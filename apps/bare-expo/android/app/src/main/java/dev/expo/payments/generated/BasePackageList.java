@@ -50,6 +50,7 @@ public class BasePackageList {
         new expo.modules.permissions.PermissionsPackage(),
         new expo.modules.print.PrintPackage(),
         new expo.modules.random.RandomPackage(),
+        new expo.modules.screencapture.ScreenCapturePackage(),
         new expo.modules.screenorientation.ScreenOrientationPackage(),
         new expo.modules.securestore.SecureStorePackage(),
         new expo.modules.sensors.SensorsPackage(),

@@ -1,25 +1,24 @@
 /* @flow */
+import dedent from 'dedent';
+import { take, takeRight } from 'lodash';
 import React from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
-import { take, takeRight } from 'lodash';
-import dedent from 'dedent';
-
-import Colors from '../constants/Colors';
-import PrimaryButton from './PrimaryButton';
-import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
-import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
-import SeeAllProjectsButton from './SeeAllProjectsButton';
-import SharedStyles from '../constants/SharedStyles';
-import SnackListItem from './SnackListItem';
-import ScrollView from '../components/NavigationScrollView';
 import ListItem from '../components/ListItem';
+import ScrollView from '../components/NavigationScrollView';
+import ProjectListItem from '../components/ProjectListItem';
 import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
-import ProjectListItem from '../components/ProjectListItem';
 import { StyledText } from '../components/Text';
 import { StyledView } from '../components/Views';
+import Colors from '../constants/Colors';
+import SharedStyles from '../constants/SharedStyles';
+import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
+import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
+import PrimaryButton from './PrimaryButton';
+import SeeAllProjectsButton from './SeeAllProjectsButton';
+import SnackListItem from './SnackListItem';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -53,7 +52,7 @@ export default class Profile extends React.Component {
     const SkipConnectionNotification = true;
     if (!SkipConnectionNotification && !prevProps.data.error && this.props.data.error) {
       // NOTE(brentvatne): sorry for this
-      let isConnectionError = this.props.data.error.message.includes('No connection available');
+      const isConnectionError = this.props.data.error.message.includes('No connection available');
 
       if (isConnectionError) {
         // Should have some integrated alert banner
@@ -117,7 +116,7 @@ export default class Profile extends React.Component {
 
   _renderError = () => {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
+    const isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
       <ScrollView
@@ -183,7 +182,7 @@ export default class Profile extends React.Component {
   };
 
   _renderLegacyHeader = () => {
-    let { username } = this.props.data.user;
+    const { username } = this.props.data.user;
 
     return (
       <View style={styles.header}>
@@ -203,7 +202,7 @@ export default class Profile extends React.Component {
       return;
     }
 
-    let { apps, appCount } = data.user;
+    const { apps, appCount } = data.user;
     let content;
 
     if (!apps || !apps.length) {
@@ -235,7 +234,7 @@ export default class Profile extends React.Component {
       return;
     }
 
-    let { snacks } = this.props.data.user;
+    const { snacks } = this.props.data.user;
     let content;
 
     if (!snacks || !snacks.length) {

@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/ActionSheetIOS/RCTActionSheetManager.h
+../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTActionSheetManager.h

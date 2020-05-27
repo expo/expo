@@ -1454,6 +1454,10 @@ EXRandom:
   LABEL: EXRandom
   PROJECT_PATH: EXRandom.xcodeproj
   UUID: 00EB4A6BB9778AFFF7F587D732973596
+EXScreenCapture:
+  LABEL: EXScreenCapture
+  PROJECT_PATH: EXScreenCapture.xcodeproj
+  UUID: 41748256BF35CA80D3CE24FFC0C6012B
 EXScreenOrientation:
   LABEL: EXScreenOrientation
   PROJECT_PATH: EXScreenOrientation.xcodeproj

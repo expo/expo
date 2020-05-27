@@ -65,7 +65,7 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 29)
 
   compileOptions {
     sourceCompatibility = '1.8'
@@ -190,14 +190,12 @@ dependencies {
   // BEGIN_SDK_35
   api 'host.exp:reactandroid-abi35_0_0:1.0.0'
   // END_SDK_35
-  // BEGIN_SDK_34
-  api 'host.exp:reactandroid-abi34_0_0:1.0.0'
-  // END_SDK_34
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
+  api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
   api 'com.facebook.fresco:fresco:2.0.0'
   api 'com.facebook.fresco:animated-gif:2.0.0'
   api 'com.facebook.fresco:animated-webp:2.0.0'
@@ -205,7 +203,7 @@ dependencies {
   api 'com.facebook.fresco:imagepipeline-okhttp3:2.0.0'
   api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
   api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
-  compileOnly 'com.facebook.soloader:soloader:0.6.0'
+  compileOnly 'com.facebook.soloader:soloader:0.8.2'
   api 'com.google.code.findbugs:jsr305:3.0.2'
   api 'com.squareup.okhttp3:okhttp:3.12.1'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.12.1'

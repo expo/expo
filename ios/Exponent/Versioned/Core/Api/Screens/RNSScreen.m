@@ -27,6 +27,7 @@
     _stackPresentation = RNSScreenStackPresentationPush;
     _stackAnimation = RNSScreenStackAnimationDefault;
     _gestureEnabled = YES;
+    _dismissed = NO;
   }
 
   return self;
@@ -168,6 +169,7 @@
 
 - (void)notifyDismissed
 {
+  _dismissed = YES;
   if (self.onDismissed) {
     dispatch_async(dispatch_get_main_queue(), ^{
       if (self.onDismissed) {

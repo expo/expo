@@ -78,6 +78,7 @@ function AuthSessionProviders(props: {
   const providers = [
     Facebook,
     Spotify,
+    Twitch,
     Dropbox,
     Google,
     Reddit,
@@ -472,7 +473,7 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
       scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
       usePKCE,
       extraParams: {
-        show_dialog: false,
+        show_dialog: 'false',
       },
       prompt,
     },
@@ -570,6 +571,34 @@ function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
     <AuthSection
       disabled={usePKCE}
       title="dropbox"
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: 'r7jomrc4hiz5wm1wgdzmwr1ccb454h',
+      redirectUri,
+      prompt,
+      scopes: ['openid', 'user_read', 'analytics:read:games'],
+      usePKCE,
+    },
+    {
+      authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
+      tokenEndpoint: 'https://id.twitch.tv/oauth2/token',
+      revocationEndpoint: 'https://id.twitch.tv/oauth2/revoke',
+    }
+  );
+
+  return (
+    <AuthSection
+      disabled={useProxy}
+      title="twitch"
       request={request}
       result={result}
       promptAsync={promptAsync}

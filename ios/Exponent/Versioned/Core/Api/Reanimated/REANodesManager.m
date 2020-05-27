@@ -23,17 +23,6 @@
 #import "Nodes/REAFunctionNode.h"
 #import "Nodes/REACallFuncNode.h"
 
-@interface RCTUIManager ()
-
-- (void)updateView:(nonnull NSNumber *)reactTag
-          viewName:(NSString *)viewName
-             props:(NSDictionary *)props;
-
-- (void)setNeedsLayout;
-
-@end
-
-
 // Interface below has been added in order to use private methods of RCTUIManager,
 // RCTUIManager#UpdateView is a React Method which is exported to JS but in 
 // Objective-C it stays private

@@ -72,9 +72,7 @@
             CGContextClipToRect(context, rect);
             [svgView drawToContext:context withRect:rect];
         } else {
-            node.hidden = false;
-            [node.layer renderInContext:context];
-            node.hidden = true;
+            [node drawRect:rect];
         }
 
         return YES;
@@ -105,11 +103,6 @@
     }
 
     [self popGlyphContext];
-}
-
-- (void)drawRect:(CGRect)rect
-{
-    [self invalidate];
 }
 
 - (void)setupGlyphContext:(CGContextRef)context

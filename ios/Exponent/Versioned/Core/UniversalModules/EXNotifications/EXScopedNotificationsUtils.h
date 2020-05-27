@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedNotificationsUtils : NSObject
 
++ (BOOL)shouldNotificationRequest:(UNNotificationRequest *)request beHandledByExperience:(NSString *)experienceId;
+
 + (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)experienceId;
 
 @end

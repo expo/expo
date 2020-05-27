@@ -20,8 +20,13 @@ export interface TimeIntervalTriggerInput {
     repeats: boolean;
     seconds: number;
 }
+export interface DailyTriggerInput {
+    type: 'daily';
+    hour: number;
+    minute: number;
+}
 export interface DateTriggerInput {
     type: 'date';
     timestamp: number;
 }
-export declare type NotificationTriggerInput = null | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput;
+export declare type NotificationTriggerInput = null | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput;

@@ -60,11 +60,7 @@ UM_EXPORT_METHOD_AS(getPresentedNotificationsAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-    NSMutableArray *serializedNotifications = [NSMutableArray new];
-    for (UNNotification *notification in notifications) {
-      [serializedNotifications addObject:[EXNotificationSerializer serializedNotification:notification]];
-    }
-    resolve(serializedNotifications);
+    resolve([self serializeNotifications:notifications]);
   }];
 }
 
@@ -113,5 +109,15 @@ UM_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
   completionHandler(presentationOptions);
 }
 
+# pragma mark - Helpers
+
+- (NSArray * _Nonnull)serializeNotifications:(NSArray<UNNotification *> * _Nonnull)notifications
+{
+  NSMutableArray *serializedNotifications = [NSMutableArray new];
+  for (UNNotification *notification in notifications) {
+    [serializedNotifications addObject:[EXNotificationSerializer serializedNotification:notification]];
+  }
+  return serializedNotifications;
+}
 
 @end

@@ -35,6 +35,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
    - Downloads submodules (like `react-native`) with `git submodule update --init`
    - Fetches files with [_git lfs_](https://git-lfs.github.com), which we use for big native libraries like Google Mobile Vision. Note: you must have `git lfs` already installed.
+   - Ensures [direnv](https://direnv.net/) is installed
    - Ensures Yarn is installed
    - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
    - Downloads the Node packages (`yarn install`)

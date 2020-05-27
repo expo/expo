@@ -240,7 +240,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
-        sourceIosPath: 'ios',
+        sourceIosPath: 'apple',
         targetIosPath: 'Api/Components/WebView',
         sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/webview',
         targetAndroidPath: 'modules/api/components/webview',
@@ -330,6 +330,16 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/sharedelement',
         sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
+      },
+    ],
+  },
+  '@react-native-community/segmented-control': {
+    repoUrl: 'https://github.com/react-native-community/segmented-control',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/SegmentedControl',
       },
     ],
   },

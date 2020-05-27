@@ -48,6 +48,7 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
+    "@types/lodash.zipobject": "^4.1.4",
     "expo-module-scripts": "~1.2.0"
   },
   "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"

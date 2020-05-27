@@ -1,7 +1,7 @@
 import * as EmbeddedAssets from '../EmbeddedAssets';
 
 jest.mock('expo-constants', () => {
-  const Constants = require.requireActual('expo-constants');
+  const Constants = jest.requireActual('expo-constants');
   return {
     ...Constants,
     appOwnership: 'standalone',
@@ -9,7 +9,7 @@ jest.mock('expo-constants', () => {
 });
 
 jest.mock('expo-file-system', () => {
-  const FileSystem = require.requireActual('expo-file-system');
+  const FileSystem = jest.requireActual('expo-file-system');
   return {
     ...FileSystem,
     bundleDirectory:
@@ -19,7 +19,7 @@ jest.mock('expo-file-system', () => {
 });
 
 jest.mock('@unimodules/core', () => {
-  const UnimodulesCore = require.requireActual('@unimodules/core');
+  const UnimodulesCore = jest.requireActual('@unimodules/core');
   return {
     ...UnimodulesCore,
     NativeModulesProxy: {

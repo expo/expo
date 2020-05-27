@@ -40,6 +40,7 @@
     }
     _src = src;
     CGImageRelease(_image);
+    _image = nil;
     RCTImageSource *source = [RCTConvert RCTImageSource:src];
     if (source.size.width != 0 && source.size.height != 0) {
         _imageSize = source.size;

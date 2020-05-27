@@ -9,12 +9,17 @@ export type SegmentOptions = {
 };
 
 export function initialize(options: SegmentOptions): void {
-  if (Platform.OS === 'android') {
-    ExponentSegment.initializeAndroid(options.androidWriteKey);
-  } else if (Platform.OS === 'ios') {
-    ExponentSegment.initializeIOS(options.iosWriteKey);
-  } else {
+  if (!ExponentSegment.initialize) {
     throw new UnavailabilityError('expo-analytics-segment', 'initialize');
+  }
+  const platformWriteKey = Platform.select({
+    ios: options.iosWriteKey,
+    android: options.androidWriteKey,
+  });
+  if (platformWriteKey) {
+    ExponentSegment.initialize(platformWriteKey);
+  } else {
+    throw new Error('You must provide a platform-specific write key to initialize Segment.');
   }
 }
 

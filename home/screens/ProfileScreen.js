@@ -84,7 +84,7 @@ class UserSettingsButton extends React.Component {
       <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
         {Platform.select({
           ios: <Text style={{ fontSize: 17, color: Colors.light.tintColor }}>Options</Text>,
-          android: <Ionicons name="md-options" size={27} color={Colors[this.props.theme].text} />,
+          android: <Ionicons name="md-settings" size={27} color={Colors[this.props.theme].text} />,
         })}
       </TouchableOpacity>
     );
