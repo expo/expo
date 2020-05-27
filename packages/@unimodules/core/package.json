@@ -1,6 +1,6 @@
 {
   "name": "@unimodules/core",
-  "version": "5.1.2",
+  "version": "5.2.0",
   "description": "Universal modules core",
   "main": "build/index.js",
   "types": "build/index.d.ts",
