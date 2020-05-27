@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixes `parseEvent` to allow numeric characters as part of the `eventName` since the name can be alphanumeric. ([#8516](https://github.com/expo/expo/pull/8516) by [@thorbenprimke](https://github.com/thorbenprimke))
+
 ## 2.4.0 — 2020-05-27
 
 ### 🎉 New features
