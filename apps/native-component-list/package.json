@@ -18,7 +18,7 @@
     "@react-native-community/netinfo": "5.9.2",
     "@react-native-community/segmented-control": "1.6.1",
     "@react-native-community/picker": "1.6.0",
-    "@react-native-community/slider": "3.0.0-rc.2",
+    "@react-native-community/slider": "3.0.0",
     "@react-native-community/viewpager": "3.3.0",
     "@react-navigation/web": "2.0.0-alpha.0",
     "date-format": "^2.0.0",
