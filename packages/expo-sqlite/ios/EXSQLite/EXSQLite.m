@@ -42,7 +42,7 @@ UM_EXPORT_MODULE(ExponentSQLite);
   return [directory stringByAppendingPathComponent:name];
 }
 
-- (NSValue *)openDatabase:(NSString *)dbName :(NSString *)dbKey
+- (NSValue *)openDatabase:(NSString *)dbName databaseKey:(NSString *)dbKey
 {
   NSValue *cachedDB = nil;
   NSString *path = [self pathForDatabaseName:dbName];
@@ -74,7 +74,7 @@ UM_EXPORT_MODULE(ExponentSQLite);
 
 UM_EXPORT_METHOD_AS(exec,
                     exec:(NSString *)dbName
-                    key:(NSString *)dbKey
+                     key:(NSString *)dbKey
                  queries:(NSArray *)sqlQueries
                 readOnly:(BOOL)readOnly
                 resolver:(UMPromiseResolveBlock)resolve

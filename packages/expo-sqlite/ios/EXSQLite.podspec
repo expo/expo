@@ -19,7 +19,14 @@ Pod::Spec.new do |s|
   s.dependency 'UMCore'
   s.dependency 'UMFileSystemInterface'
 
-  s.dependency 'SQLCipher', '>= 3.4.0'
+  sqlcipher_version = '>= 3.4.0'
+  using_custom_sqlcipher_version = defined? $SQLCipherVersion
+  if using_custom_sqlcipher_version
+    sqlcipher_version = $SDWebImageVersion
+    Pod::UI.puts "expo-sqlite: Using user specified SQLCipher version '#{$sqlcipher_version}'"
+  end
+
+  s.dependency 'SQLCipher', sqlcipher_version
   s.xcconfig = {
     'OTHER_SWIFT_FLAGS' => '$(inherited) -D SQLITE_HAS_CODEC -D SQLITE_ENABLE_FTS5',
     'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC -DSQLITE_ENABLE_FTS5',
