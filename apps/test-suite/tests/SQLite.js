@@ -1,5 +1,6 @@
 'use strict';
 
+import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
@@ -58,41 +59,44 @@ export function test(t) {
         );
       });
 
-      const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
-      t.expect(exists).toBeTruthy();
+      if (Platform.OS !== 'web') {
+        const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(exists).toBeTruthy();
+      }
     });
 
-    t.it(
-      'should work with a downloaded .db file',
-      async () => {
-        await FS.downloadAsync(
-          Asset.fromModule(require('../assets/asset-db.db')).uri,
-          `${FS.documentDirectory}SQLite/downloaded.db`
-        );
-
-        const db = SQLite.openDatabase('downloaded.db');
-        await new Promise((resolve, reject) => {
-          db.transaction(
-            tx => {
-              const nop = () => {};
-              const onError = (tx, error) => reject(error);
-              tx.executeSql(
-                'SELECT * FROM Users',
-                [],
-                (tx, results) => {
-                  t.expect(results.rows.length).toEqual(3);
-                  t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
-                },
-                onError
-              );
-            },
-            reject,
-            resolve
+    if (Platform.OS !== 'web') {
+      t.it(
+        'should work with a downloaded .db file',
+        async () => {
+          await FS.downloadAsync(
+            Asset.fromModule(require('../assets/asset-db.db')).uri,
+            `${FS.documentDirectory}SQLite/downloaded.db`
           );
-        });
-      },
-      30000
-    );
+
+          const db = SQLite.openDatabase('downloaded.db');
+          await new Promise((resolve, reject) => {
+            db.transaction(
+              tx => {
+                const onError = (tx, error) => reject(error);
+                tx.executeSql(
+                  'SELECT * FROM Users',
+                  [],
+                  (tx, results) => {
+                    t.expect(results.rows.length).toEqual(3);
+                    t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
+                  },
+                  onError
+                );
+              },
+              reject,
+              resolve
+            );
+          });
+        },
+        30000
+      );
+    }
 
     t.it('should be able to recreate db from scratch by deleting file', async () => {
       {
@@ -132,12 +136,12 @@ export function test(t) {
         });
       }
 
-      {
+      if (Platform.OS !== 'web') {
         const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(exists).toBeTruthy();
       }
 
-      {
+      if (Platform.OS !== 'web') {
         await FS.deleteAsync(`${FS.documentDirectory}SQLite/test.db`);
         const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(exists).toBeFalsy();
@@ -224,8 +228,10 @@ export function test(t) {
         );
       });
 
-      const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
-      t.expect(exists).toBeTruthy();
+      if (Platform.OS !== 'web') {
+        const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(exists).toBeTruthy();
+      }
     });
 
     t.it('should support PRAGMA statements', async () => {
