@@ -300,8 +300,9 @@ export class Changelog {
     ];
 
     if (firstVersionHeadingIndex !== -1) {
-      // Set version of the first found version header.
-      (tokens[firstVersionHeadingIndex] as Markdown.HeadingToken).text = version;
+      // Set version of the first found version header and put current date in YYYY-MM-DD format.
+      const dateStr = new Date().toISOString().substring(0, 10);
+      (tokens[firstVersionHeadingIndex] as Markdown.HeadingToken).text = `${version} — ${dateStr}`;
 
       // Clean up empty sections.
       let i = firstVersionHeadingIndex + 1;
