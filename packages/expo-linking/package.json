@@ -31,13 +31,14 @@
   "homepage": "https://docs.expo.io/versions/latest/sdk/linking",
   "dependencies": {
     "expo-constants": "~9.0.0",
-    "url-parse": "^1.4.4",
-    "qs": "^6.5.0"
+    "qs": "^6.5.0",
+    "url-parse": "^1.4.4"
   },
   "peerDependencies": {
     "react-native": "*"
   },
   "devDependencies": {
+    "@types/qs": "^6.5.3",
     "expo-module-scripts": "^1.2.0"
   },
   "jest": {

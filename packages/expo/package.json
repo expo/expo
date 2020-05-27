@@ -51,10 +51,6 @@
   "dependencies": {
     "@babel/runtime": "^7.1.2",
     "@expo/vector-icons": "^10.0.2",
-    "@types/fbemitter": "^2.0.32",
-    "@types/invariant": "^2.2.29",
-    "@types/lodash.zipobject": "^4.1.4",
-    "@types/qs": "^6.5.1",
     "@unimodules/core": "~5.1.2",
     "@unimodules/react-native-adapter": "~5.2.0",
     "babel-preset-expo": "~8.2.1",
@@ -79,7 +75,6 @@
     "nullthrows": "^1.1.0",
     "pretty-format": "^23.6.0",
     "prop-types": "^15.6.0",
-    "qs": "^6.5.0",
     "react-native-safe-area-context": "2.0.1",
     "serialize-error": "^2.1.0",
     "unimodules-app-loader": "~1.0.2",
@@ -97,6 +92,8 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
+    "@types/fbemitter": "^2.0.32",
+    "@types/invariant": "^2.2.29",
     "@types/react": "^16.9.0",
     "@types/react-native": "^0.62.8",
     "@types/react-test-renderer": "16.9.0",
