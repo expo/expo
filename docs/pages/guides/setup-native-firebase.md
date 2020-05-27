@@ -43,7 +43,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 - Open **Project overview** in the firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `ios.bundleIdentifier` in your app.json.**
 - Register the app & download the config file by clicking **"Download GoogleService-Info.plist"** and drag the file into your Expo project folder.
-- Add the relative path to the Android **GoogleService-Info.plist** file to **`app.json`**.
+- Add the relative path to the iOS **GoogleService-Info.plist** file to **`app.json`**.
 
 ```json
 {
