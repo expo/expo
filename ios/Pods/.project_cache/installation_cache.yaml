@@ -5933,7 +5933,7 @@ CACHE_KEYS:
   EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXAppleAuthentication: 231e6d3e7cdb50c8b662cdf61e99b5bc
-    CHECKSUM: 046c76335343eaa97f6ed8d35a9cf493a2c4d351
+    CHECKSUM: 587bd66367c25571da846544635bd65cd4a1e44b
     FILES:
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.h"
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.m"
@@ -5946,7 +5946,7 @@ CACHE_KEYS:
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationRequest.m"
     PROJECT_NAME: EXAppleAuthentication
     SPECS:
-      - EXAppleAuthentication (2.1.1)
+      - EXAppleAuthentication (2.2.0)
   EXApplication:
     BUILD_SETTINGS_CHECKSUM:
       EXApplication: 829c6d5611b2866c7f51150821bc8075
@@ -6432,13 +6432,13 @@ CACHE_KEYS:
   EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalAuthentication: 96fac91a3b24706197a1e3e3eada681c
-    CHECKSUM: bbf1026cc289d729da4f29240dd7a8f6a14e4b20
+    CHECKSUM: fc03548af33eccddfb756d0cf12fb40c2ca80fe2
     FILES:
       - "../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h"
       - "../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.m"
     PROJECT_NAME: EXLocalAuthentication
     SPECS:
-      - EXLocalAuthentication (9.0.0)
+      - EXLocalAuthentication (9.1.0)
   EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalization: 012b2a22ab282cfa39e5a52631e82929
@@ -6480,7 +6480,7 @@ CACHE_KEYS:
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
       EXMediaLibrary: 6e5794f84885cb414f6e6f91e6923492
-    CHECKSUM: aa151e6f6f977543c24222d57a1caad4b7facfbc
+    CHECKSUM: 7c2f60d48c0bf6c24f6726763a3361d614425976
     FILES:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -6492,7 +6492,7 @@ CACHE_KEYS:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (8.1.0)
+      - EXMediaLibrary (8.2.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork: 103419567d2a8f5ad5aacd9a0a438bd1

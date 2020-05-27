@@ -1253,7 +1253,7 @@ PODS:
   - EXAppAuth (9.0.0):
     - AppAuth (~> 1.2)
     - UMCore
-  - EXAppleAuthentication (2.1.1):
+  - EXAppleAuthentication (2.2.0):
     - UMCore
   - EXApplication (2.1.1):
     - UMCore
@@ -1362,7 +1362,7 @@ PODS:
     - UMCore
   - EXLinearGradient (8.1.0):
     - UMCore
-  - EXLocalAuthentication (9.0.0):
+  - EXLocalAuthentication (9.1.0):
     - UMConstantsInterface
     - UMCore
   - EXLocalization (8.1.0):
@@ -1374,7 +1374,7 @@ PODS:
   - EXMailComposer (8.1.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (8.1.0):
+  - EXMediaLibrary (8.2.0):
     - React
     - UMCore
     - UMFileSystemInterface
@@ -3296,7 +3296,7 @@ SPEC CHECKSUMS:
   EXAdsFacebook: 3615ce0bf49b7dcabd53718fea9201224b489c43
   EXAmplitude: bc6221f0fb9c8af700ae3d26f2d9b803e1ccff7a
   EXAppAuth: 26cc5ad605079dab36f6209322cf21f528c44328
-  EXAppleAuthentication: 046c76335343eaa97f6ed8d35a9cf493a2c4d351
+  EXAppleAuthentication: 587bd66367c25571da846544635bd65cd4a1e44b
   EXApplication: 7cf81de6fafccff42f5d1caa5c24a159db6b9437
   EXAV: 2edd9cd30fe98d04b55325303c7ff01db02d1d0f
   EXBackgroundFetch: d876383d77a17fab25b2bd98437b6cf2297de353
@@ -3329,11 +3329,11 @@ SPEC CHECKSUMS:
   EXImagePicker: 4126814cba56cc3dc5e7fc47abce0b263da84609
   EXKeepAwake: d045bc2cf1ad5a04f0323cc7c894b95b414042e0
   EXLinearGradient: 97d8095d1e4ad96f7893e010e564796ed8aeea42
-  EXLocalAuthentication: bbf1026cc289d729da4f29240dd7a8f6a14e4b20
+  EXLocalAuthentication: fc03548af33eccddfb756d0cf12fb40c2ca80fe2
   EXLocalization: 1997068470bdfb7601fd58dbbf85ba1cde36fb82
   EXLocation: bbd487fd96a18a3ad9725389bbb94c4a5f78edf3
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
-  EXMediaLibrary: aa151e6f6f977543c24222d57a1caad4b7facfbc
+  EXMediaLibrary: 7c2f60d48c0bf6c24f6726763a3361d614425976
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
   EXNotifications: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964

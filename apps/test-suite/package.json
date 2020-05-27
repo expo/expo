@@ -35,7 +35,7 @@
     "expo-keep-awake": "~8.1.0",
     "expo-localization": "~8.1.0",
     "expo-location": "~8.1.0",
-    "expo-media-library": "~8.1.0",
+    "expo-media-library": "~8.2.0",
     "expo-network": "~2.1.1",
     "expo-notifications": "~0.1.7",
     "expo-permissions": "~8.1.0",

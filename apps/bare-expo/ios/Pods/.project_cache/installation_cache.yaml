@@ -500,13 +500,13 @@ CACHE_KEYS:
   EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalAuthentication: 5e28c7ec1bad6a0570a9cbc373438c44
-    CHECKSUM: bbf1026cc289d729da4f29240dd7a8f6a14e4b20
+    CHECKSUM: fc03548af33eccddfb756d0cf12fb40c2ca80fe2
     FILES:
       - "../../../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h"
       - "../../../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.m"
     PROJECT_NAME: EXLocalAuthentication
     SPECS:
-      - EXLocalAuthentication (9.0.0)
+      - EXLocalAuthentication (9.1.0)
   EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalization: 8513c3f384ef74b702b8d41adb5ed780
@@ -548,7 +548,7 @@ CACHE_KEYS:
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
       EXMediaLibrary: 7544d673700f034419a0fff210a72e00
-    CHECKSUM: aa151e6f6f977543c24222d57a1caad4b7facfbc
+    CHECKSUM: 7c2f60d48c0bf6c24f6726763a3361d614425976
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -560,7 +560,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (8.1.0)
+      - EXMediaLibrary (8.2.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork: 1bd35e8c2b02e38f824935482ef7c92c
