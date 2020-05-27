@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import View from '../primitives/View';
 function createView(nativeProps = {}) {
     return forwardRef((props, ref) => {
-        return <View {...nativeProps} {...props} ref={ref}/>;
+        return React.createElement(View, Object.assign({}, nativeProps, props, { ref: ref }));
     });
 }
 export const Nav = createView(Platform.select({
