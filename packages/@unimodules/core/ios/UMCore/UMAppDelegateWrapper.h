@@ -5,6 +5,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UMAppDelegateWrapper : UIResponder <UIApplicationDelegate>
 
+@property (nullable, nonatomic, strong) UIWindow *window;
+
 @end
 
 NS_ASSUME_NONNULL_END
