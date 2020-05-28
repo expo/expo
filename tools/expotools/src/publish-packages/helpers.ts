@@ -115,7 +115,7 @@ export function printPackageParcel(parcel: Parcel): void {
     }
   }
 
-  if (releaseType && releaseVersion) {
+  if (pkgView && releaseType && releaseVersion) {
     logger.log(
       '  ',
       magenta(`Suggested ${cyan.bold(releaseType)} upgrade to ${cyan.bold(releaseVersion)}`)
