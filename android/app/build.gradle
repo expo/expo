@@ -58,7 +58,9 @@ android {
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       consumerProguardFiles 'proguard-rules.pro'
-      signingConfig signingConfigs.release
+      if (!System.getenv("ANDROID_UNSIGNED")) {
+        signingConfig signingConfigs.release
+      }
     }
   }
   lintOptions {
