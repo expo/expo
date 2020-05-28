@@ -40,7 +40,7 @@ public interface TasksAndEventsRepository {
   void removeEvents(String appId);
   List<Bundle> getEvents(String appId);
 
-  boolean tasksExists();
+  boolean tasksExist();
   void createTasks();
   @NonNull Set<String> allAppIdsWithTasks();
   Map<String, TaskInterface> getTasks(String appId);

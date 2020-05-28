@@ -72,7 +72,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     mContextRef = new WeakReference<>(context);
     mTasksAndEventsRepository = TasksAndEventsRepository.create(context);
 
-    if (!mTasksAndEventsRepository.tasksExists()) {
+    if (!mTasksAndEventsRepository.tasksExist()) {
       mTasksAndEventsRepository.createTasks();
       restoreTasks();
     }

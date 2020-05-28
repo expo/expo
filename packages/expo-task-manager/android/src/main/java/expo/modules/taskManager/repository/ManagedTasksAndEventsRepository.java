@@ -49,7 +49,7 @@ public class ManagedTasksAndEventsRepository implements TasksAndEventsRepository
   }
 
   @Override
-  public boolean tasksExists() {
+  public boolean tasksExist() {
     return sTasks != null;
   }
 

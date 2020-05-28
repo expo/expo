@@ -16,12 +16,9 @@ import androidx.annotation.NonNull;
 public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
 
   private final TasksPersistence tasksPersistence;
-  private String appId;
 
   private static Map<String, List<Bundle>> sEvents = new HashMap<>();
   private static Map<String, Map<String, TaskInterface>> sTasks;
-
-  private boolean tasksExists = false;
 
   public BareTasksAndEventsRepository(TasksPersistence tasksPersistence) {
     this.tasksPersistence = tasksPersistence;
@@ -57,7 +54,7 @@ public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
   }
 
   @Override
-  public boolean tasksExists() {
+  public boolean tasksExist() {
     return sTasks != null;
   }
 
