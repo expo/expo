@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Test ([#8533](https://github.com/expo/expo/pull/8533) by [@lukmccall](https://github.com/lukmccall))
+
 ## 8.2.0 — 2020-05-27
 
 ### 🐛 Bug fixes
