@@ -11,7 +11,6 @@ To create a new project including this example, run `npx create-react-native-app
 
 ```js
 import React from 'react';
-
 import { useFonts } from '@use-expo/font';
 import { Text, View } from 'react-native';
 import { AppLoading } from 'expo';
