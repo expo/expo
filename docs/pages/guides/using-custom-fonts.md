@@ -2,19 +2,39 @@
 title: Using Custom Fonts
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-import SnackInline from '~/components/plugins/SnackInline';
-
 Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. And since each
 operating system has its own set of platform fonts, if you want to produce an experience that is consistent for all users, you'll want to use your own fonts in your project. This guide will show you how to do that.
 
 ## A Minimal but Complete Working Example
 
-<SnackEmbed snackId="@ccheever/custom-font-example" />
+To create a new project including this example, run `npx create-react-native-app --template with-custom-font` in your terminal.
 
-> 💡 **This won't preview properly in the web viewer of Snack but works everywhere else.** This is just a bug in Snack that should be fixed soon. This code will work on web in expo-cli apps and on all other platforms in Snack.
+```js
+import React from 'react';
 
-If you load this up on a device, you should see something that looks like this:
+import { useFonts } from '@use-expo/font';
+import { Text, View } from 'react-native';
+import { AppLoading } from 'expo';
+
+export default props => {
+  let [fontsLoaded] = useFonts({
+    'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  } else {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>Inter Black</Text>
+        <Text style={{ fontSize: 40 }}>Platform Default</Text>
+      </View>
+    );
+  }
+};
+```
+
+When you load it on your device, you should see something like this:
 
 <img src="/static/images/font-example-custom-font.png" style={{maxWidth: 305}} />
 
@@ -30,7 +50,7 @@ You'll want either a font in either `.otf` or `.ttf` format. Those are the two f
 
 The convention in Expo apps is to put your fonts in an `./assets/fonts` directory, but you can put them anywhere you like.
 
-In this example (which you can see if you [open the Snack in a dedicated window](https://snack.expo.io/@ccheever/custom-font-example)), we've put our font file, `Inter-Black.otf` in the `./assets/fonts` subdirectory of the project.
+In this example, we've put our font file, `Inter-Black.otf` in the `./assets/fonts` subdirectory of the project.
 
 ## Using the `useFonts` Hook
 
@@ -95,7 +115,29 @@ To do this, just replace the `require('./assets/fonts/MyFont.otf')` with the URL
 
 Here is a minimal, complete example.
 
-<SnackEmbed snackId="@ccheever/remote-font-example" />
+```js
+import React from 'react';
+
+import { useFonts } from '@use-expo/font';
+import { Text, View } from 'react-native';
+import { AppLoading } from 'expo';
+
+export default props => {
+  let [fontsLoaded] = useFonts({
+    'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
+  });
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  } else {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
+        <Text>Platform Default</Text>
+      </View>
+    );
+  }
+};
+```
 
 > ⚠️ **If loading remote fonts, make sure they are being served from an origin with CORS properly configured** If you don't do this, your remote font might not load properly on the web platform.
 
@@ -107,13 +149,50 @@ What is happening under the hood is that your fonts are being loaded using `Font
 
 You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 
-<SnackEmbed snackId="@ccheever/font.loadasync-example" />
+```js
+import React from 'react';
+import { Text, View, StyleSheet } from 'react-native';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+
+let customFonts = {
+  'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+  'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
+};
+
+export default class App extends React.Component {
+  state = {
+    fontsLoaded: false,
+  };
+
+  async _loadFontsAsync() {
+    await Font.loadAsync(customFonts);
+    this.setState({ fontsLoaded: true });
+  }
+
+  componentDidMount() {
+    this._loadFontsAsync();
+  }
+
+  render() {
+    if (this.state.fontsLoaded) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Platform Default</Text>
+          <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
+          <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
+        </View>
+      );
+    } else {
+      return <AppLoading />;
+    }
+  }
+}
+```
 
 ### Writing your own Hooks
 
 You can use the primitives in the `expo-font` library to write your own hooks if you want. Here is a basic implementation of a hook that works just like the `useFonts` library above.
-
-<SnackInline>
 
 ```js
 import React, { useEffect, useState } from 'react';
@@ -149,8 +228,6 @@ export default () => {
   }
 };
 ```
-
-</SnackInline>
 
 ## More on Font Formats
 
