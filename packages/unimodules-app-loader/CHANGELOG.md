@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- @mczernek/app loader migration ([#8438](https://github.com/expo/expo/pull/8438) by [@mczernek](https://github.com/mczernek))
+
 ## 1.1.0 — 2020-05-27
 
 ### 🐛 Bug fixes
