@@ -75,7 +75,7 @@
     "nullthrows": "^1.1.0",
     "pretty-format": "^23.6.0",
     "prop-types": "^15.6.0",
-    "react-native-safe-area-context": "3.0.0",
+    "react-native-safe-area-context": "3.0.2",
     "serialize-error": "^2.1.0",
     "unimodules-app-loader": "~1.1.0",
     "unimodules-barcode-scanner-interface": "~5.2.0",
