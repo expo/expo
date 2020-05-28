@@ -64,14 +64,17 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   public void didReceiveBroadcast(Intent intent) {
     String action = intent.getAction();
 
-    if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-      // Device has just been booted up or app has been reinstalled, so we need restore an alarm if "startOnBoot" option is enabled.
+    if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+      // Device has just been booted up, so we need restore an alarm if "startOnBoot" option is enabled.
       Map<String, Object> options = mTask.getOptions();
       boolean startOnBoot = options.containsKey("startOnBoot") && (boolean) options.get("startOnBoot");
 
       if (startOnBoot) {
         startAlarm();
       }
+    } else if(Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+      // App has just been reinstalled, so we need restore an alarm.
+      startAlarm();
     } else {
       Context context = getContext();
       TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
