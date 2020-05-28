@@ -8,6 +8,4 @@
 
 ### 🐛 Bug fixes
 
-## 8.2.0 — 2020-05-27
-
-*This version does not introduce any user-facing changes.*
+- Upgrading an application does not cause `BackgroundFetch` tasks to unregister. ([#8348](https://github.com/expo/expo/pull/8438) by [@mczernek](https://github.com/mczernek))

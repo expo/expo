@@ -26,7 +26,6 @@ public class ReactAdapterPackage extends BasePackage {
 
   @Override
   public List<InternalModule> createInternalModules(Context context) {
-    AppLoaderProvider.registerLoader(context, "react-native-headless", RNHeadlessAppLoader.class);
     // We can force-cast here, because this package will only be used in React Native context.
     ReactContext reactContext = (ReactContext) context;
     return Arrays.asList(
