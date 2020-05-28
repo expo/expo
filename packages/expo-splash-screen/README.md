@@ -58,7 +58,7 @@ Please take a look at the [`res/drawable/splashscreen.xml`](#resdrawablesplashsc
 
 ### StatusBar customization
 
-`expo-splash-screen` allows customization of the StatusBar according to the [StatusBar API from ReactNative](https://reactnative.dev/docs/statusbar).
+`expo-splash-screen` allows customization of the StatusBar according to the [ReactNative StatusBar API](https://reactnative.dev/docs/statusbar).
 
 ## 📚 API
 
@@ -441,9 +441,8 @@ There is this awesome 1x1px png online generator: http://www.1x1px.me (use it to
 #### 🛠 (<em>optional</em>) Customize StatusBar
 
 You might want to customize the StatusBar appearance during the time the SplashScreen is being shown.
-iOS platform allows customizing `hiding` and `style` of the StatusBar component.
 
-1. Customize `StatusBar hidden` flag:
+1. Customize `StatusBar hiding` flag:
 - open main project view, select your project name from `TARGETS` panel and navigate to `Info` tab,
 - add or modify `Status bar initially hidden` attribute with desired value.
 
@@ -481,7 +480,7 @@ The easiest way to configure the splash screen in bare React Native projects is 
 8. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
 9. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
 
-#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Boolean )`
+#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Boolean statusBarTranslucent)`
 
 This native method is used to hook `SplashScreen` into the native view hierarchy that is attached to the provided activity.
 
@@ -648,13 +647,10 @@ This step is optional, because you might want to have the same image in both `li
 #### 🛠 (<em>optional</em>) Customize StatusBar
 
 You might want to customize the StatusBar appearance during the time the SplashScreen is being shown.
-There is a variety of available StatusBar options on Android platform.
 
-Please take a look at available options and the way to achieve it's behavior:
+1. Customize `StatusBar hiding` flag
 
-1. Customize `StatusBar hidden` flag
-
-To have the StatusBar completely hidden you need to update your `res/values/styles.xml` file with the following entry:
+To have the StatusBar completely hidden you need to update your `res/values/styles.xml` file with the following entry (to prevent StatusBar from hiding either remove this entry or enter `false` as the value):
 
 ```diff
   <!-- Main/SplashScreen activity theme. -->
@@ -665,14 +661,14 @@ To have the StatusBar completely hidden you need to update your `res/values/styl
   </style>
 ```
 
-If you have multiple `styles.xml` files located in different directories (e.g. in `res/values-night`, `res/values-night-v23`, etc.) containing exactly the same `style` entry, be sure to update these files accordingly.
+If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night`, `res/values-night-v23`, etc.), be sure to update these files accordingly.
 
 Read more about `android:windowFullscreen` flag in [official Android documentation](https://developer.android.com/reference/android/R.attr#windowFullscreen).
 
 2. Customize `StatusBar style` option
 
 This option is only available for Android devices running Android 6.0 or greater.
-To enforce `light` or `dark` StatusBar style for given color mode of your application you have to prepare or update your `res/values-v23/styles.xml` (this flag is supported since API 23) file with the following entry:
+To enforce `light` or `dark` StatusBar style for given system color mode, you have to prepare or update your `res/values-v23/styles.xml` file with the following entry (as of this option being supported since API 23, you have to configure specifically named directory containing separate configuration files):
 
 ```diff
   <!-- Main/SplashScreen activity theme. -->
@@ -687,18 +683,17 @@ Available values:
   - `true` for having dark-colored icons,
   - `false` for having light-colored icons.
 
-If you have multiple `styles.xml` files located in different directories (e.g. in `res/values-night-v23` (for dark color mode), etc.) containing exactly the same `style` entry, be sure to update these files accordingly.
+If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night-v23` (for dark color mode), etc.), be sure to update these files accordingly.
 
 Read more about `android:windowLightStatusBar` flag in [official Android documentation](https://developer.android.com/reference/android/R.attr#windowLightStatusBar).
 
-To read more about Android multi-API-levels support see [this official documentation](https://developer.android.com/guide/topics/resources/providing-resources).
+To read more about Android multi-API-level support see [this official documentation](https://developer.android.com/guide/topics/resources/providing-resources).
 
 3. Customize `StatusBar color` option (a.k.a. `background color` of the StatusBar component)
 
-This option allows passing custom color for StatusBar background color.
-To achieve custom background color you need to create new color resource and provide it to your `style`.
+To achieve custom background color you need to create a new color resource and provide it to the SplashScreen `style` description.
 
-Create new color resource in your `res/values/colors.xml` (consider adding different color in `res/values-night/colors.xml` for dark mode if your application supports it):
+Create new color resource in your `res/values/colors.xml` (if your application supports dark mode, consider adding different color in `res/values-night/colors.xml` file):
 
 ```diff
   <resources>
@@ -719,15 +714,15 @@ Update your `res/values/styles.xml` file with the following entry:
   </style>
 ```
 
-If you have multiple `styles.xml` files located in different directories (e.g. in `res/values-night`, `res/values-night-v23`, etc.) containing exactly the same `style` entry, be sure to update these files accordingly.
+If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night`, `res/values-night-v23`, etc.), be sure to update these files accordingly.
 
-Read more about `android:statusBarColor` flag in [official Android documentation](https://developer.android.com/reference/android/R.attr#statusBarColor).
+Read more about `android:statusBarColor` option in [official Android documentation](https://developer.android.com/reference/android/R.attr#statusBarColor).
 
 4. Customize `StatusBar translucent` flag
 
-When the StatusBar is translucent, the app will draw under the StatusBar component.
+When the StatusBar is translucent, the app will be able to draw under the StatusBar component area.
 
-To make the StatusBar translucent update your `MainActivity` file with the following change:
+To make the StatusBar translucent update your `MainActivity` file with the following content:
 
 ```diff
 public class MainActivity extends ReactActivity {
@@ -737,8 +732,8 @@ public class MainActivity extends ReactActivity {
     super.onCreate(savedInstanceState);
     // SplashScreen.show(...) has to be called after super.onCreate(...)
     // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
--   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER< NATIVE}, false);
-+   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER< NATIVE}, true);
+-   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, false);
++   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, true);
   }
 
   ...
