@@ -1,15 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPullRequestManager = exports.PullRequestManager = exports.DEFAULT_CHANGELOG_ENTRY_KEY = exports.DEFAULT_ENTRY_TYPE = exports.ChangelogEntryType = void 0;
+exports.createPullRequestManager = exports.PullRequestManager = exports.DEFAULT_CHANGELOG_ENTRY_KEY = exports.ChangelogEntryType = void 0;
 const GithubApiWrapper_1 = require("./GithubApiWrapper");
 const Utils_1 = require("./Utils");
 var ChangelogEntryType;
 (function (ChangelogEntryType) {
+    ChangelogEntryType[ChangelogEntryType["NOT_INCLUDED"] = -2] = "NOT_INCLUDED";
+    ChangelogEntryType[ChangelogEntryType["SKIP"] = -1] = "SKIP";
     ChangelogEntryType[ChangelogEntryType["BUG_FIXES"] = 0] = "BUG_FIXES";
     ChangelogEntryType[ChangelogEntryType["NEW_FEATURES"] = 1] = "NEW_FEATURES";
     ChangelogEntryType[ChangelogEntryType["BREAKING_CHANGES"] = 2] = "BREAKING_CHANGES";
 })(ChangelogEntryType = exports.ChangelogEntryType || (exports.ChangelogEntryType = {}));
-exports.DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
 exports.DEFAULT_CHANGELOG_ENTRY_KEY = 'default';
 const dangerMessage = `Add missing changelog`;
 const dangerTags = `[danger][bot]`;
@@ -17,6 +18,13 @@ class PullRequestManager {
     constructor(pullRequest, githubApi) {
         this.pullRequest = pullRequest;
         this.githubApi = githubApi;
+        this._shouldGeneratePR = false;
+        this.changelogSection = [];
+        this.skip = false;
+        this.preprocessPR();
+    }
+    shouldGeneratePR() {
+        return this._shouldGeneratePR;
     }
     /**
      * Gets suggested changelog entries from PR provided in the constructor.
@@ -28,31 +36,52 @@ class PullRequestManager {
      * Otherwise, it tries to parse PR's body.
      */
     parseChangelogSuggestionFromDescription() {
-        var _a;
         const changelogEntries = {
             [exports.DEFAULT_CHANGELOG_ENTRY_KEY]: {
-                type: exports.DEFAULT_ENTRY_TYPE,
+                type: this.skip ? ChangelogEntryType.SKIP : ChangelogEntryType.NOT_INCLUDED,
                 message: this.pullRequest.title.replace(/\[.*\]/, '').trim(),
             },
         };
         const parseLine = line => {
             const parsingResult = this.parseTagsFromLine(line);
+            const message = line.replace(/\[.*\]/, '').trim();
+            // we skip entries without message
+            const type = message.length == 0 ? ChangelogEntryType.SKIP : parsingResult.type;
             changelogEntries[parsingResult.packageName] = {
-                type: parsingResult.type,
-                message: line.replace(/\[.*\]/, '').trim(),
+                type,
+                message,
             };
         };
-        parseLine(this.pullRequest.title);
+        // skip option should be more important than title. So, we don't have to parse title.
+        if (!this.skip) {
+            parseLine(this.pullRequest.title);
+        }
+        this.changelogSection.forEach(parseLine);
+        return changelogEntries;
+    }
+    preprocessPR() {
+        var _a;
         const changelogSection = (_a = this.pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)) === null || _a === void 0 ? void 0 : _a[0];
         if (changelogSection) {
-            changelogSection
+            this.changelogSection = changelogSection
                 .split('\n')
                 .slice(1)
                 .map(line => line.replace(/^\s*-/, '').trim())
-                .filter(line => line.length > 0)
-                .forEach(parseLine);
+                .filter(line => {
+                if (!line.length) {
+                    return false;
+                }
+                if (line === 'skip') {
+                    this.skip = true;
+                    return false;
+                }
+                if (line === 'generate') {
+                    this._shouldGeneratePR = true;
+                    return false;
+                }
+                return true;
+            });
         }
-        return changelogEntries;
     }
     async createOrUpdatePRAsync(missingEntries) {
         const dangerHeadRef = `@danger/add-missing-changelog-to-${this.pullRequest.number}`;
@@ -87,7 +116,7 @@ class PullRequestManager {
     parseTagsFromLine(line) {
         var _a;
         const result = {
-            type: exports.DEFAULT_ENTRY_TYPE,
+            type: ChangelogEntryType.NOT_INCLUDED,
             packageName: exports.DEFAULT_CHANGELOG_ENTRY_KEY,
         };
         const tags = (_a = line.match(/\[[^\]]*\]/g)) === null || _a === void 0 ? void 0 : _a.map(tag => tag.slice(1, tag.length - 1));
@@ -119,6 +148,8 @@ function parseEntryType(tag) {
             return ChangelogEntryType.NEW_FEATURES;
         case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
             return ChangelogEntryType.BUG_FIXES;
+        case /\b(skip)\b/i.test(tag):
+            return ChangelogEntryType.SKIP;
     }
     return null;
 }

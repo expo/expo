@@ -2,11 +2,12 @@ import { Octokit } from '@octokit/rest';
 import { GitHubPRDSL } from 'danger/distribution/dsl/GitHubDSL';
 import { GithubApiWrapper } from './GithubApiWrapper';
 export declare enum ChangelogEntryType {
+    NOT_INCLUDED = -2,
+    SKIP = -1,
     BUG_FIXES = 0,
     NEW_FEATURES = 1,
     BREAKING_CHANGES = 2
 }
-export declare const DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
 export declare type ChangelogEntry = {
     type: ChangelogEntryType;
     message: string;
@@ -20,7 +21,11 @@ export declare type PullRequest = GitHubPRDSL | Octokit.PullsListResponseItem;
 export declare class PullRequestManager {
     private pullRequest;
     private githubApi;
+    private _shouldGeneratePR;
+    private changelogSection;
+    private skip;
     constructor(pullRequest: PullRequest, githubApi: GithubApiWrapper);
+    shouldGeneratePR(): boolean;
     /**
      * Gets suggested changelog entries from PR provided in the constructor.
      *
@@ -31,6 +36,7 @@ export declare class PullRequestManager {
      * Otherwise, it tries to parse PR's body.
      */
     parseChangelogSuggestionFromDescription(): ChangelogEntries;
+    private preprocessPR;
     createOrUpdatePRAsync(missingEntries: {
         packageName: string;
         content: string;

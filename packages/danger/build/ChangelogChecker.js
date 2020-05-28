@@ -47,7 +47,7 @@ function isChangelogModified(packageName, modifiedFiles) {
     return (modifiedFiles.includes(changelogPath) ||
         !fs.existsSync(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)));
 }
-function getSuggestedChangelogEntries(packageNames) {
+function getSuggestionsFromPR(packageNames) {
     const { [PullRequestManager_1.DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
         var _a, _b, _c, _d;
@@ -59,6 +59,28 @@ function getSuggestedChangelogEntries(packageNames) {
             type,
         };
     });
+}
+function getSuggestedChangelogEntry(entries) {
+    const skipped = [];
+    const result = entries.filter(entry => {
+        // removes skipped package
+        if (entry.type == PullRequestManager_1.ChangelogEntryType.SKIP) {
+            skipped.push(entry.packageName);
+            return false;
+        }
+        // adds default changelog typ
+        if (entry.type == PullRequestManager_1.ChangelogEntryType.NOT_INCLUDED) {
+            entry.type = PullRequestManager_1.ChangelogEntryType.BUG_FIXES;
+        }
+        return true;
+    });
+    // displays information about skipped packages
+    if (skipped.length) {
+        const skippedPackages = skipped.map(name => `- **${name}**`).join('\n');
+        warn(`Changelog check was skipped for:
+${skippedPackages}`);
+    }
+    return result;
 }
 async function runAddChangelogCommandAsync(suggestedEntries) {
     for (const entry of suggestedEntries) {
@@ -91,13 +113,11 @@ function generateReport(missingEntries, url) {
         .join('\n');
     const diff = '```diff\n' + missingEntries.map(entry => entry.diff).join('\n') + '```\n';
     const pr = url ? `#### or merge this pull request: ${url}` : '';
-    fail(`
-📋 **Missing Changelog**
+    fail(`📋 **Missing Changelog**
 ------
-🛠 Add missing entires to:
+🛠 Add missing entries to:
 ${message}`);
-    markdown(`
-### 🛠 Suggested fixes:
+    markdown(`### 🛠 Suggested fixes:
 
 <details>
   <summary>📋 Missing changelog</summary>
@@ -118,26 +138,43 @@ ${pr}
  */
 async function checkChangelog() {
     const modifiedPackages = lodash_1.groupBy(danger.git.modified_files.filter(file => file.startsWith('packages')), file => file.split(path.sep)[1]);
+    console.log('🔎 Searching for packages without changelog...');
     const packagesWithoutChangelog = Object.entries(modifiedPackages)
         .filter(([packageName, files]) => !isChangelogModified(packageName, files))
         .map(([packageName]) => packageName);
     if (packagesWithoutChangelog.length === 0) {
+        console.log('Everything is ok 🎉');
         return;
     }
     // gets suggested entries based on pull request
-    const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelog);
+    console.log('📝 Gathering information from PR...');
+    const suggestions = getSuggestionsFromPR(packagesWithoutChangelog);
+    // gets fixable entries
+    const suggestedEntries = getSuggestedChangelogEntry(suggestions);
+    // everything is up-to-date or skipped
+    if (!suggestedEntries.length) {
+        console.log('Everything is ok 🎉');
+        return;
+    }
+    console.log('🛠 Suggested fixes:');
+    suggestedEntries.forEach(entry => console.log(`  > ${entry.packageName} - [${PullRequestManager_1.ChangelogEntryType[entry.type]}] ${entry.message}`));
     // applies suggested fixes using `et add-changelog` command
+    console.log('⚙️ Fixing...');
     const fixedEntries = await runAddChangelogCommandAsync(suggestedEntries);
     // creates/updates PR form result of `et` command - it will be merged to the current PR
     let prUrl;
-    try {
-        prUrl = ((await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {}).html_url;
-    }
-    catch (e) {
-        console.log("Couldn't create a pull request.");
-        console.log(e);
+    if (pullRequestManager.shouldGeneratePR()) {
+        console.log('📩 Creating PR...');
+        try {
+            prUrl = ((await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {}).html_url;
+        }
+        catch (e) {
+            console.log("Couldn't create a pull request.");
+            console.log(e);
+        }
     }
     // generates danger report. It will contain result of `et` command as a git diff and link to created PR
+    console.log('📋 Creating report...');
     await generateReport(fixedEntries, prUrl);
 }
 exports.checkChangelog = checkChangelog;

@@ -5,12 +5,12 @@ import { GithubApiWrapper } from './GithubApiWrapper';
 import { getPackageChangelogRelativePath } from './Utils';
 
 export enum ChangelogEntryType {
+  NOT_INCLUDED = -2,
+  SKIP = -1,
   BUG_FIXES = 0,
   NEW_FEATURES = 1,
   BREAKING_CHANGES = 2,
 }
-
-export const DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
 
 export type ChangelogEntry = {
   type: ChangelogEntryType;
@@ -35,7 +35,17 @@ const dangerMessage = `Add missing changelog`;
 const dangerTags = `[danger][bot]`;
 
 export class PullRequestManager {
-  constructor(private pullRequest: PullRequest, private githubApi: GithubApiWrapper) {}
+  private _shouldGeneratePR = false;
+  private changelogSection: string[] = [];
+  private skip = false;
+
+  constructor(private pullRequest: PullRequest, private githubApi: GithubApiWrapper) {
+    this.preprocessPR();
+  }
+
+  shouldGeneratePR() {
+    return this._shouldGeneratePR;
+  }
 
   /**
    * Gets suggested changelog entries from PR provided in the constructor.
@@ -49,32 +59,56 @@ export class PullRequestManager {
   parseChangelogSuggestionFromDescription(): ChangelogEntries {
     const changelogEntries = {
       [DEFAULT_CHANGELOG_ENTRY_KEY]: {
-        type: DEFAULT_ENTRY_TYPE,
+        type: this.skip ? ChangelogEntryType.SKIP : ChangelogEntryType.NOT_INCLUDED,
         message: this.pullRequest.title.replace(/\[.*\]/, '').trim(),
       },
     };
 
     const parseLine: (line: string) => void = line => {
       const parsingResult = this.parseTagsFromLine(line);
+      const message = line.replace(/\[.*\]/, '').trim();
+      // we skip entries without message
+      const type = message.length == 0 ? ChangelogEntryType.SKIP : parsingResult.type;
+
       changelogEntries[parsingResult.packageName] = {
-        type: parsingResult.type,
-        message: line.replace(/\[.*\]/, '').trim(),
+        type,
+        message,
       };
     };
 
-    parseLine(this.pullRequest.title);
+    // skip option should be more important than title. So, we don't have to parse title.
+    if (!this.skip) {
+      parseLine(this.pullRequest.title);
+    }
 
+    this.changelogSection.forEach(parseLine);
+
+    return changelogEntries;
+  }
+
+  private preprocessPR() {
     const changelogSection = this.pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)?.[0];
     if (changelogSection) {
-      changelogSection
+      this.changelogSection = changelogSection
         .split('\n')
         .slice(1)
         .map(line => line.replace(/^\s*-/, '').trim())
-        .filter(line => line.length > 0)
-        .forEach(parseLine);
-    }
+        .filter(line => {
+          if (!line.length) {
+            return false;
+          }
+          if (line === 'skip') {
+            this.skip = true;
+            return false;
+          }
+          if (line === 'generate') {
+            this._shouldGeneratePR = true;
+            return false;
+          }
 
-    return changelogEntries;
+          return true;
+        });
+    }
   }
 
   async createOrUpdatePRAsync(
@@ -121,7 +155,7 @@ export class PullRequestManager {
 
   private parseTagsFromLine(line: string): ParsingResult {
     const result: ParsingResult = {
-      type: DEFAULT_ENTRY_TYPE,
+      type: ChangelogEntryType.NOT_INCLUDED,
       packageName: DEFAULT_CHANGELOG_ENTRY_KEY,
     };
 
@@ -158,6 +192,8 @@ function parseEntryType(tag: string): ChangelogEntryType | null {
       return ChangelogEntryType.NEW_FEATURES;
     case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
       return ChangelogEntryType.BUG_FIXES;
+    case /\b(skip)\b/i.test(tag):
+      return ChangelogEntryType.SKIP;
   }
   return null;
 }
