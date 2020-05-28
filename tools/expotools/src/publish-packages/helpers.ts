@@ -47,7 +47,7 @@ export async function shouldUseBackupAsync(options: CommandOptions): Promise<boo
 export function printPackageParcel(parcel: Parcel): void {
   const { pkg, pkgView, state, dependencies } = parcel;
   const { logs, changelogChanges, releaseType, releaseVersion } = state;
-  const gitHead = pkg.packageJson.gitHead;
+  const gitHead = pkgView?.gitHead;
 
   logger.log(
     '\n📦',
@@ -64,7 +64,7 @@ export function printPackageParcel(parcel: Parcel): void {
   } else if (!logs) {
     logger.warn("   We couldn't determine new commits for this package.");
 
-    if (pkg.packageJson.gitHead) {
+    if (gitHead) {
       // There are no logs and `gitHead` is there, so probably it's unreachable.
       logger.warn('   Git head of its current version is not reachable from this branch.');
     } else {
