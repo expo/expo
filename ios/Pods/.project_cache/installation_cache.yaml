@@ -4,7 +4,9 @@ BUILD_CONFIGURATIONS:
 CACHE_KEYS:
   ABI35_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXAdsAdMob: 36f19d1f110baa70d0ef25dd04d06a9b
+      ABI35_0_0EXAdsAdMob:
+        :debug: 36f19d1f110baa70d0ef25dd04d06a9b
+        :release: 36f19d1f110baa70d0ef25dd04d06a9b
     CHECKSUM: bf87cc7ed320275ac74045e45ce5c2ea8b52cf79
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXAdsAdMob/ABI35_0_0EXAdsAdMob/ABI35_0_0EXAdsAdMobBannerView.h"
@@ -24,7 +26,9 @@ CACHE_KEYS:
       - ABI35_0_0EXAdsAdMob (6.0.0)
   ABI35_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXAdsFacebook: 116f3bd0e78708bcd68db688a8d0b8b5
+      ABI35_0_0EXAdsFacebook:
+        :debug: 116f3bd0e78708bcd68db688a8d0b8b5
+        :release: 116f3bd0e78708bcd68db688a8d0b8b5
     CHECKSUM: 6540ee041358c0a9d68b78e0d3e7f2bdb8ac6e41
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXAdsFacebook/ABI35_0_0EXAdsFacebook/ABI35_0_0EXAdIconViewManager.h"
@@ -52,7 +56,9 @@ CACHE_KEYS:
       - ABI35_0_0EXAdsFacebook (6.0.0)
   ABI35_0_0EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXAmplitude: 4e1ce75b214fb24b229a56b2e5dce6d9
+      ABI35_0_0EXAmplitude:
+        :debug: 4e1ce75b214fb24b229a56b2e5dce6d9
+        :release: 4e1ce75b214fb24b229a56b2e5dce6d9
     CHECKSUM: 18411668bd3c216086947b436e46a974a2bf9fa9
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXAmplitude/ABI35_0_0EXAmplitude/ABI35_0_0EXAmplitude.h"
@@ -62,7 +68,9 @@ CACHE_KEYS:
       - ABI35_0_0EXAmplitude (6.0.0)
   ABI35_0_0EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXAppAuth: 9bf79fe212ef9be9facee6b9eb1aac8d
+      ABI35_0_0EXAppAuth:
+        :debug: 9bf79fe212ef9be9facee6b9eb1aac8d
+        :release: 9bf79fe212ef9be9facee6b9eb1aac8d
     CHECKSUM: a24de0cc481175589ddb69d4faae356b6d146fa5
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXAppAuth/ABI35_0_0EXAppAuth/ABI35_0_0EXAppAuth+JSON.h"
@@ -78,7 +86,9 @@ CACHE_KEYS:
       - ABI35_0_0EXAppAuth (6.0.0)
   ABI35_0_0EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXAppleAuthentication: bceca49cc07a67e24b7e2fdd701582da
+      ABI35_0_0EXAppleAuthentication:
+        :debug: bceca49cc07a67e24b7e2fdd701582da
+        :release: bceca49cc07a67e24b7e2fdd701582da
     CHECKSUM: 27e207771775b1a8e5341c1965f8e920a412da1a
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXAppleAuthentication/ABI35_0_0EXAppleAuthentication/ABI35_0_0EXAppleAuthentication.h"
@@ -95,7 +105,9 @@ CACHE_KEYS:
       - ABI35_0_0EXAppleAuthentication (1.0.0)
   ABI35_0_0EXApplication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXApplication: b1ef62ef525419aca61eb8a9f9698243
+      ABI35_0_0EXApplication:
+        :debug: b1ef62ef525419aca61eb8a9f9698243
+        :release: b1ef62ef525419aca61eb8a9f9698243
     CHECKSUM: 2cdc10609ddc78c935d73f0df53f630ab311f558
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXApplication/ABI35_0_0EXApplication/ABI35_0_0EXApplication.h"
@@ -105,7 +117,9 @@ CACHE_KEYS:
       - ABI35_0_0EXApplication (0.0.1)
   ABI35_0_0EXAppLoaderProvider:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXAppLoaderProvider: b6fbe23fe676b7343bd582e11fbc9f33
+      ABI35_0_0EXAppLoaderProvider:
+        :debug: b6fbe23fe676b7343bd582e11fbc9f33
+        :release: b6fbe23fe676b7343bd582e11fbc9f33
     CHECKSUM: 8bc016adb724f694f29b8c9ab79e279bc98c9d8e
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXAppLoaderProvider/ABI35_0_0EXAppLoaderProvider/ABI35_0_0EXAppLoaderProvider.h"
@@ -117,7 +131,9 @@ CACHE_KEYS:
       - ABI35_0_0EXAppLoaderProvider (6.0.0)
   ABI35_0_0EXAV:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXAV: c1b1372e32ebc63078d9a51ef61dd194
+      ABI35_0_0EXAV:
+        :debug: c1b1372e32ebc63078d9a51ef61dd194
+        :release: c1b1372e32ebc63078d9a51ef61dd194
     CHECKSUM: c55eaae13f115227300a7511aadef41bc5aebbea
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXAV/ABI35_0_0EXAV/ABI35_0_0EXAudioSessionManager.h"
@@ -139,7 +155,9 @@ CACHE_KEYS:
       - ABI35_0_0EXAV (6.0.0)
   ABI35_0_0EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXBackgroundFetch: b197b9055afdc2ac6e82b6cff96b0aae
+      ABI35_0_0EXBackgroundFetch:
+        :debug: b197b9055afdc2ac6e82b6cff96b0aae
+        :release: b197b9055afdc2ac6e82b6cff96b0aae
     CHECKSUM: fbb8acb4e7165ec9e23b23a4d602656704709f8c
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXBackgroundFetch/ABI35_0_0EXBackgroundFetch/ABI35_0_0EXBackgroundFetch.h"
@@ -151,7 +169,9 @@ CACHE_KEYS:
       - ABI35_0_0EXBackgroundFetch (6.0.0)
   ABI35_0_0EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXBarCodeScanner: 0a51dcbe8d574360e50084be9f37948c
+      ABI35_0_0EXBarCodeScanner:
+        :debug: 0a51dcbe8d574360e50084be9f37948c
+        :release: 0a51dcbe8d574360e50084be9f37948c
     CHECKSUM: dc077a04726771beab0799507709132cdeecc861
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXBarCodeScanner/ABI35_0_0EXBarCodeScanner/ABI35_0_0EXBarCodeScanner.h"
@@ -171,7 +191,9 @@ CACHE_KEYS:
       - ABI35_0_0EXBarCodeScanner (6.0.0)
   ABI35_0_0EXBattery:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXBattery: 443239ad2777970ff6f9e86df31da668
+      ABI35_0_0EXBattery:
+        :debug: 443239ad2777970ff6f9e86df31da668
+        :release: 443239ad2777970ff6f9e86df31da668
     CHECKSUM: 74cbc56e42127c92040d293fbb2fce7adb4c03cd
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXBattery/ABI35_0_0EXBattery/ABI35_0_0EXBattery.h"
@@ -181,7 +203,9 @@ CACHE_KEYS:
       - ABI35_0_0EXBattery (0.0.1)
   ABI35_0_0EXBlur:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXBlur: a4d89591a86c8e496cc06116e7b64212
+      ABI35_0_0EXBlur:
+        :debug: a4d89591a86c8e496cc06116e7b64212
+        :release: a4d89591a86c8e496cc06116e7b64212
     CHECKSUM: 7f124b89f606a79878bce65bfe89d9bcefd81e22
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXBlur/ABI35_0_0EXBlur/ABI35_0_0EXBlurView.h"
@@ -193,7 +217,9 @@ CACHE_KEYS:
       - ABI35_0_0EXBlur (6.0.0)
   ABI35_0_0EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXBrightness: 727ac05db805e37a83c950b766c031dd
+      ABI35_0_0EXBrightness:
+        :debug: 727ac05db805e37a83c950b766c031dd
+        :release: 727ac05db805e37a83c950b766c031dd
     CHECKSUM: 2c908e26e1ec3dece5fed563214bfdebfefc742b
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXBrightness/ABI35_0_0EXBrightness/ABI35_0_0EXBrightness.h"
@@ -203,7 +229,9 @@ CACHE_KEYS:
       - ABI35_0_0EXBrightness (6.0.0)
   ABI35_0_0EXCalendar:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXCalendar: 19034c0577815271ce812fb45ccde5d7
+      ABI35_0_0EXCalendar:
+        :debug: 19034c0577815271ce812fb45ccde5d7
+        :release: 19034c0577815271ce812fb45ccde5d7
     CHECKSUM: 9dae5a1e6011ec6b6a716965dcd2c7233071ff99
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXCalendar/ABI35_0_0EXCalendar/ABI35_0_0EXCalendar.h"
@@ -215,7 +243,9 @@ CACHE_KEYS:
       - ABI35_0_0EXCalendar (6.0.0)
   ABI35_0_0EXCamera:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXCamera: bd3cee7107b16f71292b3f66e77b961e
+      ABI35_0_0EXCamera:
+        :debug: bd3cee7107b16f71292b3f66e77b961e
+        :release: bd3cee7107b16f71292b3f66e77b961e
     CHECKSUM: 6298935a3f8fddc253e53ffa1e9e962d6891a404
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXCamera/ABI35_0_0EXCamera/ABI35_0_0EXCamera.h"
@@ -229,7 +259,9 @@ CACHE_KEYS:
       - ABI35_0_0EXCamera (6.0.0)
   ABI35_0_0EXCellular:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXCellular: c9d51137bf3057c674b6ab526107d9ef
+      ABI35_0_0EXCellular:
+        :debug: c9d51137bf3057c674b6ab526107d9ef
+        :release: c9d51137bf3057c674b6ab526107d9ef
     CHECKSUM: 795896a0298d0c230cfc5b47584f639356f31273
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXCellular/ABI35_0_0EXCellular/ABI35_0_0EXCellularModule.h"
@@ -239,7 +271,9 @@ CACHE_KEYS:
       - ABI35_0_0EXCellular (0.0.1)
   ABI35_0_0EXConstants:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXConstants: 9c2531b3d4b3299a2e4755b0717b07e5
+      ABI35_0_0EXConstants:
+        :debug: 9c2531b3d4b3299a2e4755b0717b07e5
+        :release: 9c2531b3d4b3299a2e4755b0717b07e5
     CHECKSUM: 1402a72eff91cfe5597009e80f7744b81e4b728a
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXConstants/ABI35_0_0EXConstants/ABI35_0_0EXConstants.h"
@@ -251,7 +285,9 @@ CACHE_KEYS:
       - ABI35_0_0EXConstants (6.0.0)
   ABI35_0_0EXContacts:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXContacts: 65e49a8cc168beab772e3cea68a3aacf
+      ABI35_0_0EXContacts:
+        :debug: 65e49a8cc168beab772e3cea68a3aacf
+        :release: 65e49a8cc168beab772e3cea68a3aacf
     CHECKSUM: d27675d2e2c7230b8fcc66fa79808cf3bb6603aa
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXContacts/ABI35_0_0EXContacts/ABI35_0_0EXContacts+Serialization.h"
@@ -265,7 +301,9 @@ CACHE_KEYS:
       - ABI35_0_0EXContacts (6.0.0)
   ABI35_0_0EXCrypto:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXCrypto: 167eeb7919f6548028fce5ebc06e4568
+      ABI35_0_0EXCrypto:
+        :debug: 167eeb7919f6548028fce5ebc06e4568
+        :release: 167eeb7919f6548028fce5ebc06e4568
     CHECKSUM: 0a9dbfb33a2a97517071f5d9cc3632583390ea9e
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXCrypto/ABI35_0_0EXCrypto/ABI35_0_0EXCrypto.h"
@@ -275,7 +313,9 @@ CACHE_KEYS:
       - ABI35_0_0EXCrypto (6.0.0)
   ABI35_0_0EXDevice:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXDevice: e66eade201e8f07c78c57c538bf733f1
+      ABI35_0_0EXDevice:
+        :debug: e66eade201e8f07c78c57c538bf733f1
+        :release: e66eade201e8f07c78c57c538bf733f1
     CHECKSUM: 37c75f9bea44b4fc7cb0c3f5b773a5d6764d4dc6
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXDevice/ABI35_0_0EXDevice/ABI35_0_0EXDevice.h"
@@ -285,7 +325,9 @@ CACHE_KEYS:
       - ABI35_0_0EXDevice (0.0.1)
   ABI35_0_0EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXDocumentPicker: e98b31d1697fa240d799a6bc1bc7e622
+      ABI35_0_0EXDocumentPicker:
+        :debug: e98b31d1697fa240d799a6bc1bc7e622
+        :release: e98b31d1697fa240d799a6bc1bc7e622
     CHECKSUM: c42500441c1359f3794e1957f14b36baf369fc06
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXDocumentPicker/ABI35_0_0EXDocumentPicker/ABI35_0_0EXDocumentPickerModule.h"
@@ -295,7 +337,9 @@ CACHE_KEYS:
       - ABI35_0_0EXDocumentPicker (6.0.0)
   ABI35_0_0EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXFacebook: 25b454f484c184abc64852f21448098e
+      ABI35_0_0EXFacebook:
+        :debug: 25b454f484c184abc64852f21448098e
+        :release: 25b454f484c184abc64852f21448098e
     CHECKSUM: 7c98f8a027e52a58bd9e834bf0f701b394063e99
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXFacebook/ABI35_0_0EXFacebook/ABI35_0_0EXFacebook.h"
@@ -307,7 +351,9 @@ CACHE_KEYS:
       - ABI35_0_0EXFacebook (6.0.0)
   ABI35_0_0EXFaceDetector:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXFaceDetector: 09adfa528abd38398bf3f235eedb717a
+      ABI35_0_0EXFaceDetector:
+        :debug: 09adfa528abd38398bf3f235eedb717a
+        :release: 09adfa528abd38398bf3f235eedb717a
     CHECKSUM: d309d0d01bfa4aa078ec3bf5a2f5bbe5c08d90a2
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXFaceDetector/ABI35_0_0EXFaceDetector/ABI35_0_0EXCSBufferOrientationCalculator.h"
@@ -331,7 +377,9 @@ CACHE_KEYS:
       - ABI35_0_0EXFaceDetector (6.0.1)
   ABI35_0_0EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXFileSystem: ea6db7a8a68886f56ab12ae45c85089f
+      ABI35_0_0EXFileSystem:
+        :debug: ea6db7a8a68886f56ab12ae45c85089f
+        :release: ea6db7a8a68886f56ab12ae45c85089f
     CHECKSUM: 024a8182e92bccfee3129fb8614fcb9416ff54b2
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXFileSystem/ABI35_0_0EXFileSystem/ABI35_0_0EXDownloadDelegate.h"
@@ -349,7 +397,9 @@ CACHE_KEYS:
       - ABI35_0_0EXFileSystem (6.0.2)
   ABI35_0_0EXFont:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXFont: 6e22920497aeb9bc3e73a58148463485
+      ABI35_0_0EXFont:
+        :debug: 6e22920497aeb9bc3e73a58148463485
+        :release: 6e22920497aeb9bc3e73a58148463485
     CHECKSUM: 93d0c858473e8407cb44bba89c327664bbec287f
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXFont/ABI35_0_0EXFont/ABI35_0_0EXFont.h"
@@ -369,7 +419,9 @@ CACHE_KEYS:
       - ABI35_0_0EXFont (6.0.1)
   ABI35_0_0EXGL:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXGL: 66a1d170012eab5cd20a2d137cf24ab3
+      ABI35_0_0EXGL:
+        :debug: 66a1d170012eab5cd20a2d137cf24ab3
+        :release: 66a1d170012eab5cd20a2d137cf24ab3
     CHECKSUM: f4ed70897ec10a2fa64591ae25cd6c1a50d7e024
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXGL/ABI35_0_0EXGL/ABI35_0_0EXGLCameraObject.h"
@@ -389,7 +441,9 @@ CACHE_KEYS:
       - ABI35_0_0EXGL (6.0.0)
   ABI35_0_0EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXGoogleSignIn: e4ec35c18b636aa46f537ed53bba9d5d
+      ABI35_0_0EXGoogleSignIn:
+        :debug: e4ec35c18b636aa46f537ed53bba9d5d
+        :release: e4ec35c18b636aa46f537ed53bba9d5d
     CHECKSUM: d25b80ec26f399b881f394f8d6ef62218f89fc7e
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXGoogleSignIn/ABI35_0_0EXGoogleSignIn/ABI35_0_0EXAuthTask.h"
@@ -405,7 +459,9 @@ CACHE_KEYS:
       - ABI35_0_0EXGoogleSignIn (6.0.0)
   ABI35_0_0EXHaptics:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXHaptics: e7430c3412d956a92ace7074d62a5201
+      ABI35_0_0EXHaptics:
+        :debug: e7430c3412d956a92ace7074d62a5201
+        :release: e7430c3412d956a92ace7074d62a5201
     CHECKSUM: 7a9f659ae9862a5a433e3263c968b384694672bf
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXHaptics/ABI35_0_0EXHaptics/ABI35_0_0EXHapticsModule.h"
@@ -415,7 +471,9 @@ CACHE_KEYS:
       - ABI35_0_0EXHaptics (6.0.0)
   ABI35_0_0EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXImageManipulator: 27f32d8816ffd3815411c0bc6e422782
+      ABI35_0_0EXImageManipulator:
+        :debug: 27f32d8816ffd3815411c0bc6e422782
+        :release: 27f32d8816ffd3815411c0bc6e422782
     CHECKSUM: f4b4ff56f6942cabecc3c07c92d59ab3d0805e63
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXImageManipulator/ABI35_0_0EXImageManipulator/ABI35_0_0EXImageManipulatorModule.h"
@@ -425,7 +483,9 @@ CACHE_KEYS:
       - ABI35_0_0EXImageManipulator (6.0.0)
   ABI35_0_0EXImagePicker:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXImagePicker: 5e706cdf124bf3ba28136adbfaf90c8f
+      ABI35_0_0EXImagePicker:
+        :debug: 5e706cdf124bf3ba28136adbfaf90c8f
+        :release: 5e706cdf124bf3ba28136adbfaf90c8f
     CHECKSUM: afc068ae71ab2e032c6222c30dae26cc72e79bc6
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXImagePicker/ABI35_0_0EXImagePicker/ABI35_0_0EXImagePicker.h"
@@ -435,7 +495,9 @@ CACHE_KEYS:
       - ABI35_0_0EXImagePicker (6.0.0)
   ABI35_0_0EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXKeepAwake: ff8c0d5f437101935f0cf63ee1cd5152
+      ABI35_0_0EXKeepAwake:
+        :debug: ff8c0d5f437101935f0cf63ee1cd5152
+        :release: ff8c0d5f437101935f0cf63ee1cd5152
     CHECKSUM: eddb41bafadd7f655d671e21ea160d34328c0737
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXKeepAwake/ABI35_0_0EXKeepAwake/ABI35_0_0EXKeepAwake.h"
@@ -445,7 +507,9 @@ CACHE_KEYS:
       - ABI35_0_0EXKeepAwake (6.0.0)
   ABI35_0_0EXLinearGradient:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXLinearGradient: a6bf74d0282ee23581ddc8129c9c0ccb
+      ABI35_0_0EXLinearGradient:
+        :debug: a6bf74d0282ee23581ddc8129c9c0ccb
+        :release: a6bf74d0282ee23581ddc8129c9c0ccb
     CHECKSUM: f2aba354b055588a6c0596e2ba75bdf26b6d492d
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXLinearGradient/ABI35_0_0EXLinearGradient/ABI35_0_0EXLinearGradient.h"
@@ -459,7 +523,9 @@ CACHE_KEYS:
       - ABI35_0_0EXLinearGradient (6.0.0)
   ABI35_0_0EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXLocalAuthentication: a79d481a20c5e64e1a2fe80e268e2384
+      ABI35_0_0EXLocalAuthentication:
+        :debug: a79d481a20c5e64e1a2fe80e268e2384
+        :release: a79d481a20c5e64e1a2fe80e268e2384
     CHECKSUM: 0f54f415e870c650d954d81e0e46e0ff086288fd
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXLocalAuthentication/ABI35_0_0EXLocalAuthentication/ABI35_0_0EXLocalAuthentication.h"
@@ -469,7 +535,9 @@ CACHE_KEYS:
       - ABI35_0_0EXLocalAuthentication (6.0.0)
   ABI35_0_0EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXLocalization: 29d60fcddfbb03be54498417a35be566
+      ABI35_0_0EXLocalization:
+        :debug: 29d60fcddfbb03be54498417a35be566
+        :release: 29d60fcddfbb03be54498417a35be566
     CHECKSUM: b43cff404ef4dc66c4aa4b9a1b68c29fa681b78c
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXLocalization/ABI35_0_0EXLocalization/ABI35_0_0EXLocalization.h"
@@ -479,7 +547,9 @@ CACHE_KEYS:
       - ABI35_0_0EXLocalization (6.0.0)
   ABI35_0_0EXLocation:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXLocation: 9bda7c1e5d2b53e86153505f5cf2e58c
+      ABI35_0_0EXLocation:
+        :debug: 9bda7c1e5d2b53e86153505f5cf2e58c
+        :release: 9bda7c1e5d2b53e86153505f5cf2e58c
     CHECKSUM: ac60bf63898619628b58eef10dac0301c4acdb58
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXLocation/ABI35_0_0EXLocation/ABI35_0_0EXLocation.h"
@@ -495,7 +565,9 @@ CACHE_KEYS:
       - ABI35_0_0EXLocation (6.0.0)
   ABI35_0_0EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXMailComposer: 6265307e74ba5365ebfecf2af9117d5b
+      ABI35_0_0EXMailComposer:
+        :debug: 6265307e74ba5365ebfecf2af9117d5b
+        :release: 6265307e74ba5365ebfecf2af9117d5b
     CHECKSUM: 967ed5cfc4356fbce5a80384a676da6a53ed7f3e
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXMailComposer/ABI35_0_0EXMailComposer/ABI35_0_0EXMailComposer.h"
@@ -505,7 +577,9 @@ CACHE_KEYS:
       - ABI35_0_0EXMailComposer (6.0.0)
   ABI35_0_0EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXMediaLibrary: a4a283bf1c03b473b18008feaaf8fc92
+      ABI35_0_0EXMediaLibrary:
+        :debug: a4a283bf1c03b473b18008feaaf8fc92
+        :release: a4a283bf1c03b473b18008feaaf8fc92
     CHECKSUM: 397872062a01ce639309510709b03843a5a1be0d
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXMediaLibrary/ABI35_0_0EXMediaLibrary/ABI35_0_0EXMediaLibrary.h"
@@ -515,7 +589,9 @@ CACHE_KEYS:
       - ABI35_0_0EXMediaLibrary (6.1.0-rc.1)
   ABI35_0_0EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXNetwork: 18d66df5de6704e105c843976c135dec
+      ABI35_0_0EXNetwork:
+        :debug: 18d66df5de6704e105c843976c135dec
+        :release: 18d66df5de6704e105c843976c135dec
     CHECKSUM: b7bed2a22371ea68f1b619dbcfefeec82181890c
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXNetwork/ABI35_0_0EXNetwork/ABI35_0_0EXNetwork.h"
@@ -525,7 +601,9 @@ CACHE_KEYS:
       - ABI35_0_0EXNetwork (0.0.1)
   ABI35_0_0EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXPermissions: 04d5bb895ba208ce64040444320bdb4a
+      ABI35_0_0EXPermissions:
+        :debug: 04d5bb895ba208ce64040444320bdb4a
+        :release: 04d5bb895ba208ce64040444320bdb4a
     CHECKSUM: 7bf182aa42ce57e094a33dbdb72d07c9caf15b7d
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXPermissions/ABI35_0_0EXPermissions/ABI35_0_0EXAudioRecordingPermissionRequester.h"
@@ -557,7 +635,9 @@ CACHE_KEYS:
       - ABI35_0_0EXPermissions (6.0.0)
   ABI35_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0ExpoKit: 0449ac05f66665c44b93ea37a707db11
+      ABI35_0_0ExpoKit:
+        :debug: 0449ac05f66665c44b93ea37a707db11
+        :release: 0449ac05f66665c44b93ea37a707db11
     CHECKSUM: 2ac94e456ff8b6bfa6ff295d809a3bfdd7105811
     FILES:
       - "../versioned-react-native/ABI35_0_0/Expo/Core/ABI35_0_0EXUnversioned.h"
@@ -995,7 +1075,9 @@ CACHE_KEYS:
       - ABI35_0_0ExpoKit/ExpoOptional (34.0.0)
   ABI35_0_0EXPrint:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXPrint: 04882408e7b8bc754440259dff07fa45
+      ABI35_0_0EXPrint:
+        :debug: 04882408e7b8bc754440259dff07fa45
+        :release: 04882408e7b8bc754440259dff07fa45
     CHECKSUM: e26eef76629439758b0b84aeca28479d11266caf
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXPrint/ABI35_0_0EXPrint/ABI35_0_0EXPrint.h"
@@ -1011,7 +1093,9 @@ CACHE_KEYS:
       - ABI35_0_0EXPrint (6.0.0)
   ABI35_0_0EXRandom:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXRandom: 73516c7f4469d109a5635255ba797c6d
+      ABI35_0_0EXRandom:
+        :debug: 73516c7f4469d109a5635255ba797c6d
+        :release: 73516c7f4469d109a5635255ba797c6d
     CHECKSUM: 95cc027414d78d0ac041ebdad969e89beb54e56a
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXRandom/ABI35_0_0EXRandom/ABI35_0_0EXRandom.h"
@@ -1021,7 +1105,9 @@ CACHE_KEYS:
       - ABI35_0_0EXRandom (6.0.0)
   ABI35_0_0EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXSecureStore: fe83be85487392badc31da5b0d65a2e2
+      ABI35_0_0EXSecureStore:
+        :debug: fe83be85487392badc31da5b0d65a2e2
+        :release: fe83be85487392badc31da5b0d65a2e2
     CHECKSUM: 5159c0dd31775726fbbd35d69708427c690970f1
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXSecureStore/ABI35_0_0EXSecureStore/ABI35_0_0EXSecureStore.h"
@@ -1031,7 +1117,9 @@ CACHE_KEYS:
       - ABI35_0_0EXSecureStore (6.0.0)
   ABI35_0_0EXSegment:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXSegment: f121c480f66123fc06b3ff59d4491ecd
+      ABI35_0_0EXSegment:
+        :debug: f121c480f66123fc06b3ff59d4491ecd
+        :release: f121c480f66123fc06b3ff59d4491ecd
     CHECKSUM: 22b9e3c5b6f6aa7715fe9e1b9786dd9e412bc96e
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXSegment/ABI35_0_0EXSegment/ABI35_0_0EXSegment.h"
@@ -1041,7 +1129,9 @@ CACHE_KEYS:
       - ABI35_0_0EXSegment (6.0.0)
   ABI35_0_0EXSensors:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXSensors: e33feaebe386628f05ebb43d2fdca0c4
+      ABI35_0_0EXSensors:
+        :debug: e33feaebe386628f05ebb43d2fdca0c4
+        :release: e33feaebe386628f05ebb43d2fdca0c4
     CHECKSUM: 468795115accf56791df378d6295ca28cbb0c8cb
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXSensors/ABI35_0_0EXSensors/ABI35_0_0EXSensorsManager.h"
@@ -1067,7 +1157,9 @@ CACHE_KEYS:
       - ABI35_0_0EXSensors (6.0.0)
   ABI35_0_0EXSharing:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXSharing: da961ce76a88fabe830659258fa42220
+      ABI35_0_0EXSharing:
+        :debug: da961ce76a88fabe830659258fa42220
+        :release: da961ce76a88fabe830659258fa42220
     CHECKSUM: 6e85c8edde0ab59a40056d5b67b15db0d95c31b2
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXSharing/ABI35_0_0EXSharing/ABI35_0_0EXSharingModule.h"
@@ -1077,7 +1169,9 @@ CACHE_KEYS:
       - ABI35_0_0EXSharing (6.0.0)
   ABI35_0_0EXSMS:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXSMS: 5fa73488b1b4d8626e2c047a8dcf031c
+      ABI35_0_0EXSMS:
+        :debug: 5fa73488b1b4d8626e2c047a8dcf031c
+        :release: 5fa73488b1b4d8626e2c047a8dcf031c
     CHECKSUM: 89bdd0b3979b4bc18ad37430992f49072b2628ce
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXSMS/ABI35_0_0EXSMS/ABI35_0_0EXSMSModule.h"
@@ -1087,7 +1181,9 @@ CACHE_KEYS:
       - ABI35_0_0EXSMS (6.0.0)
   ABI35_0_0EXSpeech:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXSpeech: 1b8acbae089c2f401459bbe958765702
+      ABI35_0_0EXSpeech:
+        :debug: 1b8acbae089c2f401459bbe958765702
+        :release: 1b8acbae089c2f401459bbe958765702
     CHECKSUM: 8333a265aee6bf19ae581a408c58a581c67d597a
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXSpeech/ABI35_0_0EXSpeech/ABI35_0_0EXSpeech.h"
@@ -1097,7 +1193,9 @@ CACHE_KEYS:
       - ABI35_0_0EXSpeech (6.0.0)
   ABI35_0_0EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXSQLite: 4f94d6bf03b47a978c40bbf07a03be3e
+      ABI35_0_0EXSQLite:
+        :debug: 4f94d6bf03b47a978c40bbf07a03be3e
+        :release: 4f94d6bf03b47a978c40bbf07a03be3e
     CHECKSUM: 67071e559640efdfc9999349b5def330730af48b
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXSQLite/ABI35_0_0EXSQLite/ABI35_0_0EXSQLite.h"
@@ -1107,7 +1205,9 @@ CACHE_KEYS:
       - ABI35_0_0EXSQLite (6.0.0)
   ABI35_0_0EXStoreReview:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXStoreReview: f0684f1a54736c3e4b52ec851f374280
+      ABI35_0_0EXStoreReview:
+        :debug: f0684f1a54736c3e4b52ec851f374280
+        :release: f0684f1a54736c3e4b52ec851f374280
     CHECKSUM: 4aeea2d186a14c18e43372356b78ca2c736fa520
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXStoreReview/ABI35_0_0EXStoreReview/ABI35_0_0EXStoreReviewModule.h"
@@ -1117,7 +1217,9 @@ CACHE_KEYS:
       - ABI35_0_0EXStoreReview (1.0.0)
   ABI35_0_0EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXTaskManager: 2fe298a4f8eb769d4554786ca794220d
+      ABI35_0_0EXTaskManager:
+        :debug: 2fe298a4f8eb769d4554786ca794220d
+        :release: 2fe298a4f8eb769d4554786ca794220d
     CHECKSUM: 0a6634ba1577bea3ca0347a85fd669a044572ef3
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXTaskManager/ABI35_0_0EXTaskManager/ABI35_0_0EXTask.h"
@@ -1135,7 +1237,9 @@ CACHE_KEYS:
       - ABI35_0_0EXTaskManager (6.0.0)
   ABI35_0_0EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXVideoThumbnails: 6f4498afaedab7584286809d0431c4ab
+      ABI35_0_0EXVideoThumbnails:
+        :debug: 6f4498afaedab7584286809d0431c4ab
+        :release: 6f4498afaedab7584286809d0431c4ab
     CHECKSUM: 68f1659faa4a0209871a3290fde5edd493d8dbdd
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXVideoThumbnails/ABI35_0_0EXVideoThumbnails/ABI35_0_0EXVideoThumbnailsModule.h"
@@ -1145,7 +1249,9 @@ CACHE_KEYS:
       - ABI35_0_0EXVideoThumbnails (2.0.0)
   ABI35_0_0EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0EXWebBrowser: ea6135770070ed3929360dffa90556ab
+      ABI35_0_0EXWebBrowser:
+        :debug: ea6135770070ed3929360dffa90556ab
+        :release: ea6135770070ed3929360dffa90556ab
     CHECKSUM: 5038bf8f0f89b56b242cdb15f0f4ae8d591ee809
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXWebBrowser/ABI35_0_0EXWebBrowser/ABI35_0_0EXWebBrowser.h"
@@ -1155,7 +1261,9 @@ CACHE_KEYS:
       - ABI35_0_0EXWebBrowser (6.0.0)
   ABI35_0_0UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMBarCodeScannerInterface: a0767da5c579f8a3de03ea4e8351bd20
+      ABI35_0_0UMBarCodeScannerInterface:
+        :debug: a0767da5c579f8a3de03ea4e8351bd20
+        :release: a0767da5c579f8a3de03ea4e8351bd20
     CHECKSUM: e9beac0c762cd28ebb1e04263a7de8cabe58c94d
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMBarCodeScannerInterface/ABI35_0_0UMBarCodeScannerInterface/ABI35_0_0UMBarCodeScannerInterface.h"
@@ -1165,7 +1273,9 @@ CACHE_KEYS:
       - ABI35_0_0UMBarCodeScannerInterface (3.0.0)
   ABI35_0_0UMCameraInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMCameraInterface: 02b70bbdf9517c5bd1ed4fdbf7b3ce98
+      ABI35_0_0UMCameraInterface:
+        :debug: 02b70bbdf9517c5bd1ed4fdbf7b3ce98
+        :release: 02b70bbdf9517c5bd1ed4fdbf7b3ce98
     CHECKSUM: 162bc5eeda2e8f24a03d49351acc1ed9739f1e59
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMCameraInterface/ABI35_0_0UMCameraInterface/ABI35_0_0UMCameraInterface.h"
@@ -1174,7 +1284,9 @@ CACHE_KEYS:
       - ABI35_0_0UMCameraInterface (3.0.0)
   ABI35_0_0UMConstantsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMConstantsInterface: ea4e64854fa7ec92aa29b27d33edc6e1
+      ABI35_0_0UMConstantsInterface:
+        :debug: ea4e64854fa7ec92aa29b27d33edc6e1
+        :release: ea4e64854fa7ec92aa29b27d33edc6e1
     CHECKSUM: 410b09a64a5806c7cb5b57d60c52df33c66e9a3a
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMConstantsInterface/ABI35_0_0UMConstantsInterface/ABI35_0_0UMConstantsInterface.h"
@@ -1183,7 +1295,9 @@ CACHE_KEYS:
       - ABI35_0_0UMConstantsInterface (3.0.0)
   ABI35_0_0UMCore:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMCore: a15109bde51e62d990172d2740894ee3
+      ABI35_0_0UMCore:
+        :debug: a15109bde51e62d990172d2740894ee3
+        :release: a15109bde51e62d990172d2740894ee3
     CHECKSUM: 5e96b2d829d7bc0c569633669efc7d12662a8131
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMCore/ABI35_0_0UMCore/ABI35_0_0UMAppDelegateWrapper.h"
@@ -1222,7 +1336,9 @@ CACHE_KEYS:
       - ABI35_0_0UMCore (3.0.2)
   ABI35_0_0UMFaceDetectorInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMFaceDetectorInterface: c471145481bfe4b4387ccf4b9ed314b7
+      ABI35_0_0UMFaceDetectorInterface:
+        :debug: c471145481bfe4b4387ccf4b9ed314b7
+        :release: c471145481bfe4b4387ccf4b9ed314b7
     CHECKSUM: 95e67c04fa355d1521636f7405dfe2cd1fa3917c
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMFaceDetectorInterface/ABI35_0_0UMFaceDetectorInterface/ABI35_0_0UMFaceDetectorManager.h"
@@ -1232,7 +1348,9 @@ CACHE_KEYS:
       - ABI35_0_0UMFaceDetectorInterface (3.0.0)
   ABI35_0_0UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMFileSystemInterface: 92be137c2596fd424bf5c2ce28c9e07f
+      ABI35_0_0UMFileSystemInterface:
+        :debug: 92be137c2596fd424bf5c2ce28c9e07f
+        :release: 92be137c2596fd424bf5c2ce28c9e07f
     CHECKSUM: b7c962e93c0ddda2b8d5a5118299d09af30c4e1c
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMFileSystemInterface/ABI35_0_0UMFileSystemInterface/ABI35_0_0UMFilePermissionModuleInterface.h"
@@ -1242,7 +1360,9 @@ CACHE_KEYS:
       - ABI35_0_0UMFileSystemInterface (3.0.0)
   ABI35_0_0UMFontInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMFontInterface: 1118ed6d6f6fa1bd05dceb073dae2081
+      ABI35_0_0UMFontInterface:
+        :debug: 1118ed6d6f6fa1bd05dceb073dae2081
+        :release: 1118ed6d6f6fa1bd05dceb073dae2081
     CHECKSUM: 1d263768dc5349e010f71419ef7c4458b193137c
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMFontInterface/ABI35_0_0UMFontInterface/ABI35_0_0UMFontManagerInterface.h"
@@ -1254,7 +1374,9 @@ CACHE_KEYS:
       - ABI35_0_0UMFontInterface (3.0.0)
   ABI35_0_0UMImageLoaderInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMImageLoaderInterface: 7893013865f1b14e83b0574eecbc6824
+      ABI35_0_0UMImageLoaderInterface:
+        :debug: 7893013865f1b14e83b0574eecbc6824
+        :release: 7893013865f1b14e83b0574eecbc6824
     CHECKSUM: f41718cc2f0d4bee4196ad279b1d9ffd60d2cf33
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMImageLoaderInterface/ABI35_0_0UMImageLoaderInterface/ABI35_0_0UMImageLoaderInterface.h"
@@ -1263,7 +1385,9 @@ CACHE_KEYS:
       - ABI35_0_0UMImageLoaderInterface (3.0.0)
   ABI35_0_0UMPermissionsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMPermissionsInterface: 5e0ffc52375a41af5b9d1a9d429537ca
+      ABI35_0_0UMPermissionsInterface:
+        :debug: 5e0ffc52375a41af5b9d1a9d429537ca
+        :release: 5e0ffc52375a41af5b9d1a9d429537ca
     CHECKSUM: d13196fd8c93db15010f936a8d72d93977be395f
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMPermissionsInterface/ABI35_0_0UMPermissionsInterface/ABI35_0_0UMPermissionsInterface.h"
@@ -1273,7 +1397,9 @@ CACHE_KEYS:
       - ABI35_0_0UMPermissionsInterface (3.0.0)
   ABI35_0_0UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMReactNativeAdapter: 2023c991a0a904b9f042613010d43cc0
+      ABI35_0_0UMReactNativeAdapter:
+        :debug: 2023c991a0a904b9f042613010d43cc0
+        :release: 2023c991a0a904b9f042613010d43cc0
     CHECKSUM: 36698f984063848ff13f9cde67b9adbc97bdb6dd
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMReactNativeAdapter/ABI35_0_0UMReactNativeAdapter/ABI35_0_0UMBridgeModule.h"
@@ -1298,7 +1424,9 @@ CACHE_KEYS:
       - ABI35_0_0UMReactNativeAdapter (3.0.0)
   ABI35_0_0UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMSensorsInterface: adf15e8512c4a0c9bfc4e936faf48ffc
+      ABI35_0_0UMSensorsInterface:
+        :debug: adf15e8512c4a0c9bfc4e936faf48ffc
+        :release: adf15e8512c4a0c9bfc4e936faf48ffc
     CHECKSUM: 265d8bca372b5055f5e7ae4953acfb625d811d18
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMSensorsInterface/ABI35_0_0UMSensorsInterface/ABI35_0_0UMAccelerometerInterface.h"
@@ -1312,7 +1440,9 @@ CACHE_KEYS:
       - ABI35_0_0UMSensorsInterface (3.0.0)
   ABI35_0_0UMTaskManagerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI35_0_0UMTaskManagerInterface: 19225d2b3ad403e4932dba760facce18
+      ABI35_0_0UMTaskManagerInterface:
+        :debug: 19225d2b3ad403e4932dba760facce18
+        :release: 19225d2b3ad403e4932dba760facce18
     CHECKSUM: 5745765bc2634ccc1d7aef8ee5752757109521f6
     FILES:
       - "../versioned-react-native/ABI35_0_0/UMTaskManagerInterface/ABI35_0_0UMTaskManagerInterface/ABI35_0_0UMTaskConsumerInterface.h"
@@ -1325,7 +1455,9 @@ CACHE_KEYS:
       - ABI35_0_0UMTaskManagerInterface (3.0.0)
   ABI36_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXAdsAdMob: 0c681f8615af38328549448334b81999
+      ABI36_0_0EXAdsAdMob:
+        :debug: 0c681f8615af38328549448334b81999
+        :release: 0c681f8615af38328549448334b81999
     CHECKSUM: 13af16f02700390202cce5c88eb0d7d59347dc76
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAdsAdMob/ABI36_0_0EXAdsAdMob/ABI36_0_0EXAdsAdMob.h"
@@ -1347,7 +1479,9 @@ CACHE_KEYS:
       - ABI36_0_0EXAdsAdMob (7.0.0)
   ABI36_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXAdsFacebook: 3adddacf56f9fa99cb4d9ac81f2737d2
+      ABI36_0_0EXAdsFacebook:
+        :debug: 3adddacf56f9fa99cb4d9ac81f2737d2
+        :release: 3adddacf56f9fa99cb4d9ac81f2737d2
     CHECKSUM: 363afd305489fa0651347342604158aae274266b
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAdsFacebook/ABI36_0_0EXAdsFacebook/ABI36_0_0EXAdIconViewManager.h"
@@ -1373,7 +1507,9 @@ CACHE_KEYS:
       - ABI36_0_0EXAdsFacebook (7.0.0)
   ABI36_0_0EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXAmplitude: 30ec30a5b199d5d1371aab2db9630290
+      ABI36_0_0EXAmplitude:
+        :debug: 30ec30a5b199d5d1371aab2db9630290
+        :release: 30ec30a5b199d5d1371aab2db9630290
     CHECKSUM: 28b99598484197ea07d9706ba4c10bf5db6bff1e
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAmplitude/ABI36_0_0EXAmplitude/ABI36_0_0EXAmplitude.h"
@@ -1383,7 +1519,9 @@ CACHE_KEYS:
       - ABI36_0_0EXAmplitude (7.0.0)
   ABI36_0_0EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXAppAuth: e3d5c601225b45c59d22c6db3cb5e319
+      ABI36_0_0EXAppAuth:
+        :debug: e3d5c601225b45c59d22c6db3cb5e319
+        :release: e3d5c601225b45c59d22c6db3cb5e319
     CHECKSUM: 1a8416ee32dda2ef4172d6529df61ab071e5ab52
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAppAuth/ABI36_0_0EXAppAuth/ABI36_0_0EXAppAuth+JSON.h"
@@ -1399,7 +1537,9 @@ CACHE_KEYS:
       - ABI36_0_0EXAppAuth (7.0.0)
   ABI36_0_0EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXAppleAuthentication: 1324e52e15df2b9db5289e333f68a263
+      ABI36_0_0EXAppleAuthentication:
+        :debug: 1324e52e15df2b9db5289e333f68a263
+        :release: 1324e52e15df2b9db5289e333f68a263
     CHECKSUM: 41912b454af57052eda1c529e00a8a6421166faa
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAppleAuthentication/ABI36_0_0EXAppleAuthentication/ABI36_0_0EXAppleAuthentication.h"
@@ -1416,7 +1556,9 @@ CACHE_KEYS:
       - ABI36_0_0EXAppleAuthentication (1.0.0)
   ABI36_0_0EXApplication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXApplication: 3e1b08764bcb3415adb5b976a9d06dda
+      ABI36_0_0EXApplication:
+        :debug: 3e1b08764bcb3415adb5b976a9d06dda
+        :release: 3e1b08764bcb3415adb5b976a9d06dda
     CHECKSUM: f8290394f71d088c418ea05f40154cf3a96f48f8
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXApplication/ABI36_0_0EXApplication/ABI36_0_0EXApplication.h"
@@ -1426,7 +1568,9 @@ CACHE_KEYS:
       - ABI36_0_0EXApplication (1.0.0)
   ABI36_0_0EXAppLoaderProvider:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXAppLoaderProvider: 1683a4f79d303be95785e76024d34744
+      ABI36_0_0EXAppLoaderProvider:
+        :debug: 1683a4f79d303be95785e76024d34744
+        :release: 1683a4f79d303be95785e76024d34744
     CHECKSUM: c92cba4b79e182f35e9fdabad9534fb0e445524f
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAppLoaderProvider/ABI36_0_0EXAppLoaderProvider/ABI36_0_0EXAppLoaderProvider.h"
@@ -1438,7 +1582,9 @@ CACHE_KEYS:
       - ABI36_0_0EXAppLoaderProvider (7.0.0)
   ABI36_0_0EXAV:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXAV: 23e35f9a3ce937436bb4d3361d88c953
+      ABI36_0_0EXAV:
+        :debug: 23e35f9a3ce937436bb4d3361d88c953
+        :release: 23e35f9a3ce937436bb4d3361d88c953
     CHECKSUM: c3dbb7797a0e440dcb6a944a80f094b90cec5c4f
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAV/ABI36_0_0EXAV/ABI36_0_0EXAudioRecordingPermissionRequester.h"
@@ -1462,7 +1608,9 @@ CACHE_KEYS:
       - ABI36_0_0EXAV (8.0.0-rc.1)
   ABI36_0_0EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXBackgroundFetch: 9cec2d704e468db4f4ef8ce856903bf5
+      ABI36_0_0EXBackgroundFetch:
+        :debug: 9cec2d704e468db4f4ef8ce856903bf5
+        :release: 9cec2d704e468db4f4ef8ce856903bf5
     CHECKSUM: 5061bddf0205cdb953716941af6064ccae7cd3a9
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXBackgroundFetch/ABI36_0_0EXBackgroundFetch/ABI36_0_0EXBackgroundFetch.h"
@@ -1474,7 +1622,9 @@ CACHE_KEYS:
       - ABI36_0_0EXBackgroundFetch (7.0.0)
   ABI36_0_0EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXBarCodeScanner: 897c62c8fe4c42863c622991c933c714
+      ABI36_0_0EXBarCodeScanner:
+        :debug: 897c62c8fe4c42863c622991c933c714
+        :release: 897c62c8fe4c42863c622991c933c714
     CHECKSUM: 4b3def5279c3427ec8dab3fb418a474f428abf91
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXBarCodeScanner/ABI36_0_0EXBarCodeScanner/ABI36_0_0EXBarCodeCameraRequester.h"
@@ -1496,7 +1646,9 @@ CACHE_KEYS:
       - ABI36_0_0EXBarCodeScanner (7.0.0)
   ABI36_0_0EXBattery:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXBattery: 6354aa3219a5c66439c7238264492526
+      ABI36_0_0EXBattery:
+        :debug: 6354aa3219a5c66439c7238264492526
+        :release: 6354aa3219a5c66439c7238264492526
     CHECKSUM: 0bfbc5af36da0bdad3552ce6ac434024aea695d1
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXBattery/ABI36_0_0EXBattery/ABI36_0_0EXBattery.h"
@@ -1506,7 +1658,9 @@ CACHE_KEYS:
       - ABI36_0_0EXBattery (1.0.0)
   ABI36_0_0EXBluetooth:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXBluetooth: c967b33d1202c7f79837131876ecad6e
+      ABI36_0_0EXBluetooth:
+        :debug: c967b33d1202c7f79837131876ecad6e
+        :release: c967b33d1202c7f79837131876ecad6e
     CHECKSUM: 8648fea6b62b9302afb5b75b0bf946600f2a6bf8
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXBluetooth/ABI36_0_0EXBluetooth/ABI36_0_0EXBluetooth+JSON.h"
@@ -1518,7 +1672,9 @@ CACHE_KEYS:
       - ABI36_0_0EXBluetooth (1.0.0)
   ABI36_0_0EXBlur:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXBlur: 7ac9ba336f3b2ce9606a8840209e71ee
+      ABI36_0_0EXBlur:
+        :debug: 7ac9ba336f3b2ce9606a8840209e71ee
+        :release: 7ac9ba336f3b2ce9606a8840209e71ee
     CHECKSUM: 83875715fc4c95602ed231d636ad5cab4d97da4c
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXBlur/ABI36_0_0EXBlur/ABI36_0_0EXBlurView.h"
@@ -1530,7 +1686,9 @@ CACHE_KEYS:
       - ABI36_0_0EXBlur (7.0.0)
   ABI36_0_0EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXBrightness: de6b87c11c803518d82ec79f2f002e15
+      ABI36_0_0EXBrightness:
+        :debug: de6b87c11c803518d82ec79f2f002e15
+        :release: de6b87c11c803518d82ec79f2f002e15
     CHECKSUM: ad0e17206b53e19f1cfa38243b774d4ed5b67d74
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXBrightness/ABI36_0_0EXBrightness/ABI36_0_0EXBrightness.h"
@@ -1542,7 +1700,9 @@ CACHE_KEYS:
       - ABI36_0_0EXBrightness (7.0.0)
   ABI36_0_0EXCalendar:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXCalendar: 6c8c88bfe2bfa12f2e0afed1384c0bff
+      ABI36_0_0EXCalendar:
+        :debug: 6c8c88bfe2bfa12f2e0afed1384c0bff
+        :release: 6c8c88bfe2bfa12f2e0afed1384c0bff
     CHECKSUM: 9dd8e68e73ef609711216b382cec1a8b4f8f7197
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXCalendar/ABI36_0_0EXCalendar/ABI36_0_0EXCalendar.h"
@@ -1558,7 +1718,9 @@ CACHE_KEYS:
       - ABI36_0_0EXCalendar (7.0.0)
   ABI36_0_0EXCamera:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXCamera: f507c7021aec928fce5ea1b23e8d4fce
+      ABI36_0_0EXCamera:
+        :debug: f507c7021aec928fce5ea1b23e8d4fce
+        :release: f507c7021aec928fce5ea1b23e8d4fce
     CHECKSUM: 3bd3042bb9f8bdca889fdc2f0702631fb45af38f
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXCamera/ABI36_0_0EXCamera/ABI36_0_0EXCamera.h"
@@ -1574,7 +1736,9 @@ CACHE_KEYS:
       - ABI36_0_0EXCamera (7.0.0)
   ABI36_0_0EXCellular:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXCellular: 200661246ed726054ad2f68206b26745
+      ABI36_0_0EXCellular:
+        :debug: 200661246ed726054ad2f68206b26745
+        :release: 200661246ed726054ad2f68206b26745
     CHECKSUM: 6fb581bf1c9fb01c8f549b3c8082041e9bb5d306
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXCellular/ABI36_0_0EXCellular/ABI36_0_0EXCellularModule.h"
@@ -1584,7 +1748,9 @@ CACHE_KEYS:
       - ABI36_0_0EXCellular (1.0.0)
   ABI36_0_0EXConstants:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXConstants: 1eb7a133126d8db1696ba5cc7778645f
+      ABI36_0_0EXConstants:
+        :debug: 1eb7a133126d8db1696ba5cc7778645f
+        :release: 1eb7a133126d8db1696ba5cc7778645f
     CHECKSUM: 4b1d41debe2ca24e24ee417fd2d361f2b27ae0da
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXConstants/ABI36_0_0EXConstants/ABI36_0_0EXConstants.h"
@@ -1596,7 +1762,9 @@ CACHE_KEYS:
       - ABI36_0_0EXConstants (8.0.0-rc.1)
   ABI36_0_0EXContacts:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXContacts: 29a7e809c8b507090f45883ea81ae5ef
+      ABI36_0_0EXContacts:
+        :debug: 29a7e809c8b507090f45883ea81ae5ef
+        :release: 29a7e809c8b507090f45883ea81ae5ef
     CHECKSUM: a2f743f65bc48cc0d63daf63b8769353064fb036
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXContacts/ABI36_0_0EXContacts/ABI36_0_0EXContacts+Serialization.h"
@@ -1612,7 +1780,9 @@ CACHE_KEYS:
       - ABI36_0_0EXContacts (7.0.0)
   ABI36_0_0EXCrypto:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXCrypto: 1ab617bec9f27c0b3ccbfce27949728e
+      ABI36_0_0EXCrypto:
+        :debug: 1ab617bec9f27c0b3ccbfce27949728e
+        :release: 1ab617bec9f27c0b3ccbfce27949728e
     CHECKSUM: 6a04b3cf066aea0ae01670caf3fef54bbdf51edb
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXCrypto/ABI36_0_0EXCrypto/ABI36_0_0EXCrypto.h"
@@ -1622,7 +1792,9 @@ CACHE_KEYS:
       - ABI36_0_0EXCrypto (7.0.0)
   ABI36_0_0EXDevice:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXDevice: 9a4149dcd8ff6d0cf26e02b3780bf24a
+      ABI36_0_0EXDevice:
+        :debug: 9a4149dcd8ff6d0cf26e02b3780bf24a
+        :release: 9a4149dcd8ff6d0cf26e02b3780bf24a
     CHECKSUM: 00bf03c7bedf8d7f3dbba053043097e9c4fbf010
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXDevice/ABI36_0_0EXDevice/ABI36_0_0EXDevice.h"
@@ -1632,7 +1804,9 @@ CACHE_KEYS:
       - ABI36_0_0EXDevice (1.0.0)
   ABI36_0_0EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXDocumentPicker: 519a0c243eb2bb844a911b952510acd6
+      ABI36_0_0EXDocumentPicker:
+        :debug: 519a0c243eb2bb844a911b952510acd6
+        :release: 519a0c243eb2bb844a911b952510acd6
     CHECKSUM: 0d4503b91bba4d960451a15a4e03f60be5fb5486
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXDocumentPicker/ABI36_0_0EXDocumentPicker/ABI36_0_0EXDocumentPickerModule.h"
@@ -1642,7 +1816,9 @@ CACHE_KEYS:
       - ABI36_0_0EXDocumentPicker (7.0.0)
   ABI36_0_0EXErrorRecovery:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXErrorRecovery: 3f5997843698f09a7cedeb69682cf9d9
+      ABI36_0_0EXErrorRecovery:
+        :debug: 3f5997843698f09a7cedeb69682cf9d9
+        :release: 3f5997843698f09a7cedeb69682cf9d9
     CHECKSUM: 1a88665dcdfbffea4412485706afb2e1eec6a088
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXErrorRecovery/ABI36_0_0EXErrorRecovery/ABI36_0_0EXErrorRecoveryModule.h"
@@ -1652,7 +1828,9 @@ CACHE_KEYS:
       - ABI36_0_0EXErrorRecovery (1.0.0)
   ABI36_0_0EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXFacebook: d828c0cef9539841a143aae14439705b
+      ABI36_0_0EXFacebook:
+        :debug: d828c0cef9539841a143aae14439705b
+        :release: d828c0cef9539841a143aae14439705b
     CHECKSUM: 7beb92069671609e3159c094e996a0b5f54bfd18
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXFacebook/ABI36_0_0EXFacebook/ABI36_0_0EXFacebook.h"
@@ -1664,7 +1842,9 @@ CACHE_KEYS:
       - ABI36_0_0EXFacebook (7.0.0)
   ABI36_0_0EXFaceDetector:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXFaceDetector: 2ead04c87d35b7981efe0b9be5531c16
+      ABI36_0_0EXFaceDetector:
+        :debug: 2ead04c87d35b7981efe0b9be5531c16
+        :release: 2ead04c87d35b7981efe0b9be5531c16
     CHECKSUM: 49619204936a326d481032ae700f538a8d2bc908
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXFaceDetector/ABI36_0_0EXFaceDetector/ABI36_0_0EXCSBufferOrientationCalculator.h"
@@ -1688,7 +1868,9 @@ CACHE_KEYS:
       - ABI36_0_0EXFaceDetector (7.0.0)
   ABI36_0_0EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXFileSystem: 475e6330c592da50addc12dc09c2203d
+      ABI36_0_0EXFileSystem:
+        :debug: 475e6330c592da50addc12dc09c2203d
+        :release: 475e6330c592da50addc12dc09c2203d
     CHECKSUM: e70160bed834e5b693b70839e7e497c52b19ede4
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXFileSystem/ABI36_0_0EXFileSystem/ABI36_0_0EXDownloadDelegate.h"
@@ -1706,7 +1888,9 @@ CACHE_KEYS:
       - ABI36_0_0EXFileSystem (8.0.0-rc.0)
   ABI36_0_0EXFont:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXFont: 47c0d7c55a4741d80ffb2eb55a09b99b
+      ABI36_0_0EXFont:
+        :debug: 47c0d7c55a4741d80ffb2eb55a09b99b
+        :release: 47c0d7c55a4741d80ffb2eb55a09b99b
     CHECKSUM: 82b60dab83d5610e00e34fa42eabca61387b8139
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXFont/ABI36_0_0EXFont/ABI36_0_0EXFont.h"
@@ -1726,7 +1910,9 @@ CACHE_KEYS:
       - ABI36_0_0EXFont (7.0.0)
   ABI36_0_0EXGL:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXGL: ec1207ba7394e9af9508e99cf24ca337
+      ABI36_0_0EXGL:
+        :debug: ec1207ba7394e9af9508e99cf24ca337
+        :release: ec1207ba7394e9af9508e99cf24ca337
     CHECKSUM: 71f2b05f8e48945b776455cbd18deeb6bb390c6c
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXGL/ABI36_0_0EXGL/ABI36_0_0EXGLCameraObject.h"
@@ -1746,7 +1932,9 @@ CACHE_KEYS:
       - ABI36_0_0EXGL (7.0.0)
   ABI36_0_0EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXGoogleSignIn: 5124123910aa4a3321fb14d297d424ae
+      ABI36_0_0EXGoogleSignIn:
+        :debug: 5124123910aa4a3321fb14d297d424ae
+        :release: 5124123910aa4a3321fb14d297d424ae
     CHECKSUM: afd4c7954deb2b4475056514c598ac9790989ede
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXGoogleSignIn/ABI36_0_0EXGoogleSignIn/ABI36_0_0EXAuthTask.h"
@@ -1762,7 +1950,9 @@ CACHE_KEYS:
       - ABI36_0_0EXGoogleSignIn (7.0.0)
   ABI36_0_0EXHaptics:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXHaptics: 9f0d9a99dc85924687e404f3a8da2b14
+      ABI36_0_0EXHaptics:
+        :debug: 9f0d9a99dc85924687e404f3a8da2b14
+        :release: 9f0d9a99dc85924687e404f3a8da2b14
     CHECKSUM: cd1c188e30bf362321d9a21862b5e221a3148462
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXHaptics/ABI36_0_0EXHaptics/ABI36_0_0EXHapticsModule.h"
@@ -1772,7 +1962,9 @@ CACHE_KEYS:
       - ABI36_0_0EXHaptics (8.0.0-rc.0)
   ABI36_0_0EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXImageManipulator: dc19549c72deb9d5a9248ad663db614a
+      ABI36_0_0EXImageManipulator:
+        :debug: dc19549c72deb9d5a9248ad663db614a
+        :release: dc19549c72deb9d5a9248ad663db614a
     CHECKSUM: 69b9aa62bc06dcca4cba3faba3cfcee81fbca059
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXImageManipulator/ABI36_0_0EXImageManipulator/ABI36_0_0EXImageManipulatorModule.h"
@@ -1782,7 +1974,9 @@ CACHE_KEYS:
       - ABI36_0_0EXImageManipulator (8.0.0-rc.0)
   ABI36_0_0EXImagePicker:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXImagePicker: 1b929e3bae85185c12f299f0c427c736
+      ABI36_0_0EXImagePicker:
+        :debug: 1b929e3bae85185c12f299f0c427c736
+        :release: 1b929e3bae85185c12f299f0c427c736
     CHECKSUM: 9704b4d4fbf4fbf962c682c084e9ca661d1945fa
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXImagePicker/ABI36_0_0EXImagePicker/ABI36_0_0EXImagePicker.h"
@@ -1796,7 +1990,9 @@ CACHE_KEYS:
       - ABI36_0_0EXImagePicker (7.0.0)
   ABI36_0_0EXInAppPurchases:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXInAppPurchases: 32923078c159e70b671c1466bf315bb3
+      ABI36_0_0EXInAppPurchases:
+        :debug: 32923078c159e70b671c1466bf315bb3
+        :release: 32923078c159e70b671c1466bf315bb3
     CHECKSUM: ef5990cd387d5b442b8c2a9580eeeae021fd51f1
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXInAppPurchases/ABI36_0_0EXInAppPurchases/ABI36_0_0EXInAppPurchasesModule.h"
@@ -1806,7 +2002,9 @@ CACHE_KEYS:
       - ABI36_0_0EXInAppPurchases (7.0.0)
   ABI36_0_0EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXKeepAwake: 06ef3aa29389b37d340da5593a739bfd
+      ABI36_0_0EXKeepAwake:
+        :debug: 06ef3aa29389b37d340da5593a739bfd
+        :release: 06ef3aa29389b37d340da5593a739bfd
     CHECKSUM: 7769c0dce335d9c09c95dd7e6430012b41d1a4cb
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXKeepAwake/ABI36_0_0EXKeepAwake/ABI36_0_0EXKeepAwake.h"
@@ -1816,7 +2014,9 @@ CACHE_KEYS:
       - ABI36_0_0EXKeepAwake (7.0.0)
   ABI36_0_0EXLinearGradient:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXLinearGradient: 05480909dc82c5d66d4292198b59b5fb
+      ABI36_0_0EXLinearGradient:
+        :debug: 05480909dc82c5d66d4292198b59b5fb
+        :release: 05480909dc82c5d66d4292198b59b5fb
     CHECKSUM: 22c48dc916b08efc1c87c3a6e8f10ddbcf6e09ba
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXLinearGradient/ABI36_0_0EXLinearGradient/ABI36_0_0EXLinearGradient.h"
@@ -1830,7 +2030,9 @@ CACHE_KEYS:
       - ABI36_0_0EXLinearGradient (7.0.0)
   ABI36_0_0EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXLocalAuthentication: 2f194cfd7e08d340a773c25cba41fb47
+      ABI36_0_0EXLocalAuthentication:
+        :debug: 2f194cfd7e08d340a773c25cba41fb47
+        :release: 2f194cfd7e08d340a773c25cba41fb47
     CHECKSUM: e2fdf6f7f654ccbf7e89df6e41b16a37796c8aff
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXLocalAuthentication/ABI36_0_0EXLocalAuthentication/ABI36_0_0EXLocalAuthentication.h"
@@ -1840,7 +2042,9 @@ CACHE_KEYS:
       - ABI36_0_0EXLocalAuthentication (7.0.0)
   ABI36_0_0EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXLocalization: 32341a232198e552f12abb47442fe30d
+      ABI36_0_0EXLocalization:
+        :debug: 32341a232198e552f12abb47442fe30d
+        :release: 32341a232198e552f12abb47442fe30d
     CHECKSUM: 077e7e02d5f9cf05c32d80450df6efd3c210e064
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXLocalization/ABI36_0_0EXLocalization/ABI36_0_0EXLocalization.h"
@@ -1850,7 +2054,9 @@ CACHE_KEYS:
       - ABI36_0_0EXLocalization (7.0.0)
   ABI36_0_0EXLocation:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXLocation: 2c8b08322a2fdeb34c61c6fc5e602d29
+      ABI36_0_0EXLocation:
+        :debug: 2c8b08322a2fdeb34c61c6fc5e602d29
+        :release: 2c8b08322a2fdeb34c61c6fc5e602d29
     CHECKSUM: a8806d733c9356bd342cd2b3df1930bbef2ec7a7
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXLocation/ABI36_0_0EXLocation/ABI36_0_0EXLocation.h"
@@ -1868,7 +2074,9 @@ CACHE_KEYS:
       - ABI36_0_0EXLocation (7.0.0)
   ABI36_0_0EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXMailComposer: b36edb6a661e1a45e0017a1b1cc4920b
+      ABI36_0_0EXMailComposer:
+        :debug: b36edb6a661e1a45e0017a1b1cc4920b
+        :release: b36edb6a661e1a45e0017a1b1cc4920b
     CHECKSUM: a993dbb8404b10216523e29f556076692c369afb
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXMailComposer/ABI36_0_0EXMailComposer/ABI36_0_0EXMailComposer.h"
@@ -1878,7 +2086,9 @@ CACHE_KEYS:
       - ABI36_0_0EXMailComposer (7.0.0)
   ABI36_0_0EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXMediaLibrary: 347ec316736fe70666e2e2b1e40826ac
+      ABI36_0_0EXMediaLibrary:
+        :debug: 347ec316736fe70666e2e2b1e40826ac
+        :release: 347ec316736fe70666e2e2b1e40826ac
     CHECKSUM: 01e603a68a28ed1f93015fec078985efda618e2f
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXMediaLibrary/ABI36_0_0EXMediaLibrary/ABI36_0_0EXMediaLibrary.h"
@@ -1892,7 +2102,9 @@ CACHE_KEYS:
       - ABI36_0_0EXMediaLibrary (8.0.0-rc.0)
   ABI36_0_0EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXNetwork: 96e114eca85b2ff45091b7c43bbaed49
+      ABI36_0_0EXNetwork:
+        :debug: 96e114eca85b2ff45091b7c43bbaed49
+        :release: 96e114eca85b2ff45091b7c43bbaed49
     CHECKSUM: 7a4a42d6ce730271bdcb74e64bea3e875713de9b
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXNetwork/ABI36_0_0EXNetwork/ABI36_0_0EXNetwork.h"
@@ -1902,7 +2114,9 @@ CACHE_KEYS:
       - ABI36_0_0EXNetwork (1.0.0)
   ABI36_0_0EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXPermissions: 3f5fe7ea89bac5473e2e4e53acd2a2f4
+      ABI36_0_0EXPermissions:
+        :debug: 3f5fe7ea89bac5473e2e4e53acd2a2f4
+        :release: 3f5fe7ea89bac5473e2e4e53acd2a2f4
     CHECKSUM: c9038e520aadea3fdf58a345537906eca18553be
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/ABI36_0_0EXPermissions.h"
@@ -1918,7 +2132,9 @@ CACHE_KEYS:
       - ABI36_0_0EXPermissions (8.0.0-rc.0)
   ABI36_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0ExpoKit: 3f432db5f60b3b2305a259619ae44c2d
+      ABI36_0_0ExpoKit:
+        :debug: 3f432db5f60b3b2305a259619ae44c2d
+        :release: 3f432db5f60b3b2305a259619ae44c2d
     CHECKSUM: f344371316472b028b0d11c6c60f0741d95a9da1
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/ABI36_0_0EXUnversioned.h"
@@ -2400,7 +2616,9 @@ CACHE_KEYS:
       - ABI36_0_0ExpoKit/ExpoOptional (36.0.0)
   ABI36_0_0EXPrint:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXPrint: 683a0cf8a1b202015cb12c093fd8202e
+      ABI36_0_0EXPrint:
+        :debug: 683a0cf8a1b202015cb12c093fd8202e
+        :release: 683a0cf8a1b202015cb12c093fd8202e
     CHECKSUM: df3e520026b059e3d85e01bb3c970dfc5c44e467
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXPrint/ABI36_0_0EXPrint/ABI36_0_0EXPrint.h"
@@ -2416,7 +2634,9 @@ CACHE_KEYS:
       - ABI36_0_0EXPrint (7.0.0)
   ABI36_0_0EXRandom:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXRandom: 23ccc723d028ceb311b2b9bfb73002ce
+      ABI36_0_0EXRandom:
+        :debug: 23ccc723d028ceb311b2b9bfb73002ce
+        :release: 23ccc723d028ceb311b2b9bfb73002ce
     CHECKSUM: e6d60a4f2bbda8c195e5be722c208bfef6c6f5be
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXRandom/ABI36_0_0EXRandom/ABI36_0_0EXRandom.h"
@@ -2426,7 +2646,9 @@ CACHE_KEYS:
       - ABI36_0_0EXRandom (7.0.0)
   ABI36_0_0EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXSecureStore: a518940403ac92800a661b351a80ec2c
+      ABI36_0_0EXSecureStore:
+        :debug: a518940403ac92800a661b351a80ec2c
+        :release: a518940403ac92800a661b351a80ec2c
     CHECKSUM: b5d6aea3dc7958a5fb720571ad02899436523e28
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSecureStore/ABI36_0_0EXSecureStore/ABI36_0_0EXSecureStore.h"
@@ -2436,7 +2658,9 @@ CACHE_KEYS:
       - ABI36_0_0EXSecureStore (7.0.0)
   ABI36_0_0EXSegment:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXSegment: 2618b6d3b4e0a2356e91c10105d15875
+      ABI36_0_0EXSegment:
+        :debug: 2618b6d3b4e0a2356e91c10105d15875
+        :release: 2618b6d3b4e0a2356e91c10105d15875
     CHECKSUM: 7728ffbb10de2a3d41ce432765116fb454d8081f
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSegment/ABI36_0_0EXSegment/ABI36_0_0EXSegment.h"
@@ -2446,7 +2670,9 @@ CACHE_KEYS:
       - ABI36_0_0EXSegment (7.0.0)
   ABI36_0_0EXSensors:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXSensors: f8e072f6fb4af46f9540163489f79f4c
+      ABI36_0_0EXSensors:
+        :debug: f8e072f6fb4af46f9540163489f79f4c
+        :release: f8e072f6fb4af46f9540163489f79f4c
     CHECKSUM: 8240634ad629ab82ff94547b3c5c43f3ad075f49
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSensors/ABI36_0_0EXSensors/ABI36_0_0EXSensorsManager.h"
@@ -2472,7 +2698,9 @@ CACHE_KEYS:
       - ABI36_0_0EXSensors (7.0.0)
   ABI36_0_0EXSharing:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXSharing: 1591edc62cdabb4fdae759ff723752f7
+      ABI36_0_0EXSharing:
+        :debug: 1591edc62cdabb4fdae759ff723752f7
+        :release: 1591edc62cdabb4fdae759ff723752f7
     CHECKSUM: 5b7013d8e1584faa890b11d77d236dbd2772aa79
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSharing/ABI36_0_0EXSharing/ABI36_0_0EXSharingModule.h"
@@ -2482,7 +2710,9 @@ CACHE_KEYS:
       - ABI36_0_0EXSharing (7.0.0)
   ABI36_0_0EXSMS:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXSMS: 191b4c2df78d4bac29078adf41f40e47
+      ABI36_0_0EXSMS:
+        :debug: 191b4c2df78d4bac29078adf41f40e47
+        :release: 191b4c2df78d4bac29078adf41f40e47
     CHECKSUM: a7bd69be76a4a4927cecce4948cbe4a0b2a78476
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSMS/ABI36_0_0EXSMS/ABI36_0_0EXSMSModule.h"
@@ -2492,7 +2722,9 @@ CACHE_KEYS:
       - ABI36_0_0EXSMS (7.0.0)
   ABI36_0_0EXSpeech:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXSpeech: 499d59b98fb9df5d9df297d84e5bb045
+      ABI36_0_0EXSpeech:
+        :debug: 499d59b98fb9df5d9df297d84e5bb045
+        :release: 499d59b98fb9df5d9df297d84e5bb045
     CHECKSUM: a67f0f7efa104e91c6b9bf0f67a8fe7474607c29
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSpeech/ABI36_0_0EXSpeech/ABI36_0_0EXSpeech.h"
@@ -2502,7 +2734,9 @@ CACHE_KEYS:
       - ABI36_0_0EXSpeech (7.0.0)
   ABI36_0_0EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXSQLite: 55f021cd931cdcdbabbbd632f8abbd31
+      ABI36_0_0EXSQLite:
+        :debug: 55f021cd931cdcdbabbbd632f8abbd31
+        :release: 55f021cd931cdcdbabbbd632f8abbd31
     CHECKSUM: c6e0291b665f16c7ea09093042dba4b37b9f2e45
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSQLite/ABI36_0_0EXSQLite/ABI36_0_0EXSQLite.h"
@@ -2512,7 +2746,9 @@ CACHE_KEYS:
       - ABI36_0_0EXSQLite (7.0.0)
   ABI36_0_0EXStoreReview:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXStoreReview: f8d9441fc6766f5940af16a0940853b5
+      ABI36_0_0EXStoreReview:
+        :debug: f8d9441fc6766f5940af16a0940853b5
+        :release: f8d9441fc6766f5940af16a0940853b5
     CHECKSUM: 6c7de99a749138b3a4483c9e6e51bd57474722d5
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXStoreReview/ABI36_0_0EXStoreReview/ABI36_0_0EXStoreReviewModule.h"
@@ -2522,7 +2758,9 @@ CACHE_KEYS:
       - ABI36_0_0EXStoreReview (1.0.0)
   ABI36_0_0EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXTaskManager: ed3333c65f134c04097e8d88398902d3
+      ABI36_0_0EXTaskManager:
+        :debug: ed3333c65f134c04097e8d88398902d3
+        :release: ed3333c65f134c04097e8d88398902d3
     CHECKSUM: 0e2e43963c31d4b76fe68bf0d8920f9a2a72e12d
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXTaskManager/ABI36_0_0EXTaskManager/ABI36_0_0EXTask.h"
@@ -2540,7 +2778,9 @@ CACHE_KEYS:
       - ABI36_0_0EXTaskManager (7.0.0)
   ABI36_0_0EXUpdates:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXUpdates: 464e47c34bb9d3aba16df849c1b44342
+      ABI36_0_0EXUpdates:
+        :debug: 464e47c34bb9d3aba16df849c1b44342
+        :release: 464e47c34bb9d3aba16df849c1b44342
     CHECKSUM: e22754a334f21f19dc92277c124c0a91c1329436
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXUpdates/ABI36_0_0EXUpdates/ABI36_0_0EXUpdatesModule.h"
@@ -2550,7 +2790,9 @@ CACHE_KEYS:
       - ABI36_0_0EXUpdates (0.0.1-rc.0)
   ABI36_0_0EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXVideoThumbnails: d45cc9c85ad96fc15d7ae8385fbacc41
+      ABI36_0_0EXVideoThumbnails:
+        :debug: d45cc9c85ad96fc15d7ae8385fbacc41
+        :release: d45cc9c85ad96fc15d7ae8385fbacc41
     CHECKSUM: dd17459f82df63b5a33153b3a862e5f9d7a1f56d
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXVideoThumbnails/ABI36_0_0EXVideoThumbnails/ABI36_0_0EXVideoThumbnailsModule.h"
@@ -2560,7 +2802,9 @@ CACHE_KEYS:
       - ABI36_0_0EXVideoThumbnails (3.0.0)
   ABI36_0_0EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXWebBrowser: ed705656e0758da03c6afbd054b16bc4
+      ABI36_0_0EXWebBrowser:
+        :debug: ed705656e0758da03c6afbd054b16bc4
+        :release: ed705656e0758da03c6afbd054b16bc4
     CHECKSUM: c12f046fe4c48f33a44147e99f9c974a2c2f4a72
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXWebBrowser/ABI36_0_0EXWebBrowser/ABI36_0_0EXWebBrowser.h"
@@ -2570,7 +2814,9 @@ CACHE_KEYS:
       - ABI36_0_0EXWebBrowser (7.0.1)
   ABI36_0_0FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0FBLazyVector: 2a91ceec20d5b1bdb7db2a29b12b1585
+      ABI36_0_0FBLazyVector:
+        :debug: 2a91ceec20d5b1bdb7db2a29b12b1585
+        :release: 2a91ceec20d5b1bdb7db2a29b12b1585
     CHECKSUM: f7ef235e10fc97854d81eaa102952ccd4e6495df
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/FBLazyVector/FBLazyVector/ABI36_0_0FBLazyIterator.h"
@@ -2580,7 +2826,9 @@ CACHE_KEYS:
       - ABI36_0_0FBLazyVector (0.61.4)
   ABI36_0_0FBReactNativeSpec:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0FBReactNativeSpec: 1bfdda6775a258d82730c9b3882dc74c
+      ABI36_0_0FBReactNativeSpec:
+        :debug: 1bfdda6775a258d82730c9b3882dc74c
+        :release: 1bfdda6775a258d82730c9b3882dc74c
     CHECKSUM: c60de773a32796de9ba6bc84a82e6d1a54502734
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/FBReactNativeSpec/FBReactNativeSpec/ABI36_0_0FBReactNativeSpec-generated.mm"
@@ -2590,7 +2838,9 @@ CACHE_KEYS:
       - ABI36_0_0FBReactNativeSpec (0.61.4)
   ABI36_0_0RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0RCTRequired: b3792c8bc48cdffbbc6e2667376813bf
+      ABI36_0_0RCTRequired:
+        :debug: b3792c8bc48cdffbbc6e2667376813bf
+        :release: b3792c8bc48cdffbbc6e2667376813bf
     CHECKSUM: 184344a8c9cf207c9fc1a4c6d5f20ad5e3aefc1b
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/RCTRequired/RCTRequired/ABI36_0_0RCTRequired.h"
@@ -2599,7 +2849,9 @@ CACHE_KEYS:
       - ABI36_0_0RCTRequired (0.61.4)
   ABI36_0_0RCTTypeSafety:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0RCTTypeSafety: 1cf68483105623a12d87730d643e623c
+      ABI36_0_0RCTTypeSafety:
+        :debug: 1cf68483105623a12d87730d643e623c
+        :release: 1cf68483105623a12d87730d643e623c
     CHECKSUM: 1b202f42d4e8db64f3b602dc8d567953a2546bef
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/TypeSafety/ABI36_0_0RCTConvertHelpers.h"
@@ -2611,7 +2863,9 @@ CACHE_KEYS:
       - ABI36_0_0RCTTypeSafety (0.61.4)
   ABI36_0_0React:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React: e1ada532972a2738e4122f068092459c
+      ABI36_0_0React:
+        :debug: e1ada532972a2738e4122f068092459c
+        :release: e1ada532972a2738e4122f068092459c
     CHECKSUM: 2dd653fbb2f96fad48d46a27bbe1e35d506d8435
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/package.json"
@@ -2620,7 +2874,9 @@ CACHE_KEYS:
       - ABI36_0_0React (0.61.4)
   ABI36_0_0React-Core:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-Core: d5215170f22103264b38dcc944973c8d
+      ABI36_0_0React-Core:
+        :debug: d5215170f22103264b38dcc944973c8d
+        :release: d5215170f22103264b38dcc944973c8d
     CHECKSUM: 15b44f26e6378ca7240f2725807d2a59f89d2c66
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/ActionSheetIOS/ABI36_0_0RCTActionSheetManager.h"
@@ -3017,7 +3273,9 @@ CACHE_KEYS:
       - ABI36_0_0React-Core/RCTWebSocket (0.61.4)
   ABI36_0_0React-CoreModules:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-CoreModules: 5ad01fd79f2525d823d7bc456eb5abbf
+      ABI36_0_0React-CoreModules:
+        :debug: 5ad01fd79f2525d823d7bc456eb5abbf
+        :release: 5ad01fd79f2525d823d7bc456eb5abbf
     CHECKSUM: ab9e8f87019a59c797e98777c12601c6f6204726
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/React/CoreModules/ABI36_0_0CoreModulesPlugins.mm"
@@ -3031,7 +3289,9 @@ CACHE_KEYS:
       - ABI36_0_0React-CoreModules (0.61.4)
   ABI36_0_0React-cxxreact:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-cxxreact: b636761b8916e25b1827e461cbdbf6c7
+      ABI36_0_0React-cxxreact:
+        :debug: b636761b8916e25b1827e461cbdbf6c7
+        :release: b636761b8916e25b1827e461cbdbf6c7
     CHECKSUM: 868ca803f8801ec5391a3d2fafd2f9dbb241fc84
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/cxxreact/ABI36_0_0CxxModule.h"
@@ -3072,7 +3332,9 @@ CACHE_KEYS:
       - ABI36_0_0React-cxxreact (0.61.4)
   ABI36_0_0React-jsi:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-jsi: 7b93b76c35004926277fe4ad2d2690ab
+      ABI36_0_0React-jsi:
+        :debug: 7b93b76c35004926277fe4ad2d2690ab
+        :release: 7b93b76c35004926277fe4ad2d2690ab
     CHECKSUM: bfe55cf6ed5c222c312c0c300ae41a90a8787ea4
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/jsi/ABI36_0_0JSCRuntime.cpp"
@@ -3094,7 +3356,9 @@ CACHE_KEYS:
       - ABI36_0_0React-jsi/Default (0.61.4)
   ABI36_0_0React-jsiexecutor:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-jsiexecutor: 38e0ef70d615322028cef13780361ed1
+      ABI36_0_0React-jsiexecutor:
+        :debug: 38e0ef70d615322028cef13780361ed1
+        :release: 38e0ef70d615322028cef13780361ed1
     CHECKSUM: 629b3a8b16cc72b77a4ec60cbf4e692edd1b8584
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/jsiexecutor/jsireact/ABI36_0_0JSIExecutor.cpp"
@@ -3106,7 +3370,9 @@ CACHE_KEYS:
       - ABI36_0_0React-jsiexecutor (0.61.4)
   ABI36_0_0React-jsinspector:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-jsinspector: 332c5c468c93956ea740468aa381ad90
+      ABI36_0_0React-jsinspector:
+        :debug: 332c5c468c93956ea740468aa381ad90
+        :release: 332c5c468c93956ea740468aa381ad90
     CHECKSUM: 566404f37e900de5d6844b9ab999aa2056c5f7ac
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/jsinspector/ABI36_0_0InspectorInterfaces.cpp"
@@ -3116,7 +3382,9 @@ CACHE_KEYS:
       - ABI36_0_0React-jsinspector (0.61.4)
   ABI36_0_0React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTActionSheet: 8b2666535d6ca0f9231ac2b0175f159e
+      ABI36_0_0React-RCTActionSheet:
+        :debug: 8b2666535d6ca0f9231ac2b0175f159e
+        :release: 8b2666535d6ca0f9231ac2b0175f159e
     CHECKSUM: 02c4b8770e5254dfc6aae2ff15cb6eace76373eb
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/ActionSheetIOS/ABI36_0_0RCTActionSheetManager.m"
@@ -3125,7 +3393,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTActionSheet (0.61.4)
   ABI36_0_0React-RCTAnimation:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTAnimation: ef7f4eb66450aba03447617de5009483
+      ABI36_0_0React-RCTAnimation:
+        :debug: ef7f4eb66450aba03447617de5009483
+        :release: ef7f4eb66450aba03447617de5009483
     CHECKSUM: be3616b93a204afd2cb72a9f45e7768a27bed326
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/NativeAnimation/ABI36_0_0RCTAnimationUtils.m"
@@ -3153,7 +3423,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTAnimation (0.61.4)
   ABI36_0_0React-RCTBlob:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTBlob: 9b440d76a78c0ff5dab9d8c4b07f2100
+      ABI36_0_0React-RCTBlob:
+        :debug: 9b440d76a78c0ff5dab9d8c4b07f2100
+        :release: 9b440d76a78c0ff5dab9d8c4b07f2100
     CHECKSUM: 80d01c1fefbd1e1f86aed2ad02942d63f7109782
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Blob/ABI36_0_0RCTBlobCollector.mm"
@@ -3164,7 +3436,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTBlob (0.61.4)
   ABI36_0_0React-RCTCameraRoll:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTCameraRoll: 4972252b2af195ad3aabdb275bb68f6b
+      ABI36_0_0React-RCTCameraRoll:
+        :debug: 4972252b2af195ad3aabdb275bb68f6b
+        :release: 4972252b2af195ad3aabdb275bb68f6b
     CHECKSUM: b42de9ffc1aab1d2634bec074028650005474cd2
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTAssetsLibraryRequestHandler.h"
@@ -3180,7 +3454,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTCameraRoll (0.61.4)
   ABI36_0_0React-RCTImage:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTImage: f44c4f5efa1aa40c03decfa78ea2e053
+      ABI36_0_0React-RCTImage:
+        :debug: f44c4f5efa1aa40c03decfa78ea2e053
+        :release: f44c4f5efa1aa40c03decfa78ea2e053
     CHECKSUM: 4891854453c9068b16206264b145988d9d0095e1
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Image/ABI36_0_0RCTAnimatedImage.m"
@@ -3199,7 +3475,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTImage (0.61.4)
   ABI36_0_0React-RCTLinking:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTLinking: a9dc7b08ccae0a7e3775d8df76d3d15a
+      ABI36_0_0React-RCTLinking:
+        :debug: a9dc7b08ccae0a7e3775d8df76d3d15a
+        :release: a9dc7b08ccae0a7e3775d8df76d3d15a
     CHECKSUM: e4352a7092b377c39496b9b641d506f913a5a973
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/LinkingIOS/ABI36_0_0RCTLinkingManager.m"
@@ -3208,7 +3486,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTLinking (0.61.4)
   ABI36_0_0React-RCTNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTNetwork: b2580337ecc8a3c9b696fbcd41ae8102
+      ABI36_0_0React-RCTNetwork:
+        :debug: b2580337ecc8a3c9b696fbcd41ae8102
+        :release: b2580337ecc8a3c9b696fbcd41ae8102
     CHECKSUM: d3de6cb9abc13e8dbe2ca94b24abb4fdeefcab06
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Network/ABI36_0_0RCTDataRequestHandler.m"
@@ -3222,7 +3502,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTNetwork (0.61.4)
   ABI36_0_0React-RCTSettings:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTSettings: 042a45c6508f1fc8ea016deff8c98819
+      ABI36_0_0React-RCTSettings:
+        :debug: 042a45c6508f1fc8ea016deff8c98819
+        :release: 042a45c6508f1fc8ea016deff8c98819
     CHECKSUM: f5035ff216f4c41d09bc9f604ebe1db4ea77e783
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Settings/ABI36_0_0RCTSettingsManager.m"
@@ -3231,7 +3513,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTSettings (0.61.4)
   ABI36_0_0React-RCTText:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTText: b1382a098f00a80f905a39c4571d3b89
+      ABI36_0_0React-RCTText:
+        :debug: b1382a098f00a80f905a39c4571d3b89
+        :release: b1382a098f00a80f905a39c4571d3b89
     CHECKSUM: 98fd8d0f97154bf98229796991d8530bf899003a
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Text/ABI36_0_0RCTConvert+Text.h"
@@ -3296,7 +3580,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTText (0.61.4)
   ABI36_0_0React-RCTVibration:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React-RCTVibration: 9a23df82cbe27808da9ce6ffaf4c5e3f
+      ABI36_0_0React-RCTVibration:
+        :debug: 9a23df82cbe27808da9ce6ffaf4c5e3f
+        :release: 9a23df82cbe27808da9ce6ffaf4c5e3f
     CHECKSUM: 5ab967deb4048ee9d93b3507dda909ceb1bde2e1
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Vibration/ABI36_0_0RCTVibration.m"
@@ -3305,7 +3591,9 @@ CACHE_KEYS:
       - ABI36_0_0React-RCTVibration (0.61.4)
   ABI36_0_0ReactCommon:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0ReactCommon: 015286a20cfa0f213b5ef454aad46c2c
+      ABI36_0_0ReactCommon:
+        :debug: 015286a20cfa0f213b5ef454aad46c2c
+        :release: 015286a20cfa0f213b5ef454aad46c2c
     CHECKSUM: 70ed7838ffbcb9d6bf38036d9056e94f41080e5c
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/jscallinvoker/ReactCommon/ABI36_0_0BridgeJSCallInvoker.cpp"
@@ -3331,7 +3619,9 @@ CACHE_KEYS:
       - ABI36_0_0ReactCommon/turbomodule/core (0.61.4)
   ABI36_0_0UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMBarCodeScannerInterface: bb11c5c53b573b71c55dde4bf0cba658
+      ABI36_0_0UMBarCodeScannerInterface:
+        :debug: bb11c5c53b573b71c55dde4bf0cba658
+        :release: bb11c5c53b573b71c55dde4bf0cba658
     CHECKSUM: c2714cd1b351b0f294046f861d9cc580564b750a
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMBarCodeScannerInterface/ABI36_0_0UMBarCodeScannerInterface/ABI36_0_0UMBarCodeScannerInterface.h"
@@ -3341,7 +3631,9 @@ CACHE_KEYS:
       - ABI36_0_0UMBarCodeScannerInterface (4.0.0)
   ABI36_0_0UMCameraInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMCameraInterface: 6bd8145da2683d860c87f4035edfcb47
+      ABI36_0_0UMCameraInterface:
+        :debug: 6bd8145da2683d860c87f4035edfcb47
+        :release: 6bd8145da2683d860c87f4035edfcb47
     CHECKSUM: d373c59b028d6fc509e72f4a108ef2b59eb7e414
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMCameraInterface/ABI36_0_0UMCameraInterface/ABI36_0_0UMCameraInterface.h"
@@ -3350,7 +3642,9 @@ CACHE_KEYS:
       - ABI36_0_0UMCameraInterface (4.0.0)
   ABI36_0_0UMConstantsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMConstantsInterface: a38abba9bfa8a8de3dccc0c7cafad6ca
+      ABI36_0_0UMConstantsInterface:
+        :debug: a38abba9bfa8a8de3dccc0c7cafad6ca
+        :release: a38abba9bfa8a8de3dccc0c7cafad6ca
     CHECKSUM: 5b4dff3cbe22f3d06cd473b1e39ce8a22115731b
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMConstantsInterface/ABI36_0_0UMConstantsInterface/ABI36_0_0UMConstantsInterface.h"
@@ -3359,7 +3653,9 @@ CACHE_KEYS:
       - ABI36_0_0UMConstantsInterface (4.0.0)
   ABI36_0_0UMCore:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMCore: 73d25b8485da9c6382b4d202437b1b0c
+      ABI36_0_0UMCore:
+        :debug: 73d25b8485da9c6382b4d202437b1b0c
+        :release: 73d25b8485da9c6382b4d202437b1b0c
     CHECKSUM: a424fb2ecde1541ae34919aacddb172cf8bd64a4
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMCore/ABI36_0_0UMCore/ABI36_0_0UMAppDelegateWrapper.h"
@@ -3398,7 +3694,9 @@ CACHE_KEYS:
       - ABI36_0_0UMCore (5.0.0-rc.0)
   ABI36_0_0UMFaceDetectorInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMFaceDetectorInterface: 3d1be7637c28bddb08b7b5d14fe759e8
+      ABI36_0_0UMFaceDetectorInterface:
+        :debug: 3d1be7637c28bddb08b7b5d14fe759e8
+        :release: 3d1be7637c28bddb08b7b5d14fe759e8
     CHECKSUM: fedfc2d8387a4061a38835cb3af4b0b25cfb0763
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMFaceDetectorInterface/ABI36_0_0UMFaceDetectorInterface/ABI36_0_0UMFaceDetectorManager.h"
@@ -3408,7 +3706,9 @@ CACHE_KEYS:
       - ABI36_0_0UMFaceDetectorInterface (4.0.0)
   ABI36_0_0UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMFileSystemInterface: 6b434607b3c27fff9c6b85fe0d77154c
+      ABI36_0_0UMFileSystemInterface:
+        :debug: 6b434607b3c27fff9c6b85fe0d77154c
+        :release: 6b434607b3c27fff9c6b85fe0d77154c
     CHECKSUM: af15978cfe4777130a4d0d5cdef3b4531720626e
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMFileSystemInterface/ABI36_0_0UMFileSystemInterface/ABI36_0_0UMFilePermissionModuleInterface.h"
@@ -3418,7 +3718,9 @@ CACHE_KEYS:
       - ABI36_0_0UMFileSystemInterface (4.0.0)
   ABI36_0_0UMFontInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMFontInterface: 15cb9ccea07c7813c1074ed52b954dc7
+      ABI36_0_0UMFontInterface:
+        :debug: 15cb9ccea07c7813c1074ed52b954dc7
+        :release: 15cb9ccea07c7813c1074ed52b954dc7
     CHECKSUM: f034eab30afc0ca72a33482b8f079120ef12ed27
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMFontInterface/ABI36_0_0UMFontInterface/ABI36_0_0UMFontManagerInterface.h"
@@ -3430,7 +3732,9 @@ CACHE_KEYS:
       - ABI36_0_0UMFontInterface (4.0.0)
   ABI36_0_0UMImageLoaderInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMImageLoaderInterface: df7b5422318b6ac21a920405199bcb5f
+      ABI36_0_0UMImageLoaderInterface:
+        :debug: df7b5422318b6ac21a920405199bcb5f
+        :release: df7b5422318b6ac21a920405199bcb5f
     CHECKSUM: 5530a8839279dac3ccc19fdd9361b4dd98bde939
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMImageLoaderInterface/ABI36_0_0UMImageLoaderInterface/ABI36_0_0UMImageLoaderInterface.h"
@@ -3439,7 +3743,9 @@ CACHE_KEYS:
       - ABI36_0_0UMImageLoaderInterface (5.0.0-rc.0)
   ABI36_0_0UMPermissionsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMPermissionsInterface: 2d0b8c84033fc54a14c0234bd34e2ff2
+      ABI36_0_0UMPermissionsInterface:
+        :debug: 2d0b8c84033fc54a14c0234bd34e2ff2
+        :release: 2d0b8c84033fc54a14c0234bd34e2ff2
     CHECKSUM: ad1d295745b4e430d6e6bebf4fd29ec8cb42d567
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMPermissionsInterface/ABI36_0_0UMPermissionsInterface/ABI36_0_0UMPermissionsInterface.h"
@@ -3451,7 +3757,9 @@ CACHE_KEYS:
       - ABI36_0_0UMPermissionsInterface (4.0.0)
   ABI36_0_0UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMReactNativeAdapter: d0e0a653d37d9160464b6352d74a3ad1
+      ABI36_0_0UMReactNativeAdapter:
+        :debug: d0e0a653d37d9160464b6352d74a3ad1
+        :release: d0e0a653d37d9160464b6352d74a3ad1
     CHECKSUM: 2ea48d43694bb8f48a1314ea91dbe001cd9fa50d
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMReactNativeAdapter/ABI36_0_0UMReactNativeAdapter/ABI36_0_0UMBridgeModule.h"
@@ -3476,7 +3784,9 @@ CACHE_KEYS:
       - ABI36_0_0UMReactNativeAdapter (5.0.0-rc.0)
   ABI36_0_0UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMSensorsInterface: 67be58c2c43adefabb3c6762bc9dfe31
+      ABI36_0_0UMSensorsInterface:
+        :debug: 67be58c2c43adefabb3c6762bc9dfe31
+        :release: 67be58c2c43adefabb3c6762bc9dfe31
     CHECKSUM: d27b81133b0a191df3de4230089e87226b1c5b2d
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMSensorsInterface/ABI36_0_0UMSensorsInterface/ABI36_0_0UMAccelerometerInterface.h"
@@ -3490,7 +3800,9 @@ CACHE_KEYS:
       - ABI36_0_0UMSensorsInterface (4.0.0)
   ABI36_0_0UMTaskManagerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0UMTaskManagerInterface: 1cf730458194dba7cdd66c2ea87d9257
+      ABI36_0_0UMTaskManagerInterface:
+        :debug: 1cf730458194dba7cdd66c2ea87d9257
+        :release: 1cf730458194dba7cdd66c2ea87d9257
     CHECKSUM: 1fec64031f2e16c59768ad67f91f18911c02782f
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/UMTaskManagerInterface/ABI36_0_0UMTaskManagerInterface/ABI36_0_0UMTaskConsumerInterface.h"
@@ -3503,7 +3815,9 @@ CACHE_KEYS:
       - ABI36_0_0UMTaskManagerInterface (4.0.0)
   ABI36_0_0Yoga:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0Yoga: 7fd4792021fd79978c3abf3d2b148669
+      ABI36_0_0Yoga:
+        :debug: 7fd4792021fd79978c3abf3d2b148669
+        :release: 7fd4792021fd79978c3abf3d2b148669
     CHECKSUM: a47f981447ce601f1ad6b82a5a5ec9673d45ba8e
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/yoga/yoga/ABI36_0_0Bitfield.h"
@@ -3541,7 +3855,9 @@ CACHE_KEYS:
       - ABI36_0_0Yoga (1.14.0)
   ABI37_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXAdsAdMob: 76779b0ab155418a7c2e797651b0b64f
+      ABI37_0_0EXAdsAdMob:
+        :debug: 76779b0ab155418a7c2e797651b0b64f
+        :release: 76779b0ab155418a7c2e797651b0b64f
     CHECKSUM: ff3bea280dfcbb9f77059cce42a269b7935e1ccf
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsAdMob/ABI37_0_0EXAdsAdMob/ABI37_0_0EXAdsAdMob.h"
@@ -3563,7 +3879,9 @@ CACHE_KEYS:
       - ABI37_0_0EXAdsAdMob (8.0.0)
   ABI37_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXAdsFacebook: 57bf0f0607cca51c8c7696ccf3517d2d
+      ABI37_0_0EXAdsFacebook:
+        :debug: 57bf0f0607cca51c8c7696ccf3517d2d
+        :release: 57bf0f0607cca51c8c7696ccf3517d2d
     CHECKSUM: 03663956df3e240105da0556957ad6bb57eef2c0
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsFacebook/ABI37_0_0EXAdsFacebook/ABI37_0_0EXAdIconViewManager.h"
@@ -3589,7 +3907,9 @@ CACHE_KEYS:
       - ABI37_0_0EXAdsFacebook (8.0.0)
   ABI37_0_0EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXAmplitude: 08ce3ed2acb8cc4b94de28fb62c1b303
+      ABI37_0_0EXAmplitude:
+        :debug: 08ce3ed2acb8cc4b94de28fb62c1b303
+        :release: 08ce3ed2acb8cc4b94de28fb62c1b303
     CHECKSUM: 0d82bb80de571a9f11e8658363817a4a20388155
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAmplitude/ABI37_0_0EXAmplitude/ABI37_0_0EXAmplitude.h"
@@ -3599,7 +3919,9 @@ CACHE_KEYS:
       - ABI37_0_0EXAmplitude (8.0.0)
   ABI37_0_0EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXAppAuth: d4848bf6e97611865fefa5678d2efa49
+      ABI37_0_0EXAppAuth:
+        :debug: d4848bf6e97611865fefa5678d2efa49
+        :release: d4848bf6e97611865fefa5678d2efa49
     CHECKSUM: 7438cd12ef50e5978fcba326242a193ae86f5087
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAppAuth/ABI37_0_0EXAppAuth/ABI37_0_0EXAppAuth+JSON.h"
@@ -3615,7 +3937,9 @@ CACHE_KEYS:
       - ABI37_0_0EXAppAuth (8.0.0)
   ABI37_0_0EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXAppleAuthentication: 5087c6ec4173b514beefef01fe9419ab
+      ABI37_0_0EXAppleAuthentication:
+        :debug: 5087c6ec4173b514beefef01fe9419ab
+        :release: 5087c6ec4173b514beefef01fe9419ab
     CHECKSUM: 4c2bbb6c09c85ff172f1a82c9c5c4d01a16d688b
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAppleAuthentication/ABI37_0_0EXAppleAuthentication/ABI37_0_0EXAppleAuthentication.h"
@@ -3632,7 +3956,9 @@ CACHE_KEYS:
       - ABI37_0_0EXAppleAuthentication (2.0.0)
   ABI37_0_0EXApplication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXApplication: 5fe2312e7c297a0369f351c510007a40
+      ABI37_0_0EXApplication:
+        :debug: 5fe2312e7c297a0369f351c510007a40
+        :release: 5fe2312e7c297a0369f351c510007a40
     CHECKSUM: 14bb28faa57e0e8becadc324fd22687d3d5d1630
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXApplication/ABI37_0_0EXApplication/ABI37_0_0EXApplication.h"
@@ -3644,7 +3970,9 @@ CACHE_KEYS:
       - ABI37_0_0EXApplication (2.0.0)
   ABI37_0_0EXAV:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXAV: c4f8e8651e2888f17ecd1f3fcbe7e918
+      ABI37_0_0EXAV:
+        :debug: c4f8e8651e2888f17ecd1f3fcbe7e918
+        :release: c4f8e8651e2888f17ecd1f3fcbe7e918
     CHECKSUM: 53d3a31166ce98ca4b0d0cfc5e12abbb2409e8ab
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAV/ABI37_0_0EXAV/ABI37_0_0EXAudioRecordingPermissionRequester.h"
@@ -3668,7 +3996,9 @@ CACHE_KEYS:
       - ABI37_0_0EXAV (8.0.0)
   ABI37_0_0EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXBackgroundFetch: 99be9ae16dc1864c26d43b0bc8fc7ac4
+      ABI37_0_0EXBackgroundFetch:
+        :debug: 99be9ae16dc1864c26d43b0bc8fc7ac4
+        :release: 99be9ae16dc1864c26d43b0bc8fc7ac4
     CHECKSUM: 2989b68857ffdb2ad89edcfc17248199c73f7683
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXBackgroundFetch/ABI37_0_0EXBackgroundFetch/ABI37_0_0EXBackgroundFetch.h"
@@ -3680,7 +4010,9 @@ CACHE_KEYS:
       - ABI37_0_0EXBackgroundFetch (8.0.0)
   ABI37_0_0EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXBarCodeScanner: 3712e3fae80bdf81ffebca244701aaef
+      ABI37_0_0EXBarCodeScanner:
+        :debug: 3712e3fae80bdf81ffebca244701aaef
+        :release: 3712e3fae80bdf81ffebca244701aaef
     CHECKSUM: 1bfe1691c49c5c7d94efa56379e78af7528a6b56
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXBarCodeScanner/ABI37_0_0EXBarCodeScanner/ABI37_0_0EXBarCodeCameraRequester.h"
@@ -3702,7 +4034,9 @@ CACHE_KEYS:
       - ABI37_0_0EXBarCodeScanner (8.0.0)
   ABI37_0_0EXBattery:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXBattery: 11f650d95b34d303309668f18d1527f7
+      ABI37_0_0EXBattery:
+        :debug: 11f650d95b34d303309668f18d1527f7
+        :release: 11f650d95b34d303309668f18d1527f7
     CHECKSUM: 4a957a28edbea5a955aa777c49d4057b21bdd13c
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXBattery/ABI37_0_0EXBattery/ABI37_0_0EXBattery.h"
@@ -3712,7 +4046,9 @@ CACHE_KEYS:
       - ABI37_0_0EXBattery (2.0.0)
   ABI37_0_0EXBluetooth:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXBluetooth: 45915f7889b3c9db76be11f3c7b8ec36
+      ABI37_0_0EXBluetooth:
+        :debug: 45915f7889b3c9db76be11f3c7b8ec36
+        :release: 45915f7889b3c9db76be11f3c7b8ec36
     CHECKSUM: b466d57f318f81d2b0629f334783dad4c3aa4f27
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXBluetooth/ABI37_0_0EXBluetooth/ABI37_0_0EXBluetooth+JSON.h"
@@ -3724,7 +4060,9 @@ CACHE_KEYS:
       - ABI37_0_0EXBluetooth (1.0.0)
   ABI37_0_0EXBlur:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXBlur: c85979d178e3ea680702949a6cbb77bb
+      ABI37_0_0EXBlur:
+        :debug: c85979d178e3ea680702949a6cbb77bb
+        :release: c85979d178e3ea680702949a6cbb77bb
     CHECKSUM: c3b113148e9c3714644d1b773045cdc034088a88
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXBlur/ABI37_0_0EXBlur/ABI37_0_0EXBlurView.h"
@@ -3736,7 +4074,9 @@ CACHE_KEYS:
       - ABI37_0_0EXBlur (8.0.0)
   ABI37_0_0EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXBrightness: 4c154f810b3efd9129c2494a4d63e493
+      ABI37_0_0EXBrightness:
+        :debug: 4c154f810b3efd9129c2494a4d63e493
+        :release: 4c154f810b3efd9129c2494a4d63e493
     CHECKSUM: eb2ba109defc2edc1afd0df07e554d56cd088475
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXBrightness/ABI37_0_0EXBrightness/ABI37_0_0EXBrightness.h"
@@ -3748,7 +4088,9 @@ CACHE_KEYS:
       - ABI37_0_0EXBrightness (8.0.0)
   ABI37_0_0EXCalendar:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXCalendar: b5093369944a045dfeba673d93a6d7e0
+      ABI37_0_0EXCalendar:
+        :debug: b5093369944a045dfeba673d93a6d7e0
+        :release: b5093369944a045dfeba673d93a6d7e0
     CHECKSUM: afccaf285bc1ae1bba40b005c43ce5c0d3e63edf
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXCalendar/ABI37_0_0EXCalendar/ABI37_0_0EXCalendar.h"
@@ -3764,7 +4106,9 @@ CACHE_KEYS:
       - ABI37_0_0EXCalendar (8.0.0)
   ABI37_0_0EXCamera:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXCamera: a39611c63d89e3c9ab3dae6c015839f8
+      ABI37_0_0EXCamera:
+        :debug: a39611c63d89e3c9ab3dae6c015839f8
+        :release: a39611c63d89e3c9ab3dae6c015839f8
     CHECKSUM: 59255a9b75a6da13ec94259b80e1af0d126cf9f3
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXCamera/ABI37_0_0EXCamera/ABI37_0_0EXCamera.h"
@@ -3780,7 +4124,9 @@ CACHE_KEYS:
       - ABI37_0_0EXCamera (8.1.0)
   ABI37_0_0EXCellular:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXCellular: 9be40dd61419ac3b66d3044da3f6e0e9
+      ABI37_0_0EXCellular:
+        :debug: 9be40dd61419ac3b66d3044da3f6e0e9
+        :release: 9be40dd61419ac3b66d3044da3f6e0e9
     CHECKSUM: b565694c92b16a5958bb20db3fa1b8ef8c85505e
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXCellular/ABI37_0_0EXCellular/ABI37_0_0EXCellularModule.h"
@@ -3790,7 +4136,9 @@ CACHE_KEYS:
       - ABI37_0_0EXCellular (2.0.0)
   ABI37_0_0EXConstants:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXConstants: c8d7357b4d69fa9518d67597d0f305a5
+      ABI37_0_0EXConstants:
+        :debug: c8d7357b4d69fa9518d67597d0f305a5
+        :release: c8d7357b4d69fa9518d67597d0f305a5
     CHECKSUM: 20673883cf43adb8acf49e812b4977fe4cb934e7
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXConstants/ABI37_0_0EXConstants/ABI37_0_0EXConstants.h"
@@ -3802,7 +4150,9 @@ CACHE_KEYS:
       - ABI37_0_0EXConstants (8.0.0)
   ABI37_0_0EXContacts:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXContacts: 7690a529cc74c0ec084635de0b816710
+      ABI37_0_0EXContacts:
+        :debug: 7690a529cc74c0ec084635de0b816710
+        :release: 7690a529cc74c0ec084635de0b816710
     CHECKSUM: 32eac75629be8ff54241753147625ca8de59093c
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXContacts/ABI37_0_0EXContacts/ABI37_0_0EXContacts+Serialization.h"
@@ -3818,7 +4168,9 @@ CACHE_KEYS:
       - ABI37_0_0EXContacts (8.0.0)
   ABI37_0_0EXCrypto:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXCrypto: 3ec4f183507547258bf926f4d43911c4
+      ABI37_0_0EXCrypto:
+        :debug: 3ec4f183507547258bf926f4d43911c4
+        :release: 3ec4f183507547258bf926f4d43911c4
     CHECKSUM: 9c811d747f81fdc716f16e26a828199720d3bba9
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXCrypto/ABI37_0_0EXCrypto/ABI37_0_0EXCrypto.h"
@@ -3828,7 +4180,9 @@ CACHE_KEYS:
       - ABI37_0_0EXCrypto (8.0.0)
   ABI37_0_0EXDevice:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXDevice: 64c35db677d150564cc4d4424d1ef318
+      ABI37_0_0EXDevice:
+        :debug: 64c35db677d150564cc4d4424d1ef318
+        :release: 64c35db677d150564cc4d4424d1ef318
     CHECKSUM: ff117d5a9997a2bb42be70be847e76f0afa2b33e
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXDevice/ABI37_0_0EXDevice/ABI37_0_0EXDevice.h"
@@ -3838,7 +4192,9 @@ CACHE_KEYS:
       - ABI37_0_0EXDevice (2.0.0)
   ABI37_0_0EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXDocumentPicker: c0ddec20606cb5254b61e4ec33deac95
+      ABI37_0_0EXDocumentPicker:
+        :debug: c0ddec20606cb5254b61e4ec33deac95
+        :release: c0ddec20606cb5254b61e4ec33deac95
     CHECKSUM: 7e6be91e00fbcd3f5bf48367df7d7fd5e0fe74f9
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXDocumentPicker/ABI37_0_0EXDocumentPicker/ABI37_0_0EXDocumentPickerModule.h"
@@ -3848,7 +4204,9 @@ CACHE_KEYS:
       - ABI37_0_0EXDocumentPicker (8.0.0)
   ABI37_0_0EXErrorRecovery:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXErrorRecovery: d5027eb9f63f93b3fccdc4ec3eadb91a
+      ABI37_0_0EXErrorRecovery:
+        :debug: d5027eb9f63f93b3fccdc4ec3eadb91a
+        :release: d5027eb9f63f93b3fccdc4ec3eadb91a
     CHECKSUM: 7ab5d5ab3814d4c559f40a2f20a522f5722d0de6
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXErrorRecovery/ABI37_0_0EXErrorRecovery/ABI37_0_0EXErrorRecoveryModule.h"
@@ -3858,7 +4216,9 @@ CACHE_KEYS:
       - ABI37_0_0EXErrorRecovery (1.0.0)
   ABI37_0_0EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXFacebook: b0e66552e3f1d44239cb1cdbc636d147
+      ABI37_0_0EXFacebook:
+        :debug: b0e66552e3f1d44239cb1cdbc636d147
+        :release: b0e66552e3f1d44239cb1cdbc636d147
     CHECKSUM: 8d60c586e4166048bfc2d95e9e446060052f0d6d
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXFacebook/ABI37_0_0EXFacebook/ABI37_0_0EXFacebook.h"
@@ -3870,7 +4230,9 @@ CACHE_KEYS:
       - ABI37_0_0EXFacebook (8.0.0)
   ABI37_0_0EXFaceDetector:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXFaceDetector: 7806fc27c39517e1e399c8a2cc9b2fa4
+      ABI37_0_0EXFaceDetector:
+        :debug: 7806fc27c39517e1e399c8a2cc9b2fa4
+        :release: 7806fc27c39517e1e399c8a2cc9b2fa4
     CHECKSUM: 89c4ee830b387dab742cf61199abef4424ec1d2d
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXFaceDetector/ABI37_0_0EXFaceDetector/ABI37_0_0EXCSBufferOrientationCalculator.h"
@@ -3894,7 +4256,9 @@ CACHE_KEYS:
       - ABI37_0_0EXFaceDetector (8.0.0)
   ABI37_0_0EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXFileSystem: cb0408e67255f9872fe820d53fdd1538
+      ABI37_0_0EXFileSystem:
+        :debug: cb0408e67255f9872fe820d53fdd1538
+        :release: cb0408e67255f9872fe820d53fdd1538
     CHECKSUM: 120c79996654397849a15e9120adef71a9caf1c9
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXFileSystem/ABI37_0_0EXFileSystem/ABI37_0_0EXDownloadDelegate.h"
@@ -3912,7 +4276,9 @@ CACHE_KEYS:
       - ABI37_0_0EXFileSystem (8.0.0)
   ABI37_0_0EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXFirebaseAnalytics: 4d1aac24cb71e50576cee02749927244
+      ABI37_0_0EXFirebaseAnalytics:
+        :debug: 4d1aac24cb71e50576cee02749927244
+        :release: 4d1aac24cb71e50576cee02749927244
     CHECKSUM: 4e0c72081998159551c1518a7f6cf60169eab196
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXFirebaseAnalytics/ABI37_0_0EXFirebaseAnalytics/ABI37_0_0EXFirebaseAnalytics.h"
@@ -3922,7 +4288,9 @@ CACHE_KEYS:
       - ABI37_0_0EXFirebaseAnalytics (3.0.0)
   ABI37_0_0EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXFirebaseCore: a9c9c5a60e63bfd1ec00378f4e0fe228
+      ABI37_0_0EXFirebaseCore:
+        :debug: a9c9c5a60e63bfd1ec00378f4e0fe228
+        :release: a9c9c5a60e63bfd1ec00378f4e0fe228
     CHECKSUM: 8b09912b278f2b026d647d4c0845c8c67d58ed1c
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXFirebaseCore/ABI37_0_0EXFirebaseCore/ABI37_0_0EXFirebaseCore+FIROptions.h"
@@ -3935,7 +4303,9 @@ CACHE_KEYS:
       - ABI37_0_0EXFirebaseCore (1.0.0)
   ABI37_0_0EXFont:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXFont: 8471704493736158b1482f66cf07fead
+      ABI37_0_0EXFont:
+        :debug: 8471704493736158b1482f66cf07fead
+        :release: 8471704493736158b1482f66cf07fead
     CHECKSUM: f92e29961ff75ae30a0df3490756e6a90b9a5f95
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXFont/ABI37_0_0EXFont/ABI37_0_0EXFont.h"
@@ -3955,7 +4325,9 @@ CACHE_KEYS:
       - ABI37_0_0EXFont (8.0.0)
   ABI37_0_0EXGL:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXGL: 07bd6bbfc5fe050acfd2b579331f08ca
+      ABI37_0_0EXGL:
+        :debug: 07bd6bbfc5fe050acfd2b579331f08ca
+        :release: 07bd6bbfc5fe050acfd2b579331f08ca
     CHECKSUM: 057137bfc60ce9fd914031a67f2860c5d1a28617
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXGL/ABI37_0_0EXGL/ABI37_0_0EXGLCameraObject.h"
@@ -3975,7 +4347,9 @@ CACHE_KEYS:
       - ABI37_0_0EXGL (8.0.0)
   ABI37_0_0EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXGoogleSignIn: babe035169e5083fe44163d173a0f20e
+      ABI37_0_0EXGoogleSignIn:
+        :debug: babe035169e5083fe44163d173a0f20e
+        :release: babe035169e5083fe44163d173a0f20e
     CHECKSUM: ac67ff76d5042ee8b1ffbda393d0daaaf95680a6
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXGoogleSignIn/ABI37_0_0EXGoogleSignIn/ABI37_0_0EXAuthTask.h"
@@ -3991,7 +4365,9 @@ CACHE_KEYS:
       - ABI37_0_0EXGoogleSignIn (8.0.0)
   ABI37_0_0EXHaptics:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXHaptics: c1a33ad8896ce4eddfef20299ba6b701
+      ABI37_0_0EXHaptics:
+        :debug: c1a33ad8896ce4eddfef20299ba6b701
+        :release: c1a33ad8896ce4eddfef20299ba6b701
     CHECKSUM: 530884ed3365d47d2c3321b15606ed993da0db99
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXHaptics/ABI37_0_0EXHaptics/ABI37_0_0EXHapticsModule.h"
@@ -4001,7 +4377,9 @@ CACHE_KEYS:
       - ABI37_0_0EXHaptics (8.0.0)
   ABI37_0_0EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXImageLoader: f027471d1ae27dbcb3b63ea927ebdf48
+      ABI37_0_0EXImageLoader:
+        :debug: f027471d1ae27dbcb3b63ea927ebdf48
+        :release: f027471d1ae27dbcb3b63ea927ebdf48
     CHECKSUM: 53e6592593845b3d87d2d28383043de108700dfa
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXImageLoader/ABI37_0_0EXImageLoader/ABI37_0_0EXImageLoader.h"
@@ -4011,7 +4389,9 @@ CACHE_KEYS:
       - ABI37_0_0EXImageLoader (1.0.0)
   ABI37_0_0EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXImageManipulator: 997e37033fe06c26b4ade88d462abab2
+      ABI37_0_0EXImageManipulator:
+        :debug: 997e37033fe06c26b4ade88d462abab2
+        :release: 997e37033fe06c26b4ade88d462abab2
     CHECKSUM: 961909e6566ee016bd68f860882ca56bcdd28717
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXImageManipulator/ABI37_0_0EXImageManipulator/ABI37_0_0EXImageManipulatorModule.h"
@@ -4021,7 +4401,9 @@ CACHE_KEYS:
       - ABI37_0_0EXImageManipulator (8.0.0)
   ABI37_0_0EXImagePicker:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXImagePicker: d3b4a3ca94a86d31589e47094920e9c6
+      ABI37_0_0EXImagePicker:
+        :debug: d3b4a3ca94a86d31589e47094920e9c6
+        :release: d3b4a3ca94a86d31589e47094920e9c6
     CHECKSUM: cb6ac1ab5950eda243c4843f89a00f3ea96b77ef
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXImagePicker/ABI37_0_0EXImagePicker/ABI37_0_0EXImagePicker.h"
@@ -4035,7 +4417,9 @@ CACHE_KEYS:
       - ABI37_0_0EXImagePicker (8.0.0)
   ABI37_0_0EXInAppPurchases:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXInAppPurchases: 9dc94f4a0f6650b1c22bf1ba8c305fdc
+      ABI37_0_0EXInAppPurchases:
+        :debug: 9dc94f4a0f6650b1c22bf1ba8c305fdc
+        :release: 9dc94f4a0f6650b1c22bf1ba8c305fdc
     CHECKSUM: a39748f65a605d38d58841c7c177f69762b23b9d
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXInAppPurchases/ABI37_0_0EXInAppPurchases/ABI37_0_0EXInAppPurchasesModule.h"
@@ -4045,7 +4429,9 @@ CACHE_KEYS:
       - ABI37_0_0EXInAppPurchases (8.0.0)
   ABI37_0_0EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXKeepAwake: 5374b43acde00ead23e0909d0dc989b7
+      ABI37_0_0EXKeepAwake:
+        :debug: 5374b43acde00ead23e0909d0dc989b7
+        :release: 5374b43acde00ead23e0909d0dc989b7
     CHECKSUM: 28395e41a2b09104f0d2abbae7fb785d887d678c
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXKeepAwake/ABI37_0_0EXKeepAwake/ABI37_0_0EXKeepAwake.h"
@@ -4055,7 +4441,9 @@ CACHE_KEYS:
       - ABI37_0_0EXKeepAwake (8.0.0)
   ABI37_0_0EXLinearGradient:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXLinearGradient: 8bd247e2cdeb8dd134e1cbba420a0117
+      ABI37_0_0EXLinearGradient:
+        :debug: 8bd247e2cdeb8dd134e1cbba420a0117
+        :release: 8bd247e2cdeb8dd134e1cbba420a0117
     CHECKSUM: f0ea39f01021f9a94b018081c8d0cd08a1609870
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXLinearGradient/ABI37_0_0EXLinearGradient/ABI37_0_0EXLinearGradient.h"
@@ -4069,7 +4457,9 @@ CACHE_KEYS:
       - ABI37_0_0EXLinearGradient (8.0.0)
   ABI37_0_0EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXLocalAuthentication: e2db19c10e2eca2157605bd36e091d79
+      ABI37_0_0EXLocalAuthentication:
+        :debug: e2db19c10e2eca2157605bd36e091d79
+        :release: e2db19c10e2eca2157605bd36e091d79
     CHECKSUM: 71a2d645a011340ab0fb802f4e8a8cf401cad3db
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXLocalAuthentication/ABI37_0_0EXLocalAuthentication/ABI37_0_0EXLocalAuthentication.h"
@@ -4079,7 +4469,9 @@ CACHE_KEYS:
       - ABI37_0_0EXLocalAuthentication (8.0.0)
   ABI37_0_0EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXLocalization: 6495e4863de615cf0201668a0e87f6b5
+      ABI37_0_0EXLocalization:
+        :debug: 6495e4863de615cf0201668a0e87f6b5
+        :release: 6495e4863de615cf0201668a0e87f6b5
     CHECKSUM: 8343f68f8e97e915dc30961655d0040649cf22ca
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXLocalization/ABI37_0_0EXLocalization/ABI37_0_0EXLocalization.h"
@@ -4089,7 +4481,9 @@ CACHE_KEYS:
       - ABI37_0_0EXLocalization (8.0.0)
   ABI37_0_0EXLocation:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXLocation: f71342c258a7cbb6da7b31be292b273f
+      ABI37_0_0EXLocation:
+        :debug: f71342c258a7cbb6da7b31be292b273f
+        :release: f71342c258a7cbb6da7b31be292b273f
     CHECKSUM: 73d7d1aee3dc476cca0e1e001c06ade4d4aa97d9
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXLocation/ABI37_0_0EXLocation/ABI37_0_0EXLocation.h"
@@ -4107,7 +4501,9 @@ CACHE_KEYS:
       - ABI37_0_0EXLocation (8.0.0)
   ABI37_0_0EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXMailComposer: 0cfb56f1d8db69455ef7f765edafd516
+      ABI37_0_0EXMailComposer:
+        :debug: 0cfb56f1d8db69455ef7f765edafd516
+        :release: 0cfb56f1d8db69455ef7f765edafd516
     CHECKSUM: eb737dd65bc7b8ee95a09666798aba262de49713
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXMailComposer/ABI37_0_0EXMailComposer/ABI37_0_0EXMailComposer.h"
@@ -4117,7 +4513,9 @@ CACHE_KEYS:
       - ABI37_0_0EXMailComposer (8.0.0)
   ABI37_0_0EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXMediaLibrary: 763f69022ea2f8410311dc49a0070eb9
+      ABI37_0_0EXMediaLibrary:
+        :debug: 763f69022ea2f8410311dc49a0070eb9
+        :release: 763f69022ea2f8410311dc49a0070eb9
     CHECKSUM: 8a96d72fc68b6a3370043103eded4de113e77776
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXMediaLibrary/ABI37_0_0EXMediaLibrary/ABI37_0_0EXMediaLibrary.h"
@@ -4131,7 +4529,9 @@ CACHE_KEYS:
       - ABI37_0_0EXMediaLibrary (8.0.0)
   ABI37_0_0EXModuleTemplate:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXModuleTemplate: 678a6698719e1eee3e039805adba7820
+      ABI37_0_0EXModuleTemplate:
+        :debug: 678a6698719e1eee3e039805adba7820
+        :release: 678a6698719e1eee3e039805adba7820
     CHECKSUM: 4bf6d16d0e1a175ae15bd8f2b6bad76232fffa36
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXModuleTemplate/ABI37_0_0EXModuleTemplate/ABI37_0_0EXModuleTemplateModule.h"
@@ -4145,7 +4545,9 @@ CACHE_KEYS:
       - ABI37_0_0EXModuleTemplate (8.1.0)
   ABI37_0_0EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXNetwork: f276761f08ec11c9355840be3c8b1704
+      ABI37_0_0EXNetwork:
+        :debug: f276761f08ec11c9355840be3c8b1704
+        :release: f276761f08ec11c9355840be3c8b1704
     CHECKSUM: 23a2ba8ba90956eddec839532f790c54dd778233
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXNetwork/ABI37_0_0EXNetwork/ABI37_0_0EXNetwork.h"
@@ -4155,7 +4557,9 @@ CACHE_KEYS:
       - ABI37_0_0EXNetwork (2.0.0)
   ABI37_0_0EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXPermissions: abe1c2c7ef7a0223a890c6707b09449b
+      ABI37_0_0EXPermissions:
+        :debug: abe1c2c7ef7a0223a890c6707b09449b
+        :release: abe1c2c7ef7a0223a890c6707b09449b
     CHECKSUM: 419eb72b484505cd327c026f624bb8514d363804
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXPermissions/ABI37_0_0EXPermissions/ABI37_0_0EXPermissions.h"
@@ -4171,7 +4575,9 @@ CACHE_KEYS:
       - ABI37_0_0EXPermissions (8.0.0)
   ABI37_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0ExpoKit: 14cac9eadefce0e89a6fcf121b4b2e18
+      ABI37_0_0ExpoKit:
+        :debug: 14cac9eadefce0e89a6fcf121b4b2e18
+        :release: 14cac9eadefce0e89a6fcf121b4b2e18
     CHECKSUM: e0cc33210bf3deb522600babb1df88487e737e83
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/ABI37_0_0EXUnversioned.h"
@@ -4658,7 +5064,9 @@ CACHE_KEYS:
       - ABI37_0_0ExpoKit/ExpoOptional (36.0.0)
   ABI37_0_0EXPrint:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXPrint: 1cafec2c78ae36d0bab85ea4febbab56
+      ABI37_0_0EXPrint:
+        :debug: 1cafec2c78ae36d0bab85ea4febbab56
+        :release: 1cafec2c78ae36d0bab85ea4febbab56
     CHECKSUM: e41f4d13cd747215b42f629b4d6f7ca99e550bc3
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXPrint/ABI37_0_0EXPrint/ABI37_0_0EXPrint.h"
@@ -4674,7 +5082,9 @@ CACHE_KEYS:
       - ABI37_0_0EXPrint (8.0.0)
   ABI37_0_0EXRandom:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXRandom: 6fcd1be3511264a3642d50559fcab78a
+      ABI37_0_0EXRandom:
+        :debug: 6fcd1be3511264a3642d50559fcab78a
+        :release: 6fcd1be3511264a3642d50559fcab78a
     CHECKSUM: c41d8e27bc5d5954c0133c32fa08b909650bd5e5
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXRandom/ABI37_0_0EXRandom/ABI37_0_0EXRandom.h"
@@ -4684,7 +5094,9 @@ CACHE_KEYS:
       - ABI37_0_0EXRandom (8.0.0)
   ABI37_0_0EXScreenOrientation:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXScreenOrientation: 6b581f7c9641ea3ae6dd6ae8f72729eb
+      ABI37_0_0EXScreenOrientation:
+        :debug: 6b581f7c9641ea3ae6dd6ae8f72729eb
+        :release: 6b581f7c9641ea3ae6dd6ae8f72729eb
     CHECKSUM: afe890516ee48c308e5a156f59bf296fd673c96d
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXScreenOrientation/ABI37_0_0EXScreenOrientation/ABI37_0_0EXScreenOrientationModule.h"
@@ -4700,7 +5112,9 @@ CACHE_KEYS:
       - ABI37_0_0EXScreenOrientation (1.0.0)
   ABI37_0_0EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXSecureStore: 0748f70e2dbafd6c2164ed176c1d54ed
+      ABI37_0_0EXSecureStore:
+        :debug: 0748f70e2dbafd6c2164ed176c1d54ed
+        :release: 0748f70e2dbafd6c2164ed176c1d54ed
     CHECKSUM: 8f69a0e3e12909f0eaa8ad2348bc8639afb0879d
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSecureStore/ABI37_0_0EXSecureStore/ABI37_0_0EXSecureStore.h"
@@ -4710,7 +5124,9 @@ CACHE_KEYS:
       - ABI37_0_0EXSecureStore (8.0.0)
   ABI37_0_0EXSegment:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXSegment: 3fe595c07a6cb0e514c45f7db15f35e2
+      ABI37_0_0EXSegment:
+        :debug: 3fe595c07a6cb0e514c45f7db15f35e2
+        :release: 3fe595c07a6cb0e514c45f7db15f35e2
     CHECKSUM: dc2cd224a0bc99dd938ab90ce3aaf771e7792cf5
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSegment/ABI37_0_0EXSegment/ABI37_0_0EXSegment.h"
@@ -4720,7 +5136,9 @@ CACHE_KEYS:
       - ABI37_0_0EXSegment (8.0.0)
   ABI37_0_0EXSensors:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXSensors: ac29df2bafe9d87ad691c16cfb1d37f2
+      ABI37_0_0EXSensors:
+        :debug: ac29df2bafe9d87ad691c16cfb1d37f2
+        :release: ac29df2bafe9d87ad691c16cfb1d37f2
     CHECKSUM: a434a9f5aef682589a05c086869fca147c60e216
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSensors/ABI37_0_0EXSensors/ABI37_0_0EXSensorsManager.h"
@@ -4746,7 +5164,9 @@ CACHE_KEYS:
       - ABI37_0_0EXSensors (8.0.0)
   ABI37_0_0EXSharing:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXSharing: 14a6a5196b994b756bfbb09c783700fe
+      ABI37_0_0EXSharing:
+        :debug: 14a6a5196b994b756bfbb09c783700fe
+        :release: 14a6a5196b994b756bfbb09c783700fe
     CHECKSUM: 1828b7f7bcf92b456727f0938346766448895e7d
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSharing/ABI37_0_0EXSharing/ABI37_0_0EXSharingModule.h"
@@ -4756,7 +5176,9 @@ CACHE_KEYS:
       - ABI37_0_0EXSharing (8.0.0)
   ABI37_0_0EXSMS:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXSMS: 2286c9ecb7c4d8bc03030d27b9bf94e4
+      ABI37_0_0EXSMS:
+        :debug: 2286c9ecb7c4d8bc03030d27b9bf94e4
+        :release: 2286c9ecb7c4d8bc03030d27b9bf94e4
     CHECKSUM: c6e7c8e337f97f63159c0684b606f86ab430e4e5
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSMS/ABI37_0_0EXSMS/ABI37_0_0EXSMSModule.h"
@@ -4766,7 +5188,9 @@ CACHE_KEYS:
       - ABI37_0_0EXSMS (8.0.0)
   ABI37_0_0EXSpeech:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXSpeech: 9b709ab0c14c95a713cb6b1e6bbcc1d4
+      ABI37_0_0EXSpeech:
+        :debug: 9b709ab0c14c95a713cb6b1e6bbcc1d4
+        :release: 9b709ab0c14c95a713cb6b1e6bbcc1d4
     CHECKSUM: 2df148aadb3986fa3cb995954786934808c98e1e
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSpeech/ABI37_0_0EXSpeech/ABI37_0_0EXSpeech.h"
@@ -4776,7 +5200,9 @@ CACHE_KEYS:
       - ABI37_0_0EXSpeech (8.0.0)
   ABI37_0_0EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXSQLite: 46cc6d8ea469e7da4ea4c9cf1219256c
+      ABI37_0_0EXSQLite:
+        :debug: 46cc6d8ea469e7da4ea4c9cf1219256c
+        :release: 46cc6d8ea469e7da4ea4c9cf1219256c
     CHECKSUM: 74f0dbe6a5fc358465316cd9bdaa0d1cbd42cc3c
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSQLite/ABI37_0_0EXSQLite/ABI37_0_0EXSQLite.h"
@@ -4786,7 +5212,9 @@ CACHE_KEYS:
       - ABI37_0_0EXSQLite (8.0.0)
   ABI37_0_0EXStoreReview:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXStoreReview: 5e987ab2f90705a8a97f941edd8a7797
+      ABI37_0_0EXStoreReview:
+        :debug: 5e987ab2f90705a8a97f941edd8a7797
+        :release: 5e987ab2f90705a8a97f941edd8a7797
     CHECKSUM: 888544d0afb2334aa9357494ca3e4e7d9e9fd875
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXStoreReview/ABI37_0_0EXStoreReview/ABI37_0_0EXStoreReviewModule.h"
@@ -4796,7 +5224,9 @@ CACHE_KEYS:
       - ABI37_0_0EXStoreReview (2.0.0)
   ABI37_0_0EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXTaskManager: 4c93b290948b327044f1738a215b4149
+      ABI37_0_0EXTaskManager:
+        :debug: 4c93b290948b327044f1738a215b4149
+        :release: 4c93b290948b327044f1738a215b4149
     CHECKSUM: ca6fb7ff38a93272c342e07e44ed4bf934628f03
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXTaskManager/ABI37_0_0EXTaskManager/ABI37_0_0EXTask.h"
@@ -4814,7 +5244,9 @@ CACHE_KEYS:
       - ABI37_0_0EXTaskManager (8.0.0)
   ABI37_0_0EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXVideoThumbnails: f41a746ecc842e01ff291f6368885574
+      ABI37_0_0EXVideoThumbnails:
+        :debug: f41a746ecc842e01ff291f6368885574
+        :release: f41a746ecc842e01ff291f6368885574
     CHECKSUM: 26ea26c94ee305eb5f99292110d6c8a3d6ee4c27
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXVideoThumbnails/ABI37_0_0EXVideoThumbnails/ABI37_0_0EXVideoThumbnailsModule.h"
@@ -4824,7 +5256,9 @@ CACHE_KEYS:
       - ABI37_0_0EXVideoThumbnails (4.0.0)
   ABI37_0_0EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0EXWebBrowser: 09fe14aae687433c05d54b04a236a428
+      ABI37_0_0EXWebBrowser:
+        :debug: 09fe14aae687433c05d54b04a236a428
+        :release: 09fe14aae687433c05d54b04a236a428
     CHECKSUM: 8d2d30670aff822034fd11db274c0a4115838e7f
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXWebBrowser/ABI37_0_0EXWebBrowser/ABI37_0_0EXWebBrowser.h"
@@ -4834,7 +5268,9 @@ CACHE_KEYS:
       - ABI37_0_0EXWebBrowser (8.0.0)
   ABI37_0_0FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0FBLazyVector: b5b11586c49e785871c44d0db06f4e22
+      ABI37_0_0FBLazyVector:
+        :debug: b5b11586c49e785871c44d0db06f4e22
+        :release: b5b11586c49e785871c44d0db06f4e22
     CHECKSUM: c765000c184a2107c48e73474782e9f48c87e6ca
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/FBLazyVector/FBLazyVector/ABI37_0_0FBLazyIterator.h"
@@ -4844,7 +5280,9 @@ CACHE_KEYS:
       - ABI37_0_0FBLazyVector (0.61.4)
   ABI37_0_0FBReactNativeSpec:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0FBReactNativeSpec: ff902e9ae87e5ba8ffdd39f7d18a794c
+      ABI37_0_0FBReactNativeSpec:
+        :debug: ff902e9ae87e5ba8ffdd39f7d18a794c
+        :release: ff902e9ae87e5ba8ffdd39f7d18a794c
     CHECKSUM: 262951ee42519a21595b99aabfbec7c13121bff1
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/FBReactNativeSpec/FBReactNativeSpec/ABI37_0_0FBReactNativeSpec-generated.mm"
@@ -4854,7 +5292,9 @@ CACHE_KEYS:
       - ABI37_0_0FBReactNativeSpec (0.61.4)
   ABI37_0_0RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0RCTRequired: 44016c819d9db4de163d75498e2249bd
+      ABI37_0_0RCTRequired:
+        :debug: 44016c819d9db4de163d75498e2249bd
+        :release: 44016c819d9db4de163d75498e2249bd
     CHECKSUM: fa2aa01e02762102279b66e0bb4c2409d51b87ec
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/RCTRequired/RCTRequired/ABI37_0_0RCTRequired.h"
@@ -4863,7 +5303,9 @@ CACHE_KEYS:
       - ABI37_0_0RCTRequired (0.61.4)
   ABI37_0_0RCTTypeSafety:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0RCTTypeSafety: 21dbf76930e5a22b9aa09943c9e5c229
+      ABI37_0_0RCTTypeSafety:
+        :debug: 21dbf76930e5a22b9aa09943c9e5c229
+        :release: 21dbf76930e5a22b9aa09943c9e5c229
     CHECKSUM: 6d637f344a611ce06db3e42ee5b2723b468287e1
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/TypeSafety/ABI37_0_0RCTConvertHelpers.h"
@@ -4875,7 +5317,9 @@ CACHE_KEYS:
       - ABI37_0_0RCTTypeSafety (0.61.4)
   ABI37_0_0React:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React: 1ac9e663936e5cd9dd055b6800c2877c
+      ABI37_0_0React:
+        :debug: 1ac9e663936e5cd9dd055b6800c2877c
+        :release: 1ac9e663936e5cd9dd055b6800c2877c
     CHECKSUM: ffb85cb8e9eaa87af224cc9ab0473c87639f73aa
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/package.json"
@@ -4884,7 +5328,9 @@ CACHE_KEYS:
       - ABI37_0_0React (0.61.4)
   ABI37_0_0React-Core:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-Core: ad2b3022cab8093d54b5f0003b883a1b
+      ABI37_0_0React-Core:
+        :debug: ad2b3022cab8093d54b5f0003b883a1b
+        :release: ad2b3022cab8093d54b5f0003b883a1b
     CHECKSUM: e20cf1da7f7b30046dc8b8d29f7d40c13e63f61f
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/ActionSheetIOS/ABI37_0_0RCTActionSheetManager.h"
@@ -5282,7 +5728,9 @@ CACHE_KEYS:
       - ABI37_0_0React-Core/RCTWebSocket (0.61.4)
   ABI37_0_0React-CoreModules:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-CoreModules: f5c1a0321b5b83d1c0e05770b83571c4
+      ABI37_0_0React-CoreModules:
+        :debug: f5c1a0321b5b83d1c0e05770b83571c4
+        :release: f5c1a0321b5b83d1c0e05770b83571c4
     CHECKSUM: bcf5f520b6f2fe4487c3fc0b7ec1c1926b0eaee9
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/React/CoreModules/ABI37_0_0CoreModulesPlugins.mm"
@@ -5296,7 +5744,9 @@ CACHE_KEYS:
       - ABI37_0_0React-CoreModules (0.61.4)
   ABI37_0_0React-cxxreact:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-cxxreact: 09d990dd01ede4c76f7092be8e5770d4
+      ABI37_0_0React-cxxreact:
+        :debug: 09d990dd01ede4c76f7092be8e5770d4
+        :release: 09d990dd01ede4c76f7092be8e5770d4
     CHECKSUM: 3dfab52b64e73e6941b763cacb6acf9bc6646866
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/cxxreact/ABI37_0_0CxxModule.h"
@@ -5337,7 +5787,9 @@ CACHE_KEYS:
       - ABI37_0_0React-cxxreact (0.61.4)
   ABI37_0_0React-jsi:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-jsi: c22e6f11c3c2a2aeadec47ca73251caf
+      ABI37_0_0React-jsi:
+        :debug: c22e6f11c3c2a2aeadec47ca73251caf
+        :release: c22e6f11c3c2a2aeadec47ca73251caf
     CHECKSUM: f10c786ab741a480b398a3e9d746b3b09a62edc9
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/jsi/ABI37_0_0JSCRuntime.cpp"
@@ -5359,7 +5811,9 @@ CACHE_KEYS:
       - ABI37_0_0React-jsi/Default (0.61.4)
   ABI37_0_0React-jsiexecutor:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-jsiexecutor: 4aa110ea534316c76df8b835c41fb556
+      ABI37_0_0React-jsiexecutor:
+        :debug: 4aa110ea534316c76df8b835c41fb556
+        :release: 4aa110ea534316c76df8b835c41fb556
     CHECKSUM: a4b0941280849fa9b8761909574c6aa3bb000027
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/jsiexecutor/jsireact/ABI37_0_0JSIExecutor.cpp"
@@ -5371,7 +5825,9 @@ CACHE_KEYS:
       - ABI37_0_0React-jsiexecutor (0.61.4)
   ABI37_0_0React-jsinspector:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-jsinspector: 51ab660655146d646164f95d88e6c87f
+      ABI37_0_0React-jsinspector:
+        :debug: 51ab660655146d646164f95d88e6c87f
+        :release: 51ab660655146d646164f95d88e6c87f
     CHECKSUM: 08eaf75f78262c20e229701f2ba3d46be3785fc0
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/jsinspector/ABI37_0_0InspectorInterfaces.cpp"
@@ -5381,7 +5837,9 @@ CACHE_KEYS:
       - ABI37_0_0React-jsinspector (0.61.4)
   ABI37_0_0React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTActionSheet: 862c7cecffecc1f37e8ce133551f0ea0
+      ABI37_0_0React-RCTActionSheet:
+        :debug: 862c7cecffecc1f37e8ce133551f0ea0
+        :release: 862c7cecffecc1f37e8ce133551f0ea0
     CHECKSUM: 9a0002a0bc9a98cc6435f3247d43e4de4747ce1e
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/ActionSheetIOS/ABI37_0_0RCTActionSheetManager.m"
@@ -5390,7 +5848,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTActionSheet (0.61.4)
   ABI37_0_0React-RCTAnimation:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTAnimation: 6738dcd626646b24ac5e10871945543e
+      ABI37_0_0React-RCTAnimation:
+        :debug: 6738dcd626646b24ac5e10871945543e
+        :release: 6738dcd626646b24ac5e10871945543e
     CHECKSUM: b7f128c2b441d4e8334cdb3f157d457c41797952
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/NativeAnimation/ABI37_0_0RCTAnimationUtils.m"
@@ -5418,7 +5878,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTAnimation (0.61.4)
   ABI37_0_0React-RCTBlob:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTBlob: 7affa3dfeddb9c053309e0b67238beef
+      ABI37_0_0React-RCTBlob:
+        :debug: 7affa3dfeddb9c053309e0b67238beef
+        :release: 7affa3dfeddb9c053309e0b67238beef
     CHECKSUM: 7d1ed294ab0adaad3a99cdc886d8c3d19372a6cc
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/Blob/ABI37_0_0RCTBlobCollector.mm"
@@ -5429,7 +5891,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTBlob (0.61.4)
   ABI37_0_0React-RCTImage:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTImage: 4ee0fcec023328b0df584d7e9f779570
+      ABI37_0_0React-RCTImage:
+        :debug: 4ee0fcec023328b0df584d7e9f779570
+        :release: 4ee0fcec023328b0df584d7e9f779570
     CHECKSUM: 1eebeced84e76a064754a246fbb9a8ec1b3691be
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/Image/ABI37_0_0RCTAnimatedImage.m"
@@ -5448,7 +5912,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTImage (0.61.4)
   ABI37_0_0React-RCTLinking:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTLinking: b4c73868fe92c9eeb944912e5eec7b9e
+      ABI37_0_0React-RCTLinking:
+        :debug: b4c73868fe92c9eeb944912e5eec7b9e
+        :release: b4c73868fe92c9eeb944912e5eec7b9e
     CHECKSUM: c4233bc67feca766164d8fe663f796f84a6e6143
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/LinkingIOS/ABI37_0_0RCTLinkingManager.m"
@@ -5457,7 +5923,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTLinking (0.61.4)
   ABI37_0_0React-RCTNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTNetwork: aa99bdb01cf96d674f54a31be4193c3f
+      ABI37_0_0React-RCTNetwork:
+        :debug: aa99bdb01cf96d674f54a31be4193c3f
+        :release: aa99bdb01cf96d674f54a31be4193c3f
     CHECKSUM: 31a2b5cc050aa0759e15e8b357221758e76d1296
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/Network/ABI37_0_0RCTAssetsLibraryRequestHandler.m"
@@ -5472,7 +5940,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTNetwork (0.61.4)
   ABI37_0_0React-RCTSettings:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTSettings: 9ed238c298516c719a54dbb3f4d49540
+      ABI37_0_0React-RCTSettings:
+        :debug: 9ed238c298516c719a54dbb3f4d49540
+        :release: 9ed238c298516c719a54dbb3f4d49540
     CHECKSUM: a057f33db2341208a4fd9583db5d101cee0830ce
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/Settings/ABI37_0_0RCTSettingsManager.m"
@@ -5481,7 +5951,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTSettings (0.61.4)
   ABI37_0_0React-RCTText:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTText: e381ceba5169b9d49a56427366b81f1e
+      ABI37_0_0React-RCTText:
+        :debug: e381ceba5169b9d49a56427366b81f1e
+        :release: e381ceba5169b9d49a56427366b81f1e
     CHECKSUM: 5a5e881aceb051c9784c3e65737d5f0afa95f64e
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/Text/ABI37_0_0RCTConvert+Text.h"
@@ -5546,7 +6018,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTText (0.61.4)
   ABI37_0_0React-RCTVibration:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React-RCTVibration: 491650ce0382ed3bb7a0426a7aec41d4
+      ABI37_0_0React-RCTVibration:
+        :debug: 491650ce0382ed3bb7a0426a7aec41d4
+        :release: 491650ce0382ed3bb7a0426a7aec41d4
     CHECKSUM: dfd5f9b031d13399b0e26c71bdc4e78e198fdda9
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/Libraries/Vibration/ABI37_0_0RCTVibration.m"
@@ -5555,7 +6029,9 @@ CACHE_KEYS:
       - ABI37_0_0React-RCTVibration (0.61.4)
   ABI37_0_0ReactCommon:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0ReactCommon: db3ba8c6ebf102b903053811938d7c53
+      ABI37_0_0ReactCommon:
+        :debug: db3ba8c6ebf102b903053811938d7c53
+        :release: db3ba8c6ebf102b903053811938d7c53
     CHECKSUM: 3777a97c593ac635a147c860f80e4751550f0c3e
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/jscallinvoker/ReactCommon/ABI37_0_0BridgeJSCallInvoker.cpp"
@@ -5581,7 +6057,9 @@ CACHE_KEYS:
       - ABI37_0_0ReactCommon/turbomodule/core (0.61.4)
   ABI37_0_0UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMAppLoader: def24185a7d1c1265ca5eb3af9eecd78
+      ABI37_0_0UMAppLoader:
+        :debug: def24185a7d1c1265ca5eb3af9eecd78
+        :release: def24185a7d1c1265ca5eb3af9eecd78
     CHECKSUM: 7ce027edf2cfd454b58fdd5e5b958d2346c97749
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMAppLoader/ABI37_0_0UMAppLoader/ABI37_0_0UMAppLoaderProvider.h"
@@ -5593,7 +6071,9 @@ CACHE_KEYS:
       - ABI37_0_0UMAppLoader (1.0.0)
   ABI37_0_0UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMBarCodeScannerInterface: 2c3b39417b4a6629594fbc9a5efaafd8
+      ABI37_0_0UMBarCodeScannerInterface:
+        :debug: 2c3b39417b4a6629594fbc9a5efaafd8
+        :release: 2c3b39417b4a6629594fbc9a5efaafd8
     CHECKSUM: 3aafdc15ff9f7158657234bde7683cf3e0545694
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMBarCodeScannerInterface/ABI37_0_0UMBarCodeScannerInterface/ABI37_0_0UMBarCodeScannerInterface.h"
@@ -5603,7 +6083,9 @@ CACHE_KEYS:
       - ABI37_0_0UMBarCodeScannerInterface (5.0.0)
   ABI37_0_0UMCameraInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMCameraInterface: 9972d1012529710e5237ef3c4abb12f2
+      ABI37_0_0UMCameraInterface:
+        :debug: 9972d1012529710e5237ef3c4abb12f2
+        :release: 9972d1012529710e5237ef3c4abb12f2
     CHECKSUM: 186f025a9f0e3e1ac01927e734df231211267b64
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMCameraInterface/ABI37_0_0UMCameraInterface/ABI37_0_0UMCameraInterface.h"
@@ -5612,7 +6094,9 @@ CACHE_KEYS:
       - ABI37_0_0UMCameraInterface (5.0.0)
   ABI37_0_0UMConstantsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMConstantsInterface: e9540363503cf557916f2f123b8464f8
+      ABI37_0_0UMConstantsInterface:
+        :debug: e9540363503cf557916f2f123b8464f8
+        :release: e9540363503cf557916f2f123b8464f8
     CHECKSUM: 790fea74f5ec9d4cd300456022c09013db92bafd
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMConstantsInterface/ABI37_0_0UMConstantsInterface/ABI37_0_0UMConstantsInterface.h"
@@ -5621,7 +6105,9 @@ CACHE_KEYS:
       - ABI37_0_0UMConstantsInterface (5.0.0)
   ABI37_0_0UMCore:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMCore: 20fcca114b05d2e7e199e562628b11e3
+      ABI37_0_0UMCore:
+        :debug: 20fcca114b05d2e7e199e562628b11e3
+        :release: 20fcca114b05d2e7e199e562628b11e3
     CHECKSUM: 7ec628c7885819be2e97c808b32e00772a13b43f
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMCore/ABI37_0_0UMCore/ABI37_0_0UMAppDelegateWrapper.h"
@@ -5660,7 +6146,9 @@ CACHE_KEYS:
       - ABI37_0_0UMCore (5.0.0)
   ABI37_0_0UMFaceDetectorInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMFaceDetectorInterface: be1a9bf1b5874bd063d06c7dd0446f56
+      ABI37_0_0UMFaceDetectorInterface:
+        :debug: be1a9bf1b5874bd063d06c7dd0446f56
+        :release: be1a9bf1b5874bd063d06c7dd0446f56
     CHECKSUM: c403d85ea5fb20fd0dc392b00504688e8a7c2a31
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMFaceDetectorInterface/ABI37_0_0UMFaceDetectorInterface/ABI37_0_0UMFaceDetectorManager.h"
@@ -5670,7 +6158,9 @@ CACHE_KEYS:
       - ABI37_0_0UMFaceDetectorInterface (5.0.0)
   ABI37_0_0UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMFileSystemInterface: 8b66c2a7193fa9cf26bb7d61ac89c469
+      ABI37_0_0UMFileSystemInterface:
+        :debug: 8b66c2a7193fa9cf26bb7d61ac89c469
+        :release: 8b66c2a7193fa9cf26bb7d61ac89c469
     CHECKSUM: d1445a159d55d79779ec3ebf34f2f723eecff828
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMFileSystemInterface/ABI37_0_0UMFileSystemInterface/ABI37_0_0UMFilePermissionModuleInterface.h"
@@ -5680,7 +6170,9 @@ CACHE_KEYS:
       - ABI37_0_0UMFileSystemInterface (5.0.0)
   ABI37_0_0UMFontInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMFontInterface: 2285d31e40f6c214ad430ef17dbc48c5
+      ABI37_0_0UMFontInterface:
+        :debug: 2285d31e40f6c214ad430ef17dbc48c5
+        :release: 2285d31e40f6c214ad430ef17dbc48c5
     CHECKSUM: 613d1099eb5c2d09a29d6a37352ec30269b0fe86
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMFontInterface/ABI37_0_0UMFontInterface/ABI37_0_0UMFontManagerInterface.h"
@@ -5692,7 +6184,9 @@ CACHE_KEYS:
       - ABI37_0_0UMFontInterface (5.0.0)
   ABI37_0_0UMImageLoaderInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMImageLoaderInterface: d667a6bb033c20f25ef3fcb42436cd61
+      ABI37_0_0UMImageLoaderInterface:
+        :debug: d667a6bb033c20f25ef3fcb42436cd61
+        :release: d667a6bb033c20f25ef3fcb42436cd61
     CHECKSUM: 46166a64bfa93b33f25b7f3bbf678f9d7d579fdd
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMImageLoaderInterface/ABI37_0_0UMImageLoaderInterface/ABI37_0_0UMImageLoaderInterface.h"
@@ -5701,7 +6195,9 @@ CACHE_KEYS:
       - ABI37_0_0UMImageLoaderInterface (5.0.0)
   ABI37_0_0UMPermissionsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMPermissionsInterface: 4d76f5227533b2509ea8769433031f3b
+      ABI37_0_0UMPermissionsInterface:
+        :debug: 4d76f5227533b2509ea8769433031f3b
+        :release: 4d76f5227533b2509ea8769433031f3b
     CHECKSUM: 641523fad72531fd5f5d16ec9c90f3ea8914c72b
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMPermissionsInterface/ABI37_0_0UMPermissionsInterface/ABI37_0_0UMPermissionsInterface.h"
@@ -5713,7 +6209,9 @@ CACHE_KEYS:
       - ABI37_0_0UMPermissionsInterface (5.0.0)
   ABI37_0_0UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMReactNativeAdapter: 6229e993e75dab168d5d70049b251c1c
+      ABI37_0_0UMReactNativeAdapter:
+        :debug: 6229e993e75dab168d5d70049b251c1c
+        :release: 6229e993e75dab168d5d70049b251c1c
     CHECKSUM: 702bd239f9e05a0eb2001e612d44694422da644f
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMReactNativeAdapter/ABI37_0_0UMReactNativeAdapter/ABI37_0_0UMBridgeModule.h"
@@ -5740,7 +6238,9 @@ CACHE_KEYS:
       - ABI37_0_0UMReactNativeAdapter (5.0.0)
   ABI37_0_0UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMSensorsInterface: 4c2e866340d933b50d896bad9e730f34
+      ABI37_0_0UMSensorsInterface:
+        :debug: 4c2e866340d933b50d896bad9e730f34
+        :release: 4c2e866340d933b50d896bad9e730f34
     CHECKSUM: 09ecafdc3c36f0c9ce59d2b05beab6bd1ed8e617
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMSensorsInterface/ABI37_0_0UMSensorsInterface/ABI37_0_0UMAccelerometerInterface.h"
@@ -5754,7 +6254,9 @@ CACHE_KEYS:
       - ABI37_0_0UMSensorsInterface (5.0.0)
   ABI37_0_0UMTaskManagerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0UMTaskManagerInterface: db2038e2cb08b853eb1909224c5df84a
+      ABI37_0_0UMTaskManagerInterface:
+        :debug: db2038e2cb08b853eb1909224c5df84a
+        :release: db2038e2cb08b853eb1909224c5df84a
     CHECKSUM: 7b9d92c6e0059229716245d6f3c7b95a5647f18d
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/UMTaskManagerInterface/ABI37_0_0UMTaskManagerInterface/ABI37_0_0UMTaskConsumerInterface.h"
@@ -5767,7 +6269,9 @@ CACHE_KEYS:
       - ABI37_0_0UMTaskManagerInterface (5.0.0)
   ABI37_0_0Yoga:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0Yoga: 5f8247d7d74902f75138516e3565b6a4
+      ABI37_0_0Yoga:
+        :debug: 5f8247d7d74902f75138516e3565b6a4
+        :release: 5f8247d7d74902f75138516e3565b6a4
     CHECKSUM: 59c1b90d1c78d56e62e0ff24abb9c9277c8f2aaa
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/yoga/yoga/ABI37_0_0Bitfield.h"
@@ -5805,21 +6309,27 @@ CACHE_KEYS:
       - ABI37_0_0Yoga (1.14.0)
   Amplitude-iOS:
     BUILD_SETTINGS_CHECKSUM:
-      Amplitude-iOS: 0cbcb9952774673acc7a6e9a8c1266db
+      Amplitude-iOS:
+        :debug: 0cbcb9952774673acc7a6e9a8c1266db
+        :release: 0cbcb9952774673acc7a6e9a8c1266db
     CHECKSUM: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
     PROJECT_NAME: Amplitude-iOS
     SPECS:
       - Amplitude-iOS (4.7.1)
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
-      Analytics: 4b3b6704130da311e34f2609627e9c55
+      Analytics:
+        :debug: 4b3b6704130da311e34f2609627e9c55
+        :release: 4b3b6704130da311e34f2609627e9c55
     CHECKSUM: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
     PROJECT_NAME: Analytics
     SPECS:
       - Analytics (3.7.0)
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      AppAuth: 645fdba9fe912c64b27cf67add67debb
+      AppAuth:
+        :debug: 645fdba9fe912c64b27cf67add67debb
+        :release: 645fdba9fe912c64b27cf67add67debb
     CHECKSUM: bce82c76043657c99d91e7882e8a9e1a93650cd4
     PROJECT_NAME: AppAuth
     SPECS:
@@ -5828,14 +6338,18 @@ CACHE_KEYS:
       - AppAuth/ExternalUserAgent (1.2.0)
   boost-for-react-native:
     BUILD_SETTINGS_CHECKSUM:
-      boost-for-react-native: e9824834bb3842483c6a4142ac76bb2d
+      boost-for-react-native:
+        :debug: e9824834bb3842483c6a4142ac76bb2d
+        :release: e9824834bb3842483c6a4142ac76bb2d
     CHECKSUM: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
     PROJECT_NAME: boost-for-react-native
     SPECS:
       - boost-for-react-native (1.63.0)
   Branch:
     BUILD_SETTINGS_CHECKSUM:
-      Branch: 9d186888e388d0c6920574cb9733ddc3
+      Branch:
+        :debug: 9d186888e388d0c6920574cb9733ddc3
+        :release: 9d186888e388d0c6920574cb9733ddc3
     CHECKSUM: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
     PROJECT_NAME: Branch
     SPECS:
@@ -5843,7 +6357,9 @@ CACHE_KEYS:
       - Branch/Core (0.29.0)
   CocoaLumberjack:
     BUILD_SETTINGS_CHECKSUM:
-      CocoaLumberjack: 3a69facfbf0b2466e4b5a52f682d7495
+      CocoaLumberjack:
+        :debug: 3a69facfbf0b2466e4b5a52f682d7495
+        :release: 3a69facfbf0b2466e4b5a52f682d7495
     CHECKSUM: 2f44e60eb91c176d471fdba43b9e3eae6a721947
     PROJECT_NAME: CocoaLumberjack
     SPECS:
@@ -5851,14 +6367,18 @@ CACHE_KEYS:
       - CocoaLumberjack/Core (3.5.3)
   DoubleConversion:
     BUILD_SETTINGS_CHECKSUM:
-      DoubleConversion: 00ad3596e935bcd21487033fc301bf91
+      DoubleConversion:
+        :debug: 00ad3596e935bcd21487033fc301bf91
+        :release: 00ad3596e935bcd21487033fc301bf91
     CHECKSUM: 5805e889d232975c086db112ece9ed034df7a0b2
     PROJECT_NAME: DoubleConversion
     SPECS:
       - DoubleConversion (1.1.6)
   EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
-      EXAdsAdMob: 368762df3b963ea10f87ad5400af2de6
+      EXAdsAdMob:
+        :debug: 368762df3b963ea10f87ad5400af2de6
+        :release: 368762df3b963ea10f87ad5400af2de6
     CHECKSUM: 0993f6edeb90f8049253e17a04e57d1cbdc519ef
     FILES:
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.h"
@@ -5880,7 +6400,9 @@ CACHE_KEYS:
       - EXAdsAdMob (8.2.0)
   EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      EXAdsFacebook: 64173b3cb8e7fa2668fbaed42153e865
+      EXAdsFacebook:
+        :debug: 64173b3cb8e7fa2668fbaed42153e865
+        :release: 64173b3cb8e7fa2668fbaed42153e865
     CHECKSUM: 06b3b7722c5cbed2f723a42f8ea5722e052b19f1
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
@@ -5906,7 +6428,9 @@ CACHE_KEYS:
       - EXAdsFacebook (8.2.0)
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
-      EXAmplitude: 5355ac7792059fcce7626f86d17bdf89
+      EXAmplitude:
+        :debug: 5355ac7792059fcce7626f86d17bdf89
+        :release: 5355ac7792059fcce7626f86d17bdf89
     CHECKSUM: 923c6c38ae2e3954db4292a92acb8ef04afee880
     FILES:
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
@@ -5916,7 +6440,9 @@ CACHE_KEYS:
       - EXAmplitude (8.2.0)
   EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      EXAppAuth: 89e0fde8db39f6819dad9ff4a53e3989
+      EXAppAuth:
+        :debug: 89e0fde8db39f6819dad9ff4a53e3989
+        :release: 89e0fde8db39f6819dad9ff4a53e3989
     CHECKSUM: 3e963954e2d27777a79a2f28ce0c99d9aa2665c2
     FILES:
       - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.h"
@@ -5932,7 +6458,9 @@ CACHE_KEYS:
       - EXAppAuth (9.1.0)
   EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      EXAppleAuthentication: 231e6d3e7cdb50c8b662cdf61e99b5bc
+      EXAppleAuthentication:
+        :debug: 231e6d3e7cdb50c8b662cdf61e99b5bc
+        :release: 231e6d3e7cdb50c8b662cdf61e99b5bc
     CHECKSUM: 587bd66367c25571da846544635bd65cd4a1e44b
     FILES:
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.h"
@@ -5949,8 +6477,10 @@ CACHE_KEYS:
       - EXAppleAuthentication (2.2.0)
   EXApplication:
     BUILD_SETTINGS_CHECKSUM:
-      EXApplication: 829c6d5611b2866c7f51150821bc8075
-    CHECKSUM: be6bb8d3a5e756a4d063bf66ee377feadc6e2cee
+      EXApplication:
+        :debug: 829c6d5611b2866c7f51150821bc8075
+        :release: 829c6d5611b2866c7f51150821bc8075
+    CHECKSUM: d7ccb60c33fa4d506967ff6adde42a0f872d69ad
     FILES:
       - "../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../packages/expo-application/ios/EXApplication/EXApplication.m"
@@ -5958,10 +6488,12 @@ CACHE_KEYS:
       - "../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
-      - EXApplication (2.2.0)
+      - EXApplication (2.2.1)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
-      EXAV: ce127c23292472b7f4826cd92eb35fbb
+      EXAV:
+        :debug: ce127c23292472b7f4826cd92eb35fbb
+        :release: ce127c23292472b7f4826cd92eb35fbb
     CHECKSUM: 1a9a55e896c387d02416ab4b6f11db31da5f6a1f
     FILES:
       - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
@@ -5985,7 +6517,9 @@ CACHE_KEYS:
       - EXAV (8.2.0)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
-      EXBackgroundFetch: 31cd7aae8a0702ead6df592e2bc5812e
+      EXBackgroundFetch:
+        :debug: 31cd7aae8a0702ead6df592e2bc5812e
+        :release: 31cd7aae8a0702ead6df592e2bc5812e
     CHECKSUM: 17f9aa2f2235c8686900ebfff6eaa38edf5a8ee9
     FILES:
       - "../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
@@ -5997,7 +6531,9 @@ CACHE_KEYS:
       - EXBackgroundFetch (8.2.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      EXBarCodeScanner: 28990d6e76c6e0a2286785ec45b6a2a6
+      EXBarCodeScanner:
+        :debug: 28990d6e76c6e0a2286785ec45b6a2a6
+        :release: 28990d6e76c6e0a2286785ec45b6a2a6
     CHECKSUM: 28bf65ebda0c5ec410812632d0ba5fc5e77f94c9
     FILES:
       - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.h"
@@ -6019,7 +6555,9 @@ CACHE_KEYS:
       - EXBarCodeScanner (8.2.0)
   EXBattery:
     BUILD_SETTINGS_CHECKSUM:
-      EXBattery: 3a7868f51d8ca27923f64ed32fdd086c
+      EXBattery:
+        :debug: 3a7868f51d8ca27923f64ed32fdd086c
+        :release: 3a7868f51d8ca27923f64ed32fdd086c
     CHECKSUM: 4cd4722a7f3949d7e6ca824e9307f338472d7950
     FILES:
       - "../../packages/expo-battery/ios/EXBattery/EXBattery.h"
@@ -6029,7 +6567,9 @@ CACHE_KEYS:
       - EXBattery (2.2.0)
   EXBlur:
     BUILD_SETTINGS_CHECKSUM:
-      EXBlur: d1e2dbc038263c27c648c99556676aed
+      EXBlur:
+        :debug: d1e2dbc038263c27c648c99556676aed
+        :release: d1e2dbc038263c27c648c99556676aed
     CHECKSUM: 34f57ea03d0150fc6931365128c7014a375636ed
     FILES:
       - "../../packages/expo-blur/ios/EXBlur/EXBlurView.h"
@@ -6041,7 +6581,9 @@ CACHE_KEYS:
       - EXBlur (8.1.1)
   EXBranch:
     BUILD_SETTINGS_CHECKSUM:
-      EXBranch: 882c2dcdaeb7ad91fadcb8897b881894
+      EXBranch:
+        :debug: 882c2dcdaeb7ad91fadcb8897b881894
+        :release: 882c2dcdaeb7ad91fadcb8897b881894
     CHECKSUM: b26a26990fd78e2797c30f5e2a0c47e566c8fc18
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
@@ -6073,7 +6615,9 @@ CACHE_KEYS:
       - EXBranch (2.2.0)
   EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
-      EXBrightness: ec8961c8ee1a8a09852b43e7ad8510c4
+      EXBrightness:
+        :debug: ec8961c8ee1a8a09852b43e7ad8510c4
+        :release: ec8961c8ee1a8a09852b43e7ad8510c4
     CHECKSUM: 8ce16b7190d1b1c7482ea3781165e8484b25bf2e
     FILES:
       - "../../packages/expo-brightness/ios/EXBrightness/EXBrightness.h"
@@ -6085,7 +6629,9 @@ CACHE_KEYS:
       - EXBrightness (8.2.0)
   EXCalendar:
     BUILD_SETTINGS_CHECKSUM:
-      EXCalendar: ec5f9b9862f62138b07b4a7d9bdacdad
+      EXCalendar:
+        :debug: ec5f9b9862f62138b07b4a7d9bdacdad
+        :release: ec5f9b9862f62138b07b4a7d9bdacdad
     CHECKSUM: b0ef4fdc0d5c2833b792c5ece5bc8e9c07004db5
     FILES:
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendar.h"
@@ -6101,7 +6647,9 @@ CACHE_KEYS:
       - EXCalendar (8.2.0)
   EXCamera:
     BUILD_SETTINGS_CHECKSUM:
-      EXCamera: 8e88762e6c92bde8fb40d5c0ad41cc5e
+      EXCamera:
+        :debug: 8e88762e6c92bde8fb40d5c0ad41cc5e
+        :release: 8e88762e6c92bde8fb40d5c0ad41cc5e
     CHECKSUM: 4d23101aa344ad5ef50c76ff18ca4ed13c993763
     FILES:
       - "../../packages/expo-camera/ios/EXCamera/EXCamera.h"
@@ -6117,7 +6665,9 @@ CACHE_KEYS:
       - EXCamera (8.3.0)
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
-      EXCellular: 7b86f685ad92a2527a5463d96e6d9b68
+      EXCellular:
+        :debug: 7b86f685ad92a2527a5463d96e6d9b68
+        :release: 7b86f685ad92a2527a5463d96e6d9b68
     CHECKSUM: 0bc3c896d022cc8fe833148de8fe1e1d89e99922
     FILES:
       - "../../packages/expo-cellular/ios/EXCellular/EXCellularModule.h"
@@ -6127,8 +6677,10 @@ CACHE_KEYS:
       - EXCellular (2.2.0)
   EXConstants:
     BUILD_SETTINGS_CHECKSUM:
-      EXConstants: 82210749075f4066f4e3b2675ece1214
-    CHECKSUM: baf3140d4faf0f9f933b2ba7b38ad2c0fc2f8a6d
+      EXConstants:
+        :debug: 82210749075f4066f4e3b2675ece1214
+        :release: 82210749075f4066f4e3b2675ece1214
+    CHECKSUM: f907b3b6ce16e20d1750f22af1e095e924574bcb
     FILES:
       - "../../packages/expo-constants/ios/EXConstants/EXConstants.h"
       - "../../packages/expo-constants/ios/EXConstants/EXConstants.m"
@@ -6136,10 +6688,12 @@ CACHE_KEYS:
       - "../../packages/expo-constants/ios/EXConstants/EXConstantsService.m"
     PROJECT_NAME: EXConstants
     SPECS:
-      - EXConstants (9.1.0)
+      - EXConstants (9.1.1)
   EXContacts:
     BUILD_SETTINGS_CHECKSUM:
-      EXContacts: a9a049ac532f2a1fea1dfcd556b9d905
+      EXContacts:
+        :debug: a9a049ac532f2a1fea1dfcd556b9d905
+        :release: a9a049ac532f2a1fea1dfcd556b9d905
     CHECKSUM: 3d64afc53d5e5715e74de00f6d46f433fa2ac7b1
     FILES:
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.h"
@@ -6155,7 +6709,9 @@ CACHE_KEYS:
       - EXContacts (8.2.0)
   EXCrypto:
     BUILD_SETTINGS_CHECKSUM:
-      EXCrypto: cbf7b3e2ec01655d9810e8dadda406bf
+      EXCrypto:
+        :debug: cbf7b3e2ec01655d9810e8dadda406bf
+        :release: cbf7b3e2ec01655d9810e8dadda406bf
     CHECKSUM: d0f379f95b16c4b93580f64ec7052fbcb4d0cade
     FILES:
       - "../../packages/expo-crypto/ios/EXCrypto/EXCrypto.h"
@@ -6165,7 +6721,9 @@ CACHE_KEYS:
       - EXCrypto (8.2.0)
   EXDevice:
     BUILD_SETTINGS_CHECKSUM:
-      EXDevice: e3da1765fb1d9de25cf51324f080e5a1
+      EXDevice:
+        :debug: e3da1765fb1d9de25cf51324f080e5a1
+        :release: e3da1765fb1d9de25cf51324f080e5a1
     CHECKSUM: 3b93caaa1b589f6e5db49460c86d2df73f5fbf35
     FILES:
       - "../../packages/expo-device/ios/EXDevice/EXDevice.h"
@@ -6175,7 +6733,9 @@ CACHE_KEYS:
       - EXDevice (2.2.0)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
-      EXDocumentPicker: 369e974b51717e3ae629d71a88034ad6
+      EXDocumentPicker:
+        :debug: 369e974b51717e3ae629d71a88034ad6
+        :release: 369e974b51717e3ae629d71a88034ad6
     CHECKSUM: e6285fcefa4514789ce104d41a2b1036aafd2a4c
     FILES:
       - "../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.h"
@@ -6185,7 +6745,9 @@ CACHE_KEYS:
       - EXDocumentPicker (8.2.0)
   EXErrorRecovery:
     BUILD_SETTINGS_CHECKSUM:
-      EXErrorRecovery: 48309e898c838fbfe19683ca23aa1cca
+      EXErrorRecovery:
+        :debug: 48309e898c838fbfe19683ca23aa1cca
+        :release: 48309e898c838fbfe19683ca23aa1cca
     CHECKSUM: 7142239c682f32b12c19843903aee8be9bd3eb5f
     FILES:
       - "../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.h"
@@ -6195,7 +6757,9 @@ CACHE_KEYS:
       - EXErrorRecovery (1.2.0)
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      EXFacebook: 6b3825dfac50d3a0fea3f27d8ecdf605
+      EXFacebook:
+        :debug: 6b3825dfac50d3a0fea3f27d8ecdf605
+        :release: 6b3825dfac50d3a0fea3f27d8ecdf605
     CHECKSUM: 4c41f10c7f34a74ce5b4c36b296094d5b278a212
     FILES:
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
@@ -6207,7 +6771,9 @@ CACHE_KEYS:
       - EXFacebook (8.2.0)
   EXFaceDetector:
     BUILD_SETTINGS_CHECKSUM:
-      EXFaceDetector: cbfbe89add42e7b69ddc056c2e62d41d
+      EXFaceDetector:
+        :debug: cbfbe89add42e7b69ddc056c2e62d41d
+        :release: cbfbe89add42e7b69ddc056c2e62d41d
     CHECKSUM: 27c12e945cb3d90abf195aecb2f66817fac9b044
     FILES:
       - "../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.h"
@@ -6231,7 +6797,9 @@ CACHE_KEYS:
       - EXFaceDetector (8.2.0)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
-      EXFileSystem: 6443c018843c511523c78eca36d52515
+      EXFileSystem:
+        :debug: 6443c018843c511523c78eca36d52515
+        :release: 6443c018843c511523c78eca36d52515
     CHECKSUM: d093a2195fce7df83e21c6bde1be91426e5ca2ba
     FILES:
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.h"
@@ -6261,7 +6829,9 @@ CACHE_KEYS:
       - EXFileSystem (9.0.0)
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
-      EXFirebaseAnalytics: 0ff060930264d17d39eb55bf7723fdb8
+      EXFirebaseAnalytics:
+        :debug: 0ff060930264d17d39eb55bf7723fdb8
+        :release: 0ff060930264d17d39eb55bf7723fdb8
     CHECKSUM: 6b23de0d3e6371b9fbff9c336fefc77f36a93c5e
     FILES:
       - "../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
@@ -6271,7 +6841,9 @@ CACHE_KEYS:
       - EXFirebaseAnalytics (2.4.0)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
-      EXFirebaseCore: 1d808549b6223d57e1cc0b09101db157
+      EXFirebaseCore:
+        :debug: 1d808549b6223d57e1cc0b09101db157
+        :release: 1d808549b6223d57e1cc0b09101db157
     CHECKSUM: b685aee40d174cc3e809e7f14cb3bb9f39cbc46b
     FILES:
       - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
@@ -6284,7 +6856,9 @@ CACHE_KEYS:
       - EXFirebaseCore (1.1.0)
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
-      EXFont: 54a701ae9a0214506a040344456fe670
+      EXFont:
+        :debug: 54a701ae9a0214506a040344456fe670
+        :release: 54a701ae9a0214506a040344456fe670
     CHECKSUM: dd24dfaf78a6b5641ed602f2fe30509a2460b437
     FILES:
       - "../../packages/expo-font/ios/EXFont/EXFont.h"
@@ -6304,7 +6878,9 @@ CACHE_KEYS:
       - EXFont (8.2.0)
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL: bca8f8421e2d5161f85265d66e770356
+      EXGL:
+        :debug: bca8f8421e2d5161f85265d66e770356
+        :release: bca8f8421e2d5161f85265d66e770356
     CHECKSUM: f3b54b630d8f0c7616f2d67b900dd421dce829be
     FILES:
       - "../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
@@ -6324,7 +6900,9 @@ CACHE_KEYS:
       - EXGL (8.3.0)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL_CPP: a826c42c1bffaf535c5e5f75d7f48a5d
+      EXGL_CPP:
+        :debug: a826c42c1bffaf535c5e5f75d7f48a5d
+        :release: a826c42c1bffaf535c5e5f75d7f48a5d
     CHECKSUM: bc3d2d83a4367adfd287e45546decd4cd43fa1a2
     FILES:
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -6347,7 +6925,9 @@ CACHE_KEYS:
       - EXGL_CPP/EXGLContext (8.3.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
-      EXGoogleSignIn: 30e34240c7bb5878127e7c1aaca288a9
+      EXGoogleSignIn:
+        :debug: 30e34240c7bb5878127e7c1aaca288a9
+        :release: 30e34240c7bb5878127e7c1aaca288a9
     CHECKSUM: 92b1a26e108e24f7ce7ea5de5f774c55863a662f
     FILES:
       - "../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.h"
@@ -6363,7 +6943,9 @@ CACHE_KEYS:
       - EXGoogleSignIn (8.2.0)
   EXHaptics:
     BUILD_SETTINGS_CHECKSUM:
-      EXHaptics: 9630619d283a492227fdac2e99d1d502
+      EXHaptics:
+        :debug: 9630619d283a492227fdac2e99d1d502
+        :release: 9630619d283a492227fdac2e99d1d502
     CHECKSUM: 1daf9a05f9054cbc1ba7e30e2a751ec75988e1f4
     FILES:
       - "../../packages/expo-haptics/ios/EXHaptics/EXHapticsModule.h"
@@ -6373,7 +6955,9 @@ CACHE_KEYS:
       - EXHaptics (8.2.0)
   EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
-      EXImageLoader: 40bbbc0aa3d6ccdfa8aadc2b69e57609
+      EXImageLoader:
+        :debug: 40bbbc0aa3d6ccdfa8aadc2b69e57609
+        :release: 40bbbc0aa3d6ccdfa8aadc2b69e57609
     CHECKSUM: 3fcb60f515e5c22b24839739f1c7d06da096a696
     FILES:
       - "../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
@@ -6383,7 +6967,9 @@ CACHE_KEYS:
       - EXImageLoader (1.1.0)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
-      EXImageManipulator: 5d68aa0d6f2a7fdd838a8783136b6a40
+      EXImageManipulator:
+        :debug: 5d68aa0d6f2a7fdd838a8783136b6a40
+        :release: 5d68aa0d6f2a7fdd838a8783136b6a40
     CHECKSUM: 05cfa9a8a898d2e8b5bb490609515a3f0f387c08
     FILES:
       - "../../packages/expo-image-manipulator/ios/EXImageManipulator/EXImageManipulatorModule.h"
@@ -6393,7 +6979,9 @@ CACHE_KEYS:
       - EXImageManipulator (8.2.0)
   EXImagePicker:
     BUILD_SETTINGS_CHECKSUM:
-      EXImagePicker: 3db5d5996c5eebe6da942be37e175d8a
+      EXImagePicker:
+        :debug: 3db5d5996c5eebe6da942be37e175d8a
+        :release: 3db5d5996c5eebe6da942be37e175d8a
     CHECKSUM: 487d0c3d818fae91e21145b54bb8ceb491410272
     FILES:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
@@ -6407,7 +6995,9 @@ CACHE_KEYS:
       - EXImagePicker (8.2.0)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
-      EXKeepAwake: a24035f82eb272b6695268c3a6d8e57d
+      EXKeepAwake:
+        :debug: a24035f82eb272b6695268c3a6d8e57d
+        :release: a24035f82eb272b6695268c3a6d8e57d
     CHECKSUM: 1ab1d4562ac9e71b5aefd2341ec8a350149a9a3c
     FILES:
       - "../../packages/expo-keep-awake/ios/EXKeepAwake/EXKeepAwake.h"
@@ -6417,7 +7007,9 @@ CACHE_KEYS:
       - EXKeepAwake (8.2.0)
   EXLinearGradient:
     BUILD_SETTINGS_CHECKSUM:
-      EXLinearGradient: 2887b3f3a283a7d788c68076b9176587
+      EXLinearGradient:
+        :debug: 2887b3f3a283a7d788c68076b9176587
+        :release: 2887b3f3a283a7d788c68076b9176587
     CHECKSUM: ebaf7f017c6735552226a4aaeeea59efe31b53de
     FILES:
       - "../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.h"
@@ -6431,7 +7023,9 @@ CACHE_KEYS:
       - EXLinearGradient (8.2.0)
   EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      EXLocalAuthentication: 96fac91a3b24706197a1e3e3eada681c
+      EXLocalAuthentication:
+        :debug: 96fac91a3b24706197a1e3e3eada681c
+        :release: 96fac91a3b24706197a1e3e3eada681c
     CHECKSUM: fc03548af33eccddfb756d0cf12fb40c2ca80fe2
     FILES:
       - "../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h"
@@ -6441,7 +7035,9 @@ CACHE_KEYS:
       - EXLocalAuthentication (9.1.0)
   EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
-      EXLocalization: 012b2a22ab282cfa39e5a52631e82929
+      EXLocalization:
+        :debug: 012b2a22ab282cfa39e5a52631e82929
+        :release: 012b2a22ab282cfa39e5a52631e82929
     CHECKSUM: 93db0235329269b3b64e211c48a09834a5ec89c8
     FILES:
       - "../../packages/expo-localization/ios/EXLocalization/EXLocalization.h"
@@ -6451,7 +7047,9 @@ CACHE_KEYS:
       - EXLocalization (8.2.0)
   EXLocation:
     BUILD_SETTINGS_CHECKSUM:
-      EXLocation: f7e22c701853afa3061f6d69d867650c
+      EXLocation:
+        :debug: f7e22c701853afa3061f6d69d867650c
+        :release: f7e22c701853afa3061f6d69d867650c
     CHECKSUM: 54acd23efbe42f1cce29b5682bdaba37f0e33718
     FILES:
       - "../../packages/expo-location/ios/EXLocation/EXLocation.h"
@@ -6469,7 +7067,9 @@ CACHE_KEYS:
       - EXLocation (8.2.0)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
-      EXMailComposer: 2b45c97e5801df1265b4facfc7a8594a
+      EXMailComposer:
+        :debug: 2b45c97e5801df1265b4facfc7a8594a
+        :release: 2b45c97e5801df1265b4facfc7a8594a
     CHECKSUM: ce7643e7ad21ba84baeeedbc187f9811e573a457
     FILES:
       - "../../packages/expo-mail-composer/ios/EXMailComposer/EXMailComposer.h"
@@ -6479,7 +7079,9 @@ CACHE_KEYS:
       - EXMailComposer (8.2.0)
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      EXMediaLibrary: 6e5794f84885cb414f6e6f91e6923492
+      EXMediaLibrary:
+        :debug: 6e5794f84885cb414f6e6f91e6923492
+        :release: 6e5794f84885cb414f6e6f91e6923492
     CHECKSUM: 7c2f60d48c0bf6c24f6726763a3361d614425976
     FILES:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
@@ -6495,7 +7097,9 @@ CACHE_KEYS:
       - EXMediaLibrary (8.2.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      EXNetwork: 103419567d2a8f5ad5aacd9a0a438bd1
+      EXNetwork:
+        :debug: 103419567d2a8f5ad5aacd9a0a438bd1
+        :release: 103419567d2a8f5ad5aacd9a0a438bd1
     CHECKSUM: e0a2210811a3e977d07f9eecb4b437419e01ba96
     FILES:
       - "../../packages/expo-network/ios/EXNetwork/EXNetwork.h"
@@ -6505,8 +7109,10 @@ CACHE_KEYS:
       - EXNetwork (2.2.0)
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
-      EXNotifications: 0602110faf064575b2e4aa90ac145f65
-    CHECKSUM: f21afb8bd924dd66945df27400df213fa8713a35
+      EXNotifications:
+        :debug: 0602110faf064575b2e4aa90ac145f65
+        :release: 0602110faf064575b2e4aa90ac145f65
+    CHECKSUM: 921bebfde64c1727c1ef8c4df2b1396bb2d2f23a
     FILES:
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -6546,11 +7152,13 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.2.0)
+      - EXNotifications (0.3.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
-      EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
-    CHECKSUM: 98c3c036bada9342d3e6a51a18bb1166f9085e67
+      EXPermissions:
+        :debug: ad5a84d3e3d454ff0e6490217ff0487c
+        :release: ad5a84d3e3d454ff0e6490217ff0487c
+    CHECKSUM: b6bb4e9261643bd3e6a0c5f8d5b5c841177815f2
     FILES:
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
@@ -6558,10 +7166,12 @@ CACHE_KEYS:
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
     PROJECT_NAME: EXPermissions
     SPECS:
-      - EXPermissions (8.2.0)
+      - EXPermissions (9.0.0)
   EXPrint:
     BUILD_SETTINGS_CHECKSUM:
-      EXPrint: 8f47c68c3865a3b13582808cc0fe6141
+      EXPrint:
+        :debug: 8f47c68c3865a3b13582808cc0fe6141
+        :release: 8f47c68c3865a3b13582808cc0fe6141
     CHECKSUM: 41e3356a233ff92e3bd03fb800e2efa03e0b0b64
     FILES:
       - "../../packages/expo-print/ios/EXPrint/EXPrint.h"
@@ -6577,7 +7187,9 @@ CACHE_KEYS:
       - EXPrint (9.0.0)
   EXRandom:
     BUILD_SETTINGS_CHECKSUM:
-      EXRandom: 09dc0cb0d42b4b64abf3c5c763a954bf
+      EXRandom:
+        :debug: 09dc0cb0d42b4b64abf3c5c763a954bf
+        :release: 09dc0cb0d42b4b64abf3c5c763a954bf
     CHECKSUM: 59fd7ceace3251897b71d65f0313564b5cf12734
     FILES:
       - "../../packages/expo-random/ios/EXRandom/EXRandom.h"
@@ -6587,7 +7199,9 @@ CACHE_KEYS:
       - EXRandom (8.2.0)
   EXScreenCapture:
     BUILD_SETTINGS_CHECKSUM:
-      EXScreenCapture: 4f5df0029a41664228c8c2ee91887d5d
+      EXScreenCapture:
+        :debug: 4f5df0029a41664228c8c2ee91887d5d
+        :release: 4f5df0029a41664228c8c2ee91887d5d
     CHECKSUM: d001b0ba68107db27504449cacf20560a0d07ca4
     FILES:
       - "../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.h"
@@ -6597,7 +7211,9 @@ CACHE_KEYS:
       - EXScreenCapture (1.0.0)
   EXScreenOrientation:
     BUILD_SETTINGS_CHECKSUM:
-      EXScreenOrientation: 8b80f5b8fedfa248ee19362c53bec28f
+      EXScreenOrientation:
+        :debug: 8b80f5b8fedfa248ee19362c53bec28f
+        :release: 8b80f5b8fedfa248ee19362c53bec28f
     CHECKSUM: c376ba2859cc98c11c93d03aee70d74db552ffad
     FILES:
       - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
@@ -6613,7 +7229,9 @@ CACHE_KEYS:
       - EXScreenOrientation (1.1.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
-      EXSecureStore: 50e8e13014befd337f5b36b246cde917
+      EXSecureStore:
+        :debug: 50e8e13014befd337f5b36b246cde917
+        :release: 50e8e13014befd337f5b36b246cde917
     CHECKSUM: 66d5f80f383254402d00f90605b12f94fcbbffaf
     FILES:
       - "../../packages/expo-secure-store/ios/EXSecureStore/EXSecureStore.h"
@@ -6623,7 +7241,9 @@ CACHE_KEYS:
       - EXSecureStore (9.0.0)
   EXSegment:
     BUILD_SETTINGS_CHECKSUM:
-      EXSegment: 0f984c746cda9e3c417625be5487217c
+      EXSegment:
+        :debug: 0f984c746cda9e3c417625be5487217c
+        :release: 0f984c746cda9e3c417625be5487217c
     CHECKSUM: a4d166d68a24dfc6fe6a0376b450e8d876dc3ee1
     FILES:
       - "../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
@@ -6633,7 +7253,9 @@ CACHE_KEYS:
       - EXSegment (8.2.0)
   EXSensors:
     BUILD_SETTINGS_CHECKSUM:
-      EXSensors: c88f6d921ca61e9e36d3abcf60bd1904
+      EXSensors:
+        :debug: c88f6d921ca61e9e36d3abcf60bd1904
+        :release: c88f6d921ca61e9e36d3abcf60bd1904
     CHECKSUM: 936c25ca5aa13e0f28a5abc130399eacf85fd9ad
     FILES:
       - "../../packages/expo-sensors/ios/EXSensors/EXSensorsManager.h"
@@ -6659,7 +7281,9 @@ CACHE_KEYS:
       - EXSensors (9.0.0)
   EXSharing:
     BUILD_SETTINGS_CHECKSUM:
-      EXSharing: 60039f4f807edc048b623e6870c00674
+      EXSharing:
+        :debug: 60039f4f807edc048b623e6870c00674
+        :release: 60039f4f807edc048b623e6870c00674
     CHECKSUM: 85c884b50e83b842e6d20b671aafda6dca9183e7
     FILES:
       - "../../packages/expo-sharing/ios/EXSharing/EXSharingModule.h"
@@ -6669,7 +7293,9 @@ CACHE_KEYS:
       - EXSharing (8.2.0)
   EXSMS:
     BUILD_SETTINGS_CHECKSUM:
-      EXSMS: 00190a19476fe3b3aaa722ada00da177
+      EXSMS:
+        :debug: 00190a19476fe3b3aaa722ada00da177
+        :release: 00190a19476fe3b3aaa722ada00da177
     CHECKSUM: 564d163a1d96cbacbee48064ae9e750f5dc53234
     FILES:
       - "../../packages/expo-sms/ios/EXSMS/EXSMSModule.h"
@@ -6679,7 +7305,9 @@ CACHE_KEYS:
       - EXSMS (8.2.0)
   EXSpeech:
     BUILD_SETTINGS_CHECKSUM:
-      EXSpeech: f93f4ca1834f10218ca8ff5c7f805e59
+      EXSpeech:
+        :debug: f93f4ca1834f10218ca8ff5c7f805e59
+        :release: f93f4ca1834f10218ca8ff5c7f805e59
     CHECKSUM: 45f77d049486c02f712e55d5a618c791759a60ef
     FILES:
       - "../../packages/expo-speech/ios/EXSpeech/EXSpeech.h"
@@ -6689,7 +7317,9 @@ CACHE_KEYS:
       - EXSpeech (8.2.0)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
-      EXSQLite: 65d89a6af97b24f728e91e75169fcc55
+      EXSQLite:
+        :debug: 65d89a6af97b24f728e91e75169fcc55
+        :release: 65d89a6af97b24f728e91e75169fcc55
     CHECKSUM: 5477b5ec0462576bedd915c4712fbe4058c8a624
     FILES:
       - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
@@ -6699,7 +7329,9 @@ CACHE_KEYS:
       - EXSQLite (8.2.0)
   EXStoreReview:
     BUILD_SETTINGS_CHECKSUM:
-      EXStoreReview: e30e02b118d196a231e4e589b8655f20
+      EXStoreReview:
+        :debug: e30e02b118d196a231e4e589b8655f20
+        :release: e30e02b118d196a231e4e589b8655f20
     CHECKSUM: ff83c7609ee49be610891720f97034f6b4ef52de
     FILES:
       - "../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.h"
@@ -6709,7 +7341,9 @@ CACHE_KEYS:
       - EXStoreReview (2.1.1)
   EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
-      EXTaskManager: c45e9c9fbb8d73ae7a0ade23384967ee
+      EXTaskManager:
+        :debug: c45e9c9fbb8d73ae7a0ade23384967ee
+        :release: c45e9c9fbb8d73ae7a0ade23384967ee
     CHECKSUM: a733d201f83218bd359088f1a88d598aa19ae58c
     FILES:
       - "../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
@@ -6727,7 +7361,9 @@ CACHE_KEYS:
       - EXTaskManager (8.2.0)
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
-      EXVideoThumbnails: f4311fc5a4bf4f6ea661c8712ad5ecfe
+      EXVideoThumbnails:
+        :debug: f4311fc5a4bf4f6ea661c8712ad5ecfe
+        :release: f4311fc5a4bf4f6ea661c8712ad5ecfe
     CHECKSUM: 6057b1587d1e520c92fde9dad0e5e39a83d45e65
     FILES:
       - "../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.h"
@@ -6737,7 +7373,9 @@ CACHE_KEYS:
       - EXVideoThumbnails (4.2.0)
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
-      EXWebBrowser: 59fe782f0e740f61899473481074075b
+      EXWebBrowser:
+        :debug: 59fe782f0e740f61899473481074075b
+        :release: 59fe782f0e740f61899473481074075b
     CHECKSUM: 60debd27edd04ba2ba3c552fb7944be1070472b4
     FILES:
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
@@ -6747,14 +7385,18 @@ CACHE_KEYS:
       - EXWebBrowser (8.3.0)
   FBAudienceNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      FBAudienceNetwork: a4ace8e29238a5d6827948993cc85524
+      FBAudienceNetwork:
+        :debug: a4ace8e29238a5d6827948993cc85524
+        :release: a4ace8e29238a5d6827948993cc85524
     CHECKSUM: 33fc8c8c07c1cdbf5279784b73729c6410809daa
     PROJECT_NAME: FBAudienceNetwork
     SPECS:
       - FBAudienceNetwork (5.7.1)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
-      FBLazyVector: 9aa2b0554ddaab9f6e72982d6af582cb
+      FBLazyVector:
+        :debug: 9aa2b0554ddaab9f6e72982d6af582cb
+        :release: 9aa2b0554ddaab9f6e72982d6af582cb
     CHECKSUM: 4aab18c93cd9546e4bfed752b4084585eca8b245
     FILES:
       - "../../react-native-lab/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyIterator.h"
@@ -6764,7 +7406,9 @@ CACHE_KEYS:
       - FBLazyVector (0.62.2)
   FBReactNativeSpec:
     BUILD_SETTINGS_CHECKSUM:
-      FBReactNativeSpec: 0be93c4a9980fb5fb302b61146740b74
+      FBReactNativeSpec:
+        :debug: 0be93c4a9980fb5fb302b61146740b74
+        :release: 0be93c4a9980fb5fb302b61146740b74
     CHECKSUM: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
     FILES:
       - "../../react-native-lab/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
@@ -6774,7 +7418,9 @@ CACHE_KEYS:
       - FBReactNativeSpec (0.62.2)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
-      FBSDKCoreKit: 60d69dde3e50d94f5f39949c424b03c5
+      FBSDKCoreKit:
+        :debug: 60d69dde3e50d94f5f39949c424b03c5
+        :release: 60d69dde3e50d94f5f39949c424b03c5
     CHECKSUM: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
     PROJECT_NAME: FBSDKCoreKit
     SPECS:
@@ -6783,7 +7429,9 @@ CACHE_KEYS:
       - FBSDKCoreKit/Core (5.8.0)
   FBSDKLoginKit:
     BUILD_SETTINGS_CHECKSUM:
-      FBSDKLoginKit: 0df82783c4955cafdce54ee3f9243823
+      FBSDKLoginKit:
+        :debug: 0df82783c4955cafdce54ee3f9243823
+        :release: 0df82783c4955cafdce54ee3f9243823
     CHECKSUM: 1b0cf04df0370b37404213157b060d6666ede814
     PROJECT_NAME: FBSDKLoginKit
     SPECS:
@@ -6791,7 +7439,9 @@ CACHE_KEYS:
       - FBSDKLoginKit/Login (5.8.0)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
-      Firebase: fceeba7c9ebf9f241b34371941481a68
+      Firebase:
+        :debug: fceeba7c9ebf9f241b34371941481a68
+        :release: fceeba7c9ebf9f241b34371941481a68
     CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
     PROJECT_NAME: Firebase
     SPECS:
@@ -6801,63 +7451,81 @@ CACHE_KEYS:
       - Firebase/MLVisionFaceModel (6.14.0)
   FirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseAnalytics: d3b8372472720ab5e91b3a3adc59720a
+      FirebaseAnalytics:
+        :debug: d3b8372472720ab5e91b3a3adc59720a
+        :release: d3b8372472720ab5e91b3a3adc59720a
     CHECKSUM: f68b9f3f1241385129ae0a83b63627fc420c05e5
     PROJECT_NAME: FirebaseAnalytics
     SPECS:
       - FirebaseAnalytics (6.1.7)
   FirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseCore: 9e46d904547d9ac25ab4b4514fc0a2f7
+      FirebaseCore:
+        :debug: 9e46d904547d9ac25ab4b4514fc0a2f7
+        :release: 9e46d904547d9ac25ab4b4514fc0a2f7
     CHECKSUM: 632e05cc5e1199d9147122c16d92305eb04c34bd
     PROJECT_NAME: FirebaseCore
     SPECS:
       - FirebaseCore (6.5.0)
   FirebaseCoreDiagnostics:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseCoreDiagnostics: d94bfb53514b8d2ac93bd041c0ca0e12
+      FirebaseCoreDiagnostics:
+        :debug: d94bfb53514b8d2ac93bd041c0ca0e12
+        :release: d94bfb53514b8d2ac93bd041c0ca0e12
     CHECKSUM: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
     PROJECT_NAME: FirebaseCoreDiagnostics
     SPECS:
       - FirebaseCoreDiagnostics (1.1.2)
   FirebaseCoreDiagnosticsInterop:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseCoreDiagnosticsInterop: 156db52ee23ec56ad2ede89ad1ee8a2b
+      FirebaseCoreDiagnosticsInterop:
+        :debug: 156db52ee23ec56ad2ede89ad1ee8a2b
+        :release: 156db52ee23ec56ad2ede89ad1ee8a2b
     CHECKSUM: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
     PROJECT_NAME: FirebaseCoreDiagnosticsInterop
     SPECS:
       - FirebaseCoreDiagnosticsInterop (1.1.0)
   FirebaseInstanceID:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseInstanceID: c417e45eb1ce3ddd5681ade464f26b8e
+      FirebaseInstanceID:
+        :debug: c417e45eb1ce3ddd5681ade464f26b8e
+        :release: c417e45eb1ce3ddd5681ade464f26b8e
     CHECKSUM: ce993a3c3670a8f5d47ce371ac5d143c560608c5
     PROJECT_NAME: FirebaseInstanceID
     SPECS:
       - FirebaseInstanceID (4.2.8)
   FirebaseMLCommon:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseMLCommon: f403e807b748b455b5bd73570909cf53
+      FirebaseMLCommon:
+        :debug: f403e807b748b455b5bd73570909cf53
+        :release: f403e807b748b455b5bd73570909cf53
     CHECKSUM: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
     PROJECT_NAME: FirebaseMLCommon
     SPECS:
       - FirebaseMLCommon (0.19.0)
   FirebaseMLVision:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseMLVision: 8e53ac945d6eac8a814fb67dbd5219ab
+      FirebaseMLVision:
+        :debug: 8e53ac945d6eac8a814fb67dbd5219ab
+        :release: 8e53ac945d6eac8a814fb67dbd5219ab
     CHECKSUM: 7a456009787690e3b53436092ae9b635563de8f3
     PROJECT_NAME: FirebaseMLVision
     SPECS:
       - FirebaseMLVision (0.19.0)
   FirebaseMLVisionFaceModel:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseMLVisionFaceModel: be561dec23d92ce53122582403370726
+      FirebaseMLVisionFaceModel:
+        :debug: be561dec23d92ce53122582403370726
+        :release: be561dec23d92ce53122582403370726
     CHECKSUM: d6ba42000f263df52187aee936262bc2002b3389
     PROJECT_NAME: FirebaseMLVisionFaceModel
     SPECS:
       - FirebaseMLVisionFaceModel (0.19.0)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
-      Folly: 6929e5198d305a2496bf017ba64d131c
+      Folly:
+        :debug: 6929e5198d305a2496bf017ba64d131c
+        :release: 6929e5198d305a2496bf017ba64d131c
     CHECKSUM: 30e7936e1c45c08d884aa59369ed951a8e68cf51
     PROJECT_NAME: Folly
     SPECS:
@@ -6865,14 +7533,18 @@ CACHE_KEYS:
       - Folly/Default (2018.10.22.00)
   glog:
     BUILD_SETTINGS_CHECKSUM:
-      glog: 092f9229debf28ff43a16fd11331f793
+      glog:
+        :debug: 092f9229debf28ff43a16fd11331f793
+        :release: 092f9229debf28ff43a16fd11331f793
     CHECKSUM: 1f3da668190260b06b429bb211bfbee5cd790c28
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
   Google-Maps-iOS-Utils:
     BUILD_SETTINGS_CHECKSUM:
-      Google-Maps-iOS-Utils: 25dea28ce1dc0ec31ce01d9e78b64b9e
+      Google-Maps-iOS-Utils:
+        :debug: 25dea28ce1dc0ec31ce01d9e78b64b9e
+        :release: 25dea28ce1dc0ec31ce01d9e78b64b9e
     CHECKSUM: c32891ff472eaaa1fca032beedafa1a013af7875
     PROJECT_NAME: Google-Maps-iOS-Utils
     SPECS:
@@ -6883,14 +7555,18 @@ CACHE_KEYS:
       - Google-Maps-iOS-Utils/QuadTree (2.1.0)
   Google-Mobile-Ads-SDK:
     BUILD_SETTINGS_CHECKSUM:
-      Google-Mobile-Ads-SDK: 539b9663c2ef324f98d2a11315beaf88
+      Google-Mobile-Ads-SDK:
+        :debug: 539b9663c2ef324f98d2a11315beaf88
+        :release: 539b9663c2ef324f98d2a11315beaf88
     CHECKSUM: f206aff290f26fde422495c6cd187e50efbed57e
     PROJECT_NAME: Google-Mobile-Ads-SDK
     SPECS:
       - Google-Mobile-Ads-SDK (7.55.1)
   GoogleAPIClientForREST:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleAPIClientForREST: 7bc2e43d860f0a8b8d74967265f714d1
+      GoogleAPIClientForREST:
+        :debug: 7bc2e43d860f0a8b8d74967265f714d1
+        :release: 7bc2e43d860f0a8b8d74967265f714d1
     CHECKSUM: 4acfffd77f1c3c8741b6be9eaed0e603278efbde
     PROJECT_NAME: GoogleAPIClientForREST
     SPECS:
@@ -6898,28 +7574,36 @@ CACHE_KEYS:
       - GoogleAPIClientForREST/Vision (1.3.10)
   GoogleAppMeasurement:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleAppMeasurement: 8edf625de9a660fae9e528eb6d244601
+      GoogleAppMeasurement:
+        :debug: 8edf625de9a660fae9e528eb6d244601
+        :release: 8edf625de9a660fae9e528eb6d244601
     CHECKSUM: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
     PROJECT_NAME: GoogleAppMeasurement
     SPECS:
       - GoogleAppMeasurement (6.1.7)
   GoogleDataTransport:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleDataTransport: c52a5276024512707683f66e6cfe0966
+      GoogleDataTransport:
+        :debug: c52a5276024512707683f66e6cfe0966
+        :release: c52a5276024512707683f66e6cfe0966
     CHECKSUM: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
     PROJECT_NAME: GoogleDataTransport
     SPECS:
       - GoogleDataTransport (3.2.0)
   GoogleDataTransportCCTSupport:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleDataTransportCCTSupport: 1974efffec58f9b1b16d714da50b2d51
+      GoogleDataTransportCCTSupport:
+        :debug: 1974efffec58f9b1b16d714da50b2d51
+        :release: 1974efffec58f9b1b16d714da50b2d51
     CHECKSUM: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
     PROJECT_NAME: GoogleDataTransportCCTSupport
     SPECS:
       - GoogleDataTransportCCTSupport (1.2.3)
   GoogleMaps:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleMaps: 42a96a2d50272809286aa8f523d12d1a
+      GoogleMaps:
+        :debug: 42a96a2d50272809286aa8f523d12d1a
+        :release: 42a96a2d50272809286aa8f523d12d1a
     CHECKSUM: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
     PROJECT_NAME: GoogleMaps
     SPECS:
@@ -6928,14 +7612,18 @@ CACHE_KEYS:
       - GoogleMaps/Maps (3.6.0)
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleSignIn: a0153e525df9a663a947ee922d9629b2
+      GoogleSignIn:
+        :debug: a0153e525df9a663a947ee922d9629b2
+        :release: a0153e525df9a663a947ee922d9629b2
     CHECKSUM: 7137d297ddc022a7e0aa4619c86d72c909fa7213
     PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.2)
   GoogleToolboxForMac:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleToolboxForMac: 404b86b785e416b5ee61d89aa5db74a4
+      GoogleToolboxForMac:
+        :debug: 404b86b785e416b5ee61d89aa5db74a4
+        :release: 404b86b785e416b5ee61d89aa5db74a4
     CHECKSUM: 800648f8b3127618c1b59c7f97684427630c5ea3
     PROJECT_NAME: GoogleToolboxForMac
     SPECS:
@@ -6947,7 +7635,9 @@ CACHE_KEYS:
       - "GoogleToolboxForMac/NSString+URLArguments (2.2.2)"
   GoogleUtilities:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleUtilities: c7dbbc462e97d6f959d7b7bdd3d67f38
+      GoogleUtilities:
+        :debug: c7dbbc462e97d6f959d7b7bdd3d67f38
+        :release: c7dbbc462e97d6f959d7b7bdd3d67f38
     CHECKSUM: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
     PROJECT_NAME: GoogleUtilities
     SPECS:
@@ -6961,14 +7651,18 @@ CACHE_KEYS:
       - GoogleUtilities/UserDefaults (6.4.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      GTMAppAuth: 4318abd6a13d458bbfc857da0ff65b96
+      GTMAppAuth:
+        :debug: 4318abd6a13d458bbfc857da0ff65b96
+        :release: 4318abd6a13d458bbfc857da0ff65b96
     CHECKSUM: 4deac854479704f348309e7b66189e604cf5e01e
     PROJECT_NAME: GTMAppAuth
     SPECS:
       - GTMAppAuth (1.0.0)
   GTMSessionFetcher:
     BUILD_SETTINGS_CHECKSUM:
-      GTMSessionFetcher: d9c89823d2516fe6150cc01204ef77f0
+      GTMSessionFetcher:
+        :debug: d9c89823d2516fe6150cc01204ef77f0
+        :release: d9c89823d2516fe6150cc01204ef77f0
     CHECKSUM: 61bb0f61a4cb560030f1222021178008a5727a23
     PROJECT_NAME: GTMSessionFetcher
     SPECS:
@@ -6977,21 +7671,27 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.2.2)
   JKBigInteger2:
     BUILD_SETTINGS_CHECKSUM:
-      JKBigInteger2: ae069f4d30f9ee9a412afcb7bcfcbd2f
+      JKBigInteger2:
+        :debug: ae069f4d30f9ee9a412afcb7bcfcbd2f
+        :release: ae069f4d30f9ee9a412afcb7bcfcbd2f
     CHECKSUM: e91672035c42328c48b7dd015b66812ddf40ca9b
     PROJECT_NAME: JKBigInteger2
     SPECS:
       - JKBigInteger2 (0.0.5)
   lottie-ios:
     BUILD_SETTINGS_CHECKSUM:
-      lottie-ios: ac91781cdd66fe71ed331af5175da8b3
+      lottie-ios:
+        :debug: ac91781cdd66fe71ed331af5175da8b3
+        :release: ac91781cdd66fe71ed331af5175da8b3
     CHECKSUM: a50d5c0160425cd4b01b852bb9578963e6d92d31
     PROJECT_NAME: lottie-ios
     SPECS:
       - lottie-ios (2.5.3)
   nanopb:
     BUILD_SETTINGS_CHECKSUM:
-      nanopb: 576bb45f6f1262a9f9a409f37f3694b7
+      nanopb:
+        :debug: 576bb45f6f1262a9f9a409f37f3694b7
+        :release: 576bb45f6f1262a9f9a409f37f3694b7
     CHECKSUM: 18003b5e52dab79db540fe93fe9579f399bd1ccd
     PROJECT_NAME: nanopb
     SPECS:
@@ -7002,6 +7702,15 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 828b2df720a176a28bf9e767edc75183
       Release: 828b2df720a176a28bf9e767edc75183
+    FILES:
+      - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
+      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
+      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
+      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der"
+      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der"
+      - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
+      - "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle"
+      - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 62045aaf1bb29fcdb190fb4457f79636
@@ -7012,14 +7721,18 @@ CACHE_KEYS:
       Release: 62045aaf1bb29fcdb190fb4457f79636
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
-      Protobuf: e9ec876cfd5ece357978b5d515d5282c
+      Protobuf:
+        :debug: e9ec876cfd5ece357978b5d515d5282c
+        :release: e9ec876cfd5ece357978b5d515d5282c
     CHECKSUM: dd1aaea7140debfe4dd0683fb8ef208e527ae153
     PROJECT_NAME: Protobuf
     SPECS:
       - Protobuf (3.11.2)
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
-      RCTRequired: 6abc14e89fff9838309e2b361a5966b7
+      RCTRequired:
+        :debug: 6abc14e89fff9838309e2b361a5966b7
+        :release: 6abc14e89fff9838309e2b361a5966b7
     CHECKSUM: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
     FILES:
       - "../../react-native-lab/react-native/Libraries/RCTRequired/RCTRequired/RCTRequired.h"
@@ -7028,7 +7741,9 @@ CACHE_KEYS:
       - RCTRequired (0.62.2)
   RCTTypeSafety:
     BUILD_SETTINGS_CHECKSUM:
-      RCTTypeSafety: c4ab98c64e70f0af529ff1a262593206
+      RCTTypeSafety:
+        :debug: c4ab98c64e70f0af529ff1a262593206
+        :release: c4ab98c64e70f0af529ff1a262593206
     CHECKSUM: 93006131180074cffa227a1075802c89a49dd4ce
     FILES:
       - "../../react-native-lab/react-native/Libraries/TypeSafety/RCTConvertHelpers.h"
@@ -7040,7 +7755,9 @@ CACHE_KEYS:
       - RCTTypeSafety (0.62.2)
   React:
     BUILD_SETTINGS_CHECKSUM:
-      React: 5db675958810f02db5957ec81763830a
+      React:
+        :debug: 5db675958810f02db5957ec81763830a
+        :release: 5db675958810f02db5957ec81763830a
     CHECKSUM: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
     FILES:
       - "../../react-native-lab/react-native/LICENSE"
@@ -7052,7 +7769,9 @@ CACHE_KEYS:
       - React (0.62.2)
   React-Core:
     BUILD_SETTINGS_CHECKSUM:
-      React-Core: 8f8acd39013105482574133e52c3b2c1
+      React-Core:
+        :debug: 8f8acd39013105482574133e52c3b2c1
+        :release: 8f8acd39013105482574133e52c3b2c1
     CHECKSUM: b12bffb3f567fdf99510acb716ef1abd426e0e05
     FILES:
       - "../../react-native-lab/react-native/Libraries/Blob/RCTBlobManager.h"
@@ -7446,7 +8165,9 @@ CACHE_KEYS:
       - React-Core/RCTWebSocket (0.62.2)
   React-CoreModules:
     BUILD_SETTINGS_CHECKSUM:
-      React-CoreModules: 4c440c5b24adbeb2b7124834768415b8
+      React-CoreModules:
+        :debug: 4c440c5b24adbeb2b7124834768415b8
+        :release: 4c440c5b24adbeb2b7124834768415b8
     CHECKSUM: 4a9b87bbe669d6c3173c0132c3328e3b000783d0
     FILES:
       - "../../react-native-lab/react-native/React/CoreModules/CoreModulesPlugins.mm"
@@ -7479,7 +8200,9 @@ CACHE_KEYS:
       - React-CoreModules (0.62.2)
   React-cxxreact:
     BUILD_SETTINGS_CHECKSUM:
-      React-cxxreact: 5f30f65f980a29785686fe15858cf05c
+      React-cxxreact:
+        :debug: 5f30f65f980a29785686fe15858cf05c
+        :release: 5f30f65f980a29785686fe15858cf05c
     CHECKSUM: e65f9c2ba0ac5be946f53548c1aaaee5873a8103
     FILES:
       - "../../react-native-lab/react-native/ReactCommon/cxxreact/CxxModule.h"
@@ -7520,7 +8243,9 @@ CACHE_KEYS:
       - React-cxxreact (0.62.2)
   React-jsi:
     BUILD_SETTINGS_CHECKSUM:
-      React-jsi: 5c9dbdaba6c160c2e45e4566efb9e621
+      React-jsi:
+        :debug: 5c9dbdaba6c160c2e45e4566efb9e621
+        :release: 5c9dbdaba6c160c2e45e4566efb9e621
     CHECKSUM: b6dc94a6a12ff98e8877287a0b7620d365201161
     FILES:
       - "../../react-native-lab/react-native/ReactCommon/jsi/JSCRuntime.cpp"
@@ -7542,7 +8267,9 @@ CACHE_KEYS:
       - React-jsi/Default (0.62.2)
   React-jsiexecutor:
     BUILD_SETTINGS_CHECKSUM:
-      React-jsiexecutor: c6f8eb8aafbb81440a2a297211487327
+      React-jsiexecutor:
+        :debug: c6f8eb8aafbb81440a2a297211487327
+        :release: c6f8eb8aafbb81440a2a297211487327
     CHECKSUM: 1540d1c01bb493ae3124ed83351b1b6a155db7da
     FILES:
       - "../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.cpp"
@@ -7554,7 +8281,9 @@ CACHE_KEYS:
       - React-jsiexecutor (0.62.2)
   React-jsinspector:
     BUILD_SETTINGS_CHECKSUM:
-      React-jsinspector: 9f44bbf7b545f0c343c7be5bd9e5b817
+      React-jsinspector:
+        :debug: 9f44bbf7b545f0c343c7be5bd9e5b817
+        :release: 9f44bbf7b545f0c343c7be5bd9e5b817
     CHECKSUM: 512e560d0e985d0e8c479a54a4e5c147a9c83493
     FILES:
       - "../../react-native-lab/react-native/ReactCommon/jsinspector/InspectorInterfaces.cpp"
@@ -7564,7 +8293,9 @@ CACHE_KEYS:
       - React-jsinspector (0.62.2)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTActionSheet: 7a766d4452bf307e93e0889e7080cb09
+      React-RCTActionSheet:
+        :debug: 7a766d4452bf307e93e0889e7080cb09
+        :release: 7a766d4452bf307e93e0889e7080cb09
     CHECKSUM: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
     FILES:
       []
@@ -7573,7 +8304,9 @@ CACHE_KEYS:
       - React-RCTActionSheet (0.62.2)
   React-RCTAnimation:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTAnimation: ccfbdd69f947fed616946d103ac78df8
+      React-RCTAnimation:
+        :debug: ccfbdd69f947fed616946d103ac78df8
+        :release: ccfbdd69f947fed616946d103ac78df8
     CHECKSUM: 49ab98b1c1ff4445148b72a3d61554138565bad0
     FILES:
       - "../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTDecayAnimation.m"
@@ -7602,7 +8335,9 @@ CACHE_KEYS:
       - React-RCTAnimation (0.62.2)
   React-RCTBlob:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTBlob: 05f61709579b7a5e9190c4e2d674f384
+      React-RCTBlob:
+        :debug: 05f61709579b7a5e9190c4e2d674f384
+        :release: 05f61709579b7a5e9190c4e2d674f384
     CHECKSUM: a332773f0ebc413a0ce85942a55b064471587a71
     FILES:
       - "../../react-native-lab/react-native/Libraries/Blob/RCTBlobCollector.mm"
@@ -7614,7 +8349,9 @@ CACHE_KEYS:
       - React-RCTBlob (0.62.2)
   React-RCTImage:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTImage: 3c8d5a2dc9fbf27c7523ea5f99c097a5
+      React-RCTImage:
+        :debug: 3c8d5a2dc9fbf27c7523ea5f99c097a5
+        :release: 3c8d5a2dc9fbf27c7523ea5f99c097a5
     CHECKSUM: e70be9b9c74fe4e42d0005f42cace7981c994ac3
     FILES:
       - "../../react-native-lab/react-native/Libraries/Image/RCTAnimatedImage.m"
@@ -7637,7 +8374,9 @@ CACHE_KEYS:
       - React-RCTImage (0.62.2)
   React-RCTLinking:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTLinking: 75322e5012c7cabe777169605a5bd381
+      React-RCTLinking:
+        :debug: 75322e5012c7cabe777169605a5bd381
+        :release: 75322e5012c7cabe777169605a5bd381
     CHECKSUM: c1b9739a88d56ecbec23b7f63650e44672ab2ad2
     FILES:
       - "../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingManager.mm"
@@ -7647,7 +8386,9 @@ CACHE_KEYS:
       - React-RCTLinking (0.62.2)
   React-RCTNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTNetwork: e9b091cbeb450d650c8210352c26c5b5
+      React-RCTNetwork:
+        :debug: e9b091cbeb450d650c8210352c26c5b5
+        :release: e9b091cbeb450d650c8210352c26c5b5
     CHECKSUM: 73138b6f45e5a2768ad93f3d57873c2a18d14b44
     FILES:
       - "../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.mm"
@@ -7661,7 +8402,9 @@ CACHE_KEYS:
       - React-RCTNetwork (0.62.2)
   React-RCTSettings:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTSettings: e80fd0c0dbf276ae7d90744c15919e82
+      React-RCTSettings:
+        :debug: e80fd0c0dbf276ae7d90744c15919e82
+        :release: e80fd0c0dbf276ae7d90744c15919e82
     CHECKSUM: 6e3738a87e21b39a8cb08d627e68c44acf1e325a
     FILES:
       - "../../react-native-lab/react-native/Libraries/Settings/RCTSettingsManager.mm"
@@ -7671,7 +8414,9 @@ CACHE_KEYS:
       - React-RCTSettings (0.62.2)
   React-RCTText:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTText: 2922785ae7b24c1fcce51e8b456f957d
+      React-RCTText:
+        :debug: 2922785ae7b24c1fcce51e8b456f957d
+        :release: 2922785ae7b24c1fcce51e8b456f957d
     CHECKSUM: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
     FILES:
       - "../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h"
@@ -7736,7 +8481,9 @@ CACHE_KEYS:
       - React-RCTText (0.62.2)
   React-RCTVibration:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTVibration: 0c6dd708343e4424849535ad3637bc61
+      React-RCTVibration:
+        :debug: 0c6dd708343e4424849535ad3637bc61
+        :release: 0c6dd708343e4424849535ad3637bc61
     CHECKSUM: 4356114dbcba4ce66991096e51a66e61eda51256
     FILES:
       - "../../react-native-lab/react-native/Libraries/Vibration/RCTVibration.mm"
@@ -7746,7 +8493,9 @@ CACHE_KEYS:
       - React-RCTVibration (0.62.2)
   ReactABI35_0_0:
     BUILD_SETTINGS_CHECKSUM:
-      ReactABI35_0_0: c3d4826b4ba527e2e51a649490849b99
+      ReactABI35_0_0:
+        :debug: c3d4826b4ba527e2e51a649490849b99
+        :release: c3d4826b4ba527e2e51a649490849b99
     CHECKSUM: a708ff5c90369b3be411033d07afc0ee072eb7dc
     FILES:
       - "../versioned-react-native/ABI35_0_0/Libraries/ActionSheetIOS/ABI35_0_0RCTActionSheetManager.h"
@@ -8304,7 +9053,9 @@ CACHE_KEYS:
       - ReactABI35_0_0/RCTWebSocket (0.59.8)
   ReactCommon:
     BUILD_SETTINGS_CHECKSUM:
-      ReactCommon: 53c057b6ee00d3c814049cb0b312f724
+      ReactCommon:
+        :debug: 53c057b6ee00d3c814049cb0b312f724
+        :release: 53c057b6ee00d3c814049cb0b312f724
     CHECKSUM: ed4e11d27609d571e7eee8b65548efc191116eb3
     FILES:
       - "../../react-native-lab/react-native/ReactCommon/callinvoker/ReactCommon/BridgeJSCallInvoker.cpp"
@@ -8332,7 +9083,9 @@ CACHE_KEYS:
       - ReactCommon/turbomodule/core (0.62.2)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
-      UMAppLoader: 98f4825f425141e39e25ec9bb92098e1
+      UMAppLoader:
+        :debug: 98f4825f425141e39e25ec9bb92098e1
+        :release: 98f4825f425141e39e25ec9bb92098e1
     CHECKSUM: e4aeb3ac68dbd15df39e7bdb5b86ae030172fdba
     FILES:
       - "../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
@@ -8344,7 +9097,9 @@ CACHE_KEYS:
       - UMAppLoader (1.1.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMBarCodeScannerInterface: 0b7affbc39246c1e4ce2f9f58ebdc8c5
+      UMBarCodeScannerInterface:
+        :debug: 0b7affbc39246c1e4ce2f9f58ebdc8c5
+        :release: 0b7affbc39246c1e4ce2f9f58ebdc8c5
     CHECKSUM: 025c37a68df518e8c559b8df9c1f81360a7a4006
     FILES:
       - "../../packages/unimodules-barcode-scanner-interface/ios/UMBarCodeScannerInterface/UMBarCodeScannerInterface.h"
@@ -8354,7 +9109,9 @@ CACHE_KEYS:
       - UMBarCodeScannerInterface (5.2.0)
   UMCameraInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMCameraInterface: 823fae80a94af2f566d2d54cfc8cb25d
+      UMCameraInterface:
+        :debug: 823fae80a94af2f566d2d54cfc8cb25d
+        :release: 823fae80a94af2f566d2d54cfc8cb25d
     CHECKSUM: 3aa0f4ebbe93127afdac9a314d08ae92ff90ef40
     FILES:
       - "../../packages/unimodules-camera-interface/ios/UMCameraInterface/UMCameraInterface.h"
@@ -8363,7 +9120,9 @@ CACHE_KEYS:
       - UMCameraInterface (5.2.0)
   UMConstantsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMConstantsInterface: 23f004b3fcfdf040db1c8d2301321779
+      UMConstantsInterface:
+        :debug: 23f004b3fcfdf040db1c8d2301321779
+        :release: 23f004b3fcfdf040db1c8d2301321779
     CHECKSUM: e053b33e00e129951a2fc37e19fa4c73513f5ffa
     FILES:
       - "../../packages/unimodules-constants-interface/ios/UMConstantsInterface/UMConstantsInterface.h"
@@ -8372,7 +9131,9 @@ CACHE_KEYS:
       - UMConstantsInterface (5.2.0)
   UMCore:
     BUILD_SETTINGS_CHECKSUM:
-      UMCore: d06038a607b8f885fd20913ef0db10a6
+      UMCore:
+        :debug: d06038a607b8f885fd20913ef0db10a6
+        :release: d06038a607b8f885fd20913ef0db10a6
     CHECKSUM: 79f0516cb97dd2e25f704951df8d03a2a9e4e948
     FILES:
       - "../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
@@ -8411,7 +9172,9 @@ CACHE_KEYS:
       - UMCore (5.2.0)
   UMFaceDetectorInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMFaceDetectorInterface: ae79dff18617c1e328408eab6d603e28
+      UMFaceDetectorInterface:
+        :debug: ae79dff18617c1e328408eab6d603e28
+        :release: ae79dff18617c1e328408eab6d603e28
     CHECKSUM: cefe4dd35c20a2e046adeb2cae4900020bf29312
     FILES:
       - "../../packages/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManager.h"
@@ -8421,7 +9184,9 @@ CACHE_KEYS:
       - UMFaceDetectorInterface (5.2.0)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMFileSystemInterface: 6ee03265d70517bc50df2a800d9474d0
+      UMFileSystemInterface:
+        :debug: 6ee03265d70517bc50df2a800d9474d0
+        :release: 6ee03265d70517bc50df2a800d9474d0
     CHECKSUM: caac1d1d9ce32aa24ab7a5d1a018be1c44c3d2cc
     FILES:
       - "../../packages/unimodules-file-system-interface/ios/UMFileSystemInterface/UMFilePermissionModuleInterface.h"
@@ -8431,7 +9196,9 @@ CACHE_KEYS:
       - UMFileSystemInterface (5.2.0)
   UMFontInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMFontInterface: 84a2b07037eabf601b53258944dd11cb
+      UMFontInterface:
+        :debug: 84a2b07037eabf601b53258944dd11cb
+        :release: 84a2b07037eabf601b53258944dd11cb
     CHECKSUM: f4a1019fb3b6e267eea0f4a27984a0af4bcc56ef
     FILES:
       - "../../packages/unimodules-font-interface/ios/UMFontInterface/UMFontManagerInterface.h"
@@ -8443,7 +9210,9 @@ CACHE_KEYS:
       - UMFontInterface (5.2.0)
   UMImageLoaderInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMImageLoaderInterface: 6d81a6858bb2d0524ffed76e4903a548
+      UMImageLoaderInterface:
+        :debug: 6d81a6858bb2d0524ffed76e4903a548
+        :release: 6d81a6858bb2d0524ffed76e4903a548
     CHECKSUM: c105202fd399beba06c391b90a66f1b61e08f5fe
     FILES:
       - "../../packages/unimodules-image-loader-interface/ios/UMImageLoaderInterface/UMImageLoaderInterface.h"
@@ -8452,7 +9221,9 @@ CACHE_KEYS:
       - UMImageLoaderInterface (5.2.0)
   UMPermissionsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMPermissionsInterface: a6af9b242b8dccd0db4fcac481ec75b6
+      UMPermissionsInterface:
+        :debug: a6af9b242b8dccd0db4fcac481ec75b6
+        :release: a6af9b242b8dccd0db4fcac481ec75b6
     CHECKSUM: ed41902058912c91163d9ce7a7b5b937209f4f76
     FILES:
       - "../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsInterface.h"
@@ -8464,7 +9235,9 @@ CACHE_KEYS:
       - UMPermissionsInterface (5.2.0)
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
-      UMReactNativeAdapter: 8ca7d33035c46063e30d66d9bfc8e094
+      UMReactNativeAdapter:
+        :debug: 8ca7d33035c46063e30d66d9bfc8e094
+        :release: 8ca7d33035c46063e30d66d9bfc8e094
     CHECKSUM: 6226be17afb603178cd84c918fac94a8714d56ce
     FILES:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
@@ -8491,7 +9264,9 @@ CACHE_KEYS:
       - UMReactNativeAdapter (5.3.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMSensorsInterface: 2a69c5e2ded5336edb3dbfcb358ca18f
+      UMSensorsInterface:
+        :debug: 2a69c5e2ded5336edb3dbfcb358ca18f
+        :release: 2a69c5e2ded5336edb3dbfcb358ca18f
     CHECKSUM: c7ddeb4e6467510b67d519e1467823f72d23010e
     FILES:
       - "../../packages/unimodules-sensors-interface/ios/UMSensorsInterface/UMAccelerometerInterface.h"
@@ -8505,7 +9280,9 @@ CACHE_KEYS:
       - UMSensorsInterface (5.2.0)
   UMTaskManagerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMTaskManagerInterface: 302551c6021741bb03a5c0d9c2f9575e
+      UMTaskManagerInterface:
+        :debug: 302551c6021741bb03a5c0d9c2f9575e
+        :release: 302551c6021741bb03a5c0d9c2f9575e
     CHECKSUM: dc8290b3291317c520001cb4a92487ffbd983115
     FILES:
       - "../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskConsumerInterface.h"
@@ -8518,7 +9295,9 @@ CACHE_KEYS:
       - UMTaskManagerInterface (5.2.0)
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
-      Yoga: acd09ff0ebca8736eb8b651693cbbe69
+      Yoga:
+        :debug: acd09ff0ebca8736eb8b651693cbbe69
+        :release: acd09ff0ebca8736eb8b651693cbbe69
     CHECKSUM: 3ebccbdd559724312790e7742142d062476b698e
     FILES:
       - "../../react-native-lab/react-native/ReactCommon/yoga/yoga/BitUtils.h"
@@ -8556,7 +9335,9 @@ CACHE_KEYS:
       - Yoga (1.14.0)
   yogaABI35_0_0:
     BUILD_SETTINGS_CHECKSUM:
-      yogaABI35_0_0: 763d86496272f5ce7909b3ea5aa55848
+      yogaABI35_0_0:
+        :debug: 763d86496272f5ce7909b3ea5aa55848
+        :release: 763d86496272f5ce7909b3ea5aa55848
     CHECKSUM: ba82ada0c3a58619049128d51d6de437638fe1a1
     FILES:
       - "../versioned-react-native/ABI35_0_0/ReactCommon/ABI35_0_0yoga/yoga/ABI35_0_0CompactValue.h"
@@ -8589,7 +9370,9 @@ CACHE_KEYS:
       - yogaABI35_0_0 (0.59.8.React)
   ZXingObjC:
     BUILD_SETTINGS_CHECKSUM:
-      ZXingObjC: d3ecdae7b9cd1c5943e115b6207f0009
+      ZXingObjC:
+        :debug: d3ecdae7b9cd1c5943e115b6207f0009
+        :release: d3ecdae7b9cd1c5943e115b6207f0009
     CHECKSUM: fdbb269f25dd2032da343e06f10224d62f537bdb
     PROJECT_NAME: ZXingObjC
     SPECS:
@@ -8597,3 +9380,6 @@ CACHE_KEYS:
       - ZXingObjC/OneD (3.6.5)
       - ZXingObjC/PDF417 (3.6.5)
 OBJECT_VERSION: 46
+PLUGINS:
+  cocoapods-stats:
+    {}

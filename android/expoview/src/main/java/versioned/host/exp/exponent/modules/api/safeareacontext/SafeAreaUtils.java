@@ -36,7 +36,12 @@ import androidx.annotation.Nullable;
     }
   }
 
-  static @Nullable EdgeInsets getSafeAreaInsets(View rootView, View view) {
+  static @Nullable EdgeInsets getSafeAreaInsets(View view) {
+    // The view has not been layout yet.
+    if (view.getHeight() == 0) {
+      return null;
+    }
+    View rootView = view.getRootView();
     EdgeInsets windowInsets = getRootWindowInsetsCompat(rootView);
     if (windowInsets == null) {
       return null;

@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0846DDC8A867368E66E517D3A88337C2 /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 135F3121F3D8B3CE6F7B34296B24B624 /* EXLocalAuthentication-dummy.m */; };
-		41F18C29D26182E3F0ADEE6066101704 /* EXLocalAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F39137866B42F86CDD54E288DBED11F /* EXLocalAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8CB418C98A508B27D428335BCEF4DD0F /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C4355AB5F222BDC84C354CE22FF1731D /* EXLocalAuthentication.m */; };
+		0846DDC8A867368E66E517D3A88337C2 /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F2BA795ACBAF5BC94093579AA616DC47 /* EXLocalAuthentication-dummy.m */; };
+		41F18C29D26182E3F0ADEE6066101704 /* EXLocalAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B33F8160C5AB7C6396CFA6BAE7475CC /* EXLocalAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8CB418C98A508B27D428335BCEF4DD0F /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC33B1675E43B3BCE2EDCDBF208FD42 /* EXLocalAuthentication.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,15 +30,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		135F3121F3D8B3CE6F7B34296B24B624 /* EXLocalAuthentication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocalAuthentication-dummy.m"; sourceTree = "<group>"; };
+		2B33F8160C5AB7C6396CFA6BAE7475CC /* EXLocalAuthentication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocalAuthentication.h; path = EXLocalAuthentication/EXLocalAuthentication.h; sourceTree = "<group>"; };
 		390E3D148DAAAA8261A98558C1658AB2 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
 		3DEF00518FD4CB9CD86A45E2307D43BB /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		3F185DC83B8CE9898D84EE0F4EDF4411 /* EXLocalAuthentication.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalAuthentication.xcconfig; sourceTree = "<group>"; };
 		3F417EA42D2B8AFAE8F227A498E73A3F /* libEXLocalAuthentication.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXLocalAuthentication.a; path = libEXLocalAuthentication.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		5C4437CF48E28404227554D19F235D77 /* EXLocalAuthentication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocalAuthentication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		768B5FF95CB85FF39FF436F59C9FE04A /* EXLocalAuthentication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocalAuthentication-prefix.pch"; sourceTree = "<group>"; };
-		7F39137866B42F86CDD54E288DBED11F /* EXLocalAuthentication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocalAuthentication.h; path = EXLocalAuthentication/EXLocalAuthentication.h; sourceTree = "<group>"; };
-		C4355AB5F222BDC84C354CE22FF1731D /* EXLocalAuthentication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocalAuthentication.m; path = EXLocalAuthentication/EXLocalAuthentication.m; sourceTree = "<group>"; };
+		58F51EFF8C06EA8F5B4517E78B4AD192 /* EXLocalAuthentication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocalAuthentication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		CD8F4F8803C653DE75B23DCB704F784B /* EXLocalAuthentication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalAuthentication.release.xcconfig; sourceTree = "<group>"; };
+		D9DDCA0541815731E489C05CA88A6680 /* EXLocalAuthentication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalAuthentication.debug.xcconfig; sourceTree = "<group>"; };
+		E70435C6C78B14FC20C686D762CAE175 /* EXLocalAuthentication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocalAuthentication-prefix.pch"; sourceTree = "<group>"; };
+		EFC33B1675E43B3BCE2EDCDBF208FD42 /* EXLocalAuthentication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocalAuthentication.m; path = EXLocalAuthentication/EXLocalAuthentication.m; sourceTree = "<group>"; };
+		F2BA795ACBAF5BC94093579AA616DC47 /* EXLocalAuthentication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocalAuthentication-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +53,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3102CC4713DC969B40A966276A7E1EC0 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F2BA795ACBAF5BC94093579AA616DC47 /* EXLocalAuthentication-dummy.m */,
+				E70435C6C78B14FC20C686D762CAE175 /* EXLocalAuthentication-prefix.pch */,
+				D9DDCA0541815731E489C05CA88A6680 /* EXLocalAuthentication.debug.xcconfig */,
+				CD8F4F8803C653DE75B23DCB704F784B /* EXLocalAuthentication.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXLocalAuthentication";
+			sourceTree = "<group>";
+		};
 		3FF7E7AF21717F6EC86E27ED7A8EF94A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -67,26 +80,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		83E24F61760C42EF77916D22DCEEF26A /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				58F51EFF8C06EA8F5B4517E78B4AD192 /* EXLocalAuthentication.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		964C5B30D00284EC36946019351804D6 = {
 			isa = PBXGroup;
 			children = (
 				AC06126D5D83A73C44A75C8505A9A579 /* Dependencies */,
-				AAF2FE5194555CA515AB675168B9423A /* EXLocalAuthentication */,
+				E4B1D6E43B466F59E576BF880F97569D /* EXLocalAuthentication */,
 				7C151BC402F8404A3F45395269ABF6EB /* Frameworks */,
 				3FF7E7AF21717F6EC86E27ED7A8EF94A /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		AAF2FE5194555CA515AB675168B9423A /* EXLocalAuthentication */ = {
-			isa = PBXGroup;
-			children = (
-				7F39137866B42F86CDD54E288DBED11F /* EXLocalAuthentication.h */,
-				C4355AB5F222BDC84C354CE22FF1731D /* EXLocalAuthentication.m */,
-				C993821A4851463170C3FA3C8DCE4F61 /* Pod */,
-				D30B763DD636B0D6C0F3317355C06834 /* Support Files */,
-			);
-			name = EXLocalAuthentication;
-			path = "../../../../packages/expo-local-authentication/ios";
 			sourceTree = "<group>";
 		};
 		AC06126D5D83A73C44A75C8505A9A579 /* Dependencies */ = {
@@ -98,23 +107,16 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		C993821A4851463170C3FA3C8DCE4F61 /* Pod */ = {
+		E4B1D6E43B466F59E576BF880F97569D /* EXLocalAuthentication */ = {
 			isa = PBXGroup;
 			children = (
-				5C4437CF48E28404227554D19F235D77 /* EXLocalAuthentication.podspec */,
+				2B33F8160C5AB7C6396CFA6BAE7475CC /* EXLocalAuthentication.h */,
+				EFC33B1675E43B3BCE2EDCDBF208FD42 /* EXLocalAuthentication.m */,
+				83E24F61760C42EF77916D22DCEEF26A /* Pod */,
+				3102CC4713DC969B40A966276A7E1EC0 /* Support Files */,
 			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		D30B763DD636B0D6C0F3317355C06834 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				3F185DC83B8CE9898D84EE0F4EDF4411 /* EXLocalAuthentication.xcconfig */,
-				135F3121F3D8B3CE6F7B34296B24B624 /* EXLocalAuthentication-dummy.m */,
-				768B5FF95CB85FF39FF436F59C9FE04A /* EXLocalAuthentication-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXLocalAuthentication";
+			name = EXLocalAuthentication;
+			path = "../../../../packages/expo-local-authentication/ios";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -275,30 +277,6 @@
 			};
 			name = Debug;
 		};
-		8438C80E4104A2C6730815FC5A113653 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3F185DC83B8CE9898D84EE0F4EDF4411 /* EXLocalAuthentication.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLocalAuthentication;
-				PRODUCT_NAME = EXLocalAuthentication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		A52049DE7CC51027C5521253F9A445CB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -359,9 +337,9 @@
 			};
 			name = Release;
 		};
-		D5DE1E296D4ADCCC6E7B0AEE4D8C99B2 /* Release */ = {
+		B2831BD51767CC9C7ED603F488B7A337 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3F185DC83B8CE9898D84EE0F4EDF4411 /* EXLocalAuthentication.xcconfig */;
+			baseConfigurationReference = CD8F4F8803C653DE75B23DCB704F784B /* EXLocalAuthentication.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -384,14 +362,38 @@
 			};
 			name = Release;
 		};
+		EBD1569764A1D38E0C33EE50B7811BA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D9DDCA0541815731E489C05CA88A6680 /* EXLocalAuthentication.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLocalAuthentication;
+				PRODUCT_NAME = EXLocalAuthentication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		6A79242EC68E83DA25514EED507D1F9C /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8438C80E4104A2C6730815FC5A113653 /* Debug */,
-				D5DE1E296D4ADCCC6E7B0AEE4D8C99B2 /* Release */,
+				EBD1569764A1D38E0C33EE50B7811BA4 /* Debug */,
+				B2831BD51767CC9C7ED603F488B7A337 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -15,7 +15,7 @@ PODS:
   - EXAppAuth (9.1.0):
     - AppAuth (~> 1.2)
     - UMCore
-  - EXApplication (2.2.0):
+  - EXApplication (2.2.1):
     - UMCore
   - EXAV (8.2.0):
     - UMCore
@@ -44,7 +44,7 @@ PODS:
     - UMPermissionsInterface
   - EXCellular (2.2.0):
     - UMCore
-  - EXConstants (9.1.0):
+  - EXConstants (9.1.1):
     - UMConstantsInterface
     - UMCore
   - EXContacts (8.2.0):
@@ -128,10 +128,10 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.2.0):
     - UMCore
-  - EXNotifications (0.2.0):
+  - EXNotifications (0.3.0):
     - UMCore
     - UMPermissionsInterface
-  - EXPermissions (8.2.0):
+  - EXPermissions (9.0.0):
     - UMCore
     - UMPermissionsInterface
   - expo-image (1.0.0-alpha.0):
@@ -876,7 +876,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAmplitude: 923c6c38ae2e3954db4292a92acb8ef04afee880
   EXAppAuth: 3e963954e2d27777a79a2f28ce0c99d9aa2665c2
-  EXApplication: be6bb8d3a5e756a4d063bf66ee377feadc6e2cee
+  EXApplication: d7ccb60c33fa4d506967ff6adde42a0f872d69ad
   EXAV: 1a9a55e896c387d02416ab4b6f11db31da5f6a1f
   EXBackgroundFetch: 17f9aa2f2235c8686900ebfff6eaa38edf5a8ee9
   EXBarCodeScanner: 28bf65ebda0c5ec410812632d0ba5fc5e77f94c9
@@ -886,7 +886,7 @@ SPEC CHECKSUMS:
   EXBrightness: 8ce16b7190d1b1c7482ea3781165e8484b25bf2e
   EXCalendar: b0ef4fdc0d5c2833b792c5ece5bc8e9c07004db5
   EXCellular: 0bc3c896d022cc8fe833148de8fe1e1d89e99922
-  EXConstants: baf3140d4faf0f9f933b2ba7b38ad2c0fc2f8a6d
+  EXConstants: f907b3b6ce16e20d1750f22af1e095e924574bcb
   EXContacts: 3d64afc53d5e5715e74de00f6d46f433fa2ac7b1
   EXCrypto: d0f379f95b16c4b93580f64ec7052fbcb4d0cade
   EXDevice: 3b93caaa1b589f6e5db49460c86d2df73f5fbf35
@@ -913,8 +913,8 @@ SPEC CHECKSUMS:
   EXMailComposer: ce7643e7ad21ba84baeeedbc187f9811e573a457
   EXMediaLibrary: 7c2f60d48c0bf6c24f6726763a3361d614425976
   EXNetwork: e0a2210811a3e977d07f9eecb4b437419e01ba96
-  EXNotifications: f21afb8bd924dd66945df27400df213fa8713a35
-  EXPermissions: 98c3c036bada9342d3e6a51a18bb1166f9085e67
+  EXNotifications: 921bebfde64c1727c1ef8c4df2b1396bb2d2f23a
+  EXPermissions: b6bb4e9261643bd3e6a0c5f8d5b5c841177815f2
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 41e3356a233ff92e3bd03fb800e2efa03e0b0b64
   EXRandom: 59fd7ceace3251897b71d65f0313564b5cf12734
@@ -993,4 +993,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5e336c4046a5cf7924b429b07035b2e33d122cdd
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.0

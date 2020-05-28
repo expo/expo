@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Platform, ScrollView, Text, View, StatusBar } from 'react-native';
+import { Button, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeArea, SafeAreaConsumer } from 'react-native-safe-area-context';
 
 import HeadingText from '../components/HeadingText';
@@ -26,7 +26,6 @@ export default function SafeAreaContextScreen({ navigation }: { navigation: any 
             <Button title="Switch to SafeAreaView" onPress={() => setFocused('view')} />
             <View style={{ marginVertical: Platform.OS === 'ios' ? 0 : 10 }} />
             <Button title="Go back to APIs" onPress={() => navigation.goBack()} />
-            <StatusBar hidden={true} />
           </ScrollView>
         )}
       </SafeAreaConsumer>

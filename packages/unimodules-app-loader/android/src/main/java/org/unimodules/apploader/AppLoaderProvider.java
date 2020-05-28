@@ -1,7 +1,7 @@
 package org.unimodules.apploader;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -9,22 +9,7 @@ import java.util.Map;
 
 public class AppLoaderProvider {
 
-  private static Map<String, Class> loaderClasses = new HashMap<>();
   private static Map<String, HeadlessAppLoader> loaders = new HashMap<>();
-
-  public static void registerLoader(Context context, String name, Class loaderClass) {
-    registerLoader(context, name, loaderClass, false);
-  }
-
-  public static void registerLoader(Context context, String name, Class loaderClass, boolean overload) {
-    if (!overload) {
-      if (appLoaderRegisteredForName(context, name, loaderClass)) return;
-    }
-    getSharedPreferences(context).edit()
-      .putString(appLoaderKey(name), loaderClass.getName())
-      .apply();
-    loaderClasses.put(name, loaderClass);
-  }
 
   public static HeadlessAppLoader getLoader(String name, Context context) {
     if (!loaders.containsKey(name)) {
@@ -39,32 +24,21 @@ public class AppLoaderProvider {
     return loaders.get(name);
   }
 
-  private static boolean appLoaderRegisteredForName(Context context, String name, Class loaderClass) {
-    String cachedClassName = getSharedPreferences(context).getString(appLoaderKey(name), null);
-    return loaderClasses.containsKey(name) || loaderClass.getName().equals(cachedClassName);
-  }
-
+  @SuppressWarnings("unchecked")
   private static void createLoader(String name, Context context) throws ClassNotFoundException, IllegalAccessException, InstantiationException, java.lang.reflect.InvocationTargetException, NoSuchMethodException {
-    Class loaderClass = loaderClasses.get(name);
-    if (loaderClass == null) {
-      String loaderClassName = getSharedPreferences(context)
-        .getString(appLoaderKey(name), null);
+    Class<? extends HeadlessAppLoader> loaderClass;
+    try {
+      String loaderClassName = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString("org.unimodules.core.AppLoader#" + name);
       if (loaderClassName != null) {
-        loaderClass = Class.forName(loaderClassName);
+        loaderClass = (Class<? extends HeadlessAppLoader>)Class.forName(loaderClassName);
+        loaders.put(name, (HeadlessAppLoader) loaderClass.getDeclaredConstructor(Context.class).newInstance(context));
+      } else {
+        throw new IllegalStateException("Unable to instantiate AppLoader!");
       }
+    } catch (PackageManager.NameNotFoundException e) {
+      throw new IllegalStateException("Unable to instantiate AppLoader!", e);
     }
-    loaders.put(name, (HeadlessAppLoader) loaderClass.getDeclaredConstructor(Context.class).newInstance(context));
-  }
 
-  private static final String APP_LOADER_PREFERENCES_NAME = "appLoader_config";
-  private static final String KEY_LOADER_PREFIX = "appLoader_";
-
-  private static String appLoaderKey(String appLoaderName) {
-    return KEY_LOADER_PREFIX + appLoaderName;
-  }
-
-  private static SharedPreferences getSharedPreferences(Context context) {
-    return context.getSharedPreferences(APP_LOADER_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 
   public static abstract class Callback {
