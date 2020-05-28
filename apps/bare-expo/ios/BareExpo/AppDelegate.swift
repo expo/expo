@@ -50,9 +50,6 @@ class AppDelegate: UMAppDelegateWrapper {
   // https://github.com/expo/react-native/commit/7f2912e8005ea6e81c45935241081153b822b988
   func ensureReactMethodSwizzlingSetUp() {
     Dispatch.once {
-
-      //#pragma clang diagnostic push
-      //#pragma clang diagnostic ignored "-Wundeclared-selector"
       // RCTKeyCommands.m
       // swizzle UIResponder
       RCTSwapInstanceMethods(UIResponder.self,
@@ -66,7 +63,6 @@ class AppDelegate: UMAppDelegateWrapper {
       RCTSwapInstanceMethods(UIWindow.self,
                              #selector(UIResponder.motionEnded(_:with:)),
                              Selector(("RCT_motionEnded:withEvent:")))
-      //#pragma clang diagnostic pop
     }
   }
 }
