@@ -86,7 +86,7 @@ export function printPackageParcel(parcel: Parcel): void {
   if (logs && logs.commits.length > 0) {
     logger.log('  ', magenta('New commits:'));
 
-    logs.commits.forEach((commitLog) => {
+    [...logs.commits].reverse().forEach((commitLog) => {
       logger.log('    ', Formatter.formatCommitLog(commitLog));
     });
   }
