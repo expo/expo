@@ -11,7 +11,7 @@ import com.facebook.react.views.view.ReactViewGroup;
 import androidx.annotation.Nullable;
 
 @SuppressLint("ViewConstructor")
-public class SafeAreaProvider extends ReactViewGroup implements ViewTreeObserver.OnGlobalLayoutListener {
+public class SafeAreaProvider extends ReactViewGroup implements ViewTreeObserver.OnPreDrawListener {
   public interface OnInsetsChangeListener {
     void onInsetsChange(SafeAreaProvider view, EdgeInsets insets, Rect frame);
   }
@@ -25,7 +25,7 @@ public class SafeAreaProvider extends ReactViewGroup implements ViewTreeObserver
   }
 
   private void maybeUpdateInsets() {
-    EdgeInsets edgeInsets = SafeAreaUtils.getSafeAreaInsets(getRootView(), this);
+    EdgeInsets edgeInsets = SafeAreaUtils.getSafeAreaInsets(this);
     Rect frame = SafeAreaUtils.getFrame((ViewGroup) getRootView(), this);
     if (edgeInsets != null && frame != null &&
         (mLastInsets == null ||
@@ -42,7 +42,7 @@ public class SafeAreaProvider extends ReactViewGroup implements ViewTreeObserver
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
 
-    getViewTreeObserver().addOnGlobalLayoutListener(this);
+    getViewTreeObserver().addOnPreDrawListener(this);
     maybeUpdateInsets();
   }
 
@@ -50,13 +50,15 @@ public class SafeAreaProvider extends ReactViewGroup implements ViewTreeObserver
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
 
-    getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    getViewTreeObserver().removeOnPreDrawListener(this);
   }
 
   @Override
-  public void onGlobalLayout() {
+  public boolean onPreDraw() {
     maybeUpdateInsets();
+    return true;
   }
+
 
   public void setOnInsetsChangeListener(OnInsetsChangeListener listener) {
     mInsetsChangeListener = listener;

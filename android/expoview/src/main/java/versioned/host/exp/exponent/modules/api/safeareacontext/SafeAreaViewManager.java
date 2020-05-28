@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -9,8 +10,6 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.EnumSet;
-
-import javax.annotation.Nullable;
 
 public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
   public SafeAreaViewManager() {
@@ -40,6 +39,15 @@ public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
     return SafeAreaViewShadowNode.class;
   }
 
+  @ReactProp(name = "mode")
+  public void setMode(SafeAreaView view, @Nullable String mode) {
+    if ("padding".equals(mode)) {
+      view.setMode(SafeAreaViewMode.PADDING);
+    } else if ("margin".equals(mode)) {
+      view.setMode(SafeAreaViewMode.MARGIN);
+    }
+  }
+
   @ReactProp(name = "edges")
   public void setEdges(SafeAreaView view, @Nullable ReadableArray propList) {
     EnumSet<SafeAreaViewEdges> edges = EnumSet.noneOf(SafeAreaViewEdges.class);
@@ -60,10 +68,5 @@ public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
     }
 
     view.setEdges(edges);
-  }
-
-  @ReactProp(name = "emulateUnlessSupported")
-  public void setEmulateUnlessSupported(SafeAreaView view, boolean propList) {
-    // Ignore
   }
 }
