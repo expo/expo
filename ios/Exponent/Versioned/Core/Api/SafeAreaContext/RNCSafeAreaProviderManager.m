@@ -6,7 +6,7 @@
 
 RCT_EXPORT_MODULE(RNCSafeAreaProvider)
 
-RCT_EXPORT_VIEW_PROPERTY(onInsetsChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onInsetsChange, RCTDirectEventBlock)
 
 + (BOOL)requiresMainQueueSetup
 {
