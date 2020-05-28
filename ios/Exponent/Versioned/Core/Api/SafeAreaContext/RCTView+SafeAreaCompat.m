@@ -2,23 +2,31 @@
 
 #import <React/RCTUIManager.h>
 
-@implementation RCTView(SafeAreaCompat)
+BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIEdgeInsets insets2, CGFloat threshold)
+{
+  return ABS(insets1.left - insets2.left) <= threshold &&
+    ABS(insets1.right - insets2.right) <= threshold &&
+    ABS(insets1.top - insets2.top) <= threshold &&
+    ABS(insets1.bottom - insets2.bottom) <= threshold;
+}
+
+@implementation UIView(SafeAreaCompat)
 
 - (BOOL)nativeSafeAreaSupport
 {
   return [self respondsToSelector:@selector(safeAreaInsets)];
 }
 
-- (UIEdgeInsets)realOrEmulateSafeAreaInsets:(BOOL)emulate
+- (UIEdgeInsets)safeAreaInsetsOrEmulate
 {
   #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
   if (self.nativeSafeAreaSupport) {
     if (@available(iOS 11.0, *)) {
-       return self.safeAreaInsets;
+      return self.safeAreaInsets;
     }
   }
   #endif
-  return emulate ? self.emulatedSafeAreaInsets : UIEdgeInsetsZero;
+  return self.emulatedSafeAreaInsets;
 }
 
 - (UIEdgeInsets)emulatedSafeAreaInsets
