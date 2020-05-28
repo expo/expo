@@ -7,26 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		028AEBC4493A27F4CF54D839FFB13422 /* EXRemoteNotificationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D724335BB0DA0377F2FC3B4C4768C7C /* EXRemoteNotificationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0C80391B2D25FC464F09B07AB0E5D12A /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = ABFEC310AD7C8DD93C4837C7FB024D7B /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		330C6E2FDDD5E51AFC80A3C591BA32C3 /* EXRemoteNotificationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = E239A779307062C84580D641907C25BB /* EXRemoteNotificationPermissionRequester.m */; };
-		564D3EEAB6694FA65E77FE5413BF4F6A /* EXUserNotificationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FBC5D4495F2FC9B522B9273F0CF6ED0 /* EXUserNotificationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		88EF60E79866A52C7DE85FA218E19887 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BD3672C11CA32C1F06C251C3DFD5B516 /* EXPermissions-dummy.m */; };
-		8C5119CCDA2581AE9D179866C8E51F27 /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E023980DB7D88DC315BBB8B8C2AB6 /* EXPermissions.m */; };
-		BE3E17D9CB2073EDE83B7E137C06A325 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = DEAA0C361008BDB1267D6536B5DC4A58 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CAF77BF8607A50D2FB953A732D2732F8 /* EXUserNotificationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 116B1B56BDDDBAA89D94A2B6A2C1A2E6 /* EXUserNotificationPermissionRequester.m */; };
-		FA61A64BEF36658A97B5442F18CFBDCA /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = F30ACF9A4F16B57BCEC8EB2E95C690E5 /* EXReactNativeUserNotificationCenterProxy.m */; };
+		2F533F71A67F99363DC6EF446EA5F494 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C967C8C58687C99A52855052E7764570 /* EXPermissions-dummy.m */; };
+		679A8A43BC6B1CB4BA02F838379A2380 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = E29139B746F5350AE56E7BE3D2477AB8 /* EXReactNativeUserNotificationCenterProxy.m */; };
+		6B74CDB306DFA31D0BBAD92BBAC64B5F /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = FA229EFB1C8EF95294788CB2DAC4E12C /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BE46AD4921D603F6AA23A29F7397FED3 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FE550422F3F36F90F02ED8498414049 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D5E98CDD6E618071618CC4E3F2655B6F /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = D4852C03D70F57B680F31B24AEDF96F6 /* EXPermissions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A1012AA6E4533DBED22D37B558337ED2 /* PBXContainerItemProxy */ = {
+		4635D83349F17C1FBAC062A2D590C9C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
-		C9539CAEF8BE38F3C47095748F0DAEB1 /* PBXContainerItemProxy */ = {
+		915CDA177F42F7183F2BF82A5B3789A7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D2058653576C4016C65A58703057E384 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -37,24 +33,20 @@
 
 /* Begin PBXFileReference section */
 		01A1DC8068A812A8B3A183BCC95FFF5A /* libEXPermissions.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXPermissions.a; path = libEXPermissions.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0FBC5D4495F2FC9B522B9273F0CF6ED0 /* EXUserNotificationPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXUserNotificationPermissionRequester.h; sourceTree = "<group>"; };
-		116B1B56BDDDBAA89D94A2B6A2C1A2E6 /* EXUserNotificationPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXUserNotificationPermissionRequester.m; sourceTree = "<group>"; };
 		23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		2D8E023980DB7D88DC315BBB8B8C2AB6 /* EXPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPermissions.m; path = EXPermissions/EXPermissions.m; sourceTree = "<group>"; };
-		3D724335BB0DA0377F2FC3B4C4768C7C /* EXRemoteNotificationPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXRemoteNotificationPermissionRequester.h; sourceTree = "<group>"; };
-		5DF5932DDE75DD939473C51D992990E9 /* EXPermissions-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPermissions-prefix.pch"; sourceTree = "<group>"; };
-		82BE333F053E5F296949F2B69D1D25F1 /* EXPermissions.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPermissions.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9718FE301C55CBEF2BA63F9F0C45C8E6 /* EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPermissions.xcconfig; sourceTree = "<group>"; };
-		ABFEC310AD7C8DD93C4837C7FB024D7B /* EXReactNativeUserNotificationCenterProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXReactNativeUserNotificationCenterProxy.h; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.h; sourceTree = "<group>"; };
-		BD3672C11CA32C1F06C251C3DFD5B516 /* EXPermissions-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPermissions-dummy.m"; sourceTree = "<group>"; };
+		4FE550422F3F36F90F02ED8498414049 /* EXPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPermissions.h; path = EXPermissions/EXPermissions.h; sourceTree = "<group>"; };
+		63541AB4E5EC81420E9451206A285757 /* EXPermissions-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPermissions-prefix.pch"; sourceTree = "<group>"; };
+		9C4B6B2855D8DB4D60399B82F0C91F0B /* EXPermissions.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPermissions.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C967C8C58687C99A52855052E7764570 /* EXPermissions-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPermissions-dummy.m"; sourceTree = "<group>"; };
 		D2058653576C4016C65A58703057E384 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		DEAA0C361008BDB1267D6536B5DC4A58 /* EXPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPermissions.h; path = EXPermissions/EXPermissions.h; sourceTree = "<group>"; };
-		E239A779307062C84580D641907C25BB /* EXRemoteNotificationPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXRemoteNotificationPermissionRequester.m; sourceTree = "<group>"; };
-		F30ACF9A4F16B57BCEC8EB2E95C690E5 /* EXReactNativeUserNotificationCenterProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXReactNativeUserNotificationCenterProxy.m; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.m; sourceTree = "<group>"; };
+		D4852C03D70F57B680F31B24AEDF96F6 /* EXPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPermissions.m; path = EXPermissions/EXPermissions.m; sourceTree = "<group>"; };
+		D51236714849580CB91B01FDE19A17A5 /* EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPermissions.xcconfig; sourceTree = "<group>"; };
+		E29139B746F5350AE56E7BE3D2477AB8 /* EXReactNativeUserNotificationCenterProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXReactNativeUserNotificationCenterProxy.m; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.m; sourceTree = "<group>"; };
+		FA229EFB1C8EF95294788CB2DAC4E12C /* EXReactNativeUserNotificationCenterProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXReactNativeUserNotificationCenterProxy.h; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		72AB8FCB5497D341025D3AABF14AF037 /* Frameworks */ = {
+		C0D82D499717142E163B95CF0D6F73AE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -64,12 +56,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		04BB61ADC9DF3512A962F426C45EF054 /* Pod */ = {
+		121F0DB45B1D0284EBDA70CDF6BF74F4 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				82BE333F053E5F296949F2B69D1D25F1 /* EXPermissions.podspec */,
+				9C4B6B2855D8DB4D60399B82F0C91F0B /* EXPermissions.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		27ED21CE3F098CCC2D9B319DE0217FB6 /* EXPermissions */ = {
+			isa = PBXGroup;
+			children = (
+				4FE550422F3F36F90F02ED8498414049 /* EXPermissions.h */,
+				D4852C03D70F57B680F31B24AEDF96F6 /* EXPermissions.m */,
+				FA229EFB1C8EF95294788CB2DAC4E12C /* EXReactNativeUserNotificationCenterProxy.h */,
+				E29139B746F5350AE56E7BE3D2477AB8 /* EXReactNativeUserNotificationCenterProxy.m */,
+				121F0DB45B1D0284EBDA70CDF6BF74F4 /* Pod */,
+				40B1E7089BBE581CE761B17E5714BCCB /* Support Files */,
+			);
+			name = EXPermissions;
+			path = "../../../../packages/expo-permissions/ios";
 			sourceTree = "<group>";
 		};
 		3F718E59B0171F9699987AA7D05A9460 /* Dependencies */ = {
@@ -81,37 +87,12 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		441DC3C18889614FBFE9DED3D6BD587D /* EXPermissions */ = {
+		40B1E7089BBE581CE761B17E5714BCCB /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				DEAA0C361008BDB1267D6536B5DC4A58 /* EXPermissions.h */,
-				2D8E023980DB7D88DC315BBB8B8C2AB6 /* EXPermissions.m */,
-				ABFEC310AD7C8DD93C4837C7FB024D7B /* EXReactNativeUserNotificationCenterProxy.h */,
-				F30ACF9A4F16B57BCEC8EB2E95C690E5 /* EXReactNativeUserNotificationCenterProxy.m */,
-				04BB61ADC9DF3512A962F426C45EF054 /* Pod */,
-				BC9350D0A3617C91E9C5F0D48455586D /* Requesters */,
-				907F588B8CA09BBEDFBEB6DCDEA088DF /* Support Files */,
-			);
-			name = EXPermissions;
-			path = "../../../../packages/expo-permissions/ios";
-			sourceTree = "<group>";
-		};
-		89E27617155F82B61D58FB61BE9F3407 /* RemoteNotification */ = {
-			isa = PBXGroup;
-			children = (
-				3D724335BB0DA0377F2FC3B4C4768C7C /* EXRemoteNotificationPermissionRequester.h */,
-				E239A779307062C84580D641907C25BB /* EXRemoteNotificationPermissionRequester.m */,
-			);
-			name = RemoteNotification;
-			path = RemoteNotification;
-			sourceTree = "<group>";
-		};
-		907F588B8CA09BBEDFBEB6DCDEA088DF /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				9718FE301C55CBEF2BA63F9F0C45C8E6 /* EXPermissions.xcconfig */,
-				BD3672C11CA32C1F06C251C3DFD5B516 /* EXPermissions-dummy.m */,
-				5DF5932DDE75DD939473C51D992990E9 /* EXPermissions-prefix.pch */,
+				D51236714849580CB91B01FDE19A17A5 /* EXPermissions.xcconfig */,
+				C967C8C58687C99A52855052E7764570 /* EXPermissions-dummy.m */,
+				63541AB4E5EC81420E9451206A285757 /* EXPermissions-prefix.pch */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXPermissions";
@@ -125,31 +106,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AD8E941F0F93C566091EA8FC66F197CD /* UserNotification */ = {
-			isa = PBXGroup;
-			children = (
-				0FBC5D4495F2FC9B522B9273F0CF6ED0 /* EXUserNotificationPermissionRequester.h */,
-				116B1B56BDDDBAA89D94A2B6A2C1A2E6 /* EXUserNotificationPermissionRequester.m */,
-			);
-			name = UserNotification;
-			path = UserNotification;
-			sourceTree = "<group>";
-		};
-		BC9350D0A3617C91E9C5F0D48455586D /* Requesters */ = {
-			isa = PBXGroup;
-			children = (
-				89E27617155F82B61D58FB61BE9F3407 /* RemoteNotification */,
-				AD8E941F0F93C566091EA8FC66F197CD /* UserNotification */,
-			);
-			name = Requesters;
-			path = EXPermissions/Requesters;
-			sourceTree = "<group>";
-		};
 		CA57B2477F967B79F73A580AF5DC80B5 = {
 			isa = PBXGroup;
 			children = (
 				3F718E59B0171F9699987AA7D05A9460 /* Dependencies */,
-				441DC3C18889614FBFE9DED3D6BD587D /* EXPermissions */,
+				27ED21CE3F098CCC2D9B319DE0217FB6 /* EXPermissions */,
 				F0844FFECEE1FF894716DA737ACCEFEF /* Frameworks */,
 				9EDFF3299932780154763497EC9393F2 /* Products */,
 			);
@@ -165,14 +126,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		2EAF1E72F5F21DA8621CEFA083CA41BA /* Headers */ = {
+		23DF97D7524845ACD563FFF2BBE7D4F2 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE3E17D9CB2073EDE83B7E137C06A325 /* EXPermissions.h in Headers */,
-				0C80391B2D25FC464F09B07AB0E5D12A /* EXReactNativeUserNotificationCenterProxy.h in Headers */,
-				028AEBC4493A27F4CF54D839FFB13422 /* EXRemoteNotificationPermissionRequester.h in Headers */,
-				564D3EEAB6694FA65E77FE5413BF4F6A /* EXUserNotificationPermissionRequester.h in Headers */,
+				BE46AD4921D603F6AA23A29F7397FED3 /* EXPermissions.h in Headers */,
+				6B74CDB306DFA31D0BBAD92BBAC64B5F /* EXReactNativeUserNotificationCenterProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,17 +140,17 @@
 /* Begin PBXNativeTarget section */
 		488F0C19AB92FC4B503EB55CC688FCF5 /* EXPermissions */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 04FFEA4573A329A7A8B6914139C98A51 /* Build configuration list for PBXNativeTarget "EXPermissions" */;
+			buildConfigurationList = 2395E9E43D24EA4D5617188E0A57A578 /* Build configuration list for PBXNativeTarget "EXPermissions" */;
 			buildPhases = (
-				2EAF1E72F5F21DA8621CEFA083CA41BA /* Headers */,
-				44EB9690BDA92DF002588F9C362D6005 /* Sources */,
-				72AB8FCB5497D341025D3AABF14AF037 /* Frameworks */,
+				23DF97D7524845ACD563FFF2BBE7D4F2 /* Headers */,
+				47FDE5CA437422130BD69E6A6CC43D4B /* Sources */,
+				C0D82D499717142E163B95CF0D6F73AE /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5AA152B5F56E6C39580860009F034FF3 /* PBXTargetDependency */,
-				1B641D6D9DA7FC6B66BE5AB685452D4E /* PBXTargetDependency */,
+				CECD489D0917F42F962165C9ADE90B16 /* PBXTargetDependency */,
+				A7CC02A4C58ACCA861AFFAFFD4DA1B6D /* PBXTargetDependency */,
 			);
 			name = EXPermissions;
 			productName = EXPermissions;
@@ -234,37 +193,35 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		44EB9690BDA92DF002588F9C362D6005 /* Sources */ = {
+		47FDE5CA437422130BD69E6A6CC43D4B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				88EF60E79866A52C7DE85FA218E19887 /* EXPermissions-dummy.m in Sources */,
-				8C5119CCDA2581AE9D179866C8E51F27 /* EXPermissions.m in Sources */,
-				FA61A64BEF36658A97B5442F18CFBDCA /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
-				330C6E2FDDD5E51AFC80A3C591BA32C3 /* EXRemoteNotificationPermissionRequester.m in Sources */,
-				CAF77BF8607A50D2FB953A732D2732F8 /* EXUserNotificationPermissionRequester.m in Sources */,
+				2F533F71A67F99363DC6EF446EA5F494 /* EXPermissions-dummy.m in Sources */,
+				D5E98CDD6E618071618CC4E3F2655B6F /* EXPermissions.m in Sources */,
+				679A8A43BC6B1CB4BA02F838379A2380 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B641D6D9DA7FC6B66BE5AB685452D4E /* PBXTargetDependency */ = {
+		A7CC02A4C58ACCA861AFFAFFD4DA1B6D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = A1012AA6E4533DBED22D37B558337ED2 /* PBXContainerItemProxy */;
+			targetProxy = 4635D83349F17C1FBAC062A2D590C9C8 /* PBXContainerItemProxy */;
 		};
-		5AA152B5F56E6C39580860009F034FF3 /* PBXTargetDependency */ = {
+		CECD489D0917F42F962165C9ADE90B16 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = C9539CAEF8BE38F3C47095748F0DAEB1 /* PBXContainerItemProxy */;
+			targetProxy = 915CDA177F42F7183F2BF82A5B3789A7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		158C8164DC31012275937FDE9DECC08E /* Release */ = {
+		17B737EC1A924E5A1D0C16FD497263D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9718FE301C55CBEF2BA63F9F0C45C8E6 /* EXPermissions.xcconfig */;
+			baseConfigurationReference = D51236714849580CB91B01FDE19A17A5 /* EXPermissions.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -283,9 +240,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		1C291454ECC94DD336D729B6C0798D35 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -411,9 +367,9 @@
 			};
 			name = Debug;
 		};
-		FE430B32740647D0978B00300281C558 /* Debug */ = {
+		8FD4375393CE3729385E53F76109EA51 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9718FE301C55CBEF2BA63F9F0C45C8E6 /* EXPermissions.xcconfig */;
+			baseConfigurationReference = D51236714849580CB91B01FDE19A17A5 /* EXPermissions.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -432,17 +388,18 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		04FFEA4573A329A7A8B6914139C98A51 /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
+		2395E9E43D24EA4D5617188E0A57A578 /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FE430B32740647D0978B00300281C558 /* Debug */,
-				158C8164DC31012275937FDE9DECC08E /* Release */,
+				17B737EC1A924E5A1D0C16FD497263D9 /* Debug */,
+				8FD4375393CE3729385E53F76109EA51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

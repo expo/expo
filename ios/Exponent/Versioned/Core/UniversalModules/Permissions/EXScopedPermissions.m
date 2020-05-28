@@ -70,7 +70,10 @@
     // ask for permission. If granted then save it as scope permission
     void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
       UM_ENSURE_STRONGIFY(self)
-      [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
+      // if permission should be scoped save it
+      if ([self shouldVerifyScopedPermission:permissionType]) {
+        [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
+      }
       resolve(permission);
     };
     
