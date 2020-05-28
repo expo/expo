@@ -1,5 +1,6 @@
 import { EventEmitter, Subscription } from './EventEmitter';
-import NativeModulesProxy, { ProxyNativeModule } from './NativeModulesProxy';
+import NativeModulesProxy from './NativeModulesProxy';
+import { ProxyNativeModule } from './NativeModulesProxy.types';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
 import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
