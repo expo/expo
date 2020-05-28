@@ -440,7 +440,26 @@ There is this awesome 1x1px png online generator: http://www.1x1px.me (use it to
 
 #### 🛠 (<em>optional</em>) Customize StatusBar
 
-<!-- TODO (@bbarthec) TO BE WRITTEN -->
+You might want to customize the StatusBar appearance during the time the SplashScreen is being shown.
+iOS platform allows customizing `hiding` and `style` of the StatusBar component.
+
+1. Customize `StatusBar hidden` flag:
+- open main project view, select your project name from `TARGETS` panel and navigate to `Info` tab,
+- add or modify `Status bar initially hidden` attribute with desired value.
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-statusBar-hidden.png" height="350" />
+</details>
+
+2. Customize `StatusBar style` option:
+- open main project view, select your project name from `TARGETS` panel and navigate to `Info` tab,
+- add or modify `Status bar style` attribute with desired value. 
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-statusBar-style.png" height="350" />
+</details>
 
 ## 🤖 Configure Android
 
