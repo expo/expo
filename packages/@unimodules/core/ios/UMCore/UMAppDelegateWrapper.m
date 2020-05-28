@@ -10,6 +10,8 @@ static dispatch_once_t onceToken;
 
 @implementation UMAppDelegateWrapper
 
+@synthesize window = _window;
+
 - (void)forwardInvocation:(NSInvocation *)invocation {
 #if DEBUG
   SEL selector = [invocation selector];
