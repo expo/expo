@@ -58,7 +58,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 
 ### Web
 
-- Open **Project overview** in the firebase console and click on the Web icon or + button to **Add Firebase to your iOS app**.
+- Open **Project overview** in the firebase console and click on the Web icon or + button to **Add Firebase to your Web app**.
 - Register the app & copy the config into your **`app.json`** under the key **`web.config.firebase`**.
 
 ```json
