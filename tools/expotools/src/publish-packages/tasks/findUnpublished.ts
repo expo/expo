@@ -1,5 +1,7 @@
+import npmPacklist from 'npm-packlist';
+
 import * as Changelogs from '../../Changelogs';
-import { GitDirectory, GitFileLog } from '../../Git';
+import { GitDirectory, GitFileLog, GitFileStatus } from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { filterAsync } from '../../Utils';
@@ -33,7 +35,7 @@ export const findUnpublished = new Task<TaskArgs>(
       state.minReleaseType = getMinReleaseType(parcel);
 
       // Return whether the package has any unpublished changes or git logs couldn't be obtained.
-      return !logs || logs.commits.length > 0 || changelogChanges.totalCount > 0;
+      return !logs || logs.files.length > 0 || changelogChanges.totalCount > 0;
     });
 
     if (newParcels.length === 0) {
@@ -46,6 +48,7 @@ export const findUnpublished = new Task<TaskArgs>(
 
 /**
  * Gets lists of commits and files changed under given directory and since commit with given checksum.
+ * Returned files list is filtered out from files ignored by npm when it creates package's tarball.
  * Can return `null` if given commit is not an ancestor of head commit.
  */
 async function getPackageGitLogsAsync(
@@ -61,10 +64,18 @@ async function getPackageGitLogsAsync(
     toCommit: 'head',
   });
 
-  const files = await gitDir.logFilesAsync({
-    fromCommit: commits[commits.length - 1]?.hash,
+  const gitFiles = await gitDir.logFilesAsync({
+    fromCommit,
     toCommit: commits[0]?.hash,
   });
+
+  // Get an array of relative paths to files that will be shipped with the package.
+  const packlist = await npmPacklist({ path: gitDir.path });
+
+  // Filter git files to contain only deleted or "packlisted" files.
+  const files = gitFiles.filter(
+    (file) => file.status === GitFileStatus.D || packlist.includes(file.relativePath)
+  );
 
   return {
     commits,
