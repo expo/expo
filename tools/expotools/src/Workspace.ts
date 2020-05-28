@@ -25,9 +25,9 @@ export type WorkspacesInfo = Record<string, WorkspaceProjectInfo>;
  */
 export async function getInfoAsync(): Promise<WorkspacesInfo> {
   const info = await spawnJSONCommandAsync<{ data: string }>('yarn', [
+    '--json',
     'workspaces',
     'info',
-    '--json',
   ]);
   return JSON.parse(info.data);
 }
