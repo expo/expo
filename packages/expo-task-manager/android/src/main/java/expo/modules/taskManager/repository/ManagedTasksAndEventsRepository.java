@@ -12,6 +12,11 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Standard implementation of {@link TasksAndEventsRepository} to be used in managed workflow.
+ *
+ * It maps <code>appId</code> to its tasks and events, and allows to retrieve them accordingly.
+ */
 public class ManagedTasksAndEventsRepository implements TasksAndEventsRepository {
 
   private final TasksPersistence tasksPersistence;

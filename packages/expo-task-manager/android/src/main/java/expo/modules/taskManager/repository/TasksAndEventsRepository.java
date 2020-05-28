@@ -13,9 +13,26 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Class used to store Tasks and Events for TaskManager.
+ *
+ * Tasks and Events are stored in static collections, thanks to which they remain intact during whole application lifetime.
+ * Additionally, it provides means to persistently store and restore Tasks whenever necessary.
+ *
+ * Differences in behavior are dictated by different approach in managed and bare workflow. See {@link ManagedTasksAndEventsRepository} and {@link BareTasksAndEventsRepository} for details.
+ */
 public interface TasksAndEventsRepository {
 
-  static TasksAndEventsRepository create(Context context) {
+  /**
+   * This factory methods tries to detect which strategy for storage and retrieving of stored tasks would be appropriate.
+   *
+   * Decision is based on value of metadata for *expo.modules.taskManager.oneAppId* which should be set to *true* in bare applications and to *false* in managed and in Client.
+   * This is due to the fact, that the value is originally set in *expo-task-manager's* AndroidManifest.xml and replaced in *expoview's* one.
+   * The latter is present only in managed workflow, the former is the only one in bare applications.
+   *
+   * @return Proper implementation of TasksAndEventsRepository
+   */
+  static TasksAndEventsRepository create(@NonNull Context context) {
     String oneAppIdMetadata = "expo.modules.taskManager.oneAppId";
     boolean oneAppId = false;
     try {

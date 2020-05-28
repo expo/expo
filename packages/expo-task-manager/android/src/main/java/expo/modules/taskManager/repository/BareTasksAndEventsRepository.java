@@ -13,6 +13,19 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Implementation of {@link TasksAndEventsRepository} to be used in bare workflow.
+ *
+ * It stores tasks and events by in relation to appId. However, upon retrieval it ignores appId and returns all stored tasks and events.
+ *
+ * In bare workflow there is no reason to map appId to task, since there is only one appId. However, we maintain this structure for some reasons:
+ *  1. Maintaining as much similarity as possible, due to delegation of persistent storage functionality
+ *  2. It might happen, after migration from managed to bare workflow, that there are some tasks under different appIds stored already
+ *
+ *  For the sake of simplicity and avoiding potential bugs, we change the behavior as minimally as possible.
+ *  In very unlikely scenario of having more than one appId in bare, we merge all tasks into one list upon retrieval.
+ *  While storing, we clear all info that is not associated with current appId to avoid future confusions.
+ */
 public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
 
   private final TasksPersistence tasksPersistence;

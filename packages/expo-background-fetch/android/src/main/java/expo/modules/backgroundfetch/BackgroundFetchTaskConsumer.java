@@ -39,7 +39,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   @Override
   public boolean canReceiveCustomBroadcast(String action) {
     // Let the TaskService know that we want to receive custom broadcasts
-    // having "android.intent.action.BOOT_COMPLETED" action.
+    // having "android.intent.action.BOOT_COMPLETED" or "Intent.ACTION_MY_PACKAGE_REPLACED" action.
     return Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action);
   }
 
@@ -65,7 +65,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     String action = intent.getAction();
 
     if (Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-      // Device has just been booted up - restore an alarm if "startOnBoot" option is enabled.
+      // Device has just been booted up or app has been reinstalled, so we need restore an alarm if "startOnBoot" option is enabled.
       Map<String, Object> options = mTask.getOptions();
       boolean startOnBoot = options.containsKey("startOnBoot") && (boolean) options.get("startOnBoot");
 
