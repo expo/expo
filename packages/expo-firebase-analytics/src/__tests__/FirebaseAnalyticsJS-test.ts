@@ -35,11 +35,13 @@ it(`Verfies parseEvent eventName validation`, async () => {
   } catch (error) {
     expect(error.message).toBe(expectedErrorMessage(name, eventName, 40));
   }
+
+  FirebaseAnalyticsJS.parseEvent(options, 'user_id');
 });
 
 it(`Verfies parseUserProperty userPropertyName validation`, async () => {
   const name = 'user-property name';
-  expect.assertions(3);
+  expect.assertions(4);
   const value = 'value';
 
   FirebaseAnalyticsJS.parseUserProperty(options, 'MyAnalyticsEvent', value);
@@ -62,6 +64,13 @@ it(`Verfies parseUserProperty userPropertyName validation`, async () => {
 
   try {
     eventName = '0LongNameThatIsMoreThan24ButLessThan40';
+    FirebaseAnalyticsJS.parseUserProperty(options, eventName, value);
+  } catch (error) {
+    expect(error.message).toBe(expectedErrorMessage(name, eventName, 24));
+  }
+
+  try {
+    eventName = 'user_id';
     FirebaseAnalyticsJS.parseUserProperty(options, eventName, value);
   } catch (error) {
     expect(error.message).toBe(expectedErrorMessage(name, eventName, 24));

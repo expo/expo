@@ -157,7 +157,6 @@ class FirebaseAnalyticsJS {
             name.length &&
             name.length <= maxLength &&
             name.match(/^[A-Za-z][A-Za-z_\d]*$/) &&
-            name !== 'user_id' &&
             !name.startsWith('firebase_') &&
             !name.startsWith('google_') &&
             !name.startsWith('ga_'));
@@ -195,7 +194,7 @@ class FirebaseAnalyticsJS {
      * through the Google Measurement API v2.
      */
     static parseUserProperty(options, userPropertyName, userPropertyValue) {
-        if (!FirebaseAnalyticsJS.isValidName(userPropertyName, 24)) {
+        if (!FirebaseAnalyticsJS.isValidName(userPropertyName, 24) || userPropertyName === 'user_id') {
             throw new Error(`Invalid user-property name (${userPropertyName}) specified. Should contain 1 to 24 alphanumeric characters or underscores. The name must start with an alphabetic character.`);
         }
         if (userPropertyValue !== undefined &&
