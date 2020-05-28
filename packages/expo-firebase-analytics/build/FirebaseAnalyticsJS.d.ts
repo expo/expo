@@ -39,6 +39,7 @@ declare class FirebaseAnalyticsJS {
      * Clears any queued events and cancels the flush timer.
      */
     clearEvents(): void;
+    private static isValidName;
     /**
      * Parses an event (as passed to logEvent) and throws an error when the
      * event-name or parameters are invalid.
