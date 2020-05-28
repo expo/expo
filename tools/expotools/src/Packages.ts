@@ -239,6 +239,19 @@ export class Package {
   async hasChangelogAsync(): Promise<boolean> {
     return fs.pathExists(this.changelogPath);
   }
+
+  /**
+   * Checks whether package has any native code (iOS, Android, C++).
+   */
+  async isNativeModuleAsync(): Promise<boolean> {
+    const dirs = ['ios', 'android', 'cpp'].map((dir) => path.join(this.path, dir));
+    for (const dir of dirs) {
+      if (await fs.pathExists(dir)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 /**

@@ -32,7 +32,7 @@ export const findUnpublished = new Task<TaskArgs>(
 
       state.logs = logs;
       state.changelogChanges = changelogChanges;
-      state.minReleaseType = getMinReleaseType(parcel);
+      state.minReleaseType = await getMinReleaseTypeAsync(parcel);
 
       // Return whether the package has any unpublished changes or git logs couldn't be obtained.
       return !logs || logs.files.length > 0 || changelogChanges.totalCount > 0;
@@ -86,20 +86,28 @@ async function getPackageGitLogsAsync(
 /**
  * Returns minimum release type for given parcel (doesn't take dependencies into account).
  */
-function getMinReleaseType(parcel: Parcel): ReleaseType {
+async function getMinReleaseTypeAsync(parcel: Parcel): Promise<ReleaseType> {
   const { logs, changelogChanges } = parcel.state;
 
   const unpublishedChanges = changelogChanges?.versions[Changelogs.UNPUBLISHED_VERSION_NAME];
   const hasBreakingChanges = unpublishedChanges?.[Changelogs.ChangeType.BREAKING_CHANGES]?.length;
-  const hasNativeChanges = logs && fileLogsContainNativeChanges(logs.files);
+  const hasNewFeatures = unpublishedChanges?.[Changelogs.ChangeType.NEW_FEATURES]?.length;
 
-  const releaseType = hasBreakingChanges
-    ? ReleaseType.MAJOR
-    : hasNativeChanges
-    ? ReleaseType.MINOR
-    : ReleaseType.PATCH;
+  // For breaking changes and new features we follow semver.
+  if (hasBreakingChanges) {
+    return ReleaseType.MAJOR;
+  }
+  if (hasNewFeatures) {
+    return ReleaseType.MINOR;
+  }
 
-  return releaseType;
+  // If the package is a native module, then we have to check whether there are any native changes.
+  if (await parcel.pkg.isNativeModuleAsync()) {
+    const hasNativeChanges = logs && fileLogsContainNativeChanges(logs.files);
+    return hasNativeChanges ? ReleaseType.MINOR : ReleaseType.PATCH;
+  }
+
+  return ReleaseType.PATCH;
 }
 
 /**
