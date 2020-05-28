@@ -53,7 +53,6 @@ public class TasksPersistence {
   }
 
   public Map<String, TasksAndEventsRepository.AppConfig> readPersistedTasks(SharedPreferences preferences) {
-    Debug.waitForDebugger();
     Map<String, TasksAndEventsRepository.AppConfig> result = new HashMap<>();
 
     Map<String, ?> appIdToAppConfigsMap = preferences.getAll();
