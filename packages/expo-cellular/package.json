@@ -1,6 +1,6 @@
 {
   "name": "expo-cellular",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Provides information about the user’s cellular service provider",
   "main": "build/Cellular.js",
   "types": "build/Cellular.d.ts",
@@ -34,6 +34,5 @@
   },
   "peerDependencies": {
     "@unimodules/core": "*"
-  },
-  "gitHead": "ec7998e573483e31acc25e52cb31a0df8c0a6784"
+  }
 }

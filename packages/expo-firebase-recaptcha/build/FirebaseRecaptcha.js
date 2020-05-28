@@ -60,24 +60,24 @@ export default function FirebaseRecaptcha(props) {
         console.error(`FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`);
         return null;
     }
-    return (<WebView javaScriptEnabled automaticallyAdjustContentInsets scalesPageToFit mixedContentMode="always" source={getWebviewSource(firebaseConfig, firebaseVersion)} onError={onError} onMessage={event => {
-        const data = JSON.parse(event.nativeEvent.data);
-        switch (data.type) {
-            case 'load':
-                if (onLoad) {
-                    onLoad();
-                }
-                break;
-            case 'error':
-                if (onError) {
-                    onError();
-                }
-                break;
-            case 'verify':
-                onVerify(data.token);
-                break;
-        }
-    }} {...otherProps}/>);
+    return (React.createElement(WebView, Object.assign({ javaScriptEnabled: true, automaticallyAdjustContentInsets: true, scalesPageToFit: true, mixedContentMode: "always", source: getWebviewSource(firebaseConfig, firebaseVersion), onError: onError, onMessage: event => {
+            const data = JSON.parse(event.nativeEvent.data);
+            switch (data.type) {
+                case 'load':
+                    if (onLoad) {
+                        onLoad();
+                    }
+                    break;
+                case 'error':
+                    if (onError) {
+                        onError();
+                    }
+                    break;
+                case 'verify':
+                    onVerify(data.token);
+                    break;
+            }
+        } }, otherProps)));
 }
 FirebaseRecaptcha.defaultProps = {
     firebaseConfig: DEFAULT_WEB_APP_OPTIONS,

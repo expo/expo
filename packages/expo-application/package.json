@@ -1,6 +1,6 @@
 {
   "name": "expo-application",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "main": "build/Application.js",
   "types": "build/Application.d.ts",
@@ -34,6 +34,5 @@
   },
   "peerDependencies": {
     "@unimodules/core": "*"
-  },
-  "gitHead": "ec7998e573483e31acc25e52cb31a0df8c0a6784"
+  }
 }

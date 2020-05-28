@@ -5,6 +5,7 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
     const [layout, setLayout] = useState(null);
     const [gradientColors, setGradientColors] = useState([]);
     const [pseudoAngle, setPseudoAngle] = useState(0);
+    const { width = 1, height = 1 } = layout ?? {};
     useEffect(() => {
         const getControlPoints = () => {
             let correctedStartPoint = [0, 0];
@@ -24,7 +25,6 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
             return [correctedStartPoint, correctedEndPoint];
         };
         const [start, end] = getControlPoints();
-        const { width = 1, height = 1 } = layout || {};
         start[0] *= width;
         end[0] *= width;
         start[1] *= height;
@@ -32,7 +32,7 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
         const py = end[1] - start[1];
         const px = end[0] - start[0];
         setPseudoAngle(90 + (Math.atan2(py, px) * 180) / Math.PI);
-    }, [startPoint, endPoint]);
+    }, [width, height, startPoint, endPoint]);
     useEffect(() => {
         const nextGradientColors = colors.map((color, index) => {
             const hexColor = normalizeColor(color);
@@ -51,16 +51,16 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
     const backgroundImage = `linear-gradient(${pseudoAngle}deg, ${colorStyle})`;
     // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
     // browser support.
-    return (<View {...props} style={[
-        props.style,
-        // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
-        { backgroundImage },
-    ]} onLayout={event => {
-        setLayout(event.nativeEvent.layout);
-        if (props.onLayout) {
-            props.onLayout(event);
-        }
-    }}/>);
+    return (React.createElement(View, Object.assign({}, props, { style: [
+            props.style,
+            // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
+            { backgroundImage },
+        ], onLayout: event => {
+            setLayout(event.nativeEvent.layout);
+            if (props.onLayout) {
+                props.onLayout(event);
+            }
+        } })));
 };
 export default NativeLinearGradient;
 //# sourceMappingURL=NativeLinearGradient.web.js.map

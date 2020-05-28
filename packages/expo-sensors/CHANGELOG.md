@@ -1,6 +1,14 @@
 # Changelog
 
-## master
+## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 9.0.0 — 2020-05-27
 
 ### 🛠 Breaking changes
 

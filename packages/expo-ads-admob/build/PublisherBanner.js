@@ -26,9 +26,8 @@ let PublisherBanner = /** @class */ (() => {
                 console.warn('The `testDeviceID` prop of PublisherBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.');
                 _hasWarnedAboutTestDeviceID = true;
             }
-            return (<View style={this.props.style}>
-        <ExpoBannerView style={this.state.style} adUnitID={this.props.adUnitID} bannerSize={this.props.bannerSize} onSizeChange={this._handleSizeChange} additionalRequestParams={additionalRequestParams} onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd} onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError} onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen} onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen} onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen} onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication} onAdmobDispatchAppEvent={this.props.onAdMobDispatchAppEvent}/>
-      </View>);
+            return (React.createElement(View, { style: this.props.style },
+                React.createElement(ExpoBannerView, { style: this.state.style, adUnitID: this.props.adUnitID, bannerSize: this.props.bannerSize, onSizeChange: this._handleSizeChange, additionalRequestParams: additionalRequestParams, onAdViewDidReceiveAd: this.props.onAdViewDidReceiveAd, onDidFailToReceiveAdWithError: this._handleDidFailToReceiveAdWithError, onAdViewWillPresentScreen: this.props.onAdViewWillPresentScreen, onAdViewWillDismissScreen: this.props.onAdViewWillDismissScreen, onAdViewDidDismissScreen: this.props.onAdViewDidDismissScreen, onAdViewWillLeaveApplication: this.props.onAdViewWillLeaveApplication, onAdmobDispatchAppEvent: this.props.onAdMobDispatchAppEvent })));
         }
     }
     PublisherBanner.propTypes = {

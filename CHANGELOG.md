@@ -3,7 +3,7 @@
 This is the log of notable changes to the Expo client that are developer-facing.
 Package-specific changes not released in any SDK will be added here just before the release. Until then, you can find them in changelogs of the individual packages (see [packages](./packages) directory).
 
-## master
+## Unpublished
 
 ### 📚 3rd party library updates
 
@@ -11,10 +11,13 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-screens` from `2.2.0` to `2.8.0`. ([#8434](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `react-native-shared-element` from `0.5.6` to `0.7.0`. ([#8427](https://github.com/expo/expo/pull/8427) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Updated `react-native-reanimated` from `1.7.0` to `1.9.0`. ([#8424](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
-- Updated `react-native-safe-area-context` from `0.7.3` to `2.0.1`. ([#8459](https://github.com/expo/expo/pull/8459) by [@brentvatne](https://github.com/brentvatne) and [#8479](https://github.com/expo/expo/pull/8479) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-safe-area-context` from `0.7.3` to `2.0.3`. ([#8459](https://github.com/expo/expo/pull/8459) by [@brentvatne](https://github.com/brentvatne) and [#8479](https://github.com/expo/expo/pull/8479) by [@tsapeta](https://github.com/tsapeta)) and [#8503](https://github.com/expo/expo/pull/8459) by [@brentvatne](https://github.com/brentvatne).
 - Updated `@react-native-community/datetimepicker` from `2.2.2` to `2.4.0`. ([#8476](https://github.com/expo/expo/pull/8476) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-webview` from `8.1.1` to `9.4.0`. ([#8489](https://github.com/expo/expo/pull/8489) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-svg` from `11.0.1` to `12.1.0`. ([#8491](https://github.com/expo/expo/pull/8491) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-maps` from `0.26.1` to `0.27.1`. ([#8495](https://github.com/expo/expo/pull/8495) by [@esamelson](https://github.com/esamelson))
+- Updated `@react-native-community/netinfo` from `5.9.0` to `5.9.2`. ([#8499](https://github.com/expo/expo/pull/8499) by [@esamelson](https://github.com/esamelson))
+- Updated `@react-native-community/masked-view` from `0.1.6` to `0.1.10`. ([#8499](https://github.com/expo/expo/pull/8499) by [@esamelson](https://github.com/esamelson))
 
 ### 🛠 Breaking changes
 
@@ -45,6 +48,9 @@ Package-specific changes not released in any SDK will be added here just before 
 - Initial release of **`expo-screen-capture`** 🥳
 - Initial release of **`expo-notifications`** 🥳
 - Added `@react-native-community/segmented-control` in version `1.6.1`. ([#8038](https://github.com/expo/expo/pull/8038) by [@marchenk0va](https://github.com/marchenk0va) and [#8441](https://github.com/expo/expo/pull/8441) by [@tsapeta](https://github.com/tsapeta))
+- Added `@react-native-community/slider` version `3.0.0`. ([#8451](https://github.com/expo/expo/pull/8451) by [@brentvatne](https://github.com/brentvatne))
+- Added `@react-native-community/picker` version `1.6.0`. ([#8451](https://github.com/expo/expo/pull/8451) by [@brentvatne](https://github.com/brentvatne))
+- Added `@react-native-community/async-storage` support for version `1.11.0`. ([@react-native-community/async-storage#368](https://github.com/react-native-community/async-storage/pull/368))
 - **`expo-apple-authentication`**
   - Add 'Sign up with Apple' option (available as of iOS 13.2). ([#7471](https://github.com/expo/expo/pull/7471) by [@IjzerenHein](https://github.com/IjzerenHein))
 - **`expo-file-system`**

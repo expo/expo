@@ -1,14 +1,13 @@
+import { Picker } from '@react-native-community/picker';
+import Slider from '@react-native-community/slider';
 import React from 'react';
-
 import {
   ActivityIndicator,
   Alert,
   DrawerLayoutAndroid,
   Image,
-  Picker,
   ProgressBarAndroid,
   RefreshControl,
-  Slider,
   Switch,
   StatusBar,
   SectionList,
@@ -23,10 +22,10 @@ import {
   TouchableOpacityProps,
 } from 'react-native';
 // @ts-ignore
-import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
-// @ts-ignore
-import { ScrollView as NavigationScrollView } from 'react-navigation';
 import WebView from 'react-native-webview';
+// @ts-ignore
+import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
+import { ScrollView as NavigationScrollView } from 'react-navigation';
 
 import { Colors, Layout } from '../../constants';
 import ModalExample from '../ModalExample';
@@ -45,7 +44,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     isRefreshing: false,
   };
 
-  sections: Array<{ title: string, data: Array<() => JSX.Element> }>;
+  sections: Array<{ title: string; data: Array<() => JSX.Element> }>;
 
   constructor(props: any) {
     super(props);
@@ -74,7 +73,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
       this.setState({ isRefreshing: false });
     }, 3000);
     this.setState({ isRefreshing: true, timeoutId: timeout });
-  }
+  };
 
   componentWillUnmount() {
     clearTimeout(this.state.timeoutId);
@@ -88,8 +87,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           backgroundColor: '#fff',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <Text>DrawerLayoutAndroid</Text>
       </View>
     );
@@ -99,8 +97,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         drawerWidth={300}
         // @ts-ignore
         drawerPosition="left"
-        renderNavigationView={renderNavigationView}
-      >
+        renderNavigationView={renderNavigationView}>
         <SectionList
           removeClippedSubviews={false}
           stickySectionHeadersEnabled
@@ -122,7 +119,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
 
   _renderItem = ({ item }: any) => {
     return <View>{item()}</View>;
-  }
+  };
 
   _renderSectionHeader = ({ section: { title } }: any) => {
     return (
@@ -130,11 +127,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Text>{title}</Text>
       </View>
     );
-  }
+  };
 
   _renderModal = () => {
     return <ModalExample />;
-  }
+  };
 
   _renderVerticalScrollView = () => {
     return (
@@ -145,7 +142,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         </Text>
       </View>
     );
-  }
+  };
 
   _renderDrawerLayout = () => {
     return (
@@ -153,7 +150,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Text>Swipe from the left of the screen to see the drawer.</Text>
       </View>
     );
-  }
+  };
 
   _renderActivityIndicator = () => {
     const Spacer = () => <View style={{ marginRight: 10 }} />;
@@ -168,7 +165,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <ActivityIndicator size="large" color="#888" />
       </View>
     );
-  }
+  };
 
   _renderAlert = () => {
     const showAlert = () => {
@@ -191,7 +188,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Button onPress={showAlert}>Give me some options</Button>
       </View>
     );
-  }
+  };
 
   _renderHorizontalScrollView = () => {
     const imageStyle = {
@@ -218,11 +215,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         />
       </ScrollView>
     );
-  }
+  };
 
   _renderPicker = () => {
     return <PickerExample />;
-  }
+  };
 
   _renderProgressBar = () => {
     return (
@@ -233,11 +230,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <ProgressBarExample progressTintColor="yellow" initialProgress={0.8} />
       </View>
     );
-  }
+  };
 
   _renderSlider = () => {
     return <SliderExample />;
-  }
+  };
 
   _renderStatusBar = () => {
     const randomAnimation = () => {
@@ -259,11 +256,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Button onPress={show}>Show</Button>
       </View>
     );
-  }
+  };
 
   _renderSwitch = () => {
     return <SwitchExample />;
-  }
+  };
 
   _renderText = () => {
     const linkStyle = { color: Colors.tintColor, marginVertical: 3 };
@@ -282,11 +279,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         </Text>
       </View>
     );
-  }
+  };
 
   _renderTextInput = () => {
     return <TextInputExample />;
-  }
+  };
 
   _renderTouchables = () => {
     const buttonStyle = {
@@ -307,8 +304,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           <TouchableHighlight
             underlayColor="rgba(1, 1, 255, 0.9)"
             style={buttonStyle}
-            onPress={() => {}}
-          >
+            onPress={() => {}}>
             <Text style={buttonText}>Highlight!</Text>
           </TouchableHighlight>
 
@@ -321,8 +317,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           <TouchableNativeFeedback
             background={TouchableNativeFeedback.Ripple('#fff', false)}
             onPress={() => {}}
-            delayPressIn={0}
-          >
+            delayPressIn={0}>
             <View style={buttonStyle}>
               <Text style={buttonText}>Native feedback!</Text>
             </View>
@@ -334,7 +329,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         </View>
       </View>
     );
-  }
+  };
 
   _renderWebView = () => {
     return (
@@ -359,7 +354,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         />
       </View>
     );
-  }
+  };
 }
 
 class PickerExample extends React.Component {
@@ -371,8 +366,7 @@ class PickerExample extends React.Component {
     return (
       <Picker
         selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}
-      >
+        onValueChange={lang => this.setState({ language: lang })}>
         <Picker.Item label="Java" value="java" />
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />

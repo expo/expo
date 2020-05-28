@@ -95,19 +95,13 @@ export default function withNativeAd(Component) {
             }
             const { adsManager } = this.props;
             const props = this._getForwardedProps();
-            const viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
-          <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
-            <AdIconViewContext.Provider value={this._adIconViewContextValue}>
-              <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
-                  {this.state.ad ? <Component {...props} nativeAd={this.state.ad}/> : null}
-                </AdOptionsViewContext.Provider>
-              </AdTriggerViewContext.Provider>
-            </AdIconViewContext.Provider>
-          </AdMediaViewContext.Provider>
-        </NativeAdView>);
+            const viewHierarchy = (React.createElement(NativeAdView, { ref: this._nativeAdViewRef, adsManager: adsManager.placementId, onAdLoaded: this._handleAdLoaded },
+                React.createElement(AdMediaViewContext.Provider, { value: this._adMediaViewContextValue },
+                    React.createElement(AdIconViewContext.Provider, { value: this._adIconViewContextValue },
+                        React.createElement(AdTriggerViewContext.Provider, { value: this._adTriggerViewContextValue },
+                            React.createElement(AdOptionsViewContext.Provider, { value: this._adOptionsViewContextValue }, this.state.ad ? React.createElement(Component, Object.assign({}, props, { nativeAd: this.state.ad })) : null))))));
             if (NativeAdLayout) {
-                return <NativeAdLayout>{viewHierarchy}</NativeAdLayout>;
+                return React.createElement(NativeAdLayout, null, viewHierarchy);
             }
             return viewHierarchy;
         }

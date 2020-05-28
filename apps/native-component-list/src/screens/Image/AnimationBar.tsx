@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
-//import Slider from '@react-native-community/slider';
+import Slider from '@react-native-community/slider';
 import * as React from 'react';
-import { StyleSheet, View, Animated, TouchableOpacity, Text, Slider } from 'react-native';
+import { StyleSheet, View, Animated, TouchableOpacity, Text } from 'react-native';
 
 import Colors from '../../constants/Colors';
 

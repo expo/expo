@@ -1,12 +1,18 @@
 # Changelog
 
-## master
+## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 0.3.0 — 2020-05-27
 
 ### 🛠 Breaking changes
 
 - `expo-splash-screen-command` is now replaced by `@expo/configure-splash-screen`. Functionality is not affected.
-
-### 🎉 New features
 
 ### 🐛 Bug fixes
 

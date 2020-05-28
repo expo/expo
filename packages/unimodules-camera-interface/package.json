@@ -1,6 +1,6 @@
 {
   "name": "unimodules-camera-interface",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "description": "An interface package for camera",
   "main": "index.js",
   "keywords": [
@@ -17,6 +17,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-camera-interface",
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-camera-interface"
 }

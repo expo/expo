@@ -7,7 +7,7 @@ let BlurView = /** @class */ (() => {
         render() {
             const { tint, intensity, style = {}, ...props } = this.props;
             const blurStyle = getBlurStyle({ tint, intensity });
-            return <View {...props} style={[style, blurStyle]}/>;
+            return React.createElement(View, Object.assign({}, props, { style: [style, blurStyle] }));
         }
     }
     BlurView.propTypes = {

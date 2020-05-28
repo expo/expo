@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
@@ -43,6 +43,5 @@
   "dependencies": {
     "fbjs": "1.0.0",
     "uuid": "^3.3.2"
-  },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  }
 }

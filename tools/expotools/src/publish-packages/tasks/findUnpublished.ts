@@ -78,7 +78,7 @@ async function getPackageGitLogsAsync(
 function getMinReleaseType(parcel: Parcel): ReleaseType {
   const { logs, changelogChanges } = parcel.state;
 
-  const unpublishedChanges = changelogChanges?.versions.unpublished;
+  const unpublishedChanges = changelogChanges?.versions[Changelogs.UNPUBLISHED_VERSION_NAME];
   const hasBreakingChanges = unpublishedChanges?.[Changelogs.ChangeType.BREAKING_CHANGES]?.length;
   const hasNativeChanges = logs && fileLogsContainNativeChanges(logs.files);
 
