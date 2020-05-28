@@ -69,21 +69,27 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - name: Decode release keystore
-        env:
-          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
-        run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - env:
+      - name: Build APK
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ExponentKey
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: fastlane android build build_type:Release
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_B64" ]; then
+            echo "External build detected, APK will not be signed"
+            fastlane android build build_type:Release sign:false
+          else
+            echo "Internal build detected, APK will be signed"
+            echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
+            fastlane android build build_type:Release
+          fi
       - uses: actions/upload-artifact@v2
         with:
           name: android-apk
