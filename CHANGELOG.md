@@ -17,7 +17,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Updated `@react-native-community/netinfo` from `5.5.1` to `5.9.0`. ([#8440](https://github.com/expo/expo/pull/8440) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `react-native-screens` from `2.2.0` to `2.8.0`. ([#8434](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `react-native-shared-element` from `0.5.6` to `0.7.0`. ([#8427](https://github.com/expo/expo/pull/8427) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Updated `react-native-reanimated` from `1.7.0` to `1.9.0`. ([#8424](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
@@ -26,7 +25,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-webview` from `8.1.1` to `9.4.0`. ([#8489](https://github.com/expo/expo/pull/8489) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-svg` from `11.0.1` to `12.1.0`. ([#8491](https://github.com/expo/expo/pull/8491) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-maps` from `0.26.1` to `0.27.1`. ([#8495](https://github.com/expo/expo/pull/8495) by [@esamelson](https://github.com/esamelson))
-- Updated `@react-native-community/netinfo` from `5.9.0` to `5.9.2`. ([#8499](https://github.com/expo/expo/pull/8499) by [@esamelson](https://github.com/esamelson))
+- Updated `@react-native-community/netinfo` from `5.5.1` to `5.9.2`. ([#8499](https://github.com/expo/expo/pull/8499) by [@esamelson](https://github.com/esamelson))
 - Updated `@react-native-community/masked-view` from `0.1.6` to `0.1.10`. ([#8499](https://github.com/expo/expo/pull/8499) by [@esamelson](https://github.com/esamelson))
 
 ### 🛠 Breaking changes
