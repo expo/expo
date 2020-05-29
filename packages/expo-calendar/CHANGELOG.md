@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- `sourceId` parameter (iOS only) now uses default calendar for given `entityType` if it's not provided. ([#8570](https://github.com/expo/expo/pull/8570) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ## 8.2.1 — 2020-05-29
