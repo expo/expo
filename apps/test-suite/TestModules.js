@@ -69,7 +69,8 @@ export function getTestModules() {
     require('./tests/HTML'),
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
-    require('./tests/FirebaseRecaptcha')
+    require('./tests/FirebaseRecaptcha'),
+    optionalRequire(() => require('./tests/SQLite'))
   );
 
   if (Platform.OS === 'android') {
@@ -117,7 +118,6 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Network')),
     optionalRequire(() => require('./tests/SecureStore')),
     optionalRequire(() => require('./tests/Segment')),
-    optionalRequire(() => require('./tests/SQLite')),
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
