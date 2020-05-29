@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixes `parseEvent` and `parseUserProperty` to allow numeric characters in the name parameter. ([#8516](https://github.com/expo/expo/pull/8516) by [@thorbenprimke](https://github.com/thorbenprimke))
+
 ## 2.4.0 — 2020-05-27
 
 ### 🎉 New features
