@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A51E672A1A6E7442A2D8771A9BB166A7 /* EXNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */; };
-		B3B078C7F97F76EAD4BDE68A55F75C0C /* EXNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */; };
-		CF383E9B194D71A30471938647E343C6 /* EXNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 28F0D83C8A9664155C20B105195A12BD /* EXNetwork.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A51E672A1A6E7442A2D8771A9BB166A7 /* EXNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 705545C6ACDB5250154CA372C77BFA80 /* EXNetwork.m */; };
+		B3B078C7F97F76EAD4BDE68A55F75C0C /* EXNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C84A9D8780BB39BFC714CD27D957BBFA /* EXNetwork-dummy.m */; };
+		CF383E9B194D71A30471938647E343C6 /* EXNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 81243AE73BE4D9F4D04C7E1573812978 /* EXNetwork.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,13 +24,14 @@
 
 /* Begin PBXFileReference section */
 		0EA852D2E09F61E87FF0091BDDA1F9DC /* libEXNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXNetwork.a; path = libEXNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXNetwork-dummy.m"; sourceTree = "<group>"; };
-		28F0D83C8A9664155C20B105195A12BD /* EXNetwork.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNetwork.h; path = EXNetwork/EXNetwork.h; sourceTree = "<group>"; };
-		37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXNetwork.xcconfig; sourceTree = "<group>"; };
-		737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNetwork.m; path = EXNetwork/EXNetwork.m; sourceTree = "<group>"; };
-		956843D929BFEADA8093A2C191224707 /* EXNetwork-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXNetwork-prefix.pch"; sourceTree = "<group>"; };
+		705545C6ACDB5250154CA372C77BFA80 /* EXNetwork.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNetwork.m; path = EXNetwork/EXNetwork.m; sourceTree = "<group>"; };
+		81243AE73BE4D9F4D04C7E1573812978 /* EXNetwork.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNetwork.h; path = EXNetwork/EXNetwork.h; sourceTree = "<group>"; };
+		BE72A05D88017BD8E96A687F94DAB952 /* EXNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C84A9D8780BB39BFC714CD27D957BBFA /* EXNetwork-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXNetwork-dummy.m"; sourceTree = "<group>"; };
 		D950A541FE3459760B4EFE7B8D21736A /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		E87928ABF58A5FAFFEAA2035377B5EA6 /* EXNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DC0E36B249FABAF349CDBBF5CDBA24EC /* EXNetwork.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXNetwork.debug.xcconfig; sourceTree = "<group>"; };
+		E334B99F7FFA07517603F2F746F46CC3 /* EXNetwork.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXNetwork.release.xcconfig; sourceTree = "<group>"; };
+		E9469A28264F1E491058DA0ECF488217 /* EXNetwork-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXNetwork-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,15 +45,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		29194BD37CF32F38482D1DA11555943C /* Support Files */ = {
+		02F9CAFDBD0192795729FC1936B5279D /* EXNetwork */ = {
 			isa = PBXGroup;
 			children = (
-				37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */,
-				26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */,
-				956843D929BFEADA8093A2C191224707 /* EXNetwork-prefix.pch */,
+				81243AE73BE4D9F4D04C7E1573812978 /* EXNetwork.h */,
+				705545C6ACDB5250154CA372C77BFA80 /* EXNetwork.m */,
+				63D877249F6481562C363D2E6FE3AA8C /* Pod */,
+				0EF37829695BA03E13652FDDAA25D7E6 /* Support Files */,
+			);
+			name = EXNetwork;
+			path = "../../../../packages/expo-network/ios";
+			sourceTree = "<group>";
+		};
+		0EF37829695BA03E13652FDDAA25D7E6 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				C84A9D8780BB39BFC714CD27D957BBFA /* EXNetwork-dummy.m */,
+				E9469A28264F1E491058DA0ECF488217 /* EXNetwork-prefix.pch */,
+				DC0E36B249FABAF349CDBBF5CDBA24EC /* EXNetwork.debug.xcconfig */,
+				E334B99F7FFA07517603F2F746F46CC3 /* EXNetwork.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXNetwork";
+			sourceTree = "<group>";
+		};
+		63D877249F6481562C363D2E6FE3AA8C /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				BE72A05D88017BD8E96A687F94DAB952 /* EXNetwork.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		9DD76F6B354AA9F2AF63D696426528EB /* Products */ = {
@@ -70,34 +92,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		BC50F43295BA888E3B006E06B85146A5 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				E87928ABF58A5FAFFEAA2035377B5EA6 /* EXNetwork.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		C26D3EDFBECA5F2C280D38D7BE273B7D = {
 			isa = PBXGroup;
 			children = (
 				EF63AC02E9CBC957C4D75D3684A78E22 /* Dependencies */,
-				D7047C8508AABAD0BAE92BE5B79DA129 /* EXNetwork */,
+				02F9CAFDBD0192795729FC1936B5279D /* EXNetwork */,
 				A0601E29852A6D20D297E29FF70A2A78 /* Frameworks */,
 				9DD76F6B354AA9F2AF63D696426528EB /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		D7047C8508AABAD0BAE92BE5B79DA129 /* EXNetwork */ = {
-			isa = PBXGroup;
-			children = (
-				28F0D83C8A9664155C20B105195A12BD /* EXNetwork.h */,
-				737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */,
-				BC50F43295BA888E3B006E06B85146A5 /* Pod */,
-				29194BD37CF32F38482D1DA11555943C /* Support Files */,
-			);
-			name = EXNetwork;
-			path = "../../../../packages/expo-network/ios";
 			sourceTree = "<group>";
 		};
 		EF63AC02E9CBC957C4D75D3684A78E22 /* Dependencies */ = {
@@ -193,9 +195,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		6D5E9BE5D3BB836CC2416A151262A9E2 /* Debug */ = {
+		06B62A38E263428A54C20D28F4E898F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */;
+			baseConfigurationReference = DC0E36B249FABAF349CDBBF5CDBA24EC /* EXNetwork.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -216,6 +218,31 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		0C7AF16C66695BFF4FD335243B3BD6A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E334B99F7FFA07517603F2F746F46CC3 /* EXNetwork.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXNetwork;
+				PRODUCT_NAME = EXNetwork;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		9EB1CCD338BBF2F5CF6EF08A0C5951CC /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -341,31 +368,6 @@
 			};
 			name = Debug;
 		};
-		DC4DD1353E810311AFBFE1C23104B8D1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXNetwork;
-				PRODUCT_NAME = EXNetwork;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -381,8 +383,8 @@
 		FC50712A6D79D545272F95935F1BECAC /* Build configuration list for PBXNativeTarget "EXNetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6D5E9BE5D3BB836CC2416A151262A9E2 /* Debug */,
-				DC4DD1353E810311AFBFE1C23104B8D1 /* Release */,
+				06B62A38E263428A54C20D28F4E898F9 /* Debug */,
+				0C7AF16C66695BFF4FD335243B3BD6A6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

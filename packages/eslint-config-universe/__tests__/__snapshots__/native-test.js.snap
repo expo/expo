@@ -310,3 +310,83 @@ export default function Example() {
   "warningCount": 0,
 }
 `;
+
+exports[`lints with the React Native config: fixtures/web-native-04.js 1`] = `
+Object {
+  "errorCount": 2,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": Array [
+    Object {
+      "column": 6,
+      "endColumn": 8,
+      "endLine": 7,
+      "line": 7,
+      "message": "React Hook useEffect has a missing dependency: 'dependentVariable'. Either include it or remove the dependency array.",
+      "nodeType": "ArrayExpression",
+      "ruleId": "react-hooks/exhaustive-deps",
+      "severity": 1,
+      "suggestions": Array [
+        Object {
+          "desc": "Update the dependencies array to be: [dependentVariable]",
+          "fix": Object {
+            "range": Array [
+              177,
+              179,
+            ],
+            "text": "[dependentVariable]",
+          },
+        },
+      ],
+    },
+    Object {
+      "column": 5,
+      "endColumn": 14,
+      "endLine": 10,
+      "line": 10,
+      "message": "React Hook \\"useEffect\\" is called conditionally. React Hooks must be called in the exact same order in every component render.",
+      "nodeType": "Identifier",
+      "ruleId": "react-hooks/rules-of-hooks",
+      "severity": 2,
+    },
+    Object {
+      "column": 10,
+      "endColumn": 18,
+      "endLine": 14,
+      "line": 14,
+      "message": "'notAHook' is defined but never used.",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+    },
+    Object {
+      "column": 3,
+      "endColumn": 12,
+      "endLine": 15,
+      "line": 15,
+      "message": "React Hook \\"useEffect\\" is called in function \\"notAHook\\" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter.",
+      "nodeType": "Identifier",
+      "ruleId": "react-hooks/rules-of-hooks",
+      "severity": 2,
+    },
+  ],
+  "source": "import { useEffect } from 'react';
+
+export default function Example(props) {
+  const { dependentVariable } = props;
+  useEffect(() => {
+    console.log(dependentVariable);
+  }, []);
+
+  if (props.badConditionalHook) {
+    useEffect(() => {});
+  }
+}
+
+function notAHook() {
+  useEffect(() => {});
+}
+",
+  "warningCount": 2,
+}
+`;

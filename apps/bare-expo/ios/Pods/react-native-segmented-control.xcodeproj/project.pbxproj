@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5792E3A2E2A8EA415018807471E7FB08 /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AEDDD639014E4F12CC7FBC1930035789 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A6C2999DF807B176E3F5E059EA09C311 /* RNCSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EBF88A890DBE51E893B2F3263A5559D /* RNCSegmentedControl.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AD73DCAFB2F151679DC3146F0DEB24A3 /* RNCSegmentedControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 309AD404CD57B4EFCC2FFBBD9DCA689D /* RNCSegmentedControlManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D0F30235ACED1E38CF5ECFEDB1890F42 /* react-native-segmented-control-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0617382F5A06C50E771A13D620E5EC61 /* react-native-segmented-control-dummy.m */; };
-		EC5B6F3B228885E480B3BC1901B6EC49 /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA43CB73EAAC3A91752FDC5BC1F2C8E /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5792E3A2E2A8EA415018807471E7FB08 /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 10D20B1798A9A6EF9591A68925BC4151 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A6C2999DF807B176E3F5E059EA09C311 /* RNCSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B2FC69E3FB976DD223BFACBB4FFB1A80 /* RNCSegmentedControl.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AD73DCAFB2F151679DC3146F0DEB24A3 /* RNCSegmentedControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = EDE398C8EBC4753F034F7527A33D607E /* RNCSegmentedControlManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D0F30235ACED1E38CF5ECFEDB1890F42 /* react-native-segmented-control-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B5AD92F25D5545A3C02FE6A1E4F96F /* react-native-segmented-control-dummy.m */; };
+		EC5B6F3B228885E480B3BC1901B6EC49 /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C0F250859FECA86922FEF9AF88F1B0C /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,18 +25,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0163600A0AD87499649BCEBEE71FFEFE /* react-native-segmented-control.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-segmented-control.xcconfig"; sourceTree = "<group>"; };
-		0617382F5A06C50E771A13D620E5EC61 /* react-native-segmented-control-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-segmented-control-dummy.m"; sourceTree = "<group>"; };
-		2EBF88A890DBE51E893B2F3263A5559D /* RNCSegmentedControl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSegmentedControl.h; path = ios/RNCSegmentedControl.h; sourceTree = "<group>"; };
-		309AD404CD57B4EFCC2FFBBD9DCA689D /* RNCSegmentedControlManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSegmentedControlManager.h; path = ios/RNCSegmentedControlManager.h; sourceTree = "<group>"; };
-		5F2A996D01A8AE9AA6287892EE95DC2E /* react-native-segmented-control.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-segmented-control.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		8E8462311E21631CCA15EEF1BA4EFB0A /* react-native-segmented-control-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-segmented-control-prefix.pch"; sourceTree = "<group>"; };
-		AEA43CB73EAAC3A91752FDC5BC1F2C8E /* RNCSegmentedControl.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSegmentedControl.m; path = ios/RNCSegmentedControl.m; sourceTree = "<group>"; };
-		AEDDD639014E4F12CC7FBC1930035789 /* RNCSegmentedControlManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSegmentedControlManager.m; path = ios/RNCSegmentedControlManager.m; sourceTree = "<group>"; };
+		10D20B1798A9A6EF9591A68925BC4151 /* RNCSegmentedControlManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSegmentedControlManager.m; path = ios/RNCSegmentedControlManager.m; sourceTree = "<group>"; };
+		3C0F250859FECA86922FEF9AF88F1B0C /* RNCSegmentedControl.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSegmentedControl.m; path = ios/RNCSegmentedControl.m; sourceTree = "<group>"; };
+		881332B4BC72F8FFAC6DC76F8247890C /* react-native-segmented-control.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-segmented-control.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		93056CF4EC6B77A9B92930372FE898E0 /* react-native-segmented-control.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-segmented-control.release.xcconfig"; sourceTree = "<group>"; };
+		B2FC69E3FB976DD223BFACBB4FFB1A80 /* RNCSegmentedControl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSegmentedControl.h; path = ios/RNCSegmentedControl.h; sourceTree = "<group>"; };
 		B61ED6CE4FCFFD1F9617EADC06000061 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		C07CFC141EE5210AFEA6C7B0B893C39F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		B78262EA11F039A80734B8AB262E1431 /* react-native-segmented-control-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-segmented-control-prefix.pch"; sourceTree = "<group>"; };
+		BEA2735484AF632F1BCD8316FC2655B4 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		BF0D89B928E631F0594E0091D7226AE0 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		C9B5AD92F25D5545A3C02FE6A1E4F96F /* react-native-segmented-control-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-segmented-control-dummy.m"; sourceTree = "<group>"; };
 		D476954564534225FEB5019A5F0A9AAE /* libreact-native-segmented-control.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libreact-native-segmented-control.a"; path = "libreact-native-segmented-control.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F25387B13A08672C3383332BF656A016 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		EDE398C8EBC4753F034F7527A33D607E /* RNCSegmentedControlManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSegmentedControlManager.h; path = ios/RNCSegmentedControlManager.h; sourceTree = "<group>"; };
+		F9DC762710CA3BFDA5F7AE0A9CCE8B21 /* react-native-segmented-control.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-segmented-control.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,12 +67,13 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		5E5DA24E67D51097F1E205A559FF1541 /* Support Files */ = {
+		2318A639E6760752C16AB82CE9F3CB32 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				0163600A0AD87499649BCEBEE71FFEFE /* react-native-segmented-control.xcconfig */,
-				0617382F5A06C50E771A13D620E5EC61 /* react-native-segmented-control-dummy.m */,
-				8E8462311E21631CCA15EEF1BA4EFB0A /* react-native-segmented-control-prefix.pch */,
+				C9B5AD92F25D5545A3C02FE6A1E4F96F /* react-native-segmented-control-dummy.m */,
+				B78262EA11F039A80734B8AB262E1431 /* react-native-segmented-control-prefix.pch */,
+				F9DC762710CA3BFDA5F7AE0A9CCE8B21 /* react-native-segmented-control.debug.xcconfig */,
+				93056CF4EC6B77A9B92930372FE898E0 /* react-native-segmented-control.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/react-native-segmented-control";
@@ -83,16 +85,16 @@
 				18E05D55A7B0248F1F5B1F80878F7DEB /* Dependencies */,
 				D5BBB876EE06AFF875660BC13828C06A /* Frameworks */,
 				1719BC99CBFC615D8A4DD35A57C0536E /* Products */,
-				EA63EFC6397E6DAF643995B5DE7B38ED /* react-native-segmented-control */,
+				E1B9B40C4088A777BF577DDD2210590F /* react-native-segmented-control */,
 			);
 			sourceTree = "<group>";
 		};
-		A159EC01EBD2F972E5AA00F7293E259F /* Pod */ = {
+		7306E9A92F840F5385FE8705DB673094 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				C07CFC141EE5210AFEA6C7B0B893C39F /* LICENSE */,
-				5F2A996D01A8AE9AA6287892EE95DC2E /* react-native-segmented-control.podspec */,
-				F25387B13A08672C3383332BF656A016 /* README.md */,
+				BEA2735484AF632F1BCD8316FC2655B4 /* LICENSE */,
+				881332B4BC72F8FFAC6DC76F8247890C /* react-native-segmented-control.podspec */,
+				BF0D89B928E631F0594E0091D7226AE0 /* README.md */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -104,15 +106,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		EA63EFC6397E6DAF643995B5DE7B38ED /* react-native-segmented-control */ = {
+		E1B9B40C4088A777BF577DDD2210590F /* react-native-segmented-control */ = {
 			isa = PBXGroup;
 			children = (
-				2EBF88A890DBE51E893B2F3263A5559D /* RNCSegmentedControl.h */,
-				AEA43CB73EAAC3A91752FDC5BC1F2C8E /* RNCSegmentedControl.m */,
-				309AD404CD57B4EFCC2FFBBD9DCA689D /* RNCSegmentedControlManager.h */,
-				AEDDD639014E4F12CC7FBC1930035789 /* RNCSegmentedControlManager.m */,
-				A159EC01EBD2F972E5AA00F7293E259F /* Pod */,
-				5E5DA24E67D51097F1E205A559FF1541 /* Support Files */,
+				B2FC69E3FB976DD223BFACBB4FFB1A80 /* RNCSegmentedControl.h */,
+				3C0F250859FECA86922FEF9AF88F1B0C /* RNCSegmentedControl.m */,
+				EDE398C8EBC4753F034F7527A33D607E /* RNCSegmentedControlManager.h */,
+				10D20B1798A9A6EF9591A68925BC4151 /* RNCSegmentedControlManager.m */,
+				7306E9A92F840F5385FE8705DB673094 /* Pod */,
+				2318A639E6760752C16AB82CE9F3CB32 /* Support Files */,
 			);
 			name = "react-native-segmented-control";
 			path = "../../../../node_modules/@react-native-community/segmented-control";
@@ -205,9 +207,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		110EACD1D7F846A85165BBFAD26282C1 /* Release */ = {
+		24DF41D88F3464A006ED52D5266F39AF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0163600A0AD87499649BCEBEE71FFEFE /* react-native-segmented-control.xcconfig */;
+			baseConfigurationReference = F9DC762710CA3BFDA5F7AE0A9CCE8B21 /* react-native-segmented-control.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-segmented-control/react-native-segmented-control-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_segmented_control;
+				PRODUCT_NAME = "react-native-segmented-control";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		770628DCB1DE802E138DB37613C66406 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 93056CF4EC6B77A9B92930372FE898E0 /* react-native-segmented-control.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -228,29 +253,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		55EAAB20D1545CC303544004E94EBDA2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0163600A0AD87499649BCEBEE71FFEFE /* react-native-segmented-control.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-segmented-control/react-native-segmented-control-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_segmented_control;
-				PRODUCT_NAME = "react-native-segmented-control";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		D838DFD3A11CDE62B4D50805221D3F7A /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -382,8 +384,8 @@
 		D05FB5550E88084ED15AF518A8179E31 /* Build configuration list for PBXNativeTarget "react-native-segmented-control" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				55EAAB20D1545CC303544004E94EBDA2 /* Debug */,
-				110EACD1D7F846A85165BBFAD26282C1 /* Release */,
+				24DF41D88F3464A006ED52D5266F39AF /* Debug */,
+				770628DCB1DE802E138DB37613C66406 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

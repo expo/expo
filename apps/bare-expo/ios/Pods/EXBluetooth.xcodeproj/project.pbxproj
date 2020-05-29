@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0ECC0FABC9E7987C8DFB82B839B75A1D /* EXBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = E6AB879C16CB5B729774510E2F30D775 /* EXBluetooth.m */; };
-		371E5B4D889FF70C950096C7EC70E1DE /* EXBluetooth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBC4110FC0DC71BDA0A1E9E03FD65B9 /* EXBluetooth-dummy.m */; };
-		5C1FEF62061D6C61B6F8418B8B67D747 /* EXBluetooth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC67F0BB70B3BED6F5A4738A1B1F86B /* EXBluetooth+JSON.m */; };
-		8FEB415D2A2958D2231E9CF002094E61 /* EXBluetooth.h in Headers */ = {isa = PBXBuildFile; fileRef = 03F3102C9FCF2CBBB9ED6ED4277D3310 /* EXBluetooth.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9C14B6AD747146FD3FCA23E91705105A /* EXBluetooth+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = A38BE196B83B708F28B5FA509A5086A7 /* EXBluetooth+JSON.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0ECC0FABC9E7987C8DFB82B839B75A1D /* EXBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = A5C7C5D2D690F18EAAB6493300B5EEC8 /* EXBluetooth.m */; };
+		371E5B4D889FF70C950096C7EC70E1DE /* EXBluetooth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D03E7556AC0CF40D2983AA699AB9B22 /* EXBluetooth-dummy.m */; };
+		5C1FEF62061D6C61B6F8418B8B67D747 /* EXBluetooth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 244B7B90366F5F8B23B4203303C8A025 /* EXBluetooth+JSON.m */; };
+		8FEB415D2A2958D2231E9CF002094E61 /* EXBluetooth.h in Headers */ = {isa = PBXBuildFile; fileRef = 618660D4A7E92DA7C28F3F4D7D9DAA9C /* EXBluetooth.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9C14B6AD747146FD3FCA23E91705105A /* EXBluetooth+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 0D8E2EDA7C2BC066334AE4BECF0DFFA8 /* EXBluetooth+JSON.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,16 +25,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		03F3102C9FCF2CBBB9ED6ED4277D3310 /* EXBluetooth.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBluetooth.h; path = EXBluetooth/EXBluetooth.h; sourceTree = "<group>"; };
-		1BBC4110FC0DC71BDA0A1E9E03FD65B9 /* EXBluetooth-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBluetooth-dummy.m"; sourceTree = "<group>"; };
-		3046008627188CA6F027CA91641E3FAE /* EXBluetooth.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBluetooth.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		0D8E2EDA7C2BC066334AE4BECF0DFFA8 /* EXBluetooth+JSON.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXBluetooth+JSON.h"; path = "EXBluetooth/EXBluetooth+JSON.h"; sourceTree = "<group>"; };
+		1792F7C694AE9277C006516201F3920A /* EXBluetooth.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBluetooth.release.xcconfig; sourceTree = "<group>"; };
+		1D03E7556AC0CF40D2983AA699AB9B22 /* EXBluetooth-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBluetooth-dummy.m"; sourceTree = "<group>"; };
+		244B7B90366F5F8B23B4203303C8A025 /* EXBluetooth+JSON.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "EXBluetooth+JSON.m"; path = "EXBluetooth/EXBluetooth+JSON.m"; sourceTree = "<group>"; };
+		618660D4A7E92DA7C28F3F4D7D9DAA9C /* EXBluetooth.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBluetooth.h; path = EXBluetooth/EXBluetooth.h; sourceTree = "<group>"; };
 		68E6A9EBC06F24BD31F405E73363CA11 /* libEXBluetooth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBluetooth.a; path = libEXBluetooth.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		75FE9CBB16FE3E7A3073D078371F9A25 /* EXBluetooth.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBluetooth.xcconfig; sourceTree = "<group>"; };
-		7E90A0C7D27A9C2630E4C127AB054D76 /* EXBluetooth-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBluetooth-prefix.pch"; sourceTree = "<group>"; };
-		A38BE196B83B708F28B5FA509A5086A7 /* EXBluetooth+JSON.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXBluetooth+JSON.h"; path = "EXBluetooth/EXBluetooth+JSON.h"; sourceTree = "<group>"; };
-		BCC67F0BB70B3BED6F5A4738A1B1F86B /* EXBluetooth+JSON.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "EXBluetooth+JSON.m"; path = "EXBluetooth/EXBluetooth+JSON.m"; sourceTree = "<group>"; };
+		A1621CC682A9CE86CBDC1F5B6EC832C2 /* EXBluetooth.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBluetooth.debug.xcconfig; sourceTree = "<group>"; };
+		A5C7C5D2D690F18EAAB6493300B5EEC8 /* EXBluetooth.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBluetooth.m; path = EXBluetooth/EXBluetooth.m; sourceTree = "<group>"; };
+		DB054AF60ADEDE11944A4122652F3844 /* EXBluetooth.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBluetooth.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		E6181726DA49ADD3EC5F49A8117C7172 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		E6AB879C16CB5B729774510E2F30D775 /* EXBluetooth.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBluetooth.m; path = EXBluetooth/EXBluetooth.m; sourceTree = "<group>"; };
+		EC60144CD6C12AF8D691E78004AF5343 /* EXBluetooth-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBluetooth-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,11 +49,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		28259609BE759FAD86517A031AFE5632 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1D03E7556AC0CF40D2983AA699AB9B22 /* EXBluetooth-dummy.m */,
+				EC60144CD6C12AF8D691E78004AF5343 /* EXBluetooth-prefix.pch */,
+				A1621CC682A9CE86CBDC1F5B6EC832C2 /* EXBluetooth.debug.xcconfig */,
+				1792F7C694AE9277C006516201F3920A /* EXBluetooth.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXBluetooth";
+			sourceTree = "<group>";
+		};
 		68623237EC6A09049DAE430B0B1F0CF8 = {
 			isa = PBXGroup;
 			children = (
 				863B0CABDECDC77D9C44E011A1124161 /* Dependencies */,
-				7E11CDCEE222B30CE5F066C5C1409582 /* EXBluetooth */,
+				DA19C43558F7E8F25EF3C0F2FEB31BC1 /* EXBluetooth */,
 				6AD6338FCD64A23C262495ED8CE4E241 /* Frameworks */,
 				E62192B25EC1D22DC2DE499D873C4C29 /* Products */,
 			);
@@ -65,20 +78,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		7E11CDCEE222B30CE5F066C5C1409582 /* EXBluetooth */ = {
-			isa = PBXGroup;
-			children = (
-				03F3102C9FCF2CBBB9ED6ED4277D3310 /* EXBluetooth.h */,
-				E6AB879C16CB5B729774510E2F30D775 /* EXBluetooth.m */,
-				A38BE196B83B708F28B5FA509A5086A7 /* EXBluetooth+JSON.h */,
-				BCC67F0BB70B3BED6F5A4738A1B1F86B /* EXBluetooth+JSON.m */,
-				8750474A674B29B041014781039B714C /* Pod */,
-				F8CEFD621DFF1766326F6898B74272C4 /* Support Files */,
-			);
-			name = EXBluetooth;
-			path = "../../../../packages/expo-bluetooth/ios";
-			sourceTree = "<group>";
-		};
 		863B0CABDECDC77D9C44E011A1124161 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -87,12 +86,26 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		8750474A674B29B041014781039B714C /* Pod */ = {
+		C754DC671BA05CD75388A7369E8F6769 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				3046008627188CA6F027CA91641E3FAE /* EXBluetooth.podspec */,
+				DB054AF60ADEDE11944A4122652F3844 /* EXBluetooth.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		DA19C43558F7E8F25EF3C0F2FEB31BC1 /* EXBluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				618660D4A7E92DA7C28F3F4D7D9DAA9C /* EXBluetooth.h */,
+				A5C7C5D2D690F18EAAB6493300B5EEC8 /* EXBluetooth.m */,
+				0D8E2EDA7C2BC066334AE4BECF0DFFA8 /* EXBluetooth+JSON.h */,
+				244B7B90366F5F8B23B4203303C8A025 /* EXBluetooth+JSON.m */,
+				C754DC671BA05CD75388A7369E8F6769 /* Pod */,
+				28259609BE759FAD86517A031AFE5632 /* Support Files */,
+			);
+			name = EXBluetooth;
+			path = "../../../../packages/expo-bluetooth/ios";
 			sourceTree = "<group>";
 		};
 		E62192B25EC1D22DC2DE499D873C4C29 /* Products */ = {
@@ -101,17 +114,6 @@
 				68E6A9EBC06F24BD31F405E73363CA11 /* libEXBluetooth.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F8CEFD621DFF1766326F6898B74272C4 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				75FE9CBB16FE3E7A3073D078371F9A25 /* EXBluetooth.xcconfig */,
-				1BBC4110FC0DC71BDA0A1E9E03FD65B9 /* EXBluetooth-dummy.m */,
-				7E90A0C7D27A9C2630E4C127AB054D76 /* EXBluetooth-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXBluetooth";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -265,9 +267,33 @@
 			};
 			name = Debug;
 		};
-		84158042798190CC972B46C62F23F88D /* Release */ = {
+		979ABD22A133A87D138B272AD04EB2D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 75FE9CBB16FE3E7A3073D078371F9A25 /* EXBluetooth.xcconfig */;
+			baseConfigurationReference = A1621CC682A9CE86CBDC1F5B6EC832C2 /* EXBluetooth.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBluetooth/EXBluetooth-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBluetooth;
+				PRODUCT_NAME = EXBluetooth;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		ACEF99A2CD8E905128D882428F1B2BA5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1792F7C694AE9277C006516201F3920A /* EXBluetooth.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -289,30 +315,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		AE73529E94EFB88445290F7D9ED563DB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 75FE9CBB16FE3E7A3073D078371F9A25 /* EXBluetooth.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBluetooth/EXBluetooth-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBluetooth;
-				PRODUCT_NAME = EXBluetooth;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		D843FC6FA802233BC5726403E28F555D /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -389,8 +391,8 @@
 		E2F3550EF6ED601E51C7E8FDD0B19CBF /* Build configuration list for PBXNativeTarget "EXBluetooth" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AE73529E94EFB88445290F7D9ED563DB /* Debug */,
-				84158042798190CC972B46C62F23F88D /* Release */,
+				979ABD22A133A87D138B272AD04EB2D4 /* Debug */,
+				ACEF99A2CD8E905128D882428F1B2BA5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

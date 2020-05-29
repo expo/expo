@@ -6,6 +6,7 @@ import * as Formatter from '../Formatter';
 import logger from '../Logger';
 import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 import { BackupableOptions, CommandOptions, Parcel } from './types';
+import { UNPUBLISHED_VERSION_NAME } from '../Changelogs';
 
 const { green, cyan, magenta, gray } = chalk;
 
@@ -46,7 +47,7 @@ export async function shouldUseBackupAsync(options: CommandOptions): Promise<boo
 export function printPackageParcel(parcel: Parcel): void {
   const { pkg, pkgView, state, dependencies } = parcel;
   const { logs, changelogChanges, releaseType, releaseVersion } = state;
-  const gitHead = pkg.packageJson.gitHead;
+  const gitHead = pkgView?.gitHead;
 
   logger.log(
     '\n📦',
@@ -63,7 +64,7 @@ export function printPackageParcel(parcel: Parcel): void {
   } else if (!logs) {
     logger.warn("   We couldn't determine new commits for this package.");
 
-    if (pkg.packageJson.gitHead) {
+    if (gitHead) {
       // There are no logs and `gitHead` is there, so probably it's unreachable.
       logger.warn('   Git head of its current version is not reachable from this branch.');
     } else {
@@ -85,7 +86,7 @@ export function printPackageParcel(parcel: Parcel): void {
   if (logs && logs.commits.length > 0) {
     logger.log('  ', magenta('New commits:'));
 
-    logs.commits.forEach((commitLog) => {
+    [...logs.commits].reverse().forEach((commitLog) => {
       logger.log('    ', Formatter.formatCommitLog(commitLog));
     });
   }
@@ -100,8 +101,7 @@ export function printPackageParcel(parcel: Parcel): void {
     });
   }
 
-  const unpublishedChanges =
-    changelogChanges?.versions.unpublished ?? changelogChanges?.versions.master ?? {};
+  const unpublishedChanges = changelogChanges?.versions[UNPUBLISHED_VERSION_NAME] ?? {};
 
   for (const changeType in unpublishedChanges) {
     const changes = unpublishedChanges[changeType];
@@ -115,7 +115,7 @@ export function printPackageParcel(parcel: Parcel): void {
     }
   }
 
-  if (releaseType && releaseVersion) {
+  if (pkgView && releaseType && releaseVersion) {
     logger.log(
       '  ',
       magenta(`Suggested ${cyan.bold(releaseType)} upgrade to ${cyan.bold(releaseVersion)}`)

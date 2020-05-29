@@ -19,14 +19,25 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		04A0A4AEFEDA3D27655586E923EC84F3 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMaps.framework; path = Maps/Frameworks/GoogleMaps.framework; sourceTree = "<group>"; };
-		136E75279A522A8348F36C4D7F18F632 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsCore.framework; path = Maps/Frameworks/GoogleMapsCore.framework; sourceTree = "<group>"; };
-		7C91EADA88296CF942BC35F9C11F9C6B /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsBase.framework; path = Base/Frameworks/GoogleMapsBase.framework; sourceTree = "<group>"; };
-		AE28C3A5A84692C51C1E5B4A079B3421 /* GoogleMaps.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleMaps.xcconfig; sourceTree = "<group>"; };
-		C336ECD84980356EA4B1EE56D6A5F248 /* GoogleMaps.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
+		0A52113E4503D346AEA64DFC1E7CB098 /* GoogleMaps.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleMaps.release.xcconfig; sourceTree = "<group>"; };
+		0BBFE5A7DF1818111EDDF98496B8C00C /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMaps.framework; path = Maps/Frameworks/GoogleMaps.framework; sourceTree = "<group>"; };
+		2D2ADB8A3666AD3947CAF767475B4DE5 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsCore.framework; path = Maps/Frameworks/GoogleMapsCore.framework; sourceTree = "<group>"; };
+		3DAF6356AE5E13E68D439DA0E29063B1 /* GoogleMaps.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleMaps.debug.xcconfig; sourceTree = "<group>"; };
+		BC87EB2E6CAD0B696AAA1E94D3C79169 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsBase.framework; path = Base/Frameworks/GoogleMapsBase.framework; sourceTree = "<group>"; };
+		C0C112BB9D2D866444B1431E81A7A19E /* GoogleMaps.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		010CBF5EFFC0A60BEC372B1DA40C46D3 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				3DAF6356AE5E13E68D439DA0E29063B1 /* GoogleMaps.debug.xcconfig */,
+				0A52113E4503D346AEA64DFC1E7CB098 /* GoogleMaps.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/GoogleMaps";
+			sourceTree = "<group>";
+		};
 		0838DB6FFFBBF0079B5B31BE7E719725 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -34,40 +45,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0F1783B4A724E7F9BAB997D6F7B9C99D /* Frameworks */ = {
+		44B9BC5ABC613D411556BC39C7B5622A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				04A0A4AEFEDA3D27655586E923EC84F3 /* GoogleMaps.framework */,
-				136E75279A522A8348F36C4D7F18F632 /* GoogleMapsCore.framework */,
+				BC87EB2E6CAD0B696AAA1E94D3C79169 /* GoogleMapsBase.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		28780AF5FD19CC90BD57A156FF970F16 /* Resources */ = {
+		5F994B9907E9CCB712D53CE954688591 /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				C336ECD84980356EA4B1EE56D6A5F248 /* GoogleMaps.bundle */,
+				44B9BC5ABC613D411556BC39C7B5622A /* Frameworks */,
 			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		3E19524CFBF07F41D7381A03B7DE1EB2 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				7C91EADA88296CF942BC35F9C11F9C6B /* GoogleMapsBase.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		9931ACA0FF58041C7FAACC2F830CDEB2 /* GoogleMaps */ = {
-			isa = PBXGroup;
-			children = (
-				FF9D74C7D1A51688B1405597AB1038A0 /* Base */,
-				A6F3AF86F43CDD681864C484AAC9B813 /* Maps */,
-				B190EE38835829E0A872204924A3514A /* Support Files */,
-			);
-			name = GoogleMaps;
-			path = GoogleMaps;
+			name = Base;
 			sourceTree = "<group>";
 		};
 		9A096911D70E205CE77AA9E27DA3615B /* Frameworks */ = {
@@ -77,39 +68,50 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		A6F3AF86F43CDD681864C484AAC9B813 /* Maps */ = {
+		A8F2F6ED0EC129D564731F81431A738F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0F1783B4A724E7F9BAB997D6F7B9C99D /* Frameworks */,
-				28780AF5FD19CC90BD57A156FF970F16 /* Resources */,
+				C0C112BB9D2D866444B1431E81A7A19E /* GoogleMaps.bundle */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		AA31A9EC4F038D42042A27819C8128DB /* Maps */ = {
+			isa = PBXGroup;
+			children = (
+				BFD30241F59A8D4764040871D2FB3E98 /* Frameworks */,
+				A8F2F6ED0EC129D564731F81431A738F /* Resources */,
 			);
 			name = Maps;
 			sourceTree = "<group>";
 		};
-		B190EE38835829E0A872204924A3514A /* Support Files */ = {
+		BFD30241F59A8D4764040871D2FB3E98 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AE28C3A5A84692C51C1E5B4A079B3421 /* GoogleMaps.xcconfig */,
+				0BBFE5A7DF1818111EDDF98496B8C00C /* GoogleMaps.framework */,
+				2D2ADB8A3666AD3947CAF767475B4DE5 /* GoogleMapsCore.framework */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/GoogleMaps";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E7AE6B281F6AF40650A56B3503105A58 = {
 			isa = PBXGroup;
 			children = (
 				9A096911D70E205CE77AA9E27DA3615B /* Frameworks */,
-				9931ACA0FF58041C7FAACC2F830CDEB2 /* GoogleMaps */,
+				FEA1EE413D905C6FD62180AA94F60600 /* GoogleMaps */,
 				0838DB6FFFBBF0079B5B31BE7E719725 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		FF9D74C7D1A51688B1405597AB1038A0 /* Base */ = {
+		FEA1EE413D905C6FD62180AA94F60600 /* GoogleMaps */ = {
 			isa = PBXGroup;
 			children = (
-				3E19524CFBF07F41D7381A03B7DE1EB2 /* Frameworks */,
+				5F994B9907E9CCB712D53CE954688591 /* Base */,
+				AA31A9EC4F038D42042A27819C8128DB /* Maps */,
+				010CBF5EFFC0A60BEC372B1DA40C46D3 /* Support Files */,
 			);
-			name = Base;
+			name = GoogleMaps;
+			path = GoogleMaps;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,9 +142,9 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		5431E0B0ECDEFB82977EE7685AB1A4C8 /* Debug */ = {
+		47412A0F02465909EE50A261B086F610 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AE28C3A5A84692C51C1E5B4A079B3421 /* GoogleMaps.xcconfig */;
+			baseConfigurationReference = 3DAF6356AE5E13E68D439DA0E29063B1 /* GoogleMaps.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -152,6 +154,20 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		4DDF18A6CDD103CCB82C6505C13DDC61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A52113E4503D346AEA64DFC1E7CB098 /* GoogleMaps.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		5EC7FA65EC45F4370473E53DAAF2E0EE /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -210,20 +226,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		A3416888921F65C9292DCE1BE97E2FEE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = AE28C3A5A84692C51C1E5B4A079B3421 /* GoogleMaps.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -297,8 +299,8 @@
 		2CC3365E1BA4D17F45236B6E7CCCDD35 /* Build configuration list for PBXAggregateTarget "GoogleMaps" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5431E0B0ECDEFB82977EE7685AB1A4C8 /* Debug */,
-				A3416888921F65C9292DCE1BE97E2FEE /* Release */,
+				47412A0F02465909EE50A261B086F610 /* Debug */,
+				4DDF18A6CDD103CCB82C6505C13DDC61 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

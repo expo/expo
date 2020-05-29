@@ -19,19 +19,31 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		46B2684938A6C997E3BCEAAA6B7D7EBD /* FirebaseCoreDiagnosticsInterop.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCoreDiagnosticsInterop.xcconfig; sourceTree = "<group>"; };
-		87DB2D338B499A86F10EE0D23A637A3B /* FIRCoreDiagnosticsInterop.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCoreDiagnosticsInterop.h; path = Interop/CoreDiagnostics/Public/FIRCoreDiagnosticsInterop.h; sourceTree = "<group>"; };
-		D5A203A94DF767FFC90CF8568062FC17 /* FIRCoreDiagnosticsData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCoreDiagnosticsData.h; path = Interop/CoreDiagnostics/Public/FIRCoreDiagnosticsData.h; sourceTree = "<group>"; };
+		5EFA90CEFA545BB6DFA388C357E38015 /* FIRCoreDiagnosticsData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCoreDiagnosticsData.h; path = Interop/CoreDiagnostics/Public/FIRCoreDiagnosticsData.h; sourceTree = "<group>"; };
+		72AF77FA9BE883892AECD589DE3B9230 /* FirebaseCoreDiagnosticsInterop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCoreDiagnosticsInterop.release.xcconfig; sourceTree = "<group>"; };
+		75C4FB6AB87970D931BACE3D8ECAD5EE /* FirebaseCoreDiagnosticsInterop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCoreDiagnosticsInterop.debug.xcconfig; sourceTree = "<group>"; };
+		C63C6B47C0965D76D10F8A08E7085202 /* FIRCoreDiagnosticsInterop.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCoreDiagnosticsInterop.h; path = Interop/CoreDiagnostics/Public/FIRCoreDiagnosticsInterop.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		086817CD8FE3FA288A94BD620BE7ABE6 = {
 			isa = PBXGroup;
 			children = (
-				F7E2784B9665521AF80C4DFCA2B1BBA6 /* FirebaseCoreDiagnosticsInterop */,
+				093E62D827AC504CE2E2178E60C53924 /* FirebaseCoreDiagnosticsInterop */,
 				DE06B4D13B40F313390062B14CF22586 /* Frameworks */,
 				11E63C84B363945672C328F9F75920AF /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		093E62D827AC504CE2E2178E60C53924 /* FirebaseCoreDiagnosticsInterop */ = {
+			isa = PBXGroup;
+			children = (
+				5EFA90CEFA545BB6DFA388C357E38015 /* FIRCoreDiagnosticsData.h */,
+				C63C6B47C0965D76D10F8A08E7085202 /* FIRCoreDiagnosticsInterop.h */,
+				D98CD6DBB5481D6B19995F1CABB9BCF8 /* Support Files */,
+			);
+			name = FirebaseCoreDiagnosticsInterop;
+			path = FirebaseCoreDiagnosticsInterop;
 			sourceTree = "<group>";
 		};
 		11E63C84B363945672C328F9F75920AF /* Products */ = {
@@ -41,10 +53,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		886CEEFE9C593EFF99F497BCEBF39A6C /* Support Files */ = {
+		D98CD6DBB5481D6B19995F1CABB9BCF8 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				46B2684938A6C997E3BCEAAA6B7D7EBD /* FirebaseCoreDiagnosticsInterop.xcconfig */,
+				75C4FB6AB87970D931BACE3D8ECAD5EE /* FirebaseCoreDiagnosticsInterop.debug.xcconfig */,
+				72AF77FA9BE883892AECD589DE3B9230 /* FirebaseCoreDiagnosticsInterop.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/FirebaseCoreDiagnosticsInterop";
@@ -55,17 +68,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		F7E2784B9665521AF80C4DFCA2B1BBA6 /* FirebaseCoreDiagnosticsInterop */ = {
-			isa = PBXGroup;
-			children = (
-				D5A203A94DF767FFC90CF8568062FC17 /* FIRCoreDiagnosticsData.h */,
-				87DB2D338B499A86F10EE0D23A637A3B /* FIRCoreDiagnosticsInterop.h */,
-				886CEEFE9C593EFF99F497BCEBF39A6C /* Support Files */,
-			);
-			name = FirebaseCoreDiagnosticsInterop;
-			path = FirebaseCoreDiagnosticsInterop;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -96,33 +98,6 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		0B53504C68D14E632CE82F302661B0CD /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 46B2684938A6C997E3BCEAAA6B7D7EBD /* FirebaseCoreDiagnosticsInterop.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		1CE35901916565349D6591BAA38D6690 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 46B2684938A6C997E3BCEAAA6B7D7EBD /* FirebaseCoreDiagnosticsInterop.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		22B1E5404433DD79AB36916D1FB9754C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -247,6 +222,33 @@
 			};
 			name = Debug;
 		};
+		B1A98ECF8EE1565BFC9B1B99DD379EFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 72AF77FA9BE883892AECD589DE3B9230 /* FirebaseCoreDiagnosticsInterop.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C52B69DFD7B470E8EE9C5AFFB9192445 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 75C4FB6AB87970D931BACE3D8ECAD5EE /* FirebaseCoreDiagnosticsInterop.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -262,8 +264,8 @@
 		F26ECD83F786E848C4B3B59D808E165A /* Build configuration list for PBXAggregateTarget "FirebaseCoreDiagnosticsInterop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1CE35901916565349D6591BAA38D6690 /* Debug */,
-				0B53504C68D14E632CE82F302661B0CD /* Release */,
+				C52B69DFD7B470E8EE9C5AFFB9192445 /* Debug */,
+				B1A98ECF8EE1565BFC9B1B99DD379EFC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

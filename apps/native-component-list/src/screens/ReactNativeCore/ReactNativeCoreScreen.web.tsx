@@ -1,3 +1,4 @@
+import Slider from '@react-native-community/slider';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -5,7 +6,6 @@ import {
   Image,
   Picker,
   RefreshControl,
-  Slider,
   Switch,
   StatusBar,
   SectionList,

@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0253BD56042F9EC3316AD1C977DD5155 /* EXDocumentPickerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 89107976877BAE86384886345705871E /* EXDocumentPickerModule.m */; };
-		E4590C6BAB922D3CFBA78A62DE7709B0 /* EXDocumentPickerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 68FC49F798BEBD76D2D17EEA44A1B5F0 /* EXDocumentPickerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FDDE40B9AD49EAE7FAC1F6C8BBB29875 /* EXDocumentPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A359AAB35FF9C0825B157DC0A8B255 /* EXDocumentPicker-dummy.m */; };
+		0253BD56042F9EC3316AD1C977DD5155 /* EXDocumentPickerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CB02716C7B837676550E1F5A7E1B8118 /* EXDocumentPickerModule.m */; };
+		E4590C6BAB922D3CFBA78A62DE7709B0 /* EXDocumentPickerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9457059407C3BBB9E4FBEF90961CFAAE /* EXDocumentPickerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FDDE40B9AD49EAE7FAC1F6C8BBB29875 /* EXDocumentPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B96CADA60CC9423ECB431C49266E1A /* EXDocumentPicker-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,14 +31,15 @@
 
 /* Begin PBXFileReference section */
 		0C1D8682E59251E3D593771987608DCD /* libEXDocumentPicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXDocumentPicker.a; path = libEXDocumentPicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0CCC58A3950B089B24274FFABA072460 /* EXDocumentPicker.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXDocumentPicker.xcconfig; sourceTree = "<group>"; };
-		58A359AAB35FF9C0825B157DC0A8B255 /* EXDocumentPicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXDocumentPicker-dummy.m"; sourceTree = "<group>"; };
-		68FC49F798BEBD76D2D17EEA44A1B5F0 /* EXDocumentPickerModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDocumentPickerModule.h; path = EXDocumentPicker/EXDocumentPickerModule.h; sourceTree = "<group>"; };
+		2B0286CFBC36D5EE1C6A35645A30E8D6 /* EXDocumentPicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDocumentPicker-prefix.pch"; sourceTree = "<group>"; };
 		7AE9EC1AFE0FC150D12091A7EA69D9B4 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		89107976877BAE86384886345705871E /* EXDocumentPickerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDocumentPickerModule.m; path = EXDocumentPicker/EXDocumentPickerModule.m; sourceTree = "<group>"; };
-		987F9C9030CDA71FE21DFA2F0B8F857E /* EXDocumentPicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDocumentPicker-prefix.pch"; sourceTree = "<group>"; };
+		85B96CADA60CC9423ECB431C49266E1A /* EXDocumentPicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXDocumentPicker-dummy.m"; sourceTree = "<group>"; };
+		9457059407C3BBB9E4FBEF90961CFAAE /* EXDocumentPickerModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDocumentPickerModule.h; path = EXDocumentPicker/EXDocumentPickerModule.h; sourceTree = "<group>"; };
+		A9A371B7D1598021F0AE57FC87469360 /* EXDocumentPicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXDocumentPicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		AD20ACE0E10710598CC896AE306FCD6B /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		B1B4F96778A123DEE27285D97B784FBB /* EXDocumentPicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXDocumentPicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		CB02716C7B837676550E1F5A7E1B8118 /* EXDocumentPickerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDocumentPickerModule.m; path = EXDocumentPicker/EXDocumentPickerModule.m; sourceTree = "<group>"; };
+		CC8528C2E56CCB1455D86551B6E2F4AD /* EXDocumentPicker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXDocumentPicker.release.xcconfig; sourceTree = "<group>"; };
+		D2FC0FA5D7F4BA0E7E934A23263A655A /* EXDocumentPicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXDocumentPicker.debug.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,37 +53,46 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0C6A662DEBED711E77CF723D2C6B6FC1 /* EXDocumentPicker */ = {
+		0C7CA395BA0B45D87C2D3A8C5BA2214C /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				68FC49F798BEBD76D2D17EEA44A1B5F0 /* EXDocumentPickerModule.h */,
-				89107976877BAE86384886345705871E /* EXDocumentPickerModule.m */,
-				DDA3E0F62F01F952134FA0F01F2E2B8D /* Pod */,
-				2644C7CEA6B9756585D127C5036624A3 /* Support Files */,
-			);
-			name = EXDocumentPicker;
-			path = "../../../../packages/expo-document-picker/ios";
-			sourceTree = "<group>";
-		};
-		2644C7CEA6B9756585D127C5036624A3 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				0CCC58A3950B089B24274FFABA072460 /* EXDocumentPicker.xcconfig */,
-				58A359AAB35FF9C0825B157DC0A8B255 /* EXDocumentPicker-dummy.m */,
-				987F9C9030CDA71FE21DFA2F0B8F857E /* EXDocumentPicker-prefix.pch */,
+				85B96CADA60CC9423ECB431C49266E1A /* EXDocumentPicker-dummy.m */,
+				2B0286CFBC36D5EE1C6A35645A30E8D6 /* EXDocumentPicker-prefix.pch */,
+				D2FC0FA5D7F4BA0E7E934A23263A655A /* EXDocumentPicker.debug.xcconfig */,
+				CC8528C2E56CCB1455D86551B6E2F4AD /* EXDocumentPicker.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXDocumentPicker";
+			sourceTree = "<group>";
+		};
+		6491FD1CC64AD31F04825E2A96F68312 /* EXDocumentPicker */ = {
+			isa = PBXGroup;
+			children = (
+				9457059407C3BBB9E4FBEF90961CFAAE /* EXDocumentPickerModule.h */,
+				CB02716C7B837676550E1F5A7E1B8118 /* EXDocumentPickerModule.m */,
+				9B2AADA2CB4D5BEB73C3CFC706163CAC /* Pod */,
+				0C7CA395BA0B45D87C2D3A8C5BA2214C /* Support Files */,
+			);
+			name = EXDocumentPicker;
+			path = "../../../../packages/expo-document-picker/ios";
 			sourceTree = "<group>";
 		};
 		6716D924A0F29CAC028CE8E797396267 = {
 			isa = PBXGroup;
 			children = (
 				A6356745382EC6A9CB57A92C26E4B5E7 /* Dependencies */,
-				0C6A662DEBED711E77CF723D2C6B6FC1 /* EXDocumentPicker */,
+				6491FD1CC64AD31F04825E2A96F68312 /* EXDocumentPicker */,
 				CD82277915AC5E74BB62A02FE17BE5AB /* Frameworks */,
 				E016763F17094C3C6C02B0E785284045 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		9B2AADA2CB4D5BEB73C3CFC706163CAC /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				A9A371B7D1598021F0AE57FC87469360 /* EXDocumentPicker.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		A6356745382EC6A9CB57A92C26E4B5E7 /* Dependencies */ = {
@@ -99,14 +109,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		DDA3E0F62F01F952134FA0F01F2E2B8D /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				B1B4F96778A123DEE27285D97B784FBB /* EXDocumentPicker.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		E016763F17094C3C6C02B0E785284045 /* Products */ = {
@@ -211,9 +213,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4F7C4BF8916D95F6283261CA5C73F27B /* Debug */ = {
+		1D565D1F86B1C403FFF4A3D05CD7A8EB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0CCC58A3950B089B24274FFABA072460 /* EXDocumentPicker.xcconfig */;
+			baseConfigurationReference = CC8528C2E56CCB1455D86551B6E2F4AD /* EXDocumentPicker.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -232,8 +234,9 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		7864B0A58DB5AE8B5046071B1C878FDD /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -359,9 +362,9 @@
 			};
 			name = Release;
 		};
-		FD378AD7CF0EEAA24BAB4FDEDD4FEDE6 /* Release */ = {
+		FEC49BA35C27C5D69EFD967B5FC816FC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0CCC58A3950B089B24274FFABA072460 /* EXDocumentPicker.xcconfig */;
+			baseConfigurationReference = D2FC0FA5D7F4BA0E7E934A23263A655A /* EXDocumentPicker.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -380,9 +383,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -390,8 +392,8 @@
 		E7071EA3AFBA5E62BDEF63B15D9D4CE9 /* Build configuration list for PBXNativeTarget "EXDocumentPicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4F7C4BF8916D95F6283261CA5C73F27B /* Debug */,
-				FD378AD7CF0EEAA24BAB4FDEDD4FEDE6 /* Release */,
+				FEC49BA35C27C5D69EFD967B5FC816FC /* Debug */,
+				1D565D1F86B1C403FFF4A3D05CD7A8EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

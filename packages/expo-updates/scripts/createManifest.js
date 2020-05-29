@@ -73,7 +73,7 @@ const destinationDir = process.argv[4];
         subdirectory: asset.httpServerLocation,
       };
       if (platform === 'ios') {
-        assetInfoForManifest.nsBundleDir = getBasePath(asset);
+        assetInfoForManifest.nsBundleDir = getIosDestinationDir(asset);
         assetInfoForManifest.nsBundleFilename =
           scale === 1 ? asset.name : asset.name + '@' + scale + 'x';
       } else if (platform === 'android') {
@@ -105,6 +105,12 @@ function getAndroidResourceIdentifier(asset) {
     .replace(/\//g, '_') // Encode folder structure in file name
     .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
     .replace(/^assets_/, ''); // Remove "assets_" prefix
+}
+
+function getIosDestinationDir(asset) {
+  // react-native-cli replaces `..` with `_` when embedding assets in the iOS app bundle
+  // https://github.com/react-native-community/cli/blob/0a93be1a42ed1fb05bb0ebf3b82d58b2dd920614/packages/cli/src/commands/bundle/getAssetDestPathIOS.ts
+  return getBasePath(asset).replace(/\.\.\//g, '_');
 }
 
 // copied from react-native/Libraries/Image/assetPathUtils.js

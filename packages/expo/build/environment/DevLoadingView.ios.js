@@ -43,7 +43,7 @@ export default function DevLoadingView() {
             nativeDevLoadingViewEventEmitter.removeListener('devLoadingView:showMessage', handleShowMessage);
             nativeDevLoadingViewEventEmitter.removeListener('devLoadingView:hide', handleHide);
         };
-    }, []);
+    }, [translateY]);
     if (isDevLoading || isAnimating) {
         return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
             React.createElement(SafeAreaView, { style: styles.banner, edges: ['bottom'] },

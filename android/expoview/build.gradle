@@ -154,7 +154,6 @@ dependencies {
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-updates',
-        'expo-notifications'
         'expo-splash-screen'
       ]
   ])

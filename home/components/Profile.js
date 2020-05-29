@@ -244,7 +244,7 @@ export default class Profile extends React.Component {
       content = (
         <>
           {take(snacks, MAX_SNACKS_TO_DISPLAY).map(this._renderSnack)}
-          {otherSnacks.length && (
+          {otherSnacks.length > 0 && (
             <ListItem
               title="See all snacks"
               onPress={this._handlePressSnackList}
