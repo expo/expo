@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- If permission is not recognized, show the correct expo package to link. ([#8546])(https://github.com/expo/expo/pull/8046) by [@jarvisluong](https://github.com/jarvisluong)
+
 ### 🐛 Bug fixes
 
 ## 9.0.0 — 2020-05-28
