@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A6EA30D5CF59F81F79E543A2886EE09 /* EXBarCodeScannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E165892DD25B93DA3F3F9167D8D8A96 /* EXBarCodeScannerView.m */; };
-		590A06B8E441603DB052238E2D52E7A1 /* EXBarCodeScannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 14E9A571A7D16E0F5FDC99E533E3B808 /* EXBarCodeScannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		67B312425D92FBDFE4167004B0CDEE47 /* EXBarCodeScannerProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = B0D1C9A4C60BFA6D3047F50824CA680B /* EXBarCodeScannerProvider.m */; };
-		8BF185E798915EE8524C501EA6B32FE2 /* EXBarCodeScannerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CCDF9B09B19D88BB5D9CE615EB9748D /* EXBarCodeScannerUtils.m */; };
-		93DC453D4D5285285F9417F9182CECB4 /* EXBarCodeScannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = D50F96199E966E7ECD15DBB044FB4457 /* EXBarCodeScannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9854A4D64821957B7D05D4667BEAA707 /* EXBarCodeScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = F3AADFB13605DA5C0379D7AEFE31EFB1 /* EXBarCodeScanner.m */; };
-		9B19711B387D270D09658D0606591AEA /* EXBarCodeScannerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 90AD1043FF2F8920D10CA7215A6C4040 /* EXBarCodeScannerUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9C4218EE463295F803FF5A5F914B7886 /* EXBarCodeCameraRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 22EE64DF85055260FB63607E5217CD7A /* EXBarCodeCameraRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9D17660388C0F1C23B02102222C2B0F3 /* EXBarCodeScanner.h in Headers */ = {isa = PBXBuildFile; fileRef = E86F84BC4344F8FE4D598457FA48A5CF /* EXBarCodeScanner.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A6349DDD3B3BAF2422E2C2BBDB225CBB /* EXBarCodeScannerProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 310B90C1A33D07B1D459FC42855A43B9 /* EXBarCodeScannerProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B11CE0F7F054ABD697229181283B24DC /* EXBarCodeScannerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A55637DD5EEE5FD2D6E04704182F45FB /* EXBarCodeScannerModule.m */; };
-		C2E3468E49437E029E2525FC7938BDA7 /* EXBarCodeScanner-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC2CDB9B93ACEB288666750C41946EC /* EXBarCodeScanner-dummy.m */; };
-		DB825C5EDF821CBA3AFB820FB07E6CFC /* EXBarCodeScannerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 93CA74A3F322D6269E10322BCBF786C7 /* EXBarCodeScannerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F734578BBEAD11C7ED175FD1EF6A20F9 /* EXBarCodeScannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 74F4B52A18E4A148A015924E9C6E5516 /* EXBarCodeScannerViewManager.m */; };
-		FC3BCA05CCB8F60D8CC46CCD1865C7BD /* EXBarCodeCameraRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B62C1496C433A10200B7FAE2C61BE80 /* EXBarCodeCameraRequester.m */; };
+		0A6EA30D5CF59F81F79E543A2886EE09 /* EXBarCodeScannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = E1A8B6CDE88DA8F66B28B103BA4B88B5 /* EXBarCodeScannerView.m */; };
+		590A06B8E441603DB052238E2D52E7A1 /* EXBarCodeScannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A349E7EF0D0B6A6E9667BFB579EF17D2 /* EXBarCodeScannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		67B312425D92FBDFE4167004B0CDEE47 /* EXBarCodeScannerProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = BEC4AEAB6C1109C74F19050C1D288BB8 /* EXBarCodeScannerProvider.m */; };
+		8BF185E798915EE8524C501EA6B32FE2 /* EXBarCodeScannerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2B70059E0BBE727294BCEB9D8C97CA /* EXBarCodeScannerUtils.m */; };
+		93DC453D4D5285285F9417F9182CECB4 /* EXBarCodeScannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = A2FA8D71CEBD5E7B9CC5E82795292ECA /* EXBarCodeScannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9854A4D64821957B7D05D4667BEAA707 /* EXBarCodeScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 26644395EF8C7EC477B2DB6F0E3C70EA /* EXBarCodeScanner.m */; };
+		9B19711B387D270D09658D0606591AEA /* EXBarCodeScannerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = EEAC8B1F897E1BCC991ACA89A437E37E /* EXBarCodeScannerUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9C4218EE463295F803FF5A5F914B7886 /* EXBarCodeCameraRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = DA820E83FE8177F60E7321BA89178F22 /* EXBarCodeCameraRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9D17660388C0F1C23B02102222C2B0F3 /* EXBarCodeScanner.h in Headers */ = {isa = PBXBuildFile; fileRef = A562DEB2EBE4E3C26C06ADA7DDA8A879 /* EXBarCodeScanner.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A6349DDD3B3BAF2422E2C2BBDB225CBB /* EXBarCodeScannerProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D5BE7B94AB737B507CE8460570A092 /* EXBarCodeScannerProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B11CE0F7F054ABD697229181283B24DC /* EXBarCodeScannerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 0673B8D1A14FBB847E5533506D2471AF /* EXBarCodeScannerModule.m */; };
+		C2E3468E49437E029E2525FC7938BDA7 /* EXBarCodeScanner-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 93208C9AFE6D13C36C020B9220663F22 /* EXBarCodeScanner-dummy.m */; };
+		DB825C5EDF821CBA3AFB820FB07E6CFC /* EXBarCodeScannerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = BB986921D39AB062258A449EE47D8415 /* EXBarCodeScannerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F734578BBEAD11C7ED175FD1EF6A20F9 /* EXBarCodeScannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AE5F8A837298BC36FEA87F48D849E4F3 /* EXBarCodeScannerViewManager.m */; };
+		FC3BCA05CCB8F60D8CC46CCD1865C7BD /* EXBarCodeCameraRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = F851060BACC36700AB4E593386BB1B86 /* EXBarCodeCameraRequester.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,29 +56,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		14E9A571A7D16E0F5FDC99E533E3B808 /* EXBarCodeScannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerViewManager.h; path = EXBarCodeScanner/EXBarCodeScannerViewManager.h; sourceTree = "<group>"; };
-		22EE64DF85055260FB63607E5217CD7A /* EXBarCodeCameraRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeCameraRequester.h; path = EXBarCodeScanner/EXBarCodeCameraRequester.h; sourceTree = "<group>"; };
-		310B90C1A33D07B1D459FC42855A43B9 /* EXBarCodeScannerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerProvider.h; path = EXBarCodeScanner/EXBarCodeScannerProvider.h; sourceTree = "<group>"; };
+		0673B8D1A14FBB847E5533506D2471AF /* EXBarCodeScannerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerModule.m; path = EXBarCodeScanner/EXBarCodeScannerModule.m; sourceTree = "<group>"; };
+		213A84C9E762AD8AD6C0F7B2814B510B /* EXBarCodeScanner-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBarCodeScanner-prefix.pch"; sourceTree = "<group>"; };
+		26644395EF8C7EC477B2DB6F0E3C70EA /* EXBarCodeScanner.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScanner.m; path = EXBarCodeScanner/EXBarCodeScanner.m; sourceTree = "<group>"; };
 		50F02FAB3A7CFAB99DC54BC3162EC767 /* ZXingObjC */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingObjC; path = ZXingObjC.xcodeproj; sourceTree = "<group>"; };
 		52D9F110E3A21A8D4259408A5177D27A /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
-		595DF242EA2DB4433A849FE5EC91DD8A /* EXBarCodeScanner-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBarCodeScanner-prefix.pch"; sourceTree = "<group>"; };
-		74F4B52A18E4A148A015924E9C6E5516 /* EXBarCodeScannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerViewManager.m; path = EXBarCodeScanner/EXBarCodeScannerViewManager.m; sourceTree = "<group>"; };
+		53D408DBBAA61ED90B62FABC49191B8C /* EXBarCodeScanner.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBarCodeScanner.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		59B2090954D55A6F9ABD72BF3722D024 /* EXBarCodeScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBarCodeScanner.debug.xcconfig; sourceTree = "<group>"; };
 		783ECE15DAB1293D5AFA675461F111FF /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		7E165892DD25B93DA3F3F9167D8D8A96 /* EXBarCodeScannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerView.m; path = EXBarCodeScanner/EXBarCodeScannerView.m; sourceTree = "<group>"; };
-		8B465E758E8B4200AC283A4D322353BB /* EXBarCodeScanner.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBarCodeScanner.xcconfig; sourceTree = "<group>"; };
-		8B62C1496C433A10200B7FAE2C61BE80 /* EXBarCodeCameraRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeCameraRequester.m; path = EXBarCodeScanner/EXBarCodeCameraRequester.m; sourceTree = "<group>"; };
-		8CCDF9B09B19D88BB5D9CE615EB9748D /* EXBarCodeScannerUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScannerUtils.m; sourceTree = "<group>"; };
-		90AD1043FF2F8920D10CA7215A6C4040 /* EXBarCodeScannerUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXBarCodeScannerUtils.h; sourceTree = "<group>"; };
-		93CA74A3F322D6269E10322BCBF786C7 /* EXBarCodeScannerModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerModule.h; path = EXBarCodeScanner/EXBarCodeScannerModule.h; sourceTree = "<group>"; };
+		89D5BE7B94AB737B507CE8460570A092 /* EXBarCodeScannerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerProvider.h; path = EXBarCodeScanner/EXBarCodeScannerProvider.h; sourceTree = "<group>"; };
+		93208C9AFE6D13C36C020B9220663F22 /* EXBarCodeScanner-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBarCodeScanner-dummy.m"; sourceTree = "<group>"; };
+		A2FA8D71CEBD5E7B9CC5E82795292ECA /* EXBarCodeScannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerView.h; path = EXBarCodeScanner/EXBarCodeScannerView.h; sourceTree = "<group>"; };
+		A349E7EF0D0B6A6E9667BFB579EF17D2 /* EXBarCodeScannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerViewManager.h; path = EXBarCodeScanner/EXBarCodeScannerViewManager.h; sourceTree = "<group>"; };
 		A34E4E199955B8BA186D384F986A08C7 /* libEXBarCodeScanner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBarCodeScanner.a; path = libEXBarCodeScanner.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A55637DD5EEE5FD2D6E04704182F45FB /* EXBarCodeScannerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerModule.m; path = EXBarCodeScanner/EXBarCodeScannerModule.m; sourceTree = "<group>"; };
-		B0D1C9A4C60BFA6D3047F50824CA680B /* EXBarCodeScannerProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerProvider.m; path = EXBarCodeScanner/EXBarCodeScannerProvider.m; sourceTree = "<group>"; };
+		A562DEB2EBE4E3C26C06ADA7DDA8A879 /* EXBarCodeScanner.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScanner.h; path = EXBarCodeScanner/EXBarCodeScanner.h; sourceTree = "<group>"; };
+		AB2B70059E0BBE727294BCEB9D8C97CA /* EXBarCodeScannerUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXBarCodeScannerUtils.m; sourceTree = "<group>"; };
+		AE5F8A837298BC36FEA87F48D849E4F3 /* EXBarCodeScannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerViewManager.m; path = EXBarCodeScanner/EXBarCodeScannerViewManager.m; sourceTree = "<group>"; };
 		BA17C005D36DDAFC88B493B9F91AAD7F /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		CEC2CDB9B93ACEB288666750C41946EC /* EXBarCodeScanner-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBarCodeScanner-dummy.m"; sourceTree = "<group>"; };
-		D50F96199E966E7ECD15DBB044FB4457 /* EXBarCodeScannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerView.h; path = EXBarCodeScanner/EXBarCodeScannerView.h; sourceTree = "<group>"; };
-		E86F84BC4344F8FE4D598457FA48A5CF /* EXBarCodeScanner.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScanner.h; path = EXBarCodeScanner/EXBarCodeScanner.h; sourceTree = "<group>"; };
-		F3AADFB13605DA5C0379D7AEFE31EFB1 /* EXBarCodeScanner.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScanner.m; path = EXBarCodeScanner/EXBarCodeScanner.m; sourceTree = "<group>"; };
-		F5978FA1F335815CE4BD5E2A633EE605 /* EXBarCodeScanner.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBarCodeScanner.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BB986921D39AB062258A449EE47D8415 /* EXBarCodeScannerModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeScannerModule.h; path = EXBarCodeScanner/EXBarCodeScannerModule.h; sourceTree = "<group>"; };
+		BEC4AEAB6C1109C74F19050C1D288BB8 /* EXBarCodeScannerProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerProvider.m; path = EXBarCodeScanner/EXBarCodeScannerProvider.m; sourceTree = "<group>"; };
+		DA820E83FE8177F60E7321BA89178F22 /* EXBarCodeCameraRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBarCodeCameraRequester.h; path = EXBarCodeScanner/EXBarCodeCameraRequester.h; sourceTree = "<group>"; };
+		DBB745477E179ECA4702CB94409E1044 /* EXBarCodeScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBarCodeScanner.release.xcconfig; sourceTree = "<group>"; };
+		E1A8B6CDE88DA8F66B28B103BA4B88B5 /* EXBarCodeScannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeScannerView.m; path = EXBarCodeScanner/EXBarCodeScannerView.m; sourceTree = "<group>"; };
+		EEAC8B1F897E1BCC991ACA89A437E37E /* EXBarCodeScannerUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXBarCodeScannerUtils.h; sourceTree = "<group>"; };
+		F851060BACC36700AB4E593386BB1B86 /* EXBarCodeCameraRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBarCodeCameraRequester.m; path = EXBarCodeScanner/EXBarCodeCameraRequester.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,10 +97,33 @@
 			isa = PBXGroup;
 			children = (
 				B0B9F9B1CF663C341049F35E85765CFE /* Dependencies */,
-				7A8E9933FD30DA798871E5C38CCE4DBC /* EXBarCodeScanner */,
+				2324B9754246A9E7FD0E2B8531DAE22E /* EXBarCodeScanner */,
 				52ECDAF96125D3A15042FA9EDC424744 /* Frameworks */,
 				366B91BA1AECF760609EB8642F74334E /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		2324B9754246A9E7FD0E2B8531DAE22E /* EXBarCodeScanner */ = {
+			isa = PBXGroup;
+			children = (
+				DA820E83FE8177F60E7321BA89178F22 /* EXBarCodeCameraRequester.h */,
+				F851060BACC36700AB4E593386BB1B86 /* EXBarCodeCameraRequester.m */,
+				A562DEB2EBE4E3C26C06ADA7DDA8A879 /* EXBarCodeScanner.h */,
+				26644395EF8C7EC477B2DB6F0E3C70EA /* EXBarCodeScanner.m */,
+				BB986921D39AB062258A449EE47D8415 /* EXBarCodeScannerModule.h */,
+				0673B8D1A14FBB847E5533506D2471AF /* EXBarCodeScannerModule.m */,
+				89D5BE7B94AB737B507CE8460570A092 /* EXBarCodeScannerProvider.h */,
+				BEC4AEAB6C1109C74F19050C1D288BB8 /* EXBarCodeScannerProvider.m */,
+				A2FA8D71CEBD5E7B9CC5E82795292ECA /* EXBarCodeScannerView.h */,
+				E1A8B6CDE88DA8F66B28B103BA4B88B5 /* EXBarCodeScannerView.m */,
+				A349E7EF0D0B6A6E9667BFB579EF17D2 /* EXBarCodeScannerViewManager.h */,
+				AE5F8A837298BC36FEA87F48D849E4F3 /* EXBarCodeScannerViewManager.m */,
+				3A3D9D6787AB8304E527A16B243AEC35 /* Pod */,
+				6AF26B241D484D9559E6D67FBDD1E971 /* Support Files */,
+				E69563C2E4671FC10E1F698F4B65BCF2 /* Utilities */,
+			);
+			name = EXBarCodeScanner;
+			path = "../../packages/expo-barcode-scanner/ios";
 			sourceTree = "<group>";
 		};
 		366B91BA1AECF760609EB8642F74334E /* Products */ = {
@@ -110,6 +134,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3A3D9D6787AB8304E527A16B243AEC35 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				53D408DBBAA61ED90B62FABC49191B8C /* EXBarCodeScanner.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		52ECDAF96125D3A15042FA9EDC424744 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -117,56 +149,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		6F3E3267905BE9962DE5A8D92A82B21E /* Support Files */ = {
+		6AF26B241D484D9559E6D67FBDD1E971 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				8B465E758E8B4200AC283A4D322353BB /* EXBarCodeScanner.xcconfig */,
-				CEC2CDB9B93ACEB288666750C41946EC /* EXBarCodeScanner-dummy.m */,
-				595DF242EA2DB4433A849FE5EC91DD8A /* EXBarCodeScanner-prefix.pch */,
+				93208C9AFE6D13C36C020B9220663F22 /* EXBarCodeScanner-dummy.m */,
+				213A84C9E762AD8AD6C0F7B2814B510B /* EXBarCodeScanner-prefix.pch */,
+				59B2090954D55A6F9ABD72BF3722D024 /* EXBarCodeScanner.debug.xcconfig */,
+				DBB745477E179ECA4702CB94409E1044 /* EXBarCodeScanner.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXBarCodeScanner";
-			sourceTree = "<group>";
-		};
-		7A8E9933FD30DA798871E5C38CCE4DBC /* EXBarCodeScanner */ = {
-			isa = PBXGroup;
-			children = (
-				22EE64DF85055260FB63607E5217CD7A /* EXBarCodeCameraRequester.h */,
-				8B62C1496C433A10200B7FAE2C61BE80 /* EXBarCodeCameraRequester.m */,
-				E86F84BC4344F8FE4D598457FA48A5CF /* EXBarCodeScanner.h */,
-				F3AADFB13605DA5C0379D7AEFE31EFB1 /* EXBarCodeScanner.m */,
-				93CA74A3F322D6269E10322BCBF786C7 /* EXBarCodeScannerModule.h */,
-				A55637DD5EEE5FD2D6E04704182F45FB /* EXBarCodeScannerModule.m */,
-				310B90C1A33D07B1D459FC42855A43B9 /* EXBarCodeScannerProvider.h */,
-				B0D1C9A4C60BFA6D3047F50824CA680B /* EXBarCodeScannerProvider.m */,
-				D50F96199E966E7ECD15DBB044FB4457 /* EXBarCodeScannerView.h */,
-				7E165892DD25B93DA3F3F9167D8D8A96 /* EXBarCodeScannerView.m */,
-				14E9A571A7D16E0F5FDC99E533E3B808 /* EXBarCodeScannerViewManager.h */,
-				74F4B52A18E4A148A015924E9C6E5516 /* EXBarCodeScannerViewManager.m */,
-				8DF35F4CEC6C6966DCFCAC481C45BBA4 /* Pod */,
-				6F3E3267905BE9962DE5A8D92A82B21E /* Support Files */,
-				A20A79A79B7FA8D0146734536CEE0370 /* Utilities */,
-			);
-			name = EXBarCodeScanner;
-			path = "../../packages/expo-barcode-scanner/ios";
-			sourceTree = "<group>";
-		};
-		8DF35F4CEC6C6966DCFCAC481C45BBA4 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				F5978FA1F335815CE4BD5E2A633EE605 /* EXBarCodeScanner.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		A20A79A79B7FA8D0146734536CEE0370 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				90AD1043FF2F8920D10CA7215A6C4040 /* EXBarCodeScannerUtils.h */,
-				8CCDF9B09B19D88BB5D9CE615EB9748D /* EXBarCodeScannerUtils.m */,
-			);
-			name = Utilities;
-			path = EXBarCodeScanner/Utilities;
 			sourceTree = "<group>";
 		};
 		B0B9F9B1CF663C341049F35E85765CFE /* Dependencies */ = {
@@ -178,6 +170,16 @@
 				50F02FAB3A7CFAB99DC54BC3162EC767 /* ZXingObjC */,
 			);
 			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		E69563C2E4671FC10E1F698F4B65BCF2 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EEAC8B1F897E1BCC991ACA89A437E37E /* EXBarCodeScannerUtils.h */,
+				AB2B70059E0BBE727294BCEB9D8C97CA /* EXBarCodeScannerUtils.m */,
+			);
+			name = Utilities;
+			path = EXBarCodeScanner/Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,6 +306,31 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		30937D554BD0162319A236B7FD8198D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DBB745477E179ECA4702CB94409E1044 /* EXBarCodeScanner.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBarCodeScanner/EXBarCodeScanner-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBarCodeScanner;
+				PRODUCT_NAME = EXBarCodeScanner;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		70CE0B01E5B39B954D44D935CB2A22D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -368,34 +395,9 @@
 			};
 			name = Debug;
 		};
-		94E36D6731B95CBEB2CC29774BDE26FE /* Release */ = {
+		AE9F36BFF49ED995FB975259CDD8EDC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8B465E758E8B4200AC283A4D322353BB /* EXBarCodeScanner.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBarCodeScanner/EXBarCodeScanner-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBarCodeScanner;
-				PRODUCT_NAME = EXBarCodeScanner;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		EFA7260540C20C27D5C853BF5CB8DBBE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8B465E758E8B4200AC283A4D322353BB /* EXBarCodeScanner.xcconfig */;
+			baseConfigurationReference = 59B2090954D55A6F9ABD72BF3722D024 /* EXBarCodeScanner.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -483,8 +485,8 @@
 		56C97EAD1743F2AD524BD2CF884F36F8 /* Build configuration list for PBXNativeTarget "EXBarCodeScanner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EFA7260540C20C27D5C853BF5CB8DBBE /* Debug */,
-				94E36D6731B95CBEB2CC29774BDE26FE /* Release */,
+				AE9F36BFF49ED995FB975259CDD8EDC0 /* Debug */,
+				30937D554BD0162319A236B7FD8198D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

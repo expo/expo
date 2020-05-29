@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D59FE96CA3CA5888714076510EA6C22 /* EXWKSnapshotPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 05FCD3DF1353846E7BBA1CC6C1F37AA9 /* EXWKSnapshotPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3E69A3C3E0893F7C1AF89F3BF707718C /* EXWKPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 860CC7FC5C6A54760C872E49BA28DF05 /* EXWKPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4EEC946FDACEC73376FBE26DB25E0C92 /* EXWKViewPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 566240212BEE310DB50E204A639E2C4E /* EXWKViewPDFRenderer.m */; };
-		71F223EA78C6F48C9265C4283C0959ED /* EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = F5B278F6C32B92455721519C2785AC15 /* EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		75EDCFFC5177009FDC65D456C3CB842B /* EXWKSnapshotPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CACDA186BC8BE7BD811801CFA373150 /* EXWKSnapshotPDFRenderer.m */; };
-		89DCD86505207CF67ECB4123197F96F5 /* EXWKPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A524C41661B20B6475C23423C8D403 /* EXWKPDFRenderer.m */; };
-		AE15E440F7BABAB816D1153F73A4A397 /* EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 905433DDCA5042F7AE834B59B618B258 /* EXPrint-dummy.m */; };
-		B2014A6242C9D0585CD677995B89D189 /* EXWKViewPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 12C9D2C205B7CC179956FAEF93880B9F /* EXWKViewPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C628A882E3B2D002A4499ED925D607F6 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25BFCD71DE2946E369D3E6CD4FADBAA4 /* EXPrint.m */; };
+		1D59FE96CA3CA5888714076510EA6C22 /* EXWKSnapshotPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 75AB53CA074B00A2B8ACEE1EB4DB5B1B /* EXWKSnapshotPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3E69A3C3E0893F7C1AF89F3BF707718C /* EXWKPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 37B5855A2A5DF6468F632EADABDCB15C /* EXWKPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4EEC946FDACEC73376FBE26DB25E0C92 /* EXWKViewPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 183AFFF2CC45E276DE6FB7BE5D807927 /* EXWKViewPDFRenderer.m */; };
+		71F223EA78C6F48C9265C4283C0959ED /* EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = CC9066A236ED240A38BD72079BB2F6C7 /* EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		75EDCFFC5177009FDC65D456C3CB842B /* EXWKSnapshotPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A06D788163946DE506430D1773ED60B /* EXWKSnapshotPDFRenderer.m */; };
+		89DCD86505207CF67ECB4123197F96F5 /* EXWKPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E4F63FEBC86701697DF2B15A5AF8285 /* EXWKPDFRenderer.m */; };
+		AE15E440F7BABAB816D1153F73A4A397 /* EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B56EC5D370150100E5F2A82E3E89781 /* EXPrint-dummy.m */; };
+		B2014A6242C9D0585CD677995B89D189 /* EXWKViewPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DAD733D5F79DE26F1975E6E2DEFF3C4 /* EXWKViewPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C628A882E3B2D002A4499ED925D607F6 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = B7994C0913C893495104E5E3BD993D1F /* EXPrint.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,21 +36,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		05FCD3DF1353846E7BBA1CC6C1F37AA9 /* EXWKSnapshotPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKSnapshotPDFRenderer.h; path = EXPrint/EXWKSnapshotPDFRenderer.h; sourceTree = "<group>"; };
-		12C9D2C205B7CC179956FAEF93880B9F /* EXWKViewPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKViewPDFRenderer.h; path = EXPrint/EXWKViewPDFRenderer.h; sourceTree = "<group>"; };
-		19E86B7FDEBDD1E6CB7F9948B11D4563 /* EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		0E4F63FEBC86701697DF2B15A5AF8285 /* EXWKPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKPDFRenderer.m; path = EXPrint/EXWKPDFRenderer.m; sourceTree = "<group>"; };
+		183AFFF2CC45E276DE6FB7BE5D807927 /* EXWKViewPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKViewPDFRenderer.m; path = EXPrint/EXWKViewPDFRenderer.m; sourceTree = "<group>"; };
 		207E86D566133B58D7119C07F305E304 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		25BFCD71DE2946E369D3E6CD4FADBAA4 /* EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPrint.m; path = EXPrint/EXPrint.m; sourceTree = "<group>"; };
-		566240212BEE310DB50E204A639E2C4E /* EXWKViewPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKViewPDFRenderer.m; path = EXPrint/EXWKViewPDFRenderer.m; sourceTree = "<group>"; };
-		6CC56B24A3655728A6C1D36EBB29D0EE /* EXPrint-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPrint-prefix.pch"; sourceTree = "<group>"; };
-		7CACDA186BC8BE7BD811801CFA373150 /* EXWKSnapshotPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKSnapshotPDFRenderer.m; path = EXPrint/EXWKSnapshotPDFRenderer.m; sourceTree = "<group>"; };
-		860CC7FC5C6A54760C872E49BA28DF05 /* EXWKPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKPDFRenderer.h; path = EXPrint/EXWKPDFRenderer.h; sourceTree = "<group>"; };
-		905433DDCA5042F7AE834B59B618B258 /* EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPrint-dummy.m"; sourceTree = "<group>"; };
+		34D474B15BA72CAD8FA34E158F06628C /* EXPrint.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPrint.release.xcconfig; sourceTree = "<group>"; };
+		37B5855A2A5DF6468F632EADABDCB15C /* EXWKPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKPDFRenderer.h; path = EXPrint/EXWKPDFRenderer.h; sourceTree = "<group>"; };
+		6A06D788163946DE506430D1773ED60B /* EXWKSnapshotPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKSnapshotPDFRenderer.m; path = EXPrint/EXWKSnapshotPDFRenderer.m; sourceTree = "<group>"; };
+		6DAD733D5F79DE26F1975E6E2DEFF3C4 /* EXWKViewPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKViewPDFRenderer.h; path = EXPrint/EXWKViewPDFRenderer.h; sourceTree = "<group>"; };
+		75AB53CA074B00A2B8ACEE1EB4DB5B1B /* EXWKSnapshotPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKSnapshotPDFRenderer.h; path = EXPrint/EXWKSnapshotPDFRenderer.h; sourceTree = "<group>"; };
+		7B56EC5D370150100E5F2A82E3E89781 /* EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPrint-dummy.m"; sourceTree = "<group>"; };
+		A6DFDA99A82568915A21C06A441CF9EF /* EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B6896CB12863AF0CEC6C87AB6BE55A1D /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		B7994C0913C893495104E5E3BD993D1F /* EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPrint.m; path = EXPrint/EXPrint.m; sourceTree = "<group>"; };
 		BB996DF48FE5C5674799B20BD254C4A4 /* libEXPrint.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXPrint.a; path = libEXPrint.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		C6BD331DA8A60741A13A1BCA9EBB3014 /* EXPrint.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPrint.xcconfig; sourceTree = "<group>"; };
-		F0A524C41661B20B6475C23423C8D403 /* EXWKPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKPDFRenderer.m; path = EXPrint/EXWKPDFRenderer.m; sourceTree = "<group>"; };
-		F5B278F6C32B92455721519C2785AC15 /* EXPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPrint.h; path = EXPrint/EXPrint.h; sourceTree = "<group>"; };
+		CC9066A236ED240A38BD72079BB2F6C7 /* EXPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPrint.h; path = EXPrint/EXPrint.h; sourceTree = "<group>"; };
+		D032553B2D0AE6D050EA27E87EADBF22 /* EXPrint.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPrint.debug.xcconfig; sourceTree = "<group>"; };
+		E647139B59E797C85764F81DA425182C /* EXPrint-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPrint-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,12 +65,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		23C810250C93C781F4399622DF28E675 /* Pod */ = {
+		1BE5D772BE75006D7FCD9276B871B837 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				19E86B7FDEBDD1E6CB7F9948B11D4563 /* EXPrint.podspec */,
+				A6DFDA99A82568915A21C06A441CF9EF /* EXPrint.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		20F5C9183F4FE87B17723F1315059A91 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7B56EC5D370150100E5F2A82E3E89781 /* EXPrint-dummy.m */,
+				E647139B59E797C85764F81DA425182C /* EXPrint-prefix.pch */,
+				D032553B2D0AE6D050EA27E87EADBF22 /* EXPrint.debug.xcconfig */,
+				34D474B15BA72CAD8FA34E158F06628C /* EXPrint.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXPrint";
 			sourceTree = "<group>";
 		};
 		5EDDF778DA5CE0AEDE0F0495166092B9 /* Frameworks */ = {
@@ -88,25 +101,32 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		8D4D76E380D7E3117D83D6C30AB032D7 /* EXPrint */ = {
+			isa = PBXGroup;
+			children = (
+				CC9066A236ED240A38BD72079BB2F6C7 /* EXPrint.h */,
+				B7994C0913C893495104E5E3BD993D1F /* EXPrint.m */,
+				37B5855A2A5DF6468F632EADABDCB15C /* EXWKPDFRenderer.h */,
+				0E4F63FEBC86701697DF2B15A5AF8285 /* EXWKPDFRenderer.m */,
+				75AB53CA074B00A2B8ACEE1EB4DB5B1B /* EXWKSnapshotPDFRenderer.h */,
+				6A06D788163946DE506430D1773ED60B /* EXWKSnapshotPDFRenderer.m */,
+				6DAD733D5F79DE26F1975E6E2DEFF3C4 /* EXWKViewPDFRenderer.h */,
+				183AFFF2CC45E276DE6FB7BE5D807927 /* EXWKViewPDFRenderer.m */,
+				1BE5D772BE75006D7FCD9276B871B837 /* Pod */,
+				20F5C9183F4FE87B17723F1315059A91 /* Support Files */,
+			);
+			name = EXPrint;
+			path = "../../packages/expo-print/ios";
+			sourceTree = "<group>";
+		};
 		A689763C83C4E06DCFB1702EF059552E = {
 			isa = PBXGroup;
 			children = (
 				5F17E76679D58AE6C9685910703A0F12 /* Dependencies */,
-				E8F59EB97EDD1EEBCDB40CDA3BA59742 /* EXPrint */,
+				8D4D76E380D7E3117D83D6C30AB032D7 /* EXPrint */,
 				5EDDF778DA5CE0AEDE0F0495166092B9 /* Frameworks */,
 				E57B6A014B638867619730F4012F59A2 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		BF7BB8DDCC0CACDE5DE32CE8533A9004 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				C6BD331DA8A60741A13A1BCA9EBB3014 /* EXPrint.xcconfig */,
-				905433DDCA5042F7AE834B59B618B258 /* EXPrint-dummy.m */,
-				6CC56B24A3655728A6C1D36EBB29D0EE /* EXPrint-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXPrint";
 			sourceTree = "<group>";
 		};
 		E57B6A014B638867619730F4012F59A2 /* Products */ = {
@@ -115,24 +135,6 @@
 				BB996DF48FE5C5674799B20BD254C4A4 /* libEXPrint.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E8F59EB97EDD1EEBCDB40CDA3BA59742 /* EXPrint */ = {
-			isa = PBXGroup;
-			children = (
-				F5B278F6C32B92455721519C2785AC15 /* EXPrint.h */,
-				25BFCD71DE2946E369D3E6CD4FADBAA4 /* EXPrint.m */,
-				860CC7FC5C6A54760C872E49BA28DF05 /* EXWKPDFRenderer.h */,
-				F0A524C41661B20B6475C23423C8D403 /* EXWKPDFRenderer.m */,
-				05FCD3DF1353846E7BBA1CC6C1F37AA9 /* EXWKSnapshotPDFRenderer.h */,
-				7CACDA186BC8BE7BD811801CFA373150 /* EXWKSnapshotPDFRenderer.m */,
-				12C9D2C205B7CC179956FAEF93880B9F /* EXWKViewPDFRenderer.h */,
-				566240212BEE310DB50E204A639E2C4E /* EXWKViewPDFRenderer.m */,
-				23C810250C93C781F4399622DF28E675 /* Pod */,
-				BF7BB8DDCC0CACDE5DE32CE8533A9004 /* Support Files */,
-			);
-			name = EXPrint;
-			path = "../../packages/expo-print/ios";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -235,6 +237,31 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		14677523113226F9EF1EF5A32A3F7F47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 34D474B15BA72CAD8FA34E158F06628C /* EXPrint.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPrint;
+				PRODUCT_NAME = EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		546F7C321D2F1915C437EE60FC71B63E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -295,34 +322,9 @@
 			};
 			name = Release;
 		};
-		91DC3321959A56E98CE93FB78F413B86 /* Release */ = {
+		73C22A6DCDB9EFAC741B3F798FA314C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C6BD331DA8A60741A13A1BCA9EBB3014 /* EXPrint.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXPrint;
-				PRODUCT_NAME = EXPrint;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		D331FB962E8B72C0E4089556F53C6F44 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C6BD331DA8A60741A13A1BCA9EBB3014 /* EXPrint.xcconfig */;
+			baseConfigurationReference = D032553B2D0AE6D050EA27E87EADBF22 /* EXPrint.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -423,8 +425,8 @@
 		FF266557DDFDEBE6380C65866E26D2D3 /* Build configuration list for PBXNativeTarget "EXPrint" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D331FB962E8B72C0E4089556F53C6F44 /* Debug */,
-				91DC3321959A56E98CE93FB78F413B86 /* Release */,
+				73C22A6DCDB9EFAC741B3F798FA314C4 /* Debug */,
+				14677523113226F9EF1EF5A32A3F7F47 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
