@@ -44,7 +44,6 @@
   },
   "dependencies": {
     "@expo/websql": "^1.0.1",
-    "@types/websql": "^0.0.27",
     "lodash": "^4.17.15"
   },
   "devDependencies": {

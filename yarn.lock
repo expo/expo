@@ -2949,11 +2949,6 @@
     "@types/webpack-sources" "*"
     source-map "^0.6.0"
 
-"@types/websql@^0.0.27":
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/@types/websql/-/websql-0.0.27.tgz#621a666a7f02018e7cbb4abab956a25736c27d71"
-  integrity sha1-Yhpman8CAY58u0q6uVaiVzbCfXE=
-
 "@types/yargs-parser@*":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"

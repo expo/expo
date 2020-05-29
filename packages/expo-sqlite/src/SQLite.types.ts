@@ -1,4 +1,19 @@
-// Definitions by: TeamworkGuy2 <https://github.com/TeamworkGuy2>
+// Definitions copied from `@types/websql` as we want
+// to expose a custom version of the API that:
+// - uses primitive `string` instead of `String`
+// - excludes some methods that are not exposed by our API.
+//
+// Original definitions by: TeamworkGuy2 <https://github.com/TeamworkGuy2>
+
+export interface Window {
+  openDatabase?: (
+    name: string,
+    version: string,
+    displayName: string,
+    estimatedSize: number,
+    creationCallback?: DatabaseCallback
+  ) => Database;
+}
 
 export interface DatabaseCallback {
   (database: Database): void;
