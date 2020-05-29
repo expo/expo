@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1CA0C761E265DFC1F8F58D55EB3DD20B /* EXBattery.h in Headers */ = {isa = PBXBuildFile; fileRef = 89164E6077B30A59C224960A2340FFC8 /* EXBattery.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A171D9AE2B1B62B33C2F8A5F62C83EC9 /* EXBattery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE855699389B092D72FABABFEB65314C /* EXBattery-dummy.m */; };
-		C8046A7E54D6431327D4DB3A879E345D /* EXBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D83D0B176ED031DCA9F350A291AA5 /* EXBattery.m */; };
+		1CA0C761E265DFC1F8F58D55EB3DD20B /* EXBattery.h in Headers */ = {isa = PBXBuildFile; fileRef = 3C7B2D23E8682D6C383ECF7E3C12B2D9 /* EXBattery.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A171D9AE2B1B62B33C2F8A5F62C83EC9 /* EXBattery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5260E5D178C297A54C47C51480464365 /* EXBattery-dummy.m */; };
+		C8046A7E54D6431327D4DB3A879E345D /* EXBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E8F9FD535A7D65EF100F0B31F36F5F9 /* EXBattery.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,14 +23,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0CDFD63B82CE0CFA1533549C7F958134 /* EXBattery.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBattery.debug.xcconfig; sourceTree = "<group>"; };
-		89164E6077B30A59C224960A2340FFC8 /* EXBattery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBattery.h; path = EXBattery/EXBattery.h; sourceTree = "<group>"; };
-		9A95541DAA6145C6129CC11E5EDEC8B8 /* EXBattery-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBattery-prefix.pch"; sourceTree = "<group>"; };
-		9E9D83D0B176ED031DCA9F350A291AA5 /* EXBattery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBattery.m; path = EXBattery/EXBattery.m; sourceTree = "<group>"; };
-		A196C2FEC868CAA932F5A085559CB880 /* EXBattery.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBattery.release.xcconfig; sourceTree = "<group>"; };
+		1E8F9FD535A7D65EF100F0B31F36F5F9 /* EXBattery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBattery.m; path = EXBattery/EXBattery.m; sourceTree = "<group>"; };
+		3836320C3108F3DBB214E35E0ECBC15B /* EXBattery.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBattery.xcconfig; sourceTree = "<group>"; };
+		3C7B2D23E8682D6C383ECF7E3C12B2D9 /* EXBattery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBattery.h; path = EXBattery/EXBattery.h; sourceTree = "<group>"; };
+		5260E5D178C297A54C47C51480464365 /* EXBattery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBattery-dummy.m"; sourceTree = "<group>"; };
+		7ECF0A0CF6431871AE90858834F05732 /* EXBattery-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBattery-prefix.pch"; sourceTree = "<group>"; };
 		D7DF10BF51F3DEC97C1E4C73C51A2869 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		DD5C822E87334B94C8BB380D70D1C09F /* EXBattery.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBattery.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		DE855699389B092D72FABABFEB65314C /* EXBattery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBattery-dummy.m"; sourceTree = "<group>"; };
+		DCD7F9B084C13A33FC1CCA0CFD151CD1 /* EXBattery.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBattery.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F1C93E2DEBFECE929634A4B003934AF1 /* libEXBattery.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBattery.a; path = libEXBattery.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -49,22 +48,10 @@
 			isa = PBXGroup;
 			children = (
 				F36BC418A1FDFD530BFD89B37244C8CC /* Dependencies */,
-				09A4FA914773E7A6F08B3156D58ED0DB /* EXBattery */,
+				45C56CFA7B2FC4E1D12C0DEE94D44A79 /* EXBattery */,
 				24CE6005E32658F2C17A0CDD11FBE2F1 /* Frameworks */,
 				AEBCE13AC0E5985F0A44CD42EB46D976 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		09A4FA914773E7A6F08B3156D58ED0DB /* EXBattery */ = {
-			isa = PBXGroup;
-			children = (
-				89164E6077B30A59C224960A2340FFC8 /* EXBattery.h */,
-				9E9D83D0B176ED031DCA9F350A291AA5 /* EXBattery.m */,
-				315D247C4B2A6D35EFB75B2E0D660A3E /* Pod */,
-				4774281C3CFB20A4F1B4B9FC51E536CA /* Support Files */,
-			);
-			name = EXBattery;
-			path = "../../../../packages/expo-battery/ios";
 			sourceTree = "<group>";
 		};
 		24CE6005E32658F2C17A0CDD11FBE2F1 /* Frameworks */ = {
@@ -74,21 +61,32 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		315D247C4B2A6D35EFB75B2E0D660A3E /* Pod */ = {
+		45C56CFA7B2FC4E1D12C0DEE94D44A79 /* EXBattery */ = {
 			isa = PBXGroup;
 			children = (
-				DD5C822E87334B94C8BB380D70D1C09F /* EXBattery.podspec */,
+				3C7B2D23E8682D6C383ECF7E3C12B2D9 /* EXBattery.h */,
+				1E8F9FD535A7D65EF100F0B31F36F5F9 /* EXBattery.m */,
+				7A597D7E6EAE7447CE903F44C6080FC6 /* Pod */,
+				A089D1A1FEF2EA1F9EABD6781362A40C /* Support Files */,
+			);
+			name = EXBattery;
+			path = "../../../../packages/expo-battery/ios";
+			sourceTree = "<group>";
+		};
+		7A597D7E6EAE7447CE903F44C6080FC6 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				DCD7F9B084C13A33FC1CCA0CFD151CD1 /* EXBattery.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		4774281C3CFB20A4F1B4B9FC51E536CA /* Support Files */ = {
+		A089D1A1FEF2EA1F9EABD6781362A40C /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				DE855699389B092D72FABABFEB65314C /* EXBattery-dummy.m */,
-				9A95541DAA6145C6129CC11E5EDEC8B8 /* EXBattery-prefix.pch */,
-				0CDFD63B82CE0CFA1533549C7F958134 /* EXBattery.debug.xcconfig */,
-				A196C2FEC868CAA932F5A085559CB880 /* EXBattery.release.xcconfig */,
+				3836320C3108F3DBB214E35E0ECBC15B /* EXBattery.xcconfig */,
+				5260E5D178C297A54C47C51480464365 /* EXBattery-dummy.m */,
+				7ECF0A0CF6431871AE90858834F05732 /* EXBattery-prefix.pch */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXBattery";
@@ -195,9 +193,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		243B35F1F2ACA749E27145EA718136EF /* Release */ = {
+		41AB1CF8CC8D664855FA2C5E30596B2F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A196C2FEC868CAA932F5A085559CB880 /* EXBattery.release.xcconfig */;
+			baseConfigurationReference = 3836320C3108F3DBB214E35E0ECBC15B /* EXBattery.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -215,6 +213,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -280,6 +279,31 @@
 			};
 			name = Release;
 		};
+		6741342FD5B9E6DBFC9A96818CCE65F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3836320C3108F3DBB214E35E0ECBC15B /* EXBattery.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBattery/EXBattery-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBattery;
+				PRODUCT_NAME = EXBattery;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		B53732AF145193029BF1E107A5761F92 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -344,30 +368,6 @@
 			};
 			name = Debug;
 		};
-		D1E3593C2436DF21C29FFC0C08422E9F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0CDFD63B82CE0CFA1533549C7F958134 /* EXBattery.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBattery/EXBattery-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBattery;
-				PRODUCT_NAME = EXBattery;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -383,8 +383,8 @@
 		EEDE382C106603AF1DC811CBC74AD5B9 /* Build configuration list for PBXNativeTarget "EXBattery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D1E3593C2436DF21C29FFC0C08422E9F /* Debug */,
-				243B35F1F2ACA749E27145EA718136EF /* Release */,
+				6741342FD5B9E6DBFC9A96818CCE65F2 /* Debug */,
+				41AB1CF8CC8D664855FA2C5E30596B2F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

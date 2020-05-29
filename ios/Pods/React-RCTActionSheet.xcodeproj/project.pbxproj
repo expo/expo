@@ -30,31 +30,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		10632DF85B8FC6437C0E1B646543F4E4 /* React-RCTActionSheet.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTActionSheet.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		73E3AB8064623265CE12D7CA65792C9A /* React-RCTActionSheet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTActionSheet.debug.xcconfig"; sourceTree = "<group>"; };
-		B8A016861367BBA275A643181863AFB2 /* React-RCTActionSheet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTActionSheet.release.xcconfig"; sourceTree = "<group>"; };
+		189C1BDA4BB208E860DB1D95E2908EB1 /* React-RCTActionSheet.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTActionSheet.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTActionSheet.xcconfig"; sourceTree = "<group>"; };
 		FCF084C4B4379E37652B4620EE24359B /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		33DD76FC53D967BEF373D663E677C432 /* Support Files */ = {
+		0D295A07562E134BFAD08BB2C160FC60 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				73E3AB8064623265CE12D7CA65792C9A /* React-RCTActionSheet.debug.xcconfig */,
-				B8A016861367BBA275A643181863AFB2 /* React-RCTActionSheet.release.xcconfig */,
+				189C1BDA4BB208E860DB1D95E2908EB1 /* React-RCTActionSheet.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../../ios/Pods/Target Support Files/React-RCTActionSheet";
-			sourceTree = "<group>";
-		};
-		7C03F21635BC82AF90A874239C69D4E0 /* React-RCTActionSheet */ = {
-			isa = PBXGroup;
-			children = (
-				FF40E0DDFA4D4158498E65AFF1FA02E7 /* Pod */,
-				33DD76FC53D967BEF373D663E677C432 /* Support Files */,
-			);
-			name = "React-RCTActionSheet";
-			path = "../../react-native-lab/react-native/Libraries/ActionSheetIOS";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		886AA2469B6A446D93E62505B6FC4DD6 /* Products */ = {
@@ -79,22 +66,33 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		EE1A479DE175AB335E1DAF78D722E6FC /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/React-RCTActionSheet";
+			sourceTree = "<group>";
+		};
+		F0BAABD8D36C47BB9D116EE72E65440E /* React-RCTActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				0D295A07562E134BFAD08BB2C160FC60 /* Pod */,
+				EE1A479DE175AB335E1DAF78D722E6FC /* Support Files */,
+			);
+			name = "React-RCTActionSheet";
+			path = "../../react-native-lab/react-native/Libraries/ActionSheetIOS";
+			sourceTree = "<group>";
+		};
 		F8C5283DBDCF123C1AE268392EB71752 = {
 			isa = PBXGroup;
 			children = (
 				C7F8C9D2A33CF4A7087D3A85D579B9DD /* Dependencies */,
 				C5468622F9AC514D0B41B1C3F3F1C2FD /* Frameworks */,
 				886AA2469B6A446D93E62505B6FC4DD6 /* Products */,
-				7C03F21635BC82AF90A874239C69D4E0 /* React-RCTActionSheet */,
+				F0BAABD8D36C47BB9D116EE72E65440E /* React-RCTActionSheet */,
 			);
-			sourceTree = "<group>";
-		};
-		FF40E0DDFA4D4158498E65AFF1FA02E7 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				10632DF85B8FC6437C0E1B646543F4E4 /* React-RCTActionSheet.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -202,9 +200,9 @@
 			};
 			name = Debug;
 		};
-		436C16579C0412A9A59D46B6C541E2CD /* Debug */ = {
+		65EBC40DC1578558BC7B067D6780677A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 73E3AB8064623265CE12D7CA65792C9A /* React-RCTActionSheet.debug.xcconfig */;
+			baseConfigurationReference = B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -221,9 +219,9 @@
 			};
 			name = Debug;
 		};
-		95B8740D64494B4E594ADC810E6BFE6D /* Release */ = {
+		C23DBDB67F732ECC1D1CB9B16C281DDD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B8A016861367BBA275A643181863AFB2 /* React-RCTActionSheet.release.xcconfig */;
+			baseConfigurationReference = B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -307,8 +305,8 @@
 		CD85073308E5CBA83E15F675A9CCD54C /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				436C16579C0412A9A59D46B6C541E2CD /* Debug */,
-				95B8740D64494B4E594ADC810E6BFE6D /* Release */,
+				65EBC40DC1578558BC7B067D6780677A /* Debug */,
+				C23DBDB67F732ECC1D1CB9B16C281DDD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

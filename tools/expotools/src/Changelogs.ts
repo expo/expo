@@ -111,7 +111,8 @@ export class Changelog {
 
     return tokens
       .filter((token): token is Markdown.HeadingToken => isVersionToken(token))
-      .map((token) => token.text.trim());
+      .map((token) => parseVersion(token.text))
+      .filter(Boolean) as string[];
   }
 
   /**

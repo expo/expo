@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A730E2F5EA5D2C7CFF1F0EA2A7291C /* EXErrorRecoveryModule.m */; };
-		403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BF7B2DB3BDE43BD0AA7CA2F43C97750 /* EXErrorRecovery-dummy.m */; };
-		C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 160B6865275A86A75CF23ABCAE08506C /* EXErrorRecoveryModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F6C63CE72D5ADA42F40849AA2BDBB9AB /* EXErrorRecoveryModule.m */; };
+		403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AC386DC016F6931D0CEC825C7B563DB1 /* EXErrorRecovery-dummy.m */; };
+		C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DD002DC1F4AA005B214E11B216A848C /* EXErrorRecoveryModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,15 +23,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		160B6865275A86A75CF23ABCAE08506C /* EXErrorRecoveryModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXErrorRecoveryModule.h; path = EXErrorRecovery/EXErrorRecoveryModule.h; sourceTree = "<group>"; };
+		1DD002DC1F4AA005B214E11B216A848C /* EXErrorRecoveryModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXErrorRecoveryModule.h; path = EXErrorRecovery/EXErrorRecoveryModule.h; sourceTree = "<group>"; };
 		2914D17BF504D0A58332842D9F7783C4 /* libEXErrorRecovery.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXErrorRecovery.a; path = libEXErrorRecovery.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		3D0F271CA4B173F6ACC353CFD297A7C3 /* EXErrorRecovery.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXErrorRecovery.release.xcconfig; sourceTree = "<group>"; };
-		47A730E2F5EA5D2C7CFF1F0EA2A7291C /* EXErrorRecoveryModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXErrorRecoveryModule.m; path = EXErrorRecovery/EXErrorRecoveryModule.m; sourceTree = "<group>"; };
-		5BF7B2DB3BDE43BD0AA7CA2F43C97750 /* EXErrorRecovery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXErrorRecovery-dummy.m"; sourceTree = "<group>"; };
-		838A833F096233AA79CB78666FED339B /* EXErrorRecovery.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXErrorRecovery.debug.xcconfig; sourceTree = "<group>"; };
-		DE6162DC7BB5D00A92665BDB41A5E189 /* EXErrorRecovery.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXErrorRecovery.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		44604E7BA095DB325F7118BB7A6FA475 /* EXErrorRecovery-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXErrorRecovery-prefix.pch"; sourceTree = "<group>"; };
+		46C1D6F03BE367AAD118267EB3D9042C /* EXErrorRecovery.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXErrorRecovery.xcconfig; sourceTree = "<group>"; };
+		99BE2A84481C5C992812921EAEDBDC38 /* EXErrorRecovery.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXErrorRecovery.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		AC386DC016F6931D0CEC825C7B563DB1 /* EXErrorRecovery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXErrorRecovery-dummy.m"; sourceTree = "<group>"; };
+		F6C63CE72D5ADA42F40849AA2BDBB9AB /* EXErrorRecoveryModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXErrorRecoveryModule.m; path = EXErrorRecovery/EXErrorRecoveryModule.m; sourceTree = "<group>"; };
 		FDE7E72F4F259D2C8E974C92345D460C /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		FE6DC3FF7FE4C44E14EA25278107D1FA /* EXErrorRecovery-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXErrorRecovery-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,43 +44,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		02661F3E253547F25D3E62AC9699AB17 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				DE6162DC7BB5D00A92665BDB41A5E189 /* EXErrorRecovery.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		38EFD0DE6844547EEE5ED7F2CBAD19AE /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				5BF7B2DB3BDE43BD0AA7CA2F43C97750 /* EXErrorRecovery-dummy.m */,
-				FE6DC3FF7FE4C44E14EA25278107D1FA /* EXErrorRecovery-prefix.pch */,
-				838A833F096233AA79CB78666FED339B /* EXErrorRecovery.debug.xcconfig */,
-				3D0F271CA4B173F6ACC353CFD297A7C3 /* EXErrorRecovery.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXErrorRecovery";
-			sourceTree = "<group>";
-		};
 		3DE9ACAFA799A6723B6D240FF1672274 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		7345A287C168C84A09857283E2580035 /* EXErrorRecovery */ = {
-			isa = PBXGroup;
-			children = (
-				160B6865275A86A75CF23ABCAE08506C /* EXErrorRecoveryModule.h */,
-				47A730E2F5EA5D2C7CFF1F0EA2A7291C /* EXErrorRecoveryModule.m */,
-				02661F3E253547F25D3E62AC9699AB17 /* Pod */,
-				38EFD0DE6844547EEE5ED7F2CBAD19AE /* Support Files */,
-			);
-			name = EXErrorRecovery;
-			path = "../../../../packages/expo-error-recovery/ios";
 			sourceTree = "<group>";
 		};
 		83B79619077DA9140E04AD0D8E37C069 /* Dependencies */ = {
@@ -100,14 +67,45 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		ADA1AFE547611550EE045114BDE3CD2A /* EXErrorRecovery */ = {
+			isa = PBXGroup;
+			children = (
+				1DD002DC1F4AA005B214E11B216A848C /* EXErrorRecoveryModule.h */,
+				F6C63CE72D5ADA42F40849AA2BDBB9AB /* EXErrorRecoveryModule.m */,
+				E6E786F1E64C297EA430E056ABDEC51B /* Pod */,
+				E397912392026B128F74C9C40B56A653 /* Support Files */,
+			);
+			name = EXErrorRecovery;
+			path = "../../../../packages/expo-error-recovery/ios";
+			sourceTree = "<group>";
+		};
 		E0531714D7095B9CC05AADECCC870F27 = {
 			isa = PBXGroup;
 			children = (
 				83B79619077DA9140E04AD0D8E37C069 /* Dependencies */,
-				7345A287C168C84A09857283E2580035 /* EXErrorRecovery */,
+				ADA1AFE547611550EE045114BDE3CD2A /* EXErrorRecovery */,
 				3DE9ACAFA799A6723B6D240FF1672274 /* Frameworks */,
 				9981103A74279DD2E2D98C54C0E9BD29 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		E397912392026B128F74C9C40B56A653 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				46C1D6F03BE367AAD118267EB3D9042C /* EXErrorRecovery.xcconfig */,
+				AC386DC016F6931D0CEC825C7B563DB1 /* EXErrorRecovery-dummy.m */,
+				44604E7BA095DB325F7118BB7A6FA475 /* EXErrorRecovery-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXErrorRecovery";
+			sourceTree = "<group>";
+		};
+		E6E786F1E64C297EA430E056ABDEC51B /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				99BE2A84481C5C992812921EAEDBDC38 /* EXErrorRecovery.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -195,9 +193,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		018DD8AEC411BDECFA28EB23BF235DE9 /* Debug */ = {
+		5169EB3EBCD4EF50895992B1C88E9DF4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 838A833F096233AA79CB78666FED339B /* EXErrorRecovery.debug.xcconfig */;
+			baseConfigurationReference = 46C1D6F03BE367AAD118267EB3D9042C /* EXErrorRecovery.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -215,13 +213,14 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		09CA0369C55FFDF1D65D60504CFE69FD /* Release */ = {
+		5FBA8206089199F1E5106E0DDEA4326F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D0F271CA4B173F6ACC353CFD297A7C3 /* EXErrorRecovery.release.xcconfig */;
+			baseConfigurationReference = 46C1D6F03BE367AAD118267EB3D9042C /* EXErrorRecovery.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -239,6 +238,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -383,8 +383,8 @@
 		88FE7B3B8211A6769125AF890B5E1CEE /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				018DD8AEC411BDECFA28EB23BF235DE9 /* Debug */,
-				09CA0369C55FFDF1D65D60504CFE69FD /* Release */,
+				5169EB3EBCD4EF50895992B1C88E9DF4 /* Debug */,
+				5FBA8206089199F1E5106E0DDEA4326F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,6 +1,6 @@
 {
   "name": "EXBrightness",
-  "version": "8.2.0",
+  "version": "8.2.1",
   "summary": "Provides an API to get and set screen brightness.",
   "description": "Provides an API to get and set screen brightness.",
   "license": "MIT",

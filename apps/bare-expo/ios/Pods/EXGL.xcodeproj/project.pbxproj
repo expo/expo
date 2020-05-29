@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BB3E9E7164828C152F92E5AC99C7690 /* EXGLObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B01929B86FCDB271E306C113EE0F130C /* EXGLObjectManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		10CEA9742455F6BE42F455A1800F15E8 /* EXGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A3E8176F978750718B14D725776C20F /* EXGLView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		27486EB7184A9B8C70AA62F45284011C /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = FF74544C594B752C85742D8CE8C811F3 /* EXGLObject.m */; };
-		3595E9197AE7D1F9B1F766FD9353071D /* EXGL-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 544786B86B04BE1E41304E2695D71980 /* EXGL-dummy.m */; };
-		360C94C1D9ACE18F3837A47A45558B7D /* EXGLViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D362F96A0BBCE2DAF132745D0A8348D4 /* EXGLViewManager.m */; };
-		536FF7E2B46A55BE460697F1FD82EA81 /* EXGLContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FEE11C614E289947CAE8737462CB57A /* EXGLContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5ECF9D82CAB8EBC4F314485F5A40BAF2 /* EXGLViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E63A7CEB1EBF34016F2433FB4AF3B3F1 /* EXGLViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5F86D05A7BFAC2D90A83579432ABEACD /* EXGLCameraObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 742E7E8F00C18321220FF5290C447760 /* EXGLCameraObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8617B990DC2BC97DD90567B25F1217B8 /* EXGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = D088CFF15F329ADF6C866B39290399F0 /* EXGLView.m */; };
-		8BE7F437C289DEA481C3BC977CFB3B0C /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B38BC8AAA81C5C73D7EC54A68C55C3F /* EXGLObjectManager.m */; };
-		A3C86171138C064C88B31E32A1766459 /* EXGLObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 62D6DFE039EDD57B0014927B409BBCE1 /* EXGLObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AF237ABA4C0CF9E62F6B40A717012DC9 /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = A46245CF35CB5A2A7901C63DBEDD5C29 /* EXGLContext.m */; };
-		AFD7BE5108280CCC49DB721D2D55B9A4 /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4B284A2985F85DBA73A22BB1877498 /* EXGLCameraObject.m */; };
+		0BB3E9E7164828C152F92E5AC99C7690 /* EXGLObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A3CA2A15AA60F9BF59A3A5AC3B83B4C /* EXGLObjectManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		10CEA9742455F6BE42F455A1800F15E8 /* EXGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 29C1CC5E95FD46E553772E70FF61F3AA /* EXGLView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		27486EB7184A9B8C70AA62F45284011C /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D9F21205E24627CF88177B3A417F06 /* EXGLObject.m */; };
+		3595E9197AE7D1F9B1F766FD9353071D /* EXGL-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EC8EB288E32B5811152AEBD5C805803 /* EXGL-dummy.m */; };
+		360C94C1D9ACE18F3837A47A45558B7D /* EXGLViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C5D68AE52141BB13B5BDE8E9E00113EC /* EXGLViewManager.m */; };
+		536FF7E2B46A55BE460697F1FD82EA81 /* EXGLContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 303A69E6C12CDFEBDE8198C1B74335F9 /* EXGLContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5ECF9D82CAB8EBC4F314485F5A40BAF2 /* EXGLViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E9276B03359A340ADA6475136090FB4 /* EXGLViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5F86D05A7BFAC2D90A83579432ABEACD /* EXGLCameraObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4734DE188B877E6B4C74B9AC27C23EF4 /* EXGLCameraObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8617B990DC2BC97DD90567B25F1217B8 /* EXGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA293EB85EAC128B8F03DAAD4A939E6 /* EXGLView.m */; };
+		8BE7F437C289DEA481C3BC977CFB3B0C /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 801D0593F5D6396A2E6BBE12CA036C37 /* EXGLObjectManager.m */; };
+		A3C86171138C064C88B31E32A1766459 /* EXGLObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D08C600533D4C3FBC49C26CC9F37CFF /* EXGLObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AF237ABA4C0CF9E62F6B40A717012DC9 /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 298F1A3EA03358797E679C252D1A7E4D /* EXGLContext.m */; };
+		AFD7BE5108280CCC49DB721D2D55B9A4 /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 142FA56E9094EC1D5127946591728D15 /* EXGLCameraObject.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,28 +54,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0B4B284A2985F85DBA73A22BB1877498 /* EXGLCameraObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLCameraObject.m; path = EXGL/EXGLCameraObject.m; sourceTree = "<group>"; };
+		142FA56E9094EC1D5127946591728D15 /* EXGLCameraObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLCameraObject.m; path = EXGL/EXGLCameraObject.m; sourceTree = "<group>"; };
 		1A0B08FBB3286A7C4199C9505C3C5950 /* UMCameraInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCameraInterface; path = UMCameraInterface.xcodeproj; sourceTree = "<group>"; };
-		2A3E8176F978750718B14D725776C20F /* EXGLView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLView.h; path = EXGL/EXGLView.h; sourceTree = "<group>"; };
+		1E9276B03359A340ADA6475136090FB4 /* EXGLViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLViewManager.h; path = EXGL/EXGLViewManager.h; sourceTree = "<group>"; };
+		298F1A3EA03358797E679C252D1A7E4D /* EXGLContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLContext.m; path = EXGL/EXGLContext.m; sourceTree = "<group>"; };
+		29C1CC5E95FD46E553772E70FF61F3AA /* EXGLView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLView.h; path = EXGL/EXGLView.h; sourceTree = "<group>"; };
+		2A3CA2A15AA60F9BF59A3A5AC3B83B4C /* EXGLObjectManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLObjectManager.h; path = EXGL/EXGLObjectManager.h; sourceTree = "<group>"; };
+		303A69E6C12CDFEBDE8198C1B74335F9 /* EXGLContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLContext.h; path = EXGL/EXGLContext.h; sourceTree = "<group>"; };
 		321D5C6B61F36B2BB6731261A0D6D46E /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		32982F49F5C88C450C1DD92DF4C8850E /* EXGL.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXGL.debug.xcconfig; sourceTree = "<group>"; };
-		3553F30B801E5241F2F971D0033B6687 /* EXGL-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXGL-prefix.pch"; sourceTree = "<group>"; };
-		544786B86B04BE1E41304E2695D71980 /* EXGL-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXGL-dummy.m"; sourceTree = "<group>"; };
-		62D6DFE039EDD57B0014927B409BBCE1 /* EXGLObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLObject.h; path = EXGL/EXGLObject.h; sourceTree = "<group>"; };
-		742E7E8F00C18321220FF5290C447760 /* EXGLCameraObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLCameraObject.h; path = EXGL/EXGLCameraObject.h; sourceTree = "<group>"; };
-		74C623A0305C2F598D06D9F26B05145D /* EXGL.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXGL.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		7B38BC8AAA81C5C73D7EC54A68C55C3F /* EXGLObjectManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLObjectManager.m; path = EXGL/EXGLObjectManager.m; sourceTree = "<group>"; };
-		8FEE11C614E289947CAE8737462CB57A /* EXGLContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLContext.h; path = EXGL/EXGLContext.h; sourceTree = "<group>"; };
-		A46245CF35CB5A2A7901C63DBEDD5C29 /* EXGLContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLContext.m; path = EXGL/EXGLContext.m; sourceTree = "<group>"; };
-		B01929B86FCDB271E306C113EE0F130C /* EXGLObjectManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLObjectManager.h; path = EXGL/EXGLObjectManager.h; sourceTree = "<group>"; };
+		3A7DB9C64F2F77B861809BD67AB8AE5E /* EXGL-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXGL-prefix.pch"; sourceTree = "<group>"; };
+		4734DE188B877E6B4C74B9AC27C23EF4 /* EXGLCameraObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLCameraObject.h; path = EXGL/EXGLCameraObject.h; sourceTree = "<group>"; };
+		4EC8EB288E32B5811152AEBD5C805803 /* EXGL-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXGL-dummy.m"; sourceTree = "<group>"; };
+		5D08C600533D4C3FBC49C26CC9F37CFF /* EXGLObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLObject.h; path = EXGL/EXGLObject.h; sourceTree = "<group>"; };
+		801D0593F5D6396A2E6BBE12CA036C37 /* EXGLObjectManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLObjectManager.m; path = EXGL/EXGLObjectManager.m; sourceTree = "<group>"; };
+		924CD679F17E773AD4562C7C79ECD9B8 /* EXGL.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXGL.xcconfig; sourceTree = "<group>"; };
+		BB88B072C54CA76CCDF0FCE17C7310E4 /* EXGL.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXGL.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		C1646364459A7CCA805460100EADDBB3 /* EXGL_CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL_CPP; path = EXGL_CPP.xcodeproj; sourceTree = "<group>"; };
-		CA276F0D061F1FE9BF7A92D6D2DD8A71 /* EXGL.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXGL.release.xcconfig; sourceTree = "<group>"; };
-		D088CFF15F329ADF6C866B39290399F0 /* EXGLView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLView.m; path = EXGL/EXGLView.m; sourceTree = "<group>"; };
-		D362F96A0BBCE2DAF132745D0A8348D4 /* EXGLViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLViewManager.m; path = EXGL/EXGLViewManager.m; sourceTree = "<group>"; };
+		C5D68AE52141BB13B5BDE8E9E00113EC /* EXGLViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLViewManager.m; path = EXGL/EXGLViewManager.m; sourceTree = "<group>"; };
+		C8D9F21205E24627CF88177B3A417F06 /* EXGLObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLObject.m; path = EXGL/EXGLObject.m; sourceTree = "<group>"; };
 		DB4A0F497B6034FF71F2BB59C784EF4E /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		E63A7CEB1EBF34016F2433FB4AF3B3F1 /* EXGLViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXGLViewManager.h; path = EXGL/EXGLViewManager.h; sourceTree = "<group>"; };
 		F5BED67EB16A5732A7A0F54C7305AD79 /* libEXGL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXGL.a; path = libEXGL.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF74544C594B752C85742D8CE8C811F3 /* EXGLObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLObject.m; path = EXGL/EXGLObject.m; sourceTree = "<group>"; };
+		FFA293EB85EAC128B8F03DAAD4A939E6 /* EXGLView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXGLView.m; path = EXGL/EXGLView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,26 +99,34 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		5C4008CEAC326C386B63B21F512BD6C8 /* EXGL */ = {
+		598EAE91FF704A24EAB270075E234742 /* EXGL */ = {
 			isa = PBXGroup;
 			children = (
-				742E7E8F00C18321220FF5290C447760 /* EXGLCameraObject.h */,
-				0B4B284A2985F85DBA73A22BB1877498 /* EXGLCameraObject.m */,
-				8FEE11C614E289947CAE8737462CB57A /* EXGLContext.h */,
-				A46245CF35CB5A2A7901C63DBEDD5C29 /* EXGLContext.m */,
-				62D6DFE039EDD57B0014927B409BBCE1 /* EXGLObject.h */,
-				FF74544C594B752C85742D8CE8C811F3 /* EXGLObject.m */,
-				B01929B86FCDB271E306C113EE0F130C /* EXGLObjectManager.h */,
-				7B38BC8AAA81C5C73D7EC54A68C55C3F /* EXGLObjectManager.m */,
-				2A3E8176F978750718B14D725776C20F /* EXGLView.h */,
-				D088CFF15F329ADF6C866B39290399F0 /* EXGLView.m */,
-				E63A7CEB1EBF34016F2433FB4AF3B3F1 /* EXGLViewManager.h */,
-				D362F96A0BBCE2DAF132745D0A8348D4 /* EXGLViewManager.m */,
-				F4BD2537C218747773D80D06EBAB5279 /* Pod */,
-				F3191C5F0C4B3D1A5489F8CABE30A6B4 /* Support Files */,
+				4734DE188B877E6B4C74B9AC27C23EF4 /* EXGLCameraObject.h */,
+				142FA56E9094EC1D5127946591728D15 /* EXGLCameraObject.m */,
+				303A69E6C12CDFEBDE8198C1B74335F9 /* EXGLContext.h */,
+				298F1A3EA03358797E679C252D1A7E4D /* EXGLContext.m */,
+				5D08C600533D4C3FBC49C26CC9F37CFF /* EXGLObject.h */,
+				C8D9F21205E24627CF88177B3A417F06 /* EXGLObject.m */,
+				2A3CA2A15AA60F9BF59A3A5AC3B83B4C /* EXGLObjectManager.h */,
+				801D0593F5D6396A2E6BBE12CA036C37 /* EXGLObjectManager.m */,
+				29C1CC5E95FD46E553772E70FF61F3AA /* EXGLView.h */,
+				FFA293EB85EAC128B8F03DAAD4A939E6 /* EXGLView.m */,
+				1E9276B03359A340ADA6475136090FB4 /* EXGLViewManager.h */,
+				C5D68AE52141BB13B5BDE8E9E00113EC /* EXGLViewManager.m */,
+				6353605E8B21912E7980E15B895C28A9 /* Pod */,
+				80177C270FC9C553B03CCC8FB9A2D338 /* Support Files */,
 			);
 			name = EXGL;
 			path = "../../../../packages/expo-gl/ios";
+			sourceTree = "<group>";
+		};
+		6353605E8B21912E7980E15B895C28A9 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				BB88B072C54CA76CCDF0FCE17C7310E4 /* EXGL.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		6ECF924BBAAA152970FAC4F25464E51A /* Frameworks */ = {
@@ -129,11 +136,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		80177C270FC9C553B03CCC8FB9A2D338 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				924CD679F17E773AD4562C7C79ECD9B8 /* EXGL.xcconfig */,
+				4EC8EB288E32B5811152AEBD5C805803 /* EXGL-dummy.m */,
+				3A7DB9C64F2F77B861809BD67AB8AE5E /* EXGL-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXGL";
+			sourceTree = "<group>";
+		};
 		9109E73A507FA968BB24980DE19DB76D = {
 			isa = PBXGroup;
 			children = (
 				53010827C9597F0E4E4866336251033C /* Dependencies */,
-				5C4008CEAC326C386B63B21F512BD6C8 /* EXGL */,
+				598EAE91FF704A24EAB270075E234742 /* EXGL */,
 				6ECF924BBAAA152970FAC4F25464E51A /* Frameworks */,
 				E83AD4441D8D072212B268384F85BFB6 /* Products */,
 			);
@@ -145,26 +163,6 @@
 				F5BED67EB16A5732A7A0F54C7305AD79 /* libEXGL.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F3191C5F0C4B3D1A5489F8CABE30A6B4 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				544786B86B04BE1E41304E2695D71980 /* EXGL-dummy.m */,
-				3553F30B801E5241F2F971D0033B6687 /* EXGL-prefix.pch */,
-				32982F49F5C88C450C1DD92DF4C8850E /* EXGL.debug.xcconfig */,
-				CA276F0D061F1FE9BF7A92D6D2DD8A71 /* EXGL.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXGL";
-			sourceTree = "<group>";
-		};
-		F4BD2537C218747773D80D06EBAB5279 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				74C623A0305C2F598D06D9F26B05145D /* EXGL.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -353,9 +351,9 @@
 			};
 			name = Debug;
 		};
-		26698EAA3CD5EE56163BD01A31B45792 /* Debug */ = {
+		38F90DD637167807CE573325AFCF747D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 32982F49F5C88C450C1DD92DF4C8850E /* EXGL.debug.xcconfig */;
+			baseConfigurationReference = 924CD679F17E773AD4562C7C79ECD9B8 /* EXGL.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -373,6 +371,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -437,9 +436,9 @@
 			};
 			name = Release;
 		};
-		F0D04D9EF28EBD87B883C0060323AD39 /* Release */ = {
+		F0D8321E9EA47967E70A5E37F519638C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CA276F0D061F1FE9BF7A92D6D2DD8A71 /* EXGL.release.xcconfig */;
+			baseConfigurationReference = 924CD679F17E773AD4562C7C79ECD9B8 /* EXGL.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -457,6 +456,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -468,8 +468,8 @@
 		9F77B89B96F71A9EC31279D4781B353F /* Build configuration list for PBXNativeTarget "EXGL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				26698EAA3CD5EE56163BD01A31B45792 /* Debug */,
-				F0D04D9EF28EBD87B883C0060323AD39 /* Release */,
+				38F90DD637167807CE573325AFCF747D /* Debug */,
+				F0D8321E9EA47967E70A5E37F519638C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

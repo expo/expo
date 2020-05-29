@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C8FB3F83AB2F640D8C074A0E4B442545 /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = 629C0EEDE5F868571120FBC39D41CD0F /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 12B690187E9DECE2B912CEE5A821FC2D /* EXAmplitude-dummy.m */; };
-		FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE8AE8099938DD982E2D2B99203105E /* EXAmplitude.m */; };
+		C8FB3F83AB2F640D8C074A0E4B442545 /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = 79FA1C6C73DB59041D55B506B14CE844 /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */; };
+		FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,17 +37,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		12B690187E9DECE2B912CEE5A821FC2D /* EXAmplitude-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAmplitude-dummy.m"; sourceTree = "<group>"; };
+		0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAmplitude.m; path = EXAmplitude/EXAmplitude.m; sourceTree = "<group>"; };
 		174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
-		3CE8AE8099938DD982E2D2B99203105E /* EXAmplitude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAmplitude.m; path = EXAmplitude/EXAmplitude.m; sourceTree = "<group>"; };
+		35017F342C0C098491162978D69D0CFD /* EXAmplitude.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAmplitude.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		463402081A46EB38CD3DC1CE798D7BC7 /* libEXAmplitude.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAmplitude.a; path = libEXAmplitude.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		629C0EEDE5F868571120FBC39D41CD0F /* EXAmplitude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAmplitude.h; path = EXAmplitude/EXAmplitude.h; sourceTree = "<group>"; };
-		6DC5A16FEC800C79FBA0F1D880DF4112 /* EXAmplitude.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.debug.xcconfig; sourceTree = "<group>"; };
-		88418457897E8234AAFE88211E8F25D4 /* EXAmplitude.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAmplitude.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		79FA1C6C73DB59041D55B506B14CE844 /* EXAmplitude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAmplitude.h; path = EXAmplitude/EXAmplitude.h; sourceTree = "<group>"; };
+		919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAmplitude-dummy.m"; sourceTree = "<group>"; };
 		98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
+		A347D214B7812C3CA9E8AD3D47C6DE34 /* EXAmplitude-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAmplitude-prefix.pch"; sourceTree = "<group>"; };
 		A4E14751E18F8137819ECD80562E6EF9 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		AD36EEEA945E1D90A2F3DAB8DF5F6F24 /* EXAmplitude-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAmplitude-prefix.pch"; sourceTree = "<group>"; };
-		E69A153912C447ACFFBC56241C944053 /* EXAmplitude.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.release.xcconfig; sourceTree = "<group>"; };
+		B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				61E01D90471B6C4016FF52EDBF1C3E05 /* Dependencies */,
-				9FB3BF02B743F46C2D29163045ED5D5D /* EXAmplitude */,
+				6499B1B9553512295E06F759F4E847FE /* EXAmplitude */,
 				7947E6F8BC4765B612E1335D8ADA7DD2 /* Frameworks */,
 				67946ED29343B3D134035288A0D8C35F /* Products */,
 			);
@@ -81,12 +80,35 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		6499B1B9553512295E06F759F4E847FE /* EXAmplitude */ = {
+			isa = PBXGroup;
+			children = (
+				79FA1C6C73DB59041D55B506B14CE844 /* EXAmplitude.h */,
+				0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */,
+				85F2E53F920742065F2F2E968963A8B4 /* Pod */,
+				760CCAE29D372A9D0B3428A9E3BCBBF0 /* Support Files */,
+			);
+			name = EXAmplitude;
+			path = "../../../../packages/expo-analytics-amplitude/ios";
+			sourceTree = "<group>";
+		};
 		67946ED29343B3D134035288A0D8C35F /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				463402081A46EB38CD3DC1CE798D7BC7 /* libEXAmplitude.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		760CCAE29D372A9D0B3428A9E3BCBBF0 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */,
+				919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */,
+				A347D214B7812C3CA9E8AD3D47C6DE34 /* EXAmplitude-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXAmplitude";
 			sourceTree = "<group>";
 		};
 		7947E6F8BC4765B612E1335D8ADA7DD2 /* Frameworks */ = {
@@ -96,34 +118,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9C91AB3FB3E647617C66B85D327ECFC5 /* Support Files */ = {
+		85F2E53F920742065F2F2E968963A8B4 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				12B690187E9DECE2B912CEE5A821FC2D /* EXAmplitude-dummy.m */,
-				AD36EEEA945E1D90A2F3DAB8DF5F6F24 /* EXAmplitude-prefix.pch */,
-				6DC5A16FEC800C79FBA0F1D880DF4112 /* EXAmplitude.debug.xcconfig */,
-				E69A153912C447ACFFBC56241C944053 /* EXAmplitude.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXAmplitude";
-			sourceTree = "<group>";
-		};
-		9FB3BF02B743F46C2D29163045ED5D5D /* EXAmplitude */ = {
-			isa = PBXGroup;
-			children = (
-				629C0EEDE5F868571120FBC39D41CD0F /* EXAmplitude.h */,
-				3CE8AE8099938DD982E2D2B99203105E /* EXAmplitude.m */,
-				BAB9A1BF58B8265ECE0076616DD2FF36 /* Pod */,
-				9C91AB3FB3E647617C66B85D327ECFC5 /* Support Files */,
-			);
-			name = EXAmplitude;
-			path = "../../../../packages/expo-analytics-amplitude/ios";
-			sourceTree = "<group>";
-		};
-		BAB9A1BF58B8265ECE0076616DD2FF36 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				88418457897E8234AAFE88211E8F25D4 /* EXAmplitude.podspec */,
+				35017F342C0C098491162978D69D0CFD /* EXAmplitude.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -231,6 +229,31 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0DEDDEC326D16D0E980AF77EE3DF0CE5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAmplitude;
+				PRODUCT_NAME = EXAmplitude;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		14AE8955BDE7A570A26396A84C85CF38 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -355,9 +378,9 @@
 			};
 			name = Debug;
 		};
-		D12EEC01C6A668F1B5DC3C5342B7E013 /* Debug */ = {
+		BFA9E914B728CCFE1BC71518AC42970C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6DC5A16FEC800C79FBA0F1D880DF4112 /* EXAmplitude.debug.xcconfig */;
+			baseConfigurationReference = B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -375,30 +398,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		FEFD95E96CC5430E10DA16829BFDA547 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E69A153912C447ACFFBC56241C944053 /* EXAmplitude.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAmplitude;
-				PRODUCT_NAME = EXAmplitude;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -410,8 +410,8 @@
 		5184269E3AFE53B5379962720E6D30CC /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D12EEC01C6A668F1B5DC3C5342B7E013 /* Debug */,
-				FEFD95E96CC5430E10DA16829BFDA547 /* Release */,
+				0DEDDEC326D16D0E980AF77EE3DF0CE5 /* Debug */,
+				BFA9E914B728CCFE1BC71518AC42970C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		156DD2374305DFE6803C8662DCB892A5 /* EXHaptics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D75A18B2442BD17D5A8A0A7EDD3BA160 /* EXHaptics-dummy.m */; };
-		1CDC402E5319AC8314E33CD2B9AF269F /* EXHapticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 0056BD031D0F550B527E04A4FC5D45DE /* EXHapticsModule.m */; };
-		C38B6FFDAFEFF326850DD06238202868 /* EXHapticsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 68A1D8004D04AF409D8688AAB41B96E6 /* EXHapticsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		156DD2374305DFE6803C8662DCB892A5 /* EXHaptics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 51A6B0CA6EC9594FC03983BBAE4A5DCE /* EXHaptics-dummy.m */; };
+		1CDC402E5319AC8314E33CD2B9AF269F /* EXHapticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E2CC05B210677C4F0EBA95771C1CBE4 /* EXHapticsModule.m */; };
+		C38B6FFDAFEFF326850DD06238202868 /* EXHapticsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = E8078D3C137A5FABDA268AC2BC10C0F8 /* EXHapticsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,14 +23,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0056BD031D0F550B527E04A4FC5D45DE /* EXHapticsModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXHapticsModule.m; path = EXHaptics/EXHapticsModule.m; sourceTree = "<group>"; };
-		07BBF23F7017AB21C3628EA2A1335CD2 /* EXHaptics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXHaptics.debug.xcconfig; sourceTree = "<group>"; };
-		39037B27B2FBF96EFAC0FCEE3E5FD488 /* EXHaptics-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXHaptics-prefix.pch"; sourceTree = "<group>"; };
-		5BFFEE2E6C161623C369B398A48BDE84 /* EXHaptics.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXHaptics.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		68A1D8004D04AF409D8688AAB41B96E6 /* EXHapticsModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXHapticsModule.h; path = EXHaptics/EXHapticsModule.h; sourceTree = "<group>"; };
+		3E2CC05B210677C4F0EBA95771C1CBE4 /* EXHapticsModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXHapticsModule.m; path = EXHaptics/EXHapticsModule.m; sourceTree = "<group>"; };
+		4C3B6B3003B8E24CE9DC4B4D00D152B0 /* EXHaptics.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXHaptics.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		51A6B0CA6EC9594FC03983BBAE4A5DCE /* EXHaptics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXHaptics-dummy.m"; sourceTree = "<group>"; };
+		72786F75CF3736C31FDBC26862BFFC88 /* EXHaptics.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXHaptics.xcconfig; sourceTree = "<group>"; };
 		B263F67BE259022AB2BF22C25BB0D60B /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		D75A18B2442BD17D5A8A0A7EDD3BA160 /* EXHaptics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXHaptics-dummy.m"; sourceTree = "<group>"; };
-		E8EA935BD2A1A33A6E655AF0317AA505 /* EXHaptics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXHaptics.release.xcconfig; sourceTree = "<group>"; };
+		C0A2DD92745242101F35C13E72723947 /* EXHaptics-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXHaptics-prefix.pch"; sourceTree = "<group>"; };
+		E8078D3C137A5FABDA268AC2BC10C0F8 /* EXHapticsModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXHapticsModule.h; path = EXHaptics/EXHapticsModule.h; sourceTree = "<group>"; };
 		ECABCFF5F0B2738F1B49196E6ADE1B18 /* libEXHaptics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXHaptics.a; path = libEXHaptics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -45,6 +44,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2CBE0DDAA53FA805C91139E27D3538D6 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				72786F75CF3736C31FDBC26862BFFC88 /* EXHaptics.xcconfig */,
+				51A6B0CA6EC9594FC03983BBAE4A5DCE /* EXHaptics-dummy.m */,
+				C0A2DD92745242101F35C13E72723947 /* EXHaptics-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXHaptics";
+			sourceTree = "<group>";
+		};
 		378D9D7C0F50AAD180D27EAA2C9AC383 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -60,18 +70,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		668A755702C0F3DB45271A70FEFBE599 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				D75A18B2442BD17D5A8A0A7EDD3BA160 /* EXHaptics-dummy.m */,
-				39037B27B2FBF96EFAC0FCEE3E5FD488 /* EXHaptics-prefix.pch */,
-				07BBF23F7017AB21C3628EA2A1335CD2 /* EXHaptics.debug.xcconfig */,
-				E8EA935BD2A1A33A6E655AF0317AA505 /* EXHaptics.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXHaptics";
-			sourceTree = "<group>";
-		};
 		770C4E6F218A5439F916FB92A9EA22C0 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -80,21 +78,21 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		97B62D8E5563F02E7FD1D869A6FF8120 /* Pod */ = {
+		B11AC919307F08EC9DCEF2E93E116C7E /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				5BFFEE2E6C161623C369B398A48BDE84 /* EXHaptics.podspec */,
+				4C3B6B3003B8E24CE9DC4B4D00D152B0 /* EXHaptics.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		CD8458B5444825D038BBC66B977C652C /* EXHaptics */ = {
+		F08AF8170472EA517E8CAD721FFF913B /* EXHaptics */ = {
 			isa = PBXGroup;
 			children = (
-				68A1D8004D04AF409D8688AAB41B96E6 /* EXHapticsModule.h */,
-				0056BD031D0F550B527E04A4FC5D45DE /* EXHapticsModule.m */,
-				97B62D8E5563F02E7FD1D869A6FF8120 /* Pod */,
-				668A755702C0F3DB45271A70FEFBE599 /* Support Files */,
+				E8078D3C137A5FABDA268AC2BC10C0F8 /* EXHapticsModule.h */,
+				3E2CC05B210677C4F0EBA95771C1CBE4 /* EXHapticsModule.m */,
+				B11AC919307F08EC9DCEF2E93E116C7E /* Pod */,
+				2CBE0DDAA53FA805C91139E27D3538D6 /* Support Files */,
 			);
 			name = EXHaptics;
 			path = "../../../../packages/expo-haptics/ios";
@@ -104,7 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				770C4E6F218A5439F916FB92A9EA22C0 /* Dependencies */,
-				CD8458B5444825D038BBC66B977C652C /* EXHaptics */,
+				F08AF8170472EA517E8CAD721FFF913B /* EXHaptics */,
 				378D9D7C0F50AAD180D27EAA2C9AC383 /* Frameworks */,
 				493C54F91BC520E8E6A4EE942D64A9AF /* Products */,
 			);
@@ -195,9 +193,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		51A63902F98DBFA26C0B81EE07DA982F /* Release */ = {
+		7F5A0E136C077BEC99552A7A707CBD27 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8EA935BD2A1A33A6E655AF0317AA505 /* EXHaptics.release.xcconfig */;
+			baseConfigurationReference = 72786F75CF3736C31FDBC26862BFFC88 /* EXHaptics.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -215,34 +213,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		58ADE4CDEA2DDCBA52FB744D8B9ED71C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 07BBF23F7017AB21C3628EA2A1335CD2 /* EXHaptics.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXHaptics/EXHaptics-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXHaptics;
-				PRODUCT_NAME = EXHaptics;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		8BBFE792A66CD00557629FE6EE90B77D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -368,6 +343,31 @@
 			};
 			name = Release;
 		};
+		B8FA341B0484680D5BC42B8A7ED89297 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 72786F75CF3736C31FDBC26862BFFC88 /* EXHaptics.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXHaptics/EXHaptics-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXHaptics;
+				PRODUCT_NAME = EXHaptics;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -383,8 +383,8 @@
 		B9FC0D6C1ADD03E76CD7854240B51D79 /* Build configuration list for PBXNativeTarget "EXHaptics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				58ADE4CDEA2DDCBA52FB744D8B9ED71C /* Debug */,
-				51A63902F98DBFA26C0B81EE07DA982F /* Release */,
+				B8FA341B0484680D5BC42B8A7ED89297 /* Debug */,
+				7F5A0E136C077BEC99552A7A707CBD27 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
