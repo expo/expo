@@ -8,173 +8,173 @@ PODS:
   - AppAuth/ExternalUserAgent (1.3.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - EXAmplitude (8.2.0):
+  - EXAmplitude (8.2.1):
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
     - UMCore
-  - EXAppAuth (9.1.0):
+  - EXAppAuth (9.1.1):
     - AppAuth (~> 1.2)
     - UMCore
   - EXApplication (2.2.1):
     - UMCore
-  - EXAV (8.2.0):
+  - EXAV (8.2.1):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXBackgroundFetch (8.2.0):
+  - EXBackgroundFetch (8.3.0):
     - UMCore
     - UMTaskManagerInterface
-  - EXBarCodeScanner (8.2.0):
+  - EXBarCodeScanner (8.2.1):
     - UMCore
     - UMImageLoaderInterface
     - UMPermissionsInterface
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBattery (2.2.0):
+  - EXBattery (2.2.1):
     - UMCore
   - EXBluetooth (1.0.0):
     - UMCore
-  - EXBlur (8.1.1):
+  - EXBlur (8.1.2):
     - UMCore
-  - EXBrightness (8.2.0):
-    - UMCore
-    - UMPermissionsInterface
-  - EXCalendar (8.2.0):
+  - EXBrightness (8.2.1):
     - UMCore
     - UMPermissionsInterface
-  - EXCellular (2.2.0):
+  - EXCalendar (8.2.1):
+    - UMCore
+    - UMPermissionsInterface
+  - EXCellular (2.2.1):
     - UMCore
   - EXConstants (9.1.1):
     - UMConstantsInterface
     - UMCore
-  - EXContacts (8.2.0):
+  - EXContacts (8.2.1):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXCrypto (8.2.0):
+  - EXCrypto (8.2.1):
     - UMCore
-  - EXDevice (2.2.0):
+  - EXDevice (2.2.1):
     - UMCore
-  - EXDocumentPicker (8.2.0):
+  - EXDocumentPicker (8.2.1):
     - UMCore
     - UMFileSystemInterface
-  - EXErrorRecovery (1.2.0):
+  - EXErrorRecovery (1.2.1):
     - UMCore
-  - EXFacebook (8.2.0):
+  - EXFacebook (8.2.1):
     - FBSDKCoreKit (~> 5.8.0)
     - FBSDKLoginKit (~> 5.8.0)
     - UMConstantsInterface
     - UMCore
-  - EXFileSystem (9.0.0):
+  - EXFileSystem (9.0.1):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (2.4.0):
+  - EXFirebaseAnalytics (2.4.1):
     - EXFirebaseCore
     - Firebase/Core (= 6.14.0)
     - UMCore
-  - EXFirebaseCore (1.1.0):
+  - EXFirebaseCore (1.1.1):
     - Firebase/Core (= 6.14.0)
     - UMCore
-  - EXFont (8.2.0):
+  - EXFont (8.2.1):
     - UMCore
     - UMFontInterface
-  - EXGL (8.3.0):
+  - EXGL (8.3.1):
     - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL_CPP (8.3.0):
-    - EXGL_CPP/EXGLContext (= 8.3.0)
-  - EXGL_CPP/EXGLContext (8.3.0)
-  - EXGoogleSignIn (8.2.0):
+  - EXGL_CPP (8.3.1):
+    - EXGL_CPP/EXGLContext (= 8.3.1)
+  - EXGL_CPP/EXGLContext (8.3.1)
+  - EXGoogleSignIn (8.2.1):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
-  - EXHaptics (8.2.0):
+  - EXHaptics (8.2.1):
     - UMCore
-  - EXImageLoader (1.1.0):
+  - EXImageLoader (1.1.1):
     - React-Core
     - UMCore
     - UMImageLoaderInterface
-  - EXImageManipulator (8.2.0):
+  - EXImageManipulator (8.2.1):
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (8.2.0):
+  - EXImagePicker (8.3.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXInAppPurchases (8.2.0):
+  - EXInAppPurchases (8.2.1):
     - UMCore
-  - EXKeepAwake (8.2.0):
+  - EXKeepAwake (8.2.1):
     - UMCore
-  - EXLinearGradient (8.2.0):
+  - EXLinearGradient (8.2.1):
     - UMCore
-  - EXLocalAuthentication (9.1.0):
+  - EXLocalAuthentication (9.1.1):
     - UMConstantsInterface
     - UMCore
-  - EXLocalization (8.2.0):
+  - EXLocalization (8.2.1):
     - UMCore
-  - EXLocation (8.2.0):
+  - EXLocation (8.2.1):
     - UMCore
     - UMPermissionsInterface
     - UMTaskManagerInterface
-  - EXMailComposer (8.2.0):
+  - EXMailComposer (8.2.1):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (8.2.0):
+  - EXMediaLibrary (8.2.1):
     - React
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXNetwork (2.2.0):
+  - EXNetwork (2.2.1):
     - UMCore
   - EXNotifications (0.3.0):
     - UMCore
     - UMPermissionsInterface
-  - EXPermissions (9.0.0):
+  - EXPermissions (9.0.1):
     - UMCore
     - UMPermissionsInterface
   - expo-image (1.0.0-alpha.0):
     - React
     - SDWebImage (~> 5.0)
-  - EXPrint (9.0.0):
+  - EXPrint (9.0.1):
     - UMCore
     - UMFileSystemInterface
-  - EXRandom (8.2.0):
+  - EXRandom (8.2.1):
     - UMCore
-  - EXScreenCapture (1.0.0):
+  - EXScreenCapture (1.0.1):
     - UMCore
-  - EXScreenOrientation (1.1.0):
+  - EXScreenOrientation (1.1.1):
     - React-Core
     - UMCore
-  - EXSecureStore (9.0.0):
+  - EXSecureStore (9.0.1):
     - UMCore
-  - EXSegment (8.2.0):
+  - EXSegment (8.2.1):
     - Analytics (~> 3.7)
     - UMConstantsInterface
     - UMCore
-  - EXSensors (9.0.0):
+  - EXSensors (9.0.1):
     - UMCore
     - UMSensorsInterface
-  - EXSharing (8.2.0):
+  - EXSharing (8.2.1):
     - UMCore
     - UMFileSystemInterface
-  - EXSMS (8.2.0):
+  - EXSMS (8.2.1):
     - UMCore
     - UMPermissionsInterface
-  - EXSpeech (8.2.0):
+  - EXSpeech (8.2.1):
     - UMCore
-  - EXSQLite (8.2.0):
+  - EXSQLite (8.2.1):
     - UMCore
     - UMFileSystemInterface
-  - EXStoreReview (2.1.1):
+  - EXStoreReview (2.1.2):
     - UMCore
-  - EXTaskManager (8.2.0):
+  - EXTaskManager (8.3.0):
     - UMAppLoader
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXWebBrowser (8.3.0):
+  - EXWebBrowser (8.3.1):
     - UMCore
   - FBLazyVector (0.62.2)
   - FBReactNativeSpec (0.62.2):
@@ -516,22 +516,22 @@ PODS:
   - SDWebImage (5.6.0):
     - SDWebImage/Core (= 5.6.0)
   - SDWebImage/Core (5.6.0)
-  - UMAppLoader (1.1.0)
-  - UMBarCodeScannerInterface (5.2.0)
-  - UMCameraInterface (5.2.0)
-  - UMConstantsInterface (5.2.0)
-  - UMCore (5.2.0)
-  - UMFileSystemInterface (5.2.0)
-  - UMFontInterface (5.2.0)
-  - UMImageLoaderInterface (5.2.0)
-  - UMPermissionsInterface (5.2.0):
+  - UMAppLoader (1.2.0)
+  - UMBarCodeScannerInterface (5.2.1)
+  - UMCameraInterface (5.2.1)
+  - UMConstantsInterface (5.2.1)
+  - UMCore (5.3.0)
+  - UMFileSystemInterface (5.2.1)
+  - UMFontInterface (5.2.1)
+  - UMImageLoaderInterface (5.2.1)
+  - UMPermissionsInterface (5.2.1):
     - UMCore
-  - UMReactNativeAdapter (5.3.0):
+  - UMReactNativeAdapter (5.4.0):
     - React-Core
     - UMCore
     - UMFontInterface
-  - UMSensorsInterface (5.2.0)
-  - UMTaskManagerInterface (5.2.0)
+  - UMSensorsInterface (5.2.1)
+  - UMTaskManagerInterface (5.2.1)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
@@ -874,62 +874,62 @@ SPEC CHECKSUMS:
   AppAuth: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  EXAmplitude: 923c6c38ae2e3954db4292a92acb8ef04afee880
-  EXAppAuth: 3e963954e2d27777a79a2f28ce0c99d9aa2665c2
+  EXAmplitude: 9232a37c556ab739c42adcbd0b239b5c1ac61f10
+  EXAppAuth: 98c853968adeec68008887a0cb475efb2656f196
   EXApplication: d7ccb60c33fa4d506967ff6adde42a0f872d69ad
-  EXAV: 1a9a55e896c387d02416ab4b6f11db31da5f6a1f
-  EXBackgroundFetch: 17f9aa2f2235c8686900ebfff6eaa38edf5a8ee9
-  EXBarCodeScanner: 28bf65ebda0c5ec410812632d0ba5fc5e77f94c9
-  EXBattery: 4cd4722a7f3949d7e6ca824e9307f338472d7950
+  EXAV: 86344030966e0da7e00556fbb97269d9ad16071d
+  EXBackgroundFetch: 6e4836e2998b1e045d574fbc2018b6f288e929b6
+  EXBarCodeScanner: 02c41a2bb7c0747dc96a96ee30b0aa80a0fc4168
+  EXBattery: 367aef7eba65f488587610564224952411f1b48b
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
-  EXBlur: 34f57ea03d0150fc6931365128c7014a375636ed
-  EXBrightness: 8ce16b7190d1b1c7482ea3781165e8484b25bf2e
-  EXCalendar: b0ef4fdc0d5c2833b792c5ece5bc8e9c07004db5
-  EXCellular: 0bc3c896d022cc8fe833148de8fe1e1d89e99922
+  EXBlur: b622dc0f8a8fe74f05fb437cfb1c5ee16259dab1
+  EXBrightness: e02018c74baedcb51825cd91e16886973c81d029
+  EXCalendar: 9157be548211a7b283535d5a5cf7c6843d26108b
+  EXCellular: b571e997db382446d6a5145932d738d694f63949
   EXConstants: f907b3b6ce16e20d1750f22af1e095e924574bcb
-  EXContacts: 3d64afc53d5e5715e74de00f6d46f433fa2ac7b1
-  EXCrypto: d0f379f95b16c4b93580f64ec7052fbcb4d0cade
-  EXDevice: 3b93caaa1b589f6e5db49460c86d2df73f5fbf35
-  EXDocumentPicker: e6285fcefa4514789ce104d41a2b1036aafd2a4c
-  EXErrorRecovery: 7142239c682f32b12c19843903aee8be9bd3eb5f
-  EXFacebook: 4c41f10c7f34a74ce5b4c36b296094d5b278a212
-  EXFileSystem: d093a2195fce7df83e21c6bde1be91426e5ca2ba
-  EXFirebaseAnalytics: 6b23de0d3e6371b9fbff9c336fefc77f36a93c5e
-  EXFirebaseCore: b685aee40d174cc3e809e7f14cb3bb9f39cbc46b
-  EXFont: dd24dfaf78a6b5641ed602f2fe30509a2460b437
-  EXGL: f3b54b630d8f0c7616f2d67b900dd421dce829be
-  EXGL_CPP: bc3d2d83a4367adfd287e45546decd4cd43fa1a2
-  EXGoogleSignIn: 92b1a26e108e24f7ce7ea5de5f774c55863a662f
-  EXHaptics: 1daf9a05f9054cbc1ba7e30e2a751ec75988e1f4
-  EXImageLoader: 3fcb60f515e5c22b24839739f1c7d06da096a696
-  EXImageManipulator: 05cfa9a8a898d2e8b5bb490609515a3f0f387c08
-  EXImagePicker: 487d0c3d818fae91e21145b54bb8ceb491410272
-  EXInAppPurchases: 0c168b0c5f582e944b72a05a87b285a64df02ebd
-  EXKeepAwake: 1ab1d4562ac9e71b5aefd2341ec8a350149a9a3c
-  EXLinearGradient: ebaf7f017c6735552226a4aaeeea59efe31b53de
-  EXLocalAuthentication: fc03548af33eccddfb756d0cf12fb40c2ca80fe2
-  EXLocalization: 93db0235329269b3b64e211c48a09834a5ec89c8
-  EXLocation: 54acd23efbe42f1cce29b5682bdaba37f0e33718
-  EXMailComposer: ce7643e7ad21ba84baeeedbc187f9811e573a457
-  EXMediaLibrary: 7c2f60d48c0bf6c24f6726763a3361d614425976
-  EXNetwork: e0a2210811a3e977d07f9eecb4b437419e01ba96
+  EXContacts: 9ecc819adfb7690ed90ebcaf93d23ac84fe957f1
+  EXCrypto: 867e1d45d513e39ab9d7706232435edb1cf756cd
+  EXDevice: befd3b2619915e615c3753c9f83309808aa0cdf5
+  EXDocumentPicker: 38b1bc0995d3b8c879142be6d6753866484025a8
+  EXErrorRecovery: 500f1d4231c534f415e86caeb3fc677c7f5dd23c
+  EXFacebook: 3c124265fb7230cf1071329208b765e0e187789e
+  EXFileSystem: 76875135b61708b9afa7e6a89b72a60ba0fdfa20
+  EXFirebaseAnalytics: b502d650cb33c2d137cb19d639f8b315ee7e5ad3
+  EXFirebaseCore: 7e720f6f3725795b960b9e59dfcd46e674b30774
+  EXFont: d6cabb73989fc29296972c52915a023f46b2c7f5
+  EXGL: 34fdad312c8fefe8dbc24fa68056868830d8e826
+  EXGL_CPP: ed6b6ec48e1253e038003c49cdd29af3e0e8e82c
+  EXGoogleSignIn: 02f0db1efb39c8e2508832a0175319f0ce08a80f
+  EXHaptics: 5428b344a216ca5d9df6ca8f65720b2a1ad9f109
+  EXImageLoader: 02ca02c9cd5cc8a97b423207a73a791e0a86bea5
+  EXImageManipulator: fbc0fff59cd398ebec3f3e9bedd4451375de2d5f
+  EXImagePicker: f5eb978a3b2f268f47eb567008018de512f36557
+  EXInAppPurchases: f20d1ae0f899ef5f868c95033da6656282a41e68
+  EXKeepAwake: 8b0f68242f036b971f9f8976341823cbe6f50812
+  EXLinearGradient: 663bf3b9009a96567e98498016e40422631be81d
+  EXLocalAuthentication: 9a91ae13eec74d90404a9845a1f5486a48af2a94
+  EXLocalization: b5bcfc925ed83123b585d46d3bd54d7b7118f307
+  EXLocation: e93020e255f52a1cc031e0f45b0a24eb20fc4b55
+  EXMailComposer: a7e2a9f6ad73718dc1ec0bb786200dbc9376e2c2
+  EXMediaLibrary: 267cf1daca04a4d71d20c5be0b82701fe6056a08
+  EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
   EXNotifications: 921bebfde64c1727c1ef8c4df2b1396bb2d2f23a
-  EXPermissions: b6bb4e9261643bd3e6a0c5f8d5b5c841177815f2
+  EXPermissions: 80ac3acbdb145930079810fe5b08c022b3428aa8
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
-  EXPrint: 41e3356a233ff92e3bd03fb800e2efa03e0b0b64
-  EXRandom: 59fd7ceace3251897b71d65f0313564b5cf12734
-  EXScreenCapture: d001b0ba68107db27504449cacf20560a0d07ca4
-  EXScreenOrientation: c376ba2859cc98c11c93d03aee70d74db552ffad
-  EXSecureStore: 66d5f80f383254402d00f90605b12f94fcbbffaf
-  EXSegment: a4d166d68a24dfc6fe6a0376b450e8d876dc3ee1
-  EXSensors: 936c25ca5aa13e0f28a5abc130399eacf85fd9ad
-  EXSharing: 85c884b50e83b842e6d20b671aafda6dca9183e7
-  EXSMS: 564d163a1d96cbacbee48064ae9e750f5dc53234
-  EXSpeech: 45f77d049486c02f712e55d5a618c791759a60ef
-  EXSQLite: 5477b5ec0462576bedd915c4712fbe4058c8a624
-  EXStoreReview: ff83c7609ee49be610891720f97034f6b4ef52de
-  EXTaskManager: a733d201f83218bd359088f1a88d598aa19ae58c
-  EXWebBrowser: 60debd27edd04ba2ba3c552fb7944be1070472b4
+  EXPrint: ba38c9f67a2d046d6160f6d4308af18f584a5039
+  EXRandom: a375fb6bed8a0919a795766b8d5218b1200538b7
+  EXScreenCapture: ed9b1813758bf0057fc3780043bfa4dc0956a9b5
+  EXScreenOrientation: c9cfb33eaff7ce83330c5238eba523d027b9eb53
+  EXSecureStore: 908934a8b02301997fee88e3f4c05eea4e2a9ffb
+  EXSegment: 7f9fd99f88f5b1ff06d323a153873d2105d390f4
+  EXSensors: 761f6bd03eb13ff7dfffe955de7edce3b73306c4
+  EXSharing: 90a28fe9d4187d124d491788d96d204b30448b8f
+  EXSMS: 93b2aafc8aca983cecf5905cf03ac80a678c61d9
+  EXSpeech: 9917a04a410a42904f1507a2e06234a91aff1c6d
+  EXSQLite: 64611c1b369c0f1e9cae4e551d0aa4478a58cadf
+  EXStoreReview: 2b9bdb91b3ed4319b4f6a4cb4647ba48a6ab67c8
+  EXTaskManager: 019344613fa2ad14a85e5b6c2699707eee35a62d
+  EXWebBrowser: d37a5ffdea1b65947352bc001dd9f732463725d4
   FBLazyVector: 4aab18c93cd9546e4bfed752b4084585eca8b245
   FBReactNativeSpec: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
   FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
@@ -976,21 +976,21 @@ SPEC CHECKSUMS:
   RNReanimated: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
   RNScreens: 62211832af51e0aebcf6e8c36bcf7dd65592f244
   SDWebImage: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
-  UMAppLoader: e4aeb3ac68dbd15df39e7bdb5b86ae030172fdba
-  UMBarCodeScannerInterface: 025c37a68df518e8c559b8df9c1f81360a7a4006
-  UMCameraInterface: 3aa0f4ebbe93127afdac9a314d08ae92ff90ef40
-  UMConstantsInterface: e053b33e00e129951a2fc37e19fa4c73513f5ffa
-  UMCore: 79f0516cb97dd2e25f704951df8d03a2a9e4e948
-  UMFileSystemInterface: caac1d1d9ce32aa24ab7a5d1a018be1c44c3d2cc
-  UMFontInterface: f4a1019fb3b6e267eea0f4a27984a0af4bcc56ef
-  UMImageLoaderInterface: c105202fd399beba06c391b90a66f1b61e08f5fe
-  UMPermissionsInterface: ed41902058912c91163d9ce7a7b5b937209f4f76
-  UMReactNativeAdapter: 6226be17afb603178cd84c918fac94a8714d56ce
-  UMSensorsInterface: c7ddeb4e6467510b67d519e1467823f72d23010e
-  UMTaskManagerInterface: dc8290b3291317c520001cb4a92487ffbd983115
+  UMAppLoader: 61049c8d55590b74e9ae1d5429bf68d96b4a2528
+  UMBarCodeScannerInterface: e5e4c87797d3d01214e25cd1618866caf5d4f17f
+  UMCameraInterface: 415ac060034edecacdbbaa739c223e3f276e0056
+  UMConstantsInterface: 1a52f2d884c95e8829439da13e36b7669a1a8fb4
+  UMCore: d98083b522b08c0a8ba3992bc263c624ae5d887c
+  UMFileSystemInterface: 303d696ede28102a7e11d111808bd2ed2c5eb62f
+  UMFontInterface: 6edf1ee8bc55d2030766f8cf0a7b20a5d5a913b0
+  UMImageLoaderInterface: 9cdbf3bab6a513bddd88505cb2340fe02d6a11c0
+  UMPermissionsInterface: 019170ad655f464e3f8d23d2a8bcbda2e645cde4
+  UMReactNativeAdapter: 538efe92e781b5d7678cf95b34c46f2d0989a557
+  UMSensorsInterface: cb5bf31d52c4349f0ff9e3c049bbe4df0d80d383
+  UMTaskManagerInterface: 80653f25c55d9e6d79d6a0a65589fa213feaee11
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
 PODFILE CHECKSUM: 5e336c4046a5cf7924b429b07035b2e33d122cdd
 
-COCOAPODS: 1.9.0
+COCOAPODS: 1.8.4

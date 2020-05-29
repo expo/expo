@@ -1,6 +1,6 @@
 {
   "name": "jest-expo-enzyme",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@types/enzyme": "^3.10.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
-    "babel-preset-expo": "~8.2.2",
+    "babel-preset-expo": "~8.2.3",
     "expo-module-scripts": "~1.2.0",
     "react": "16.11.0"
   },

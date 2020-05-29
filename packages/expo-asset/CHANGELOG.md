@@ -8,9 +8,14 @@
 
 ### 🐛 Bug fixes
 
+## 8.1.7 — 2020-05-29
+
+*This version does not introduce any user-facing changes.*
+
 ## 8.1.6 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
+
 ## 8.1.5
 
 ### 🎉 New features

@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.2.8 — 2020-05-29
+
+*This version does not introduce any user-facing changes.*
+
 ## 0.2.7 - 2020-05-27
 
 ### 🐛 Bug fixes

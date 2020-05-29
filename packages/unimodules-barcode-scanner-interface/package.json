@@ -1,6 +1,6 @@
 {
   "name": "unimodules-barcode-scanner-interface",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "An interface for bar code scanners",
   "main": "index.js",
   "keywords": [

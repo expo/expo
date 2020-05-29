@@ -1,6 +1,6 @@
 {
   "name": "unimodules-permissions-interface",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "An interface for permissions modules",
   "main": "build/PermissionsInterface.js",
   "types": "build/PermissionsInterface.d.ts",

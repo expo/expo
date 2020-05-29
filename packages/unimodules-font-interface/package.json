@@ -1,6 +1,6 @@
 {
   "name": "unimodules-font-interface",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Interface for managing fonts.",
   "keywords": [
     "expo",
