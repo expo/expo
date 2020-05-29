@@ -5,9 +5,10 @@ title: Authentication
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
-import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
+import { SocialGrid, SocialGridItem, CreateAppButton, AuthMethodTabSwitcher, AuthMethodTab } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
 
@@ -167,6 +168,10 @@ const [request, response, promptAsync] = useAuthRequest(
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
 
+<AuthMethodTabSwitcher>
+
+<AuthMethodTab>
+
 ```ts
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
@@ -175,7 +180,51 @@ import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// In a functional component...
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
+  tokenEndpoint: 'https://api.coinbase.com/oauth/token',
+  revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
+};
+
+function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['wallet:accounts:read'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+   React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response])
+
+  return (/* ... */)
+}
+```
+
+</AuthMethodTab>
+
+<AuthMethodTab>
+
+```tsx
+import React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
 
 // Endpoint
 const discovery = {
@@ -183,20 +232,36 @@ const discovery = {
   tokenEndpoint: 'https://api.coinbase.com/oauth/token',
   revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
 };
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['wallet:accounts:read'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+
+function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['wallet:accounts:read'],
+      responseType: ResponseType.Token,
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+    }
+  }, [response])
+
+  return ( /* ... */)
+}
 ```
+
+</AuthMethodTab>
+</AuthMethodTabSwitcher>
 
 <!-- End Coinbase -->
 
@@ -215,40 +280,134 @@ const [request, response, promptAsync] = useAuthRequest(
 - Implicit auth is supported.
 - When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
-```ts
+<AuthMethodTabSwitcher>
+<AuthMethodTab>
+
+Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
+
+```tsx
+import React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-
-// In a functional component...
 
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://www.dropbox.com/oauth2/authorize',
   tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
 };
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    // There are no scopes so just pass an empty array
-    scopes: [],
-    // Dropbox doesn't support PKCE
-    usePKCE: false,
-    // Implicit auth is universal, `.Code` will only work in native with `useProxy: true`.
-    responseType: ResponseType.Token,
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+
+/* @info Implicit auth is universal, <code>.Code</code> will only work in native with <code>useProxy: true</code>. */
+const useProxy = Platform.select({ web: false, default: true });
+/* @end */
+
+function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      // There are no scopes so just pass an empty array
+      scopes: [],
+      // Dropbox doesn't support PKCE
+      usePKCE: false,
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+        useProxy
+      }),
+    },
+    discovery
+  );
+
+   React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response])
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
+}
 ```
+
+</AuthMethodTab>
+
+<AuthMethodTab>
+
+```tsx
+import React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.dropbox.com/oauth2/authorize',
+  tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
+};
+
+function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      // There are no scopes so just pass an empty array
+      scopes: [],
+      // Dropbox doesn't support PKCE
+      usePKCE: false,
+      responseType: ResponseType.Token,
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+    }
+  }, [response])
+
+   return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({})
+        /* @end */
+      }} />
+  );
+}
+```
+
+</AuthMethodTab>
+</AuthMethodTabSwitcher>
 
 <!-- End Dropbox -->
 
