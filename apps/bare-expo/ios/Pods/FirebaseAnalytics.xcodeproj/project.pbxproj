@@ -62,29 +62,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		05D107CEA4D1B193555F3D5DBEEC4A75 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
-		1DADA6EEE2D48610F769D54F6B161BF2 /* FirebaseAnalytics.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseAnalytics.xcconfig; sourceTree = "<group>"; };
+		1963669BE92F113AF5EB52C3F578DC9A /* FirebaseAnalytics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseAnalytics.release.xcconfig; sourceTree = "<group>"; };
+		4C912F062131F7BBC6B7BD49E8B5CC1E /* FirebaseAnalytics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseAnalytics.debug.xcconfig; sourceTree = "<group>"; };
+		5FDE952F5F401D3AD5C14EF4045020B7 /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = Frameworks/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
 		7550AC1E6CED2CF53E5FD2966E9FBAFD /* GoogleUtilities */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleUtilities; path = GoogleUtilities.xcodeproj; sourceTree = "<group>"; };
+		A26355079015D848A6871DE1D8DBEE88 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		A6484606E929A3565DBA17DE6C3ED22F /* nanopb */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nanopb; path = nanopb.xcodeproj; sourceTree = "<group>"; };
 		CD2763802FBC7FA4F923E6CB868C330E /* GoogleAppMeasurement */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleAppMeasurement; path = GoogleAppMeasurement.xcodeproj; sourceTree = "<group>"; };
 		D2C3915E8330EBCFACA70BC633CF71AF /* FirebaseInstanceID */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseInstanceID; path = FirebaseInstanceID.xcodeproj; sourceTree = "<group>"; };
 		E07AB05D788176688CF56E971C111E89 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
-		E967AE0344F7058845E3D6AF8AC88397 /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = Frameworks/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		03E30DF3EBE0E264CA6198A192F5C4F3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		0AF95AA298BAB600482F08AE0D36931C /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				E967AE0344F7058845E3D6AF8AC88397 /* FIRAnalyticsConnector.framework */,
-				05D107CEA4D1B193555F3D5DBEEC4A75 /* FirebaseAnalytics.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -108,33 +100,43 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		98F99384D8C0CEEA17D443C6211084F2 /* FirebaseAnalytics */ = {
+		7C7395E2B7F102F43C06B6C476B99B1A /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				0AF95AA298BAB600482F08AE0D36931C /* Frameworks */,
-				D3AA4380E39A4E5D81E00DB3A4B9EDAB /* Support Files */,
+				4C912F062131F7BBC6B7BD49E8B5CC1E /* FirebaseAnalytics.debug.xcconfig */,
+				1963669BE92F113AF5EB52C3F578DC9A /* FirebaseAnalytics.release.xcconfig */,
 			);
-			name = FirebaseAnalytics;
-			path = FirebaseAnalytics;
+			name = "Support Files";
+			path = "../Target Support Files/FirebaseAnalytics";
 			sourceTree = "<group>";
 		};
 		ABED8298F9702BBB04A2C8E21C240953 = {
 			isa = PBXGroup;
 			children = (
 				40B352D7A27A1D7705D537D4BF01A370 /* Dependencies */,
-				98F99384D8C0CEEA17D443C6211084F2 /* FirebaseAnalytics */,
+				E74FECA856CF5D26765A7D75C8AF5BD6 /* FirebaseAnalytics */,
 				03E30DF3EBE0E264CA6198A192F5C4F3 /* Frameworks */,
 				20DBDF24DAD334020E6058803FB0031E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		D3AA4380E39A4E5D81E00DB3A4B9EDAB /* Support Files */ = {
+		D7BC4F9B5926A683D64D6BC1FBB33A3B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1DADA6EEE2D48610F769D54F6B161BF2 /* FirebaseAnalytics.xcconfig */,
+				5FDE952F5F401D3AD5C14EF4045020B7 /* FIRAnalyticsConnector.framework */,
+				A26355079015D848A6871DE1D8DBEE88 /* FirebaseAnalytics.framework */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/FirebaseAnalytics";
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E74FECA856CF5D26765A7D75C8AF5BD6 /* FirebaseAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				D7BC4F9B5926A683D64D6BC1FBB33A3B /* Frameworks */,
+				7C7395E2B7F102F43C06B6C476B99B1A /* Support Files */,
+			);
+			name = FirebaseAnalytics;
+			path = FirebaseAnalytics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,9 +272,9 @@
 			};
 			name = Release;
 		};
-		1B3A1796B9AD0B529D40C865D6036287 /* Debug */ = {
+		A8DB2D215D2D5C1B50437134643BCFA5 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1DADA6EEE2D48610F769D54F6B161BF2 /* FirebaseAnalytics.xcconfig */;
+			baseConfigurationReference = 4C912F062131F7BBC6B7BD49E8B5CC1E /* FirebaseAnalytics.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -283,9 +285,9 @@
 			};
 			name = Debug;
 		};
-		8F8418AA100196082F99F8FF4D838D0F /* Release */ = {
+		BCAAACC5220B194D390368BB506D094E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1DADA6EEE2D48610F769D54F6B161BF2 /* FirebaseAnalytics.xcconfig */;
+			baseConfigurationReference = 1963669BE92F113AF5EB52C3F578DC9A /* FirebaseAnalytics.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -367,8 +369,8 @@
 		7AE68BAEF10449E1FDDC6450BF87958B /* Build configuration list for PBXAggregateTarget "FirebaseAnalytics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1B3A1796B9AD0B529D40C865D6036287 /* Debug */,
-				8F8418AA100196082F99F8FF4D838D0F /* Release */,
+				A8DB2D215D2D5C1B50437134643BCFA5 /* Debug */,
+				BCAAACC5220B194D390368BB506D094E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
