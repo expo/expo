@@ -928,6 +928,10 @@ function App() {
 - Navigate to the **"Scopes"** section to enable scopes.
 - `revocationEndpoint` is not available.
 
+<AuthMethodTabSwitcher>
+
+<AuthMethodTab>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -981,6 +985,71 @@ function App() {
   );
 }
 ```
+
+<AuthMethodTab>
+
+</AuthMethodTab>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://slack.com/oauth/authorize',
+  tokenEndpoint: 'https://slack.com/api/oauth.access',
+};
+
+function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
+      clientId: 'CLIENT_ID',
+      scopes: ['emoji:read'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }} />
+  );
+}
+```
+
+</AuthMethodTab>
+
+</AuthMethodTabSwitcher>
 
 <!-- End Slack -->
 
@@ -1136,6 +1205,7 @@ function App() {
 - You will need to enable 2FA on your Twitch account to create an application.
 
 <AuthMethodTabSwitcher>
+
 <AuthMethodTab>
 
 ```tsx
@@ -1185,7 +1255,7 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({})
+        promptAsync({});
         /* @end */
       }} />
   );
@@ -1246,7 +1316,7 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({})
+        promptAsync({});
         /* @end */
       }} />
   );
@@ -1392,6 +1462,7 @@ function App() {
 ```
 
 </AuthMethodTab>
+
 </AuthMethodTabSwitcher>
 
 <!-- End Uber -->
