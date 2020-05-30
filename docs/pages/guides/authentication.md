@@ -240,7 +240,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync()
+        promptAsync();
         /* @end */
       }}
     />
@@ -322,13 +322,13 @@ export default function App() {
     discovery
   );
 
-   React.useEffect(() => {
+  React.useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
       const { code } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
   return (
     <Button
@@ -396,7 +396,7 @@ export default function App() {
       const { access_token } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
    return (
     <Button
@@ -472,7 +472,6 @@ const discovery = {
 const useProxy = Platform.select({ web: false, default: true });
 
 export default function App() {
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: '<YOUR FBID>',
@@ -548,7 +547,6 @@ const discovery = {
 const useProxy = Platform.select({ web: false, default: true });
 
 export default function App() {
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
@@ -640,14 +638,14 @@ import { Button, Platform } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
+  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
+};
+
 export default function App() {
-  // Endpoint
-  const discovery = {
-    authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
-    tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
-    revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
-  };
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -677,7 +675,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -705,14 +703,14 @@ WebBrowser.maybeCompleteAuthSession();
 
 const useProxy = Platform.select({ web: false, default: true });
 
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
+  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
+};
+
 export default function App() {
-  // Endpoint
-  const discovery = {
-    authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
-    tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
-    revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
-  };
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
@@ -803,7 +801,6 @@ const discovery = {
 };
 
 export default function App() {
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -833,7 +830,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync()
+        promptAsync();
         /* @end */
       }}
     />
@@ -934,7 +931,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync({ useProxy });
         /* @end */
       }}
     />
@@ -1014,7 +1011,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync({ useProxy });
         /* @end */
       }}
     />
@@ -1094,7 +1091,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync({ useProxy });
         /* @end */
       }}
     />
@@ -1149,13 +1146,13 @@ import { Button } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
+  tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
+};
+
 export default function App() {
-  // Endpoint
-  const discovery = {
-    authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
-    tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
-  };
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -1213,13 +1210,13 @@ import { Button } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
+  tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
+};
+
 export default function App() {
-  // Endpoint
-  const discovery = {
-    authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
-    tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
-  };
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
@@ -1254,7 +1251,8 @@ export default function App() {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync();
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
@@ -1306,7 +1304,6 @@ const discovery = {
 };
 
 export default function App() {
-  // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -1336,7 +1333,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync()
+        promptAsync();
         /* @end */
       }}
     />
@@ -1414,7 +1411,7 @@ export default function App() {
       const { code } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
   return (
     <Button
@@ -1424,7 +1421,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync()
+        promptAsync();
         /* @end */
       }}
     />
@@ -1492,7 +1489,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync()
+        promptAsync();
         /* @end */
       }}
     />
@@ -1639,7 +1636,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({});
+        promptAsync();
         /* @end */
       }}
     />
@@ -1691,7 +1688,7 @@ const discovery = {
   revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -1711,7 +1708,7 @@ function App() {
       const { code } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
   return (
     <Button
@@ -1721,7 +1718,7 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync()
+        promptAsync();
         /* @end */
       }}
     />
@@ -1777,7 +1774,7 @@ export default function App() {
       const { access_token } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
    return (
     <Button
