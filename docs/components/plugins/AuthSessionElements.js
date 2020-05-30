@@ -154,7 +154,11 @@ export function AuthMethodTabSwitcher({ children }) {
       <TabList>
         {React.Children.toArray(children).map((item, index) => {
           const title = getTabName(item.type.name);
-          return <AuthMethodTabButton selected={tabIndex === index}>{title}</AuthMethodTabButton>;
+          return (
+            <AuthMethodTabButton key={index} selected={tabIndex === index}>
+              {title}
+            </AuthMethodTabButton>
+          );
         })}
       </TabList>
       <TabPanels style={{ paddingTop: 8 }}>{children}</TabPanels>
