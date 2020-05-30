@@ -1,6 +1,6 @@
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@reach/tabs';
 import * as React from 'react';
 import { css } from 'react-emotion';
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@reach/tabs';
 import * as Constants from '~/common/constants';
 
 const STYLES_LINK = css`
@@ -153,7 +153,6 @@ export function AuthMethodTabSwitcher({ children }) {
     <Tabs index={tabIndex} onChange={handleTabsChange}>
       <TabList>
         {React.Children.toArray(children).map((item, index) => {
-          console.log(item);
           const title = getTabName(item.type.name);
           return <AuthMethodTabButton selected={tabIndex === index}>{title}</AuthMethodTabButton>;
         })}
