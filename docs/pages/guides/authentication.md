@@ -856,6 +856,10 @@ function App() {
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
+<AuthMethodTabSwitcher>
+
+<AuthMethodTab>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -908,6 +912,68 @@ function App() {
   );
 }
 ```
+
+</AuthMethodTab>
+<AuthMethodTab>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+function App() {
+  // Endpoint
+  const discovery = {
+    authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
+    tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
+  };
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
+      clientId: 'CLIENT_ID',
+      scopes: ['identity'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }} />
+  );
+}
+```
+
+</AuthMethodTab>
+</AuthMethodTabSwitcher>
 
 <!-- End Reddit -->
 
@@ -993,7 +1059,7 @@ function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
