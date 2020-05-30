@@ -786,38 +786,128 @@ const [request, response, promptAsync] = useAuthRequest(
 
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 
-```ts
+- Learn more about the [Spotify API](https://developer.spotify.com/documentation/web-api/).
+
+<AuthMethodTabSwitcher>
+<AuthMethodTab>
+
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-
-// In a functional component...
 
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://accounts.spotify.com/authorize',
   tokenEndpoint: 'https://accounts.spotify.com/api/token',
 };
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['user-read-email', 'playlist-modify-public'],
-    // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
-    // this must be set to false
-    usePKCE: false,
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+
+function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['user-read-email', 'playlist-modify-public'],
+      // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
+      // this must be set to false
+      usePKCE: false,
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response])
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({})
+        /* @end */
+      }} />
+  );
+}
 ```
+
+</AuthMethodTab>
+<AuthMethodTab>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+  tokenEndpoint: 'https://accounts.spotify.com/api/token',
+};
+
+function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['user-read-email', 'playlist-modify-public'],
+      // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
+      // this must be set to false
+      usePKCE: false,
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response])
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({})
+        /* @end */
+      }} />
+  );
+}
+```
+
+</AuthMethodTab>
+</AuthMethodTabSwitcher>
 
 <!-- End Spotify -->
 
@@ -928,8 +1018,8 @@ function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
-      const { code } = response.params;
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
       /* @end */
     }
   }, [response])
