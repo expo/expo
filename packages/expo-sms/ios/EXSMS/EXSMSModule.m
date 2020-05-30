@@ -21,6 +21,13 @@
 
 UM_EXPORT_MODULE(ExpoSMS);
 
+- (dispatch_queue_t)methodQueue
+{
+  // Everything in this module uses `MFMessageComposeViewController` which is a subclass of UIViewController,
+  // so everything should be called from main thread.
+  return dispatch_get_main_queue();
+}
+
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
@@ -52,7 +59,7 @@ UM_EXPORT_METHOD_AS(sendSMSAsync,
   
   _resolve = resolve;
   _reject = reject;
-    
+
   MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
   messageComposeViewController.messageComposeDelegate = self;
   messageComposeViewController.recipients = addresses;
@@ -87,11 +94,7 @@ UM_EXPORT_METHOD_AS(sendSMSAsync,
     }
   }
 
-  UM_WEAKIFY(self);
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    UM_ENSURE_STRONGIFY(self);
-    [self.utils.currentViewController presentViewController:messageComposeViewController animated:YES completion:nil];
-  }];
+  [self.utils.currentViewController presentViewController:messageComposeViewController animated:YES completion:nil];
 }
 
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller
