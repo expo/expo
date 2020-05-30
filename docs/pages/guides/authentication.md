@@ -124,15 +124,19 @@ export default function App() {
 
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
 
+<SnackInline label='Azure Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-function App() {
+export default function App() {
   // Endpoint
   const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
   // Request
@@ -157,13 +161,15 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
   );
 }
 ```
+
+</SnackInline>
 
 <!-- End Azure -->
 
@@ -185,6 +191,8 @@ function App() {
 
 <AuthCodeTab>
 
+<SnackInline label='Coinbase Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -202,7 +210,7 @@ const discovery = {
   revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -232,12 +240,15 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync()
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </AuthCodeTab>
 
@@ -266,9 +277,12 @@ function App() {
 - When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
 <AuthMethodTabSwitcher>
+
 <AuthCodeTab>
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
+
+<SnackInline label='Dropbox Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -290,7 +304,7 @@ const discovery = {
 const useProxy = Platform.select({ web: false, default: true });
 /* @end */
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -326,14 +340,19 @@ function App() {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({ useProxy });
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
 
+</SnackInline>
+
 </AuthCodeTab>
 
 <ImplicitTab>
+
+<SnackInline label='Dropbox Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -351,7 +370,7 @@ const discovery = {
   tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
@@ -389,12 +408,16 @@ function App() {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync();
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
 
+</SnackInline>
+
 </ImplicitTab>
+
 </AuthMethodTabSwitcher>
 
 <!-- End Dropbox -->
@@ -425,7 +448,10 @@ function App() {
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
 <AuthMethodTabSwitcher>
+
 <AuthCodeTab>
+
+<SnackInline label='Facebook Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -445,7 +471,7 @@ const discovery = {
 
 const useProxy = Platform.select({ web: false, default: true });
 
-function App() {
+export default function App() {
   // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -495,9 +521,13 @@ function App() {
 }
 ```
 
+</SnackInline>
+
 </AuthCodeTab>
 
 <ImplicitTab>
+
+<SnackInline label='Facebook Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -517,7 +547,7 @@ const discovery = {
 
 const useProxy = Platform.select({ web: false, default: true });
 
-function App() {
+export default function App() {
   // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -569,6 +599,8 @@ function App() {
   );
 }
 ```
+
+</SnackInline>
 
 </ImplicitTab>
 
@@ -596,6 +628,8 @@ function App() {
 <AuthMethodTabSwitcher>
 <AuthCodeTab>
 
+<SnackInline label='FitBit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -606,7 +640,7 @@ import { Button, Platform } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-function App() {
+export default function App() {
   // Endpoint
   const discovery = {
     authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
@@ -651,9 +685,13 @@ function App() {
 }
 ```
 
+</SnackInline>
+
 </AuthCodeTab>
 
 <ImplicitTab>
+
+<SnackInline label='FitBit Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -667,7 +705,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 const useProxy = Platform.select({ web: false, default: true });
 
-function App() {
+export default function App() {
   // Endpoint
   const discovery = {
     authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
@@ -715,6 +753,8 @@ function App() {
   );
 }
 ```
+
+</SnackInline>
 
 </ImplicitTab>
 
@@ -743,6 +783,8 @@ function App() {
 <AuthMethodTabSwitcher>
 <AuthCodeTab>
 
+<SnackInline label='GitHub Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -759,7 +801,8 @@ const discovery = {
   tokenEndpoint: 'https://github.com/login/oauth/access_token',
   revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
 };
-function App() {
+
+export default function App() {
   // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -790,12 +833,15 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync()
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </AuthCodeTab>
 
@@ -829,17 +875,21 @@ function App() {
 <AuthMethodTabSwitcher>
 <AuthCodeTab>
 
+<SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
-import { Button } from 'react-native';
+import { Button, Platform } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-function App() {
+const useProxy = Platform.select({ web: false, default: true });
+
+export default function App() {
   // Endpoint
   const discovery = useAutoDiscovery('https://accounts.google.com');
   // Request
@@ -886,10 +936,13 @@ function App() {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({ useProxy })
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </AuthCodeTab>
 
@@ -897,17 +950,21 @@ function App() {
 
 - PKCE must be disabled in implicit mode (`usePKCE: false`).
 
+<SnackInline label='Google Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, ResponseType, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
-import { Button } from 'react-native';
+import { Button, Platform } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-function App() {
+const useProxy = Platform.select({ web: false, default: true });
+
+export default function App() {
   // Endpoint
   const discovery = useAutoDiscovery('https://accounts.google.com');
   // Request
@@ -959,10 +1016,13 @@ function App() {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({ useProxy })
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </ImplicitTab>
 
@@ -986,17 +1046,21 @@ function App() {
 <AuthMethodTabSwitcher>
 <AuthCodeTab>
 
+<SnackInline label='Okta Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
-import { Button } from 'react-native';
+import { Button, Platform } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-function App() {
+const useProxy = Platform.select({ web: false, default: true })
+
+export default function App() {
   // Endpoint
   const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
   // Request
@@ -1032,10 +1096,13 @@ function App() {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({ useProxy })
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </AuthCodeTab>
 
@@ -1070,6 +1137,8 @@ function App() {
 
 <AuthCodeTab>
 
+<SnackInline label='Reddit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1080,7 +1149,7 @@ import { Button } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-function App() {
+export default function App() {
   // Endpoint
   const discovery = {
     authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
@@ -1116,18 +1185,23 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync();
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </AuthCodeTab>
 
 <ImplicitTab>
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
+
+<SnackInline label='Reddit Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1139,7 +1213,7 @@ import { Button } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-function App() {
+export default function App() {
   // Endpoint
   const discovery = {
     authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
@@ -1178,12 +1252,14 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }} />
   );
 }
 ```
+
+</SnackInline>
 
 </ImplicitTab>
 </AuthMethodTabSwitcher>
@@ -1211,6 +1287,8 @@ function App() {
 
 <AuthCodeTab>
 
+<SnackInline label='Slack Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1227,7 +1305,7 @@ const discovery = {
   tokenEndpoint: 'https://slack.com/api/oauth.access',
 };
 
-function App() {
+export default function App() {
   // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -1258,12 +1336,15 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync()
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </AuthCodeTab>
 
@@ -1292,6 +1373,8 @@ function App() {
 <AuthMethodTabSwitcher>
 <AuthCodeTab>
 
+<SnackInline label='Spotify Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1308,7 +1391,7 @@ const discovery = {
   tokenEndpoint: 'https://accounts.spotify.com/api/token',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -1341,15 +1424,21 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({})
+        promptAsync()
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
 
+</SnackInline>
+
 </AuthCodeTab>
+
 <ImplicitTab>
+
+<SnackInline label='Spotify Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1367,7 +1456,7 @@ const discovery = {
   tokenEndpoint: 'https://accounts.spotify.com/api/token',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
@@ -1403,12 +1492,15 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({})
+        promptAsync()
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </ImplicitTab>
 </AuthMethodTabSwitcher>
@@ -1432,6 +1524,8 @@ function App() {
 
 <AuthCodeTab>
 
+<SnackInline label='Twitch Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1449,7 +1543,7 @@ const discovery = {
   revocationEndpoint: 'https://id.twitch.tv/oauth2/revoke',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
@@ -1479,16 +1573,21 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({});
+        promptAsync();
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
 
+</SnackInline>
+
 </AuthCodeTab>
 
 <ImplicitTab>
+
+<SnackInline label='Twitch Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1507,7 +1606,7 @@ const discovery = {
   revocationEndpoint: 'https://id.twitch.tv/oauth2/revoke',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
@@ -1542,10 +1641,13 @@ function App() {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({});
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </ImplicitTab>
 
@@ -1570,6 +1672,8 @@ function App() {
 
 <AuthCodeTab>
 
+<SnackInline label='Uber Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1617,16 +1721,21 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
+        promptAsync()
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
 
+</SnackInline>
+
 </AuthCodeTab>
 
 <ImplicitTab>
+
+<SnackInline label='Uber Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1645,7 +1754,7 @@ const discovery = {
   revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
 };
 
-function App() {
+export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
@@ -1678,12 +1787,15 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({});
+        promptAsync();
         /* @end */
-      }} />
+      }}
+    />
   );
 }
 ```
+
+</SnackInline>
 
 </ImplicitTab>
 
