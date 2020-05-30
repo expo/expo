@@ -244,62 +244,7 @@ function App() {
 
 <AuthMethodTab>
 
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
-  tokenEndpoint: 'https://api.coinbase.com/oauth/token',
-  revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
-};
-
-function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['wallet:accounts:read'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response])
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
-        /* @end */
-      }} />
-  );
-}
-```
+- Coinbase does not support implicit grant.
 
 </AuthMethodTab>
 </AuthMethodTabSwitcher>
@@ -857,62 +802,7 @@ function App() {
 
 <AuthMethodTab>
 
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  tokenEndpoint: 'https://github.com/login/oauth/access_token',
-  revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
-};
-function App() {
-  // Request
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['identity'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
-        /* @end */
-      }} />
-  );
-}
-```
+- Implicit grant is [not supported for Github](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
 </AuthMethodTab>
 
@@ -1006,6 +896,8 @@ function App() {
 
 <AuthMethodTab>
 
+- PKCE must be disabled in implicit mode (`usePKCE: false`).
+
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1025,6 +917,8 @@ function App() {
       /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
       responseType: ResponseType.Token,
       /* @end */
+      // PKCE must be disabled in implicit mode
+      usePKCE: false,
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
@@ -1148,59 +1042,7 @@ function App() {
 
 <AuthMethodTab>
 
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseToken, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-function App() {
-  // Endpoint
-  const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
-  // Request
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['openid', 'profile'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'com.okta.<OKTA_DOMAIN>:/callback',
-        useProxy,
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy })
-        /* @end */
-      }} />
-  );
-}
-```
+- This flow is not documented yet, learn more [from the Okta website](https://developer.okta.com/docs/guides/implement-implicit/use-flow/).
 
 </AuthMethodTab>
 
@@ -1284,6 +1126,8 @@ function App() {
 
 </AuthMethodTab>
 <AuthMethodTab>
+
+- You must select the `installed` option for your app on Reddit to use implicit grant.
 
 ```tsx
 import * as React from 'react';
@@ -1425,62 +1269,7 @@ function App() {
 
 <AuthMethodTab>
 
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://slack.com/oauth/authorize',
-  tokenEndpoint: 'https://slack.com/api/oauth.access',
-};
-
-function App() {
-  // Request
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['emoji:read'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
-        /* @end */
-      }} />
-  );
-}
-```
+- Slack does not support implicit grant.
 
 </AuthMethodTab>
 
