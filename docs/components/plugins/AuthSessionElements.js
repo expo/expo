@@ -126,6 +126,22 @@ function AuthMethodTabButton({ selected, ...props }) {
   );
 }
 
+export function AuthCodeTab(props) {
+  return <TabPanel {...props} />;
+}
+export function ImplicitTab(props) {
+  return <TabPanel {...props} />;
+}
+
+function getTabName(tab) {
+  if (tab === 'AuthCodeTab') {
+    return 'Auth Code';
+  } else if (tab === 'ImplicitTab') {
+    return 'Implicit Flow';
+  }
+  return 'other';
+}
+
 export function AuthMethodTabSwitcher({ children }) {
   const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -136,8 +152,11 @@ export function AuthMethodTabSwitcher({ children }) {
   return (
     <Tabs index={tabIndex} onChange={handleTabsChange}>
       <TabList>
-        <AuthMethodTabButton selected={tabIndex === 0}>Auth Code</AuthMethodTabButton>
-        <AuthMethodTabButton selected={tabIndex === 1}>Implicit</AuthMethodTabButton>
+        {React.Children.toArray(children).map((item, index) => {
+          console.log(item);
+          const title = getTabName(item.type.name);
+          return <AuthMethodTabButton selected={tabIndex === index}>{title}</AuthMethodTabButton>;
+        })}
       </TabList>
       <TabPanels style={{ paddingTop: 8 }}>{children}</TabPanels>
     </Tabs>

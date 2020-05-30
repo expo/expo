@@ -5,10 +5,9 @@ title: Authentication
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
-import { SocialGrid, SocialGridItem, CreateAppButton, AuthMethodTabSwitcher, AuthMethodTab } from '~/components/plugins/AuthSessionElements';
+import { SocialGrid, SocialGridItem, CreateAppButton, AuthMethodTabSwitcher, ImplicitTab, AuthMethodTab, AuthCodeTab } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
 
@@ -184,7 +183,7 @@ function App() {
 
 <AuthMethodTabSwitcher>
 
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -240,13 +239,13 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 - Coinbase does not support implicit grant.
 
-</AuthMethodTab>
+</ImplicitTab>
 </AuthMethodTabSwitcher>
 
 <!-- End Coinbase -->
@@ -267,7 +266,7 @@ function App() {
 - When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
 <AuthMethodTabSwitcher>
-<AuthMethodTab>
+<AuthCodeTab>
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
@@ -332,9 +331,9 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 ```tsx
 import * as React from 'react';
@@ -395,7 +394,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 </AuthMethodTabSwitcher>
 
 <!-- End Dropbox -->
@@ -426,7 +425,7 @@ function App() {
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
 <AuthMethodTabSwitcher>
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -496,9 +495,9 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 ```tsx
 import * as React from 'react';
@@ -571,7 +570,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
@@ -595,7 +594,7 @@ function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 
 <AuthMethodTabSwitcher>
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -652,9 +651,9 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 ```tsx
 import * as React from 'react';
@@ -717,7 +716,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
@@ -742,7 +741,7 @@ function App() {
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
 <AuthMethodTabSwitcher>
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -798,13 +797,13 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 - Implicit grant is [not supported for Github](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
@@ -828,7 +827,7 @@ function App() {
 - You can set which email address to use ahead of time by setting `extraParams.login_hint`.
 
 <AuthMethodTabSwitcher>
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -892,9 +891,9 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 - PKCE must be disabled in implicit mode (`usePKCE: false`).
 
@@ -965,7 +964,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
@@ -985,7 +984,7 @@ function App() {
 - You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
 <AuthMethodTabSwitcher>
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -1038,13 +1037,13 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 - This flow is not documented yet, learn more [from the Okta website](https://developer.okta.com/docs/guides/implement-implicit/use-flow/).
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1069,7 +1068,7 @@ function App() {
 
 <AuthMethodTabSwitcher>
 
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -1124,8 +1123,9 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
-<AuthMethodTab>
+</AuthCodeTab>
+
+<ImplicitTab>
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
 
@@ -1185,7 +1185,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 </AuthMethodTabSwitcher>
 
 <!-- End Reddit -->
@@ -1209,7 +1209,7 @@ function App() {
 
 <AuthMethodTabSwitcher>
 
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -1265,13 +1265,13 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 - Slack does not support implicit grant.
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1290,7 +1290,7 @@ function App() {
 - Learn more about the [Spotify API](https://developer.spotify.com/documentation/web-api/).
 
 <AuthMethodTabSwitcher>
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -1348,8 +1348,8 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
-<AuthMethodTab>
+</AuthCodeTab>
+<ImplicitTab>
 
 ```tsx
 import * as React from 'react';
@@ -1410,7 +1410,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 </AuthMethodTabSwitcher>
 
 <!-- End Spotify -->
@@ -1430,7 +1430,7 @@ function App() {
 
 <AuthMethodTabSwitcher>
 
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -1486,9 +1486,9 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 ```tsx
 import * as React from 'react';
@@ -1547,7 +1547,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1568,7 +1568,7 @@ function App() {
 
 <AuthMethodTabSwitcher>
 
-<AuthMethodTab>
+<AuthCodeTab>
 
 ```tsx
 import * as React from 'react';
@@ -1624,9 +1624,9 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</AuthCodeTab>
 
-<AuthMethodTab>
+<ImplicitTab>
 
 ```tsx
 import * as React from 'react';
@@ -1685,7 +1685,7 @@ function App() {
 }
 ```
 
-</AuthMethodTab>
+</ImplicitTab>
 
 </AuthMethodTabSwitcher>
 
