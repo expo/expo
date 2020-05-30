@@ -136,7 +136,7 @@ export function AuthMethodTabSwitcher({ children }) {
   return (
     <Tabs index={tabIndex} onChange={handleTabsChange}>
       <TabList>
-        <AuthMethodTabButton selected={tabIndex === 0}>Code Exchange</AuthMethodTabButton>
+        <AuthMethodTabButton selected={tabIndex === 0}>Auth Code</AuthMethodTabButton>
         <AuthMethodTabButton selected={tabIndex === 1}>Implicit</AuthMethodTabButton>
       </TabList>
       <TabPanels style={{ paddingTop: 8 }}>{children}</TabPanels>
