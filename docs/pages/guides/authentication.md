@@ -65,7 +65,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 <SnackInline label='Identity 4 Auth' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
-import React from 'react';
+import * as React from 'react';
 import { Button, Text, View } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -125,7 +125,7 @@ export default function App() {
 
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
 
-```ts
+```tsx
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 
@@ -133,23 +133,37 @@ import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-ses
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// In a functional component...
+function App() {
+  // Endpoint
+  const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
 
-// Endpoint
-const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['openid', 'profile', 'email', 'offline_access'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }}
+    />
+  );
+}
 ```
 
 <!-- End Azure -->
@@ -172,9 +186,11 @@ const [request, response, promptAsync] = useAuthRequest(
 
 <AuthMethodTab>
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -201,15 +217,26 @@ function App() {
     discovery
   );
 
-   React.useEffect(() => {
+  React.useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
       const { code } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
-  return (/* ... */)
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
 }
 ```
 
@@ -218,9 +245,10 @@ function App() {
 <AuthMethodTab>
 
 ```tsx
-import React from 'react';
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -236,9 +264,11 @@ const discovery = {
 function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['wallet:accounts:read'],
-      responseType: ResponseType.Token,
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
@@ -256,7 +286,18 @@ function App() {
     }
   }, [response])
 
-  return ( /* ... */)
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
 }
 ```
 
@@ -286,7 +327,7 @@ function App() {
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
 ```tsx
-import React from 'react';
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
@@ -351,7 +392,7 @@ function App() {
 <AuthMethodTab>
 
 ```tsx
-import React from 'react';
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
@@ -369,12 +410,14 @@ const discovery = {
 function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
       clientId: 'CLIENT_ID',
       // There are no scopes so just pass an empty array
       scopes: [],
       // Dropbox doesn't support PKCE
       usePKCE: false,
-      responseType: ResponseType.Token,
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
@@ -437,41 +480,66 @@ function App() {
   - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-
-// In a functional component...
 
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
   tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
 };
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: '<YOUR FBID>',
-    scopes: ['public_profile', 'user_likes'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      // Use your FBID here. The path MUST be `authorize`.
-      native: 'fb111111111111://authorize',
-    }),
-    extraParams: {
-      // Use `popup` on web for a better experience
-      display: Platform.select({ web: 'popup' }),
-      // Optionally you can use this to rerequest declined permissions
-      auth_type: 'rerequest',
+
+function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: '<YOUR FBID>',
+      scopes: ['public_profile', 'user_likes'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        // Use your FBID here. The path MUST be `authorize`.
+        native: 'fb111111111111://authorize',
+      }),
+      extraParams: {
+        // Use `popup` on web for a better experience
+        display: Platform.select({ web: 'popup' }),
+        // Optionally you can use this to rerequest declined permissions
+        auth_type: 'rerequest',
+      },
     },
-  },
-  discovery
-);
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }}
+    />
+  );
+}
 ```
 
 <!-- End Facebook -->
@@ -493,35 +561,59 @@ const [request, response, promptAsync] = useAuthRequest(
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// In a functional component...
+function App() {
+  // Endpoint
+  const discovery = {
+    authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
+    tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
+    revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
+  };
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['activity', 'sleep'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
-  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
-  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['activity', 'sleep'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }}
+    />
+  );
+}
 ```
 
 <!-- End FitBit -->
@@ -544,15 +636,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - The `redirectUri` requires 2 slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-
-// In a functional component...
 
 // Endpoint
 const discovery = {
@@ -560,19 +652,42 @@ const discovery = {
   tokenEndpoint: 'https://github.com/login/oauth/access_token',
   revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
 };
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['identity'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['identity'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
+}
 ```
 
 <!-- End Github -->
@@ -594,43 +709,66 @@ const [request, response, promptAsync] = useAuthRequest(
 - You can change the UI language by setting `extraParams.hl` to an ISO language code (ex: `fr`, `en-US`). Defaults to the best estimation based on the users browser.
 - You can set which email address to use ahead of time by setting `extraParams.login_hint`.
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// In a functional component...
+function App() {
+  // Endpoint
+  const discovery = useAutoDiscovery('https://accounts.google.com');
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        useProxy,
+      }),
+      scopes: ['openid', 'profile'],
 
-// Endpoint
-const discovery = useAutoDiscovery('https://accounts.google.com');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
-      useProxy,
-    }),
-    scopes: ['openid', 'profile'],
+      // Optionally should the user be prompted to select or switch accounts
+      prompt: Prompt.SelectAccount,
 
-    // Optionally should the user be prompted to select or switch accounts
-    prompt: Prompt.SelectAccount,
-
-    // Optional
-    extraParams: {
-      // Change language
-      hl: 'fr',
-      // Select the user
-      login_hint: 'user@gmail.com',
+      // Optional
+      extraParams: {
+        // Change language
+        hl: 'fr',
+        // Select the user
+        login_hint: 'user@gmail.com',
+      },
+      scopes: ['openid', 'profile'],
     },
-    scopes: ['openid', 'profile'],
-  },
-  discovery
-);
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
+}
 ```
 
 <!-- End Google -->
@@ -648,32 +786,55 @@ const [request, response, promptAsync] = useAuthRequest(
 - You cannot define a custom `redirectUri`, Okta will provide you with one.
 - You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// In a functional component...
+function App() {
+  // Endpoint
+  const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['openid', 'profile'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.okta.<OKTA_DOMAIN>:/callback',
+        useProxy,
+      }),
+    },
+    discovery
+  );
 
-// Endpoint
-const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['openid', 'profile'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'com.okta.<OKTA_DOMAIN>:/callback',
-      useProxy,
-    }),
-  },
-  discovery
-);
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
+}
 ```
 
 <!-- End Okta -->
@@ -695,34 +856,57 @@ const [request, response, promptAsync] = useAuthRequest(
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// In a functional component...
+function App() {
+  // Endpoint
+  const discovery = {
+    authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
+    tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
+  };
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['identity'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
-  tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['identity'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
+}
 ```
 
 <!-- End Reddit -->
@@ -744,34 +928,58 @@ const [request, response, promptAsync] = useAuthRequest(
 - Navigate to the **"Scopes"** section to enable scopes.
 - `revocationEndpoint` is not available.
 
-```ts
+```tsx
+import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-
-// In a functional component...
 
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://slack.com/oauth/authorize',
   tokenEndpoint: 'https://slack.com/api/oauth.access',
 };
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    scopes: ['emoji:read'],
-    // For usage in managed apps using the proxy
-    redirectUri: makeRedirectUri({
-      // For usage in bare and standalone
-      native: 'your.app://redirect',
-    }),
-  },
-  discovery
-);
+
+function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['emoji:read'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy })
+        /* @end */
+      }} />
+  );
+}
 ```
 
 <!-- End Slack -->
@@ -869,6 +1077,9 @@ const discovery = {
 function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
       // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
@@ -885,11 +1096,11 @@ function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
-      const { code } = response.params;
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
   return (
     <Button
@@ -964,7 +1175,7 @@ function App() {
       const { code } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
    return (
     <Button
@@ -982,6 +1193,7 @@ function App() {
 ```
 
 </AuthMethodTab>
+
 <AuthMethodTab>
 
 ```tsx
@@ -1004,8 +1216,10 @@ const discovery = {
 function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
-      clientId: 'CLIENT_ID',
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
       responseType: ResponseType.Token,
+      /* @end */
+      clientId: 'CLIENT_ID',
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
@@ -1022,7 +1236,7 @@ function App() {
       const { access_token } = response.params;
       /* @end */
     }
-  }, [response])
+  }, [response]);
 
    return (
     <Button
@@ -1040,6 +1254,7 @@ function App() {
 ```
 
 </AuthMethodTab>
+
 </AuthMethodTabSwitcher>
 
 <!-- End Twitch -->
@@ -1058,6 +1273,7 @@ function App() {
 - `scopes` can be difficult to get approved.
 
 <AuthMethodTabSwitcher>
+
 <AuthMethodTab>
 
 ```tsx
@@ -1138,9 +1354,11 @@ const discovery = {
 function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
-      responseType: ResponseType.Token,
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
@@ -1166,7 +1384,7 @@ function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({})
+        promptAsync({});
         /* @end */
       }} />
   );
@@ -1315,7 +1533,7 @@ On native platforms like iOS, and Android you can secure things like access toke
 
 You can store your authentication results and rehydrate them later to avoid having to prompt the user to login again.
 
-```ts
+```tsx
 import * as SecureStore from 'expo-secure-store';
 
 const MY_SECURE_AUTH_STATE_KEY = 'MySecureAuthStateKey';
