@@ -23,42 +23,16 @@ import SnackInline from '~/components/plugins/SnackInline';
 <SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
 
 ```js
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Image, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
-export default class ImagePickerExample extends React.Component {
-  state = {
-    image: null,
-  };
-
-  render() {
-    let { image } = this.state;
-
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button title="Pick an image from camera roll" onPress={this._pickImage} />
-        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-      </View>
-    );
-  }
-
-  componentDidMount() {
-    this.getPermissionAsync();
-  }
-
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
-
-  _pickImage = async () => {
+const ImagePickerExample = (props) => {
+   const [image, setImage] = useState(null);
+   
+   const _pickImage = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -67,7 +41,7 @@ export default class ImagePickerExample extends React.Component {
         quality: 1,
       });
       if (!result.cancelled) {
-        this.setState({ image: result.uri });
+        setImage(result.uri);
       }
 
       console.log(result);
@@ -75,7 +49,28 @@ export default class ImagePickerExample extends React.Component {
       console.log(E);
     }
   };
+  
+  const getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  };
+  
+  useEffect(() => {
+    getPermissionAsync();
+  }, []);
+
+  return (
+     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Button title="Pick an image from camera roll" onPress={_pickImage} />
+        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+     </View>
+  )
 }
+export default ImagePickerExample;
 ```
 
 </SnackInline>
