@@ -56,12 +56,7 @@ UM_EXPORT_METHOD_AS(connectAsync,
   _retrievedItems = [NSMutableSet set];
   
   _queryingItems = NO;
-  BOOL promiseSet = [self setPromise:kEXQueryHistoryKey resolve:resolve reject:reject];
-  
-  if (promiseSet) {
-    // Request history
-    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
-  }
+  resolve(nil);
 }
 
 UM_EXPORT_METHOD_AS(getProductsAsync,
