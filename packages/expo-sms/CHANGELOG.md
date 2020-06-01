@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed rare crashes on iOS caused by `MFMessageComposeViewController` being initialized not from the main thread. ([#8575](https://github.com/expo/expo/pull/8575) by [@tsapeta](https://github.com/tsapeta))
+
 ## 8.2.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
