@@ -1,10 +1,10 @@
-import React from 'react';
-import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { Code } from '@expo/html-elements';
+import React from 'react';
+import { StyleSheet, View, StyleProp, ViewStyle, TextStyle } from 'react-native';
 
 const MonoText: React.FunctionComponent<{
   containerStyle?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }> = ({ children, containerStyle, textStyle }) => (
   <View style={[styles.container, containerStyle]}>
     <Code style={[styles.monoText, textStyle]}>{children}</Code>
