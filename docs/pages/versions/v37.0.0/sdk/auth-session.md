@@ -279,6 +279,24 @@ This error method will add the missing description for more context on what went
 
 ## Types
 
+### `AuthSessionResult`
+
+Object returned after an auth request has completed.
+
+| Name      | Type                     | Description                                                                | Default |
+| --------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
+| type      | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
+| url       | `string`                 | Auth URL that was opened                                                   |         |
+| error     | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
+| params    | `Record<string, string>` | Query params from the `url` as an object                                   |         |
+| errorCode | `string | null`          | Legacy error code query param, use `error` instead                         |         |
+
+- If the user cancelled the auth session by closing the browser or popup, the result is `{ type: 'cancel' }`.
+- If the auth is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
+- If the auth flow is successful, the result is `{type: 'success', params: Object, event: Object }`
+- If the auth flow is returns an error, the result is `{type: 'error', params: Object, errorCode: string, event: Object }`
+- If you call `promptAsync()` more than once before the first call has returned, the result is `{type: 'locked'}`, because only one `AuthSession` can be in progress at any time.
+
 ### `ResponseType`
 
 The client informs the authorization server of the
