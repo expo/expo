@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		32685C930121919A05649FE178CCBD9E /* EXBlurView.h in Headers */ = {isa = PBXBuildFile; fileRef = 2051582CEA6A271393322F7B470CF035 /* EXBlurView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		45E88F651E1BB3E95A19D98177AB026D /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D7B1235DC47AA5C1D952E931EE78B2 /* EXBlur-dummy.m */; };
-		717BB6D2344614C83273034359CBCC29 /* EXBlurViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 59BF6557EEB4DC1FE74DDAA07E80F811 /* EXBlurViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		941B75994A129AB55455E3E9DC0E9845 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 681192A602AABC4823EFC5A1B93D2462 /* EXBlurView.m */; };
-		A34D23967FF38AADC2508E3AB62044E3 /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F8C7395D5937389AE507F670D0E921 /* EXBlurViewManager.m */; };
+		32685C930121919A05649FE178CCBD9E /* EXBlurView.h in Headers */ = {isa = PBXBuildFile; fileRef = E2B4D9F25823DA84684A9C1EF83F0412 /* EXBlurView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		45E88F651E1BB3E95A19D98177AB026D /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FBC09EC1E62E7AACB8D62B4EBE8248C7 /* EXBlur-dummy.m */; };
+		717BB6D2344614C83273034359CBCC29 /* EXBlurViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E0E8A03CE11359AF6387FDB141F66C6 /* EXBlurViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		941B75994A129AB55455E3E9DC0E9845 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = D52241BD8216A60B3C0B9F7397D7A2CE /* EXBlurView.m */; };
+		A34D23967FF38AADC2508E3AB62044E3 /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B55362463FDBCC0308B25A68740BFF0 /* EXBlurViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,16 +25,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0E7DBD8737BDE30347CFBD7A186B4430 /* EXBlur.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBlur.xcconfig; sourceTree = "<group>"; };
-		18F8C7395D5937389AE507F670D0E921 /* EXBlurViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBlurViewManager.m; path = EXBlur/EXBlurViewManager.m; sourceTree = "<group>"; };
-		2051582CEA6A271393322F7B470CF035 /* EXBlurView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBlurView.h; path = EXBlur/EXBlurView.h; sourceTree = "<group>"; };
+		1B55362463FDBCC0308B25A68740BFF0 /* EXBlurViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBlurViewManager.m; path = EXBlur/EXBlurViewManager.m; sourceTree = "<group>"; };
+		373ED477460F70544CEE431941EB56E1 /* EXBlur.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBlur.debug.xcconfig; sourceTree = "<group>"; };
 		58F4EFC84723E19812DD3D4A1FAA95D8 /* libEXBlur.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBlur.a; path = libEXBlur.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		59BF6557EEB4DC1FE74DDAA07E80F811 /* EXBlurViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBlurViewManager.h; path = EXBlur/EXBlurViewManager.h; sourceTree = "<group>"; };
-		681192A602AABC4823EFC5A1B93D2462 /* EXBlurView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBlurView.m; path = EXBlur/EXBlurView.m; sourceTree = "<group>"; };
-		749FC01AC94392393C169B56317E684A /* EXBlur-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBlur-prefix.pch"; sourceTree = "<group>"; };
-		7B0BAA999A9DBDDF49B7EB48A177B864 /* EXBlur.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBlur.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5E0E8A03CE11359AF6387FDB141F66C6 /* EXBlurViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBlurViewManager.h; path = EXBlur/EXBlurViewManager.h; sourceTree = "<group>"; };
+		79A9F13D2079CCA1424C62B4FF67AF96 /* EXBlur.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBlur.release.xcconfig; sourceTree = "<group>"; };
+		840FD7F8BF3C6B9D72D48444C15C1159 /* EXBlur-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBlur-prefix.pch"; sourceTree = "<group>"; };
 		AB611175BFE82778132F2B07DE8ED0E3 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		C8D7B1235DC47AA5C1D952E931EE78B2 /* EXBlur-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBlur-dummy.m"; sourceTree = "<group>"; };
+		D1EF9C38A067A9BC374F55F9B494B1E1 /* EXBlur.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBlur.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D52241BD8216A60B3C0B9F7397D7A2CE /* EXBlurView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBlurView.m; path = EXBlur/EXBlurView.m; sourceTree = "<group>"; };
+		E2B4D9F25823DA84684A9C1EF83F0412 /* EXBlurView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBlurView.h; path = EXBlur/EXBlurView.h; sourceTree = "<group>"; };
+		FBC09EC1E62E7AACB8D62B4EBE8248C7 /* EXBlur-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBlur-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,17 +49,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		152A6AC939264CD8018FBAA4518787B3 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				0E7DBD8737BDE30347CFBD7A186B4430 /* EXBlur.xcconfig */,
-				C8D7B1235DC47AA5C1D952E931EE78B2 /* EXBlur-dummy.m */,
-				749FC01AC94392393C169B56317E684A /* EXBlur-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXBlur";
-			sourceTree = "<group>";
-		};
 		1DE025954EE850D8BBBAB29A34771146 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,23 +72,35 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9B01F3DF8985FFE6EF388DBA93C4F774 /* Pod */ = {
+		86365A0469CCB390B24BA66D25F6D17E /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				7B0BAA999A9DBDDF49B7EB48A177B864 /* EXBlur.podspec */,
+				D1EF9C38A067A9BC374F55F9B494B1E1 /* EXBlur.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		A6D1AD3AA058FB96B10053D65386BB80 /* EXBlur */ = {
+		A458901781A22F9F710CA79BBF97947C /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				2051582CEA6A271393322F7B470CF035 /* EXBlurView.h */,
-				681192A602AABC4823EFC5A1B93D2462 /* EXBlurView.m */,
-				59BF6557EEB4DC1FE74DDAA07E80F811 /* EXBlurViewManager.h */,
-				18F8C7395D5937389AE507F670D0E921 /* EXBlurViewManager.m */,
-				9B01F3DF8985FFE6EF388DBA93C4F774 /* Pod */,
-				152A6AC939264CD8018FBAA4518787B3 /* Support Files */,
+				FBC09EC1E62E7AACB8D62B4EBE8248C7 /* EXBlur-dummy.m */,
+				840FD7F8BF3C6B9D72D48444C15C1159 /* EXBlur-prefix.pch */,
+				373ED477460F70544CEE431941EB56E1 /* EXBlur.debug.xcconfig */,
+				79A9F13D2079CCA1424C62B4FF67AF96 /* EXBlur.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXBlur";
+			sourceTree = "<group>";
+		};
+		B4CC45C97F75C0D5A7E2440C448053A1 /* EXBlur */ = {
+			isa = PBXGroup;
+			children = (
+				E2B4D9F25823DA84684A9C1EF83F0412 /* EXBlurView.h */,
+				D52241BD8216A60B3C0B9F7397D7A2CE /* EXBlurView.m */,
+				5E0E8A03CE11359AF6387FDB141F66C6 /* EXBlurViewManager.h */,
+				1B55362463FDBCC0308B25A68740BFF0 /* EXBlurViewManager.m */,
+				86365A0469CCB390B24BA66D25F6D17E /* Pod */,
+				A458901781A22F9F710CA79BBF97947C /* Support Files */,
 			);
 			name = EXBlur;
 			path = "../../packages/expo-blur/ios";
@@ -108,7 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				4387C2F9DEE3578460931E2FAB75C2E4 /* Dependencies */,
-				A6D1AD3AA058FB96B10053D65386BB80 /* EXBlur */,
+				B4CC45C97F75C0D5A7E2440C448053A1 /* EXBlur */,
 				6D98253E84CE1E8999077D09D2D2EB53 /* Frameworks */,
 				1DE025954EE850D8BBBAB29A34771146 /* Products */,
 			);
@@ -261,9 +263,9 @@
 			};
 			name = Release;
 		};
-		3693268C24BED88ED0A8423AB8870540 /* Release */ = {
+		3D017AB433354F07A28B31A68070FA21 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0E7DBD8737BDE30347CFBD7A186B4430 /* EXBlur.xcconfig */;
+			baseConfigurationReference = 79A9F13D2079CCA1424C62B4FF67AF96 /* EXBlur.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -285,30 +287,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		85DB462DC99AAF44BEB4946450E3051C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0E7DBD8737BDE30347CFBD7A186B4430 /* EXBlur.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBlur/EXBlur-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBlur;
-				PRODUCT_NAME = EXBlur;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		B0271187E4520474D637AB95CC0F25A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -374,6 +352,30 @@
 			};
 			name = Debug;
 		};
+		EA57B27D0D01EBDA3EE824A1515E5706 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 373ED477460F70544CEE431941EB56E1 /* EXBlur.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBlur/EXBlur-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBlur;
+				PRODUCT_NAME = EXBlur;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -389,8 +391,8 @@
 		BB9863084968AFE9A8618F770AC76C0F /* Build configuration list for PBXNativeTarget "EXBlur" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85DB462DC99AAF44BEB4946450E3051C /* Debug */,
-				3693268C24BED88ED0A8423AB8870540 /* Release */,
+				EA57B27D0D01EBDA3EE824A1515E5706 /* Debug */,
+				3D017AB433354F07A28B31A68070FA21 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

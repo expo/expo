@@ -1,7 +1,7 @@
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
+import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
@@ -24,7 +24,10 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
       expect(shape.height).toBeGreaterThan(0);
 
       expect(typeof shape.type).toBe('string');
-      expect(shape.type).toBe(type);
+
+      if (type) {
+        expect(shape.type).toBe(type);
+      }
 
       if (shape.type === 'video') {
         expect(typeof shape.duration).toBe('number');
@@ -49,22 +52,32 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
       jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
     });
 
-    if (Constants.isDevice) {
-      it('launches the camera', async () => {
-        const { cancelled } = await ImagePicker.launchCameraAsync();
-        expect(cancelled).toBe(true);
-      });
-    } else {
-      it('natively prevents the camera from launching on a simulator', async () => {
-        let err;
-        try {
-          await ImagePicker.launchCameraAsync();
-        } catch ({ code }) {
-          err = code;
-        }
-        expect(err).toBe('CAMERA_MISSING');
-      });
-    }
+    describe('launchCameraAsync', () => {
+      if (Constants.isDevice) {
+        it('launches the camera', async () => {
+          alert('Please take a picture for this test to pass.');
+          const image = await ImagePicker.launchCameraAsync();
+          expect(image.cancelled).toBe(false);
+          testMediaObjectShape(image);
+        });
+
+        it('cancels the camera', async () => {
+          alert('Please cancel the camera for this test to pass.');
+          const image = await ImagePicker.launchCameraAsync();
+          expect(image.cancelled).toBe(true);
+        });
+      } else {
+        it('natively prevents the camera from launching on a simulator', async () => {
+          let err;
+          try {
+            await ImagePicker.launchCameraAsync();
+          } catch ({ code }) {
+            err = code;
+          }
+          expect(err).toBe('CAMERA_MISSING');
+        });
+      }
+    });
 
     describe('launchImageLibraryAsync', async () => {
       it('mediaType: image', async () => {

@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10366EDD0BEEA1116DFE154F7C9327C2 /* UMFirebaseCoreInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 8430648B878CB7F70A48129B5AD064A4 /* UMFirebaseCoreInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		49E23CE3E5C97F161666535C00DC39DB /* EXFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BF35171A3D7FEB9F4FCA6AA665DBFD3 /* EXFirebaseCore.m */; };
-		73156D5796CB40A63D497CCAD053D13E /* EXFirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DBB04CEE40007BD11C0EFB5FC9C53A48 /* EXFirebaseCore-dummy.m */; };
-		7B9D48D6FB46DB955FEFDFE0B605A68E /* EXFirebaseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D89652C9F81362B7B4184EFB37F8CA8 /* EXFirebaseCore.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9E7B49A98CEEDEE7B8F92EFD561A5A4B /* EXFirebaseCore+FIROptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C036A0033CEBDC6FC1F6B3A34ADA425 /* EXFirebaseCore+FIROptions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B5A1C31A26DF92DFEDA92FCDF7938FD5 /* EXFirebaseCore+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = B2A58D364A1715B4EDEEE28DD8C9D3A4 /* EXFirebaseCore+FIROptions.m */; };
+		10366EDD0BEEA1116DFE154F7C9327C2 /* UMFirebaseCoreInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CE6B4995A9BF8B23A81D6D2DB8DA19A /* UMFirebaseCoreInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		49E23CE3E5C97F161666535C00DC39DB /* EXFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 546BFDC65B9D3BF879440EE91B2465AB /* EXFirebaseCore.m */; };
+		73156D5796CB40A63D497CCAD053D13E /* EXFirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 23275EAB2BFDE146CF2546FBDF175ED8 /* EXFirebaseCore-dummy.m */; };
+		7B9D48D6FB46DB955FEFDFE0B605A68E /* EXFirebaseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 7282BDA821CAE519A68D3E87D709C1DB /* EXFirebaseCore.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9E7B49A98CEEDEE7B8F92EFD561A5A4B /* EXFirebaseCore+FIROptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E950B93F8955CDFCE79AC9D5A51BF98 /* EXFirebaseCore+FIROptions.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B5A1C31A26DF92DFEDA92FCDF7938FD5 /* EXFirebaseCore+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B74088EEA827BBC5821F9EC219E57C7 /* EXFirebaseCore+FIROptions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,18 +33,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1D7072A91F759BB5E16DFC2EC973BFBE /* EXFirebaseCore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFirebaseCore.xcconfig; sourceTree = "<group>"; };
-		1D89652C9F81362B7B4184EFB37F8CA8 /* EXFirebaseCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFirebaseCore.h; path = EXFirebaseCore/EXFirebaseCore.h; sourceTree = "<group>"; };
-		3BF35171A3D7FEB9F4FCA6AA665DBFD3 /* EXFirebaseCore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFirebaseCore.m; path = EXFirebaseCore/EXFirebaseCore.m; sourceTree = "<group>"; };
-		463808A4F60A4610900FA9F1F5DABD03 /* EXFirebaseCore-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFirebaseCore-prefix.pch"; sourceTree = "<group>"; };
+		0E950B93F8955CDFCE79AC9D5A51BF98 /* EXFirebaseCore+FIROptions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXFirebaseCore+FIROptions.h"; path = "EXFirebaseCore/EXFirebaseCore+FIROptions.h"; sourceTree = "<group>"; };
+		0F7E61E9098DCF4115651C492770A20A /* EXFirebaseCore-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFirebaseCore-prefix.pch"; sourceTree = "<group>"; };
+		23275EAB2BFDE146CF2546FBDF175ED8 /* EXFirebaseCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFirebaseCore-dummy.m"; sourceTree = "<group>"; };
+		546BFDC65B9D3BF879440EE91B2465AB /* EXFirebaseCore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFirebaseCore.m; path = EXFirebaseCore/EXFirebaseCore.m; sourceTree = "<group>"; };
+		6B74088EEA827BBC5821F9EC219E57C7 /* EXFirebaseCore+FIROptions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "EXFirebaseCore+FIROptions.m"; path = "EXFirebaseCore/EXFirebaseCore+FIROptions.m"; sourceTree = "<group>"; };
 		6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
-		7C036A0033CEBDC6FC1F6B3A34ADA425 /* EXFirebaseCore+FIROptions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXFirebaseCore+FIROptions.h"; path = "EXFirebaseCore/EXFirebaseCore+FIROptions.h"; sourceTree = "<group>"; };
-		8430648B878CB7F70A48129B5AD064A4 /* UMFirebaseCoreInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFirebaseCoreInterface.h; path = EXFirebaseCore/UMFirebaseCoreInterface.h; sourceTree = "<group>"; };
-		B2A58D364A1715B4EDEEE28DD8C9D3A4 /* EXFirebaseCore+FIROptions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "EXFirebaseCore+FIROptions.m"; path = "EXFirebaseCore/EXFirebaseCore+FIROptions.m"; sourceTree = "<group>"; };
+		7282BDA821CAE519A68D3E87D709C1DB /* EXFirebaseCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFirebaseCore.h; path = EXFirebaseCore/EXFirebaseCore.h; sourceTree = "<group>"; };
+		7CE6B4995A9BF8B23A81D6D2DB8DA19A /* UMFirebaseCoreInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFirebaseCoreInterface.h; path = EXFirebaseCore/UMFirebaseCoreInterface.h; sourceTree = "<group>"; };
+		9024382F2DAA9B6E53C658CFC1083B55 /* EXFirebaseCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFirebaseCore.debug.xcconfig; sourceTree = "<group>"; };
+		97FE08CAB661FA128138222C393C711A /* EXFirebaseCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFirebaseCore.release.xcconfig; sourceTree = "<group>"; };
 		B53CDD009FA913CFF50104926B465EAB /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		DBB04CEE40007BD11C0EFB5FC9C53A48 /* EXFirebaseCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFirebaseCore-dummy.m"; sourceTree = "<group>"; };
-		DD2A087207148546095F0619DD949DE9 /* EXFirebaseCore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFirebaseCore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		E8C8A5F5939945F085D7FFB5F56196CF /* libEXFirebaseCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXFirebaseCore.a; path = libEXFirebaseCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F2DA20593A5650DA35B0D5E1DEBD2BFB /* EXFirebaseCore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFirebaseCore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,15 +59,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		134E8A926596D8896490ED7B572F96F5 /* Support Files */ = {
+		001B81D6FAACDC0333C27DD13D865123 /* EXFirebaseCore */ = {
 			isa = PBXGroup;
 			children = (
-				1D7072A91F759BB5E16DFC2EC973BFBE /* EXFirebaseCore.xcconfig */,
-				DBB04CEE40007BD11C0EFB5FC9C53A48 /* EXFirebaseCore-dummy.m */,
-				463808A4F60A4610900FA9F1F5DABD03 /* EXFirebaseCore-prefix.pch */,
+				7282BDA821CAE519A68D3E87D709C1DB /* EXFirebaseCore.h */,
+				546BFDC65B9D3BF879440EE91B2465AB /* EXFirebaseCore.m */,
+				0E950B93F8955CDFCE79AC9D5A51BF98 /* EXFirebaseCore+FIROptions.h */,
+				6B74088EEA827BBC5821F9EC219E57C7 /* EXFirebaseCore+FIROptions.m */,
+				7CE6B4995A9BF8B23A81D6D2DB8DA19A /* UMFirebaseCoreInterface.h */,
+				BCD1EE14C91A569973014791721C38B5 /* Pod */,
+				DCFA0B35953F686E6F39A2EE3D982F8F /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXFirebaseCore";
+			name = EXFirebaseCore;
+			path = "../../../../packages/expo-firebase-core/ios";
 			sourceTree = "<group>";
 		};
 		66BC4CF30AEDDC8C6FCBE83A2CDD0CDE /* Frameworks */ = {
@@ -76,20 +81,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		71994B92ABAD0A8CC0C74DC8C9A359DF /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				DD2A087207148546095F0619DD949DE9 /* EXFirebaseCore.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		7A2DD7F289212916A0AD002737C6DCF7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				E8C8A5F5939945F085D7FFB5F56196CF /* libEXFirebaseCore.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BCD1EE14C91A569973014791721C38B5 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				F2DA20593A5650DA35B0D5E1DEBD2BFB /* EXFirebaseCore.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		C47303D8058F1257C1B53773B1DBD1B6 /* Dependencies */ = {
@@ -101,26 +106,23 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		DD8FC9507E758FE3C243659F7D2A56CC /* EXFirebaseCore */ = {
+		DCFA0B35953F686E6F39A2EE3D982F8F /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				1D89652C9F81362B7B4184EFB37F8CA8 /* EXFirebaseCore.h */,
-				3BF35171A3D7FEB9F4FCA6AA665DBFD3 /* EXFirebaseCore.m */,
-				7C036A0033CEBDC6FC1F6B3A34ADA425 /* EXFirebaseCore+FIROptions.h */,
-				B2A58D364A1715B4EDEEE28DD8C9D3A4 /* EXFirebaseCore+FIROptions.m */,
-				8430648B878CB7F70A48129B5AD064A4 /* UMFirebaseCoreInterface.h */,
-				71994B92ABAD0A8CC0C74DC8C9A359DF /* Pod */,
-				134E8A926596D8896490ED7B572F96F5 /* Support Files */,
+				23275EAB2BFDE146CF2546FBDF175ED8 /* EXFirebaseCore-dummy.m */,
+				0F7E61E9098DCF4115651C492770A20A /* EXFirebaseCore-prefix.pch */,
+				9024382F2DAA9B6E53C658CFC1083B55 /* EXFirebaseCore.debug.xcconfig */,
+				97FE08CAB661FA128138222C393C711A /* EXFirebaseCore.release.xcconfig */,
 			);
-			name = EXFirebaseCore;
-			path = "../../../../packages/expo-firebase-core/ios";
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXFirebaseCore";
 			sourceTree = "<group>";
 		};
 		F2FF45C3B0588269CAD35F268A22A8D3 = {
 			isa = PBXGroup;
 			children = (
 				C47303D8058F1257C1B53773B1DBD1B6 /* Dependencies */,
-				DD8FC9507E758FE3C243659F7D2A56CC /* EXFirebaseCore */,
+				001B81D6FAACDC0333C27DD13D865123 /* EXFirebaseCore */,
 				66BC4CF30AEDDC8C6FCBE83A2CDD0CDE /* Frameworks */,
 				7A2DD7F289212916A0AD002737C6DCF7 /* Products */,
 			);
@@ -223,9 +225,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0FE17782BE270925FF89DA24F8E109E1 /* Release */ = {
+		9DBFB4DB3728CF76E9D1EC66A2A1ADA8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1D7072A91F759BB5E16DFC2EC973BFBE /* EXFirebaseCore.xcconfig */;
+			baseConfigurationReference = 9024382F2DAA9B6E53C658CFC1083B55 /* EXFirebaseCore.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -245,9 +247,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		A7F60851ACEEFBC86FA6C9887F36F4BA /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -373,9 +374,9 @@
 			};
 			name = Debug;
 		};
-		DADC1329A791E0F8BADBF4F591F38CB9 /* Debug */ = {
+		D4E16F185B42E868E38137DD4C7E5362 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1D7072A91F759BB5E16DFC2EC973BFBE /* EXFirebaseCore.xcconfig */;
+			baseConfigurationReference = 97FE08CAB661FA128138222C393C711A /* EXFirebaseCore.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -395,8 +396,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -413,8 +415,8 @@
 		C649305474112FF3F9EC8DB2CD80D8E5 /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DADC1329A791E0F8BADBF4F591F38CB9 /* Debug */,
-				0FE17782BE270925FF89DA24F8E109E1 /* Release */,
+				9DBFB4DB3728CF76E9D1EC66A2A1ADA8 /* Debug */,
+				D4E16F185B42E868E38137DD4C7E5362 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

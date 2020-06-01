@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6C4B19961E3F0203ED868884B8B7C2D9 /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 567C25E2E8C7DE8270E9632656058809 /* EXSharingModule.m */; };
-		8115AF8A31209E1234A71FD1AD093BB8 /* EXSharingModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ABD84A88BEDB57AF2132E6211F6391A9 /* EXSharingModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E4D58721D9057637F59B54500B024C52 /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F06BBFA16AF29B64C0539DF52EDD6F /* EXSharing-dummy.m */; };
+		6C4B19961E3F0203ED868884B8B7C2D9 /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C59051CC71D34FC41404E300705D88A /* EXSharingModule.m */; };
+		8115AF8A31209E1234A71FD1AD093BB8 /* EXSharingModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 590849D9FAB83E8CB7D6D155D8958B28 /* EXSharingModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E4D58721D9057637F59B54500B024C52 /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7874CF475BA538DC63A8C8093F75B40F /* EXSharing-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,15 +30,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		018C201115C91E4517ABA2AF3F770A8D /* EXSharing.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSharing.release.xcconfig; sourceTree = "<group>"; };
 		0BE026E50B27274472C84DA2A53C9F51 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		25591BD849CE845A6E36CEBBD690D15E /* EXSharing-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSharing-prefix.pch"; sourceTree = "<group>"; };
-		42F06BBFA16AF29B64C0539DF52EDD6F /* EXSharing-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSharing-dummy.m"; sourceTree = "<group>"; };
 		4426472595AA918722579EC11CFF2955 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		567C25E2E8C7DE8270E9632656058809 /* EXSharingModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSharingModule.m; path = EXSharing/EXSharingModule.m; sourceTree = "<group>"; };
-		5E7B50642E5F096C94C01AC692E2C569 /* EXSharing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSharing.xcconfig; sourceTree = "<group>"; };
+		4C59051CC71D34FC41404E300705D88A /* EXSharingModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSharingModule.m; path = EXSharing/EXSharingModule.m; sourceTree = "<group>"; };
+		590849D9FAB83E8CB7D6D155D8958B28 /* EXSharingModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSharingModule.h; path = EXSharing/EXSharingModule.h; sourceTree = "<group>"; };
+		7874CF475BA538DC63A8C8093F75B40F /* EXSharing-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSharing-dummy.m"; sourceTree = "<group>"; };
 		90960112FDD1735C71AD89FB2CF2F011 /* libEXSharing.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSharing.a; path = libEXSharing.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABD84A88BEDB57AF2132E6211F6391A9 /* EXSharingModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSharingModule.h; path = EXSharing/EXSharingModule.h; sourceTree = "<group>"; };
-		B30FCFF82F012F38BEF7B92483FD6A88 /* EXSharing.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSharing.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		96A45E77DF5F81954E5168E23055F67F /* EXSharing.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSharing.debug.xcconfig; sourceTree = "<group>"; };
+		9E0E85579CB32DBBAD4992C9B6B15FA8 /* EXSharing-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSharing-prefix.pch"; sourceTree = "<group>"; };
+		F3BDACF3E79747A8075F1F4FCC4A7D74 /* EXSharing.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSharing.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,34 +53,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18D0BD14CA7EA2FF0E0E7F47C8EF1018 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7874CF475BA538DC63A8C8093F75B40F /* EXSharing-dummy.m */,
+				9E0E85579CB32DBBAD4992C9B6B15FA8 /* EXSharing-prefix.pch */,
+				96A45E77DF5F81954E5168E23055F67F /* EXSharing.debug.xcconfig */,
+				018C201115C91E4517ABA2AF3F770A8D /* EXSharing.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXSharing";
+			sourceTree = "<group>";
+		};
 		21E21585D563DB3F6785CDD63A73C333 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		2711D560D305957B33DFD5FBF7F0B279 /* EXSharing */ = {
-			isa = PBXGroup;
-			children = (
-				ABD84A88BEDB57AF2132E6211F6391A9 /* EXSharingModule.h */,
-				567C25E2E8C7DE8270E9632656058809 /* EXSharingModule.m */,
-				C9ACE769C461F7B74DA8D4F6A7FC7EC6 /* Pod */,
-				7715D21BB01F4F9615CAC76FE38F4100 /* Support Files */,
-			);
-			name = EXSharing;
-			path = "../../packages/expo-sharing/ios";
-			sourceTree = "<group>";
-		};
-		7715D21BB01F4F9615CAC76FE38F4100 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				5E7B50642E5F096C94C01AC692E2C569 /* EXSharing.xcconfig */,
-				42F06BBFA16AF29B64C0539DF52EDD6F /* EXSharing-dummy.m */,
-				25591BD849CE845A6E36CEBBD690D15E /* EXSharing-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXSharing";
 			sourceTree = "<group>";
 		};
 		92AF8D326E0B63F0D4DA89EA64EAA17C /* Products */ = {
@@ -88,6 +78,26 @@
 				90960112FDD1735C71AD89FB2CF2F011 /* libEXSharing.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A8EE1B3C7EA4C612164BE06C7FC8CDAC /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				F3BDACF3E79747A8075F1F4FCC4A7D74 /* EXSharing.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		B7CC48E381EE017A5A5AEB4F97DDDDC2 /* EXSharing */ = {
+			isa = PBXGroup;
+			children = (
+				590849D9FAB83E8CB7D6D155D8958B28 /* EXSharingModule.h */,
+				4C59051CC71D34FC41404E300705D88A /* EXSharingModule.m */,
+				A8EE1B3C7EA4C612164BE06C7FC8CDAC /* Pod */,
+				18D0BD14CA7EA2FF0E0E7F47C8EF1018 /* Support Files */,
+			);
+			name = EXSharing;
+			path = "../../packages/expo-sharing/ios";
 			sourceTree = "<group>";
 		};
 		B96E27A09BE659F58CD099DFBB2FBDDE /* Dependencies */ = {
@@ -103,18 +113,10 @@
 			isa = PBXGroup;
 			children = (
 				B96E27A09BE659F58CD099DFBB2FBDDE /* Dependencies */,
-				2711D560D305957B33DFD5FBF7F0B279 /* EXSharing */,
+				B7CC48E381EE017A5A5AEB4F97DDDDC2 /* EXSharing */,
 				21E21585D563DB3F6785CDD63A73C333 /* Frameworks */,
 				92AF8D326E0B63F0D4DA89EA64EAA17C /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		C9ACE769C461F7B74DA8D4F6A7FC7EC6 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				B30FCFF82F012F38BEF7B92483FD6A88 /* EXSharing.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -271,9 +273,9 @@
 			};
 			name = Release;
 		};
-		7596BE30DD2E59DD9FF8D83893E0AC51 /* Debug */ = {
+		8EBFC4A817AE7472A408B5F3A5F2360E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E7B50642E5F096C94C01AC692E2C569 /* EXSharing.xcconfig */;
+			baseConfigurationReference = 96A45E77DF5F81954E5168E23055F67F /* EXSharing.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -295,9 +297,9 @@
 			};
 			name = Debug;
 		};
-		87361D73C07AAEEAB9F5F8F54FF27386 /* Release */ = {
+		C438C3F65B8338DB7753160EB75227D0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E7B50642E5F096C94C01AC692E2C569 /* EXSharing.xcconfig */;
+			baseConfigurationReference = 018C201115C91E4517ABA2AF3F770A8D /* EXSharing.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -390,8 +392,8 @@
 		1420350743A22FA96A2BE106D8AAC86B /* Build configuration list for PBXNativeTarget "EXSharing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7596BE30DD2E59DD9FF8D83893E0AC51 /* Debug */,
-				87361D73C07AAEEAB9F5F8F54FF27386 /* Release */,
+				8EBFC4A817AE7472A408B5F3A5F2360E /* Debug */,
+				C438C3F65B8338DB7753160EB75227D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

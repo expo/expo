@@ -2,6 +2,15 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
+
+stripe_version = '~> 14.0.1'
+using_custom_stripe_version = defined? $StripeVersion
+if using_custom_stripe_version
+  stripe_version = $StripeVersion
+  Pod::UI.puts "expo-payments-stripe: Using user specified Stripe version '#{$stripe_version}'"
+end
+
+
 Pod::Spec.new do |s|
   s.name           = 'EXPaymentsStripe'
   s.version        = package['version']
@@ -17,6 +26,6 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'UMCore'
-  s.dependency 'Stripe', '~> 13.2.0'
+  s.dependency 'Stripe', stripe_version
 
 end

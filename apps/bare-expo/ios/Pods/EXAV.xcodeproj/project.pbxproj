@@ -7,23 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A2790EF87AB13818D86768218BBA671 /* EXVideoPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A03132F2D6D98F8B8FEF1BA47967A4 /* EXVideoPlayerViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		130FF494A01F07BC7093F2AFF59000CE /* EXAV.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DA6CE63FF58D7DEA663BF2443071B18 /* EXAV.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1835EB0476CEA9A26E326A60CD0DA317 /* EXVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AE16DA9D888FDED11CE96056C48E54B /* EXVideoPlayerViewController.m */; };
-		23ED551AA70FC9EAC9B907D5927141FA /* EXVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFA59A921A9E2FEE410A6272AFA266 /* EXVideoView.m */; };
-		2CC584E9B639A2CC308BC27B75EC91E9 /* EXAVPlayerData.h in Headers */ = {isa = PBXBuildFile; fileRef = D58D1107531E31E8AD91783B5497FB76 /* EXAVPlayerData.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3FF3C37506E81D2BBC202EA0B5099434 /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B162AEC656283C6891B45173952FA3AC /* EXAudioRecordingPermissionRequester.m */; };
-		61D7B53E60764FF3A4EDE41C3DD4C196 /* EXAV-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D330AF2794CE6D6AFABB990352647D9 /* EXAV-dummy.m */; };
-		63F409135769B77E4096C6FF04CCD721 /* EXAVObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 3ACA986F4B8A23D407F354711D810932 /* EXAVObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9F33039E9297D0F2ABDD93AB06BF9153 /* EXAVPlayerData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4456F435281DD9B9C0D36EAA505AAB31 /* EXAVPlayerData.m */; };
-		A765E6F52235CB82AC1CEC20B02B452E /* EXAudioSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2B13C28853B06522F037BE35CB2075A /* EXAudioSessionManager.m */; };
-		AB81915A188CF3209AF77B1BD4960A21 /* EXVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B7AEF5C1F2FD2C920397FB0985975B /* EXVideoManager.m */; };
-		AD9E3A22B636166FDC0269261B3E3D84 /* EXVideoPlayerViewControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A578EBD86984E4A43FAE2DD894ED83F6 /* EXVideoPlayerViewControllerDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BE98BB6F5B72ED7DAD599BD43CA88C32 /* EXAV.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A3FF2383F6D9FEB085DF5F2A29FF780 /* EXAV.m */; };
-		CA18529076AFDE7937195AE0DAF92584 /* EXAudioSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2097066C1DAD67968B65CEBA2C292546 /* EXAudioSessionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CC6DA05AF58840FAB12F4C09EC07C87F /* EXAudioRecordingPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = FF7A05EA41E40C0841A3438B469AFE70 /* EXAudioRecordingPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D721D346C0102DF98A64DDA4C374E85D /* EXVideoView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EA99D5FF8F89247C79DD392A856913B /* EXVideoView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DB94E17000B6F050AF3C87A086550D80 /* EXVideoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A3D189E5223ECE05931CF7119DB6E33 /* EXVideoManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0A2790EF87AB13818D86768218BBA671 /* EXVideoPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0779BD79C0655E37048E6293C798B6DD /* EXVideoPlayerViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		130FF494A01F07BC7093F2AFF59000CE /* EXAV.h in Headers */ = {isa = PBXBuildFile; fileRef = 751ED5F8901E4ACFE831D50F42C29733 /* EXAV.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1835EB0476CEA9A26E326A60CD0DA317 /* EXVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E1146B01D043679D1653C6E927BB5858 /* EXVideoPlayerViewController.m */; };
+		23ED551AA70FC9EAC9B907D5927141FA /* EXVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CD14D6FE325670AF7A27FB4FA1119B /* EXVideoView.m */; };
+		2CC584E9B639A2CC308BC27B75EC91E9 /* EXAVPlayerData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2CB7A43EFEF4D0C126DE9B26334802CA /* EXAVPlayerData.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3FF3C37506E81D2BBC202EA0B5099434 /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = CF8EB64B493A39809C34D8D8CC7F8824 /* EXAudioRecordingPermissionRequester.m */; };
+		61D7B53E60764FF3A4EDE41C3DD4C196 /* EXAV-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 040978CFF5B691CD4C16869332B69041 /* EXAV-dummy.m */; };
+		63F409135769B77E4096C6FF04CCD721 /* EXAVObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F491731D78BC2322C4AE8E0AE5D240F /* EXAVObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9F33039E9297D0F2ABDD93AB06BF9153 /* EXAVPlayerData.m in Sources */ = {isa = PBXBuildFile; fileRef = F18EA77D50473EE740D5ECEF5B5132A0 /* EXAVPlayerData.m */; };
+		A765E6F52235CB82AC1CEC20B02B452E /* EXAudioSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B6D8C2C14876C82CFEE31C3A7180D5E /* EXAudioSessionManager.m */; };
+		AB81915A188CF3209AF77B1BD4960A21 /* EXVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9FFFA594C889C705EB0D8BC420138 /* EXVideoManager.m */; };
+		AD9E3A22B636166FDC0269261B3E3D84 /* EXVideoPlayerViewControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 11E3F47852BF30F7745379D7C387FFA7 /* EXVideoPlayerViewControllerDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BE98BB6F5B72ED7DAD599BD43CA88C32 /* EXAV.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F67F18320B0FCF2AA000FCCC5FF9C7D /* EXAV.m */; };
+		CA18529076AFDE7937195AE0DAF92584 /* EXAudioSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A0F84044C915C6D7BEFE09B8EDBE7FF4 /* EXAudioSessionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CC6DA05AF58840FAB12F4C09EC07C87F /* EXAudioRecordingPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = B11311736A76C4302C3A9A87C291B021 /* EXAudioRecordingPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D721D346C0102DF98A64DDA4C374E85D /* EXVideoView.h in Headers */ = {isa = PBXBuildFile; fileRef = EF5327AA70222FE561E67EADF432192A /* EXVideoView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DB94E17000B6F050AF3C87A086550D80 /* EXVideoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 48F3114017507BFFEAC2FC0036BA9ECA /* EXVideoManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,30 +51,31 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2097066C1DAD67968B65CEBA2C292546 /* EXAudioSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAudioSessionManager.h; path = EXAV/EXAudioSessionManager.h; sourceTree = "<group>"; };
+		040978CFF5B691CD4C16869332B69041 /* EXAV-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAV-dummy.m"; sourceTree = "<group>"; };
+		0779BD79C0655E37048E6293C798B6DD /* EXVideoPlayerViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoPlayerViewController.h; sourceTree = "<group>"; };
+		0F49A7BCD0CEA3D6F48B316634990C41 /* EXAV.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAV.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		11E3F47852BF30F7745379D7C387FFA7 /* EXVideoPlayerViewControllerDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoPlayerViewControllerDelegate.h; sourceTree = "<group>"; };
+		2CB7A43EFEF4D0C126DE9B26334802CA /* EXAVPlayerData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAVPlayerData.h; path = EXAV/EXAVPlayerData.h; sourceTree = "<group>"; };
 		35420FF324659286902F39B90AAFE8B1 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		3ACA986F4B8A23D407F354711D810932 /* EXAVObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAVObject.h; path = EXAV/EXAVObject.h; sourceTree = "<group>"; };
-		4456F435281DD9B9C0D36EAA505AAB31 /* EXAVPlayerData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAVPlayerData.m; path = EXAV/EXAVPlayerData.m; sourceTree = "<group>"; };
-		58A03132F2D6D98F8B8FEF1BA47967A4 /* EXVideoPlayerViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoPlayerViewController.h; sourceTree = "<group>"; };
-		5DA6CE63FF58D7DEA663BF2443071B18 /* EXAV.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAV.h; path = EXAV/EXAV.h; sourceTree = "<group>"; };
-		6D330AF2794CE6D6AFABB990352647D9 /* EXAV-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAV-dummy.m"; sourceTree = "<group>"; };
-		7A3D189E5223ECE05931CF7119DB6E33 /* EXVideoManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoManager.h; sourceTree = "<group>"; };
-		7AE16DA9D888FDED11CE96056C48E54B /* EXVideoPlayerViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXVideoPlayerViewController.m; sourceTree = "<group>"; };
-		8D8B63FA28A6206E4932F0BF2C42D4D1 /* EXAV.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAV.xcconfig; sourceTree = "<group>"; };
-		8EA99D5FF8F89247C79DD392A856913B /* EXVideoView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoView.h; sourceTree = "<group>"; };
-		9A3FF2383F6D9FEB085DF5F2A29FF780 /* EXAV.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAV.m; path = EXAV/EXAV.m; sourceTree = "<group>"; };
-		A578EBD86984E4A43FAE2DD894ED83F6 /* EXVideoPlayerViewControllerDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoPlayerViewControllerDelegate.h; sourceTree = "<group>"; };
-		B162AEC656283C6891B45173952FA3AC /* EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAudioRecordingPermissionRequester.m; path = EXAV/EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
-		BE5781BEA4FDEEDCCA7F234ACA5518B2 /* EXAV-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAV-prefix.pch"; sourceTree = "<group>"; };
+		3B6D8C2C14876C82CFEE31C3A7180D5E /* EXAudioSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAudioSessionManager.m; path = EXAV/EXAudioSessionManager.m; sourceTree = "<group>"; };
+		48F3114017507BFFEAC2FC0036BA9ECA /* EXVideoManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoManager.h; sourceTree = "<group>"; };
+		4C3509DF4838CC052237FE48E6B736E7 /* EXAV.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAV.debug.xcconfig; sourceTree = "<group>"; };
+		5FE9FFFA594C889C705EB0D8BC420138 /* EXVideoManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXVideoManager.m; sourceTree = "<group>"; };
+		67A89AD7271E5586E4A6DE4CFD45FFFF /* EXAV-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAV-prefix.pch"; sourceTree = "<group>"; };
+		751ED5F8901E4ACFE831D50F42C29733 /* EXAV.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAV.h; path = EXAV/EXAV.h; sourceTree = "<group>"; };
+		7F67F18320B0FCF2AA000FCCC5FF9C7D /* EXAV.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAV.m; path = EXAV/EXAV.m; sourceTree = "<group>"; };
+		8F491731D78BC2322C4AE8E0AE5D240F /* EXAVObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAVObject.h; path = EXAV/EXAVObject.h; sourceTree = "<group>"; };
+		A0F84044C915C6D7BEFE09B8EDBE7FF4 /* EXAudioSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAudioSessionManager.h; path = EXAV/EXAudioSessionManager.h; sourceTree = "<group>"; };
+		B11311736A76C4302C3A9A87C291B021 /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAudioRecordingPermissionRequester.h; path = EXAV/EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
 		BEC361E5CFD7C6B9E107C2E08D306CC4 /* libEXAV.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAV.a; path = libEXAV.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5E665A12F511BEBCB6B72AFB5D75233 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		D2B13C28853B06522F037BE35CB2075A /* EXAudioSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAudioSessionManager.m; path = EXAV/EXAudioSessionManager.m; sourceTree = "<group>"; };
-		D58D1107531E31E8AD91783B5497FB76 /* EXAVPlayerData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAVPlayerData.h; path = EXAV/EXAVPlayerData.h; sourceTree = "<group>"; };
-		E9B7AEF5C1F2FD2C920397FB0985975B /* EXVideoManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXVideoManager.m; sourceTree = "<group>"; };
+		CF8EB64B493A39809C34D8D8CC7F8824 /* EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAudioRecordingPermissionRequester.m; path = EXAV/EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
+		E1146B01D043679D1653C6E927BB5858 /* EXVideoPlayerViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXVideoPlayerViewController.m; sourceTree = "<group>"; };
+		E9E9B44447468BBC3D5667C732A119C7 /* EXAV.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAV.release.xcconfig; sourceTree = "<group>"; };
 		EE65F051E0C199397FAA3326175F3B49 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		F7BFA59A921A9E2FEE410A6272AFA266 /* EXVideoView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXVideoView.m; sourceTree = "<group>"; };
-		FBBC16892AB162B0E0F16419B6C292A0 /* EXAV.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAV.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		FF7A05EA41E40C0841A3438B469AFE70 /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAudioRecordingPermissionRequester.h; path = EXAV/EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
+		EF5327AA70222FE561E67EADF432192A /* EXVideoView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXVideoView.h; sourceTree = "<group>"; };
+		F18EA77D50473EE740D5ECEF5B5132A0 /* EXAVPlayerData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAVPlayerData.m; path = EXAV/EXAVPlayerData.m; sourceTree = "<group>"; };
+		F2CD14D6FE325670AF7A27FB4FA1119B /* EXVideoView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXVideoView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,65 +96,38 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		12B8AFF2A4ECBDC7EB594CA727337E38 /* Pod */ = {
+		236DF84776755964BDCABE1F648380D9 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				FBBC16892AB162B0E0F16419B6C292A0 /* EXAV.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		203C6A4ABC8C5E0A41298358AD95A826 /* Video */ = {
-			isa = PBXGroup;
-			children = (
-				7A3D189E5223ECE05931CF7119DB6E33 /* EXVideoManager.h */,
-				E9B7AEF5C1F2FD2C920397FB0985975B /* EXVideoManager.m */,
-				58A03132F2D6D98F8B8FEF1BA47967A4 /* EXVideoPlayerViewController.h */,
-				7AE16DA9D888FDED11CE96056C48E54B /* EXVideoPlayerViewController.m */,
-				A578EBD86984E4A43FAE2DD894ED83F6 /* EXVideoPlayerViewControllerDelegate.h */,
-				8EA99D5FF8F89247C79DD392A856913B /* EXVideoView.h */,
-				F7BFA59A921A9E2FEE410A6272AFA266 /* EXVideoView.m */,
-			);
-			name = Video;
-			path = EXAV/Video;
-			sourceTree = "<group>";
-		};
-		2F0B4F2E88F1482361745D73BF2FDE22 /* EXAV */ = {
-			isa = PBXGroup;
-			children = (
-				FF7A05EA41E40C0841A3438B469AFE70 /* EXAudioRecordingPermissionRequester.h */,
-				B162AEC656283C6891B45173952FA3AC /* EXAudioRecordingPermissionRequester.m */,
-				2097066C1DAD67968B65CEBA2C292546 /* EXAudioSessionManager.h */,
-				D2B13C28853B06522F037BE35CB2075A /* EXAudioSessionManager.m */,
-				5DA6CE63FF58D7DEA663BF2443071B18 /* EXAV.h */,
-				9A3FF2383F6D9FEB085DF5F2A29FF780 /* EXAV.m */,
-				3ACA986F4B8A23D407F354711D810932 /* EXAVObject.h */,
-				D58D1107531E31E8AD91783B5497FB76 /* EXAVPlayerData.h */,
-				4456F435281DD9B9C0D36EAA505AAB31 /* EXAVPlayerData.m */,
-				12B8AFF2A4ECBDC7EB594CA727337E38 /* Pod */,
-				4AEC962495D9A9305211166438FB3A48 /* Support Files */,
-				203C6A4ABC8C5E0A41298358AD95A826 /* Video */,
-			);
-			name = EXAV;
-			path = "../../../../packages/expo-av/ios";
-			sourceTree = "<group>";
-		};
-		4AEC962495D9A9305211166438FB3A48 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				8D8B63FA28A6206E4932F0BF2C42D4D1 /* EXAV.xcconfig */,
-				6D330AF2794CE6D6AFABB990352647D9 /* EXAV-dummy.m */,
-				BE5781BEA4FDEEDCCA7F234ACA5518B2 /* EXAV-prefix.pch */,
+				040978CFF5B691CD4C16869332B69041 /* EXAV-dummy.m */,
+				67A89AD7271E5586E4A6DE4CFD45FFFF /* EXAV-prefix.pch */,
+				4C3509DF4838CC052237FE48E6B736E7 /* EXAV.debug.xcconfig */,
+				E9E9B44447468BBC3D5667C732A119C7 /* EXAV.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXAV";
+			sourceTree = "<group>";
+		};
+		4C33F99091B8EE31CC8CBC2303CA4C19 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				48F3114017507BFFEAC2FC0036BA9ECA /* EXVideoManager.h */,
+				5FE9FFFA594C889C705EB0D8BC420138 /* EXVideoManager.m */,
+				0779BD79C0655E37048E6293C798B6DD /* EXVideoPlayerViewController.h */,
+				E1146B01D043679D1653C6E927BB5858 /* EXVideoPlayerViewController.m */,
+				11E3F47852BF30F7745379D7C387FFA7 /* EXVideoPlayerViewControllerDelegate.h */,
+				EF5327AA70222FE561E67EADF432192A /* EXVideoView.h */,
+				F2CD14D6FE325670AF7A27FB4FA1119B /* EXVideoView.m */,
+			);
+			name = Video;
+			path = EXAV/Video;
 			sourceTree = "<group>";
 		};
 		6B57BBBBDE998ACA7A0E3D3AA3E06E17 = {
 			isa = PBXGroup;
 			children = (
 				88523BA1E3D23E73BC40F37A3E627676 /* Dependencies */,
-				2F0B4F2E88F1482361745D73BF2FDE22 /* EXAV */,
+				EBD8034ED2266075A41E2F2233CA491D /* EXAV */,
 				054962CC933B1FCCC5A31E391A1FA49E /* Frameworks */,
 				86C754566F58802DDE99463E68DCE7E4 /* Products */,
 			);
@@ -175,6 +149,34 @@
 				35420FF324659286902F39B90AAFE8B1 /* UMPermissionsInterface */,
 			);
 			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		CD63741E10BB8FE88C597E1FFD225C4E /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				0F49A7BCD0CEA3D6F48B316634990C41 /* EXAV.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		EBD8034ED2266075A41E2F2233CA491D /* EXAV */ = {
+			isa = PBXGroup;
+			children = (
+				B11311736A76C4302C3A9A87C291B021 /* EXAudioRecordingPermissionRequester.h */,
+				CF8EB64B493A39809C34D8D8CC7F8824 /* EXAudioRecordingPermissionRequester.m */,
+				A0F84044C915C6D7BEFE09B8EDBE7FF4 /* EXAudioSessionManager.h */,
+				3B6D8C2C14876C82CFEE31C3A7180D5E /* EXAudioSessionManager.m */,
+				751ED5F8901E4ACFE831D50F42C29733 /* EXAV.h */,
+				7F67F18320B0FCF2AA000FCCC5FF9C7D /* EXAV.m */,
+				8F491731D78BC2322C4AE8E0AE5D240F /* EXAVObject.h */,
+				2CB7A43EFEF4D0C126DE9B26334802CA /* EXAVPlayerData.h */,
+				F18EA77D50473EE740D5ECEF5B5132A0 /* EXAVPlayerData.m */,
+				CD63741E10BB8FE88C597E1FFD225C4E /* Pod */,
+				236DF84776755964BDCABE1F648380D9 /* Support Files */,
+				4C33F99091B8EE31CC8CBC2303CA4C19 /* Video */,
+			);
+			name = EXAV;
+			path = "../../../../packages/expo-av/ios";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -354,9 +356,34 @@
 			};
 			name = Release;
 		};
-		0943423308DABE7703DE674CD6244583 /* Release */ = {
+		413779FF53A9206AD725012ABC45E2B4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D8B63FA28A6206E4932F0BF2C42D4D1 /* EXAV.xcconfig */;
+			baseConfigurationReference = 4C3509DF4838CC052237FE48E6B736E7 /* EXAV.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAV/EXAV-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAV;
+				PRODUCT_NAME = EXAV;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CC7210FCF467BB62140A0EF61D5F6E2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E9E9B44447468BBC3D5667C732A119C7 /* EXAV.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -379,31 +406,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		336C0FB63FFE234C3988A35FD917AAC9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D8B63FA28A6206E4932F0BF2C42D4D1 /* EXAV.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAV/EXAV-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAV;
-				PRODUCT_NAME = EXAV;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		FE27A7F98696A647CC1655680B30EC47 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -475,8 +477,8 @@
 		0BBAD823B16235FC6C2BB56995AF0B70 /* Build configuration list for PBXNativeTarget "EXAV" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				336C0FB63FFE234C3988A35FD917AAC9 /* Debug */,
-				0943423308DABE7703DE674CD6244583 /* Release */,
+				413779FF53A9206AD725012ABC45E2B4 /* Debug */,
+				CC7210FCF467BB62140A0EF61D5F6E2E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

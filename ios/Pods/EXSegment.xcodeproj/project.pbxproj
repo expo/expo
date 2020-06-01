@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		063D0F6B85513F5759FE4CA30BC8F99C /* EXSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F605FFB21B747F3C91CBAFEE67A6894 /* EXSegment.m */; };
-		5A098A7305899855DE7BECC731141370 /* EXSegment-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 552CF84B1B895023715E6F7D41EDFD4A /* EXSegment-dummy.m */; };
-		C3C69E390288C80F5AF024A9025415C6 /* EXSegment.h in Headers */ = {isa = PBXBuildFile; fileRef = 87B96D13B67766721AE8D51FB0E98D21 /* EXSegment.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		063D0F6B85513F5759FE4CA30BC8F99C /* EXSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FE59926D6B6791786C5FF37DC1C2CED /* EXSegment.m */; };
+		5A098A7305899855DE7BECC731141370 /* EXSegment-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 95351424652AB80CAACE823AC6CEE7DD /* EXSegment-dummy.m */; };
+		C3C69E390288C80F5AF024A9025415C6 /* EXSegment.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FE1BBFF158687E4968CA30BC72D571 /* EXSegment.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,16 +37,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0782FBB872B26F7EB41C40591DC96D88 /* EXSegment.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSegment.xcconfig; sourceTree = "<group>"; };
-		0E3F56113167C32A3C687F3F19A07DA5 /* EXSegment-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSegment-prefix.pch"; sourceTree = "<group>"; };
+		2EC05DDFAD22D2C0617FDEEF9EB7B9E6 /* EXSegment.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSegment.release.xcconfig; sourceTree = "<group>"; };
 		347AA387D01E4B646A5466697C592780 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
-		552CF84B1B895023715E6F7D41EDFD4A /* EXSegment-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSegment-dummy.m"; sourceTree = "<group>"; };
+		7EDD88626AC2063337ACAD15FFFD121C /* EXSegment.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSegment.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		7F51D67361E0A3B01DB2D0A952027E98 /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
-		7F605FFB21B747F3C91CBAFEE67A6894 /* EXSegment.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSegment.m; path = EXSegment/EXSegment.m; sourceTree = "<group>"; };
-		87B96D13B67766721AE8D51FB0E98D21 /* EXSegment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSegment.h; path = EXSegment/EXSegment.h; sourceTree = "<group>"; };
+		8FE59926D6B6791786C5FF37DC1C2CED /* EXSegment.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSegment.m; path = EXSegment/EXSegment.m; sourceTree = "<group>"; };
+		95351424652AB80CAACE823AC6CEE7DD /* EXSegment-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSegment-dummy.m"; sourceTree = "<group>"; };
+		985594FE5ED01BCD38A98F01041BF761 /* EXSegment-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSegment-prefix.pch"; sourceTree = "<group>"; };
 		9B206114E20575C5BBDFD4DE33B6F046 /* libEXSegment.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSegment.a; path = libEXSegment.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7FE1BBFF158687E4968CA30BC72D571 /* EXSegment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSegment.h; path = EXSegment/EXSegment.h; sourceTree = "<group>"; };
 		CFCF55B7910F570D4C311BA7AA328B58 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		EC81F0C3EB3DB81D87CD03311799EFB9 /* EXSegment.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSegment.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F395558104E128F4A92569DE6AFD93F9 /* EXSegment.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSegment.debug.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,27 +61,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3D9D2C1C3D46CE47234B750841C13A3D /* Support Files */ = {
+		08E479766A79F6684E5C24B8EF689F7E /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				0782FBB872B26F7EB41C40591DC96D88 /* EXSegment.xcconfig */,
-				552CF84B1B895023715E6F7D41EDFD4A /* EXSegment-dummy.m */,
-				0E3F56113167C32A3C687F3F19A07DA5 /* EXSegment-prefix.pch */,
+				7EDD88626AC2063337ACAD15FFFD121C /* EXSegment.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXSegment";
-			sourceTree = "<group>";
-		};
-		4F9F07F3BFBDEE368B764D0C52368F90 /* EXSegment */ = {
-			isa = PBXGroup;
-			children = (
-				87B96D13B67766721AE8D51FB0E98D21 /* EXSegment.h */,
-				7F605FFB21B747F3C91CBAFEE67A6894 /* EXSegment.m */,
-				8660480F99B110275B9292BDF9854808 /* Pod */,
-				3D9D2C1C3D46CE47234B750841C13A3D /* Support Files */,
-			);
-			name = EXSegment;
-			path = "../../packages/expo-analytics-segment/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		830C43DDE92B6F42000D6BB838223FAD /* Dependencies */ = {
@@ -91,14 +77,6 @@
 				CFCF55B7910F570D4C311BA7AA328B58 /* UMCore */,
 			);
 			name = Dependencies;
-			sourceTree = "<group>";
-		};
-		8660480F99B110275B9292BDF9854808 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				EC81F0C3EB3DB81D87CD03311799EFB9 /* EXSegment.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		9D155E48E2C0CE71F9FC8139E7C65AF8 /* Products */ = {
@@ -116,14 +94,38 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		C7F6CE2364487387026F140A2824058A /* EXSegment */ = {
+			isa = PBXGroup;
+			children = (
+				C7FE1BBFF158687E4968CA30BC72D571 /* EXSegment.h */,
+				8FE59926D6B6791786C5FF37DC1C2CED /* EXSegment.m */,
+				08E479766A79F6684E5C24B8EF689F7E /* Pod */,
+				EBE9DE2A5EABFCB81FD971A12969BB6A /* Support Files */,
+			);
+			name = EXSegment;
+			path = "../../packages/expo-analytics-segment/ios";
+			sourceTree = "<group>";
+		};
 		E938E163BD52000A70B65EFDA966513D = {
 			isa = PBXGroup;
 			children = (
 				830C43DDE92B6F42000D6BB838223FAD /* Dependencies */,
-				4F9F07F3BFBDEE368B764D0C52368F90 /* EXSegment */,
+				C7F6CE2364487387026F140A2824058A /* EXSegment */,
 				BE55F29AD89E048C00D6549330187E2E /* Frameworks */,
 				9D155E48E2C0CE71F9FC8139E7C65AF8 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		EBE9DE2A5EABFCB81FD971A12969BB6A /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				95351424652AB80CAACE823AC6CEE7DD /* EXSegment-dummy.m */,
+				985594FE5ED01BCD38A98F01041BF761 /* EXSegment-prefix.pch */,
+				F395558104E128F4A92569DE6AFD93F9 /* EXSegment.debug.xcconfig */,
+				2EC05DDFAD22D2C0617FDEEF9EB7B9E6 /* EXSegment.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXSegment";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -229,34 +231,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		17D74FF51E894133C61C750676EEB460 /* Release */ = {
+		19C3A3F61180710F16EC81F840098D6C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0782FBB872B26F7EB41C40591DC96D88 /* EXSegment.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSegment/EXSegment-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSegment;
-				PRODUCT_NAME = EXSegment;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		1A86FA12AD56D9392CB8220B56BBE9ED /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0782FBB872B26F7EB41C40591DC96D88 /* EXSegment.xcconfig */;
+			baseConfigurationReference = F395558104E128F4A92569DE6AFD93F9 /* EXSegment.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -342,6 +319,31 @@
 			};
 			name = Debug;
 		};
+		CAC27F2D121AF93C37E1A3F3C71C9BF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2EC05DDFAD22D2C0617FDEEF9EB7B9E6 /* EXSegment.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSegment/EXSegment-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSegment;
+				PRODUCT_NAME = EXSegment;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		E51560415B61E99F08D8594CBE534C67 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -417,8 +419,8 @@
 		B975DF9252D9F0C873F263E9888A4795 /* Build configuration list for PBXNativeTarget "EXSegment" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1A86FA12AD56D9392CB8220B56BBE9ED /* Debug */,
-				17D74FF51E894133C61C750676EEB460 /* Release */,
+				19C3A3F61180710F16EC81F840098D6C /* Debug */,
+				CAC27F2D121AF93C37E1A3F3C71C9BF5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		125D786EF5B6ADC80AB84EEDDC8F974C /* EXWebBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = 5294F8C3CDC10EAB39E26B3B1DFF7B1D /* EXWebBrowser.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B7CC63707C825751E5B7EDE2BE2EAEA6 /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E767568F793DEB20E768AC2668FB88F /* EXWebBrowser.m */; };
-		C929DBF8E899DB24A485F16838542517 /* EXWebBrowser-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A257E7E8B79B1382BDD869B7216FCBAB /* EXWebBrowser-dummy.m */; };
+		125D786EF5B6ADC80AB84EEDDC8F974C /* EXWebBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C34F2C1D2E269BA6B3B7ABCBF070D8 /* EXWebBrowser.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B7CC63707C825751E5B7EDE2BE2EAEA6 /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = E7007D3F1F7CFECE9879392650494759 /* EXWebBrowser.m */; };
+		C929DBF8E899DB24A485F16838542517 /* EXWebBrowser-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 318B5D49787EA1EF5C9014D8969B8482 /* EXWebBrowser-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,13 +23,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0D8A422CC1E6BEC358E03198705ACB57 /* EXWebBrowser-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXWebBrowser-prefix.pch"; sourceTree = "<group>"; };
-		12BAE4B66D3F20B981F5A2F2839CC3ED /* EXWebBrowser.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXWebBrowser.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		15B9C90DF6BF7394970503ADD4E22312 /* libEXWebBrowser.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXWebBrowser.a; path = libEXWebBrowser.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E767568F793DEB20E768AC2668FB88F /* EXWebBrowser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWebBrowser.m; path = EXWebBrowser/EXWebBrowser.m; sourceTree = "<group>"; };
-		3C787208CECAB319ED69FBBA05B213DB /* EXWebBrowser.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXWebBrowser.xcconfig; sourceTree = "<group>"; };
-		5294F8C3CDC10EAB39E26B3B1DFF7B1D /* EXWebBrowser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWebBrowser.h; path = EXWebBrowser/EXWebBrowser.h; sourceTree = "<group>"; };
-		A257E7E8B79B1382BDD869B7216FCBAB /* EXWebBrowser-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXWebBrowser-dummy.m"; sourceTree = "<group>"; };
+		318B5D49787EA1EF5C9014D8969B8482 /* EXWebBrowser-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXWebBrowser-dummy.m"; sourceTree = "<group>"; };
+		31C34F2C1D2E269BA6B3B7ABCBF070D8 /* EXWebBrowser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWebBrowser.h; path = EXWebBrowser/EXWebBrowser.h; sourceTree = "<group>"; };
+		361469AC287ACB84BB4C30A0CE822145 /* EXWebBrowser-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXWebBrowser-prefix.pch"; sourceTree = "<group>"; };
+		4B297579845B9838E4D252B64D5B3670 /* EXWebBrowser.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXWebBrowser.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B023C6BF121E53ED1042A49FA1E066E7 /* EXWebBrowser.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXWebBrowser.debug.xcconfig; sourceTree = "<group>"; };
+		DCF41D90090CA99C500A5BF039490603 /* EXWebBrowser.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXWebBrowser.release.xcconfig; sourceTree = "<group>"; };
+		E7007D3F1F7CFECE9879392650494759 /* EXWebBrowser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWebBrowser.m; path = EXWebBrowser/EXWebBrowser.m; sourceTree = "<group>"; };
 		FD9323749311E011A55B78BA04C6B9FB /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -44,13 +45,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0B027B52C27FF936465C06C6B0977A26 /* EXWebBrowser */ = {
+		0B15381643B5CD72782FB0B7B66C0E1E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				5294F8C3CDC10EAB39E26B3B1DFF7B1D /* EXWebBrowser.h */,
-				1E767568F793DEB20E768AC2668FB88F /* EXWebBrowser.m */,
-				9E013C2854E4A9659FB3803EF1DC1D7E /* Pod */,
-				81E186483085A63CB0FBA063C06D9442 /* Support Files */,
+				318B5D49787EA1EF5C9014D8969B8482 /* EXWebBrowser-dummy.m */,
+				361469AC287ACB84BB4C30A0CE822145 /* EXWebBrowser-prefix.pch */,
+				B023C6BF121E53ED1042A49FA1E066E7 /* EXWebBrowser.debug.xcconfig */,
+				DCF41D90090CA99C500A5BF039490603 /* EXWebBrowser.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXWebBrowser";
+			sourceTree = "<group>";
+		};
+		0F64A90F7C274FADD040AE901D24D4D3 /* EXWebBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				31C34F2C1D2E269BA6B3B7ABCBF070D8 /* EXWebBrowser.h */,
+				E7007D3F1F7CFECE9879392650494759 /* EXWebBrowser.m */,
+				F93E125A33C1EC545690425A5DBAE920 /* Pod */,
+				0B15381643B5CD72782FB0B7B66C0E1E /* Support Files */,
 			);
 			name = EXWebBrowser;
 			path = "../../packages/expo-web-browser/ios";
@@ -68,7 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				69B923BF86AA5A52FFAEF58FBE72E8EA /* Dependencies */,
-				0B027B52C27FF936465C06C6B0977A26 /* EXWebBrowser */,
+				0F64A90F7C274FADD040AE901D24D4D3 /* EXWebBrowser */,
 				9391403B6F7B03232137DE739EEEAA43 /* Frameworks */,
 				3D71928C8B224ECA3294531EA03A29A6 /* Products */,
 			);
@@ -82,17 +95,6 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		81E186483085A63CB0FBA063C06D9442 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				3C787208CECAB319ED69FBBA05B213DB /* EXWebBrowser.xcconfig */,
-				A257E7E8B79B1382BDD869B7216FCBAB /* EXWebBrowser-dummy.m */,
-				0D8A422CC1E6BEC358E03198705ACB57 /* EXWebBrowser-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXWebBrowser";
-			sourceTree = "<group>";
-		};
 		9391403B6F7B03232137DE739EEEAA43 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -100,10 +102,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9E013C2854E4A9659FB3803EF1DC1D7E /* Pod */ = {
+		F93E125A33C1EC545690425A5DBAE920 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				12BAE4B66D3F20B981F5A2F2839CC3ED /* EXWebBrowser.podspec */,
+				4B297579845B9838E4D252B64D5B3670 /* EXWebBrowser.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -257,9 +259,9 @@
 			};
 			name = Debug;
 		};
-		5DA2E418588EBF5270BB178FE958FD1E /* Debug */ = {
+		7034E2E9C44E9EFA481693A714433BFB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C787208CECAB319ED69FBBA05B213DB /* EXWebBrowser.xcconfig */;
+			baseConfigurationReference = B023C6BF121E53ED1042A49FA1E066E7 /* EXWebBrowser.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -281,9 +283,9 @@
 			};
 			name = Debug;
 		};
-		9B5D7C61C8F4575F09B3E085CFF8A76F /* Release */ = {
+		BD2658F8C5B00BCBCA2EDDA12CB22C2B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C787208CECAB319ED69FBBA05B213DB /* EXWebBrowser.xcconfig */;
+			baseConfigurationReference = DCF41D90090CA99C500A5BF039490603 /* EXWebBrowser.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -372,8 +374,8 @@
 		67065628492C2FF6554913599AB4670F /* Build configuration list for PBXNativeTarget "EXWebBrowser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5DA2E418588EBF5270BB178FE958FD1E /* Debug */,
-				9B5D7C61C8F4575F09B3E085CFF8A76F /* Release */,
+				7034E2E9C44E9EFA481693A714433BFB /* Debug */,
+				BD2658F8C5B00BCBCA2EDDA12CB22C2B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
