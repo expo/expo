@@ -128,8 +128,8 @@ When the prompt method completes then the response will be fulfilled.
 
 #### Arguments
 
-- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#AuthRequestConfig) that specifies what provider to use.
-- **discovery (_DiscoveryDocument_)** -- A loaded [`DiscoveryDocument`](#DiscoveryDocument) with endpoints used for authenticating. Only `authorizationEndpoint` is required for requesting an authorization code.
+- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#authrequestconfig) that specifies what provider to use.
+- **discovery (_DiscoveryDocument_)** -- A loaded [`DiscoveryDocument`](#discoverydocument) with endpoints used for authenticating. Only `authorizationEndpoint` is required for requesting an authorization code.
 
 #### Returns
 
