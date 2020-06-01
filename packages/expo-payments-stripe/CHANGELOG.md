@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Upgraded `Stripe` pod on iOS to fix compatibility with Xcode 11.4. Now you can also customize the version of `Stripe` pod installed by setting `$StripeVersion` variable in your `Podfile`. ([#8594](https://github.com/expo/expo/pull/8594) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 8.2.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
