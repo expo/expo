@@ -7,23 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		386B0B024E91559B2596C37744B46882 /* UMAppLoaderProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = CFE84978F0B27827E369B778D76F4946 /* UMAppLoaderProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6A37B127C5280D1E93447AE2879E86AC /* UMAppRecordInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F2A02F7E77058CC303D676F44D951C /* UMAppRecordInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AD2B158BC4D251B34FDC92352E9B2EEE /* UMAppLoaderInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 15A73AB5E000B6736FA7612EA095E468 /* UMAppLoaderInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E07358B09CE767048D9F1E6F80EE32DE /* UMAppLoader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E335FC98E572B18E5081B4045FBA231B /* UMAppLoader-dummy.m */; };
-		F4ACA67F7EBF663372DBEBFA1C0D97F9 /* UMAppLoaderProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = D5B41089C1AA7552B2A677FA03D159DF /* UMAppLoaderProvider.m */; };
+		386B0B024E91559B2596C37744B46882 /* UMAppLoaderProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ED744570BB050E3D6B0D4783E52ED41 /* UMAppLoaderProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6A37B127C5280D1E93447AE2879E86AC /* UMAppRecordInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 383F4CE859660F135342DC89E735FBB1 /* UMAppRecordInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AD2B158BC4D251B34FDC92352E9B2EEE /* UMAppLoaderInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = D0EAFEC1DE535758988B489D2C2B8958 /* UMAppLoaderInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E07358B09CE767048D9F1E6F80EE32DE /* UMAppLoader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ED5B828084DB9A879FD0E67FE554FA9E /* UMAppLoader-dummy.m */; };
+		F4ACA67F7EBF663372DBEBFA1C0D97F9 /* UMAppLoaderProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CDBD174A0B6D1726751BB0E1228D577 /* UMAppLoaderProvider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		15A73AB5E000B6736FA7612EA095E468 /* UMAppLoaderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppLoaderInterface.h; sourceTree = "<group>"; };
-		17F2A02F7E77058CC303D676F44D951C /* UMAppRecordInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppRecordInterface.h; sourceTree = "<group>"; };
-		52833ABCC6E1F11F282709CBB8926A79 /* UMAppLoader-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UMAppLoader-prefix.pch"; sourceTree = "<group>"; };
+		0CDBD174A0B6D1726751BB0E1228D577 /* UMAppLoaderProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMAppLoaderProvider.m; path = UMAppLoader/UMAppLoaderProvider.m; sourceTree = "<group>"; };
+		0ED060448FE9BEB5A6BD7CC38E9D867B /* UMAppLoader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMAppLoader.debug.xcconfig; sourceTree = "<group>"; };
+		0ED744570BB050E3D6B0D4783E52ED41 /* UMAppLoaderProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMAppLoaderProvider.h; path = UMAppLoader/UMAppLoaderProvider.h; sourceTree = "<group>"; };
+		383F4CE859660F135342DC89E735FBB1 /* UMAppRecordInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppRecordInterface.h; sourceTree = "<group>"; };
+		61D5DFDAE500DF4E94FAB9A1A5264A05 /* UMAppLoader-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UMAppLoader-prefix.pch"; sourceTree = "<group>"; };
 		6B18BAA29707AD7E470F561850D9C5C0 /* libUMAppLoader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libUMAppLoader.a; path = libUMAppLoader.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMAppLoader.xcconfig; sourceTree = "<group>"; };
-		A14C5223FFBEC527CB2F235BB69B3A8D /* UMAppLoader.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMAppLoader.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		CFE84978F0B27827E369B778D76F4946 /* UMAppLoaderProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMAppLoaderProvider.h; path = UMAppLoader/UMAppLoaderProvider.h; sourceTree = "<group>"; };
-		D5B41089C1AA7552B2A677FA03D159DF /* UMAppLoaderProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMAppLoaderProvider.m; path = UMAppLoader/UMAppLoaderProvider.m; sourceTree = "<group>"; };
-		E335FC98E572B18E5081B4045FBA231B /* UMAppLoader-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UMAppLoader-dummy.m"; sourceTree = "<group>"; };
+		CAE596C0C7CFDF67121316D5AC0D0976 /* UMAppLoader.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMAppLoader.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D0EAFEC1DE535758988B489D2C2B8958 /* UMAppLoaderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppLoaderInterface.h; sourceTree = "<group>"; };
+		ED5B828084DB9A879FD0E67FE554FA9E /* UMAppLoader-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UMAppLoader-dummy.m"; sourceTree = "<group>"; };
+		F1D79E18B114318F00632D281A7FA12F /* UMAppLoader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMAppLoader.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,23 +45,37 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		2871116D3E32D0F55C67793F15FE1158 /* Pod */ = {
+		0EEC20BFF1EB64FB24BFCBC9EE365CEC /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				A14C5223FFBEC527CB2F235BB69B3A8D /* UMAppLoader.podspec */,
+				CAE596C0C7CFDF67121316D5AC0D0976 /* UMAppLoader.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		36D587924645F18175E1F60061C986E2 /* Support Files */ = {
+		16725436EAC2FC3616FE368B9471138E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */,
-				E335FC98E572B18E5081B4045FBA231B /* UMAppLoader-dummy.m */,
-				52833ABCC6E1F11F282709CBB8926A79 /* UMAppLoader-prefix.pch */,
+				ED5B828084DB9A879FD0E67FE554FA9E /* UMAppLoader-dummy.m */,
+				61D5DFDAE500DF4E94FAB9A1A5264A05 /* UMAppLoader-prefix.pch */,
+				0ED060448FE9BEB5A6BD7CC38E9D867B /* UMAppLoader.debug.xcconfig */,
+				F1D79E18B114318F00632D281A7FA12F /* UMAppLoader.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMAppLoader";
+			sourceTree = "<group>";
+		};
+		179C39A82F105E92CB364C08E5CE2839 /* UMAppLoader */ = {
+			isa = PBXGroup;
+			children = (
+				0ED744570BB050E3D6B0D4783E52ED41 /* UMAppLoaderProvider.h */,
+				0CDBD174A0B6D1726751BB0E1228D577 /* UMAppLoaderProvider.m */,
+				7A6400FF56509E7D732805EE006D113B /* Interfaces */,
+				0EEC20BFF1EB64FB24BFCBC9EE365CEC /* Pod */,
+				16725436EAC2FC3616FE368B9471138E /* Support Files */,
+			);
+			name = UMAppLoader;
+			path = "../../../../packages/unimodules-app-loader/ios";
 			sourceTree = "<group>";
 		};
 		3941C2B9988C6C23313D9682D00A30CB = {
@@ -68,21 +83,18 @@
 			children = (
 				06C29445860890868E4D1C024D491D7F /* Frameworks */,
 				B5B7DBD7B4EBFA1FB332C2184D71F4C9 /* Products */,
-				796DA979B24729A4855461CD2CAE5DC4 /* UMAppLoader */,
+				179C39A82F105E92CB364C08E5CE2839 /* UMAppLoader */,
 			);
 			sourceTree = "<group>";
 		};
-		796DA979B24729A4855461CD2CAE5DC4 /* UMAppLoader */ = {
+		7A6400FF56509E7D732805EE006D113B /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
-				CFE84978F0B27827E369B778D76F4946 /* UMAppLoaderProvider.h */,
-				D5B41089C1AA7552B2A677FA03D159DF /* UMAppLoaderProvider.m */,
-				DB014FD46D8E5145C7F9B63FD918D683 /* Interfaces */,
-				2871116D3E32D0F55C67793F15FE1158 /* Pod */,
-				36D587924645F18175E1F60061C986E2 /* Support Files */,
+				D0EAFEC1DE535758988B489D2C2B8958 /* UMAppLoaderInterface.h */,
+				383F4CE859660F135342DC89E735FBB1 /* UMAppRecordInterface.h */,
 			);
-			name = UMAppLoader;
-			path = "../../../../packages/unimodules-app-loader/ios";
+			name = Interfaces;
+			path = UMAppLoader/Interfaces;
 			sourceTree = "<group>";
 		};
 		B5B7DBD7B4EBFA1FB332C2184D71F4C9 /* Products */ = {
@@ -91,16 +103,6 @@
 				6B18BAA29707AD7E470F561850D9C5C0 /* libUMAppLoader.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		DB014FD46D8E5145C7F9B63FD918D683 /* Interfaces */ = {
-			isa = PBXGroup;
-			children = (
-				15A73AB5E000B6736FA7612EA095E468 /* UMAppLoaderInterface.h */,
-				17F2A02F7E77058CC303D676F44D951C /* UMAppRecordInterface.h */,
-			);
-			name = Interfaces;
-			path = UMAppLoader/Interfaces;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,57 +178,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		355117213E46539CC3CD47E58E60452C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMAppLoader;
-				PRODUCT_NAME = UMAppLoader;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		645779E27C9C7320978989B440B5D7F5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMAppLoader;
-				PRODUCT_NAME = UMAppLoader;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		8B0BCF6533E0223EE1BA34F1DD414156 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -284,6 +235,57 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		95CD402081F929BB14281D1AA7317D14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0ED060448FE9BEB5A6BD7CC38E9D867B /* UMAppLoader.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMAppLoader;
+				PRODUCT_NAME = UMAppLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1CCB81CE1C174F2F86725522DC3E30A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1D79E18B114318F00632D281A7FA12F /* UMAppLoader.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMAppLoader;
+				PRODUCT_NAME = UMAppLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -366,8 +368,8 @@
 		ED068C3EB6601017BB9D9F7C2CE8BADE /* Build configuration list for PBXNativeTarget "UMAppLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				645779E27C9C7320978989B440B5D7F5 /* Debug */,
-				355117213E46539CC3CD47E58E60452C /* Release */,
+				95CD402081F929BB14281D1AA7317D14 /* Debug */,
+				A1CCB81CE1C174F2F86725522DC3E30A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

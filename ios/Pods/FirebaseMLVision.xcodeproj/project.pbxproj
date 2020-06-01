@@ -70,12 +70,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		040DC3108423067A1BAEA9A05785FB25 /* FirebaseMLVision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLVision.framework; path = Frameworks/FirebaseMLVision.framework; sourceTree = "<group>"; };
+		14D0EB0248A1DEE7CEDD4EBC9AAFA2EB /* FirebaseMLVision.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLVision.debug.xcconfig; sourceTree = "<group>"; };
 		1A6BAAFB1D9943896529BDFA08080A07 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
 		1AA7AA87A2CBC46FA11A04D4AA97DDE0 /* GoogleToolboxForMac */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleToolboxForMac; path = GoogleToolboxForMac.xcodeproj; sourceTree = "<group>"; };
 		3CE09663017C990D605E18352B9D139F /* Protobuf */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Protobuf; path = Protobuf.xcodeproj; sourceTree = "<group>"; };
-		5107D1B023B0CA42EA53048A2254CE26 /* FirebaseMLVision.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLVision.xcconfig; sourceTree = "<group>"; };
 		59CC0097B401FFB7B7BDC2903B72BB29 /* FirebaseMLCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLCommon; path = FirebaseMLCommon.xcodeproj; sourceTree = "<group>"; };
-		6AF85F4F1901309093BB353849989FAE /* FirebaseMLVision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLVision.framework; path = Frameworks/FirebaseMLVision.framework; sourceTree = "<group>"; };
+		77D7A8AB62C5B2049068E12C8B5F5F2A /* FirebaseMLVision.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLVision.release.xcconfig; sourceTree = "<group>"; };
 		D845C838BDB0408F82716678DDCF5FC0 /* GTMSessionFetcher */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMSessionFetcher; path = GTMSessionFetcher.xcodeproj; sourceTree = "<group>"; };
 		FB851AA01EB86F9DF256C69E7C60B142 /* GoogleAPIClientForREST */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleAPIClientForREST; path = GoogleAPIClientForREST.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,18 +93,10 @@
 			isa = PBXGroup;
 			children = (
 				7FD57F1AA2DB3D2D8CC2FB463BF61987 /* Dependencies */,
-				A134B8D8C43D6D292B8CFB52C5F9A00C /* FirebaseMLVision */,
+				944C68449C73AFCF933D79180A696482 /* FirebaseMLVision */,
 				0EF24207121A26D70F0753BA5BD3353B /* Frameworks */,
 				44F1340A8E7D0E4C212318834830E3B9 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		278E04F0104CABA19EAE23B76E5643F4 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				6AF85F4F1901309093BB353849989FAE /* FirebaseMLVision.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		44F1340A8E7D0E4C212318834830E3B9 /* Products */ = {
@@ -113,13 +106,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7171CE83B861CDDE0663789883E5BFAD /* Support Files */ = {
+		5F378514D54898FCADC37202807FAE83 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5107D1B023B0CA42EA53048A2254CE26 /* FirebaseMLVision.xcconfig */,
+				040DC3108423067A1BAEA9A05785FB25 /* FirebaseMLVision.framework */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/FirebaseMLVision";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		7FD57F1AA2DB3D2D8CC2FB463BF61987 /* Dependencies */ = {
@@ -135,11 +127,21 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		A134B8D8C43D6D292B8CFB52C5F9A00C /* FirebaseMLVision */ = {
+		8B57DCA19227F715B8D99BE09D8E2883 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				278E04F0104CABA19EAE23B76E5643F4 /* Frameworks */,
-				7171CE83B861CDDE0663789883E5BFAD /* Support Files */,
+				14D0EB0248A1DEE7CEDD4EBC9AAFA2EB /* FirebaseMLVision.debug.xcconfig */,
+				77D7A8AB62C5B2049068E12C8B5F5F2A /* FirebaseMLVision.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/FirebaseMLVision";
+			sourceTree = "<group>";
+		};
+		944C68449C73AFCF933D79180A696482 /* FirebaseMLVision */ = {
+			isa = PBXGroup;
+			children = (
+				5F378514D54898FCADC37202807FAE83 /* Frameworks */,
+				8B57DCA19227F715B8D99BE09D8E2883 /* Support Files */,
 			);
 			name = FirebaseMLVision;
 			path = FirebaseMLVision;
@@ -226,6 +228,19 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0DB5AEAF95849CA6DCB414A9002D20FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 14D0EB0248A1DEE7CEDD4EBC9AAFA2EB /* FirebaseMLVision.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		288BB2350F270612D1A30E4C18341B75 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -285,19 +300,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		64C5419BE78ECC818C51D41D5903D8D6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5107D1B023B0CA42EA53048A2254CE26 /* FirebaseMLVision.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		952BD0BC8A3B6FAA9893DDEBFD60C30F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -363,9 +365,9 @@
 			};
 			name = Debug;
 		};
-		BB0032EEF7D17996B38BA46621D80D96 /* Release */ = {
+		BEC31E2430924C498FDF9A5BC26FCB3F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5107D1B023B0CA42EA53048A2254CE26 /* FirebaseMLVision.xcconfig */;
+			baseConfigurationReference = 77D7A8AB62C5B2049068E12C8B5F5F2A /* FirebaseMLVision.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -383,8 +385,8 @@
 		735F001D879FE9207C7867293A786F67 /* Build configuration list for PBXAggregateTarget "FirebaseMLVision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				64C5419BE78ECC818C51D41D5903D8D6 /* Debug */,
-				BB0032EEF7D17996B38BA46621D80D96 /* Release */,
+				0DB5AEAF95849CA6DCB414A9002D20FD /* Debug */,
+				BEC31E2430924C498FDF9A5BC26FCB3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

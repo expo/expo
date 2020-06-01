@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		52A193E4F6BE98EB3E7F4EE4304BF1F8 /* RCTSettingsManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5E2D75C86C0282C45801AF3D9E2972DB /* RCTSettingsManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E7812D5FF337F6862E910313364228C0 /* React-RCTSettings-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BB3C40FB3BED80B7DE038D7413478A6 /* React-RCTSettings-dummy.m */; };
-		EE70CA6C25334C35C433B9D0887D06EA /* RCTSettingsPlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = 16BDA7FCA3CE18C5FFFA08C7B0772915 /* RCTSettingsPlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		52A193E4F6BE98EB3E7F4EE4304BF1F8 /* RCTSettingsManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1E43CF1331F61259A7CC4BB5F8FAC219 /* RCTSettingsManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E7812D5FF337F6862E910313364228C0 /* React-RCTSettings-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9533EA7321648738A926C24211ED1B8A /* React-RCTSettings-dummy.m */; };
+		EE70CA6C25334C35C433B9D0887D06EA /* RCTSettingsPlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2878862D421F91F8D64EB8C33D98F4F2 /* RCTSettingsPlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,18 +51,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		16BDA7FCA3CE18C5FFFA08C7B0772915 /* RCTSettingsPlugins.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTSettingsPlugins.mm; sourceTree = "<group>"; };
-		5E2D75C86C0282C45801AF3D9E2972DB /* RCTSettingsManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTSettingsManager.mm; sourceTree = "<group>"; };
-		63F2BFE47297C5DFB770DD0DDCA07F15 /* React-RCTSettings-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTSettings-prefix.pch"; sourceTree = "<group>"; };
-		7BB3C40FB3BED80B7DE038D7413478A6 /* React-RCTSettings-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTSettings-dummy.m"; sourceTree = "<group>"; };
-		7D387B8E0713190A3D5FFEEC8C325523 /* React-RCTSettings.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTSettings.xcconfig"; sourceTree = "<group>"; };
+		1E43CF1331F61259A7CC4BB5F8FAC219 /* RCTSettingsManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTSettingsManager.mm; sourceTree = "<group>"; };
+		2878862D421F91F8D64EB8C33D98F4F2 /* RCTSettingsPlugins.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTSettingsPlugins.mm; sourceTree = "<group>"; };
+		2C5C73872B15F9FCFC1ABC556EFEDB73 /* React-RCTSettings-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTSettings-prefix.pch"; sourceTree = "<group>"; };
 		833B9779CCFF3EECFEA5D77297615F25 /* ReactCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCommon; path = ReactCommon.xcodeproj; sourceTree = "<group>"; };
+		86ED3778A80D40EFF8E03355F9A7396A /* React-RCTSettings.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTSettings.debug.xcconfig"; sourceTree = "<group>"; };
+		92B5D7DB5CC199F6430CBFF24B729723 /* React-RCTSettings.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTSettings.release.xcconfig"; sourceTree = "<group>"; };
+		9533EA7321648738A926C24211ED1B8A /* React-RCTSettings-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTSettings-dummy.m"; sourceTree = "<group>"; };
 		967724213CD838EC106A38FBC14B2E8C /* FBReactNativeSpec */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBReactNativeSpec; path = FBReactNativeSpec.xcodeproj; sourceTree = "<group>"; };
 		AE3B2B15BBC05D091723E840BDD36EE7 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 		D04D1EB85E2F372DF2A6437FBA1847A7 /* libReact-RCTSettings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-RCTSettings.a"; path = "libReact-RCTSettings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D41B93C64C2ED366D5C4650DE4FDA72A /* RCTTypeSafety */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTypeSafety; path = RCTTypeSafety.xcodeproj; sourceTree = "<group>"; };
 		DC5E447281B8E627EEAE2323BDD80940 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		E31C0D2B7680938E513566E8C78FC021 /* React-RCTSettings.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTSettings.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E575EAD3C8EF8989D78FC9A57C8265DE /* React-RCTSettings.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTSettings.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,13 +77,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04393E86D7BDE9361ADD511EAE2D0EDA /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				E575EAD3C8EF8989D78FC9A57C8265DE /* React-RCTSettings.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		15358626B43829BA8D3200C06504365F /* React-RCTSettings */ = {
+			isa = PBXGroup;
+			children = (
+				1E43CF1331F61259A7CC4BB5F8FAC219 /* RCTSettingsManager.mm */,
+				2878862D421F91F8D64EB8C33D98F4F2 /* RCTSettingsPlugins.mm */,
+				04393E86D7BDE9361ADD511EAE2D0EDA /* Pod */,
+				6EEA110A6A3EE7D9D6CDB4DB87174097 /* Support Files */,
+			);
+			name = "React-RCTSettings";
+			path = "../../../../react-native-lab/react-native/Libraries/Settings";
+			sourceTree = "<group>";
+		};
 		242052A9CFB940B5230E1EA2141A16BF = {
 			isa = PBXGroup;
 			children = (
 				ED953D826009E9A2313EB98B6AFDC00C /* Dependencies */,
 				541B68184595F914A5781DDADD2A010A /* Frameworks */,
 				57D1F95F32F909BA55A7B0FC8E2B5174 /* Products */,
-				EDE59981A5279E773462D633539A38B7 /* React-RCTSettings */,
+				15358626B43829BA8D3200C06504365F /* React-RCTSettings */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,12 +122,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8FC14CD644F8A8DCEA42B89A43654B3B /* Support Files */ = {
+		6EEA110A6A3EE7D9D6CDB4DB87174097 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				7D387B8E0713190A3D5FFEEC8C325523 /* React-RCTSettings.xcconfig */,
-				7BB3C40FB3BED80B7DE038D7413478A6 /* React-RCTSettings-dummy.m */,
-				63F2BFE47297C5DFB770DD0DDCA07F15 /* React-RCTSettings-prefix.pch */,
+				9533EA7321648738A926C24211ED1B8A /* React-RCTSettings-dummy.m */,
+				2C5C73872B15F9FCFC1ABC556EFEDB73 /* React-RCTSettings-prefix.pch */,
+				86ED3778A80D40EFF8E03355F9A7396A /* React-RCTSettings.debug.xcconfig */,
+				92B5D7DB5CC199F6430CBFF24B729723 /* React-RCTSettings.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../../apps/bare-expo/ios/Pods/Target Support Files/React-RCTSettings";
@@ -122,26 +144,6 @@
 				833B9779CCFF3EECFEA5D77297615F25 /* ReactCommon */,
 			);
 			name = Dependencies;
-			sourceTree = "<group>";
-		};
-		EDE59981A5279E773462D633539A38B7 /* React-RCTSettings */ = {
-			isa = PBXGroup;
-			children = (
-				5E2D75C86C0282C45801AF3D9E2972DB /* RCTSettingsManager.mm */,
-				16BDA7FCA3CE18C5FFFA08C7B0772915 /* RCTSettingsPlugins.mm */,
-				F76B9635A7F70C0DBB433F1667168066 /* Pod */,
-				8FC14CD644F8A8DCEA42B89A43654B3B /* Support Files */,
-			);
-			name = "React-RCTSettings";
-			path = "../../../../react-native-lab/react-native/Libraries/Settings";
-			sourceTree = "<group>";
-		};
-		F76B9635A7F70C0DBB433F1667168066 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				E31C0D2B7680938E513566E8C78FC021 /* React-RCTSettings.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -325,31 +327,6 @@
 			};
 			name = Release;
 		};
-		236653F29FA5BB203808DE9110F7EFD1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D387B8E0713190A3D5FFEEC8C325523 /* React-RCTSettings.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTSettings/React-RCTSettings-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTSettings;
-				PRODUCT_NAME = "React-RCTSettings";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		2A6647A0E5003E7C518DE77A417A8A26 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -414,9 +391,34 @@
 			};
 			name = Debug;
 		};
-		8D37B27DB214E53BCEC0D7C214C9D03A /* Debug */ = {
+		30DCA35993C33DB5E206BFA9C75BEC0B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D387B8E0713190A3D5FFEEC8C325523 /* React-RCTSettings.xcconfig */;
+			baseConfigurationReference = 92B5D7DB5CC199F6430CBFF24B729723 /* React-RCTSettings.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTSettings/React-RCTSettings-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTSettings;
+				PRODUCT_NAME = "React-RCTSettings";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4F2B149D5B68D0AF0B03F26E3376BCB6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 86ED3778A80D40EFF8E03355F9A7396A /* React-RCTSettings.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -444,8 +446,8 @@
 		42D71B9BB203F7D8E8A1CD6515CAE3D1 /* Build configuration list for PBXNativeTarget "React-RCTSettings" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D37B27DB214E53BCEC0D7C214C9D03A /* Debug */,
-				236653F29FA5BB203808DE9110F7EFD1 /* Release */,
+				4F2B149D5B68D0AF0B03F26E3376BCB6 /* Debug */,
+				30DCA35993C33DB5E206BFA9C75BEC0B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
