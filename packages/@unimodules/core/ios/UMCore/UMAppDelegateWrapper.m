@@ -124,6 +124,17 @@ static dispatch_once_t onceToken;
   return result;
 }
 
+#pragma mark - BackgroundSession
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
+{
+  SEL selector = @selector(application:handleEventsForBackgroundURLSession:completionHandler:);
+  NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
+  
+  for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
+    [subcontractor application:application handleEventsForBackgroundURLSession:identifier completionHandler:completionHandler];
+  }
+}
+
 #pragma mark - Notifications
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token

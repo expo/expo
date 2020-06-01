@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <EXFileSystem/EXSessionTaskDelegate.h>
+#import <EXFileSystem/EXSessionHandler.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerTaskDelegate:(EXSessionTaskDelegate *)delegate forTask:(NSURLSessionTask *)task;
 
 - (void)deactivate;
+
+- (instancetype)initWithSessionHandler:(id<EXSessionHandler>)sessionHandler;
 
 @end
 
