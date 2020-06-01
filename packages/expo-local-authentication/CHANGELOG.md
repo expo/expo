@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix crash when `NSFaceIDUsageDescription` is not provided and device fallback is disabled ([#8595](https://github.com/expo/expo/pull/8595) by [@tsapeta](https://github.com/tsapeta))
+- Fix crash when `NSFaceIDUsageDescription` is not provided and device fallback is disabled. ([#8595](https://github.com/expo/expo/pull/8595) by [@tsapeta](https://github.com/tsapeta))
 
 ## 9.1.1 — 2020-05-29
 
