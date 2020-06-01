@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- `sourceId` parameter (iOS only) now uses default calendar for given `entityType` if it's not provided. ([#8570](https://github.com/expo/expo/pull/8570) by [@tsapeta](https://github.com/tsapeta))
+- `createCalendarAsync` now uses default calendar for given `entityType` if `sourceId` parameter (iOS only) is not provided. ([#8570](https://github.com/expo/expo/pull/8570) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
