@@ -1,5 +1,7 @@
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@reach/tabs';
 import * as React from 'react';
 import { css } from 'react-emotion';
+import * as Constants from '~/common/constants';
 
 const STYLES_LINK = css`
   text-decoration: none;
@@ -93,5 +95,73 @@ export function SocialGridItem({ title, protocol = [], image, href }) {
         </p>
       )}
     </a>
+  );
+}
+
+export const AuthMethodTab = TabPanel;
+
+const TAB_BUTTON = css`
+  transition: all 0.15s ease 0s;
+
+  :hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+`;
+
+function AuthMethodTabButton({ selected, ...props }) {
+  return (
+    <Tab
+      {...props}
+      className={TAB_BUTTON}
+      style={{
+        padding: '1rem',
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        borderColor: selected ? Constants.colors.expo : 'transparent',
+        borderWidth: 0,
+        borderBottomWidth: 3,
+        color: selected ? Constants.colors.expo : Constants.colors.darkGrey,
+      }}
+    />
+  );
+}
+
+export function AuthCodeTab(props) {
+  return <TabPanel {...props} />;
+}
+export function ImplicitTab(props) {
+  return <TabPanel {...props} />;
+}
+
+function getTabName(tab) {
+  if (tab === 'AuthCodeTab') {
+    return 'Auth Code';
+  } else if (tab === 'ImplicitTab') {
+    return 'Implicit Flow';
+  }
+  return 'other';
+}
+
+export function AuthMethodTabSwitcher({ children }) {
+  const [tabIndex, setTabIndex] = React.useState(0);
+
+  const handleTabsChange = index => {
+    setTabIndex(index);
+  };
+
+  return (
+    <Tabs index={tabIndex} onChange={handleTabsChange}>
+      <TabList>
+        {React.Children.toArray(children).map((item, index) => {
+          const title = getTabName(item.type.name);
+          return (
+            <AuthMethodTabButton key={index} selected={tabIndex === index}>
+              {title}
+            </AuthMethodTabButton>
+          );
+        })}
+      </TabList>
+      <TabPanels style={{ paddingTop: 8 }}>{children}</TabPanels>
+    </Tabs>
   );
 }
