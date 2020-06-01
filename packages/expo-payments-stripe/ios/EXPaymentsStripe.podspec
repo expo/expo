@@ -2,8 +2,6 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-# Following the example of react-native-firebase
-# https://github.com/invertase/react-native-firebase/blob/bf5271ef46b534d3363206f816d114f9ac5c59ee/packages/app/RNFBApp.podspec#L5-L10
 
 stripe_version = '~> 14.0.1'
 using_custom_stripe_version = defined? $StripeVersion
