@@ -12,7 +12,7 @@ import NativeView from './ExpoModuleTemplateNativeView';
  */
 export default class ExpoModuleTemplateView extends React.Component {
     render() {
-        return (<NativeView />);
+        return (React.createElement(NativeView, null));
     }
 }
 //# sourceMappingURL=ExpoModuleTemplateView.js.map

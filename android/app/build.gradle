@@ -58,7 +58,9 @@ android {
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       consumerProguardFiles 'proguard-rules.pro'
-      signingConfig signingConfigs.release
+      if (!System.getenv("ANDROID_UNSIGNED")) {
+        signingConfig signingConfigs.release
+      }
     }
   }
   lintOptions {
@@ -114,7 +116,7 @@ dependencies {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:10.2.0'
+  implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
@@ -221,7 +223,6 @@ dependencies {
         'expo-module-template',
         'expo-bluetooth',
         'expo-in-app-purchases',
-        'expo-notifications',
         'expo-payments-stripe',
         'expo-updates',
         'expo-splash-screen'

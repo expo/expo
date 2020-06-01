@@ -8,8 +8,7 @@ export default class AdTriggerView extends React.Component {
         this._trigger = null;
     }
     render() {
-        return (<AdTriggerViewContext.Consumer>
-        {(contextValue) => {
+        return (React.createElement(AdTriggerViewContext.Consumer, null, (contextValue) => {
             const context = nullthrows(contextValue);
             // Compute the context-dependent props to pass to the interactive component
             const forwardedProps = this._getForwardedProps();
@@ -36,8 +35,7 @@ export default class AdTriggerView extends React.Component {
             return this.props.renderInteractiveComponent
                 ? this.props.renderInteractiveComponent(props)
                 : this._renderDefaultInteractiveComponent(props);
-        }}
-      </AdTriggerViewContext.Consumer>);
+        }));
     }
     // NOTE: This is a helper method to extract the props to forward to the interactive component
     // because TypeScript does not currently support rest objects with generic types in some cases,
@@ -49,7 +47,7 @@ export default class AdTriggerView extends React.Component {
     // TODO: change from TouchableOpacity to a Gesture Handler BorderlessButton
     _renderDefaultInteractiveComponent(props) {
         // @ts-ignore: the RN TypeScript declarations are missing the "collapsable" prop
-        return <TouchableOpacity {...props} collapsable={false}/>;
+        return React.createElement(TouchableOpacity, Object.assign({}, props, { collapsable: false }));
     }
 }
 //# sourceMappingURL=AdTriggerView.js.map

@@ -19,7 +19,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		728A0471CC8F8467622F8FFCF96BAFE5 /* boost-for-react-native.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "boost-for-react-native.xcconfig"; sourceTree = "<group>"; };
+		2EE36E98F4C042833FF117F0A683D96C /* boost-for-react-native.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "boost-for-react-native.release.xcconfig"; sourceTree = "<group>"; };
+		92A6BD93BEFF24EFB61708EE9A11C7A1 /* boost-for-react-native.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "boost-for-react-native.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -30,13 +31,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1B7B6ED2013FB07348D4911BD1386672 /* Support Files */ = {
+		6933FF2F9F0DF98279E8FE1861E86EB4 /* boost-for-react-native */ = {
 			isa = PBXGroup;
 			children = (
-				728A0471CC8F8467622F8FFCF96BAFE5 /* boost-for-react-native.xcconfig */,
+				9B51432DCB84EBCE8315B96E8E6D0487 /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/boost-for-react-native";
+			name = "boost-for-react-native";
+			path = "boost-for-react-native";
 			sourceTree = "<group>";
 		};
 		7EB53C96ECB7708772CFC59FED91F92F /* Frameworks */ = {
@@ -49,19 +50,20 @@
 		7F8DB0DB96ECF9DE7BEFB6AD2C414307 = {
 			isa = PBXGroup;
 			children = (
-				E54B1C82214CAF38A73E3A24FBF6BEDC /* boost-for-react-native */,
+				6933FF2F9F0DF98279E8FE1861E86EB4 /* boost-for-react-native */,
 				7EB53C96ECB7708772CFC59FED91F92F /* Frameworks */,
 				0EA69F05C07D6C32690D3DC08DA348FE /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		E54B1C82214CAF38A73E3A24FBF6BEDC /* boost-for-react-native */ = {
+		9B51432DCB84EBCE8315B96E8E6D0487 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				1B7B6ED2013FB07348D4911BD1386672 /* Support Files */,
+				92A6BD93BEFF24EFB61708EE9A11C7A1 /* boost-for-react-native.debug.xcconfig */,
+				2EE36E98F4C042833FF117F0A683D96C /* boost-for-react-native.release.xcconfig */,
 			);
-			name = "boost-for-react-native";
-			path = "boost-for-react-native";
+			name = "Support Files";
+			path = "../Target Support Files/boost-for-react-native";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -92,6 +94,33 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
+		0329DE6AEBE681C363A6D040D5084C4D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92A6BD93BEFF24EFB61708EE9A11C7A1 /* boost-for-react-native.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3A3A650B4B1958B0A54792C5C687888D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2EE36E98F4C042833FF117F0A683D96C /* boost-for-react-native.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		506B044A91348C18424162B8CFB3A93E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -151,33 +180,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		89117ECA93D926392D41DA9C7B664B8C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 728A0471CC8F8467622F8FFCF96BAFE5 /* boost-for-react-native.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		EBDE99F8D064B2A1F0A6CC118454D04A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 728A0471CC8F8467622F8FFCF96BAFE5 /* boost-for-react-native.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		EED1722D119A2C9E6ADF722DF35B899D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -249,8 +251,8 @@
 		35E9179E77BE13EBA2FD0B3F94AA8613 /* Build configuration list for PBXAggregateTarget "boost-for-react-native" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EBDE99F8D064B2A1F0A6CC118454D04A /* Debug */,
-				89117ECA93D926392D41DA9C7B664B8C /* Release */,
+				0329DE6AEBE681C363A6D040D5084C4D /* Debug */,
+				3A3A650B4B1958B0A54792C5C687888D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

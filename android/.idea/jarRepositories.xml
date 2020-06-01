@@ -12,40 +12,29 @@
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven7" />
-      <option name="name" value="maven7" />
-      <option name="url" value="file:$PROJECT_DIR$/../node_modules/expokit/maven/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven11" />
-      <option name="name" value="maven11" />
-      <option name="url" value="https://www.jitpack.io" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven9" />
-      <option name="name" value="maven9" />
-      <option name="url" value="file:$PROJECT_DIR$/../node_modules/jsc-android/dist/" />
-    </remote-repository>
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven5" />
-      <option name="name" value="maven5" />
-      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/expoview-abi35_0_0/maven/" />
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/expoview-abi37_0_0/maven/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven10" />
       <option name="name" value="maven10" />
+      <option name="url" value="https://www.jitpack.io" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven4" />
+      <option name="name" value="maven4" />
+      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/expoview-abi35_0_0/maven/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven9" />
+      <option name="name" value="maven9" />
       <option name="url" value="https://google.bintray.com/exoplayer" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="MavenLocal" />
-      <option name="name" value="MavenLocal" />
-      <option name="url" value="file:$USER_HOME$/.m2/repository/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven2" />
-      <option name="name" value="maven2" />
-      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/expoview-abi36_0_0/maven/" />
+      <option name="id" value="maven5" />
+      <option name="name" value="maven5" />
+      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/maven" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven" />
@@ -55,17 +44,32 @@
     <remote-repository>
       <option name="id" value="maven6" />
       <option name="name" value="maven6" />
-      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/maven" />
+      <option name="url" value="file:$PROJECT_DIR$/../node_modules/expokit/maven/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven8" />
       <option name="name" value="maven8" />
+      <option name="url" value="file:$PROJECT_DIR$/../node_modules/jsc-android/dist/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven7" />
+      <option name="name" value="maven7" />
       <option name="url" value="file:$PROJECT_DIR$/maven-test/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven3" />
+      <option name="name" value="maven3" />
+      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/expoview-abi36_0_0/maven/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="BintrayJCenter" />
       <option name="name" value="BintrayJCenter" />
       <option name="url" value="https://jcenter.bintray.com/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:$USER_HOME$/.m2/repository/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="Google" />
@@ -78,14 +82,9 @@
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven12" />
-      <option name="name" value="maven12" />
+      <option name="id" value="maven11" />
+      <option name="name" value="maven11" />
       <option name="url" value="file:$PROJECT_DIR$/../packages/expo-camera/android/maven/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven12" />
-      <option name="name" value="maven12" />
-      <option name="url" value="https://maven.fabric.io/public" />
     </remote-repository>
   </component>
 </project>

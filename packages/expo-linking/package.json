@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
@@ -30,18 +30,18 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/linking",
   "dependencies": {
-    "expo-constants": "~9.0.0",
-    "url-parse": "^1.4.4",
-    "qs": "^6.5.0"
+    "expo-constants": "~9.1.1",
+    "qs": "^6.5.0",
+    "url-parse": "^1.4.4"
   },
   "peerDependencies": {
     "react-native": "*"
   },
   "devDependencies": {
+    "@types/qs": "^6.5.3",
     "expo-module-scripts": "^1.2.0"
   },
   "jest": {
     "preset": "expo-module-scripts"
-  },
-  "gitHead": "bce449748b0d51a1415e106853e9effcd4c57b84"
+  }
 }

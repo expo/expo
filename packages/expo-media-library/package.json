@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "8.1.0",
+  "version": "8.2.1",
   "description": "Provides access to user's media library.",
   "main": "build/MediaLibrary.js",
   "types": "build/MediaLibrary.d.ts",
@@ -48,6 +48,5 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
-  },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  }
 }

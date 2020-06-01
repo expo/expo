@@ -8,7 +8,6 @@ import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { green } = chalk;
-const IGNORED_PACKAGES = ['react-native-unimodules'];
 
 /**
  * Gets a list of public packages in the monorepo, downloads `npm view` result of them,
@@ -38,7 +37,7 @@ export const prepareParcels = new Task<TaskArgs>(
     const filteredPackages = allPackages.filter((pkg) => {
       const isPrivate = pkg.packageJson.private;
       const isIncluded = packageNames.length === 0 || packageNames.includes(pkg.packageName);
-      return !isPrivate && isIncluded && !IGNORED_PACKAGES.includes(pkg.packageName);
+      return !isPrivate && isIncluded;
     });
 
     parcels.push(...(await Promise.all(filteredPackages.map(createParcelAsync))));

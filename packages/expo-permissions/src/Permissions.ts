@@ -37,6 +37,21 @@ export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 export const MOTION = 'motion';
 
+// Map corresponding permission to correct package
+const PERMISSION_MODULE_MAPPING = {
+  [CAMERA]: 'expo-camera',
+  [CAMERA_ROLL]: 'expo-media-library',
+  [AUDIO_RECORDING]: 'expo-av',
+  [LOCATION]: 'expo-location',
+  [USER_FACING_NOTIFICATIONS]: 'expo-notifications',
+  [NOTIFICATIONS]: 'expo-notifications',
+  [CONTACTS]: 'expo-contacts',
+  [CALENDAR]: 'expo-calendar',
+  [REMINDERS]: 'expo-calendar',
+  [SYSTEM_BRIGHTNESS]: 'expo-brightness',
+  [MOTION]: 'expo-sensors',
+};
+
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
   if (Platform.OS === 'ios') {
     return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
@@ -63,7 +78,16 @@ async function _handleSinglePermissionRequestIOSAsync(
       canAskAgain: true,
     };
   }
-  return await handlePermission(type);
+  try {
+    return await handlePermission(type);
+  } catch (error) {
+    // We recognize the permission's library, so we inform the user to link that library to request the permission.
+    if (error.code === 'E_PERMISSIONS_UNKNOWN' && PERMISSION_MODULE_MAPPING[type]) {
+      const library = PERMISSION_MODULE_MAPPING[type];
+      error.message = `${error.message}, please install and link the package ${PERMISSION_MODULE_MAPPING[type]}, see more at https://github.com/expo/expo/tree/master/packages/${library}`;
+    }
+    throw error;
+  }
 }
 
 async function _handleMultiPermissionsRequestIOSAsync(

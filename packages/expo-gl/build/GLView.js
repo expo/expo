@@ -43,16 +43,15 @@ let GLView = /** @class */ (() => {
         render() {
             const { onContextCreate, // eslint-disable-line no-unused-vars
             msaaSamples, ...viewProps } = this.props;
-            return (<View {...viewProps}>
-        <NativeView ref={this._setNativeRef} style={{
-                flex: 1,
-                ...(Platform.OS === 'ios'
-                    ? {
-                        backgroundColor: 'transparent',
-                    }
-                    : {}),
-            }} onSurfaceCreate={this._onSurfaceCreate} msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}/>
-      </View>);
+            return (React.createElement(View, Object.assign({}, viewProps),
+                React.createElement(NativeView, { ref: this._setNativeRef, style: {
+                        flex: 1,
+                        ...(Platform.OS === 'ios'
+                            ? {
+                                backgroundColor: 'transparent',
+                            }
+                            : {}),
+                    }, onSurfaceCreate: this._onSurfaceCreate, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
         }
         async startARSessionAsync() {
             if (!ExponentGLViewManager.startARSessionAsync) {

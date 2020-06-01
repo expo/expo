@@ -265,19 +265,6 @@ executors:
       GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
-  # Android and iOS clients
-  client:
-    unless: << pipeline.parameters.release >>
-    jobs:
-      - client_android
-      # Disabled until further notice
-      # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
-      # - test_suite_publish
-      # - android_test_suite:
-      #     requires:
-      #       - test_suite_publish
-      - client_ios
-
   release_simulator:
     when: << pipeline.parameters.release_simulator >>
     jobs:

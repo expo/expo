@@ -23,6 +23,7 @@ const NativeLinearGradient: FunctionComponent<Props> = ({
   const [gradientColors, setGradientColors] = useState<string[]>([]);
   const [pseudoAngle, setPseudoAngle] = useState<number>(0);
 
+  const { width = 1, height = 1 } = layout ?? {};
   useEffect(() => {
     const getControlPoints = (): Point[] => {
       let correctedStartPoint: Point = [0, 0];
@@ -43,7 +44,6 @@ const NativeLinearGradient: FunctionComponent<Props> = ({
     };
 
     const [start, end] = getControlPoints();
-    const { width = 1, height = 1 } = layout || {};
     start[0] *= width;
     end[0] *= width;
     start[1] *= height;
@@ -52,7 +52,7 @@ const NativeLinearGradient: FunctionComponent<Props> = ({
     const px = end[0] - start[0];
 
     setPseudoAngle(90 + (Math.atan2(py, px) * 180) / Math.PI);
-  }, [startPoint, endPoint]);
+  }, [width, height, startPoint, endPoint]);
 
   useEffect(() => {
     const nextGradientColors = colors.map((color: number, index: number): string => {

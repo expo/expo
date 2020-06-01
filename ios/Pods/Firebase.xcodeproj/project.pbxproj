@@ -54,12 +54,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2697158071AB59F75AEF558051FF326D /* Firebase.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Firebase.debug.xcconfig; sourceTree = "<group>"; };
 		35573AE5308005A067A0C7093F50B4AA /* FirebaseMLVision */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLVision; path = FirebaseMLVision.xcodeproj; sourceTree = "<group>"; };
 		4FC0CA1100ACC8BD372AC48AD285F645 /* FirebaseAnalytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseAnalytics; path = FirebaseAnalytics.xcodeproj; sourceTree = "<group>"; };
-		77C6CB357139DE5D7C98C46983E1E437 /* Firebase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Firebase.h; path = CoreOnly/Sources/Firebase.h; sourceTree = "<group>"; };
+		530578E780F2D4D0D994449831AD4E07 /* Firebase.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Firebase.release.xcconfig; sourceTree = "<group>"; };
 		91ACC218D124FC41D8CFDADD30E247D3 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
-		91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Firebase.xcconfig; sourceTree = "<group>"; };
 		C898B3359D1C59BBBBC37C8970861ED1 /* FirebaseMLVisionFaceModel */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLVisionFaceModel; path = FirebaseMLVisionFaceModel.xcodeproj; sourceTree = "<group>"; };
+		F2A97D0F8ACFB912A1D06FB884E8A3BC /* Firebase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Firebase.h; path = CoreOnly/Sources/Firebase.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -70,28 +71,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		13B455E5E767EFFEEA91942489805264 /* CoreOnly */ = {
+		0C0C78BCD4DB353CEFA23000C227ED23 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				77C6CB357139DE5D7C98C46983E1E437 /* Firebase.h */,
-			);
-			name = CoreOnly;
-			sourceTree = "<group>";
-		};
-		1EF48F333065A39F1C73DC6C3579AB1F /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */,
+				2697158071AB59F75AEF558051FF326D /* Firebase.debug.xcconfig */,
+				530578E780F2D4D0D994449831AD4E07 /* Firebase.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/Firebase";
 			sourceTree = "<group>";
 		};
-		46EBF526ADBCE0D0D5E4E0D3F5C51E66 /* Firebase */ = {
+		126FD15E26066FE126976B14269AEC68 /* Firebase */ = {
 			isa = PBXGroup;
 			children = (
-				13B455E5E767EFFEEA91942489805264 /* CoreOnly */,
-				1EF48F333065A39F1C73DC6C3579AB1F /* Support Files */,
+				F6D79BA7471ABA4557CA31145F6C19D3 /* CoreOnly */,
+				0C0C78BCD4DB353CEFA23000C227ED23 /* Support Files */,
 			);
 			name = Firebase;
 			path = Firebase;
@@ -119,10 +113,18 @@
 			isa = PBXGroup;
 			children = (
 				9813E545FABE1622461FD41DFEAFF7B8 /* Dependencies */,
-				46EBF526ADBCE0D0D5E4E0D3F5C51E66 /* Firebase */,
+				126FD15E26066FE126976B14269AEC68 /* Firebase */,
 				012A247E6E6EF3281F994FFF15D35FED /* Frameworks */,
 				7677451580D65C621C3555C5ED0FF2C7 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		F6D79BA7471ABA4557CA31145F6C19D3 /* CoreOnly */ = {
+			isa = PBXGroup;
+			children = (
+				F2A97D0F8ACFB912A1D06FB884E8A3BC /* Firebase.h */,
+			);
+			name = CoreOnly;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -254,9 +256,9 @@
 			};
 			name = Debug;
 		};
-		4C2704ECCB91D1037062D717ACAFC9E9 /* Release */ = {
+		A3EFA3D2FAA465F87820AD53DA1911D4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */;
+			baseConfigurationReference = 530578E780F2D4D0D994449831AD4E07 /* Firebase.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -268,9 +270,9 @@
 			};
 			name = Release;
 		};
-		C0A72149AA5981888010B53DFFE5961C /* Debug */ = {
+		AE80D28B77AFAEEFC2E038A8F6E5E574 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */;
+			baseConfigurationReference = 2697158071AB59F75AEF558051FF326D /* Firebase.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -356,8 +358,8 @@
 		881390FAB695325F2A64B228532B9D23 /* Build configuration list for PBXAggregateTarget "Firebase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C0A72149AA5981888010B53DFFE5961C /* Debug */,
-				4C2704ECCB91D1037062D717ACAFC9E9 /* Release */,
+				AE80D28B77AFAEEFC2E038A8F6E5E574 /* Debug */,
+				A3EFA3D2FAA465F87820AD53DA1911D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

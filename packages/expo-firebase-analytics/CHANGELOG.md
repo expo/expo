@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 2.4.1 — 2020-05-29
+
+### 🐛 Bug fixes
+
+- Fixes `parseEvent` and `parseUserProperty` to allow numeric characters in the name parameter. ([#8516](https://github.com/expo/expo/pull/8516) by [@thorbenprimke](https://github.com/thorbenprimke))
+
+## 2.4.0 — 2020-05-27
+
+### 🎉 New features
+
 - Add `setDebugModeEnabled` for enabling DebugView on the Expo client. ([#7796](https://github.com/expo/expo/pull/7796) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 🐛 Bug fixes

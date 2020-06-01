@@ -53,7 +53,7 @@ export enum ChangeType {
 export const UNPUBLISHED_VERSION_NAME = 'Unpublished';
 
 export const VERSION_EMPTY_PARAGRAPH_TEXT =
-  '*This version does not introduce any user-facing changes.*';
+  '*This version does not introduce any user-facing changes.*\n';
 
 /**
  * Depth of headings that mean the version containing following changes.
@@ -111,7 +111,8 @@ export class Changelog {
 
     return tokens
       .filter((token): token is Markdown.HeadingToken => isVersionToken(token))
-      .map((token) => token.text.trim());
+      .map((token) => parseVersion(token.text))
+      .filter(Boolean) as string[];
   }
 
   /**
@@ -300,8 +301,9 @@ export class Changelog {
     ];
 
     if (firstVersionHeadingIndex !== -1) {
-      // Set version of the first found version header.
-      (tokens[firstVersionHeadingIndex] as Markdown.HeadingToken).text = version;
+      // Set version of the first found version header and put current date in YYYY-MM-DD format.
+      const dateStr = new Date().toISOString().substring(0, 10);
+      (tokens[firstVersionHeadingIndex] as Markdown.HeadingToken).text = `${version} — ${dateStr}`;
 
       // Clean up empty sections.
       let i = firstVersionHeadingIndex + 1;

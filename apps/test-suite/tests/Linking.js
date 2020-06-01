@@ -1,8 +1,7 @@
-import { Platform } from 'react-native';
-import { Linking } from 'expo';
-
-import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
+import { Platform } from 'react-native';
 
 import { waitFor } from './helpers';
 
@@ -56,7 +55,7 @@ export function test(t) {
           Linking.addEventListener('url', handler);
           await WebBrowser.openBrowserAsync(testUrl);
           t.expect(handlerCalled).toBe(true);
-          Linking.removeListener('url', handler);
+          Linking.removeEventListener('url', handler);
         });
 
         // We can't run this test on iOS since iOS asks "whether to open this link in Expo"
@@ -71,7 +70,7 @@ export function test(t) {
           await Linking.openURL(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);
           await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
-          Linking.removeListener('url', handler);
+          Linking.removeEventListener('url', handler);
         });
       }
 
@@ -86,7 +85,7 @@ export function test(t) {
         await WebBrowser.openBrowserAsync(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);
         await waitFor(1000);
         t.expect(handlerCalled).toBe(true);
-        Linking.removeListener('url', handler);
+        Linking.removeEventListener('url', handler);
       });
 
       t.it('listener gets called with a proper URL when opened with Linking.openURL', async () => {
@@ -98,7 +97,7 @@ export function test(t) {
         await Linking.openURL(Linking.makeUrl('++'));
         await waitFor(500);
         t.expect(handlerCalled).toBe(true);
-        Linking.removeListener('url', handler);
+        Linking.removeEventListener('url', handler);
       });
 
       t.it('listener parses out deep link information correctly', async () => {
@@ -115,7 +114,7 @@ export function test(t) {
         await Linking.openURL(Linking.makeUrl('++test/path?query=param'));
         await waitFor(500);
         t.expect(handlerCalled).toBe(true);
-        Linking.removeListener('url', handler);
+        Linking.removeEventListener('url', handler);
       });
     });
   });

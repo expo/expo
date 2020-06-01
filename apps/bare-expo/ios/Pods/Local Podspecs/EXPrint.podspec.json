@@ -1,6 +1,6 @@
 {
   "name": "EXPrint",
-  "version": "8.1.0",
+  "version": "9.0.1",
   "summary": "Provides an API for iOS (AirPrint) and Android printing functionality.",
   "description": "Provides an API for iOS (AirPrint) and Android printing functionality.",
   "license": "MIT",

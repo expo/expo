@@ -1,6 +1,6 @@
 {
   "name": "expo-device",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "description": "A universal module that gets physical information about the device running the application",
   "main": "build/Device.js",
   "types": "build/Device.d.ts",
@@ -39,6 +39,5 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
-  },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  }
 }

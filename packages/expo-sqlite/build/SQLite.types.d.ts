@@ -1,3 +1,6 @@
+export interface Window {
+    openDatabase?: (name: string, version: string, displayName: string, estimatedSize: number, creationCallback?: DatabaseCallback) => Database;
+}
 export interface DatabaseCallback {
     (database: Database): void;
 }

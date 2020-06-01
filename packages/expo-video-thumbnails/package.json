@@ -1,6 +1,6 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "4.1.1",
+  "version": "4.2.1",
   "description": "ExpoVideoThumbnails standalone module",
   "main": "build/VideoThumbnails.js",
   "types": "build/VideoThumbnails.d.ts",
@@ -34,6 +34,5 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
-  },
-  "gitHead": "ec7998e573483e31acc25e52cb31a0df8c0a6784"
+  }
 }

@@ -229,7 +229,7 @@ export class Package {
     if (!podName) {
       return false;
     }
-    const podspecPath = path.join(this.path, 'ios/Local Podspecs', `${podName}.podspec.json`);
+    const podspecPath = path.join(this.path, 'ios/Pods/Local Podspecs', `${podName}.podspec.json`);
     return await fs.pathExists(podspecPath);
   }
 
@@ -238,6 +238,19 @@ export class Package {
    */
   async hasChangelogAsync(): Promise<boolean> {
     return fs.pathExists(this.changelogPath);
+  }
+
+  /**
+   * Checks whether package has any native code (iOS, Android, C++).
+   */
+  async isNativeModuleAsync(): Promise<boolean> {
+    const dirs = ['ios', 'android', 'cpp'].map((dir) => path.join(this.path, dir));
+    for (const dir of dirs) {
+      if (await fs.pathExists(dir)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 

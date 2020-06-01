@@ -94,7 +94,17 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
     context.interactionNotAllowed = false;
   }
 
-  if (disableDeviceFallback) {
+  if ([disableDeviceFallback boolValue]) {
+    if (warningMessage) {
+      // If the warning message is set (NSFaceIDUsageDescription is not configured) then we can't use
+      // authentication with biometrics — it would crash, so let's just resolve with no success.
+      // We could reject, but we already resolve even if there are any errors, so sadly we would need to introduce a breaking change.
+      return resolve(@{
+        @"success": @NO,
+        @"error": @"missing_usage_description",
+        @"warning": warningMessage
+      });
+    }
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
           localizedReason:reason
                     reply:^(BOOL success, NSError *error) {
