@@ -1,6 +1,5 @@
-import { Notifications } from 'expo';
-
 import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
 
 // In this test app we contact the Expo push service directly. You *never*
 // should do this in a real app. You should always store the push tokens on your
@@ -9,34 +8,19 @@ const PUSH_ENDPOINT = 'https://expo.io/--/api/v2/push/send';
 
 export default async function registerForPushNotificationsAsync() {
   // this method assumes the user has already granted permission
-  // to receive remote notificartions.
+  // to receive remote notifications.
 
   // Get the token that uniquely identifies this device
-  const token = await Notifications.getExpoPushTokenAsync();
+  const { data: token } = await Notifications.getExpoPushTokenAsync();
 
   // Log it so we can easily copy it if we need to work with it
   console.log(`Got this device's push token: ${token}`);
-
-  await Notifications.createCategoryAsync('welcome', [
-    {
-      actionId: 'tada',
-      buttonTitle: '🎉',
-      isDestructive: false,
-      isAuthenticationRequired: false,
-    },
-    {
-      actionId: 'heart_eyes',
-      buttonTitle: '😍',
-      isDestructive: false,
-      isAuthenticationRequired: true,
-    },
-  ]);
 
   // POST the token to the Expo push server
   const response = await fetch(PUSH_ENDPOINT, {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify([
@@ -63,9 +47,7 @@ export default async function registerForPushNotificationsAsync() {
     if (receipt.status === 'error') {
       if (receipt.details) {
         console.warn(
-          `Expo push service reported an error sending a notification: ${
-            receipt.details.error
-          }`
+          `Expo push service reported an error sending a notification: ${receipt.details.error}`
         );
       }
       if (receipt.__debug) {

@@ -1,9 +1,9 @@
+import * as Notifications from 'expo-notifications';
 import React from 'react';
-import { Notifications } from 'expo';
-import { Alert, Platform } from 'react-native';
-import { EventSubscription } from 'fbemitter';
-import ComponentListScreen from './ComponentListScreen';
+import { Alert } from 'react-native';
+
 import { Screens } from '../navigation/ExpoApis';
+import ComponentListScreen from './ComponentListScreen';
 
 try {
   require('react-native-branch').default.subscribe((bundle: any) => {
@@ -15,65 +15,19 @@ try {
   // Branch is not available, do nothing
 }
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
 export default class ExpoApisScreen extends React.Component {
   static path = '';
 
   static navigationOptions = {
     title: 'APIs in Expo SDK',
-  };
-
-  _notificationSubscription?: EventSubscription;
-
-  componentDidMount() {
-    if (Platform.OS !== 'web') {
-      this._notificationSubscription = Notifications.addListener(this._handleNotification);
-    }
-  }
-
-  componentWillUnmount() {
-    this._notificationSubscription && this._notificationSubscription.remove();
-  }
-
-  _handleNotification = (notification: {
-    data: object | string;
-    origin: string;
-    remote: boolean;
-    actionId: string;
-    userText?: string;
-  }) => {
-    let { data } = notification;
-    const { origin, remote, actionId, userText } = notification;
-    if (typeof data === 'string') {
-      data = JSON.parse(data);
-    }
-
-    /**
-     * Currently on Android this will only fire when selected for local
-     * notifications, and there is no way to distinguish between local
-     * and remote notifications
-     */
-
-    let message: string;
-    if (remote) {
-      message = `Push notification ${
-        actionId ? `"${actionId}"` : origin
-      } with data: ${JSON.stringify(data)}`;
-    } else {
-      message = `Local notification ${
-        actionId ? `"${actionId}"` : origin
-      } with data: ${JSON.stringify(data)}`;
-    }
-
-    if (userText) {
-      message += `\nUser provided text: ${userText}.`;
-    } else {
-      message += `\nNo text provided.`;
-    }
-
-    // Calling alert(message) immediately fails to show the alert on Android
-    // if after backgrounding the app and then clicking on a notification
-    // to foreground the app
-    setTimeout(() => alert(message), 1000);
   };
 
   render() {
