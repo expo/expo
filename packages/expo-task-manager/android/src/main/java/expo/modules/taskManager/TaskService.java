@@ -120,11 +120,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       throw new InvalidConsumerClassException(taskName);
     }
 
-    Map<String, TaskInterface> appTasks = mTasksAndEventsRepository.getTasks(appId);
-
-    if (appTasks != null) {
-      appTasks.remove(taskName);
-    }
+    mTasksAndEventsRepository.removeTask(appId, taskName);
 
     Log.i(TAG, "Unregistering task '" + taskName + "' for app '" + appId + "'.");
 
@@ -143,7 +139,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
         task.getConsumer().didUnregister();
       }
 
-      appTasks.clear();
+      mTasksAndEventsRepository.removeTasks(appId);
       removeAppFromConfig(appId);
     }
   }

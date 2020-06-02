@@ -64,6 +64,7 @@ public interface TasksAndEventsRepository {
   boolean hasTasks(String appId);
   void putTasks(String appId, Map<String, TaskInterface> tasks);
   void removeTasks(String appId);
+  void removeTask(String appId, String taskName);
   void persistTasksForAppId(SharedPreferences preferences, String appId);
   Map<String, AppConfig> readPersistedTasks(SharedPreferences preferences);
 }
