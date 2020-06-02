@@ -1,3 +1,7 @@
+import { Picker } from '@react-native-community/picker';
+import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
   Alert,
@@ -7,14 +11,11 @@ import {
   Text,
   Switch,
   TextInput,
-  Picker,
   Platform,
 } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import Constants from 'expo-constants';
 
-import Colors from '../constants/Colors';
 import Button from '../components/Button';
+import Colors from '../constants/Colors';
 
 const url = 'https://expo.io';
 interface Package {
@@ -37,7 +38,7 @@ interface State {
   enableDefaultShare: boolean;
 }
 
-export default class WebBrowserScreen extends React.Component<{}, State> {
+export default class WebBrowserScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'WebBrowser',
   };
@@ -88,8 +89,10 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   };
 
   startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
-    const url = Platform.select({ web: window.location.origin, default: Constants.linkingUrl });
-    const redirectUrl = `${url}/redirect`;
+    const redirectUrl = Platform.select({
+      web: `${window.location.origin}/redirect`,
+      default: Linking.makeUrl('redirect'),
+    });
     const result = await WebBrowser.openAuthSessionAsync(
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
         redirectUrl
@@ -286,7 +289,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
   },
   label: {
     paddingBottom: 5,
