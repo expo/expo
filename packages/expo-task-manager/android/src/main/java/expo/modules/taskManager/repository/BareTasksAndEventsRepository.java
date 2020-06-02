@@ -109,7 +109,7 @@ public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
 
   @Override
   public void removeTask(String appId, String taskName) {
-    if(sTasks.containsKey(appId)) {
+    if (sTasks.containsKey(appId)) {
       Objects.requireNonNull(sTasks.get(appId)).remove(taskName);
     }
   }
