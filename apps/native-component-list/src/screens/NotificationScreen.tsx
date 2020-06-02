@@ -168,7 +168,7 @@ export default class NotificationScreen extends React.Component<
     await this._obtainUserFacingNotifPermissionsAsync();
     Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Here is a scheduled notification!',
+        title: 'Here is a local notification!',
         body: 'This is the body',
         data: {
           hello: 'there',
