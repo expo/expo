@@ -1,3 +1,5 @@
+import Constants from 'expo-constants';
+import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
   Alert,
@@ -10,11 +12,9 @@ import {
   Picker,
   Platform,
 } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import Constants from 'expo-constants';
 
-import Colors from '../constants/Colors';
 import Button from '../components/Button';
+import Colors from '../constants/Colors';
 
 const url = 'https://expo.io';
 interface Package {
@@ -37,7 +37,7 @@ interface State {
   enableDefaultShare: boolean;
 }
 
-export default class WebBrowserScreen extends React.Component<{}, State> {
+export default class WebBrowserScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'WebBrowser',
   };
