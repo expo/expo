@@ -35,7 +35,7 @@ export async function test(t) {
           subscription = null;
         }
       });
-
+      
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
         t.it('resolves with a string', async () => {
           const devicePushToken = await Notifications.getDevicePushTokenAsync();
@@ -1314,6 +1314,87 @@ export async function test(t) {
         );
       }
     );
+
+    t.describe('createCategoryAsync', () => {
+      t.it(
+        'triggers a category notification which resolves an actionIdentifier when tapped',
+        async () => {
+          const secondsToTimeout = 5;
+          const shouldRun = await Promise.race([
+            askUserYesOrNo('Could you tap on the "🎉" action in the notification when it shows?'),
+            waitFor(secondsToTimeout * 1000),
+          ]);
+          if (!shouldRun) {
+            console.warn(
+              "Notification response test was skipped and marked as successful. It required user interaction which hasn't occured in time."
+            );
+            Alert.alert(
+              'Notification response test was skipped',
+              `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
+            );
+            return;
+          }
+
+          const identifier = 'create-category-async';
+          const notification = {
+            title: 'Press 🎉 for the test',
+            data: { key: 'value' },
+            badge: 2,
+            color: '#FF0000',
+            categoryIdentifier: 'welcome',
+          };
+
+          await Notifications.createCategoryAsync('welcome', [
+            {
+              actionId: 'tada',
+              buttonTitle: '🎉',
+              isDestructive: false,
+              isAuthenticationRequired: false,
+            },
+            {
+              actionId: 'heart_eyes',
+              buttonTitle: '😍',
+              isDestructive: false,
+              isAuthenticationRequired: true,
+            },
+          ]);
+
+          Notifications.setNotificationHandler({
+            handleNotification: () => {
+              return {
+                shouldShowAlert: true,
+              };
+            },
+          });
+
+          let actionIdentifier;
+          const subscription = Notifications.addNotificationResponseReceivedListener(({ actionIdentifier: actionId }) => {
+            actionIdentifier = actionId;
+            console.log({ actionIdentifier });
+          });
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: null,
+          });
+          await waitFor(5000);
+          const notificationWasShown = await askUserYesOrNo('Was the notification shown?');
+          t.expect(notificationWasShown).toBeTruthy();
+          t.expect(actionIdentifier).toBe('expo.modules.notifications.actions.tada');
+          subscription.remove();
+          Notifications.setNotificationHandler(null);
+          await Notifications.deleteCategoryAsync('welcome');
+        },
+        20000
+      );
+    });
+
+    t.describe('deleteCategoryAsync', () => {
+      t.it('resolves with null', async () => {
+        const response = await Notifications.deleteCategoryAsync('welcome');
+        t.expect(typeof response === 'undefined').toBe(true);
+      });
+    });
   });
 }
 
