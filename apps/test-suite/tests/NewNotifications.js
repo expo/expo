@@ -670,6 +670,24 @@ export async function test(t) {
           })
         );
       });
+
+      if (Constants.appOwnership === 'expo') {
+        t.fit('includes the foreign persistent notification', async () => {
+          const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+          t.expect(displayedNotifications).toContain(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                identifier: t.jasmine.stringMatching(/^__expo_foreign_notification__#.*#\d+$/),
+                content: t.jasmine.objectContaining({
+                  data: t.jasmine.objectContaining({
+                    'android.contains.customView': true,
+                  }),
+                }),
+              }),
+            })
+          );
+        });
+      }
     });
 
     t.describe('dismissNotificationAsync()', () => {
