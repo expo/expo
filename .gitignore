@@ -121,5 +121,6 @@ shellAppWorkspaces
 apps/bare-expo/deploy-url.txt
 
 # Expo Doc merging
-docs/pages/versions/*/react-native/*.unpatched.md
-docs/pages/versions/*/react-native/*.patch
+docs/pages/versions/*/react-native/ADDED_*.md
+docs/pages/versions/*/react-native/REMOVED_*.md
+docs/pages/versions/*/react-native/*.diff
