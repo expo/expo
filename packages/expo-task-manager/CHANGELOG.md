@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Upgrading an application does not cause `BackgroundFetch` tasks to unregister. ([#8348](https://github.com/expo/expo/pull/8438) by [@mczernek](https://github.com/mczernek))
+- Fix removing tasks from repository when … ([#8612](https://github.com/expo/expo/pull/8612) by [@mczernek](https://github.com/mczernek))
 
 ## 8.3.0 — 2020-05-29
 
