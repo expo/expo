@@ -1,5 +1,6 @@
 import { Picker } from '@react-native-community/picker';
 import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
@@ -88,8 +89,10 @@ export default class WebBrowserScreen extends React.Component<object, State> {
   };
 
   startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
-    const url = Platform.select({ web: window.location.origin, default: Constants.linkingUrl });
-    const redirectUrl = `${url}/redirect`;
+    const redirectUrl = Platform.select({
+      web: `${window.location.origin}/redirect`,
+      default: Linking.makeUrl('redirect'),
+    });
     const result = await WebBrowser.openAuthSessionAsync(
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
         redirectUrl
@@ -286,7 +289,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
   },
   label: {
     paddingBottom: 5,
