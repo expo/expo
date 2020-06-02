@@ -246,3 +246,15 @@ export interface NotificationBehavior {
   shouldSetBadge: boolean;
   priority?: AndroidNotificationPriority;
 }
+
+export type ActionType = {
+  actionId: string;
+  buttonTitle: string;
+  isDestructive?: boolean;
+  isAuthenticationRequired?: boolean;
+  doNotOpenInForeground?: boolean;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
+};

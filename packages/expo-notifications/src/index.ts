@@ -18,6 +18,8 @@ export { default as getAllScheduledNotificationsAsync } from './getAllScheduledN
 export { default as scheduleNotificationAsync } from './scheduleNotificationAsync';
 export { default as cancelScheduledNotificationAsync } from './cancelScheduledNotificationAsync';
 export { default as cancelAllScheduledNotificationsAsync } from './cancelAllScheduledNotificationsAsync';
+export { default as createCategoryAsync } from './createCategoryAsync';
+export { default as deleteCategoryAsync } from './deleteCategoryAsync';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
