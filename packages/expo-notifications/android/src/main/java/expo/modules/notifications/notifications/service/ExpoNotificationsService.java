@@ -46,6 +46,8 @@ public class ExpoNotificationsService extends BaseNotificationsService {
    * to properly handle the notification. This implementation uses a static ID = 0.
    */
   protected static final int ANDROID_NOTIFICATION_ID = 0;
+  protected static final String INTERNAL_IDENTIFIER_FOREIGN_PREFIX = "__expo_foreign_notification__";
+  protected static final String INTERNAL_IDENTIFIER_NULL_PLACEHOLDER = "__expo_null__";
   /**
    * A weak map of listeners -> reference. Used to check quickly whether given listener
    * is already registered and to iterate over when notifying of new token.
@@ -123,9 +125,23 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     }
   }
 
+  protected String getInternalIdentifierKey(StatusBarNotification notification) {
+    // We first add the key as it may produce PREFIX##number which,
+    // split by #, will always result in a three-element array.
+    String safeKey = notification.getTag() == null ? INTERNAL_IDENTIFIER_NULL_PLACEHOLDER : notification.getTag();
+    return INTERNAL_IDENTIFIER_FOREIGN_PREFIX + "#" + safeKey + "#" + notification.getId();
+  }
+
   @Override
   protected void onNotificationDismiss(String identifier) {
-    NotificationManagerCompat.from(this).cancel(identifier, ANDROID_NOTIFICATION_ID);
+    if (identifier.startsWith(INTERNAL_IDENTIFIER_FOREIGN_PREFIX)) {
+      String[] parts = identifier.split("#");
+      int id = Integer.parseInt(parts[2]);
+      String key = INTERNAL_IDENTIFIER_NULL_PLACEHOLDER.equals(parts[1]) ? null : parts[1];
+      NotificationManagerCompat.from(this).cancel(key, id);
+    } else {
+      NotificationManagerCompat.from(this).cancel(identifier, ANDROID_NOTIFICATION_ID);
+    }
   }
 
   @Override
@@ -219,7 +235,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
         .setAutoDismiss((notification.flags & android.app.Notification.FLAG_AUTO_CANCEL) != 0)
         .setBody(fromBundle(notification.extras))
         .build();
-      NotificationRequest request = new NotificationRequest(statusBarNotification.getKey(), content, null);
+      NotificationRequest request = new NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null);
       return new Notification(request, new Date(statusBarNotification.getPostTime()));
     }
     return null;
