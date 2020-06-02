@@ -1,8 +1,9 @@
+import { Picker } from '@react-native-community/picker';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 import chunk from 'lodash/chunk';
 import React from 'react';
-import { Picker, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';

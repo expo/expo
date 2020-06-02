@@ -1,3 +1,4 @@
+import { Picker } from '@react-native-community/picker';
 import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
@@ -9,7 +10,6 @@ import {
   Text,
   Switch,
   TextInput,
-  Picker,
   Platform,
 } from 'react-native';
 
