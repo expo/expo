@@ -2,9 +2,13 @@ package expo.modules.notifications.notifications.service;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -22,8 +26,10 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
@@ -198,10 +204,38 @@ public class ExpoNotificationsService extends BaseNotificationsService {
         String message = String.format("Could not have unmarshalled NotificationRequest from (%s, %d).", statusBarNotification.getTag(), statusBarNotification.getId());
         Log.e("expo-notifications", message);
       }
+    } else {
+      // It's not our notification. Let's do what we can.
+      NotificationContent content = new NotificationContent.Builder()
+        .setTitle(notification.extras.getString(android.app.Notification.EXTRA_TITLE))
+        .setText(notification.extras.getString(android.app.Notification.EXTRA_TEXT))
+        .setSubtitle(notification.extras.getString(android.app.Notification.EXTRA_SUB_TEXT))
+        // using deprecated field
+        .setPriority(NotificationPriority.fromNativeValue(notification.priority))
+        // using deprecated field
+        .setVibrationPattern(notification.vibrate)
+        // using deprecated field
+        .setSound(notification.sound)
+        .setAutoDismiss((notification.flags & android.app.Notification.FLAG_AUTO_CANCEL) != 0)
+        .setBody(fromBundle(notification.extras))
+        .build();
+      NotificationRequest request = new NotificationRequest(statusBarNotification.getKey(), content, null);
+      return new Notification(request, new Date(statusBarNotification.getPostTime()));
     }
     return null;
   }
 
+  protected JSONObject fromBundle(Bundle bundle) {
+    JSONObject json = new JSONObject();
+    for (String key : bundle.keySet()) {
+      try {
+        json.put(key, JSONObject.wrap(bundle.get(key)));
+      } catch (JSONException e) {
+        // can't do anything about it
+      }
+    }
+    return json;
+  }
 
   protected NotificationRequest reconstructNotificationRequest(Parcel parcel) {
     return NotificationRequest.CREATOR.createFromParcel(parcel);
