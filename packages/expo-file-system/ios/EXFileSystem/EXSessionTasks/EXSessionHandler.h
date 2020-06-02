@@ -6,7 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 @protocol EXSessionHandler
 
 - (void)invokeCompletionHandlerForSessionIdentifier:(NSString *)identifier;

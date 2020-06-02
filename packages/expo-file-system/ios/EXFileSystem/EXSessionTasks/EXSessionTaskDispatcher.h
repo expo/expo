@@ -8,11 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXSessionTaskDispatcher : NSObject <NSURLSessionDelegate>
 
+- (instancetype)initWithSessionHandler:(id<EXSessionHandler>)sessionHandler;
+
 - (void)registerTaskDelegate:(EXSessionTaskDelegate *)delegate forTask:(NSURLSessionTask *)task;
 
 - (void)deactivate;
-
-- (instancetype)initWithSessionHandler:(id<EXSessionHandler>)sessionHandler;
 
 @end
 

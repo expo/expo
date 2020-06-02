@@ -8,6 +8,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, EXSessionTaskDelegate *> *tasks;
 @property (nonatomic) BOOL isActive;
 @property (nonatomic, weak) id<EXSessionHandler> sessionHandler;
+
 @end
 
 @implementation EXSessionTaskDispatcher

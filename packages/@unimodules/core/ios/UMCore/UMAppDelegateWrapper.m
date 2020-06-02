@@ -125,6 +125,7 @@ static dispatch_once_t onceToken;
 }
 
 #pragma mark - BackgroundSession
+
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
 {
   SEL selector = @selector(application:handleEventsForBackgroundURLSession:completionHandler:);

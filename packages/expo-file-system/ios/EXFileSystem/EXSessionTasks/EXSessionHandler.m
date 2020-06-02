@@ -32,9 +32,9 @@ UM_REGISTER_SINGLETON_MODULE(SessionHandler);
   void (^completionHandler)(void) = _completionHandlers[identifier];
   if (completionHandler) {
     // We need to run completionHandler explicite on the main thread because is's part of UIKit
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    dispatch_async(dispatch_get_main_queue(), ^{
       completionHandler();
-    }];
+    });
     [_completionHandlers removeObjectForKey:identifier];
   }
 }
