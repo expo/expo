@@ -68,7 +68,7 @@ import okio.Source;
 public class FileSystemModule extends ExportedModule {
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
-  private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
+  private static final String EXDownloadProgressEventName = "expo-file-system.downloadProgress";
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
 
