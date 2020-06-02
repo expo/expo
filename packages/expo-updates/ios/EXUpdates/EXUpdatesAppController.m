@@ -10,6 +10,7 @@
 #import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -85,9 +86,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     _launcher = launcher;
     [launcher launchUpdate];
 
-    if (_delegate) {
-      [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
-    }
+    [self _finishWithSuccess:self.launchAssetUrl != nil];
 
     return;
   }
@@ -227,6 +226,26 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
 # pragma mark - internal
 
+- (void)_finishWithSuccess:(BOOL)success
+{
+  if (_delegate) {
+    [EXUpdatesUtils runBlockOnMainThread:^{
+      [self->_delegate appController:self didStartWithSuccess:success];
+      id splashScreenService = [UMModuleRegistryProvider getSingletonModuleForClass:NSClassFromString(@"EXSplashScreenService")];
+      SEL showSplashScreenSelector = NSSelectorFromString(@"showSplashScreenFor:");
+      if (splashScreenService && [splashScreenService respondsToSelector:showSplashScreenSelector]) {
+        UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
+
+        // workaround for potential memory leak with performSelector:
+        // https://stackoverflow.com/questions/7017281/performselector-may-cause-a-leak-because-its-selector-is-unknown
+        IMP imp = [splashScreenService methodForSelector:showSplashScreenSelector];
+        void (*func)(id, SEL, UIViewController *) = (void *)imp;
+        func(splashScreenService, showSplashScreenSelector, rootViewController);
+      }
+    }];
+  }
+}
+
 - (void)_maybeFinish
 {
   if (!_isTimerFinished || !_isReadyToLaunch) {
@@ -246,11 +265,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     return;
   }
 
-  if (self->_delegate) {
-    [EXUpdatesUtils runBlockOnMainThread:^{
-      [self->_delegate appController:self didStartWithSuccess:YES];
-    }];
-  }
+  [self _finishWithSuccess:YES];
 }
 
 - (void)_timerDidFire
@@ -366,11 +381,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   _launcher = launcher;
   [launcher launchUpdateWithFatalError:error];
 
-  if (_delegate) {
-    [EXUpdatesUtils runBlockOnMainThread:^{
-      [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
-    }];
-  }
+  [self _finishWithSuccess:self.launchAssetUrl != nil];
 }
 
 @end
