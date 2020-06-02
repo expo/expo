@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -104,6 +105,13 @@ public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
   @Override
   public void removeTasks(String appId) {
     sTasks.remove(appId);
+  }
+
+  @Override
+  public void removeTask(String appId, String taskName) {
+    if (sTasks.containsKey(appId)) {
+      Objects.requireNonNull(sTasks.get(appId)).remove(taskName);
+    }
   }
 
   @Override
