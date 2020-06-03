@@ -282,7 +282,8 @@ public class ExpoNotificationsService extends BaseNotificationsService {
       try {
         json.put(key, JSONObject.wrap(bundle.get(key)));
       } catch (JSONException e) {
-        // can't do anything about it
+        // can't do anything about it apart from logging it
+        Log.d("expo-notifications", "Error encountered while serializing Android notification extras: " + key + " -> " + bundle.get(key), e);
       }
     }
     return json;
