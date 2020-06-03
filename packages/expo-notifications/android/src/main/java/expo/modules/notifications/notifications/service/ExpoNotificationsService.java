@@ -1,11 +1,13 @@
 package expo.modules.notifications.notifications.service;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.util.Pair;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
@@ -46,8 +49,10 @@ public class ExpoNotificationsService extends BaseNotificationsService {
    * to properly handle the notification. This implementation uses a static ID = 0.
    */
   protected static final int ANDROID_NOTIFICATION_ID = 0;
-  protected static final String INTERNAL_IDENTIFIER_FOREIGN_PREFIX = "__expo_foreign_notification__";
-  protected static final String INTERNAL_IDENTIFIER_NULL_PLACEHOLDER = "__expo_null__";
+  public static final String INTERNAL_IDENTIFIER_SCHEME = "expo-notifications";
+  public static final String INTERNAL_IDENTIFIER_AUTHORITY = "foreign_notifications";
+  public static final String INTERNAL_IDENTIFIER_TAG_KEY = "tag";
+  public static final String INTERNAL_IDENTIFIER_ID_KEY = "id";
   /**
    * A weak map of listeners -> reference. Used to check quickly whether given listener
    * is already registered and to iterate over when notifying of new token.
@@ -125,23 +130,53 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     }
   }
 
-  protected String getInternalIdentifierKey(StatusBarNotification notification) {
-    // We first add the key as it may produce PREFIX##number which,
-    // split by #, will always result in a three-element array.
-    String safeKey = notification.getTag() == null ? INTERNAL_IDENTIFIER_NULL_PLACEHOLDER : notification.getTag();
-    return INTERNAL_IDENTIFIER_FOREIGN_PREFIX + "#" + safeKey + "#" + notification.getId();
-  }
-
   @Override
   protected void onNotificationDismiss(String identifier) {
-    if (identifier.startsWith(INTERNAL_IDENTIFIER_FOREIGN_PREFIX)) {
-      String[] parts = identifier.split("#");
-      int id = Integer.parseInt(parts[2]);
-      String key = INTERNAL_IDENTIFIER_NULL_PLACEHOLDER.equals(parts[1]) ? null : parts[1];
-      NotificationManagerCompat.from(this).cancel(key, id);
+    Pair<String, Integer> foreignNotification = parseNotificationIdentifier(identifier);
+    if (foreignNotification != null) {
+      // Foreign notification identified by us
+      NotificationManagerCompat.from(this).cancel(foreignNotification.first, foreignNotification.second);
     } else {
+      // Let's hope it's our notification, we have no reason to believe otherwise
       NotificationManagerCompat.from(this).cancel(identifier, ANDROID_NOTIFICATION_ID);
     }
+  }
+
+  /**
+   * Creates an identifier for given {@link StatusBarNotification}. It's supposed to be parsable
+   * by {@link ExpoNotificationsService#parseNotificationIdentifier(String)}.
+   *
+   * @param notification Notification to be identified
+   * @return String identifier
+   */
+  protected static String getInternalIdentifierKey(StatusBarNotification notification) {
+    Uri.Builder builder = Uri.parse(INTERNAL_IDENTIFIER_SCHEME + "://" + INTERNAL_IDENTIFIER_AUTHORITY).buildUpon();
+    if (notification.getTag() != null) {
+      builder.appendQueryParameter(INTERNAL_IDENTIFIER_TAG_KEY, notification.getTag());
+    }
+    builder.appendQueryParameter(INTERNAL_IDENTIFIER_ID_KEY, Integer.toString(notification.getId()));
+    return builder.toString();
+  }
+
+  /**
+   * Tries to parse given identifier as an internal foreign notification identifier
+   * created by us in {@link ExpoNotificationsService#getInternalIdentifierKey(StatusBarNotification)}.
+   *
+   * @param identifier String identifier of the notification
+   * @return Pair of (notification tag, notification id), if the identifier could be parsed. null otherwise.
+   */
+  public static Pair<String, Integer> parseNotificationIdentifier(String identifier) {
+    Uri parsedIdentifier = Uri.parse(identifier);
+    try {
+      if (INTERNAL_IDENTIFIER_SCHEME.equals(parsedIdentifier.getScheme()) && INTERNAL_IDENTIFIER_AUTHORITY.equals(parsedIdentifier.getAuthority())) {
+        String tag = parsedIdentifier.getQueryParameter(INTERNAL_IDENTIFIER_TAG_KEY);
+        int id = Integer.parseInt(Objects.requireNonNull(parsedIdentifier.getQueryParameter(INTERNAL_IDENTIFIER_ID_KEY)));
+        return new Pair<>(tag, id);
+      }
+    } catch (NullPointerException | NumberFormatException | UnsupportedOperationException e) {
+      Log.e("expo-notifications", "Malformed foreign notification identifier: " + identifier, e);
+    }
+    return null;
   }
 
   @Override
