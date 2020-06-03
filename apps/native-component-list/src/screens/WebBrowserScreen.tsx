@@ -89,10 +89,7 @@ export default class WebBrowserScreen extends React.Component<object, State> {
   };
 
   startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
-    const redirectUrl = Platform.select({
-      web: `${window.location.origin}/redirect`,
-      default: Linking.makeUrl('redirect'),
-    });
+    const redirectUrl = Linking.makeUrl('redirect');
     const result = await WebBrowser.openAuthSessionAsync(
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
         redirectUrl
