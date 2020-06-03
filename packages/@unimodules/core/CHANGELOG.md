@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- App delegates now can receive the completion handler via the `application:handleEventsForBackgroundURLSession:completionHandler:` method on the iOS. ([#8599](https://github.com/expo/expo/pull/8599) by [@lukmccall](https://github.com/lukmccall))
+- App delegates can now handle background URL session events via `application:handleEventsForBackgroundURLSession:completionHandler:` method on iOS. ([#8599](https://github.com/expo/expo/pull/8599) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

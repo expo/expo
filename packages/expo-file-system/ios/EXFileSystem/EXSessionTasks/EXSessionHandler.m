@@ -39,7 +39,7 @@ UM_REGISTER_SINGLETON_MODULE(SessionHandler);
   }
 }
 
-#pragma mark - AppDelagate
+#pragma mark - AppDelegate
 
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
 {
