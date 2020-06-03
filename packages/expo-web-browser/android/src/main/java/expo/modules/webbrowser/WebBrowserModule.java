@@ -34,6 +34,7 @@ public class WebBrowserModule extends ExportedModule {
   private final static String SHOW_IN_RECENTS = "showInRecents";
   private final static String DEFAULT_SHARE_MENU_ITEM = "enableDefaultShareMenuItem";
   private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
+  private final static String SECONDARY_TOOLBAR_COLOR_KEY = "secondaryToolbarColor";
 
   private final static String ERROR_CODE = "EXWebBrowser";
   private static final String TAG = "ExpoWebBrowser";
@@ -152,11 +153,16 @@ public class WebBrowserModule extends ExportedModule {
   private Intent createCustomTabsIntent(ReadableArguments arguments) {
     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
     String color = arguments.getString(TOOLBAR_COLOR_KEY);
+    String secondaryColor = arguments.getString(SECONDARY_TOOLBAR_COLOR_KEY);
     String packageName = arguments.getString(BROWSER_PACKAGE_KEY);
     try {
       if (!TextUtils.isEmpty(color)) {
         int intColor = Color.parseColor(color);
         builder.setToolbarColor(intColor);
+      }
+      if (!TextUtils.isEmpty(secondaryColor)) {
+        int intSecondaryColor = Color.parseColor(secondaryColor);
+        builder.setSecondaryToolbarColor(intSecondaryColor);
       }
     } catch (IllegalArgumentException ignored) {
     }
