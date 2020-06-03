@@ -33,14 +33,14 @@ export async function hideAsync() {
     return await ExpoSplashScreen.hideAsync();
 }
 /**
- * @deprecated
+ * @deprecated use `SplashScreen.hideAsync()`
  */
 export function hide() {
     console.warn('SplashScreen.hide() is deprecated in favour of SplashScreen.hideAsync()');
     hideAsync();
 }
 /**
- * @deprecated
+ * @deprecated use `SplashScreen.preventAutoHideAsync()`
  */
 export function preventAutoHide() {
     console.warn('SplashScreen.preventAutoHide() is deprecated in favour of SplashScreen.preventAutoHideAsync()');

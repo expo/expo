@@ -21,10 +21,10 @@
 export declare function preventAutoHideAsync(): Promise<boolean>;
 export declare function hideAsync(): Promise<boolean>;
 /**
- * @deprecated
+ * @deprecated use `SplashScreen.hideAsync()`
  */
 export declare function hide(): void;
 /**
- * @deprecated
+ * @deprecated use `SplashScreen.preventAutoHideAsync()`
  */
 export declare function preventAutoHide(): void;
