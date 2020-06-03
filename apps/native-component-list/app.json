@@ -44,7 +44,8 @@
           "apiKey": "key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO"
         },
         "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713"
-      }
+      },
+      "useNextNotificationsApi": true
     },
     "ios": {
       "bundleIdentifier": "host.exp.nclexp",
