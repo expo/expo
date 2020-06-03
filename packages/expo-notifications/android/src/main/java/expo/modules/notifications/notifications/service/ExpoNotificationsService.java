@@ -1,10 +1,16 @@
 package expo.modules.notifications.notifications.service;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.util.Pair;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -12,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
@@ -22,8 +29,10 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
@@ -40,6 +49,10 @@ public class ExpoNotificationsService extends BaseNotificationsService {
    * to properly handle the notification. This implementation uses a static ID = 0.
    */
   protected static final int ANDROID_NOTIFICATION_ID = 0;
+  public static final String INTERNAL_IDENTIFIER_SCHEME = "expo-notifications";
+  public static final String INTERNAL_IDENTIFIER_AUTHORITY = "foreign_notifications";
+  public static final String INTERNAL_IDENTIFIER_TAG_KEY = "tag";
+  public static final String INTERNAL_IDENTIFIER_ID_KEY = "id";
   /**
    * A weak map of listeners -> reference. Used to check quickly whether given listener
    * is already registered and to iterate over when notifying of new token.
@@ -119,7 +132,51 @@ public class ExpoNotificationsService extends BaseNotificationsService {
 
   @Override
   protected void onNotificationDismiss(String identifier) {
-    NotificationManagerCompat.from(this).cancel(identifier, ANDROID_NOTIFICATION_ID);
+    Pair<String, Integer> foreignNotification = parseNotificationIdentifier(identifier);
+    if (foreignNotification != null) {
+      // Foreign notification identified by us
+      NotificationManagerCompat.from(this).cancel(foreignNotification.first, foreignNotification.second);
+    } else {
+      // Let's hope it's our notification, we have no reason to believe otherwise
+      NotificationManagerCompat.from(this).cancel(identifier, ANDROID_NOTIFICATION_ID);
+    }
+  }
+
+  /**
+   * Creates an identifier for given {@link StatusBarNotification}. It's supposed to be parsable
+   * by {@link ExpoNotificationsService#parseNotificationIdentifier(String)}.
+   *
+   * @param notification Notification to be identified
+   * @return String identifier
+   */
+  protected static String getInternalIdentifierKey(StatusBarNotification notification) {
+    Uri.Builder builder = Uri.parse(INTERNAL_IDENTIFIER_SCHEME + "://" + INTERNAL_IDENTIFIER_AUTHORITY).buildUpon();
+    if (notification.getTag() != null) {
+      builder.appendQueryParameter(INTERNAL_IDENTIFIER_TAG_KEY, notification.getTag());
+    }
+    builder.appendQueryParameter(INTERNAL_IDENTIFIER_ID_KEY, Integer.toString(notification.getId()));
+    return builder.toString();
+  }
+
+  /**
+   * Tries to parse given identifier as an internal foreign notification identifier
+   * created by us in {@link ExpoNotificationsService#getInternalIdentifierKey(StatusBarNotification)}.
+   *
+   * @param identifier String identifier of the notification
+   * @return Pair of (notification tag, notification id), if the identifier could be parsed. null otherwise.
+   */
+  public static Pair<String, Integer> parseNotificationIdentifier(String identifier) {
+    Uri parsedIdentifier = Uri.parse(identifier);
+    try {
+      if (INTERNAL_IDENTIFIER_SCHEME.equals(parsedIdentifier.getScheme()) && INTERNAL_IDENTIFIER_AUTHORITY.equals(parsedIdentifier.getAuthority())) {
+        String tag = parsedIdentifier.getQueryParameter(INTERNAL_IDENTIFIER_TAG_KEY);
+        int id = Integer.parseInt(Objects.requireNonNull(parsedIdentifier.getQueryParameter(INTERNAL_IDENTIFIER_ID_KEY)));
+        return new Pair<>(tag, id);
+      }
+    } catch (NullPointerException | NumberFormatException | UnsupportedOperationException e) {
+      Log.e("expo-notifications", "Malformed foreign notification identifier: " + identifier, e);
+    }
+    return null;
   }
 
   @Override
@@ -198,10 +255,39 @@ public class ExpoNotificationsService extends BaseNotificationsService {
         String message = String.format("Could not have unmarshalled NotificationRequest from (%s, %d).", statusBarNotification.getTag(), statusBarNotification.getId());
         Log.e("expo-notifications", message);
       }
+    } else {
+      // It's not our notification. Let's do what we can.
+      NotificationContent content = new NotificationContent.Builder()
+        .setTitle(notification.extras.getString(android.app.Notification.EXTRA_TITLE))
+        .setText(notification.extras.getString(android.app.Notification.EXTRA_TEXT))
+        .setSubtitle(notification.extras.getString(android.app.Notification.EXTRA_SUB_TEXT))
+        // using deprecated field
+        .setPriority(NotificationPriority.fromNativeValue(notification.priority))
+        // using deprecated field
+        .setVibrationPattern(notification.vibrate)
+        // using deprecated field
+        .setSound(notification.sound)
+        .setAutoDismiss((notification.flags & android.app.Notification.FLAG_AUTO_CANCEL) != 0)
+        .setBody(fromBundle(notification.extras))
+        .build();
+      NotificationRequest request = new NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null);
+      return new Notification(request, new Date(statusBarNotification.getPostTime()));
     }
     return null;
   }
 
+  protected JSONObject fromBundle(Bundle bundle) {
+    JSONObject json = new JSONObject();
+    for (String key : bundle.keySet()) {
+      try {
+        json.put(key, JSONObject.wrap(bundle.get(key)));
+      } catch (JSONException e) {
+        // can't do anything about it apart from logging it
+        Log.d("expo-notifications", "Error encountered while serializing Android notification extras: " + key + " -> " + bundle.get(key), e);
+      }
+    }
+    return json;
+  }
 
   protected NotificationRequest reconstructNotificationRequest(Parcel parcel) {
     return NotificationRequest.CREATOR.createFromParcel(parcel);
