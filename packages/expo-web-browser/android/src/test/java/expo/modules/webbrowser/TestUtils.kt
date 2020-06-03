@@ -24,7 +24,7 @@ fun mockkCustomTabsActivitiesHelper(
     every { it.customTabsResolvingServices } returns services
     every { it.getPreferredCustomTabsResolvingActivity(any()) } returns preferredActivity
     every { it.defaultCustomTabsResolvingActivity } returns defaultActivity
-    every { it.exportedInterfaces } returns listOf(CustomTabsActivitiesHelper::class.java)
+    every { it.exportedInterfaces } returns mutableListOf(CustomTabsActivitiesHelper::class.java)
 
     if (startIntentSlot != null) {
       every { it.startCustomTabs(capture(startIntentSlot)) } just Runs
@@ -39,6 +39,7 @@ fun mockkCustomTabsConnectionHelper(): CustomTabsConnectionHelper {
 
 fun browserArguments(
   toolbarColor: String = "#000000",
+  toolbarSecondaryColor: String = "#000000",
   browserPackage: String = "com.browser",
   enableBarCollapsing: Boolean = true,
   showTitle: Boolean = true,
@@ -48,6 +49,7 @@ fun browserArguments(
   // Move creation of readable arguments to TestUtils
   return readableArgumentsOf(mapOf(
     "toolbarColor" to toolbarColor,
+    "toolbarSecondaryColor" to toolbarSecondaryColor,
     "browserPackage" to browserPackage,
     "enableBarCollapsing" to enableBarCollapsing,
     "showTitle" to showTitle,
