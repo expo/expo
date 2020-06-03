@@ -15,8 +15,8 @@ fun mockkCustomTabsActivitiesHelper(
   preferredActivity: String? = null,
   defaultActivity: String? = null,
   startIntentSlot: CapturingSlot<Intent>? = null,
-  defaultCanResolveIntent: Boolean = false):
-  CustomTabsActivitiesHelper {
+  defaultCanResolveIntent: Boolean = false
+): CustomTabsActivitiesHelper {
 
   return mockkInternalModule<CustomTabsActivitiesHelper>(relaxed = true).also {
     every { it.canResolveIntent(any()) } returns defaultCanResolveIntent
