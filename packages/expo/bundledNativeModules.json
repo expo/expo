@@ -97,7 +97,7 @@
   "expo-image-loader": "~1.1.1",
   "expo-screen-orientation": "~1.1.1",
   "unimodules-app-loader": "~1.2.0",
-  "expo-notifications": "~0.3.0",
+  "expo-notifications": "~0.3.1",
   "expo-splash-screen": "~0.3.1",
   "firebase": "7.9.0",
   "@react-native-community/picker": "1.6.0",
