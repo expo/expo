@@ -125,7 +125,7 @@
       android:label="@string/app_name"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.Exponent.Light.LightStatusBar">
+      android:theme="@style/Theme.Exponent.HomeActivity">
       <!-- START HOME INTENT FILTERS -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>

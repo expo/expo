@@ -1,9 +1,9 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Device from 'expo-device';
 import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Appearance } from 'react-native-appearance';
@@ -24,9 +24,7 @@ Asset.loadAsync(StackAssets);
 
 @connect(data => App.getDataProps(data))
 export default class App extends React.Component {
-  static getDataProps(data) {
-    const { settings } = data;
-
+  static getDataProps({ settings }) {
     return {
       preferredAppearance: settings.preferredAppearance,
     };
@@ -37,9 +35,10 @@ export default class App extends React.Component {
     colorScheme: Appearance.getColorScheme(),
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this._initializeStateAsync();
     this._addProjectHistoryListener();
+    await SplashScreen.preventAutoHideAsync();
   }
 
   _addProjectHistoryListener = () => {
@@ -96,6 +95,7 @@ export default class App extends React.Component {
       // ..
     } finally {
       this.setState({ isReady: true }, async () => {
+        await SplashScreen.hideAsync();
         if (Platform.OS === 'ios') {
           // if expo client is opened via deep linking, we'll get the url here
           const initialUrl = await Linking.getInitialURL();
@@ -109,7 +109,7 @@ export default class App extends React.Component {
 
   render() {
     if (!this.state.isReady) {
-      return <AppLoading />;
+      return null;
     }
 
     const { preferredAppearance, colorScheme } = this.props;
