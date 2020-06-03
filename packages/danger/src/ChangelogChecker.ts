@@ -45,7 +45,7 @@ function isChangelogModified(packageName: string, modifiedFiles: string[]): bool
   );
 }
 
-function getSuggestedChangelogEntry(packageNames: string[]): PackageChangelogEntry[] {
+function getSuggestedChangelogEntries(packageNames: string[]): PackageChangelogEntry[] {
   const {
     [DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry,
     ...suggestedEntries
@@ -156,7 +156,7 @@ export async function checkChangelog(): Promise<void> {
 
   // gets suggested entries based on pull request
   console.log('📝 Gathering information from PR...');
-  const suggestedEntries = getSuggestedChangelogEntry(packagesWithoutChangelog);
+  const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelog);
 
   // everything is up-to-date or skipped
   if (!suggestedEntries.length) {

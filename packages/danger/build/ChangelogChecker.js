@@ -47,7 +47,7 @@ function isChangelogModified(packageName, modifiedFiles) {
     return (modifiedFiles.includes(changelogPath) ||
         !fs.existsSync(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)));
 }
-function getSuggestedChangelogEntry(packageNames) {
+function getSuggestedChangelogEntries(packageNames) {
     const { [PullRequestManager_1.DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
         var _a, _b, _c, _d;
@@ -126,7 +126,7 @@ async function checkChangelog() {
     }
     // gets suggested entries based on pull request
     console.log('📝 Gathering information from PR...');
-    const suggestedEntries = getSuggestedChangelogEntry(packagesWithoutChangelog);
+    const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelog);
     // everything is up-to-date or skipped
     if (!suggestedEntries.length) {
         console.log('Everything is ok 🎉');
