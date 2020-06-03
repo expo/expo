@@ -31,7 +31,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
     await FileSystem.downloadAsync(url, FileSystem.documentDirectory + '256KB.zip');
     alert('Download complete!');
-  }
+  };
 
   _startDownloading = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
@@ -47,14 +47,14 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     this.download = FileSystem.createDownloadResumable(url, fileUri, options, callback);
 
     try {
-      await this.download.downloadAsync();
-      if (this.state.downloadProgress === 1) {
-        alert('Download complete!');
+      const result = await this.download.downloadAsync();
+      if (result) {
+        this._downloadComplete();
       }
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _pause = async () => {
     if (!this.download) {
@@ -68,14 +68,14 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _resume = async () => {
     try {
       if (this.download) {
-        await this.download.resumeAsync();
-        if (this.state.downloadProgress === 1) {
-          alert('Download complete!');
+        const result = await this.download.resumeAsync();
+        if (result) {
+          this._downloadComplete();
         }
       } else {
         this._fetchDownload();
@@ -83,7 +83,16 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
+
+  _downloadComplete = () => {
+    if (this.state.downloadProgress !== 1) {
+      this.setState({
+        downloadProgress: 1,
+      });
+    }
+    alert('Download complete!');
+  };
 
   _fetchDownload = async () => {
     try {
@@ -115,7 +124,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _getInfo = async () => {
     if (!this.download) {
@@ -128,7 +137,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _readAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -139,7 +148,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  }
+  };
 
   _getInfoAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -150,7 +159,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  }
+  };
 
   _copyAndReadAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -163,12 +172,12 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  }
+  };
 
   _alertFreeSpace = async () => {
     const freeBytes = await FileSystem.getFreeDiskStorageAsync();
     alert(`${Math.round(freeBytes / 1024 / 1024)} MB available`);
-  }
+  };
 
   render() {
     let progress = null;

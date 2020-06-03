@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix background URL session completion handler not being called. ([#8599](https://github.com/expo/expo/pull/8599) by [@lukmccall](https://github.com/lukmccall))
+
 ## 9.0.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*

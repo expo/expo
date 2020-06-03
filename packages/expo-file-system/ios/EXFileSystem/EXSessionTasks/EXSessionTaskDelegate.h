@@ -11,7 +11,6 @@
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
                          reject:(UMPromiseRejectBlock)reject;
 
-
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location;
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error;
