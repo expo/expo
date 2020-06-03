@@ -1,9 +1,9 @@
 import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
-import { EventEmitter } from 'fbemitter';
 import * as FileSystem from 'expo-file-system';
-import ExponentUpdates from './ExponentUpdates';
+import { EventEmitter } from 'fbemitter';
 import { Platform } from 'react-native';
+import ExponentUpdates from './ExponentUpdates';
 export async function reload() {
     await ExponentUpdates.reload();
 }
@@ -47,20 +47,20 @@ export async function fetchUpdateAsync({ eventListener, } = {}) {
     };
 }
 export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
-    let errors = [];
+    const errors = [];
     if (Platform.OS !== 'android') {
         errors.push('This method is only supported on Android.');
         return { success: false, errors };
     }
     if (Constants.manifest && FileSystem.documentDirectory) {
-        let sdkBundlesPath = FileSystem.documentDirectory + sdkVersion ?? Constants.manifest.sdkVersion;
-        let sdkBundleFiles = await FileSystem.readDirectoryAsync(sdkBundlesPath);
+        const sdkBundlesPath = FileSystem.documentDirectory + sdkVersion ?? Constants.manifest.sdkVersion;
+        const sdkBundleFiles = await FileSystem.readDirectoryAsync(sdkBundlesPath);
         sdkBundleFiles.forEach(async (filename) => {
             let fullpath = sdkBundlesPath + '/' + filename;
             // In java, we use `getPath`, which decodes, so we need to double-encode these values
             fullpath = fullpath.replace('%40', '%2540').replace('%2F', '%252F');
-            let bundleUrlStringHashcode = hashCode(Constants.manifest.bundleUrl);
-            let isCurrentlyRunningBundle = filename.includes(bundleUrlStringHashcode);
+            const bundleUrlStringHashcode = hashCode(Constants.manifest.bundleUrl);
+            const isCurrentlyRunningBundle = filename.includes(bundleUrlStringHashcode);
             if (!isCurrentlyRunningBundle) {
                 try {
                     await FileSystem.deleteAsync(fullpath);
@@ -80,7 +80,8 @@ export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
     return { success: false, errors };
 }
 export function hashCode(string) {
-    let hash = 0, length = string.length, i = 0;
+    const length = string.length;
+    let hash = 0, i = 0;
     if (length > 0) {
         while (i < length) {
             hash = ((hash << 5) - hash + string.charCodeAt(i++)) | 0;
