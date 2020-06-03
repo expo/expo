@@ -28,9 +28,9 @@ import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.expoview.R;
 
-public class LoadingView extends RelativeLayout {
+public class legacy__LoadingView extends RelativeLayout {
 
-  private static final String TAG = LoadingView.class.getSimpleName();
+  private static final String TAG = legacy__LoadingView.class.getSimpleName();
 
   private static final String ASYNC_CONDITION_KEY = "loadingViewImage";
   private static final long PROGRESS_BAR_DELAY_MS = 2500;
@@ -47,17 +47,17 @@ public class LoadingView extends RelativeLayout {
   private boolean mIsLoading = false;
   private boolean mIsLoadingImageView = false;
 
-  public LoadingView(Context context) {
+  public legacy__LoadingView(Context context) {
     super(context);
     init();
   }
 
-  public LoadingView(Context context, AttributeSet attrs) {
+  public legacy__LoadingView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init();
   }
 
-  public LoadingView(Context context, AttributeSet attrs, int defStyleAttr) {
+  public legacy__LoadingView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     init();
   }

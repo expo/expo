@@ -66,7 +66,7 @@ public class HomeActivity extends BaseExperienceActivity {
 
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel(this);
-    showLoadingScreen(null);
+    legacy__showLoadingScreen(null);
 
     tryInstallLeakCanary(true);
   }

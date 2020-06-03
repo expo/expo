@@ -376,7 +376,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
 
-      showLoadingScreen(manifest);
+      legacy__showLoadingScreen(manifest);
 
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
     });
@@ -524,7 +524,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
       ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
-      showLoadingScreen(manifest);
+      legacy__showLoadingScreen(manifest);
 
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
     });

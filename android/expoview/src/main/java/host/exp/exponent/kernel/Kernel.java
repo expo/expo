@@ -14,12 +14,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
-import android.os.Parcel;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -1009,7 +1007,7 @@ public class Kernel extends KernelInterface {
           Exponent.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              weakActivity.showLoadingScreen(null);
+              weakActivity.legacy__showLoadingScreen(null);
             }
           });
           break;
