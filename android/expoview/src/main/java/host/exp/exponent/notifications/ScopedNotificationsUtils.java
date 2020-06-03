@@ -7,11 +7,11 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
 import host.exp.exponent.kernel.ExperienceId;
 
 public class ScopedNotificationsUtils {
-  public static boolean shouldHandleNotification(Notification notification, ExperienceId experienceId) {
+  public boolean shouldHandleNotification(Notification notification, ExperienceId experienceId) {
     return shouldHandleNotification(notification.getNotificationRequest(), experienceId);
   }
 
-  public static boolean shouldHandleNotification(NotificationRequest notificationRequest, ExperienceId experienceId) {
+  public boolean shouldHandleNotification(NotificationRequest notificationRequest, ExperienceId experienceId) {
     if (notificationRequest instanceof ScopedNotificationRequest) {
       ScopedNotificationRequest scopedNotificationRequest = (ScopedNotificationRequest) notificationRequest;
       return scopedNotificationRequest.checkIfBelongsToExperience(experienceId);
