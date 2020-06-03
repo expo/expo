@@ -1,0 +1,38 @@
+{
+  "name": "expo-status-bar",
+  "version": "1.0.0",
+  "description": "Provides the same interface as the React Native StatusBar API, but with slightly different defaults to work great in Expo environments.",
+  "main": "build/StatusBar.js",
+  "types": "build/StatusBar.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-status-bar"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-status-bar"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
+  "dependencies": {
+    "expo-module-scripts": "^1.2.0"
+  },
+  "jest": {
+    "preset": "expo-module-scripts/enzyme"
+  }
+}
