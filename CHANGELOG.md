@@ -45,7 +45,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
-- `expo-sqlite` now supports encrypted SQLite files ([#8242](https://github.com/expo/expo/pull/8242/) by [@gurs1kh](https://github.com/gurs1kh))
 - Initial release of **`expo-screen-capture`** 🥳
 - Initial release of **`expo-notifications`** 🥳
 - Added `@react-native-community/segmented-control` in version `1.6.1`. ([#8038](https://github.com/expo/expo/pull/8038) by [@marchenk0va](https://github.com/marchenk0va) and [#8441](https://github.com/expo/expo/pull/8441) by [@tsapeta](https://github.com/tsapeta))

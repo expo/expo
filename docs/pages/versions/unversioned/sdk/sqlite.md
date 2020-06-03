@@ -30,7 +30,7 @@ Open a database, creating it if it doesn't exist, and return a `Database` object
 
 - **fileInfo (_object_ or _string_)** -- Either name of the database file or an object with the following:
   - **name (_string_)** -- Name of the database file to open.
-  - **key (_string_)** -- Key used to encrypt database file
+  - **key (_string_)** -- Key used to optionally encrypt the database file. Note that this will only be used on iOS and Android to encrypt database files stored on the device's filesystem. On Web the key will not be used as WebSQL API available in browsers doesn't expose such functionality—data will be stored unencrypted. For a proper solution for storing secure data we recommend looking into [`SecureStore`](../securestore/) module.
 
 The `version`, `description` and `size` arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification.
 

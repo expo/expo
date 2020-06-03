@@ -42,7 +42,7 @@ UM_EXPORT_MODULE(ExponentSQLite);
   return [directory stringByAppendingPathComponent:name];
 }
 
-- (NSValue *)openDatabase:(NSString *)dbName databaseKey:(NSString *)dbKey
+- (NSValue *)openDatabase:(NSString *)dbName withKey:(NSString *)dbKey
 {
   NSValue *cachedDB = nil;
   NSString *path = [self pathForDatabaseName:dbName];
@@ -59,9 +59,9 @@ UM_EXPORT_MODULE(ExponentSQLite);
       return nil;
     };
 
-    if (dbKey != NULL) {
+    if (!dbKey) {
       const char *key = [dbKey UTF8String];
-      if (key != NULL) {
+      if (!key) {
         sqlite3_key(db, key, (int)strlen(key));
       }
     }
@@ -81,7 +81,7 @@ UM_EXPORT_METHOD_AS(exec,
                 rejecter:(UMPromiseRejectBlock)reject)
 {
   @synchronized(self) {
-    NSValue *databasePointer = [self openDatabase:dbName :dbKey];
+    NSValue *databasePointer = [self openDatabase:dbName withKey:dbKey];
     if (!databasePointer) {
       reject(@"E_SQLITE_OPEN_DATABASE", @"Could not open database.", nil);
       return;
