@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/EXBarCodeScanner/ABI38_0_0EXBarCodeScanner/ABI38_0_0EXBarCodeCameraRequester.h
