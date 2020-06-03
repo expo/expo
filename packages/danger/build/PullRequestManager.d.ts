@@ -2,8 +2,6 @@ import { Octokit } from '@octokit/rest';
 import { GitHubPRDSL } from 'danger/distribution/dsl/GitHubDSL';
 import { GithubApiWrapper } from './GithubApiWrapper';
 export declare enum ChangelogEntryType {
-    NOT_INCLUDED = -2,
-    SKIP = -1,
     BUG_FIXES = 0,
     NEW_FEATURES = 1,
     BREAKING_CHANGES = 2
@@ -19,11 +17,12 @@ export declare type ChangelogEntries = {
 };
 export declare type PullRequest = GitHubPRDSL | Octokit.PullsListResponseItem;
 export declare class PullRequestManager {
-    private pullRequest;
     private githubApi;
     private _shouldGeneratePR;
     private changelogSection;
-    private skip;
+    private prTitle;
+    private prHeadRef;
+    private prNumber;
     constructor(pullRequest: PullRequest, githubApi: GithubApiWrapper);
     shouldGeneratePR(): boolean;
     /**

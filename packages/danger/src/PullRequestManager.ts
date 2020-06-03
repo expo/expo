@@ -5,8 +5,6 @@ import { GithubApiWrapper } from './GithubApiWrapper';
 import { getPackageChangelogRelativePath } from './Utils';
 
 export enum ChangelogEntryType {
-  NOT_INCLUDED = -2,
-  SKIP = -1,
   BUG_FIXES = 0,
   NEW_FEATURES = 1,
   BREAKING_CHANGES = 2,
@@ -37,10 +35,16 @@ const dangerTags = `[danger][bot]`;
 export class PullRequestManager {
   private _shouldGeneratePR = false;
   private changelogSection: string[] = [];
-  private skip = false;
+  private prTitle: string;
+  private prHeadRef: string;
+  private prNumber: number;
 
-  constructor(private pullRequest: PullRequest, private githubApi: GithubApiWrapper) {
-    this.preprocessPR();
+  constructor(pullRequest: PullRequest, private githubApi: GithubApiWrapper) {
+    this.prHeadRef = pullRequest.head.ref;
+    this.prNumber = pullRequest.number;
+    this.prTitle = pullRequest.title;
+
+    this.preprocessPR(pullRequest);
   }
 
   shouldGeneratePR() {
@@ -59,63 +63,48 @@ export class PullRequestManager {
   parseChangelogSuggestionFromDescription(): ChangelogEntries {
     const changelogEntries = {
       [DEFAULT_CHANGELOG_ENTRY_KEY]: {
-        type: this.skip ? ChangelogEntryType.SKIP : ChangelogEntryType.NOT_INCLUDED,
-        message: this.pullRequest.title.replace(/\[.*\]/, '').trim(),
+        type: ChangelogEntryType.BUG_FIXES,
+        message: this.prTitle.replace(/\[.*\]/, '').trim(),
       },
     };
 
-    const parseLine: (line: string) => void = line => {
-      const parsingResult = this.parseTagsFromLine(line);
+    this.changelogSection.forEach(line => {
+      const { packageName, type } = this.parseTagsFromLine(line);
       const message = line.replace(/\[.*\]/, '').trim();
       // we skip entries without message
-      const type = message.length == 0 ? ChangelogEntryType.SKIP : parsingResult.type;
+      if (!message.length) {
+        return;
+      }
 
-      changelogEntries[parsingResult.packageName] = {
+      changelogEntries[packageName] = {
         type,
         message,
       };
-    };
-
-    // skip option should be more important than title. So, we don't have to parse title.
-    if (!this.skip) {
-      parseLine(this.pullRequest.title);
-    }
-
-    this.changelogSection.forEach(parseLine);
+    });
 
     return changelogEntries;
   }
 
-  private preprocessPR() {
-    const changelogSection = this.pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)?.[0];
+  private preprocessPR(pullRequest: PullRequest) {
+    const changelogSection = pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)?.[0];
     if (changelogSection) {
       this.changelogSection = changelogSection
         .split('\n')
         .slice(1)
         .map(line => line.replace(/^\s*-/, '').trim())
-        .filter(line => {
-          if (!line.length) {
-            return false;
-          }
-          if (line === 'skip') {
-            this.skip = true;
-            return false;
-          }
-          if (line === 'generate') {
-            this._shouldGeneratePR = true;
-            return false;
-          }
+        .filter(line => line.length);
 
-          return true;
-        });
+      // we only generate PR when the changelog section isn't empty.
+      if (this.changelogSection.length) {
+        this._shouldGeneratePR = true;
+      }
     }
   }
 
   async createOrUpdatePRAsync(
     missingEntries: { packageName: string; content: string }[]
   ): Promise<PullRequest | null> {
-    const dangerHeadRef = `@danger/add-missing-changelog-to-${this.pullRequest.number}`;
-    const dangerBaseRef = this.pullRequest.head.ref;
+    const dangerHeadRef = `@danger/add-missing-changelog-to-${this.prNumber}`;
 
     const fileMap = missingEntries.reduce(
       (prev, current) => ({
@@ -126,14 +115,14 @@ export class PullRequestManager {
     );
 
     await this.githubApi.createOrUpdateBranchFromFileMap(fileMap, {
-      baseBranchName: dangerBaseRef,
+      baseBranchName: this.prHeadRef,
       branchName: dangerHeadRef,
       message: `${dangerTags} ${dangerMessage}`,
     });
 
     const prs = await this.githubApi.getOpenPRs({
       fromBranch: dangerHeadRef,
-      toBranch: dangerBaseRef,
+      toBranch: this.prHeadRef,
     });
 
     if (prs.length > 1) {
@@ -147,15 +136,15 @@ export class PullRequestManager {
 
     return this.githubApi.openPR({
       fromBranch: dangerHeadRef,
-      toBranch: dangerBaseRef,
-      title: `${dangerTags} ${dangerMessage} to #${this.pullRequest.number}`,
-      body: `${dangerMessage} to #${this.pullRequest.number}`,
+      toBranch: this.prHeadRef,
+      title: `${dangerTags} ${dangerMessage} to #${this.prNumber}`,
+      body: `${dangerMessage} to #${this.prNumber}`,
     });
   }
 
   private parseTagsFromLine(line: string): ParsingResult {
     const result: ParsingResult = {
-      type: ChangelogEntryType.NOT_INCLUDED,
+      type: ChangelogEntryType.BUG_FIXES,
       packageName: DEFAULT_CHANGELOG_ENTRY_KEY,
     };
 
@@ -192,8 +181,6 @@ function parseEntryType(tag: string): ChangelogEntryType | null {
       return ChangelogEntryType.NEW_FEATURES;
     case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
       return ChangelogEntryType.BUG_FIXES;
-    case /\b(skip)\b/i.test(tag):
-      return ChangelogEntryType.SKIP;
   }
   return null;
 }

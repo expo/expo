@@ -47,7 +47,7 @@ function isChangelogModified(packageName, modifiedFiles) {
     return (modifiedFiles.includes(changelogPath) ||
         !fs.existsSync(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)));
 }
-function getSuggestionsFromPR(packageNames) {
+function getSuggestedChangelogEntry(packageNames) {
     const { [PullRequestManager_1.DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
         var _a, _b, _c, _d;
@@ -59,28 +59,6 @@ function getSuggestionsFromPR(packageNames) {
             type,
         };
     });
-}
-function getSuggestedChangelogEntry(entries) {
-    const skipped = [];
-    const result = entries.filter(entry => {
-        // removes skipped package
-        if (entry.type == PullRequestManager_1.ChangelogEntryType.SKIP) {
-            skipped.push(entry.packageName);
-            return false;
-        }
-        // adds default changelog typ
-        if (entry.type == PullRequestManager_1.ChangelogEntryType.NOT_INCLUDED) {
-            entry.type = PullRequestManager_1.ChangelogEntryType.BUG_FIXES;
-        }
-        return true;
-    });
-    // displays information about skipped packages
-    if (skipped.length) {
-        const skippedPackages = skipped.map(name => `- **${name}**`).join('\n');
-        warn(`Changelog check was skipped for:
-${skippedPackages}`);
-    }
-    return result;
 }
 async function runAddChangelogCommandAsync(suggestedEntries) {
     for (const entry of suggestedEntries) {
@@ -148,9 +126,7 @@ async function checkChangelog() {
     }
     // gets suggested entries based on pull request
     console.log('📝 Gathering information from PR...');
-    const suggestions = getSuggestionsFromPR(packagesWithoutChangelog);
-    // gets fixable entries
-    const suggestedEntries = getSuggestedChangelogEntry(suggestions);
+    const suggestedEntries = getSuggestedChangelogEntry(packagesWithoutChangelog);
     // everything is up-to-date or skipped
     if (!suggestedEntries.length) {
         console.log('Everything is ok 🎉');
@@ -169,7 +145,7 @@ async function checkChangelog() {
             prUrl = ((await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {}).html_url;
         }
         catch (e) {
-            console.log("Couldn't create a pull request.");
+            console.log("❌ Couldn't create a pull request.");
             console.log(e);
         }
     }

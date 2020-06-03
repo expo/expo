@@ -45,7 +45,7 @@ function isChangelogModified(packageName: string, modifiedFiles: string[]): bool
   );
 }
 
-function getSuggestionsFromPR(packageNames: string[]): PackageChangelogEntry[] {
+function getSuggestedChangelogEntry(packageNames: string[]): PackageChangelogEntry[] {
   const {
     [DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry,
     ...suggestedEntries
@@ -59,32 +59,6 @@ function getSuggestionsFromPR(packageNames: string[]): PackageChangelogEntry[] {
       type,
     };
   });
-}
-
-function getSuggestedChangelogEntry(entries: PackageChangelogEntry[]): PackageChangelogEntry[] {
-  const skipped: string[] = [];
-  const result = entries.filter(entry => {
-    // removes skipped package
-    if (entry.type == ChangelogEntryType.SKIP) {
-      skipped.push(entry.packageName);
-      return false;
-    }
-
-    // adds default changelog typ
-    if (entry.type == ChangelogEntryType.NOT_INCLUDED) {
-      entry.type = ChangelogEntryType.BUG_FIXES;
-    }
-    return true;
-  });
-
-  // displays information about skipped packages
-  if (skipped.length) {
-    const skippedPackages = skipped.map(name => `- **${name}**`).join('\n');
-    warn(`Changelog check was skipped for:
-${skippedPackages}`);
-  }
-
-  return result;
 }
 
 async function runAddChangelogCommandAsync(
@@ -182,10 +156,7 @@ export async function checkChangelog(): Promise<void> {
 
   // gets suggested entries based on pull request
   console.log('📝 Gathering information from PR...');
-  const suggestions = getSuggestionsFromPR(packagesWithoutChangelog);
-
-  // gets fixable entries
-  const suggestedEntries = getSuggestedChangelogEntry(suggestions);
+  const suggestedEntries = getSuggestedChangelogEntry(packagesWithoutChangelog);
 
   // everything is up-to-date or skipped
   if (!suggestedEntries.length) {
@@ -209,7 +180,7 @@ export async function checkChangelog(): Promise<void> {
     try {
       prUrl = ((await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {}).html_url;
     } catch (e) {
-      console.log("Couldn't create a pull request.");
+      console.log("❌ Couldn't create a pull request.");
       console.log(e);
     }
   }
