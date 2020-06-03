@@ -1,21 +1,23 @@
 package expo.modules.splashscreen
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.Activity
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import java.lang.ref.WeakReference
 
 @SuppressLint("ViewConstructor")
 class SplashScreenView(
-  context: Context,
-  resizeMode: SplashScreenImageResizeMode,
+  activity: Activity,
+  val resizeMode: SplashScreenImageResizeMode,
   splashScreenResourcesProvider: SplashScreenResourcesProvider
-) : RelativeLayout(context) {
+) : RelativeLayout(activity) {
   private val imageView: ImageView
+  private val activity = WeakReference(activity)
 
   init {
-    imageView = ImageView(context).also { view ->
+    imageView = ImageView(activity).also { view ->
       view.layoutParams = LayoutParams(
         LayoutParams.MATCH_PARENT,
         LayoutParams.MATCH_PARENT
@@ -23,16 +25,31 @@ class SplashScreenView(
     }
 
     layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-    setBackgroundColor(splashScreenResourcesProvider.getBackgroundColor(context))
+    setBackgroundColor(splashScreenResourcesProvider.getBackgroundColor(activity))
 
     addView(imageView)
-    imageView.setImageResource(splashScreenResourcesProvider.getImageResource(context))
+    imageView.setImageResource(splashScreenResourcesProvider.getImageResource(activity))
     imageView.scaleType = resizeMode.scaleType
 
     when (resizeMode) {
       SplashScreenImageResizeMode.NATIVE -> {}
       SplashScreenImageResizeMode.CONTAIN -> { imageView.adjustViewBounds = true }
       SplashScreenImageResizeMode.COVER -> {}
+    }
+  }
+
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    // obtain measuredHeight of top level view (DecorView) that draws the "android:windowBackground" drawable
+    // if the ResizeMode.NATIVE is being used, then we need our custom SplashView have exactly the same height to prevent visual move of optional SplashScreen image
+    // TODO (@bbarthec): check how it behaves when different visibility settings are applied to StatusBar and/or NavigationBar
+    // TODO (@bbarthec): check how it behaves when orientation = landscape
+    if (resizeMode === SplashScreenImageResizeMode.NATIVE) {
+      val decorViewMeasuredHeight = activity.get()?.window?.decorView?.measuredHeight
+      val newHeightMeasureSpec: Int = decorViewMeasuredHeight?.let { MeasureSpec.makeMeasureSpec(it, MeasureSpec.EXACTLY) }
+        ?: heightMeasureSpec
+      super.onMeasure(widthMeasureSpec, newHeightMeasureSpec)
+    } else {
+      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
   }
 }

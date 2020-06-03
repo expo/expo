@@ -4,7 +4,6 @@
 <resources>
   <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="android:windowBackground">@drawable/splashscreen</item>
-    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
   </style>
 </resources>
