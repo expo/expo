@@ -123,8 +123,6 @@ export default class AppContainer extends React.Component {
   state = {
     expoPushToken: '',
     notification: { request: { content: { body: '', title: '', data: {} } } },
-    onReceivedListener: { remove: () => {} },
-    onResponseReceivedListener: { remove: () => {} },
   };
 
   registerForPushNotificationsAsync = async () => {
