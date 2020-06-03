@@ -21,12 +21,19 @@ type ActionOptions = {
 };
 
 async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptions> {
+  const lengthValidator = (x: { length: number }) => x.length !== 0;
+  const stringValidator = {
+    filter: (s: string) => s.trim(),
+    validate: lengthValidator,
+  };
+
   const questions: inquirer.Question[] = [];
   if (!options.package) {
     questions.push({
       type: 'input',
       name: 'package',
       message: 'What is the package that you want to add?',
+      ...stringValidator,
     });
   }
 
@@ -36,7 +43,11 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       name: 'pullRequest',
       message: 'What is the pull request number?',
       filter: (pullRequests) =>
-        pullRequests.split(',').map((pullrequest) => parseInt(pullrequest, 10)),
+        pullRequests
+          .split(',')
+          .map((pullrequest) => parseInt(pullrequest, 10))
+          .filter(Boolean),
+      validate: lengthValidator,
     });
   }
 
@@ -50,6 +61,7 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
           .split(',')
           .map((author) => author.trim())
           .filter(Boolean),
+      validate: lengthValidator,
     });
   }
 
@@ -58,6 +70,7 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       type: 'input',
       name: 'entry',
       message: 'What is the changelog message?',
+      ...stringValidator,
     });
   }
 
@@ -116,9 +129,10 @@ async function action(options: ActionOptions) {
 
   const changelog = Changelogs.loadFrom(packagePath);
 
+  const message = options.entry.slice(-1) === '.' ? options.entry : `${options.entry}.`;
   const insertedEntries = await changelog.insertEntriesAsync(options.version, type, null, [
     {
-      message: options.entry,
+      message,
       pullRequests: options.pullRequest,
       authors: options.author,
     },
