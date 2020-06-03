@@ -20,8 +20,8 @@ React Navigation is the most popular navigation library in the React Native ecos
 
 ### Getting started with React Navigation
 
-- To install React Navigation in your project, refer to its ["Getting started" guide](https://reactnavigation.org/docs/getting-started/).
-- We strongly advise going through the "Fundamentals" guides to become comfortable with the library, you can start with ["Hello React Navigation"](https://reactnavigation.org/docs/hello-react-navigation) after installing the library in y our project.
+- **Install**: To install React Navigation in your project, refer to its ["Getting started" guide](https://reactnavigation.org/docs/getting-started/).
+- **Learn**: We strongly advise going through the "Fundamentals" guides to become comfortable with the library, you can start with ["Hello React Navigation"](https://reactnavigation.org/docs/hello-react-navigation) after installing the library in your project.
 
 ## Alternatives
 
