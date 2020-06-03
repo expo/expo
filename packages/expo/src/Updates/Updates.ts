@@ -75,6 +75,7 @@ export async function clearUpdateCacheExperimentalAsync(
   let errors: string[] = [];
   if (Platform.OS !== 'android') {
     errors.push('This method is only supported on Android.');
+    return { success: false, errors };
   }
 
   if (Constants.manifest && FileSystem.documentDirectory) {
@@ -106,7 +107,7 @@ export async function clearUpdateCacheExperimentalAsync(
   return { success: false, errors };
 }
 
-function hashCode(string: string): string {
+export function hashCode(string: string): string {
   let hash = 0,
     length = string.length,
     i = 0;

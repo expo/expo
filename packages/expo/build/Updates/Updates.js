@@ -50,6 +50,7 @@ export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
     let errors = [];
     if (Platform.OS !== 'android') {
         errors.push('This method is only supported on Android.');
+        return { success: false, errors };
     }
     if (Constants.manifest && FileSystem.documentDirectory) {
         let sdkBundlesPath = FileSystem.documentDirectory + sdkVersion ?? Constants.manifest.sdkVersion;
@@ -78,7 +79,7 @@ export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
     }
     return { success: false, errors };
 }
-function hashCode(string) {
+export function hashCode(string) {
     let hash = 0, length = string.length, i = 0;
     if (length > 0) {
         while (i < length) {

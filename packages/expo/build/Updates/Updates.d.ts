@@ -33,6 +33,7 @@ export declare function clearUpdateCacheExperimentalAsync(sdkVersion?: string): 
     success: boolean;
     errors: string[];
 }>;
+export declare function hashCode(string: string): string;
 export declare function addListener(listener: Function): EventSubscription;
 export declare const EventType: {
     DOWNLOAD_STARTED: string;
