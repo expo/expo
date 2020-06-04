@@ -1,1 +1,0 @@
-{"version":3,"file":"AppLoading.types.js","sourceRoot":"","sources":["../src/AppLoading.types.ts"],"names":[],"mappings":"","sourcesContent":["export interface SampleOptions {\n  someOption: string;\n}\n"]}
