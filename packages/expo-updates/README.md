@@ -219,6 +219,26 @@ Providing `EXUpdatesAppController` with a reference to the `RCTBridge` is option
  @end
 ```
 
+#### `expo-splash-screen`
+
+If you have `expo-splash-screen` installed in your bare workflow project, you'll need to make the following additional change to `AppDelegate.m`:
+
+```diff
++#import <EXSplashScreen/EXSplashScreenService.h>
++#import <UMCore/UMModuleRegistryProvider.h>
+
+ - (RCTBridge *)initializeReactNativeApp
+ {
+  ...
+   [self.window makeKeyAndVisible];
+
++  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
++  [splashScreenService showSplashScreenFor:rootViewController];
+
+   return bridge;
+ }
+```
+
 ### Configure for Android
 
 #### `app/build.gradle`
