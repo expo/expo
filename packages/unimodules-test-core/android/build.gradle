@@ -1,11 +1,10 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven'
 
-group = 'host.exp.exponent'
-version = '8.3.1'
+group = 'org.unimodules'
+version = '1.0.0'
 
-// Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -36,47 +35,35 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 14
-    versionName '8.3.1'
+    versionCode 1
+    versionName '1.0.0'
   }
   lintOptions {
     abortOnError false
   }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-  }
-
-  useLibrary 'android.test.runner'
-
-  useLibrary 'android.test.base'
-  useLibrary 'android.test.mock'
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(':unimodules-core').file('../unimodules-core.gradle')
+  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
       '\'unimodules-core.gradle\' was not found in the usual Flutter or React Native dependency locations. ' +
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
-configurations.configureEach {
-  if(it.getName().startsWith("test")) {
-    resolutionStrategy.force project(":unimodules-test-core")
-  }
+repositories {
+  mavenCentral()
 }
 
 dependencies {
   unimodule 'unimodules-core'
 
-  testImplementation project(':unimodules-test-core')
-  testImplementation 'org.robolectric:robolectric:4.3.1'
-
-  api "androidx.browser:browser:1.2.0"
+  api 'androidx.test:core:1.2.0'
+  api 'junit:junit:4.12'
+  api 'io.mockk:mockk:1.9.3'
 }

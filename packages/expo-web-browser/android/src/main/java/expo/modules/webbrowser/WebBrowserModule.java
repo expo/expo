@@ -2,12 +2,9 @@ package expo.modules.webbrowser;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
 import org.unimodules.core.ExportedModule;
@@ -18,8 +15,9 @@ import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 import expo.modules.webbrowser.error.NoPreferredPackageFound;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
@@ -57,14 +55,14 @@ public class WebBrowserModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
-    mConnectionHelper = new CustomTabsConnectionHelper(getContext());
+    mCustomTabsResolver = moduleRegistry.getModule(CustomTabsActivitiesHelper.class);
+    mConnectionHelper = moduleRegistry.getModule(CustomTabsConnectionHelper.class);
   }
 
   @ExpoMethod
   public void warmUpAsync(@Nullable String packageName, final Promise promise) {
     try {
-      packageName = givenOfPreferredPackageName(packageName);
+      packageName = givenOrPreferredPackageName(packageName);
       mConnectionHelper.warmUp(packageName);
       Bundle result = new Bundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
@@ -77,7 +75,7 @@ public class WebBrowserModule extends ExportedModule {
   @ExpoMethod
   public void coolDownAsync(@Nullable String packageName, final Promise promise) {
     try {
-      packageName = givenOfPreferredPackageName(packageName);
+      packageName = givenOrPreferredPackageName(packageName);
       if (mConnectionHelper.coolDown(packageName)) {
         Bundle result = new Bundle();
         result.putString(SERVICE_PACKAGE_KEY, packageName);
@@ -93,7 +91,7 @@ public class WebBrowserModule extends ExportedModule {
   @ExpoMethod
   public void mayInitWithUrlAsync(@Nullable final String url, String packageName, final Promise promise) {
     try {
-      packageName = givenOfPreferredPackageName(packageName);
+      packageName = givenOrPreferredPackageName(packageName);
       mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
       Bundle result = new Bundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
@@ -128,6 +126,17 @@ public class WebBrowserModule extends ExportedModule {
     }
   }
 
+  /**
+   * @param url Url to be opened by WebBrowser
+   * @param arguments Required arguments are:
+   *  toolbarColor: String;
+   *  browserPackage: String;
+   *  enableBarCollapsing: Boolean;
+   *  showTitle: Boolean;
+   *  enableDefaultShareMenuItem: Boolean;
+   *  showInRecents: Boolean;
+   * @param promise
+   */
   @ExpoMethod
   public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
 
@@ -135,8 +144,7 @@ public class WebBrowserModule extends ExportedModule {
     intent.setData(Uri.parse(url));
 
     try {
-      List<ResolveInfo> activities = mCustomTabsResolver.getResolvingActivities(intent);
-      if (activities.size() > 0) {
+      if (mCustomTabsResolver.canResolveIntent(intent)) {
         mCustomTabsResolver.startCustomTabs(intent);
         Bundle result = new Bundle();
         result.putString("type", "opened");
@@ -190,7 +198,7 @@ public class WebBrowserModule extends ExportedModule {
     return intent;
   }
 
-  private String givenOfPreferredPackageName(@Nullable String packageName) throws NoPreferredPackageFound {
+  private String givenOrPreferredPackageName(@Nullable String packageName) throws NoPreferredPackageFound {
     try {
       if (TextUtils.isEmpty(packageName)) {
         packageName = mCustomTabsResolver.getPreferredCustomTabsResolvingActivity(null);
