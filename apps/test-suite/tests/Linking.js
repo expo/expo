@@ -54,6 +54,7 @@ export function test(t) {
           };
           Linking.addEventListener('url', handler);
           await WebBrowser.openBrowserAsync(testUrl);
+          await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
           Linking.removeEventListener('url', handler);
         });
@@ -103,7 +104,7 @@ export function test(t) {
       t.it('listener parses out deep link information correctly', async () => {
         let handlerCalled = false;
         const handler = ({ url }) => {
-          let { path, queryParams } = Linking.parse(url);
+          const { path, queryParams } = Linking.parse(url);
           // ignore +'s on the front of path,
           // since there may be one or two depending on how test-suite is being served
           t.expect(path.replace(/\+/g, '')).toEqual('test/path');

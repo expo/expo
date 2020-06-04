@@ -1,10 +1,11 @@
 import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
+import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'ImagePicker';
 
@@ -55,14 +56,14 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
     describe('launchCameraAsync', () => {
       if (Constants.isDevice) {
         it('launches the camera', async () => {
-          alert('Please take a picture for this test to pass.');
+          await alertAndWaitForResponse('Please take a picture for this test to pass.');
           const image = await ImagePicker.launchCameraAsync();
           expect(image.cancelled).toBe(false);
           testMediaObjectShape(image);
         });
 
         it('cancels the camera', async () => {
-          alert('Please cancel the camera for this test to pass.');
+          await alertAndWaitForResponse('Please cancel the camera for this test to pass.');
           const image = await ImagePicker.launchCameraAsync();
           expect(image.cancelled).toBe(true);
         });
@@ -81,6 +82,7 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
 
     describe('launchImageLibraryAsync', async () => {
       it('mediaType: image', async () => {
+        await alertAndWaitForResponse('Please choose an image.');
         const image = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         });
@@ -89,6 +91,7 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
       });
 
       it('mediaType: video', async () => {
+        await alertAndWaitForResponse('Please choose a video.');
         const video = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         });
@@ -97,6 +100,7 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
       });
 
       it('allows editing', async () => {
+        await alertAndWaitForResponse('Please choose an image to crop.');
         const image = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
@@ -106,6 +110,7 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
       });
 
       it('allows editing and returns base64', async () => {
+        await alertAndWaitForResponse('Please choose an image to crop.');
         const image = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
