@@ -156,7 +156,7 @@ class AlgoliaSearch extends React.Component {
           onBlur={() => this.setState({ isFocused: false })}
           id="algolia-search-box"
           type="text"
-          placeholder="Search Expo Documentation"
+          placeholder="Search the documentation"
           autoComplete="off"
           spellCheck="false"
           dir="auto"
