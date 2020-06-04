@@ -1,10 +1,4 @@
-import {
-  StatusBarProps,
-  StatusBarPropsAndroid,
-  StatusBarPropsIOS,
-  StatusBarAnimation,
-  StatusBarStyle,
-} from 'react-native';
+import { StatusBarProps, StatusBarAnimation, StatusBarStyle } from 'react-native';
 
 import StatusBar from './ExpoStatusBar';
 
@@ -17,8 +11,6 @@ const setTranslucent = StatusBar.setTranslucent;
 export {
   StatusBar,
   StatusBarProps,
-  StatusBarPropsAndroid,
-  StatusBarPropsIOS,
   StatusBarAnimation,
   StatusBarStyle,
   setBarStyle,
