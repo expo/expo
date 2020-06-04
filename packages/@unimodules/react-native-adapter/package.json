@@ -30,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/@unimodules/react-native-adapter",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "peerDependencies": {
     "react-native": "*"
