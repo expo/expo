@@ -4,8 +4,6 @@ import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
-
 const {
   NativeAdsManager,
   AdSettings,
@@ -69,11 +67,14 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('FacebookAds.NativeAd', () => {
-    const mountAndWaitFor = (child, propName = 'onAdLoaded') =>
-      originalMountAndWaitFor(child, propName, setPortalChild);
-
     t.describe('when given a valid placementId', () => {
       let nativeAd;
+
+      const mountAndWaitFor = child =>
+        new Promise((resolve, reject) => {
+          const clonedChild = React.cloneElement(child, { onAdLoaded: resolve, onError: reject });
+          setPortalChild(clonedChild);
+        });
 
       t.it(
         'nativeAd properly mounted',
