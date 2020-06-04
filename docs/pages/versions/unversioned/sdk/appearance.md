@@ -144,5 +144,5 @@ const styles = StyleSheet.create({
 
 While you're developing, you may want to change your simulator's or device's appearance.
 
-1. If working with an iOS emulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
-2. If using a real device or an Android emulator, you can toggle the system dark mode setting in the device's settings.
+- If working with an iOS emulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
+- If using a real device or an Android emulator, you can toggle the system dark mode setting in the device's settings.
