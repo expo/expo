@@ -41,7 +41,7 @@ export default function withNativeAd<P>(
   Component: React.ComponentType<P & AdProps>
 ): React.ComponentType<AdContainerProps<P>> {
   return class NativeAdContainer extends React.Component<AdContainerProps<P>, AdContainerState> {
-    _subscription: EventSubscription | null = null;
+    _readySubscription: EventSubscription | null = null;
     _nativeAdViewRef = React.createRef<NativeAdView>();
     _adMediaViewNodeHandle: number | null = null;
     _adIconViewNodeHandle: number | null = null;
@@ -60,16 +60,16 @@ export default function withNativeAd<P>(
     componentDidMount() {
       if (!this.state.canRequestAds) {
         // On mounting, listen to the ads manager to learn when it is ready to display ads
-        this._subscription = this.props.adsManager.onAdsLoaded(() => {
+        this._readySubscription = this.props.adsManager.onAdsLoaded(() => {
           this.setState({ canRequestAds: true });
         });
       }
     }
 
     componentWillUnmount() {
-      if (this._subscription) {
-        this._subscription.remove();
-        this._subscription = null;
+      if (this._readySubscription) {
+        this._readySubscription.remove();
+        this._readySubscription = null;
       }
     }
 
