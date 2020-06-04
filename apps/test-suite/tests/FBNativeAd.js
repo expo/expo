@@ -41,9 +41,9 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
       <AdIconView />
       <View>
         <AdTriggerView>
-          {nativeAd.advertiserName && <Text>{nativeAd.advertiserName}</Text>}
-          {nativeAd.sponsoredTranslation && <Text>{nativeAd.sponsoredTranslation}</Text>}
-          {nativeAd.headline && <Text>{nativeAd.headline}</Text>}
+          {nativeAd.advertiserName ? <Text>{nativeAd.advertiserName}</Text> : null}
+          {nativeAd.sponsoredTranslation ? <Text>{nativeAd.sponsoredTranslation}</Text> : null}
+          {nativeAd.headline ? <Text>{nativeAd.headline}</Text> : null}
         </AdTriggerView>
       </View>
     </View>
