@@ -48,7 +48,7 @@
     "enzyme-to-json": "^3.4.0",
     "jest-canvas-mock": "^2.1.1",
     "jest-enzyme": "^7.1.0",
-    "jest-expo": "~37.0.0",
+    "jest-expo": "~38.0.0",
     "react-test-renderer": "~16.11.0"
   },
   "devDependencies": {
