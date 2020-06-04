@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Unit testing library and config. ([#8137](https://github.com/expo/expo/pull/8137) by [@mczernek](https://github.com/mczernek))
+
 ## 8.3.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
