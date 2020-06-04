@@ -47,6 +47,16 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  AppLoading: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { AppLoading } from 'expo' -> import AppLoading from 'expo-app-loading'`,
+        'AppLoading',
+        'expo-app-loading'
+      );
+    },
+  },
   AR: {
     enumerable: true,
     get() {

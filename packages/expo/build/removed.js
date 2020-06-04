@@ -27,6 +27,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { Animated } from 'expo' -> import Animated from 'react-native-reanimated'`, 'Animated', 'react-native-reanimated');
         },
     },
+    AppLoading: {
+        enumerable: true,
+        get() {
+            removedModule(`import { AppLoading } from 'expo' -> import AppLoading from 'expo-app-loading'`, 'AppLoading', 'expo-app-loading');
+        },
+    },
     AR: {
         enumerable: true,
         get() {

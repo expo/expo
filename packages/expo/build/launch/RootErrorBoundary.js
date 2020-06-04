@@ -1,6 +1,6 @@
+import { getAppLoadingLifecycleEmitter } from 'expo-app-loading';
 import React from 'react';
 import { NativeModules } from 'react-native';
-import { getAppLoadingLifecycleEmitter } from './AppLoading';
 const { ExponentAppLoadingManager } = NativeModules;
 async function finishedAsync() {
     if (ExponentAppLoadingManager && ExponentAppLoadingManager.finishedAsync) {

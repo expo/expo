@@ -21,12 +21,6 @@ Object.defineProperty(exports, "Notifications", {
     return _Notifications.default;
   }
 });
-Object.defineProperty(exports, "AppLoading", {
-  enumerable: true,
-  get: function () {
-    return _AppLoading.default;
-  }
-});
 Object.defineProperty(exports, "DangerZone", {
   enumerable: true,
   get: function () {
@@ -79,6 +73,12 @@ Object.defineProperty(exports, "AppAuth", {
   enumerable: true,
   get: function () {
     return _removed.AppAuth;
+  }
+});
+Object.defineProperty(exports, "AppLoading", {
+  enumerable: true,
+  get: function () {
+    return _removed.AppLoading;
   }
 });
 Object.defineProperty(exports, "AR", {
@@ -499,8 +499,6 @@ var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
 
 var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
-
-var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
 
 var _DangerZone = _interopRequireDefault(require("./DangerZone"));
 

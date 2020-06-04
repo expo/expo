@@ -1,7 +1,7 @@
+import AppLoading from 'expo-app-loading';
 import * as React from 'react';
 import renderer, { ReactTestInstance } from 'react-test-renderer';
 
-import AppLoading from '../AppLoading';
 import RootErrorBoundary from '../RootErrorBoundary';
 import withExpoRoot from '../withExpoRoot';
 import { withDEV } from './utils';
