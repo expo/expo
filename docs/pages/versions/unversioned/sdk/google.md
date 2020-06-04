@@ -58,15 +58,15 @@ The difference between this method and native authentication are very sparce. Go
 
 | Name                                    | Type                              | Description                                                                                                                                                         |
 | --------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [iosClientId][g-creds]                  | `string | undefined`              | The iOS client id registered with Google for use in the Expo client app.                                                                                            |
-| [androidClientId][g-creds]              | `string | undefined`              | The Android client id registered with Google for use in the Expo client app.                                                                                        |
-| [iosStandaloneAppClientId][g-creds]     | `string | undefined`              | The iOS client id registered with Google for use in a standalone app.                                                                                               |
-| [androidStandaloneAppClientId][g-creds] | `string | undefined`              | The Android client id registered with Google for use in a standalone app.                                                                                           |
-| [clientId][g-creds]                     | `string | undefined`              | If the platform-appropriate client ID is not provided, this will be used instead.                                                                                   |
-| [language][g-language]                  | `string | undefined`              | ISO language code ex (`fr`, `en-US`), this will choose which language is used in the Google sign-in UI. Defaults to the best estimation based on the users browser. |
-| [loginHint][g-loginhint]                | `string | undefined`              | If the user's email address is known ahead of time, it can be supplied to be the default option. This maps to the [OAuth login_hint][auth-loginhint] prop.          |
+| [iosClientId][g-creds]                  | `string \| undefined`              | The iOS client id registered with Google for use in the Expo client app.                                                                                            |
+| [androidClientId][g-creds]              | `string \| undefined`              | The Android client id registered with Google for use in the Expo client app.                                                                                        |
+| [iosStandaloneAppClientId][g-creds]     | `string \| undefined`              | The iOS client id registered with Google for use in a standalone app.                                                                                               |
+| [androidStandaloneAppClientId][g-creds] | `string \| undefined`              | The Android client id registered with Google for use in a standalone app.                                                                                           |
+| [clientId][g-creds]                     | `string \| undefined`              | If the platform-appropriate client ID is not provided, this will be used instead.                                                                                   |
+| [language][g-language]                  | `string \| undefined`              | ISO language code ex (`fr`, `en-US`), this will choose which language is used in the Google sign-in UI. Defaults to the best estimation based on the users browser. |
+| [loginHint][g-loginhint]                | `string \| undefined`              | If the user's email address is known ahead of time, it can be supplied to be the default option. This maps to the [OAuth login_hint][auth-loginhint] prop.          |
 | scopes                                  | `string[] = ['profile', 'email']` | The scopes to ask for from Google for this login ([more information here][g-using-apis])                                                                            |
-| redirectUrl                             | `string | undefined`              | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below.               |
+| redirectUrl                             | `string \| undefined`              | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below.               |
 
 **Note on `redirectUrl`**:
 If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../../sdk/app-auth/#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo Client or as a standalone app.
@@ -81,22 +81,22 @@ If you choose to provide your own `redirectUrl`, it should start with the value 
 
 | Name         | Type                   | Description                                                  |
 | ------------ | ---------------------- | ------------------------------------------------------------ |
-| type         | `'cancel' | 'success'` | Denotes the summary of the user event.                       |
-| accessToken  | `string | undefined`   | Used for accessing data from Google, invalidate to "log out" |
-| idToken      | `string | null`        | ID token                                                     |
-| refreshToken | `string | null`        | Refresh the other tokens.                                    |
+| type         | `'cancel' \| 'success'` | Denotes the summary of the user event.                       |
+| accessToken  | `string \| undefined`   | Used for accessing data from Google, invalidate to "log out" |
+| idToken      | `string \| null`        | ID token                                                     |
+| refreshToken | `string \| null`        | Refresh the other tokens.                                    |
 | user         | `GoogleUser`           | An object with data regarding the authenticated user.        |
 
 **GoogleUser**
 
 | Name       | Type                 | Description                |
 | ---------- | -------------------- | -------------------------- |
-| id         | `string | undefined` | ID for the user            |
-| name       | `string | undefined` | name for the user          |
-| givenName  | `string | undefined` | first name for the user    |
-| familyName | `string | undefined` | last name for the user     |
-| photoUrl   | `string | undefined` | photo for the user         |
-| email      | `string | undefined` | email address for the user |
+| id         | `string \| undefined` | ID for the user            |
+| name       | `string \| undefined` | name for the user          |
+| givenName  | `string \| undefined` | first name for the user    |
+| familyName | `string \| undefined` | last name for the user     |
+| photoUrl   | `string \| undefined` | photo for the user         |
+| email      | `string \| undefined` | email address for the user |
 
 **Example**
 
@@ -135,10 +135,10 @@ Invalidates the provided `accessToken`, given the client ID used to sign-in is p
 | Name                                    | Type                              | Description                                                                              |
 | --------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------- |
 | accessToken                             | `string`                          | Provided when the user authenticates with your Google application.                       |
-| [iosClientId][g-creds]                  | `string | undefined`              | The iOS client id registered with Google for use in the Expo client app.                 |
-| [androidClientId][g-creds]              | `string | undefined`              | The Android client id registered with Google for use in the Expo client app.             |
-| [iosStandaloneAppClientId][g-creds]     | `string | undefined`              | The iOS client id registered with Google for use in a standalone app.                    |
-| [androidStandaloneAppClientId][g-creds] | `string | undefined`              | The Android client id registered with Google for use in a standalone app.                |
+| [iosClientId][g-creds]                  | `string \| undefined`              | The iOS client id registered with Google for use in the Expo client app.                 |
+| [androidClientId][g-creds]              | `string \| undefined`              | The Android client id registered with Google for use in the Expo client app.             |
+| [iosStandaloneAppClientId][g-creds]     | `string \| undefined`              | The iOS client id registered with Google for use in a standalone app.                    |
+| [androidStandaloneAppClientId][g-creds] | `string \| undefined`              | The Android client id registered with Google for use in a standalone app.                |
 | scopes                                  | `string[] = ['profile', 'email']` | The scopes to ask for from Google for this login ([more information here][g-using-apis]) |
 
 **Example**
