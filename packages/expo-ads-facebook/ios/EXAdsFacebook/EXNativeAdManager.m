@@ -82,7 +82,7 @@ UM_EXPORT_MODULE(CTKNativeAdManager)
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"CTKNativeAdsManagersChanged", @"onAdLoaded"];
+  return @[@"CTKNativeAdsManagersChanged", @"CTKNativeAdManagerErrored", @"onAdLoaded"];
 }
 
 UM_EXPORT_METHOD_AS(registerViewsForInteraction,
@@ -158,7 +158,9 @@ UM_EXPORT_METHOD_AS(init,
   FBNativeAdsManager *adsManager = [[FBNativeAdsManager alloc] initWithPlacementID:placementId
                                                                 forNumAdsRequested:[adsToRequest intValue]];
 
-  [adsManager setDelegate:self];
+  EXAdManagerDelegate *delegate = [[EXAdManagerDelegate alloc] initWithPlacementId:placementId andManager:self];
+  _adsManagersDelegates[placementId] = delegate;
+  [adsManager setDelegate:delegate];
 
   [UMUtilities performSynchronouslyOnMainThread:^{
     [adsManager loadAds];
@@ -202,9 +204,15 @@ UM_EXPORT_METHOD_AS(disableAutoRefresh,
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)] sendEventWithName:@"CTKNativeAdsManagersChanged" body:adsManagersState];
 }
 
-- (void)nativeAdsFailedToLoadWithError:(NSError *)errors
+- (void)nativeAdForPlacementId:(NSString *)placementId failedToLoadWithError:(NSError *)error
 {
-  // @todo handle errors here
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)] sendEventWithName:@"CTKNativeAdManagerErrored" body:@{
+    @"placementId": placementId,
+    @"error": @{
+        @"message": error.localizedDescription ?: error.description,
+        @"code": @(error.code)
+    },
+  }];
 }
 
 - (UIView *)view
