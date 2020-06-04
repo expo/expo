@@ -33,6 +33,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 - `react-native-view-shot` is no longer installed by default, install it with `expo install react-native-view-shot`. ([#7950](https://github.com/expo/expo/pull/7950) by [@evanbacon](https://github.com/evanbacon))
 - The AR module has been removed from the `expo` package. See https://expo.fyi/deprecating-ar for more information. ([#8442](https://github.com/expo/expo/pull/8442) by [@sjchmiela](https://github.com/sjchmiela))
+- Importing `Linking` from `expo` package is now deprecated. Use `expo-linking` module instead. ([#8659](https://github.com/expo/expo/pull/8659) by [@tsapeta](https://github.com/tsapeta))
 - **`expo-battery`**
   - Removed deprecated `isSupported` method. ([#7206](https://github.com/expo/expo/pull/7206) by [@bbarthec](https://github.com/bbarthec))
 - **`expo-camera`**

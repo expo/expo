@@ -15,4 +15,15 @@ Object.defineProperties(module.exports, {
       return require('./Updates/Updates');
     },
   },
+  Linking: {
+    enumerable: true,
+    get() {
+      deprecatedModule(
+        `import { Linking } from 'expo' -> import * as Linking from 'expo-linking'\n`,
+        'Linking',
+        'expo-linking'
+      );
+      return require('expo-linking');
+    },
+  },
 });
