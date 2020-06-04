@@ -1,11 +1,8 @@
 import './Expo.fx';
 
-import * as Linking from 'expo-linking';
-
 import * as SplashScreen from './launch/SplashScreen';
 import * as Logs from './logs/Logs';
 
-export { Linking };
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
@@ -17,7 +14,7 @@ export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
 
 // @ts-ignore
-export { Updates } from './deprecated';
+export { Updates, Linking } from './deprecated';
 
 // @ts-ignore
 export {
