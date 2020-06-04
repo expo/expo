@@ -71,6 +71,12 @@ export interface AccessTokenRequestConfig extends TokenRequestConfig {
      * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
      */
     redirectUri: string;
+    /**
+     * If we are using PKCE then we include the original 'code_verifier' in the token request.
+     *
+     * (https://tools.ietf.org/html/rfc7636)
+     */
+    codeVerifier?: string;
 }
 /**
  * Config used to request a token refresh, or code exchange.

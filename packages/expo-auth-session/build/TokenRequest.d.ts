@@ -60,6 +60,7 @@ declare class TokenRequest<T extends TokenRequestConfig> extends Request<T, Toke
 export declare class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig> implements AccessTokenRequestConfig {
     readonly code: string;
     readonly redirectUri: string;
+    readonly codeVerifier?: string;
     constructor(options: AccessTokenRequestConfig);
     getQueryBody(): Record<string, string>;
 }
