@@ -499,8 +499,8 @@ async function generateReactPodspecAsync(versionedReactNativePath, versionName) 
   await _transformFileContentsAsync(specFilename, (fileString) => {
     // replace React/* dependency with ${versionedReactPodName}/*
     fileString = fileString.replace(
-      /(ss\.dependency\s+)"React\/(\S+)"/g,
-      `$1"${versionedReactPodName}/$2"`
+      /(\.dependency\s+)"React([^"]+)"/g,
+      `$1"${versionedReactPodName}$2"`
     );
 
     fileString = fileString.replace('/RCTTV', `/${versionName}RCTTV`);
