@@ -10,7 +10,7 @@ import {
   View,
   Alert,
 } from 'react-native';
-import { Linking } from 'expo';
+import * as Linking from 'expo-linking';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
@@ -48,8 +48,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         IconComponent={Ionicons}
         OverflowIcon={<Ionicons name="ios-more" size={23} color="blue" />}
         iconSize={23}
-        color="blue"
-      >
+        color="blue">
         <HeaderButtons.Item
           title="share"
           iconName="md-share"
@@ -71,7 +70,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         )}
       </HeaderButtons>
     ),
-  })
+  });
 
   readonly state: State = {};
 
@@ -83,7 +82,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
   checkPermissionAsync = async () => {
     const permission = await getPermissionAsync(Permissions.CONTACTS);
     this.setState({ permission });
-  }
+  };
 
   get id() {
     const { params = {} } = this.props.navigation.state;
@@ -98,7 +97,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
       // tslint:disable-next-line no-console
       console.error(message);
     }
-  }
+  };
 
   loadAsync = async () => {
     if (!this.state.permission) {
@@ -113,7 +112,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
     });
     // tslint:disable-next-line no-console
     console.log(contact);
-  }
+  };
 
   get jobTitle() {
     const { contact } = this.state;
@@ -279,7 +278,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         // Do something here depending on the button index selected
       }
     );
-  }
+  };
 
   _takePhoto = async () => {
     const permission = await getPermissionAsync(Permissions.CAMERA);
@@ -294,7 +293,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
     if (!result.cancelled) {
       this._setNewPhoto(result.uri);
     }
-  }
+  };
 
   _setNewPhoto = async (uri: string) => {
     // console.log(this.id, this.state.contact, uri);
@@ -309,7 +308,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
     }
 
     this.loadAsync();
-  }
+  };
 
   _selectPhoto = async () => {
     const permission = await getPermissionAsync(Permissions.CAMERA_ROLL);
@@ -324,11 +323,11 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
     if (!result.cancelled) {
       this._setNewPhoto(result.uri);
     }
-  }
+  };
 
   onPressItem = () => {
     Alert.alert('item pressed');
-  }
+  };
 
   renderListHeaderComponent = () => {
     const { contact } = this.state;
@@ -340,8 +339,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
           flex: 1,
           alignItems: 'stretch',
           backgroundColor: Colors.greyBackground,
-        }}
-      >
+        }}>
         <View style={{ alignItems: 'center', marginBottom: 8 }}>
           <ContactsAvatar
             style={styles.image}
@@ -364,7 +362,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         </View>
       </View>
     );
-  }
+  };
 
   renderListFooterComponent = () => (
     <Text
@@ -376,11 +374,10 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         justifyContent: 'center',
         alignItems: 'center',
         color: 'red',
-      }}
-    >
+      }}>
       Delete Contact
     </Text>
-  )
+  );
 
   render() {
     const { contact, permission } = this.state;
@@ -435,17 +432,14 @@ class LinkedButton extends React.PureComponent<{
 
   onPress = () => {
     Linking.openURL(`${this.props.format}:${this.props.uri}`);
-  }
+  };
 
   render() {
     const SIZE = 40;
     const { color, backgroundColor } = this.colors;
     const { text, icon } = this.props;
     return (
-      <TouchableOpacity
-        disabled={!this.enabled}
-        onPress={this.onPress}
-      >
+      <TouchableOpacity disabled={!this.enabled} onPress={this.onPress}>
         <View
           style={{
             width: SIZE,
@@ -457,8 +451,7 @@ class LinkedButton extends React.PureComponent<{
             backgroundColor,
             justifyContent: 'center',
             alignItems: 'center',
-          }}
-        >
+          }}>
           <Ionicons name={`ios-${icon}`} size={20} color={color} />
         </View>
         <Text style={{ fontSize: 10, color: backgroundColor, textAlign: 'center' }}>{text}</Text>

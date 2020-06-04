@@ -39,6 +39,12 @@ Object.defineProperty(exports, "Updates", {
     return _deprecated.Updates;
   }
 });
+Object.defineProperty(exports, "Linking", {
+  enumerable: true,
+  get: function () {
+    return _deprecated.Linking;
+  }
+});
 Object.defineProperty(exports, "Accelerometer", {
   enumerable: true,
   get: function () {
@@ -465,26 +471,9 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = exports.Linking = void 0;
+exports.Logs = exports.SplashScreen = void 0;
 
 require("./Expo.fx");
-
-function Linking() {
-  const data = _interopRequireWildcard(require("expo-linking"));
-
-  Linking = function () {
-    return data;
-  };
-
-  return data;
-}
-
-Object.defineProperty(exports, "Linking", {
-  enumerable: true,
-  get: function () {
-    return Linking();
-  }
-});
 
 var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
 
