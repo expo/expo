@@ -6,10 +6,53 @@
 #import <UMCore/UMUIManager.h>
 #import <UMCore/UMEventEmitterService.h>
 
-@interface EXNativeAdManager () <FBNativeAdsManagerDelegate>
+@class EXAdManagerDelegate;
+
+@interface EXNativeAdManager ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSString*, FBNativeAdsManager*> *adsManagers;
+@property (nonatomic, strong) NSMutableDictionary<NSString*, EXAdManagerDelegate*> *adsManagersDelegates;
+
+- (void)nativeAdsLoaded;
+- (void)nativeAdForPlacementId:(NSString *)placementId failedToLoadWithError:(NSError *)error;
+
+@end
+
+// A light delegate object responsible for delivering information
+// about errors to EXNativeAdManager, but with a specific placement ID
+// for which the error has happened. FBNativeAdsManagerDelegate protocol
+// does not provide such information, we only get the error. Proxying
+// the event through this middleman lets us assign specific placement ID
+// to each error.
+
+@interface EXAdManagerDelegate : NSObject <FBNativeAdsManagerDelegate>
+
+@property (nonatomic, weak) EXNativeAdManager *manager;
+@property (nonatomic, strong) NSString *placementId;
+
+@end
+
+@implementation EXAdManagerDelegate
+
+- (instancetype)initWithPlacementId:(NSString *)placementId andManager:(EXNativeAdManager *)manager
+{
+  if (self = [super init]) {
+    _manager = manager;
+    _placementId = placementId;
+  }
+  return self;
+}
+
+- (void)nativeAdsLoaded
+{
+  [_manager nativeAdsLoaded];
+}
+
+- (void)nativeAdsFailedToLoadWithError:(NSError *)errors
+{
+  [_manager nativeAdForPlacementId:_placementId failedToLoadWithError:errors];
+}
 
 @end
 
@@ -22,6 +65,7 @@ UM_EXPORT_MODULE(CTKNativeAdManager)
   self = [super init];
   if (self) {
     _adsManagers = [NSMutableDictionary new];
+    _adsManagersDelegates = [NSMutableDictionary new];
   }
   return self;
 }
