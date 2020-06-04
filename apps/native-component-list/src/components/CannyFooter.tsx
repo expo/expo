@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
-import { Linking } from 'expo';
+import * as Linking from 'expo-linking';
 
 import Colors from '../constants/Colors';
 import Button from './Button';
@@ -10,17 +10,13 @@ const cannyUrl = `https://expo.canny.io/feature-requests`;
 export default class CannyFooter extends React.Component<{ style?: StyleProp<ViewStyle> }> {
   onPress = () => {
     Linking.openURL(cannyUrl);
-  }
+  };
 
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
         <Text style={styles.text}>Missing something?</Text>
-        <Button
-          style={styles.button}
-          onPress={this.onPress}
-          title="Open a Canny!"
-        />
+        <Button style={styles.button} onPress={this.onPress} title="Open a Canny!" />
       </View>
     );
   }
