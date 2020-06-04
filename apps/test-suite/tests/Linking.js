@@ -54,6 +54,7 @@ export function test(t) {
           };
           Linking.addEventListener('url', handler);
           await WebBrowser.openBrowserAsync(testUrl);
+          await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
           Linking.removeEventListener('url', handler);
         });
