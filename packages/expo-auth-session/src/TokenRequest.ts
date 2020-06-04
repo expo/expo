@@ -171,6 +171,7 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
       discovery.tokenEndpoint,
       `Cannot invoke \`performAsync()\` without a valid tokenEndpoint`
     );
+    
     const response = await requestAsync<ServerTokenResponseConfig | ResponseErrorConfig>(
       discovery.tokenEndpoint,
       {
@@ -230,6 +231,7 @@ export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
   implements AccessTokenRequestConfig {
   readonly code: string;
   readonly redirectUri: string;
+  readonly codeVerifier?: string;
 
   constructor(options: AccessTokenRequestConfig) {
     invariant(
@@ -249,6 +251,7 @@ export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
     super(options, GrantType.AuthorizationCode);
     this.code = options.code;
     this.redirectUri = options.redirectUri;
+    this.codeVerifier = options.codeVerifier;
   }
 
   getQueryBody() {
@@ -260,6 +263,10 @@ export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
 
     if (this.code) {
       queryBody.code = this.code;
+    }
+
+    if(this.codeVerifier) {
+      queryBody.code_verifier = this.codeVerifier;
     }
 
     return queryBody;
