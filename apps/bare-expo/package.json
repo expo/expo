@@ -81,7 +81,7 @@
     "@babel/runtime": "^7.5.5",
     "@react-native-community/segmented-control": "1.6.1",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~37.0.6",
+    "expo": "~38.0.0",
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.3.1",
     "expo-yarn-workspaces": "^1.2.1",
@@ -109,7 +109,7 @@
     "detox": "^14.8.4",
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",
-    "jest-expo": "~37.0.0",
+    "jest-expo": "~38.0.0",
     "jest-expo-puppeteer": "^1.0.2",
     "puppeteer": "^2.1.1"
   }

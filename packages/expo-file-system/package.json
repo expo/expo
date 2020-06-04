@@ -46,6 +46,6 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0",
-    "jest-expo": "~37.0.0"
+    "jest-expo": "~38.0.0"
   }
 }
