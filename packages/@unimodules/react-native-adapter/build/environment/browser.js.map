@@ -1,0 +1,1 @@
+{"version":3,"file":"browser.js","sourceRoot":"","sources":["../../src/environment/browser.ts"],"names":[],"mappings":"AAAA,oDAAoD;AACpD,MAAM,CAAC,MAAM,cAAc,GAAG,KAAK,CAAC","sourcesContent":["// In standard node environments there is no DOM API\nexport const isDOMAvailable = false;\n"]}
