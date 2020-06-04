@@ -101,6 +101,5 @@
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "react-native": "0.62.2"
-  },
-  "gitHead": "5b538cb49cc65ec911fa4df63bccd4004ef92c49"
+  }
 }
