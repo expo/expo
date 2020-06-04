@@ -29,7 +29,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
-  "dependencies": {
+  "devDependencies": {
     "expo-module-scripts": "^1.2.0"
   },
   "jest": {
