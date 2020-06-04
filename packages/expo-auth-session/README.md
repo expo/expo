@@ -29,7 +29,7 @@ To use this module, you need to set up React Native deep linking in your applica
 
 - **Android**:
 
-  Add intent fileter and set the `launchMode` of your MainActivity to `singleTask` in `AndroidManifest.yml`:
+  Add intent filter and set the `launchMode` of your MainActivity to `singleTask` in `AndroidManifest.yml`:
 
   ```xml
   <activity
