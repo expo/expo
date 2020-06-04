@@ -69,6 +69,7 @@ const textElements = {
   LI,
   Q,
   Time,
+  BR,
 };
 
 const viewElements = {
@@ -77,7 +78,6 @@ const viewElements = {
   Main,
   Section,
   Nav,
-  BR,
   HR,
   Footer,
   Table,

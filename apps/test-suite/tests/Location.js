@@ -1,11 +1,11 @@
 'use strict';
 
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
 
-import * as TaskManager from 'expo-task-manager';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location';
 import * as TestUtils from '../TestUtils';
 
 const BACKGROUND_LOCATION_TASK = 'background-location-updates';
@@ -230,17 +230,20 @@ export async function test(t) {
         timeout + second
       );
 
-      t.it(
-        'resolves when called simultaneously',
-        async () => {
-          await Promise.all([
-            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
-            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest }),
-            Location.getCurrentPositionAsync(),
-          ]);
-        },
-        timeout
-      );
+      // NOTE(2020-06-03): this test is flaky on Android so we disable it for now
+      if (Platform.OS !== 'android') {
+        t.it(
+          'resolves when called simultaneously',
+          async () => {
+            await Promise.all([
+              Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
+              Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest }),
+              Location.getCurrentPositionAsync(),
+            ]);
+          },
+          timeout
+        );
+      }
 
       t.it('resolves when watchPositionAsync is running', async () => {
         const subscriber = await Location.watchPositionAsync({}, () => {});
@@ -260,22 +263,25 @@ export async function test(t) {
         });
       });
 
-      t.it('can be called simultaneously', async () => {
-        const spies = [1, 2, 3].map(number => t.jasmine.createSpy(`watchPosition${number}`));
+      // NOTE(2020-06-03): this test is flaky on Android so we disable it for now
+      if (Platform.OS !== 'android') {
+        t.it('can be called simultaneously', async () => {
+          const spies = [1, 2, 3].map(number => t.jasmine.createSpy(`watchPosition${number}`));
 
-        const subscribers = await Promise.all(
-          spies.map(spy => Location.watchPositionAsync({}, spy))
-        );
+          const subscribers = await Promise.all(
+            spies.map(spy => Location.watchPositionAsync({}, spy))
+          );
 
-        await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            spies.forEach(spy => t.expect(spy).toHaveBeenCalled());
-            resolve();
-          }, 1000);
+          await new Promise((resolve, reject) => {
+            setTimeout(() => {
+              spies.forEach(spy => t.expect(spy).toHaveBeenCalled());
+              resolve();
+            }, 1000);
+          });
+
+          subscribers.forEach(subscriber => subscriber.remove());
         });
-
-        subscribers.forEach(subscriber => subscriber.remove());
-      });
+      }
     });
 
     describeWithPermissions('Location.getHeadingAsync()', () => {
