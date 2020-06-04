@@ -63,17 +63,12 @@ This method _must_ be called before anything else, otherwise an error will be th
 
 #### Returns
 
-A `Promise` that resolves with an `IAPQueryResponse` that contains an array of `InAppPurchase` objects. This represents the user's previous purchase history and returns the same result as `getPurchaseHistoryAsync()`.
+A `Promise` that resolves when finished connecting.
 
 #### Example
 
 ```javascript
-const history = await connectAsync();
-if (history.responseCode === IAPResponseCode.OK) {
-  history.results.forEach(result => {
-    // Restore history if needed
-  });
-}
+await connectAsync();
 ```
 
 ### `InAppPurchases.getProductsAsync(itemList: string[])`
