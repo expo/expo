@@ -1,0 +1,1 @@
+{"version":3,"file":"SplashScreen.web.js","sourceRoot":"","sources":["../src/SplashScreen.web.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,oBAAoB;IAClC,EAAE;AACJ,CAAC;AAED,MAAM,UAAU,SAAS;IACvB,EAAE;AACJ,CAAC","sourcesContent":["export function preventAutoHideAsync(): void {\n  //\n}\n\nexport function hideAsync(): void {\n  //\n}\n"]}
