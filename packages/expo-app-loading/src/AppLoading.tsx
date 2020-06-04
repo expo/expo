@@ -20,7 +20,7 @@ const AppLoading: React.FC<AppLoadingProps> = props => {
     } catch (error) {
       props.onError!(error);
     } finally {
-      props.onFinish && props.onFinish();
+      props.onFinish();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

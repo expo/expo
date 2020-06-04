@@ -17,7 +17,7 @@ const AppLoading = props => {
             props.onError(error);
         }
         finally {
-            props.onFinish && props.onFinish();
+            props.onFinish();
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
     React.useEffect(() => {
