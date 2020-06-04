@@ -38,6 +38,13 @@ jobs:
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/cache@v2
+        with:
+          path: .next
+          key: docs-next-${{ hashFiles('yarn.lock') }}-${{ hashFiles('pages/**') }}
+          restore-keys: |
+            docs-next-${{ hashFiles('yarn.lock') }}-
+            docs-next-
       - run: yarn export
         timeout-minutes: 15
       - name: test links
