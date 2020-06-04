@@ -5,11 +5,12 @@ import inquirer from 'inquirer';
 import * as Directories from '../Directories';
 import { androidNativeUnitTests } from './AndroidNativeUnitTests';
 
-async function thisAction(params) {
-  let platform = params.platform;
+type PlatformName = 'android' | 'ios' | 'both';
+
+async function thisAction({ platform }: { platform?: PlatformName }) {
   if (!platform) {
-    console.log(chalk.yellow('You havent specified platform to run unit tests for!'));
-    const result = await inquirer.prompt<{ platform: string }>([
+    console.log(chalk.yellow("You haven't specified platform to run unit tests for!"));
+    const result = await inquirer.prompt<{ platform: PlatformName }>([
       {
         name: 'platform',
         type: 'list',
