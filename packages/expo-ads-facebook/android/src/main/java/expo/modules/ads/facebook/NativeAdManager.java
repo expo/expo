@@ -73,9 +73,22 @@ public class NativeAdManager implements InternalModule {
             sendAppEvent("CTKNativeAdsManagersChanged", adsManagersState);
           }
 
+          /**
+           * Called when one of the registered ads managers encounters an error. Sends the error
+           * and the specific placementId for which manager errored to JS.
+           */
           @Override
           public void onAdError(AdError adError) {
             // @todo handle errors here
+            Bundle error = new Bundle();
+            error.putInt("code", adError.getErrorCode());
+            error.putString("message", adError.getErrorMessage());
+
+            Bundle state = new Bundle();
+            state.putString("placementId", placementId);
+            state.putBundle("error", error);
+
+            sendAppEvent("CTKNativeAdManagerErrored", state);
           }
         });
 
