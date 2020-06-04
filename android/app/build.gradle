@@ -180,6 +180,8 @@ dependencies {
 
   // BEGIN_SDK_UNVERSIONED
   implementation(project(path: ':expoview'))
+
+  implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // END_SDK_UNVERSIONED
 
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE

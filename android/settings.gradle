@@ -6,6 +6,8 @@ project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
+include ':unimodules-test-core'
+project(':unimodules-test-core').projectDir = new File(rootDir, '../packages/unimodules-test-core/android')
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
@@ -34,7 +36,7 @@ includeUnimodulesProjects(
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-updates',
-        'expo-splash-screen',
+        'expo-splash-screen'
 // FLAG_END_REMOVE__UPDATE_EXPOKIT
     ]
 ]

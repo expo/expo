@@ -43,10 +43,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - run: echo "::add-path::$(pwd)/bin"
-      - run: expotools android-unit-tests
+      - run: expotools native-unit-tests --platform android
       - name: Save test results
         if: always()
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: packages/**/build/test-results/*xml
+          path: packages/**/build/test-results/**/*xml
