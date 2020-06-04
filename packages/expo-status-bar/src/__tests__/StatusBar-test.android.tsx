@@ -1,8 +1,7 @@
 import { mount } from 'enzyme';
-import React from 'react';
-import { Appearance } from 'react-native';
+import * as React from 'react';
 
-import ExpoStatusBar from '../StatusBar';
+import { StatusBar as ExpoStatusBar } from '../StatusBar';
 
 describe('StatusBar', () => {
   it('defaults to translucent', () => {

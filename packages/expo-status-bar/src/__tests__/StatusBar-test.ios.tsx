@@ -1,10 +1,10 @@
 import { mount } from 'enzyme';
-import React from 'react';
-import { Appearance } from 'react-native';
+import * as React from 'react';
+import { Appearance, ColorSchemeName } from 'react-native';
 
-import ExpoStatusBar from '../StatusBar';
+import { StatusBar as ExpoStatusBar } from '../StatusBar';
 
-function mockAppearance(colorScheme, fn) {
+function mockAppearance(colorScheme: ColorSchemeName, fn: any) {
   const originalGetColorScheme = Appearance.getColorScheme;
   Appearance.getColorScheme = () => colorScheme;
   try {
