@@ -36,7 +36,7 @@
     "eslint-config-universe": "^3.0.2",
     "find-yarn-workspace-root": "^1.2.1",
     "glob": "^7.1.3",
-    "jest-expo": "~37.0.0",
+    "jest-expo": "~38.0.0",
     "jest-expo-enzyme": "^1.0.2",
     "ts-jest": "~25.5.1",
     "typescript": "^3.9.2"
