@@ -1,0 +1,1 @@
+{"version":3,"file":"StatusBar.js","sourceRoot":"","sources":["../src/StatusBar.ts"],"names":[],"mappings":"AAAA,OAAO,aAAa,MAAM,iBAAiB,CAAC;AAC5C,eAAe,aAAa,CAAC","sourcesContent":["import ExpoStatusBar from './ExpoStatusBar';\nexport default ExpoStatusBar;\n"]}
