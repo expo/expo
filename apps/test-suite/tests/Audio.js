@@ -226,12 +226,12 @@ export function test(t) {
         );
       }
 
-      t.it('redirects from HTTPS URL to HTTPS URL (301)', async () => {
+      t.it('redirects from HTTPS URL to HTTPS URL (302)', async () => {
         let error = null;
         try {
           await soundObject.loadAsync({
             uri:
-              'https://player.vimeo.com/external/181375362.sd.mp4?s=cf573e9cf7d747f4eaf7e57eeec88e9b22e3933f&profile_id=165',
+              'https://player.vimeo.com/play/1541868671?s=371426411_1591227987_11794ef1a2ffb1b2e9f0bcb007d56cbd&loc=external&context=Vimeo%5CController%5CClipController.main',
           });
         } catch (err) {
           error = err;
