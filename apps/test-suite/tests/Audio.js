@@ -1,7 +1,7 @@
 'use strict';
 
-import { Audio } from 'expo-av';
 import { Asset } from 'expo-asset';
+import { Audio } from 'expo-av';
 import { Platform } from 'react-native';
 
 import { retryForStatus, waitFor } from './helpers';
@@ -141,13 +141,12 @@ export function test(t) {
             } else {
               t.expect(error.toString()).toMatch('error code -1013');
             }
-            const signInResponse = await (await fetch(
-              `${authenticatedStaticFilesBackend}/sign_in`,
-              {
+            const signInResponse = await (
+              await fetch(`${authenticatedStaticFilesBackend}/sign_in`, {
                 method: 'POST',
                 credentials: true,
-              }
-            )).text();
+              })
+            ).text();
             t.expect(signInResponse).toMatch('Signed in successfully!');
             error = null;
             try {
@@ -574,7 +573,11 @@ export function test(t) {
         let hasBeenRejected = false;
 
         try {
-          const status = await soundObject.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
+          const status = await soundObject.setRateAsync(
+            rate,
+            shouldCorrectPitch,
+            pitchCorrectionQuality
+          );
           t.expect(status.rate).toBeCloseTo(rate, 2);
           t.expect(status.shouldCorrectPitch).toBe(shouldCorrectPitch);
           t.expect(status.pitchCorrectionQuality).toBe(pitchCorrectionQuality);

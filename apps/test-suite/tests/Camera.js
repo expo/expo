@@ -1,12 +1,12 @@
 'use strict';
 
+import { Video } from 'expo-av';
+import { Camera } from 'expo-camera';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform } from 'react-native';
-import { Video } from 'expo-av';
-import * as Permissions from 'expo-permissions';
-import { Camera } from 'expo-camera';
-import * as TestUtils from '../TestUtils';
 
+import * as TestUtils from '../TestUtils';
 import { waitFor, mountAndWaitFor as originalMountAndWaitFor, retryForStatus } from './helpers';
 
 export const name = 'Camera';

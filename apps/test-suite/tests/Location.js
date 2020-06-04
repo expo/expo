@@ -1,11 +1,11 @@
 'use strict';
 
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
 
-import * as TaskManager from 'expo-task-manager';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location';
 import * as TestUtils from '../TestUtils';
 
 const BACKGROUND_LOCATION_TASK = 'background-location-updates';
