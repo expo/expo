@@ -96,6 +96,13 @@ export default function Playlists() {
 </p>
 </details>
 
+
+## Themes and status bar styles
+
+If you use `expo-status-bar` to control your status bar `barStyle`, the `barStyle="default"` configuration will automatically pick the appropriate default style depending on the color scheme currently used by the app. Please note that if you provide a way for users to toggle between color schemes rather than using the operating system theme, this will not have the intended behavior, and you should use `barStyle="light-content"` and `barStyle="dark-content"` as needed depending on the selected color scheme.
+
+> 💡This is only supported in SDK 38 or higher. Prior to SDK 38, `default` will not change depending on your color scheme.
+
 ## Factoring the status bar in with your layout
 
 When you have a translucent status bar, it's important to remember that content can be rendered underneath it (if it couldn't, what would be the point of it being translucent? there would be nothing for you to see through it!).
