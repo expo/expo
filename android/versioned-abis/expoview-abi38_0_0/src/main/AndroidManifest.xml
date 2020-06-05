@@ -70,7 +70,7 @@
     <application>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="abi38_0_0.host.exp.expoview.provider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
