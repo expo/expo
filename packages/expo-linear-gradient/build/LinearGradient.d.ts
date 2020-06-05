@@ -1,15 +1,43 @@
 import * as React from 'react';
 import { View } from 'react-native';
-export declare type LinearGradientProps = {
-    colors: string[];
-    locations?: number[] | null;
-    start?: LinearGradienPoint | null;
-    end?: LinearGradienPoint | null;
-} & React.ComponentProps<typeof View>;
-export declare type LinearGradienPoint = {
+import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
+export declare type LinearGradientPoint = {
     x: number;
     y: number;
-} | [number, number];
-export declare class LinearGradient extends React.Component<LinearGradientProps> {
-    render(): JSX.Element;
-}
+} | NativeLinearGradientPoint;
+export declare type LinearGradientProps = {
+    /**
+     * An array of colors that represent stops in the gradient.
+     * At least two colors are required.
+     */
+    colors: string[];
+    /**
+     * An array of `number`s the same length as the `colors` property, where each item
+     * represents where the corresponding color should be
+     * values.
+     * Items must be in numeric order.
+     */
+    locations?: number[] | null;
+    /**
+     * An object `{ x: number; y: number }` or array `[x, y]` which represents the position
+     * that the gradient starts at, as a fraction of the overall size of the gradient ranging from 0 to 1.
+     *
+     * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will start `10%` from the left and `20%` from the top.
+     *
+     * On web, this changes the angle of the gradient because CSS gradients don't support changing the starting position.
+     */
+    start?: LinearGradientPoint | null;
+    /**
+     * An object `{ x: number; y: number }` or array `[x, y]` which represents the position
+     * that the gradient ends at, as a fraction of the overall size of the gradient ranging from 0 to 1.
+     *
+     * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will end `10%` from the left and `20%` from the bottom.
+     *
+     * On web, this changes the angle of the gradient because CSS gradients don't support changing the end position.
+     */
+    end?: LinearGradientPoint | null;
+} & React.ComponentProps<typeof View>;
+/**
+ * Renders a native view that transitions between colors in a linear direction
+ */
+export declare const LinearGradient: React.FC<LinearGradientProps>;

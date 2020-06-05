@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
-export class LinearGradient extends React.Component {
-    render() {
-        let { colors, locations, start, end, ...props } = this.props;
-        if (locations && colors.length !== locations.length) {
-            console.warn('LinearGradient colors and locations props should be arrays of the same length');
-            locations = locations.slice(0, colors.length);
-        }
-        return (React.createElement(NativeLinearGradient, Object.assign({}, props, { colors: Platform.select({
-                web: colors,
-                default: colors.map(processColor),
-            }), locations: locations, startPoint: _normalizePoint(start), endPoint: _normalizePoint(end) })));
+/**
+ * Renders a native view that transitions between colors in a linear direction
+ */
+export const LinearGradient = ({ colors, locations, start, end, ...props }) => {
+    if (locations && colors.length !== locations.length) {
+        console.warn('LinearGradient colors and locations props should be arrays of the same length');
+        locations = locations.slice(0, colors.length);
     }
-}
+    return (React.createElement(NativeLinearGradient, Object.assign({}, props, { colors: Platform.select({
+            web: colors,
+            default: colors.map(processColor),
+        }), locations: locations, startPoint: _normalizePoint(start), endPoint: _normalizePoint(end) })));
+};
 function _normalizePoint(point) {
     if (!point) {
         return undefined;
