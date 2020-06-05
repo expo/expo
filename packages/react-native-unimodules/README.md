@@ -10,7 +10,7 @@ If you have an existing project you'd like to install it into, please read the f
 
 ## 📦 Installation
 
-**This project requires that you use CocoaPods on iOS**, to set it up see [this gist](https://gist.github.com/brentvatne/b0ea11a36dc423e441b7d36e36eb5a26), or relevant parts of the [this guide](https://facebook.github.io/react-native/docs/integration-with-existing-apps#3-install-cocoapods). React Native >= 0.60 ships with CocoaPods support by default, so this should be easy if you're already on that version.
+**This project requires that you use CocoaPods on iOS**, to set it up follow relevant parts of [this guide](https://facebook.github.io/react-native/docs/integration-with-existing-apps#3-install-cocoapods). React Native >= 0.60 ships with CocoaPods support by default, so this should be easy if you're already on that version.
 
 ```bash
 npm install react-native-unimodules
@@ -20,10 +20,88 @@ Now you need to configure the library for iOS and/or Android.
 
 ## 🍎 Configure iOS
 
-- Open `ios/Podfile` in your editor and make it look [like this one on react-native <= 0.59](https://gist.github.com/sjchmiela/6c079f2173938a9a61a7c6f053c45000) or [like this one on react-native >= 0.60](https://gist.github.com/brentvatne/d093e440698404803bd9c29d962949b0/revisions#diff-4a25b996826623c4a3a4910f47f10c30).
+- Open `ios/Podfile` in your editor and:
+  - Import the Unimodules functions by requiring the `cocoapods.rb` file:
+    ```diff
+     # ...
+
+    +require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+    +
+     target 'YourAppNameHere' do
+       # ...
+    ```
+  - Import Unimodules dependencies using `use_unimodules!` method:
+    ```diff
+     target 'YourAppNameHere' do
+       # ...
+      
+    +  use_unimodules!
+
+       # ...
+     end
+    ```
+
+  in the end your `Podfile` should look more or less like [this](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/ios/Podfile).
 - Run `npx pod-install` again
-- Update your `AppDelegate.h` and `AppDelegate.m` according to [to look like these](https://gist.github.com/brentvatne/1ece8c32a3c5c9d0ac3a470460c65603).
-  - If you use [`react-native-navigation`](https://github.com/wix/react-native-navigation), you will need to use its `bridgeManagerDelegate` option [like in this gist](https://gist.github.com/brentvatne/67909ec442121de22c9b81c629a99aa6).
+- Setup `@unimodules/react-native-adapter` following instructions at [README.md](../%40unimodules/react-native-adapter#ios).
+- Configure your `AppDelegate` to extend `UMAppDelegateWrapper`:
+  - Import `<UMCore/UMAppDelegateWrapper.h>` in `AppDelegate.h`:
+    ```diff
+     #import <React/RCTBridgeDelegate.h>
+     #import <UIKit/UIKit.h>
+    +
+    +#import <UMCore/UMAppDelegateWrapper.h>
+     
+     @interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
+    ```
+  - Change the superclass of your AppDelegate to `UMAppDelegateWrapper`:
+    ```diff
+     #import <React/RCTBridgeDelegate.h>
+     #import <UIKit/UIKit.h>
+     
+     #import <UMCore/UMAppDelegateWrapper.h>
+     
+    -@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
+    +@interface AppDelegate : UMAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate>
+    ```
+- Configure your `AppDelegate` to call the superclass implementation whenever applicable:
+  - For every `-application:…` method implemented by your `AppDelegate` in `AppDelegate.m` add a call to `super` before returning from the function. For example:
+    ```diff
+     - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+     {
+     // ... some code
+     
+       RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+       RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+                                                       moduleName:@"HelloWorld"
+                                                 initialProperties:nil];
+
+       rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+       
+       self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+       UIViewController *rootViewController = [UIViewController new];
+       rootViewController.view = rootView;
+       self.window.rootViewController = rootViewController;
+       [self.window makeKeyAndVisible];
+
+    +  [super application:application didFinishLaunchingWithOptions:launchOptions];
+       return YES;
+     }
+    ```
+
+    or
+
+    ```diff
+     - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+     {
+       // ... some code, probably returning if some condition is met
+
+    -  return NO;
+    +  return [super application:app openURL:url options:options];
+     }
+    ```
+
+    in the end your `AppDelegate.h` and `AppDelegate.m` should look more or less like these: [`AppDelegate.h`](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h), [`AppDelegate.m`](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.m).
 
 ### Advanced configuration
 
