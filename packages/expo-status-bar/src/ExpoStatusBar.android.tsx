@@ -21,8 +21,14 @@ export default function ExpoStatusBar(props: StatusBarProps) {
   // we don't end up with a light status bar
   const colorScheme = useColorScheme();
   let barStyle = userBarStyle;
+
+  // Only adapt the barStyle to the theme if the status bar is translucent. If it's opaque,
+  // then therere will be some background color and we don't know how to adapt to that
+  // automatically.
   if ((userBarStyle === 'default' || !userBarStyle) && translucent) {
     barStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
+  } else if (!userBarStyle && !translucent) {
+    barStyle = 'default';
   }
 
   let backgroundColor = userBackgroundColor;
