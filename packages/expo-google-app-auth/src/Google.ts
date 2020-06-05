@@ -243,7 +243,9 @@ export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult
       },
     };
   } catch (error) {
-    if (error.message.toLowerCase().indexOf('user cancelled') > -1) {
+    const message = (error.message as string).toLowerCase();
+    // Error code -3 is the native error code for user cancel on iOS
+    if (message.includes('user cancelled') || message.includes('error -3')) {
       return { type: 'cancel' };
     }
     throw error;
