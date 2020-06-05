@@ -60,7 +60,7 @@ import androidx.annotation.Nullable;
     return windowInsets;
   }
 
-  static @Nullable versioned.host.exp.exponent.modules.api.safeareacontext.Rect getFrame(ViewGroup rootView, View view) {
+  static @Nullable abi38_0_0.host.exp.exponent.modules.api.safeareacontext.Rect getFrame(ViewGroup rootView, View view) {
     // This can happen while the view gets unmounted.
     if (view.getParent() == null) {
       return null;
@@ -76,6 +76,6 @@ import androidx.annotation.Nullable;
       return null;
     }
 
-    return new versioned.host.exp.exponent.modules.api.safeareacontext.Rect(offset.left, offset.top, view.getWidth(), view.getHeight());
+    return new abi38_0_0.host.exp.exponent.modules.api.safeareacontext.Rect(offset.left, offset.top, view.getWidth(), view.getHeight());
   }
 }
