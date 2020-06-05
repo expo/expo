@@ -2,7 +2,7 @@ import * as React from 'react';
 import { LayoutRectangle, View } from 'react-native';
 import normalizeColor from 'react-native-web/src/modules/normalizeColor';
 
-import { NativeLinearGradientProps, NativeLinearGradientPoint } from './NativeLinearGradient.types';
+import { NativeLinearGradientPoint, NativeLinearGradientProps } from './NativeLinearGradient.types';
 
 const NativeLinearGradient: React.FC<NativeLinearGradientProps> = ({
   colors,
