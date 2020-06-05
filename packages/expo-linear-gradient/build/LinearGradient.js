@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
 /**
- * Renders a native view that transitions between colors in a linear direction
+ * Renders a native view that transitions between multiple colors in a linear direction.
  */
 export const LinearGradient = ({ colors, locations, start, end, ...props }) => {
     if (locations && colors.length !== locations.length) {

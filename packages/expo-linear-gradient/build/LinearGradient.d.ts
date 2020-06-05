@@ -12,9 +12,11 @@ export declare type LinearGradientProps = {
      */
     colors: string[];
     /**
-     * An array of `number`s the same length as the `colors` property, where each item
-     * represents where the corresponding color should be
-     * values.
+     * An array of `number`s ranging from 0 to 1, the same length as the `colors` property. Each item
+     * represents where the corresponding color should be located.
+     *
+     * For example, `[0.5, 1.0]` would make the first color start 50% through the gradient view (the middle), and the second color 100% through the gradient (the end).
+     *
      * Items must be in numeric order.
      */
     locations?: number[] | null;
@@ -38,6 +40,6 @@ export declare type LinearGradientProps = {
     end?: LinearGradientPoint | null;
 } & React.ComponentProps<typeof View>;
 /**
- * Renders a native view that transitions between colors in a linear direction
+ * Renders a native view that transitions between multiple colors in a linear direction.
  */
 export declare const LinearGradient: React.FC<LinearGradientProps>;

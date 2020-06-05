@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-linear-gradient`** provides a React component that renders a gradient view.
+**`expo-linear-gradient`** provides a native React view that transitions between multiple colors in a linear direction.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -19,7 +19,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <SnackInline label='Linear Gradient' dependencies={['expo-linear-gradient']}>
 
-```js
+```tsx
 import React from 'react';
 import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -75,13 +75,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 ### props
 
 `colors`  
-An array of colors that represent stops in the gradient. At least two colors are required (otherwise it's not a gradient, it's just a fill!).
+An array of colors that represent stops in the gradient. At least two colors are required (for single color background, use the `style.backgroundColor` prop on a `View` component).
 
 `start`  
-An array of `[x, y]` where x and y are floats. They represent the position that the gradient starts at, as a fraction of the overall size of the gradient. For example, `[0.1, 0.2]` means that the gradient will start 10% from the left and 20% from the top.
+An object `{ x: number; y: number }` or array `[x, y]` which represents the position that the gradient starts at, as a fraction of the overall size of the gradient ranging from 0 to 1.
+For example, `{ x: 0.1, y: 0.2 }` means that the gradient will start `10%` from the left and `20%` from the top.
+**On web**, this only changes the angle of the gradient because CSS gradients don't support changing the starting position.
 
 `end`  
-Same as start but for the end of the gradient.
+An object `{ x: number; y: number }` or array `[x, y]` which represents the position that the gradient ends at, as a fraction of the overall size of the gradient ranging from 0 to 1.
+For example, `{ x: 0.1, y: 0.2 }` means that the gradient will end `10%` from the left and `20%` from the bottom.
+**On web**, this only changes the angle of the gradient because CSS gradients don't support changing the end position.
 
 `locations`  
-An array of the same length as `colors`, where each element is a float with the same meaning as the `start` and `end` values, but instead they indicate where the color at that index should be.
+An array of `number`s ranging from 0 to 1, the same length as the `colors` property. Each item represents where the corresponding color should be located.
+For example, `[0.5, 1.0]` would make the first color start 50% through the gradient view (the middle), and the second color 100% through the gradient (the end).
+
+Items must be in numeric order.
