@@ -20,47 +20,44 @@ import SnackInline from '~/components/plugins/SnackInline';
 <SnackInline label='Linear Gradient' dependencies={['expo-linear-gradient']}>
 
 ```tsx
-import React from 'react';
+import * as React from 'react';
 import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-export default class FacebookButton extends React.Component {
-  render() {
-    return (
-      <View
+export default function FacebookButton() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      // Background Linear Gradient
+      <LinearGradient
+        colors={['rgba(0,0,0,0.8)', 'transparent']}
         style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'orange',
-        }}>
-        // Background Linear Gradient
-        <LinearGradient
-          colors={['rgba(0,0,0,0.8)', 'transparent']}
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          height: 300,
+        }}
+      />
+      // Button Linear Gradient
+      <LinearGradient
+        colors={['#4c669f', '#3b5998', '#192f6a']}
+        style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
+        <Text
           style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            height: 300,
-          }}
-        />
-        // Button Linear Gradient
-        <LinearGradient
-          colors={['#4c669f', '#3b5998', '#192f6a']}
-          style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
-          <Text
-            style={{
-              backgroundColor: 'transparent',
-              fontSize: 15,
-              color: '#fff',
-            }}>
-            Sign in with Facebook
-          </Text>
-        </LinearGradient>
-      </View>
-    );
-  }
+            backgroundColor: 'transparent',
+            fontSize: 15,
+            color: '#fff',
+          }}>
+          Sign in with Facebook
+        </Text>
+      </LinearGradient>
+    </View>
+  );
 }
 ```
 
