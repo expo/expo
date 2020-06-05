@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
-import abi38_0_0.expo.modules.notifications.notifications.interfaces.NotificationTrigger;
-import abi38_0_0.expo.modules.notifications.notifications.model.Notification;
-import abi38_0_0.expo.modules.notifications.notifications.model.NotificationContent;
-import abi38_0_0.expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 import abi38_0_0.expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
-import abi38_0_0.expo.modules.notifications.notifications.service.BaseNotificationsService;
+import expo.modules.notifications.notifications.service.BaseNotificationsService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;

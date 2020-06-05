@@ -3,8 +3,8 @@ package abi38_0_0.host.exp.exponent.modules.universal.notifications;
 import android.content.Context;
 
 import abi38_0_0.expo.modules.notifications.notifications.emitting.NotificationsEmitter;
-import abi38_0_0.expo.modules.notifications.notifications.model.Notification;
-import abi38_0_0.expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationResponse;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
