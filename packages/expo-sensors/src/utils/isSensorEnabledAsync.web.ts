@@ -1,4 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 
 type SensorEventName = 'deviceorientation' | 'devicemotion';
 
@@ -33,7 +33,7 @@ export async function assertSensorEventEnabledAsync(
   eventName: SensorEventName,
   timeout?: number
 ): Promise<boolean> {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return false;
   }
 
@@ -64,7 +64,7 @@ export async function isSensorEnabledAsync(
   //
   timeout: number = 250
 ): Promise<boolean> {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return false;
   }
 

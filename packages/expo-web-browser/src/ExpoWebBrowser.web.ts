@@ -1,6 +1,5 @@
-import { CodedError } from '@unimodules/core';
+import { Platform, CodedError } from '@unimodules/core';
 import compareUrls from 'compare-urls';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { AppState, Dimensions, AppStateStatus } from 'react-native';
 
 import {
@@ -52,14 +51,16 @@ export default {
     url: string,
     browserParams: WebBrowserOpenOptions = {}
   ): Promise<WebBrowserResult> {
-    if (!canUseDOM) return { type: 'cancel' };
+    if (!Platform.isDOMAvailable) return { type: 'cancel' };
     const { windowName = '_blank', windowFeatures } = browserParams;
     const features = getPopupFeaturesString(windowFeatures);
     window.open(url, windowName, features);
     return { type: 'opened' };
   },
   dismissAuthSession() {
-    if (!canUseDOM) return;
+    if (!Platform.isDOMAvailable) {
+      return;
+    }
     dismissPopup();
   },
   maybeCompleteAuthSession({
@@ -67,7 +68,7 @@ export default {
   }: {
     skipRedirectCheck?: boolean;
   }): { type: 'success' | 'failed'; message: string } {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
       return {
         type: 'failed',
         message: 'Cannot use expo-web-browser in a non-browser environment',
@@ -116,7 +117,9 @@ export default {
     redirectUrl?: string,
     openOptions?: WebBrowserOpenOptions
   ): Promise<WebBrowserAuthSessionResult> {
-    if (!canUseDOM) return { type: 'cancel' };
+    if (!Platform.isDOMAvailable) {
+      return { type: 'cancel' };
+    }
 
     redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
 
@@ -202,12 +205,16 @@ export default {
 
 // Crypto
 function isCryptoAvailable(): boolean {
-  if (!canUseDOM) return false;
+  if (!Platform.isDOMAvailable) {
+    return false;
+  }
   return !!(window?.crypto as any);
 }
 
 function isSubtleCryptoAvailable(): boolean {
-  if (!isCryptoAvailable()) return false;
+  if (!isCryptoAvailable()) {
+    return false;
+  }
   return !!(window.crypto.subtle as any);
 }
 

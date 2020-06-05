@@ -46,7 +46,6 @@
     "react-native": "*"
   },
   "dependencies": {
-    "fbjs": "1.0.0",
     "invariant": "2.2.4",
     "lodash": "^4.6.0",
     "prop-types": "^15.6.0"

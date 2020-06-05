@@ -1,5 +1,4 @@
-import { EventEmitter } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform, EventEmitter } from '@unimodules/core';
 import { BatteryState } from './Battery.types';
 const emitter = new EventEmitter({});
 export default {
@@ -8,7 +7,7 @@ export default {
     },
     get isSupported() {
         // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
-        return canUseDOM && ('getBattery' in navigator || 'battery' in navigator);
+        return Platform.isDOMAvailable && ('getBattery' in navigator || 'battery' in navigator);
     },
     async getBatteryLevelAsync() {
         const batteryManager = await getBatteryManagerAsync();
@@ -46,7 +45,7 @@ function onLevelChange() {
     emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
 }
 async function getBatteryManagerAsync() {
-    if (!canUseDOM)
+    if (!Platform.isDOMAvailable)
         return null;
     if ('getBattery' in navigator) {
         // @ts-ignore

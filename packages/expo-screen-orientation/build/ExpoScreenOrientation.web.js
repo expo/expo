@@ -1,5 +1,4 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
-import { canUseViewport, canUseEventListeners } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform, SyntheticPlatformEmitter } from '@unimodules/core';
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, } from './ScreenOrientation.types';
 const OrientationLockAPIToWeb = {
@@ -18,8 +17,8 @@ const OrientationWebToAPI = {
     [WebOrientation.LANDSCAPE_PRIMARY]: Orientation.LANDSCAPE_LEFT,
     [WebOrientation.LANDSCAPE_SECONDARY]: Orientation.LANDSCAPE_RIGHT,
 };
-const { screen } = canUseViewport && window;
-const orientation = canUseViewport && (screen.orientation || screen.msOrientation || null);
+const screen = Platform.isDOMAvailable ? window?.screen : null;
+const orientation = screen?.orientation ?? screen?.msOrientation ?? null;
 async function emitOrientationEvent() {
     const [orientationLock, orientation] = await Promise.all([
         getOrientationLockAsync(),
@@ -30,7 +29,7 @@ async function emitOrientationEvent() {
         orientationInfo: { orientation },
     });
 }
-if (canUseEventListeners) {
+if (Platform.isDOMAvailable && !!window.addEventListener) {
     if (orientation && orientation.addEventListener) {
         orientation.addEventListener('change', emitOrientationEvent);
     }
@@ -54,12 +53,11 @@ async function _lockAsync(webOrientationLock) {
     if (webOrientationLock === WebOrientationLock.UNKNOWN) {
         throw new Error(`expo-screen-orientation: WebOrientationLock.UNKNOWN is not a valid lock that can be applied to the device.`);
     }
-    if (screen.orientation && screen.orientation.lock) {
+    if (screen?.orientation && screen.orientation.lock) {
         await screen.orientation.lock(webOrientationLock);
     }
-    else if (screen['lockOrientation'] ||
-        screen['mozLockOrientation'] ||
-        screen['msLockOrientation']) {
+    else if (screen &&
+        (screen['lockOrientation'] ?? screen['mozLockOrientation'] ?? screen['msLockOrientation'])) {
         const legacyLock = _convertToLegacyOrientationLock(webOrientationLock);
         const lockOrientation = screen['lockOrientation'] || screen['mozLockOrientation'] || screen['msLockOrientation'];
         // correct `this` context must be passed in otherwise method call is disallowed by browser
@@ -84,7 +82,7 @@ export default {
         return _lastWebOrientationLock;
     },
     async getOrientationAsync() {
-        const webOrientation = screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
+        const webOrientation = screen?.['msOrientation'] ?? (screen?.orientation ?? screen?.['mozOrientation'] ?? {}).type;
         if (!webOrientation) {
             return Orientation.UNKNOWN;
         }
@@ -102,14 +100,15 @@ export default {
         _lastWebOrientationLock = webOrientationLock;
     },
     async unlockAsync() {
-        if (screen.orientation && screen.orientation.unlock) {
+        if (screen?.orientation.unlock) {
             screen.orientation.unlock();
         }
-        else if (screen['unlockOrientation'] ||
-            screen['mozUnlockOrientation'] ||
-            screen['msUnlockOrientation']) {
-            const unlockOrientation = screen['unlockOrientation'] ||
-                screen['mozUnlockOrientation'] ||
+        else if (screen &&
+            (screen['unlockOrientation'] ??
+                screen['mozUnlockOrientation'] ??
+                screen['msUnlockOrientation'])) {
+            const unlockOrientation = screen['unlockOrientation'] ??
+                screen['mozUnlockOrientation'] ??
                 screen['msUnlockOrientation'];
             // correct `this` context must be passed in otherwise method call is disallowed by browser
             const isSuccess = unlockOrientation.call(screen);

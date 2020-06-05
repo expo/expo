@@ -1,9 +1,10 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
+
 export default {
   get name(): string {
     return 'ExpoAppAuth';
   },
   get OAuthRedirect(): string {
-    return canUseDOM ? window.location.href : '';
+    return Platform.isDOMAvailable ? window.location.href : '';
   },
 };

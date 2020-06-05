@@ -1,12 +1,11 @@
-import { CodedError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform, CodedError } from '@unimodules/core';
 import FontObserver from 'fontfaceobserver';
 
 import { UnloadFontOptions } from './Font';
 import { FontDisplay, FontResource } from './Font.types';
 
 function getFontFaceStyleSheet(): CSSStyleSheet | null {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return null;
   }
   const styleSheet = getStyleElement();
@@ -53,7 +52,9 @@ export default {
   },
 
   async unloadAllAsync(): Promise<void> {
-    if (!canUseDOM) return;
+    if (!Platform.isDOMAvailable) {
+      return;
+    }
 
     const element = document.getElementById(ID);
     if (element && element instanceof HTMLStyleElement) {
@@ -63,7 +64,9 @@ export default {
 
   async unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void> {
     const sheet = getFontFaceStyleSheet();
-    if (!sheet) return;
+    if (!sheet) {
+      return;
+    }
     const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
     for (const item of items) {
       sheet.deleteRule(item.index);
@@ -71,7 +74,7 @@ export default {
   },
 
   async loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
       return;
     }
 

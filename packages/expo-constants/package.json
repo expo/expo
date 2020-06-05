@@ -41,7 +41,6 @@
     "expo-module-scripts": "~1.2.0"
   },
   "dependencies": {
-    "fbjs": "1.0.0",
     "uuid": "^3.3.2"
   }
 }

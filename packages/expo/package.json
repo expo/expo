@@ -68,7 +68,7 @@
     "expo-permissions": "~9.0.1",
     "expo-sqlite": "~8.2.1",
     "fbemitter": "^2.1.1",
-    "invariant": "^2.2.2",
+    "invariant": "^2.2.4",
     "lodash": "^4.6.0",
     "md5-file": "^3.2.3",
     "nullthrows": "^1.1.0",
@@ -92,7 +92,7 @@
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
     "@types/fbemitter": "^2.0.32",
-    "@types/invariant": "^2.2.29",
+    "@types/invariant": "^2.2.33",
     "@types/react": "^16.9.0",
     "@types/react-native": "^0.62.8",
     "@types/react-test-renderer": "16.9.0",

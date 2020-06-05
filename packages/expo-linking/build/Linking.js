@@ -1,10 +1,8 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import invariant from 'fbjs/lib/invariant';
+import invariant from 'invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import URL from 'url-parse';
 import NativeLinking from './ExpoLinking';
 const { manifest } = Constants;
@@ -79,7 +77,7 @@ function ensureTrailingSlash(input, shouldAppend) {
  */
 export function makeUrl(path = '', queryParams = {}) {
     if (Platform.OS === 'web') {
-        if (!canUseDOM)
+        if (!Platform.isDOMAvailable)
             return '';
         const origin = ensureLeadingSlash(window.location.origin, false);
         let queryString = qs.stringify(queryParams);

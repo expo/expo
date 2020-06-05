@@ -1,4 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 export function getRequestPermission() {
     // @ts-ignore: requestPermission does not exist
     return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
@@ -22,7 +22,7 @@ class PermissionError extends Error {
 // iOS 12.2 disables DeviceMotion by default now
 // https://github.com/w3c/deviceorientation/issues/57
 export async function assertSensorEventEnabledAsync(eventName, timeout) {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
         return false;
     }
     if (getRequestPermission()) {
@@ -49,7 +49,7 @@ export async function isSensorEnabledAsync(eventName,
 // - ~45ms
 //
 timeout = 250) {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
         return false;
     }
     // If there is no method to request permission then the device has access to device motion.

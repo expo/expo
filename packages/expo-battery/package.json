@@ -34,8 +34,5 @@
   },
   "peerDependencies": {
     "@unimodules/core": "*"
-  },
-  "dependencies": {
-    "fbjs": "1.0.0"
   }
 }

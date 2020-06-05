@@ -34,7 +34,6 @@
     "unimodules-constants-interface": "*"
   },
   "dependencies": {
-    "fbjs": "1.0.0",
     "ua-parser-js": "^0.7.19"
   },
   "devDependencies": {

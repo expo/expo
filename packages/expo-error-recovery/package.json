@@ -39,8 +39,5 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
-  },
-  "dependencies": {
-    "fbjs": "1.0.0"
   }
 }
