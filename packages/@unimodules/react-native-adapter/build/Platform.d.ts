@@ -1,17 +1,14 @@
-export declare type PlatformOSType = 'ios' | 'android' | 'web' | 'native' | 'macos' | 'windows' | 'electron';
-export declare type PlatformSelect = <T>(specifics: ({
-    [platform in PlatformOSType]?: T;
-} & {
-    default: T;
-}) | {
-    [platform in PlatformOSType]: T;
+import { PlatformOSType } from 'react-native';
+export declare type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'default';
+export declare type PlatformSelect = <T>(specifics: {
+    [platform in PlatformSelectOSType]?: T;
 }) => T;
 declare const Platform: {
     /**
      * Denotes the currently running platform.
      * Can be one of ios, android, web.
      */
-    OS: "ios" | "android" | "windows" | "macos" | "web";
+    OS: PlatformOSType;
     /**
      * Returns the value with the matching platform.
      * Object keys can be any of ios, android, native, web, default.
@@ -22,8 +19,8 @@ declare const Platform: {
      */
     select: PlatformSelect;
     /**
-     * Used for delegating node actions when browser APIs aren't available
-     * like in SSR websites. DOM is not available in native React runtimes.
+     * Denotes if the DOM API is available in the current environment.
+     * The DOM is not available in native React runtimes and Node.js.
      */
     isDOMAvailable: boolean;
 };

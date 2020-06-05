@@ -16,8 +16,8 @@ const Platform = {
      */
     select: ReactNativePlatform.select,
     /**
-     * Used for delegating node actions when browser APIs aren't available
-     * like in SSR websites. DOM is not available in native React runtimes.
+     * Denotes if the DOM API is available in the current environment.
+     * The DOM is not available in native React runtimes and Node.js.
      */
     isDOMAvailable,
 };
