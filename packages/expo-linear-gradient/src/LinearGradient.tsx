@@ -12,7 +12,7 @@ export type LinearGradientProps = {
 
 export type LinearGradienPoint = { x: number; y: number } | [number, number];
 
-export default class LinearGradient extends React.Component<LinearGradientProps> {
+export class LinearGradient extends React.Component<LinearGradientProps> {
   render() {
     let { colors, locations, start, end, ...props } = this.props;
 

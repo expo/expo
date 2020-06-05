@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
-export default class LinearGradient extends React.Component {
+export class LinearGradient extends React.Component {
     render() {
         let { colors, locations, start, end, ...props } = this.props;
         if (locations && colors.length !== locations.length) {

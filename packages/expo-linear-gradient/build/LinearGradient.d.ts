@@ -10,6 +10,6 @@ export declare type LinearGradienPoint = {
     x: number;
     y: number;
 } | [number, number];
-export default class LinearGradient extends React.Component<LinearGradientProps> {
+export declare class LinearGradient extends React.Component<LinearGradientProps> {
     render(): JSX.Element;
 }
