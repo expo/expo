@@ -82,8 +82,15 @@ public class DocumentPickerModule extends ExportedModule implements ActivityEven
 
     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
-    if (options.get("type") != null) {
-      intent.setType((String) options.get("type"));
+    String type = (String)options.get("type");
+    if (type != null) {
+      List<String> types = Arrays.asList(type.split(","));
+      if (types.size() == 1) {
+        intent.setType((String) options.get("type"));
+      } else {
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray());
+      }
     } else {
       intent.setType("*/*");
     }
