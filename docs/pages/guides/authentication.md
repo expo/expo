@@ -187,7 +187,7 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
 <AuthCodeTab>
 
@@ -276,7 +276,7 @@ export default function App() {
 - Implicit auth is supported.
 - When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
 <AuthCodeTab>
 
@@ -447,7 +447,7 @@ export default function App() {
   - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
 <AuthCodeTab>
 
@@ -623,7 +623,7 @@ export default function App() {
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 <AuthCodeTab>
 
 <SnackInline label='FitBit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -778,7 +778,7 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 <AuthCodeTab>
 
 <SnackInline label='GitHub Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -869,7 +869,7 @@ export default function App() {
 - You can change the UI language by setting `extraParams.hl` to an ISO language code (ex: `fr`, `en-US`). Defaults to the best estimation based on the users browser.
 - You can set which email address to use ahead of time by setting `extraParams.login_hint`.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 <AuthCodeTab>
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -1040,7 +1040,7 @@ export default function App() {
 - You cannot define a custom `redirectUri`, Okta will provide you with one.
 - You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 <AuthCodeTab>
 
 <SnackInline label='Okta Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -1130,7 +1130,7 @@ export default function App() {
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
 <AuthCodeTab>
 
@@ -1281,7 +1281,7 @@ export default function App() {
 - Navigate to the **"Scopes"** section to enable scopes.
 - `revocationEndpoint` is not available.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
 <AuthCodeTab>
 
@@ -1367,7 +1367,7 @@ export default function App() {
 
 - Learn more about the [Spotify API](https://developer.spotify.com/documentation/web-api/).
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 <AuthCodeTab>
 
 <SnackInline label='Spotify Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -1517,7 +1517,7 @@ export default function App() {
 
 - You will need to enable 2FA on your Twitch account to create an application.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
 <AuthCodeTab>
 
@@ -1665,7 +1665,7 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - `scopes` can be difficult to get approved.
 
-<AuthMethodTabSwitcher>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
 <AuthCodeTab>
 
