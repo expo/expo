@@ -18,7 +18,7 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 import expo.modules.notifications.notifications.service.BaseNotificationsService;
-import expo.modules.notifications.tokens.PushTokenManager;
+import expo.modules.notifications.tokens.interfaces.PushTokenManager;
 
 /**
  * Subclass of FirebaseMessagingService responsible for dispatching new tokens and remote messages.

@@ -72,6 +72,7 @@ public class PushTokenManager implements SingletonModule, expo.modules.notificat
    *
    * @param token New device push token.
    */
+  @Override
   public void onNewToken(String token) {
     for (WeakReference<PushTokenListener> listenerReference : mListenerReferenceMap.values()) {
       PushTokenListener listener = listenerReference.get();
