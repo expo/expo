@@ -16,7 +16,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-status-bar" hideBareInstructions />
+<InstallSection packageName="expo-status-bar" />
 
 ## Example Usage
 
@@ -88,7 +88,7 @@ You will likely have multiple `StatusBar` components mounted in the same app at 
 - **networkActivityIndicatorVisible (_boolean_)** - If the network activity indicator should be visible. _[iOS only]_
 - **showHideTransition (_[StatusBarAnimation](#statusbaranimation)_)** - The transition effect when showing and hiding the status bar. Defaults to `'fade'`. _[iOS only]_
 - **backgroundColor (_string_)** - The background color of the status bar. _[Android only]_
-- **translucent (_boolean_)** - Whether the app can draw under the status bar. When `true`, content will be rendered under the status bar. This is always `true` on iOS and cannot be changed. _[Android only]_
+- **translucent (_boolean_)** - Whether the app can draw under the status bar. When `true`, content will be rendered under the status bar. This is always `true` on iOS and cannot be changed. On Android, the default is also `true` unless you have explicitly configured the `androidStatusBar.translucent` key in `app.json` to `false`. _[Android only]_
 
 ## Methods
 

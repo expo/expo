@@ -34,5 +34,8 @@
   },
   "jest": {
     "preset": "expo-module-scripts/enzyme"
+  },
+  "dependencies": {
+    "expo-constants": "^9.0.0"
   }
 }

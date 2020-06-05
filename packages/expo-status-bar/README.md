@@ -22,7 +22,13 @@ Please refer to the [React Native StatusBar API documentation](https://reactnati
 npm install expo-status-bar
 ```
 
-No additional configuration is required.
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
+
+### Configure for Android
+
+No additional setup necessary.
 
 # Contributing
 
