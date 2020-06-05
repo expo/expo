@@ -1,5 +1,4 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import ExpoImage from 'expo-image';
 import * as React from 'react';
 import { StyleSheet, View, Animated } from 'react-native';
 import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
@@ -7,13 +6,20 @@ import HeaderButtons from 'react-navigation-header-buttons';
 
 import AnimationBar from './AnimationBar';
 import CompareBar from './CompareBar';
+import {
+  getImageComponent,
+  getSelectedCompareComponent,
+  getCompareComponents,
+  setSelectedCompareComponent,
+} from './ImageComponents';
 import ImageEventsView from './ImageEventsView';
 import ImageStylesView from './ImageStylesView';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
 import { ImageTest } from './types';
 
-const AnimatedExpoImage = Animated.createAnimatedComponent(ExpoImage);
+const AnimatedImage = Animated.Image;
+AnimatedImage.displayName = 'Image';
 
 type StateType = {
   animValue?: Animated.Value;
@@ -116,7 +122,7 @@ export default class ImageTestScreen extends React.Component<NavigationScreenPro
       <View style={styles.container} key={viewKey}>
         {isAnimatable ? <AnimationBar onAnimationValue={this.onAnimationValue} /> : undefined}
         <View style={styles.content}>
-          <ImageTestView imageProps={imageProps} ImageComponent={AnimatedExpoImage} />
+          <ImageTestView imageProps={imageProps} ImageComponent={getImageComponent()} />
           {!compareEnabled ? (
             <View style={styles.stylesContainer}>
               <ImageStylesView test={test} animValue={animValue} />
@@ -125,10 +131,15 @@ export default class ImageTestScreen extends React.Component<NavigationScreenPro
             undefined
           )}
         </View>
-        <CompareBar collapsed={!compareEnabled} onPress={this.onPressCompare} />
+        <CompareBar
+          collapsed={!compareEnabled}
+          ImageComponent={getSelectedCompareComponent()}
+          onPress={this.onPressCompare}
+          onPressComponent={this.onPressCompareComponent}
+        />
         {compareEnabled ? (
           <View style={styles.content}>
-            <ImageTestView imageProps={imageProps} ImageComponent={Animated.Image} />
+            <ImageTestView imageProps={imageProps} ImageComponent={getSelectedCompareComponent()} />
           </View>
         ) : (
           undefined
@@ -147,6 +158,14 @@ export default class ImageTestScreen extends React.Component<NavigationScreenPro
   onPressCompare = (collapsed: boolean) => {
     compareEnabled = !collapsed;
     //LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    this.forceUpdate();
+  };
+
+  onPressCompareComponent = (Component: React.ComponentType<any>) => {
+    const compareComponents = getCompareComponents();
+    let idx = compareComponents.indexOf(Component) + 1;
+    idx = idx >= compareComponents.length ? 0 : idx;
+    setSelectedCompareComponent(compareComponents[idx]);
     this.forceUpdate();
   };
 
