@@ -8,7 +8,7 @@ declare const Platform: {
      * Denotes the currently running platform.
      * Can be one of ios, android, web.
      */
-    OS: PlatformOSType;
+    OS: "ios" | "android" | "windows" | "macos" | "web";
     /**
      * Returns the value with the matching platform.
      * Object keys can be any of ios, android, native, web, default.
