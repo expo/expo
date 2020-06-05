@@ -6,8 +6,17 @@ const { CTKNativeAdManager } = NativeModulesProxy;
 const nativeAdEmitter = new NativeEventEmitter(CTKNativeAdManager);
 
 const EVENT_DID_BECOME_VALID = 'AdsManagerDidBecomeValid';
+const EVENT_DID_ERROR = 'AdsManagerDidError';
 
 type AdManagerCachePolicy = 'none' | 'icon' | 'image' | 'all';
+
+interface CTKNativeAdManagerErrorEvent {
+  placementId: string;
+  error: {
+    code: number;
+    message: string;
+  };
+}
 
 class NativeAdsManager {
   /** {@string} with placement id of ads **/
@@ -69,6 +78,16 @@ class NativeAdsManager {
         this.eventEmitter.emit(EVENT_DID_BECOME_VALID);
       }
     });
+
+    nativeAdEmitter.addListener(
+      'CTKNativeAdManagerErrored',
+      ({ placementId, error: { code, message } }: CTKNativeAdManagerErrorEvent) => {
+        if (this.placementId === placementId) {
+          const error = new Error(`Facebook Ads could not load (code ${code}): ${message}`);
+          this.eventEmitter.emit(EVENT_DID_ERROR, error);
+        }
+      }
+    );
   }
 
   /**
@@ -86,6 +105,10 @@ class NativeAdsManager {
     }
 
     return this.eventEmitter.once(EVENT_DID_BECOME_VALID, listener);
+  }
+
+  onAdsErrored(listener: (error: Error) => void): EventSubscription {
+    return this.eventEmitter.addListener(EVENT_DID_ERROR, listener);
   }
 
   /**

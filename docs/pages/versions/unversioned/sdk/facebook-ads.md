@@ -176,6 +176,27 @@ class MyApp extends React.Component {
 }
 ```
 
+If you want, you can optionally pass two other callback properties — `onAdLoaded` and `onError`.
+
+- `onAdLoaded` will be called once an ad is fetched and provided to your component (the `nativeAd` property introduced in step 2.) The one and only argument with which the function will be called will be the native ad object.
+- `onError` will be called if the Audience framework encounters an error while fetching the ad. The one and only argument with which the function will be called will be an instance of `Error`.
+
+```js
+class MyApp extends React.Component {
+  render() {
+    return (
+      <View>
+        <AdComponent
+          adsManager={adsManager}
+          onAdLoaded={ad => console.log(ad)}
+          onError={error => console.warn(error)}
+        />
+      </View>
+    );
+  }
+}
+```
+
 ### BannerAd
 
 The `BannerAd` component allows you to display native as banners (known as _AdView_).
