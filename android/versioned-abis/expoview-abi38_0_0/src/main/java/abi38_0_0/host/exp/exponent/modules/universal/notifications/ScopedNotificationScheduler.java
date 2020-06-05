@@ -11,11 +11,11 @@ import java.util.Collection;
 import java.util.List;
 
 import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
-import abi38_0_0.expo.modules.notifications.notifications.interfaces.NotificationTrigger;
-import abi38_0_0.expo.modules.notifications.notifications.model.NotificationContent;
-import abi38_0_0.expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 import abi38_0_0.expo.modules.notifications.notifications.scheduling.NotificationScheduler;
-import abi38_0_0.expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
+import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
