@@ -14,7 +14,6 @@ RCT_EXPORT_MODULE(ExpoImage)
   return [RCTImageShadowView new];
 }
 
-
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, RCTResizeMode)
 

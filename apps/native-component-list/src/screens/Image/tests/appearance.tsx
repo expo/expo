@@ -1,5 +1,5 @@
 import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
-import { tintColor, tintColor2 } from './constants';
+import { tintColor } from './constants';
 
 const imageTests: ImageTestGroup = {
   name: 'Appearance',
@@ -62,61 +62,6 @@ const imageTests: ImageTestGroup = {
       }),
     },
     {
-      name: 'Border color',
-      props: {
-        style: {
-          borderWidth: 5,
-          borderColor: tintColor,
-        },
-      },
-    },
-    {
-      name: 'Border width',
-      props: ({ range }: ImageTestPropsFnInput) => ({
-        style: {
-          borderWidth: range(0, 20),
-          borderColor: tintColor,
-        },
-      }),
-    },
-    {
-      name: 'Border radius',
-      props: ({ range }: ImageTestPropsFnInput) => ({
-        style: {
-          borderRadius: range(0, 100),
-        },
-      }),
-    },
-    {
-      name: 'Border radius: separate corners',
-      props: ({ range }: ImageTestPropsFnInput) => ({
-        style: {
-          borderTopLeftRadius: range(0, 25),
-          borderTopRightRadius: range(0, 50),
-          borderBottomLeftRadius: range(0, 75),
-          borderBottomRightRadius: range(0, 100),
-          borderWidth: 5,
-          borderColor: tintColor,
-        },
-      }),
-    },
-    {
-      name: 'Borders: separate edges',
-      props: ({ range }: ImageTestPropsFnInput) => ({
-        style: {
-          borderLeftWidth: range(0, 25),
-          borderLeftColor: tintColor,
-          borderTopWidth: range(0, 25),
-          borderTopColor: tintColor2,
-          borderRightWidth: range(0, 25),
-          borderRightColor: tintColor,
-          borderBottomWidth: range(0, 25),
-          borderBottomColor: tintColor2,
-        },
-      }),
-    },
-
-    {
       name: 'Opacity',
       props: ({ range }: ImageTestPropsFnInput) => ({
         style: {
@@ -141,19 +86,13 @@ const imageTests: ImageTestGroup = {
       },
     },
     {
-      name: 'Shadow',
-      props: ({ range }: ImageTestPropsFnInput) => ({
+      name: 'Background color and radius',
+      props: {
         style: {
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: range(2, 5),
-          },
-          shadowOpacity: range(0.2, 0.5),
-          shadowRadius: range(0, 10),
-          elevation: range(0, 10),
+          backgroundColor: tintColor,
+          borderRadius: 30,
         },
-      }),
+      },
     },
   ],
 };

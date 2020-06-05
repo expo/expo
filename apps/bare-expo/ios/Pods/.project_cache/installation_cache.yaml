@@ -728,6 +728,10 @@ CACHE_KEYS:
         :release: f337cc450e34c1ef80ab385c7986ca7a
     CHECKSUM: 36f53fe2845e4bb74021f69192a752db29766897
     FILES:
+      - "../../../../packages/expo-image/ios/EXImageBorders.h"
+      - "../../../../packages/expo-image/ios/EXImageBorders.m"
+      - "../../../../packages/expo-image/ios/EXImageCornerRadii.h"
+      - "../../../../packages/expo-image/ios/EXImageCornerRadii.m"
       - "../../../../packages/expo-image/ios/EXImageTypes.h"
       - "../../../../packages/expo-image/ios/EXImageTypes.m"
       - "../../../../packages/expo-image/ios/EXImageView.h"
