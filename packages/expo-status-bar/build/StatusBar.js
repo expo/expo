@@ -1,8 +1,7 @@
-import StatusBar from './ExpoStatusBar';
-const setBackgroundColor = StatusBar.setBackgroundColor;
-const setBarStyle = StatusBar.setBarStyle;
-const setHidden = StatusBar.setHidden;
-const setNetworkActivityIndicatorVisible = StatusBar.setNetworkActivityIndicatorVisible;
-const setTranslucent = StatusBar.setTranslucent;
-export { StatusBar, setBarStyle, setBackgroundColor, setHidden, setNetworkActivityIndicatorVisible, setTranslucent, };
+export * from './StatusBar.types';
+export { default as setStatusBarBackgroundColor } from './setStatusBarBackgroundColor';
+export { default as setStatusBarHidden } from './setStatusBarHidden';
+export { default as setStatusBarStyle } from './setStatusBarStyle';
+export { default as setStatusBarTranslucent } from './setStatusBarTranslucent';
+export { default as StatusBar } from './ExpoStatusBar';
 //# sourceMappingURL=StatusBar.js.map

@@ -1,50 +1,40 @@
-import Constants from 'expo-constants';
 import React from 'react';
-import { StatusBar, StatusBarProps } from 'react-native';
+import { StatusBar } from 'react-native';
 
+import { StatusBarProps } from './StatusBar.types';
+import styleToBarStyle from './styleToBarStyle';
 import useColorScheme from './useColorScheme';
 
 export default function ExpoStatusBar(props: StatusBarProps) {
   const {
-    translucent: userTranslucent,
-    backgroundColor: userBackgroundColor,
-    barStyle: userBarStyle,
-    ...otherProps
+    style,
+    animated,
+    hidden,
+    backgroundColor: backgroundColorProp,
+    translucent: translucentProp,
   } = props;
 
-  // If the manifest is available and androidStatusBar is set in it, then base the
-  // default value off of that. If it's not provided, we assume it is translucent.
-  const defaultTranslucency = Constants.manifest?.androidStatusBar?.translucent ?? true;
-  const translucent = userTranslucent ?? defaultTranslucency;
+  // Default to true for translucent
+  const translucent = translucentProp ?? true;
 
-  // Pick appropriate 'default' depending on current theme, so if we are locked to light mode
-  // we don't end up with a light status bar
+  // Pick appropriate default value depending on current theme, so if we are
+  // locked to light mode we don't end up with a light status bar
   const colorScheme = useColorScheme();
-  let barStyle = userBarStyle;
+  const barStyle = styleToBarStyle(style, colorScheme);
 
-  // Only adapt the barStyle to the theme if the status bar is translucent. If it's opaque,
-  // then therere will be some background color and we don't know how to adapt to that
-  // automatically.
-  if ((userBarStyle === 'default' || !userBarStyle) && translucent) {
-    barStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
-  } else if (!userBarStyle && !translucent) {
-    barStyle = 'default';
-  }
-
-  let backgroundColor = userBackgroundColor;
-  if (translucent) {
-    if (userBackgroundColor === undefined) {
-      // TODO: use manifest property for this?
-      backgroundColor = 'transparent';
-    }
+  // If translucent and no backgroundColor is provided, then use transparent
+  // background
+  let backgroundColor = backgroundColorProp;
+  if (translucent && !backgroundColor) {
+    backgroundColor = 'transparent';
   }
 
   return (
     <StatusBar
-      translucent={translucent}
-      backgroundColor={backgroundColor}
       barStyle={barStyle}
-      {...otherProps}
+      backgroundColor={backgroundColor}
+      animated={animated}
+      hidden={hidden}
     />
   );
 }
