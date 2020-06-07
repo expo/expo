@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { ViewProps } from 'react-native';
-export declare type NativeLinearGradientProps = ViewProps & {
-    children?: React.ReactChild;
+import { View } from 'react-native';
+export declare type NativeLinearGradientProps = React.ComponentProps<typeof View> & {
+    children?: React.ReactChildren;
     colors: number[];
     locations?: number[] | null;
     startPoint?: NativeLinearGradientPoint | null;

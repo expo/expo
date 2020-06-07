@@ -4,13 +4,13 @@ import normalizeColor from 'react-native-web/src/modules/normalizeColor';
 
 import { NativeLinearGradientPoint, NativeLinearGradientProps } from './NativeLinearGradient.types';
 
-const NativeLinearGradient: React.FC<NativeLinearGradientProps> = ({
+export default function NativeLinearGradient({
   colors,
   locations,
   startPoint,
   endPoint,
   ...props
-}: NativeLinearGradientProps) => {
+}: NativeLinearGradientProps): React.ReactElement {
   const [layout, setLayout] = React.useState<LayoutRectangle | null>(null);
   const [gradientColors, setGradientColors] = React.useState<string[]>([]);
   const [pseudoAngle, setPseudoAngle] = React.useState<number>(0);
@@ -82,6 +82,4 @@ const NativeLinearGradient: React.FC<NativeLinearGradientProps> = ({
       }}
     />
   );
-};
-
-export default NativeLinearGradient;
+}

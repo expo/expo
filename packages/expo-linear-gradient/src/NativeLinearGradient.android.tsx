@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { NativeLinearGradientProps } from './NativeLinearGradient.types';
 
-const NativeLinearGradient: React.FC<NativeLinearGradientProps> = ({
+export default function NativeLinearGradient({
   colors,
   locations,
   startPoint,
@@ -12,7 +12,7 @@ const NativeLinearGradient: React.FC<NativeLinearGradientProps> = ({
   children,
   style,
   ...props
-}: NativeLinearGradientProps) => {
+}: NativeLinearGradientProps): React.ReactElement {
   // TODO: revisit whether we need to inherit the container's borderRadius since this issue has
   // been resolved: https://github.com/facebook/react-native/issues/3198
   const flatStyle = StyleSheet.flatten(style) ?? {};
@@ -44,8 +44,6 @@ const NativeLinearGradient: React.FC<NativeLinearGradientProps> = ({
       {children}
     </View>
   );
-};
+}
 
 const BaseNativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');
-
-export default NativeLinearGradient;

@@ -1,7 +1,7 @@
 import { requireNativeViewManager } from '@unimodules/core';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, children, style, ...props }) => {
+export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, children, style, ...props }) {
     // TODO: revisit whether we need to inherit the container's borderRadius since this issue has
     // been resolved: https://github.com/facebook/react-native/issues/3198
     const flatStyle = StyleSheet.flatten(style) ?? {};
@@ -21,7 +21,6 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, childre
     return (React.createElement(View, Object.assign({}, props, { style: style }),
         React.createElement(BaseNativeLinearGradient, { style: StyleSheet.absoluteFill, colors: colors, startPoint: startPoint, endPoint: endPoint, locations: locations, borderRadii: borderRadiiPerCorner }),
         children));
-};
+}
 const BaseNativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');
-export default NativeLinearGradient;
 //# sourceMappingURL=NativeLinearGradient.android.js.map

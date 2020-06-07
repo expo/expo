@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import normalizeColor from 'react-native-web/src/modules/normalizeColor';
-const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...props }) => {
+export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, ...props }) {
     const [layout, setLayout] = React.useState(null);
     const [gradientColors, setGradientColors] = React.useState([]);
     const [pseudoAngle, setPseudoAngle] = React.useState(0);
@@ -61,6 +61,5 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
                 props.onLayout(event);
             }
         } })));
-};
-export default NativeLinearGradient;
+}
 //# sourceMappingURL=NativeLinearGradient.web.js.map

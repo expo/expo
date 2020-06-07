@@ -42,4 +42,4 @@ export declare type LinearGradientProps = {
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
-export declare const LinearGradient: React.FC<LinearGradientProps>;
+export declare function LinearGradient({ colors, locations, start, end, ...props }: LinearGradientProps): React.ReactElement;
