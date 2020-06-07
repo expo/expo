@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [gl] Delete `prop-types` in favor of TypeScript. ([#8675](https://github.com/expo/expo/pull/8675) by [@EvanBacon](https://github.com/EvanBacon))
+- Delete `prop-types` in favor of TypeScript. ([#8675](https://github.com/expo/expo/pull/8675) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
