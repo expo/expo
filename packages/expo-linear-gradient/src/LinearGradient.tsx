@@ -8,35 +8,38 @@ export type LinearGradientPoint = { x: number; y: number } | NativeLinearGradien
 
 export type LinearGradientProps = {
   /**
-   * An array of colors that represent stops in the gradient.
-   * At least two colors are required.
+   * An array of colors that represent stops in the gradient. At least two colors are required
+   * (for a single-color background, use the `style.backgroundColor` prop on a `View` component).
    */
   colors: string[];
   /**
-   * An array of `number`s ranging from 0 to 1, the same length as the `colors` property. Each item
-   * represents where the corresponding color should be located.
+   * An array that contains `number`s ranging from 0 to 1, inclusive, and is the same length as the `colors` property.
+   * Each number indicates a color-stop location where each respective color should be located.
    *
-   * For example, `[0.5, 1.0]` would make the first color start 50% through the gradient view (the middle), and the second color 100% through the gradient (the end).
+   * For example, `[0.5, 0.8]` would render:
+   * - the first color, solid, from the beginning of the gradient view to 50% through (the middle);
+   * - a gradient from the first color to the second from the 50% point to the 80% point; and
+   * - the second color, solid, from the 80% point to the end of the gradient view.
    *
-   * Items must be in numeric order.
+   * The color-stop locations must be ascending from least to greatest.
    */
   locations?: number[] | null;
   /**
-   * An object `{ x: number; y: number }` or array `[x, y]` which represents the position
-   * that the gradient starts at, as a fraction of the overall size of the gradient ranging from 0 to 1.
+   * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
+   * at which the gradient starts, as a fraction of the overall size of the gradient ranging from 0 to 1, inclusive.
    *
    * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will start `10%` from the left and `20%` from the top.
    *
-   * On web, this changes the angle of the gradient because CSS gradients don't support changing the starting position.
+   * **On web**, this only changes the angle of the gradient because CSS gradients don't support changing the starting position.
    */
   start?: LinearGradientPoint | null;
   /**
-   * An object `{ x: number; y: number }` or array `[x, y]` which represents the position
-   * that the gradient ends at, as a fraction of the overall size of the gradient ranging from 0 to 1.
+   * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
+   * at which the gradient ends, as a fraction of the overall size of the gradient ranging from 0 to 1, inclusive.
    *
    * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will end `10%` from the left and `20%` from the bottom.
    *
-   * On web, this changes the angle of the gradient because CSS gradients don't support changing the end position.
+   * **On web**, this only changes the angle of the gradient because CSS gradients don't support changing the end position.
    */
   end?: LinearGradientPoint | null;
 } & React.ComponentProps<typeof View>;
