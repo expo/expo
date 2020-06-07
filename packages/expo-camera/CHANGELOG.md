@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Delete `prop-types` in favor of TypeScript. ([#8680](https://github.com/expo/expo/pull/8680) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 8.3.1 — 2020-05-29
