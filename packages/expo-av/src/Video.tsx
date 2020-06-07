@@ -1,15 +1,7 @@
 import omit from 'lodash/omit';
 import nullthrows from 'nullthrows';
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import {
-  findNodeHandle,
-  Image,
-  NativeMethods,
-  StyleSheet,
-  View,
-  ViewPropTypes,
-} from 'react-native';
+import { findNodeHandle, Image, NativeMethods, StyleSheet, View } from 'react-native';
 
 import {
   assertStatusValuesInBounds,
@@ -101,66 +93,6 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   static FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
   static FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
   static FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
-
-  static propTypes = {
-    // Source stuff
-    source: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-        overrideFileExtensionAndroid: PropTypes.string,
-      }), // remote URI like { uri: 'http://foo/bar.mp4' }
-      PropTypes.number, // asset module like require('./foo/bar.mp4')
-    ]),
-    posterSource: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-      }), // remote URI like { uri: 'http://foo/bar.mp4' }
-      PropTypes.number, // asset module like require('./foo/bar.mp4')
-    ]),
-    posterStyle: ViewPropTypes.style,
-
-    // Callbacks
-    onPlaybackStatusUpdate: PropTypes.func,
-    onLoadStart: PropTypes.func,
-    onLoad: PropTypes.func,
-    onError: PropTypes.func,
-    onIOSFullscreenUpdate: PropTypes.func,
-    onFullscreenUpdate: PropTypes.func,
-    onReadyForDisplay: PropTypes.func,
-
-    // UI stuff
-    useNativeControls: PropTypes.bool,
-    resizeMode: PropTypes.string,
-    usePoster: PropTypes.bool,
-
-    // Playback API
-    status: PropTypes.shape({
-      progressUpdateIntervalMillis: PropTypes.number,
-      positionMillis: PropTypes.number,
-      shouldPlay: PropTypes.bool,
-      rate: PropTypes.number,
-      shouldCorrectPitch: PropTypes.bool,
-      volume: PropTypes.number,
-      isMuted: PropTypes.bool,
-      isLooping: PropTypes.bool,
-    }),
-    progressUpdateIntervalMillis: PropTypes.number,
-    positionMillis: PropTypes.number,
-    shouldPlay: PropTypes.bool,
-    rate: PropTypes.number,
-    shouldCorrectPitch: PropTypes.bool,
-    volume: PropTypes.number,
-    isMuted: PropTypes.bool,
-    isLooping: PropTypes.bool,
-
-    // Required by react-native
-    scaleX: PropTypes.number,
-    scaleY: PropTypes.number,
-    translateX: PropTypes.number,
-    translateY: PropTypes.number,
-    rotation: PropTypes.number,
-    ...ViewPropTypes,
-  };
 
   _nativeRef = React.createRef<InstanceType<ExponentVideoComponent> & NativeMethods>();
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
