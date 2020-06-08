@@ -35,7 +35,8 @@
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "expo-constants": "*"
+    "expo-constants": "*",
+    "expo-file-system": "*"
   },
   "dependencies": {
     "fbemitter": "^2.1.1",
