@@ -16,9 +16,8 @@ export async function connectAsync() {
     if (connected) {
         throw new ConnectionError(errors.ALREADY_CONNECTED);
     }
-    const result = await ExpoInAppPurchases.connectAsync();
+    await ExpoInAppPurchases.connectAsync();
     connected = true;
-    return result;
 }
 export async function getProductsAsync(itemList) {
     if (!connected) {
