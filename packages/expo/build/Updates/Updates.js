@@ -55,7 +55,7 @@ export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
     if (Constants.manifest && FileSystem.documentDirectory) {
         const sdkBundlesPath = FileSystem.documentDirectory + sdkVersion ?? Constants.manifest.sdkVersion;
         const sdkBundleFiles = await FileSystem.readDirectoryAsync(sdkBundlesPath);
-        sdkBundleFiles.forEach(async (filename) => {
+        const results = await Promise.all(sdkBundleFiles.map(async (filename) => {
             let fullpath = sdkBundlesPath + '/' + filename;
             // In java, we use `getPath`, which decodes, so we need to double-encode these values
             fullpath = fullpath.replace('%40', '%2540').replace('%2F', '%252F');
@@ -64,14 +64,16 @@ export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
             if (!isCurrentlyRunningBundle) {
                 try {
                     await FileSystem.deleteAsync(fullpath);
+                    return 'success';
                 }
                 catch (e) {
-                    errors.push(e);
+                    return e.message;
                 }
             }
-        });
+        }));
+        errors.concat(results.filter(v => v !== 'success'));
         if (!errors.length) {
-            return { success: true, errors };
+            return { success: true, errors: [] };
         }
     }
     else {
