@@ -1,7 +1,6 @@
 import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, } from '@unimodules/core';
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';
 const packageJSON = require('../package.json');
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
@@ -85,12 +84,6 @@ let GLView = /** @class */ (() => {
             return await GLView.takeSnapshotAsync(exglCtxId, options);
         }
     }
-    GLView.propTypes = {
-        onContextCreate: PropTypes.func,
-        msaaSamples: PropTypes.number,
-        nativeRef_EXPERIMENTAL: PropTypes.func,
-        ...ViewPropTypes,
-    };
     GLView.defaultProps = {
         msaaSamples: 4,
     };
