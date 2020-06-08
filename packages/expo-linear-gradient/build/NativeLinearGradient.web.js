@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { View } from 'react-native';
 import normalizeColor from 'react-native-web/src/modules/normalizeColor';
-const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...props }) => {
-    const [layout, setLayout] = useState(null);
-    const [gradientColors, setGradientColors] = useState([]);
-    const [pseudoAngle, setPseudoAngle] = useState(0);
+export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, ...props }) {
+    const [layout, setLayout] = React.useState(null);
+    const [gradientColors, setGradientColors] = React.useState([]);
+    const [pseudoAngle, setPseudoAngle] = React.useState(0);
     const { width = 1, height = 1 } = layout ?? {};
-    useEffect(() => {
+    React.useEffect(() => {
         const getControlPoints = () => {
             let correctedStartPoint = [0, 0];
             if (Array.isArray(startPoint)) {
@@ -33,7 +33,7 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
         const px = end[0] - start[0];
         setPseudoAngle(90 + (Math.atan2(py, px) * 180) / Math.PI);
     }, [width, height, startPoint, endPoint]);
-    useEffect(() => {
+    React.useEffect(() => {
         const nextGradientColors = colors.map((color, index) => {
             const hexColor = normalizeColor(color);
             let output = hexColor;
@@ -49,7 +49,7 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
     }, [colors, locations]);
     const colorStyle = gradientColors.join(',');
     const backgroundImage = `linear-gradient(${pseudoAngle}deg, ${colorStyle})`;
-    // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
+    // TODO(Bacon): In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
     // browser support.
     return (React.createElement(View, Object.assign({}, props, { style: [
             props.style,
@@ -61,6 +61,5 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
                 props.onLayout(event);
             }
         } })));
-};
-export default NativeLinearGradient;
+}
 //# sourceMappingURL=NativeLinearGradient.web.js.map
