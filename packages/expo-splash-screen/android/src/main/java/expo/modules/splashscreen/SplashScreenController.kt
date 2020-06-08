@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import com.facebook.react.ReactRootView
 import expo.modules.splashscreen.exceptions.NoContentViewException
 import java.lang.ref.WeakReference
 
@@ -12,7 +13,6 @@ const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 class SplashScreenController(
     activity: Activity,
     resizeMode: SplashScreenImageResizeMode,
-    private val rootViewClass: Class<out ViewGroup>,
     splashScreenResourcesProvider: SplashScreenResourcesProvider
 ) {
   private val weakActivity = WeakReference(activity)
@@ -91,7 +91,7 @@ class SplashScreenController(
   }
 
   private fun findRootView(view: View): ViewGroup? {
-    if (rootViewClass.isInstance(view)) {
+    if (ReactRootView::class.isInstance(view)) {
       return view as ViewGroup
     }
     if (view !is SplashScreenView && view is ViewGroup) {
