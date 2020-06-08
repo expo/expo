@@ -1,13 +1,11 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExponentFacebook from './ExponentFacebook';
-export async function logInWithReadPermissionsAsync(options) {
+export async function logInWithReadPermissionsAsync(options = {}) {
     if (!ExponentFacebook.logInWithReadPermissionsAsync) {
         throw new UnavailabilityError('Facebook', 'logInWithReadPermissionsAsync');
     }
-    if (!options || typeof options !== 'object') {
-        options = {};
-    }
-    return transformFacebookLoginResult(await ExponentFacebook.logInWithReadPermissionsAsync(options));
+    const nativeLoginResult = await ExponentFacebook.logInWithReadPermissionsAsync(options);
+    return transformFacebookLoginResult(nativeLoginResult);
 }
 /**
  * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
@@ -18,7 +16,8 @@ export async function getAccessTokenAsync() {
     if (!ExponentFacebook.getAccessTokenAsync) {
         throw new UnavailabilityError('Facebook', 'getAccessTokenAsync');
     }
-    return transformFacebookAuth(await ExponentFacebook.getAccessTokenAsync());
+    const nativeAccessTokenResult = await ExponentFacebook.getAccessTokenAsync();
+    return transformFacebookAuth(nativeAccessTokenResult);
 }
 /**
  * Logs out of the currently authenticated session.
@@ -75,8 +74,8 @@ export async function setAutoInitEnabledAsync(enabled) {
  * the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that
  * Facebook support is initialized properly.
  *
- * - On native platforms you can optionally provide an `appId` argument.
- *   - If you don't provide `appId`, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+ * - On Android and iOS you can optionally provide an `appId` argument.
+ *   - If you don't provide `appId`, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in app store development clients are unavailable, and in bare apps you configure yourself according to [Facebook's setup documentation for iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If the Facebook SDK fails to find an `appId` value, the returned promise will be rejected.
  *   - The same resolution mechanism works for `appName`.
  * - If you provide an explicit `appId`, it will override any other source.
  *

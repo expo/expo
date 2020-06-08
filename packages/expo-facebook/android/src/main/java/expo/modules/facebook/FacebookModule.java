@@ -130,7 +130,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
         }
       });
     } catch (Exception e) {
-      promise.reject("ERR_FACEBOOK_UNINITIALIZED", "An error occurred while trying to initialize a FBSDK app", e);
+      promise.reject("ERR_FACEBOOK_MISCONFIGURED", "An error occurred while trying to initialize a FBSDK app", e);
     }
   }
 

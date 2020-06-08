@@ -79,11 +79,13 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
                rejecter:(UMPromiseRejectBlock)reject
 {
   _isInitialized = YES;
-  if (appId) {
+  if (options[@"appId"]) {
     UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
   }
+
   NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-  [super initializeWithAppId:scopedFacebookAppId appName:appName resolver:resolve rejecter:reject];
+  options[@"appId"] = scopedFacebookAppId;
+  [super initializeAsync:options resolver:resolve rejecter:reject];
 }
 
 - (void)setAutoInitEnabled:(BOOL)enabled resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
@@ -100,7 +102,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
-    reject(@"E_NO_INIT", @"Facebook SDK has not been initialized yet.", nil);
+    reject(@"ERR_FACEBOOK_UNINITIALIZED", @"Facebook SDK has not been initialized yet.", nil);
     return;
   }
   [super logInWithReadPermissionsWithConfig:config resolver:resolve rejecter:reject];
@@ -110,7 +112,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
-    reject(@"E_NO_INIT", @"Facebook SDK has not been initialized yet.", nil);
+    reject(@"ERR_FACEBOOK_UNINITIALIZED", @"Facebook SDK has not been initialized yet.", nil);
     return;
   }
   [super getAccessTokenAsync:resolve rejecter:reject];
@@ -120,7 +122,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
-    reject(@"E_NO_INIT", @"Facebook SDK has not been initialized yet.", nil);
+    reject(@"ERR_FACEBOOK_UNINITIALIZED", @"Facebook SDK has not been initialized yet.", nil);
     return;
   }
   [super logOutAsync:resolve rejecter:reject];

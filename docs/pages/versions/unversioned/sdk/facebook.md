@@ -68,10 +68,10 @@ import * as Facebook from 'expo-facebook';
 
 ### `Facebook.initializeAsync(options: FacebookInitializationOptions): Promise<void>`
 
-Calling this method ensures that the SDK is initialized. You have to call this method before calling any method that uses the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that Facebook support is initialized properly.
+Calling this method ensures that the SDK is initialized. You have to call this method before calling any method that uses the Facebook SDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that Facebook support is initialized properly.
 
-- On native platforms you can optional provide an `appId` argument.
-  - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]]). If it fails to find one, the promise will be rejected.
+- On Android and iOS you can optionally provide an `appId` argument.
+  - If you don't provide it, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in the app store development clients is unavailable, and in bare apps you configure yourself according to the Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]]). If the Facebook SDK fails to find a value for `appId`, the returned promise will be rejected.
   - The same resolution mechanism works for `appName`.
 - If you provide an explicit `appId`, it will override any other source.
 
@@ -81,11 +81,11 @@ A map of options:
 
 - `FacebookInitializationOptions` type:
 
-  - **appId (_string | undefined_)** Application ID used to initialize the FBSDK app. On Android and iOS if you don't provide this, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in the Expo client are unavailable, and in bare apps you configure yourself according to Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]]). If it fails to find one, the promise will be rejected.
-  - **version (_string | undefined_)** Selects the [version of FBSDK](https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0) to use.
-  - **appName (_string | undefined_)** An optional Facebook App Name argument for iOS and Android.
-  - **autoLogAppEvents (_boolean | undefined_)** Sets whether the Facebook SDK should log app events. App events involve e.g. app installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK methods.
-  - **domain (_string | undefined_)** Android: Sets the base Facebook domain to use when making Web requests. Defaults to: `'connect.facebook.net'`.
+  - **appId (_string | undefined_)** Application ID used to specify the Facebook app. On Android and iOS if you don't provide this, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in the app store development clients is unavailable, and in bare apps you configure yourself according to the Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]]). If the Facebook SDK fails to find a value for `appId`, the returned promise will be rejected.
+  - **version (_string | undefined_)** Selects the [version of the Facebook SDK](https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0) to use.
+  - **appName (_string | undefined_)** An optional Facebook App Name argument for Android and iOS.
+  - **autoLogAppEvents (_boolean | undefined_)** Sets whether the Facebook SDK should log app events. App events involve e.g. app installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this iOS](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this Android](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK method. The default value is `false`.
+  - **domain (_string | undefined_)** _(Android only)_ Sets the base Facebook domain to use when making Web requests. Defaults to: `'connect.facebook.net'`.
 
 [d-fbsdk-ios-config]: https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project
 [d-fbsdk-android-manifest]: https://developers.facebook.com/docs/facebook-login/android#manifest
@@ -111,14 +111,14 @@ Otherwise, returns `{ type: 'success' } & FacebookAuth`.
 
   - **token (_string_)** Access token for the authenticated session. This'll provide access to use with Facebook Graph API.
   - **userId (_string_)** The ID of the user.
-  - **appId (_string_)** Application ID used to initialize the FBSDK app.
+  - **appId (_string_)** Application ID used to initialize the Facebook SDK app.
   - **permissions (_string[] | undefined_)** List of granted permissions.
   - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
   - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
   - **expirationDate (_Date_)** Gets the time at which the `token` expires.
   - **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
   - **refreshDate (_Date | undefined_)** The last time the `token` was refreshed (or when it was first obtained).
-  - **tokenSource (_string | undefined_)** Android: Indicates how this `token` was obtained.
+  - **tokenSource (_string | undefined_)** _(Android only)_ Indicates how this `token` was obtained.
   - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
   - **graphDomain (_string | undefined_)** A website domain within the Graph API.
 
@@ -171,3 +171,88 @@ async function logIn() {
 ```
 
 Given a valid Facebook application ID in place of `<APP_ID>`, the code above will prompt the user to log into Facebook then display the user's name. This uses React Native's [fetch](https://reactnative.dev/docs/network.html#fetch) to query Facebook's [Graph API](https://developers.facebook.com/docs/graph-api).
+
+### `Facebook.logOutAsync()`
+
+Logs out of the currently authenticated session.
+
+### `Facebook.getAccessTokenAsync()`
+
+Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
+
+You can use this method to check if the user should sign in or not.
+
+#### Returns
+
+- `FacebookAuth` type:
+
+  - **token (_string_)** Access token for the authenticated session. This will provide access to use with Facebook Graph API.
+  - **userId (_string_)** The ID of the user.
+  - **appId (_string_)** Application ID used to initialize the FBSDK app.
+  - **permissions (_string[] | undefined_)** List of granted permissions.
+  - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
+  - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
+  - **expirationDate (_Date_)** Gets the time at which the `token` expires.
+  - **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
+  - **refreshDate (_Date | undefined_)** Last time the `token` was refreshed (or when it was first obtained).
+  - **tokenSource (_string | undefined_)** _(Android only)_ Indicates how this `token` was obtained.
+  - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
+  - **graphDomain (_string | undefined_)** A website domain within the Graph API.
+
+```tsx
+async function toggleAuthAsync() {
+  const auth = await Facebook.getAccessTokenAsync();
+
+  if (!auth) {
+    // Log in
+  } else {
+    // Log out
+  }
+}
+```
+
+## Error Codes
+
+### `ERR_FACEBOOK_UNINITIALIZED`
+
+Attempted to use the Facebook SDK before it was initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the Facebook SDK.
+
+### `ERR_FACEBOOK_MISCONFIGURED`
+
+Failed to initialize the FBSDK app because the `appId` option wasn't provided and the `appId` couldn't be resolved automatically from the native configuration files.
+
+### `ERR_FACEBOOK_LOGIN`
+
+An error occurred while trying to log in to Facebook.
+
+## Guide
+
+You can use the `fetch` API to get info about the user from the [Facebook Graph API](https://developers.facebook.com/docs/graph-api/using-graph-api/). Here are some helper methods you can use to make data access easier.
+
+```ts
+// Get default info about the currently authenticated user.
+async function getUserAsync() {
+  const { name } = await requestAsync('me');
+  console.log(`Hello ${name} 👋`);
+}
+
+// Request data from the Facebook Graph API.
+// Learn more https://developers.facebook.com/docs/graph-api/using-graph-api/
+async function requestAsync(path: string, token?: string): Promise<any> {
+  let resolvedToken = token;
+  if (!token) {
+    const auth = await Facebook.getAccessTokenAsync();
+    if (!auth) {
+      throw new Error(
+        'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.'
+      );
+    }
+    resolvedToken = auth.token;
+  }
+  const response = await fetch(
+    `https://graph.facebook.com/${path}?access_token=${encodeURIComponent(resolvedToken)}`
+  );
+  const body = await response.json();
+  return body;
+}
+```

@@ -1,10 +1,10 @@
 export type FacebookAuth = {
   /**
-   * Access token for the authenticated session. This'll provide access to use with Facebook Graph API.
+   * Access token for the authenticated session. This provides access to the Facebook Graph API.
    */
   token: string;
   /**
-   * The ID of the user.
+   * Facebook app-scoped user ID.
    */
   userId: string;
   /**
@@ -65,7 +65,7 @@ export type FacebookOptions = {
 
 export type FacebookSDKScriptURLOptions = {
   /**
-   * Android: Sets the base Facebook domain to use when making Web requests.
+   * Android: Sets the base Facebook domain to use when making network requests.
    * Defaults to: 'connect.facebook.net'
    */
   domain?: string;
