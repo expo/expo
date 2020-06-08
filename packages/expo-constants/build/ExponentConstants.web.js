@@ -1,5 +1,5 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
 function getBrowserName() {
@@ -34,7 +34,7 @@ export default {
         return 'ExponentConstants';
     },
     get appOwnership() {
-        return 'expo';
+        return null;
     },
     get installationId() {
         let installationId;
@@ -59,14 +59,13 @@ export default {
         return { web: canUseDOM ? { ua: navigator.userAgent } : undefined };
     },
     get isHeadless() {
-        return false;
+        if (!canUseDOM)
+            return true;
+        return /\bHeadlessChrome\//.test(navigator.userAgent);
     },
     get isDevice() {
         // TODO: Bacon: Possibly want to add information regarding simulators
         return true;
-    },
-    get isDetached() {
-        return false;
     },
     get expoVersion() {
         return this.manifest.sdkVersion || null;
@@ -74,7 +73,8 @@ export default {
     get linkingUri() {
         if (canUseDOM) {
             // On native this is `exp://`
-            return location.origin + location.pathname;
+            // On web we should use the protocol and hostname (location.origin)
+            return location.origin;
         }
         else {
             return '';
@@ -110,7 +110,7 @@ export default {
     },
     get experienceUrl() {
         if (canUseDOM) {
-            return location.origin + location.pathname;
+            return location.origin;
         }
         else {
             return '';

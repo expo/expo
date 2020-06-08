@@ -9,7 +9,7 @@ Opens the standard Android date picker dialog.
 
 ### Example
 
-```jsx
+```js
 try {
   const { action, year, month, day } = await DatePickerAndroid.open({
     // Use `new Date()` for current date.
@@ -32,7 +32,7 @@ try {
 
 ### `open()`
 
-```jsx
+```js
 
 static open(options)
 
@@ -58,7 +58,7 @@ Note the native date picker dialog has some UI glitches on Android 4 and lower w
 
 ### `dateSetAction()`
 
-```jsx
+```js
 
 static dateSetAction()
 
@@ -70,7 +70,7 @@ A date has been selected.
 
 ### `dismissedAction()`
 
-```jsx
+```js
 
 static dismissedAction()
 

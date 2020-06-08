@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/EXFileSystem/ABI38_0_0EXFileSystem/ABI38_0_0EXFileSystemAssetLibraryHandler.h

@@ -7,6 +7,7 @@
 @interface EXNotificationCenterDelegate ()
 
 @property (nonatomic, strong) NSPointerArray *delegates;
+@property (nonatomic, strong) NSMutableArray<UNNotificationResponse *> *pendingNotificationResponses;
 
 @end
 
@@ -18,6 +19,7 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 {
   if (self = [super init]) {
     _delegates = [NSPointerArray weakObjectsPointerArray];
+    _pendingNotificationResponses = [NSMutableArray array];
   }
   return self;
 }
@@ -121,6 +123,21 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
+  // Save response to pending responses array if none of the handlers will handle it.
+  BOOL responseWillBeHandledByAnyDelegate = NO;
+  for (int i = 0; i < _delegates.count; i++) {
+    id pointer = [_delegates pointerAtIndex:i];
+    if ([pointer respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]) {
+      responseWillBeHandledByAnyDelegate = YES;
+      break;
+    }
+  }
+  if (!responseWillBeHandledByAnyDelegate) {
+    [_pendingNotificationResponses addObject:response];
+    completionHandler();
+    return;
+  }
+
   __block int delegatesCalled = 0;
   __block int delegatesCompleted = 0;
   __block BOOL delegatingCompleted = NO;
@@ -167,6 +184,15 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 - (void)addDelegate:(id<EXNotificationsDelegate>)delegate
 {
   [_delegates addPointer:(__bridge void * _Nullable)(delegate)];
+  if ([delegate respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    for (UNNotificationResponse *response in _pendingNotificationResponses) {
+      [delegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:^{
+        // completion handler doesn't need to do anything
+      }];
+    }
+    [_pendingNotificationResponses removeAllObjects];
+  }
 }
 
 - (void)removeDelegate:(id<EXNotificationsDelegate>)delegate

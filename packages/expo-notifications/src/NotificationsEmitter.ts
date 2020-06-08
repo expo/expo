@@ -1,7 +1,6 @@
 import { EventEmitter, Subscription, NativeModulesProxy } from '@unimodules/core';
 
-import { Notification, NotificationResponse } from './NotificationsEmitter.types';
-export { Notification, NotificationResponse } from './NotificationsEmitter.types';
+import { Notification, NotificationResponse } from './Notifications.types';
 
 // Web uses SyntheticEventEmitter
 const emitter = new EventEmitter(NativeModulesProxy.ExpoNotificationsEmitter);
@@ -9,6 +8,8 @@ const emitter = new EventEmitter(NativeModulesProxy.ExpoNotificationsEmitter);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+
+export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
 
 export function addNotificationReceivedListener(
   listener: (event: Notification) => void
@@ -29,11 +30,11 @@ export function addNotificationResponseReceivedListener(
   );
 }
 
-export function removeSubscription(subscription: Subscription) {
+export function removeNotificationSubscription(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }
 
-export function removeAllListeners() {
+export function removeAllNotificationListeners() {
   emitter.removeAllListeners(didReceiveNotificationEventName);
   emitter.removeAllListeners(didDropNotificationsEventName);
   emitter.removeAllListeners(didReceiveNotificationResponseEventName);

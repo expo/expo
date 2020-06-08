@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/EXSMS/ABI38_0_0EXSMS/ABI38_0_0EXSMSModule.h

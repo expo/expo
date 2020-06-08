@@ -3,11 +3,20 @@ package expo.modules.notifications;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
-import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 import expo.modules.notifications.notifications.service.BaseNotificationsService;
 import expo.modules.notifications.tokens.PushTokenManager;
 
@@ -74,7 +83,22 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   @Override
   public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
     super.onMessageReceived(remoteMessage);
-    BaseNotificationsService.enqueueReceive(this, remoteMessage);
+    BaseNotificationsService.enqueueReceive(this, createNotification(remoteMessage));
+  }
+
+  protected Notification createNotification(RemoteMessage remoteMessage) {
+    String identifier = remoteMessage.getMessageId();
+    if (identifier == null) {
+      identifier = UUID.randomUUID().toString();
+    }
+    JSONObject payload = new JSONObject(remoteMessage.getData());
+    NotificationContent content = new JSONNotificationContentBuilder(this).setPayload(payload).build();
+    NotificationRequest request = createNotificationRequest(identifier, content, new FirebaseNotificationTrigger(remoteMessage));
+    return new Notification(request, new Date(remoteMessage.getSentTime()));
+  }
+
+  protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, FirebaseNotificationTrigger notificationTrigger) {
+    return new NotificationRequest(identifier, content, notificationTrigger);
   }
 
   @Override

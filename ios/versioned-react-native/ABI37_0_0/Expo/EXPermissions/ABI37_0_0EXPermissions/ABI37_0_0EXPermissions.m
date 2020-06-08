@@ -20,7 +20,6 @@ NSString * const ABI37_0_0EXPermissionExpiresNever = @"never";
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id<ABI37_0_0UMPermissionsRequester>> *requesters;
 @property (nonatomic, strong) NSMapTable<Class, id<ABI37_0_0UMPermissionsRequester>> *requestersByClass;
 @property (nonatomic, weak) ABI37_0_0UMModuleRegistry *moduleRegistry;
-@property (nonatomic) dispatch_once_t requestersFallbacksRegisteredOnce;
 
 @end
 
@@ -209,9 +208,7 @@ ABI37_0_0UM_EXPORT_METHOD_AS(askAsync,
 
 - (id<ABI37_0_0UMPermissionsRequester>)getPermissionRequesterForType:(NSString *)type
 {
-  dispatch_once(&_requestersFallbacksRegisteredOnce, ^{
-    [self ensureRequestersFallbacksAreRegistered];
-  });
+  [self ensureRequestersFallbacksAreRegistered];
   return _requesters[type];
 }
 

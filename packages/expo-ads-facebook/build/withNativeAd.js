@@ -3,7 +3,7 @@ import nullthrows from 'nullthrows';
 import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
 import AdsManager from './NativeAdsManager';
-let NativeAdLayout = Platform.OS === 'android' ? requireNativeViewManager('NativeAdLayout') : null;
+const NativeAdLayout = Platform.OS === 'android' ? requireNativeViewManager('NativeAdLayout') : null;
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container
  * component type that passes in an extra `nativeAd` prop to the wrapped component.
@@ -15,7 +15,8 @@ export default function withNativeAd(Component) {
     return class NativeAdContainer extends React.Component {
         constructor(props) {
             super(props);
-            this._subscription = null;
+            this._readySubscription = null;
+            this._errorSubscription = null;
             this._nativeAdViewRef = React.createRef();
             this._adMediaViewNodeHandle = null;
             this._adIconViewNodeHandle = null;
@@ -23,7 +24,7 @@ export default function withNativeAd(Component) {
             this._handleAdLoaded = ({ nativeEvent: ad }) => {
                 this.setState({ ad }, () => {
                     if (this.props.onAdLoaded) {
-                        let ad = nullthrows(this.state.ad);
+                        const ad = nullthrows(this.state.ad);
                         this.props.onAdLoaded(ad);
                     }
                 });
@@ -53,19 +54,19 @@ export default function withNativeAd(Component) {
             };
             this._adTriggerViewContextValue = {
                 registerComponent: (component) => {
-                    let nodeHandle = nullthrows(findNodeHandle(component));
-                    let interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+                    const nodeHandle = nullthrows(findNodeHandle(component));
+                    const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
                     interactiveTriggerNodeHandles.set(component, nodeHandle);
                     this._setAdNodeHandles({ interactiveTriggerNodeHandles });
                 },
                 unregisterComponent: (component) => {
-                    let interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+                    const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
                     interactiveTriggerNodeHandles.delete(component);
                     this._setAdNodeHandles({ interactiveTriggerNodeHandles });
                 },
                 onTriggerAd: () => {
                     if (this._adMediaViewNodeHandle !== null && Platform.OS === 'android') {
-                        let nodeHandle = findNodeHandle(this._nativeAdViewRef.current);
+                        const nodeHandle = findNodeHandle(this._nativeAdViewRef.current);
                         AdsManager.triggerEvent(nodeHandle);
                     }
                 },
@@ -78,41 +79,50 @@ export default function withNativeAd(Component) {
         componentDidMount() {
             if (!this.state.canRequestAds) {
                 // On mounting, listen to the ads manager to learn when it is ready to display ads
-                this._subscription = this.props.adsManager.onAdsLoaded(() => {
+                this._readySubscription = this.props.adsManager.onAdsLoaded(() => {
                     this.setState({ canRequestAds: true });
                 });
             }
+            this._errorSubscription = this.props.adsManager.onAdsErrored(error => {
+                // From what I, @sjchmiela, understand, an error may be encountered multiple times
+                // and it does *not* mean that the manager is not able to request ads at all -
+                // - this may have been an intermittent error -- that's why we don't set canRequestAds to false
+                // here.
+                // If the configuration is invalid from the start, the manager will never emit
+                // the onAdsLoaded event and the component would never think it could request ads.
+                if (this.props.onError) {
+                    this.props.onError(error);
+                }
+            });
         }
         componentWillUnmount() {
-            if (this._subscription) {
-                this._subscription.remove();
-                this._subscription = null;
+            if (this._readySubscription) {
+                this._readySubscription.remove();
+                this._readySubscription = null;
+            }
+            if (this._errorSubscription) {
+                this._errorSubscription.remove();
+                this._errorSubscription = null;
             }
         }
         render() {
             if (!this.state.canRequestAds) {
                 return null;
             }
-            let { adsManager } = this.props;
-            let props = this._getForwardedProps();
-            let viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
-          <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
-            <AdIconViewContext.Provider value={this._adIconViewContextValue}>
-              <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
-                  {this.state.ad ? <Component {...props} nativeAd={this.state.ad}/> : null}
-                </AdOptionsViewContext.Provider>
-              </AdTriggerViewContext.Provider>
-            </AdIconViewContext.Provider>
-          </AdMediaViewContext.Provider>
-        </NativeAdView>);
+            const { adsManager } = this.props;
+            const props = this._getForwardedProps();
+            const viewHierarchy = (React.createElement(NativeAdView, { ref: this._nativeAdViewRef, adsManager: adsManager.placementId, onAdLoaded: this._handleAdLoaded },
+                React.createElement(AdMediaViewContext.Provider, { value: this._adMediaViewContextValue },
+                    React.createElement(AdIconViewContext.Provider, { value: this._adIconViewContextValue },
+                        React.createElement(AdTriggerViewContext.Provider, { value: this._adTriggerViewContextValue },
+                            React.createElement(AdOptionsViewContext.Provider, { value: this._adOptionsViewContextValue }, this.state.ad ? React.createElement(Component, Object.assign({}, props, { nativeAd: this.state.ad })) : null))))));
             if (NativeAdLayout) {
-                return <NativeAdLayout>{viewHierarchy}</NativeAdLayout>;
+                return React.createElement(NativeAdLayout, null, viewHierarchy);
             }
             return viewHierarchy;
         }
         _getForwardedProps() {
-            let { adsManager, onAdLoaded, ...props } = this.props;
+            const { adsManager, onAdLoaded, ...props } = this.props;
             return props;
         }
         /**
@@ -121,9 +131,9 @@ export default function withNativeAd(Component) {
          * re-rendering.
          */
         _setAdNodeHandles({ adMediaViewNodeHandle = this._adMediaViewNodeHandle, adIconViewNodeHandle = this._adIconViewNodeHandle, interactiveTriggerNodeHandles = this._interactiveTriggerNodeHandles, }) {
-            let adMediaViewChanged = adMediaViewNodeHandle !== this._adMediaViewNodeHandle;
-            let adIconViewChanged = adIconViewNodeHandle !== this._adIconViewNodeHandle;
-            let interactiveTriggersChanged = !_areEqualSets(new Set(interactiveTriggerNodeHandles.values()), new Set(this._interactiveTriggerNodeHandles.values()));
+            const adMediaViewChanged = adMediaViewNodeHandle !== this._adMediaViewNodeHandle;
+            const adIconViewChanged = adIconViewNodeHandle !== this._adIconViewNodeHandle;
+            const interactiveTriggersChanged = !_areEqualSets(new Set(interactiveTriggerNodeHandles.values()), new Set(this._interactiveTriggerNodeHandles.values()));
             if (adMediaViewChanged || adIconViewChanged || interactiveTriggersChanged) {
                 this._adMediaViewNodeHandle = adMediaViewNodeHandle;
                 this._adIconViewNodeHandle = adIconViewNodeHandle;
@@ -145,7 +155,7 @@ function _areEqualSets(set1, set2) {
     if (set1.size !== set2.size) {
         return false;
     }
-    for (let item of set1.values()) {
+    for (const item of set1.values()) {
         if (!set2.has(item)) {
             return false;
         }

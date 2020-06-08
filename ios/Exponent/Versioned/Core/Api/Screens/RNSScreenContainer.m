@@ -73,21 +73,41 @@
   return _controller;
 }
 
+- (UIViewController*)findChildControllerForScreen:(RNSScreenView*)screen
+{
+  for (UIViewController *vc in _controller.childViewControllers) {
+    if (vc.view == screen) {
+      return vc;
+    }
+  }
+  return nil;
+}
+
+- (void)prepareDetach:(RNSScreenView *)screen
+{
+  [[self findChildControllerForScreen:screen] willMoveToParentViewController:nil];
+}
+
 - (void)detachScreen:(RNSScreenView *)screen
 {
-  [screen.controller willMoveToParentViewController:nil];
-  [screen.controller.view removeFromSuperview];
-  [screen.controller removeFromParentViewController];
+  // We use findChildControllerForScreen method instead of directly accesing
+  // screen.controller because screen.controller may be reset to nil when the
+  // original screen view gets detached from the view hierarchy (we reset controller
+  // reference to avoid reference loops)
+  UIViewController *detachController = [self findChildControllerForScreen:screen];
+  [detachController willMoveToParentViewController:nil];
+  [screen removeFromSuperview];
+  [detachController removeFromParentViewController];
   [_activeScreens removeObject:screen];
 }
 
-- (void)attachScreen:(RNSScreenView *)screen
+- (void)attachScreen:(RNSScreenView *)screen atIndex:(NSInteger)index
 {
   [_controller addChildViewController:screen.controller];
   // the frame is already set at this moment because we adjust it in insertReactSubview. We don't
   // want to update it here as react-driven animations may already run and hence changing the frame
   // would result in visual glitches
-  [_controller.view addSubview:screen.controller.view];
+  [_controller.view insertSubview:screen.controller.view atIndex:index];
   [screen.controller didMoveToParentViewController:_controller];
   [_activeScreens addObject:screen];
 }
@@ -118,22 +138,22 @@
     }
   }
 
-  // if we are adding new active screen, we perform remounting of all already marked as active
-  // this is done to mimick the effect UINavigationController has when willMoveToWindow:nil is
-  // triggered before the animation starts
-  if (activeScreenAdded) {
-    for (RNSScreenView *screen in _reactSubviews) {
-      if (screen.active && [_activeScreens containsObject:screen]) {
-        [self detachScreen:screen];
-        // disable interactions for the duration of transition
-        screen.userInteractionEnabled = NO;
-      }
-    }
 
+  if (activeScreenAdded) {
     // add new screens in order they are placed in subviews array
+    NSInteger index = 0;
     for (RNSScreenView *screen in _reactSubviews) {
       if (screen.active) {
-        [self attachScreen:screen];
+        if ([_activeScreens containsObject:screen]) {
+          // for screens that were already active we want to mimick the effect UINavigationController
+          // has when willMoveToWindow:nil is triggered before the animation starts
+          [self prepareDetach:screen];
+          // disable interactions for the duration of transition
+          screen.userInteractionEnabled = NO;
+        } else {
+          [self attachScreen:screen atIndex:index];
+        }
+        index += 1;
       }
     }
   }
@@ -211,10 +231,10 @@ RCT_EXPORT_MODULE()
     // we enqueue updates to be run on the main queue in order to make sure that
     // all this updates (new screens attached etc) are executed in one batch
     RCTExecuteOnMainQueue(^{
-      for (RNSScreenContainerView *container in _markedContainers) {
+      for (RNSScreenContainerView *container in self->_markedContainers) {
         [container updateContainer];
       }
-      [_markedContainers removeAllObjects];
+      [self->_markedContainers removeAllObjects];
     });
   }
 }

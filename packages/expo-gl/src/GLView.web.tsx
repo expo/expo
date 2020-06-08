@@ -1,8 +1,7 @@
 import { CodedError, UnavailabilityError } from '@unimodules/core';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'invariant';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { Dimensions } from 'react-native';
 
 import Canvas from './Canvas';
@@ -38,7 +37,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
   if (!gl['_expo_texImage2D']) {
     gl['_expo_texImage2D'] = gl.texImage2D;
     gl.texImage2D = (...props: any[]): any => {
-      let nextProps = [...props];
+      const nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
       return gl['_expo_texImage2D'](...nextProps);
     };
@@ -47,7 +46,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
   if (!gl['_expo_texSubImage2D']) {
     gl['_expo_texSubImage2D'] = gl.texSubImage2D;
     gl.texSubImage2D = (...props: any[]): any => {
-      let nextProps = [...props];
+      const nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
       return gl['_expo_texSubImage2D'](...nextProps);
     };
@@ -78,32 +77,6 @@ function ensureContext(
   invariant(context, 'Browser does not support WebGL');
   return asExpoContext(context as ExpoWebGLRenderingContext);
 }
-
-function stripNonDOMProps(props: { [key: string]: any }): { [key: string]: any } {
-  for (let k in propTypes) {
-    if (k in props) {
-      delete props[k];
-    }
-  }
-  return props;
-}
-
-const propTypes = {
-  onContextCreate: PropTypes.func.isRequired,
-  onContextRestored: PropTypes.func,
-  onContextLost: PropTypes.func,
-  webglContextAttributes: PropTypes.object,
-
-  /**
-   * [iOS only] Number of samples for Apple's built-in multisampling.
-   */
-  msaaSamples: PropTypes.number,
-
-  /**
-   * A ref callback for the native GLView
-   */
-  nativeRef_EXPERIMENTAL: PropTypes.func,
-};
 
 export interface GLViewProps extends BaseGLViewProps {
   onContextCreate: (gl: WebGLRenderingContext) => void;
@@ -150,8 +123,6 @@ async function getBlobFromWebGLRenderingContext(
 }
 
 export class GLView extends React.Component<GLViewProps> {
-  static propTypes = propTypes;
-
   canvas?: HTMLCanvasElement;
 
   gl?: WebGLRenderingContext;
@@ -205,8 +176,18 @@ export class GLView extends React.Component<GLViewProps> {
   }
 
   render() {
-    const domProps = stripNonDOMProps({ ...this.props });
-    delete domProps.ref;
+    const {
+      onContextCreate,
+      onContextRestored,
+      onContextLost,
+      webglContextAttributes,
+      msaaSamples,
+      nativeRef_EXPERIMENTAL,
+      // @ts-ignore: ref does not exist
+      ref,
+      ...domProps
+    } = this.props;
+
     return <Canvas {...domProps} canvasRef={this.setCanvasRef} />;
   }
 

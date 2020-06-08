@@ -20,9 +20,9 @@ import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.launcher.EmergencyLauncher;
+import expo.modules.updates.launcher.DatabaseLauncher;
+import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.LauncherWithSelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicyNewest;
 import expo.modules.updates.loader.EmbeddedLoader;
@@ -56,6 +56,7 @@ public class UpdatesController {
   private boolean mIsReadyToLaunch = false;
   private boolean mTimeoutFinished = false;
   private boolean mHasLaunched = false;
+  private boolean mIsEmergencyLaunch = false;
   private HandlerThread mHandlerThread;
 
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
@@ -211,6 +212,13 @@ public class UpdatesController {
     return mLauncher.getLocalAssetFiles();
   }
 
+  public boolean isUsingEmbeddedAssets() {
+    if (mLauncher == null) {
+      return true;
+    }
+    return mLauncher.isUsingEmbeddedAssets();
+  }
+
   // other getters
 
   public Uri getUpdateUrl() {
@@ -234,7 +242,7 @@ public class UpdatesController {
   }
 
   public boolean isEmergencyLaunch() {
-    return mLauncher != null && mLauncher instanceof EmergencyLauncher;
+    return mIsEmergencyLaunch;
   }
 
   /**
@@ -244,11 +252,22 @@ public class UpdatesController {
    * @param context the base context of the application, ideally a {@link ReactApplication}
    */
   public synchronized void start(final Context context) {
+    if (!mUpdatesConfiguration.isEnabled()) {
+      mLauncher = new NoDatabaseLauncher(context);
+    }
     if (mUpdatesDirectory == null) {
-      mLauncher = new EmergencyLauncher(context, mUpdatesDirectoryException);
+      mLauncher = new NoDatabaseLauncher(context, mUpdatesDirectoryException);
+      mIsEmergencyLaunch = true;
+    }
+
+    if (mLauncher != null) {
       mIsReadyToLaunch = true;
       mTimeoutFinished = true;
       return;
+    }
+
+    if (mUpdatesConfiguration.getUpdateUrl() == null) {
+      throw new AssertionError("expo-updates is enabled, but no valid updateUrl is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
     }
 
     boolean shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(mUpdatesConfiguration, context);
@@ -261,9 +280,9 @@ public class UpdatesController {
     }
 
     UpdatesDatabase database = getDatabase();
-    LauncherWithSelectionPolicy launcher = new LauncherWithSelectionPolicy(mUpdatesDirectory, mSelectionPolicy);
+    DatabaseLauncher launcher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
     mLauncher = launcher;
-    if (mSelectionPolicy.shouldLoadNewUpdate(EmbeddedLoader.readEmbeddedManifest(context).getUpdateEntity(), launcher.getLaunchableUpdate(database))) {
+    if (mSelectionPolicy.shouldLoadNewUpdate(EmbeddedLoader.readEmbeddedManifest(context).getUpdateEntity(), launcher.getLaunchableUpdate(database, context))) {
       new EmbeddedLoader(context, database, mUpdatesDirectory).loadEmbeddedUpdate();
     }
     launcher.launch(database, context, new Launcher.LauncherCallback() {
@@ -277,7 +296,8 @@ public class UpdatesController {
 
       @Override
       public void onFailure(Exception e) {
-        mLauncher = new EmergencyLauncher(context, e);
+        mLauncher = new NoDatabaseLauncher(context, e);
+        mIsEmergencyLaunch = true;
         finish();
       }
 
@@ -306,7 +326,7 @@ public class UpdatesController {
 
               @Override
               public void onSuccess(@Nullable UpdateEntity update) {
-                final LauncherWithSelectionPolicy newLauncher = new LauncherWithSelectionPolicy(mUpdatesDirectory, mSelectionPolicy);
+                final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
                 newLauncher.launch(database, context, new Launcher.LauncherCallback() {
                   @Override
                   public void onFailure(Exception e) {
@@ -373,7 +393,7 @@ public class UpdatesController {
     final String oldLaunchAssetFile = mLauncher.getLaunchAssetFile();
 
     UpdatesDatabase database = getDatabase();
-    final LauncherWithSelectionPolicy newLauncher = new LauncherWithSelectionPolicy(mUpdatesDirectory, mSelectionPolicy);
+    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
     newLauncher.launch(database, context, new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {

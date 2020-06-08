@@ -1,12 +1,7 @@
-import { EventEmitter, Subscription, CodedError, Platform } from '@unimodules/core';
+import { EventEmitter, Subscription, CodedError } from '@unimodules/core';
 
-import { Notification } from './NotificationsEmitter.types';
-import NotificationsHandlerModule, {
-  BaseNotificationBehavior,
-  IosNotificationBehavior,
-  AndroidNotificationBehavior,
-  NativeNotificationBehavior,
-} from './NotificationsHandlerModule';
+import { Notification, NotificationBehavior } from './Notifications.types';
+import NotificationsHandlerModule from './NotificationsHandlerModule';
 
 export class NotificationTimeoutError extends CodedError {
   info: { notification: Notification; id: string };
@@ -17,11 +12,6 @@ export class NotificationTimeoutError extends CodedError {
 }
 
 export type NotificationHandlingError = NotificationTimeoutError | Error;
-
-export interface NotificationBehavior extends BaseNotificationBehavior {
-  ios?: IosNotificationBehavior;
-  android?: AndroidNotificationBehavior;
-}
 
 export interface NotificationHandler {
   handleNotification: (notification: Notification) => Promise<NotificationBehavior>;
@@ -60,13 +50,8 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
       handleNotificationEventName,
       async ({ id, notification }) => {
         try {
-          const { ios, android, ...baseBehavior } = await handler.handleNotification(notification);
-          const platformSpecificBehaviors = { ios, android };
-          const nativeBehavior: NativeNotificationBehavior = {
-            ...baseBehavior,
-            ...platformSpecificBehaviors[Platform.OS],
-          };
-          await NotificationsHandlerModule.handleNotificationAsync(id, nativeBehavior);
+          const behavior = await handler.handleNotification(notification);
+          await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
           // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
           // eslint-disable-next-line
           handler.handleSuccess?.(id);

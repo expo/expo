@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -21,7 +21,7 @@ import com.facebook.react.util.ExceptionDataHelper;
 import com.facebook.react.util.JSStackTrace;
 
 @ReactModule(name = ExceptionsManagerModule.NAME)
-public class ExceptionsManagerModule extends BaseJavaModule {
+public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
 
     public static final String NAME = "ExceptionsManager";
 
@@ -87,7 +87,13 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         int id = data.hasKey("id") ? data.getInt("id") : -1;
         boolean isFatal = data.hasKey("isFatal") ? data.getBoolean("isFatal") : false;
         if (mDevSupportManager.getDevSupportEnabled()) {
-            mDevSupportManager.showNewJSError(message, stack, id);
+            boolean suppressRedBox = false;
+            if (data.getMap("extraData") != null && data.getMap("extraData").hasKey("suppressRedBox")) {
+                suppressRedBox = data.getMap("extraData").getBoolean("suppressRedBox");
+            }
+            if (!suppressRedBox) {
+                mDevSupportManager.showNewJSError(message, stack, id);
+            }
         } else {
             String extraDataAsJson = ExceptionDataHelper.getExtraDataAsJson(data);
             if (isFatal) {

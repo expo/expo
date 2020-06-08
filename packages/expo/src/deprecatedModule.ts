@@ -1,12 +1,16 @@
 let messages: string[] = [];
 let packages: string[] = [];
 let namedImports: string[] = [];
+let extraInstructions: string[] = [];
 
-export default function deprecatedModule(message, namedImport, packageName) {
+export default function deprecatedModule(message, namedImport, packageName, extraInstruction?) {
   if (__DEV__) {
     messages.push(message);
     packages.push(packageName);
     namedImports.push(namedImport);
+    if (extraInstruction) {
+      extraInstructions.push(extraInstruction);
+    }
     setTimeout(logWarning, 1000);
   }
 }
@@ -26,6 +30,9 @@ function logWarning() {
   namedImports = Array.from(new Set(namedImports));
   namedImports.sort();
 
+  extraInstructions = Array.from(new Set(extraInstructions));
+  extraInstructions.sort();
+
   instructions += namedImports.join(', ');
   instructions += `.\n\n`;
   instructions += `1. Add correct versions of these packages to your project using:\n\n`;
@@ -35,6 +42,13 @@ function logWarning() {
   messages.forEach(message => {
     instructions += ` - ${message}\n`;
   });
+
+  if (extraInstructions.length) {
+    instructions += `3. Make the following other changes:\n\n`;
+    extraInstructions.forEach(instruction => {
+      instructions += ` - ${instruction}\n`;
+    });
+  }
 
   instructions += '\n';
   console.log(

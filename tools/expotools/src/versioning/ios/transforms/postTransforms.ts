@@ -20,7 +20,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `NSTextStorage (${versionName}FontScaling)`,
       },
       {
-        paths: ['NSTextStorage+FontScaling.h', 'NSTextStorage+FontScaling.m', 'RCTTextShadowView.m'],
+        paths: [
+          'NSTextStorage+FontScaling.h',
+          'NSTextStorage+FontScaling.m',
+          'RCTTextShadowView.m',
+        ],
         replace: /\b(scaleFontSizeToFitSize|scaleFontSizeWithRatio|compareToSize)\b/g,
         with: `${versionName.toLowerCase()}_rct_$1`,
       },
@@ -36,6 +40,11 @@ export function postTransforms(versionName: string): TransformPipeline {
       {
         paths: 'RCTInspectorPackagerConnection.m',
         replace: /\b(RECONNECT_DELAY_MS)\b/g,
+        with: `${versionName}$1`,
+      },
+      {
+        paths: `${versionName}FBReactNativeSpec`,
+        replace: /\b(NSStringToNativeAppearanceColorSchemeName|NativeAppearanceColorSchemeNameToNSString)\b/g,
         with: `${versionName}$1`,
       },
       {
@@ -64,6 +73,16 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: `UniversalModules/${versionName}EXScoped`,
         replace: /(EXScopedABI\d+_\d+_\d+ReactNative)/g,
         with: 'EXScopedReactNative',
+      },
+      {
+        paths: `${versionName}EXFileSystem`,
+        replace: new RegExp(`NSData\\+${versionName}EXFileSystem\\.h`, 'g'),
+        with: `${versionName}NSData+EXFileSystem.h`,
+      },
+      {
+        paths: `${versionName}EXNotifications`,
+        replace: new RegExp(`NSDictionary\\+${versionName}EXNotificationsVerifyingClass\\.h`, 'g'),
+        with: `${versionName}NSDictionary+EXNotificationsVerifyingClass.h`,
       },
 
       // react-native-maps
@@ -147,7 +166,7 @@ export function postTransforms(versionName: string): TransformPipeline {
       {
         paths: 'REATransitionAnimation.m',
         replace: /(SimAnimationDragCoefficient)\(/g,
-        with: `${versionName}$1(`
+        with: `${versionName}$1(`,
       },
 
       // react-native-shared-element
@@ -155,6 +174,18 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: 'RNSharedElementNode.m',
         replace: /\b(NSArray\s*\*\s*_imageResolvers)\b/,
         with: 'static $1',
+      },
+
+      // react-native-safe-area-context
+      {
+        paths: [
+          'RCTView+SafeAreaCompat.h',
+          'RCTView+SafeAreaCompat.m',
+          'RNCSafeAreaProvider.m',
+          'RNCSafeAreaView.m',
+        ],
+        replace: /\b(UIEdgeInsetsEqualToEdgeInsetsWithThreshold)\b/g,
+        with: `${versionName}$1`,
       },
     ],
   };

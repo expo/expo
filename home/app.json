@@ -17,9 +17,6 @@
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0
     },
-    "packagerOpts": {
-      "config": "metro.config.js"
-    },
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,

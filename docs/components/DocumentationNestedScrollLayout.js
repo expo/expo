@@ -42,14 +42,13 @@ injectGlobal`
 `;
 
 const STYLES_CONTAINER = css`
-  max-width: 1440px;
   width: 100%;
   height: 100vh;
   overflow; hidden;
   margin: 0 auto 0 auto;
   border-left: 1px solid ${Constants.colors.border};
   border-right: 1px solid ${Constants.colors.border};
-  background: ${Constants.colors.white};
+  background: #f9f9f9;
 
   display: flex;
   align-items: center;
@@ -69,6 +68,7 @@ const STYLES_CONTAINER = css`
 
 const STYLES_HEADER = css`
   border-bottom: 1px solid ${Constants.colors.border};
+  background: #fff;
   flex-shrink: 0;
   width: 100%;
 `;
@@ -76,6 +76,8 @@ const STYLES_HEADER = css`
 const STYLES_CONTENT = css`
   display: flex;
   align-items: flex-start;
+  max-width: 1440px;
+  margin: 0 auto;
   justify-content: space-between;
   width: 100%;
   height: 100%;
@@ -87,8 +89,9 @@ const STYLES_CONTENT = css`
 `;
 
 const STYLES_LEFT = css`
+  scrollbar-color: red white;
   flex-shrink: 0;
-  border-right: 1px solid ${Constants.colors.border};
+  // border-right: 1px solid ${Constants.colors.border};
   max-width: 280px;
   height: 100%;
   overflow: hidden;
@@ -104,6 +107,7 @@ const STYLES_LEFT = css`
 `;
 
 const STYLES_RIGHT = css`
+  background: #fff;
   min-width: 5%;
   width: 100%;
   height: 100%;

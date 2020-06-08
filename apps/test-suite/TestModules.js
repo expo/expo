@@ -54,7 +54,8 @@ export function getTestModules() {
     require('./tests/FileSystem'),
     require('./tests/Font'),
     require('./tests/Permissions'),
-    require('./tests/ImagePicker')
+    require('./tests/ImagePicker'),
+    optionalRequire(() => require('./tests/Image'))
   );
 
   // Universally tested APIs
@@ -67,7 +68,9 @@ export function getTestModules() {
     require('./tests/Facebook'),
     require('./tests/HTML'),
     require('./tests/FirebaseCore'),
-    require('./tests/FirebaseAnalytics')
+    require('./tests/FirebaseAnalytics'),
+    require('./tests/FirebaseRecaptcha'),
+    optionalRequire(() => require('./tests/SQLite'))
   );
 
   if (Platform.OS === 'android') {
@@ -107,6 +110,7 @@ export function getTestModules() {
 
   modules.push(
     optionalRequire(() => require('./tests/Application')),
+    optionalRequire(() => require('./tests/AuthSession')),
     optionalRequire(() => require('./tests/Device')),
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),
@@ -114,7 +118,6 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Network')),
     optionalRequire(() => require('./tests/SecureStore')),
     optionalRequire(() => require('./tests/Segment')),
-    optionalRequire(() => require('./tests/SQLite')),
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
@@ -143,6 +146,7 @@ export function getTestModules() {
     modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
+    modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
 

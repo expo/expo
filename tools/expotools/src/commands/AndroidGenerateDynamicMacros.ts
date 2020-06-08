@@ -1,8 +1,8 @@
-import path from 'path';
 import { Command } from '@expo/commander';
+import path from 'path';
 
-import { Directories } from '../expotools';
 import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMacros';
+import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();

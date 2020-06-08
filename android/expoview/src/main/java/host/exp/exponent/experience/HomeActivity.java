@@ -32,6 +32,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
+import expo.modules.notifications.NotificationsPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import host.exp.exponent.Constants;
@@ -143,6 +144,7 @@ public class HomeActivity extends BaseExperienceActivity {
         new CameraPackage(),
         new FaceDetectorPackage(),
         new MediaLibraryPackage(),
+        new NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         new TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         new DevicePackage()
     );

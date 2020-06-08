@@ -65,19 +65,6 @@ async function getAttendeeByIdAsync(eventId, attendeeId) {
   return attendees.find(attendee => attendee.id === attendeeId);
 }
 
-async function createTestReminderAsync(calendarId) {
-  return await Calendar.createReminderAsync(calendarId, {
-    title: 'Reminder to buy a ticket',
-    startDate: new Date(2019, 3, 3, 9, 0, 0),
-    dueDate: new Date(2019, 3, 3, 23, 59, 59),
-  });
-}
-
-async function getFirstCalendarForRemindersAsync() {
-  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.REMINDER);
-  return calendars[0] && calendars[0].id;
-}
-
 export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
@@ -105,7 +92,7 @@ export async function test(t) {
     }
     if (Platform.OS === 'android') {
       t.expect(typeof calendar.isPrimary).toBe('boolean');
-      t.expect(typeof calendar.name).toBe('string');
+      calendar.name && t.expect(typeof calendar.name).toBe('string');
       t.expect(typeof calendar.ownerAccount).toBe('string');
       calendar.timeZone && t.expect(typeof calendar.timeZone).toBe('string');
 
@@ -200,16 +187,6 @@ export async function test(t) {
       t.expect(typeof attendee.id).toBe('string');
       t.expect(typeof attendee.email).toBe('string');
     }
-  }
-
-  function testReminderShape(reminder) {
-    t.expect(reminder).toBeDefined();
-    t.expect(typeof reminder.id).toBe('string');
-    t.expect(typeof reminder.calendarId).toBe('string');
-    t.expect(typeof reminder.title).toBe('string');
-    // t.expect(typeof reminder.startDate).toBe('string');
-    // t.expect(typeof reminder.dueDate).toBe('string');
-    t.expect(typeof reminder.completed).toBe('boolean');
   }
 
   function expectMethodsToReject(methods) {
@@ -332,6 +309,19 @@ export async function test(t) {
 
       t.it('creates an event in the specific calendar', async () => {
         const eventId = await createTestEventAsync(calendarId);
+
+        t.expect(eventId).toBeDefined();
+        t.expect(typeof eventId).toBe('string');
+      });
+
+      t.it('creates an event with the recurrence rule', async () => {
+        const eventId = await createTestEventAsync(calendarId, {
+          recurrenceRule: {
+            endDate: new Date(2019, 3, 5),
+            frequency: 'daily',
+            interval: 1,
+          },
+        });
 
         t.expect(eventId).toBeDefined();
         t.expect(typeof eventId).toBe('string');
@@ -540,133 +530,6 @@ export async function test(t) {
         });
       });
 
-      t.describe('requestRemindersPermissionsAsync()', () => {
-        t.it('requests for Reminders permissions', async () => {
-          const results = await Calendar.requestRemindersPermissionsAsync();
-
-          t.expect(results.granted).toBe(true);
-          t.expect(results.status).toBe('granted');
-        });
-      });
-
-      t.describe('createReminderAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await getFirstCalendarForRemindersAsync();
-        });
-
-        t.it('creates a reminder', async () => {
-          reminderId = await createTestReminderAsync(calendarId);
-
-          t.expect(reminderId).toBeDefined();
-          t.expect(typeof reminderId).toBe('string');
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteReminderAsync(reminderId);
-        });
-      });
-
-      t.describe('getRemindersAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await getFirstCalendarForRemindersAsync();
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('returns an array of reminders', async () => {
-          const reminders = await Calendar.getRemindersAsync(
-            [calendarId],
-            Calendar.ReminderStatus.INCOMPLETE,
-            new Date(2019, 3, 2),
-            new Date(2019, 3, 5)
-          );
-
-          t.expect(Array.isArray(reminders)).toBe(true);
-          t.expect(reminders.length).toBe(1);
-          t.expect(reminders[0].id).toBe(reminderId);
-          testReminderShape(reminders[0]);
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteReminderAsync(reminderId);
-        });
-      });
-
-      t.describe('getReminderAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await getFirstCalendarForRemindersAsync();
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('returns an array of reminders', async () => {
-          const reminder = await Calendar.getReminderAsync(reminderId);
-
-          t.expect(reminder).toBeDefined();
-          t.expect(reminder.id).toBe(reminderId);
-          testReminderShape(reminder);
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteReminderAsync(reminderId);
-        });
-      });
-
-      t.describe('updateReminderAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await getFirstCalendarForRemindersAsync();
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('updates a reminder', async () => {
-          const dueDate = new Date();
-          dueDate.setMilliseconds(0);
-
-          const updatedReminderId = await Calendar.updateReminderAsync(reminderId, { dueDate });
-          const reminder = await Calendar.getReminderAsync(updatedReminderId);
-
-          t.expect(updatedReminderId).toBe(reminderId);
-          t.expect(reminder.dueDate).toBe(dueDate.toISOString());
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteReminderAsync(reminderId);
-        });
-      });
-
-      t.describe('deleteReminderAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await getFirstCalendarForRemindersAsync();
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('deletes a reminder', async () => {
-          await Calendar.deleteReminderAsync(reminderId);
-          let error;
-
-          try {
-            await Calendar.getReminderAsync(reminderId);
-          } catch (e) {
-            error = e;
-          }
-          t.expect(error).toBeDefined();
-          t.expect(error instanceof Error).toBe(true);
-          t.expect(error.code).toBe('E_REMINDER_NOT_FOUND');
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteReminderAsync(reminderId);
-        });
-      });
-
       t.describe('getSourcesAsync()', () => {
         t.it('returns an array of sources', async () => {
           const sources = await Calendar.getSourcesAsync();
@@ -676,12 +539,6 @@ export async function test(t) {
       });
     } else {
       expectMethodsToReject([
-        'requestRemindersPermissionsAsync',
-        'getRemindersAsync',
-        'getReminderAsync',
-        'createReminderAsync',
-        'updateReminderAsync',
-        'deleteReminderAsync',
         'getSourcesAsync',
       ]);
     }

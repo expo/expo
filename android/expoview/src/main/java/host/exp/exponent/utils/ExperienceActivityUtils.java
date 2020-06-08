@@ -346,7 +346,7 @@ public class ExperienceActivityUtils {
         colorString = manifest.optString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
       }
 
-      if (colorString == null) {
+      if (colorString == null || !ColorParser.isValid(colorString)) {
         colorString = "#ffffff";
       }
 

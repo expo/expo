@@ -12,7 +12,7 @@ export default class AdMediaView extends React.Component<Props> {
     return (
       <AdMediaViewContext.Consumer>
         {(contextValue: AdMediaViewContextValue | null) => {
-          let context = nullthrows(contextValue);
+          const context = nullthrows(contextValue);
           return <NativeAdMediaView {...this.props} ref={context.nativeRef} />;
         }}
       </AdMediaViewContext.Consumer>

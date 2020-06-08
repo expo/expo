@@ -1,4 +1,3 @@
-import * as Permissions from 'expo-permissions';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import uuidv4 from 'uuid/v4';
 
@@ -21,7 +20,7 @@ export default {
   },
 
   async launchImageLibraryAsync({
-    mediaTypes = MediaTypeOptions.All,
+    mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     return await openFileBrowserAsync({
@@ -31,7 +30,7 @@ export default {
   },
 
   async launchCameraAsync({
-    mediaTypes = MediaTypeOptions.All,
+    mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     return await openFileBrowserAsync({
@@ -44,11 +43,11 @@ export default {
   /*
    * Delegate to expo-permissions to request camera permissions
    */
-  async getCameraPermissionAsync() {
-    return Permissions.getAsync(Permissions.CAMERA);
+  async getCameraPermissionsAsync() {
+    return permissionGrantedResponse();
   },
   async requestCameraPermissionsAsync() {
-    return Permissions.askAsync(Permissions.CAMERA);
+    return permissionGrantedResponse();
   },
 
   /*
@@ -102,12 +101,32 @@ function openFileBrowserAsync({
         };
         reader.onload = ({ target }) => {
           const uri = (target as any).result;
-          resolve({
-            cancelled: false,
-            uri,
-            width: 0,
-            height: 0,
-          });
+
+          const returnRaw = () => {
+            resolve({
+              cancelled: false,
+              uri,
+              width: 0,
+              height: 0,
+            });
+          };
+          if (typeof target?.result === 'string') {
+            const image = new Image();
+            image.src = target.result;
+            image.onload = function() {
+              resolve({
+                cancelled: false,
+                uri,
+                width: image.naturalWidth ?? image.width,
+                height: image.naturalHeight ?? image.height,
+              });
+            };
+            image.onerror = () => {
+              returnRaw();
+            };
+          } else {
+            returnRaw();
+          }
         };
         // Read in the image file as a binary string.
         reader.readAsDataURL(targetFile);

@@ -1,7 +1,9 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JSCRuntime.h"
 
@@ -317,15 +319,6 @@ JSStringRef getIsArrayString() {
 #endif
 } // namespace
 
-// std::string utility
-namespace {
-std::string to_string(void* value) {
-  std::ostringstream ss;
-  ss << value;
-  return ss.str();
-}
-} // namespace
-
 JSCRuntime::JSCRuntime()
     : JSCRuntime(JSGlobalContextCreateInGroup(nullptr, nullptr)) {
   JSGlobalContextRelease(ctx_);
@@ -403,7 +396,7 @@ jsi::Object JSCRuntime::global() {
 
 std::string JSCRuntime::description() {
   if (desc_.empty()) {
-    desc_ = std::string("<JSCRuntime@") + to_string(this) + ">";
+    desc_ = std::string("<JSCRuntime@") + std::to_string(reinterpret_cast<std::uintptr_t>(this)) + ">";
   }
   return desc_;
 }

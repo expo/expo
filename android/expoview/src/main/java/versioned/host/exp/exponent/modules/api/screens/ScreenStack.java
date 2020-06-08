@@ -126,7 +126,7 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
   @Override
   protected void removeScreenAt(int index) {
     Screen toBeRemoved = getScreenAt(index);
-    mDismissed.remove(toBeRemoved);
+    mDismissed.remove(toBeRemoved.getFragment());
     super.removeScreenAt(index);
   }
 

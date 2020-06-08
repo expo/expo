@@ -3,12 +3,14 @@ export type LocalAuthenticationResult = { success: true } | { success: false; er
 export enum AuthenticationType {
   FINGERPRINT = 1,
   FACIAL_RECOGNITION = 2,
+  // Android only
+  IRIS = 3,
 }
 
 export type LocalAuthenticationOptions = {
-  // iOS only
   promptMessage?: string;
   cancelLabel?: string;
-  fallbackLabel?: string;
   disableDeviceFallback?: boolean;
+  // iOS only
+  fallbackLabel?: string;
 };

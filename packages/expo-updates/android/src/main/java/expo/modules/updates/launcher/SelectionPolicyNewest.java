@@ -1,7 +1,6 @@
 package expo.modules.updates.launcher;
 
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.db.enums.UpdateStatus;
 
 import java.util.ArrayList;
 import java.util.List;

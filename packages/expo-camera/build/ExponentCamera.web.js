@@ -38,10 +38,6 @@ export default class ExponentCamera extends React.Component {
                 onPictureSaved: this.props.onPictureSaved,
             });
         };
-        this.getAvailableCameraTypesAsync = async () => {
-            const camera = this.getCamera();
-            return await camera.getAvailableCameraTypesAsync();
-        };
         this.resumePreview = async () => {
             const camera = this.getCamera();
             await camera.resumePreview();
@@ -95,10 +91,9 @@ export default class ExponentCamera extends React.Component {
             // Flip the camera
             transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
         };
-        return (<View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
-        <Video autoPlay playsInline muted={isMuted} pointerEvents={pointerEvents} ref={this._setRef} style={[StyleSheet.absoluteFill, styles.video, style]}/>
-        {this.props.children}
-      </View>);
+        return (React.createElement(View, { pointerEvents: "box-none", style: [styles.videoWrapper, this.props.style] },
+            React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, pointerEvents: pointerEvents, ref: this._setRef, style: [StyleSheet.absoluteFill, styles.video, style] }),
+            this.props.children));
     }
 }
 const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));

@@ -3,6 +3,8 @@ def DEFAULT_BUILD_TOOLS_VERSION = '28.0.3'
 def DEFAULT_MIN_SDK_VERSION = 16
 def DEFAULT_TARGET_SDK_VERSION = 28
 
+def DEFAULT_OKHTTP_VERSION = '3.14.1'
+
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -41,6 +43,16 @@ android {
   lintOptions {
     abortOnError false
   }
+  sourceSets {
+    main {
+      java {
+        if (safeExtGet("excludeAppGlideModule", false)) {
+          srcDir "src"
+          exclude "**/ExpoImageAppGlideModule.java"
+        }
+      }
+    }
+  }
 }
 
 repositories {
@@ -64,4 +76,7 @@ dependencies {
 
   api 'com.github.bumptech.glide:glide:4.11.0'
   annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+  api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
+  api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
 }

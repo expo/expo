@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Modules/RCTTiming.h
+../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTTiming.h

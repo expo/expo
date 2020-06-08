@@ -38,12 +38,4 @@ module.exports = createMetroConfiguration(__dirname);
 
 The `expo-yarn-workspaces` package defines a Metro configuration object that makes Metro work with Yarn workspaces in the Expo repo. It configures Metro to include packages from the workspace root, resolves symlinked packages, excludes modules from Haste's module system, and exclude modules in the native Android and Xcode projects. You can further customize this configuration object before exporting it, if needed.
 
-**Add this JSON fragment to app.json under the `"expo"` object to tell Metro about the custom configuration:**
-
-```json
-"packagerOpts": {
-  "config": "metro.config.js"
-}
-```
-
 **Aside:** when starting the project, run `expo start --clear` so Metro uses the latest configuration instead of working with cached values.

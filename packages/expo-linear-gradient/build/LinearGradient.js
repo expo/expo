@@ -1,27 +1,19 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { ColorPropType, Platform, ViewPropTypes, processColor } from 'react-native';
+import * as React from 'react';
+import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
-export default class LinearGradient extends React.Component {
-    render() {
-        let { colors, locations, start, end, ...props } = this.props;
-        if (locations && colors.length !== locations.length) {
-            console.warn('LinearGradient colors and locations props should be arrays of the same length');
-            locations = locations.slice(0, colors.length);
-        }
-        return (<NativeLinearGradient {...props} colors={Platform.select({
+/**
+ * Renders a native view that transitions between multiple colors in a linear direction.
+ */
+export function LinearGradient({ colors, locations, start, end, ...props }) {
+    if (locations && colors.length !== locations.length) {
+        console.warn('LinearGradient colors and locations props should be arrays of the same length');
+        locations = locations.slice(0, colors.length);
+    }
+    return (React.createElement(NativeLinearGradient, Object.assign({}, props, { colors: Platform.select({
             web: colors,
             default: colors.map(processColor),
-        })} locations={locations} startPoint={_normalizePoint(start)} endPoint={_normalizePoint(end)}/>);
-    }
+        }), locations: locations, startPoint: _normalizePoint(start), endPoint: _normalizePoint(end) })));
 }
-LinearGradient.propTypes = {
-    ...ViewPropTypes,
-    colors: PropTypes.arrayOf(ColorPropType).isRequired,
-    locations: PropTypes.arrayOf(PropTypes.number),
-    start: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.object]),
-    end: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.object]),
-};
 function _normalizePoint(point) {
     if (!point) {
         return undefined;

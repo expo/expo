@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
-import { createElement, PixelRatio, StyleSheet, View, } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
+// @ts-ignore
+import { createElement } from './createElement';
 function getElement(component) {
     try {
         return findDOMNode(component);
@@ -56,21 +58,20 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         if (ref.current != null) {
             setSize(getSize());
         }
-    }, [ref]);
+    }, [ref]); // eslint-disable-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         updateCanvasSize();
-    }, [size]);
+    }, [size]); // eslint-disable-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         const canvas = _canvasRef.current;
         if (canvas) {
             updateCanvasSize();
         }
         setRef(props.canvasRef, canvas);
-    }, [_canvasRef]);
-    return (<View {...props} pointerEvents="box-none" ref={ref} onLayout={onLayout}>
-      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill}/>
-      {children}
-    </View>);
+    }, [_canvasRef]); // eslint-disable-line react-hooks/exhaustive-deps
+    return (React.createElement(View, Object.assign({}, props, { pointerEvents: "box-none", ref: ref, onLayout: onLayout }),
+        React.createElement(Canvas, { ref: _canvasRef, pointerEvents: pointerEvents, style: StyleSheet.absoluteFill }),
+        children));
 };
 export default CanvasWrapper;
 //# sourceMappingURL=Canvas.js.map

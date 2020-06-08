@@ -21,11 +21,11 @@ export default class AdTriggerView<
     return (
       <AdTriggerViewContext.Consumer>
         {(contextValue: AdTriggerViewContextValue | null) => {
-          let context = nullthrows(contextValue);
+          const context = nullthrows(contextValue);
 
           // Compute the context-dependent props to pass to the interactive component
-          let forwardedProps = this._getForwardedProps();
-          let props = Object.assign({}, forwardedProps, {
+          const forwardedProps = this._getForwardedProps();
+          const props = Object.assign({}, forwardedProps, {
             // Register the trigger component with the ad manager when it is mounted and unmounted
             ref: (component: React.Component<P> | null): void => {
               if (component) {
@@ -59,7 +59,7 @@ export default class AdTriggerView<
   // because TypeScript does not currently support rest objects with generic types in some cases,
   // hence the type assertions
   _getForwardedProps(): P {
-    let { renderInteractiveComponent, ...props } = this.props as any;
+    const { renderInteractiveComponent, ...props } = this.props as any;
     return props as P;
   }
 

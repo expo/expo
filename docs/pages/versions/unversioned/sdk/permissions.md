@@ -24,8 +24,8 @@ The following table shows you which permissions correspond to which packages.
 
 | Permission type             | Packages                                  |
 | --------------------------- | ----------------------------------------- |
-| `NOTIFICATIONS`             | `expo-permissions`                        |
-| `USER_FACING_NOTIFICATIONS` | `expo-permissions`                        |
+| `NOTIFICATIONS`             | `expo-notifications`                      |
+| `USER_FACING_NOTIFICATIONS` | `expo-notifications`                      |
 | `LOCATION`                  | `expo-location`                           |
 | `CAMERA`                    | `expo-camera`, `expo-barcode-scanner`     |
 | `AUDIO_RECORDING`           | `expo-av`                                 |
@@ -34,6 +34,7 @@ The following table shows you which permissions correspond to which packages.
 | `CALENDAR`                  | `expo-calendar`                           |
 | `REMINDERS`                 | `expo-calendar`                           |
 | `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
+| `MOTION`                    | `expo-sensors`                            |
 
 ## Usage
 
@@ -202,6 +203,10 @@ The permission type for reading or writing reminders.
 ### `Permissions.SYSTEM_BRIGHTNESS`
 
 The permissions type for changing brightness of the screen
+
+### `Permissions.MOTION`
+
+The permission for accessing `DeviceMotion` and `DeviceOrientation` in the web browser. This can only be requested from a website using HTTPS (`expo web --https`). This permission cannot be silently retrieved, you can only request it. This permission can only be requested with a user interaction i.e. a button press.
 
 ## Android: permissions equivalents inside `app.json`
 

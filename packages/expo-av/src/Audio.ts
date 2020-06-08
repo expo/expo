@@ -31,7 +31,7 @@ const _populateMissingKeys = (
   userAudioMode: Partial<AudioMode>,
   defaultAudioMode: AudioMode
 ): AudioMode => {
-  for (let key in defaultAudioMode) {
+  for (const key in defaultAudioMode) {
     if (!userAudioMode.hasOwnProperty(key)) {
       userAudioMode[key] = defaultAudioMode[key];
     }
@@ -46,7 +46,7 @@ const defaultMode: AudioMode = {
   staysActiveInBackground: false,
   interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
   shouldDuckAndroid: true,
-  playThroughEarpieceAndroid: true,
+  playThroughEarpieceAndroid: false,
 };
 
 let currentAudioMode: AudioMode | null = null;

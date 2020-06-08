@@ -3,10 +3,8 @@ package expo.modules.notifications.notifications.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
-import android.util.Pair;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,27 +12,23 @@ import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import androidx.annotation.NonNull;
-import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 /**
  * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link ExpoNotificationSchedulerService}.
  * Saves and reads notifications (identifiers, requests and triggers) to and from the persistent storage.
  * <p>
- * For a notification of identifier = 123abc:
- * * request will be persisted under key: {@link SharedPreferencesNotificationsStore#REQUEST_KEY_PREFIX}123abc
- * * trigger will be persisted under key: {@link SharedPreferencesNotificationsStore#TRIGGER_KEY_PREFIX}123abc
+ * A notification request of identifier = 123abc, it will be persisted under key:
+ * {@link SharedPreferencesNotificationsStore#NOTIFICATION_REQUEST_KEY_PREFIX}123abc
  */
 public class SharedPreferencesNotificationsStore {
   private static final String SHARED_PREFERENCES_NAME = "expo.modules.notifications.SharedPreferencesNotificationsStore";
 
-  private static final String REQUEST_KEY_PREFIX = "request-";
-  private static final String TRIGGER_KEY_PREFIX = "trigger-";
+  private static final String NOTIFICATION_REQUEST_KEY_PREFIX = "notification_request-";
 
   private SharedPreferences mSharedPreferences;
 
@@ -51,10 +45,8 @@ public class SharedPreferencesNotificationsStore {
    * @throws IOException            Thrown if there is an error when fetching trigger from the storage.
    * @throws ClassNotFoundException Thrown if there is an error when interpreting trigger fetched from the storage.
    */
-  public Pair<JSONObject, SchedulableNotificationTrigger> getNotification(String identifier) throws JSONException, IOException, ClassNotFoundException {
-    JSONObject request = new JSONObject(mSharedPreferences.getString(preferencesRequestKey(identifier), null));
-    SchedulableNotificationTrigger trigger = deserializeTrigger(mSharedPreferences.getString(preferencesTriggerKey(identifier), null));
-    return new Pair<>(request, trigger);
+  public NotificationRequest getNotificationRequest(String identifier) throws IOException, ClassNotFoundException {
+    return deserializeNotificationRequest(mSharedPreferences.getString(preferencesNotificationRequestKey(identifier), null));
   }
 
   /**
@@ -65,50 +57,18 @@ public class SharedPreferencesNotificationsStore {
    *
    * @return Map with identifiers as keys and notification info as values
    */
-  public Map<String, Pair<JSONObject, SchedulableNotificationTrigger>> getAllNotifications() {
-    Map<String, Pair<JSONObject, SchedulableNotificationTrigger>> allNotifications = new HashMap<>();
+  public Collection<NotificationRequest> getAllNotificationRequests() {
+    Collection<NotificationRequest> allNotifications = new ArrayList<>();
 
     for (Map.Entry<String, ?> entry : mSharedPreferences.getAll().entrySet()) {
-      String key = entry.getKey();
       try {
-        String identifier;
-        if (key.startsWith(REQUEST_KEY_PREFIX)) {
-          identifier = key.substring(REQUEST_KEY_PREFIX.length());
-        } else if (key.startsWith(TRIGGER_KEY_PREFIX)) {
-          identifier = key.substring(TRIGGER_KEY_PREFIX.length());
-        } else {
-          continue;
+        if (entry.getKey().startsWith(NOTIFICATION_REQUEST_KEY_PREFIX)) {
+          allNotifications.add(deserializeNotificationRequest((String) entry.getValue()));
         }
-
-        JSONObject request = null;
-        SchedulableNotificationTrigger trigger = null;
-        Pair<JSONObject, SchedulableNotificationTrigger> scheduledNotification = allNotifications.get(identifier);
-        if (scheduledNotification != null) {
-          request = scheduledNotification.first;
-          trigger = scheduledNotification.second;
-        }
-
-        if (key.startsWith(REQUEST_KEY_PREFIX)) {
-          request = new JSONObject((String) entry.getValue());
-        } else if (key.startsWith(TRIGGER_KEY_PREFIX)) {
-          trigger = deserializeTrigger((String) entry.getValue());
-        }
-        allNotifications.put(identifier, new Pair<>(request, trigger));
-      } catch (JSONException | ClassNotFoundException | IOException e) {
+      } catch (ClassNotFoundException | IOException e) {
         // do nothing
       }
     }
-
-    // Remove invalid notifications
-    SharedPreferences.Editor editor = mSharedPreferences.edit();
-    for (String key : allNotifications.keySet()) {
-      Pair<JSONObject, SchedulableNotificationTrigger> pair = allNotifications.get(key);
-      if (pair == null || pair.first == null || pair.second == null) {
-        allNotifications.remove(key);
-        removeNotification(editor, key);
-      }
-    }
-    editor.apply();
 
     return allNotifications;
   }
@@ -116,15 +76,12 @@ public class SharedPreferencesNotificationsStore {
   /**
    * Saves given notification in the persistent storage.
    *
-   * @param identifier   Notification identifier
-   * @param notification Notification request
-   * @param trigger      Notification trigger
+   * @param notificationRequest Notification request
    * @throws IOException Thrown if there is an error while serializing trigger
    */
-  public void saveNotification(@NonNull String identifier, @NonNull JSONObject notification, @NonNull SchedulableNotificationTrigger trigger) throws IOException {
+  public void saveNotificationRequest(NotificationRequest notificationRequest) throws IOException {
     mSharedPreferences.edit()
-        .putString(preferencesRequestKey(identifier), notification.toString())
-        .putString(preferencesTriggerKey(identifier), serializeTrigger(trigger))
+        .putString(preferencesNotificationRequestKey(notificationRequest.getIdentifier()), serializeNotificationRequest(notificationRequest))
         .apply();
   }
 
@@ -133,9 +90,9 @@ public class SharedPreferencesNotificationsStore {
    *
    * @param identifier Notification identifier
    */
-  public void removeNotification(String identifier) {
+  public void removeNotificationRequest(String identifier) {
     SharedPreferences.Editor editor = mSharedPreferences.edit();
-    removeNotification(editor, identifier);
+    removeNotificationRequest(editor, identifier);
     editor.apply();
   }
 
@@ -148,34 +105,36 @@ public class SharedPreferencesNotificationsStore {
    * @return Returns a reference to the same Editor object, so you can
    * chain put calls together.
    */
-  private SharedPreferences.Editor removeNotification(SharedPreferences.Editor editor, String identifier) {
-    return editor.remove(preferencesRequestKey(identifier)).remove(preferencesTriggerKey(identifier));
+  private SharedPreferences.Editor removeNotificationRequest(SharedPreferences.Editor editor, String identifier) {
+    return editor.remove(preferencesNotificationRequestKey(identifier));
   }
 
   /**
    * Removes all notification infos, returning removed IDs.
    */
-  public Collection<String> removeAllNotifications() {
-    Set<String> notificationsKeys = getAllNotifications().keySet();
+  public Collection<String> removeAllNotificationRequests() {
+    Collection<String> deletedIdentifiers = new ArrayList<>();
     SharedPreferences.Editor editor = mSharedPreferences.edit();
-    for (String notificationId : notificationsKeys) {
-      removeNotification(editor, notificationId);
+    for (NotificationRequest request : getAllNotificationRequests()) {
+      String identifier = request.getIdentifier();
+      removeNotificationRequest(editor, identifier);
+      deletedIdentifiers.add(identifier);
     }
     editor.apply();
-    return notificationsKeys;
+    return deletedIdentifiers;
   }
 
   /**
    * Serializes the trigger to a Base64-encoded string.
    *
-   * @param trigger Schedulable trigger to serialize
+   * @param notificationRequest Notification request to serialize
    * @return Base64-encoded, serialized trigger
    * @throws IOException Thrown if there is an error while writing trigger to string.
    */
-  private String serializeTrigger(SchedulableNotificationTrigger trigger) throws IOException {
+  private String serializeNotificationRequest(NotificationRequest notificationRequest) throws IOException {
     try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
          ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
-      objectOutputStream.writeObject(trigger);
+      objectOutputStream.writeObject(notificationRequest);
       return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP);
     }
   }
@@ -189,15 +148,15 @@ public class SharedPreferencesNotificationsStore {
    * @throws ClassNotFoundException Thrown if the deserialization failes due to class not being found.
    * @throws InvalidClassException  Thrown if the trigger is of invalid class.
    */
-  private SchedulableNotificationTrigger deserializeTrigger(String trigger) throws IOException, ClassNotFoundException, InvalidClassException {
+  private NotificationRequest deserializeNotificationRequest(String trigger) throws IOException, ClassNotFoundException, InvalidClassException {
     byte[] data = Base64.decode(trigger, Base64.NO_WRAP);
     try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
          ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream)) {
       Object o = ois.readObject();
-      if (o instanceof SchedulableNotificationTrigger) {
-        return (SchedulableNotificationTrigger) o;
+      if (o instanceof NotificationRequest) {
+        return (NotificationRequest) o;
       }
-      throw new InvalidClassException("Expected serialized trigger to be an instance of SchedulableNotificationTrigger. Found: " + o.toString());
+      throw new InvalidClassException("Expected serialized notification request to be an instance of NotificationRequest. Found: " + o.toString());
     }
   }
 
@@ -205,15 +164,7 @@ public class SharedPreferencesNotificationsStore {
    * @param identifier Notification identifier
    * @return Key under which notification request will be persisted in the storage.
    */
-  private String preferencesRequestKey(String identifier) {
-    return REQUEST_KEY_PREFIX + identifier;
-  }
-
-  /**
-   * @param identifier Notification identifier
-   * @return Key under which notification trigger will be persisted in the storage.
-   */
-  private String preferencesTriggerKey(String identifier) {
-    return TRIGGER_KEY_PREFIX + identifier;
+  private String preferencesNotificationRequestKey(String identifier) {
+    return NOTIFICATION_REQUEST_KEY_PREFIX + identifier;
   }
 }

@@ -17,8 +17,6 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Configuration
 
-For questions on setup, feel free to comment on this post: [**React Native Google Sign-Up**](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)
-
 1. Go to your `app.json` and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
 2. In `app.json`, set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.
 

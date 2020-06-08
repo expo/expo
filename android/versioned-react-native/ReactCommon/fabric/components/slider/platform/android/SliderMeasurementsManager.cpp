@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,7 +7,7 @@
 
 #include "SliderMeasurementsManager.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/core/conversions.h>
 #include <react/jni/ReadableNativeMap.h>
 
@@ -17,6 +17,7 @@ namespace facebook {
 namespace react {
 
 Size SliderMeasurementsManager::measure(
+    SurfaceId surfaceId,
     LayoutConstraints layoutConstraints) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -29,8 +30,9 @@ Size SliderMeasurementsManager::measure(
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure =
-      jni::findClassStatic("abi37_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi38_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
+              jint,
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
@@ -47,6 +49,7 @@ Size SliderMeasurementsManager::measure(
 
   auto measurement = yogaMeassureToSize(measure(
       fabricUIManager,
+      surfaceId,
       componentName.get(),
       nullptr,
       nullptr,

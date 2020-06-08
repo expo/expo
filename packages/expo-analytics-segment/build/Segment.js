@@ -2,14 +2,18 @@ import { UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import ExponentSegment from './ExponentSegment';
 export function initialize(options) {
-    if (Platform.OS === 'android') {
-        ExponentSegment.initializeAndroid(options.androidWriteKey);
+    if (!ExponentSegment.initialize) {
+        throw new UnavailabilityError('expo-analytics-segment', 'initialize');
     }
-    else if (Platform.OS === 'ios') {
-        ExponentSegment.initializeIOS(options.iosWriteKey);
+    const platformWriteKey = Platform.select({
+        ios: options.iosWriteKey,
+        android: options.androidWriteKey,
+    });
+    if (platformWriteKey) {
+        ExponentSegment.initialize(platformWriteKey);
     }
     else {
-        throw new UnavailabilityError('expo-analytics-segment', 'initialize');
+        throw new Error('You must provide a platform-specific write key to initialize Segment.');
     }
 }
 export function identify(userId) {

@@ -2,21 +2,25 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
-export default class BlurView extends React.Component {
-    render() {
-        let { tint, intensity, style = {}, ...props } = this.props;
-        const blurStyle = getBlurStyle({ tint, intensity });
-        return <View {...props} style={[style, blurStyle]}/>;
+let BlurView = /** @class */ (() => {
+    class BlurView extends React.Component {
+        render() {
+            const { tint, intensity, style = {}, ...props } = this.props;
+            const blurStyle = getBlurStyle({ tint, intensity });
+            return React.createElement(View, Object.assign({}, props, { style: [style, blurStyle] }));
+        }
     }
-}
-BlurView.propTypes = {
-    tint: PropTypes.oneOf(['light', 'default', 'dark']),
-    ...ViewPropTypes,
-};
-BlurView.defaultProps = {
-    tint: 'default',
-    intensity: 50,
-};
+    BlurView.propTypes = {
+        tint: PropTypes.oneOf(['light', 'default', 'dark']),
+        ...ViewPropTypes,
+    };
+    BlurView.defaultProps = {
+        tint: 'default',
+        intensity: 50,
+    };
+    return BlurView;
+})();
+export default BlurView;
 function isBlurSupported() {
     // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
     // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
@@ -29,7 +33,7 @@ function getBlurStyle({ intensity, tint }) {
         backgroundColor: getBackgroundColor(intensity, tint),
     };
     if (isBlurSupported()) {
-        style.backdropFilter = `blur(${intensity * 0.8}px)`;
+        style.backdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
     }
     return style;
 }

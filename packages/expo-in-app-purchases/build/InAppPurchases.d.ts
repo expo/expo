@@ -1,6 +1,6 @@
 import { IAPErrorCode, IAPItemType, IAPQueryResponse, IAPResponseCode, InAppPurchase, InAppPurchaseState, IAPItemDetails } from './InAppPurchases.types';
 export { InAppPurchase, InAppPurchaseState, IAPResponseCode, IAPErrorCode, IAPItemType, IAPQueryResponse, IAPItemDetails, };
-export declare function connectAsync(): Promise<IAPQueryResponse>;
+export declare function connectAsync(): Promise<void>;
 export declare function getProductsAsync(itemList: string[]): Promise<IAPQueryResponse>;
 export declare function getPurchaseHistoryAsync(refresh?: boolean): Promise<IAPQueryResponse>;
 export declare function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void>;

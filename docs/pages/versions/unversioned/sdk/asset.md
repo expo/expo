@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-asset'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-asset`** provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts, and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://facebook.github.io/react-native/docs/images.html#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
+**`expo-asset`** provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts, and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://reactnative.dev/docs/images.html#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -52,7 +52,7 @@ If the asset is an image, the height of the image data divided by the scale fact
 
 - `downloadAsync()`
 
-Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#expoassetlocaluri 'Asset.localUri') field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
+Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#expoassetlocaluri 'Asset.localUri') field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download. The downloaded `Asset` will be returned when the promise is resolved.
 
 ### `Asset.loadAsync(modules)`
 
@@ -64,7 +64,13 @@ A helper that wraps `Asset.fromModule(module).downloadAsync` for convenience.
 
 #### Returns
 
-Returns a Promise that resolves when the asset has been saved to disk.
+Returns a Promise that resolves with an array of `Asset`s when the asset(s) has been saved to disk.
+
+#### Example
+
+```ts
+const [{ localUri }] = await Asset.loadAsync(require('./assets/snack-icon.png'));
+```
 
 ### `Asset.fromModule(module)`
 

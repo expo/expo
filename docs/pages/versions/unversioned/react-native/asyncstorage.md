@@ -15,13 +15,13 @@ The `AsyncStorage` JavaScript code is a facade that provides a clear JavaScript 
 
 Importing the `AsyncStorage` library:
 
-```jsx
+```js
 import { AsyncStorage } from 'react-native';
 ```
 
 Persisting data:
 
-```jsx
+```js
 _storeData = async () => {
   try {
     await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
@@ -33,7 +33,7 @@ _storeData = async () => {
 
 Fetching data:
 
-```jsx
+```js
 _retrieveData = async () => {
   try {
     const value = await AsyncStorage.getItem('TASKS');
@@ -55,7 +55,7 @@ _retrieveData = async () => {
 
 ### `getItem()`
 
-```jsx
+```js
 
 static getItem(key: string, [callback]: ?(error: ?Error, result: ?string) => void)
 
@@ -74,7 +74,7 @@ Fetches an item for a `key` and invokes a callback upon completion. Returns a `P
 
 ### `setItem()`
 
-```jsx
+```js
 
 static setItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
 
@@ -94,7 +94,7 @@ Sets the value for a `key` and invokes a callback upon completion. Returns a `Pr
 
 ### `removeItem()`
 
-```jsx
+```js
 
 static removeItem(key: string, [callback]: ?(error: ?Error) => void)
 
@@ -113,7 +113,7 @@ Removes an item for a `key` and invokes a callback upon completion. Returns a `P
 
 ### `mergeItem()`
 
-```jsx
+```js
 
 static mergeItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
 
@@ -133,7 +133,7 @@ Merges an existing `key` value with an input value, assuming both values are str
 
 Example:
 
-```jsx
+```js
 let UID123_object = {
   name: 'Chris',
   age: 30,
@@ -162,7 +162,7 @@ AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
 
 ### `clear()`
 
-```jsx
+```js
 
 static clear([callback]: ?(error: ?Error) => void)
 
@@ -180,7 +180,7 @@ Erases _all_ `AsyncStorage` for all clients, libraries, etc. You probably don't 
 
 ### `getAllKeys()`
 
-```jsx
+```js
 
 static getAllKeys([callback]: ?(error: ?Error, keys: ?Array<string>) => void)
 
@@ -198,7 +198,7 @@ Gets _all_ keys known to your app; for all callers, libraries, etc. Returns a `P
 
 ### `flushGetRequests()`
 
-```jsx
+```js
 
 static flushGetRequests(): [object Object]
 
@@ -210,7 +210,7 @@ Flushes any pending requests using a single batch call to get the data.
 
 ### `multiGet()`
 
-```jsx
+```js
 
 static multiGet(keys: Array<string>, [callback]: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void)
 
@@ -218,7 +218,7 @@ static multiGet(keys: Array<string>, [callback]: ?(errors: ?Array<Error>, result
 
 This allows you to batch the fetching of items given an array of `key` inputs. Your callback will be invoked with an array of corresponding key-value pairs found:
 
-```javascript
+```js
 
 multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
 
@@ -235,7 +235,7 @@ The method returns a `Promise` object.
 
 Example:
 
-```jsx
+```js
 AsyncStorage.getAllKeys((err, keys) => {
   AsyncStorage.multiGet(keys, (err, stores) => {
     stores.map((result, i, store) => {
@@ -251,7 +251,7 @@ AsyncStorage.getAllKeys((err, keys) => {
 
 ### `multiSet()`
 
-```jsx
+```js
 
 static multiSet(keyValuePairs: Array<Array<string>>, [callback]: ?(errors: ?Array<Error>) => void)
 
@@ -259,7 +259,7 @@ static multiSet(keyValuePairs: Array<Array<string>>, [callback]: ?(errors: ?Arra
 
 Use this as a batch operation for storing multiple key-value pairs. When the operation completes you'll get a single callback with any errors:
 
-```javascript
+```js
 multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
 ```
 
@@ -276,7 +276,7 @@ The method returns a `Promise` object.
 
 ### `multiRemove()`
 
-```jsx
+```js
 
 static multiRemove(keys: Array<string>, [callback]: ?(errors: ?Array<Error>) => void)
 
@@ -293,7 +293,7 @@ Call this to batch the deletion of all keys in the `keys` array. Returns a `Prom
 
 Example:
 
-```jsx
+```js
 let keys = ['k1', 'k2'];
 AsyncStorage.multiRemove(keys, err => {
   // keys k1 & k2 removed, if they existed
@@ -305,7 +305,7 @@ AsyncStorage.multiRemove(keys, err => {
 
 ### `multiMerge()`
 
-```jsx
+```js
 
 static multiMerge(keyValuePairs: Array<Array<string>>, [callback]: ?(errors: ?Array<Error>) => void)
 
@@ -324,7 +324,7 @@ Batch operation to merge in existing and new values for a given set of keys. Thi
 
 Example:
 
-```jsx
+```js
 // first user, initial values
 let UID234_object = {
   name: 'Chris',

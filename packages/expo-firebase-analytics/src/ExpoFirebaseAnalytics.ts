@@ -18,7 +18,19 @@ let isUnavailabilityWarningLogged = false;
 
 function callAnalyticsModule(funcName: string, ...args) {
   if (!ExpoFirebaseAnalytics[funcName]) {
-    throw new UnavailabilityError('expo-firebase-analytics', funcName);
+    if (funcName === 'setDebugModeEnabled') {
+      // Debug-mode can only be enabled for the pure JS Analytics Tracker
+      // For all other environments, the platform specific method must be used.
+      // https://firebase.google.com/docs/analytics/debugview
+      if (!(DEFAULT_APP_NAME !== '[DEFAULT]' && DEFAULT_WEB_APP_OPTIONS)) {
+        throw new CodedError(
+          'ERR_FIREBASE_NOTCONFIGURED',
+          `setDebugModeEnabled is not available in this environment. See "https://firebase.google.com/docs/analytics/debugview" on how to enable debug mode.`
+        );
+      }
+    } else {
+      throw new UnavailabilityError('expo-firebase-analytics', funcName);
+    }
   }
   if (!DEFAULT_APP_OPTIONS) {
     throw new CodedError(
@@ -37,10 +49,16 @@ function callAnalyticsModule(funcName: string, ...args) {
   if (DEFAULT_APP_NAME !== '[DEFAULT]') {
     if (DEFAULT_WEB_APP_OPTIONS && !pureJSAnalyticsTracker) {
       pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
-        clientId: Constants.sessionId,
+        clientId: Constants.installationId,
+        sessionId: Constants.sessionId,
         strictNativeEmulation: true,
         appName: Constants.manifest?.name || 'Unnamed Expo project',
         appVersion: Constants.nativeAppVersion || undefined,
+        headers: {
+          // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
+          // Set a user-agent that clearly identifies the Expo client.
+          'user-agent': `Expo/${Constants.nativeAppVersion}`,
+        },
       });
     }
     if (pureJSAnalyticsTracker) {
@@ -70,7 +88,7 @@ export default {
     return callAnalyticsModule('logEvent', name, properties);
   },
   async setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void> {
-    return callAnalyticsModule('setAnalyticsEnabled', isEnabled);
+    return callAnalyticsModule('setAnalyticsCollectionEnabled', isEnabled);
   },
   async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
     return callAnalyticsModule('setCurrentScreen', screenName, screenClassOverride);
@@ -89,5 +107,8 @@ export default {
   },
   setUnavailabilityLogging(isEnabled: boolean): void {
     isUnavailabilityLoggingEnabled = isEnabled;
+  },
+  async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
+    return callAnalyticsModule('setDebugModeEnabled', isEnabled);
   },
 };

@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesConfig ()
 
+@property (nonatomic, readwrite, assign) BOOL isEnabled;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
@@ -19,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString * const kEXUpdatesConfigPlistName = @"Expo";
 static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
 
+static NSString * const kEXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
 static NSString * const kEXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
 static NSString * const kEXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
 static NSString * const kEXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
@@ -48,6 +50,7 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
 - (instancetype)init
 {
   if (self = [super init]) {
+    _isEnabled = YES;
     _releaseChannel = kEXUpdatesDefaultReleaseChannelName;
     _launchWaitMs = @(0);
     _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
@@ -61,16 +64,17 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
 {
   NSString *configPath = [[NSBundle mainBundle] pathForResource:kEXUpdatesConfigPlistName ofType:@"plist"];
   if (configPath) {
-    NSDictionary *config = [NSDictionary dictionaryWithContentsOfFile:configPath];
-    id updateUrl __unused = config[kEXUpdatesConfigUpdateUrlKey];
-    NSAssert(updateUrl && [updateUrl isKindOfClass:[NSString class]], @"EXUpdatesURL must be a nonnull string");
-
-    [self loadConfigFromDictionary:config];
+    [self loadConfigFromDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
   }
 }
 
 - (void)loadConfigFromDictionary:(NSDictionary *)config
 {
+  id isEnabled = config[kEXUpdatesConfigEnabledKey];
+  if (isEnabled && [isEnabled isKindOfClass:[NSNumber class]]) {
+    _isEnabled = [(NSNumber *)isEnabled boolValue];
+  }
+
   id updateUrl = config[kEXUpdatesConfigUpdateUrlKey];
   if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
     NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];

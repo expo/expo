@@ -32,13 +32,13 @@ describe('getImageInfoAsync', () => {
   it(`fetches images by setting the "src" property`, () => {
     ImageAssets.getImageInfoAsync('https://example.com/example.png');
     expect((Image as jest.Mock<HTMLImageElement>).mock.instances.length).toBe(1);
-    let mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
+    const mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
     expect(mockImage.src).toBe('https://example.com/example.png');
   });
 
   it(`resolves the promise when the image loads`, async () => {
-    let infoPromise = ImageAssets.getImageInfoAsync('https://example.com/example.png');
-    let mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
+    const infoPromise = ImageAssets.getImageInfoAsync('https://example.com/example.png');
+    const mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
     expect(mockImage.onload).toBeDefined();
 
     // @ts-ignore: naturalWidth is declared as read-only
@@ -46,7 +46,7 @@ describe('getImageInfoAsync', () => {
     // @ts-ignore: naturalHeight is declared as read-only
     mockImage.naturalHeight = 400;
 
-    let mockLoadEvent = { type: 'load' } as any;
+    const mockLoadEvent = { type: 'load' } as any;
     mockImage.onload!(mockLoadEvent);
 
     await expect(infoPromise).resolves.toEqual({
@@ -57,11 +57,11 @@ describe('getImageInfoAsync', () => {
   });
 
   it(`rejects the promise when the image fails to load`, async () => {
-    let infoPromise = ImageAssets.getImageInfoAsync('https://example.com/example.png');
-    let mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
+    const infoPromise = ImageAssets.getImageInfoAsync('https://example.com/example.png');
+    const mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
     expect(mockImage.onerror).toBeDefined();
 
-    let mockErrorEvent = { type: 'error' } as any;
+    const mockErrorEvent = { type: 'error' } as any;
     mockImage.onerror!(mockErrorEvent);
 
     // TODO: change this to a proper Error

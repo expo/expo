@@ -52,7 +52,7 @@ function _streamSimulatorLogsAsync(simulatorId: string): Promise<TestSuiteResult
     let logStream = new IOSSimulator.IOSLogStream();
     logProcess.stdout.pipe(logStream);
 
-    logStream.on('data', entry => {
+    logStream.on('data', (entry) => {
       // Show the log messages in the CI log
       console.log(entry.eventMessage);
 

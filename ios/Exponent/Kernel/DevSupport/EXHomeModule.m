@@ -7,6 +7,10 @@
 #import "EXClientReleaseType.h"
 #import "EXKernelDevKeyCommands.h"
 
+#ifndef EX_DETACHED
+#import "EXDevMenuManager.h"
+#endif
+
 #import <React/RCTEventDispatcher.h>
 
 @interface EXHomeModule ()
@@ -88,14 +92,12 @@
  */
 - (void)requestToCloseDevMenu
 {
-  __weak typeof(self) weakSelf = self;
-  void (^close)(id) = ^(id arg){
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf->_delegate) {
-      [strongSelf->_delegate homeModuleDidSelectCloseMenu:strongSelf];
-    }
+#ifndef EX_DETACHED
+  void (^callback)(id) = ^(id arg){
+    [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
   };
-  [self dispatchJSEvent:@"requestToCloseDevMenu" body:nil onSuccess:close onFailure:close];
+  [self dispatchJSEvent:@"requestToCloseDevMenu" body:nil onSuccess:callback onFailure:callback];
+#endif
 }
 
 /**
@@ -173,9 +175,9 @@ RCT_EXPORT_METHOD(reloadAppAsync)
  */
 RCT_EXPORT_METHOD(closeDevMenuAsync)
 {
-  if (_delegate) {
-    [_delegate homeModuleDidSelectCloseMenu:self];
-  }
+#ifndef EX_DETACHED
+  [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
+#endif
 }
 
 /**
@@ -196,6 +198,42 @@ RCT_EXPORT_METHOD(selectQRReader)
   if (_delegate) {
     [_delegate homeModuleDidSelectQRReader:self];
   }
+}
+
+RCT_REMAP_METHOD(getDevMenuSettingsAsync,
+                 getDevMenuSettingsAsync:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+#ifndef EX_DETACHED
+  EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
+
+  resolve(@{
+    @"motionGestureEnabled": @(manager.interceptMotionGesture),
+    @"touchGestureEnabled": @(manager.interceptTouchGesture),
+  });
+#else
+  resolve(@{});
+#endif
+}
+
+RCT_REMAP_METHOD(setDevMenuSettingAsync,
+                 setDevMenuSetting:(NSString *)key
+                 withValue:(id)value
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+#ifndef EX_DETACHED
+  EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
+
+  if ([key isEqualToString:@"motionGestureEnabled"]) {
+    manager.interceptMotionGesture = [value boolValue];
+  } else if ([key isEqualToString:@"touchGestureEnabled"]) {
+    manager.interceptTouchGesture = [value boolValue];
+  } else {
+    return reject(@"ERR_DEV_MENU_SETTING_NOT_EXISTS", @"Specified dev menu setting doesn't exist.", nil);
+  }
+#endif
+  resolve(nil);
 }
 
 RCT_REMAP_METHOD(getSessionAsync,

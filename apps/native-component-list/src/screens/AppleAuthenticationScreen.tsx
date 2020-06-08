@@ -1,7 +1,8 @@
-import React from 'react';
+import Slider from '@react-native-community/slider';
 import { Subscription } from '@unimodules/core';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { Alert, AsyncStorage, ScrollView, StyleSheet, View, Text, Button, Slider } from 'react-native';
+import React from 'react';
+import { Alert, AsyncStorage, ScrollView, StyleSheet, View, Text, Button } from 'react-native';
 
 import MonoText from '../components/MonoText';
 
@@ -198,6 +199,10 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
             <Button
               title={`${AppleAuthenticationButtonType[AppleAuthenticationButtonType.CONTINUE]}`}
               onPress={() => this.setState({ buttonType: AppleAuthenticationButtonType.CONTINUE })}
+            />
+            <Button
+              title={`${AppleAuthenticationButtonType[AppleAuthenticationButtonType.SIGN_UP]}`}
+              onPress={() => this.setState({ buttonType: AppleAuthenticationButtonType.SIGN_UP })}
             />
           </View>
         </View>

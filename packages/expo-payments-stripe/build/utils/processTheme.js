@@ -1,7 +1,7 @@
 import { processColor } from 'react-native';
 export default function processTheme(theme = {}) {
     return Object.keys(theme).reduce((result, key) => {
-        let value = theme[key];
+        const value = theme[key];
         if (key.toLowerCase().endsWith('color')) {
             result[key] = processColor(value);
             return result;

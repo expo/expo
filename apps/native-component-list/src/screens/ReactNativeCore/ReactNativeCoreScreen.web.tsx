@@ -1,3 +1,4 @@
+import Slider from '@react-native-community/slider';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -5,7 +6,6 @@ import {
   Image,
   Picker,
   RefreshControl,
-  Slider,
   Switch,
   StatusBar,
   SectionList,
@@ -18,12 +18,11 @@ import {
   TouchableOpacityProps,
   View,
 } from 'react-native';
+import WebView from 'react-native-webview';
+import { NavigationScreenProps } from 'react-navigation';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
-
-import { NavigationScreenProps } from 'react-navigation';
-import WebView from 'react-native-webview';
 
 export default class ReactNativeCoreScreen extends React.Component<NavigationScreenProps> {
   static path = '';

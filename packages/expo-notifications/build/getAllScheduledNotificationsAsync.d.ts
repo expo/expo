@@ -1,2 +1,2 @@
-import { Notification } from './NotificationsEmitter.types';
-export default function getAllScheduledNotificationsAsync(): Promise<Notification[]>;
+import { NotificationRequest } from './Notifications.types';
+export default function getAllScheduledNotificationsAsync(): Promise<NotificationRequest[]>;

@@ -1,4 +1,6 @@
-*.pbxproj -diff linguist-generated
+*.pbxproj binary linguist-generated
+ios/Exponent.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
+apps/bare-expo/ios/BareExpo.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
 nix/**/gemset.nix -diff linguist-generated
 packages/*/build/** -diff linguist-generated
 packages/@*/*/build/** -diff linguist-generated

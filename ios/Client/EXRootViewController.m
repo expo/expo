@@ -11,8 +11,8 @@
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
-#import "EXMenuViewController.h"
 #import "EXRootViewController.h"
+#import "EXDevMenuManager.h"
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
@@ -21,10 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRootViewController () <EXAppBrowserController>
 
-@property (nonatomic, strong) EXMenuViewController *menuViewController;
-@property (nonatomic, assign) BOOL isMenuVisible;
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
-@property (nonatomic, strong, nullable) NSNumber *orientationBeforeShowingMenu;
 
 @end
 
@@ -37,26 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self _maybeResetNuxState];
   }
   return self;
-}
-
-/**
- * Overrides UIViewController's method that returns interface orientations that the view controller supports.
- * If EXMenuViewController is currently shown we want to use its supported orientations so the UI rotates
- * when we open the dev menu while in the unsupported orientation.
- * Otherwise, returns interface orientations supported by the current experience.
- */
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-  return _isMenuVisible ? [_menuViewController supportedInterfaceOrientations] : [self.contentViewController supportedInterfaceOrientations];
-}
-
-/**
- * Same case as above with `supportedInterfaceOrientations` method.
- * If we don't override this, we can get incorrect orientation while changing device orientation when the dev menu is visible.
- */
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-{
-  return _isMenuVisible ? [_menuViewController preferredInterfaceOrientationForPresentation] : [self.contentViewController preferredInterfaceOrientationForPresentation];
 }
 
 #pragma mark - EXViewController
@@ -83,58 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 }
 
-- (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion
-{
-  [self setIsMenuVisible:!_isMenuVisible completion:completion];
-}
-
-/**
- * Sets the visibility of the dev menu and attempts to rotate the UI according to interface orientations supported by the view controller that is on top.
- */
-- (void)setIsMenuVisible:(BOOL)isMenuVisible completion:(void (^ _Nullable)(void))completion
-{
-  if (!_menuViewController) {
-    _menuViewController = [[EXMenuViewController alloc] init];
-  }
-  if (isMenuVisible != _isMenuVisible) {
-    _isMenuVisible = isMenuVisible;
-
-    if (isMenuVisible) {
-      // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
-      // However, when removing it, we should set it back to the orientation from before showing the dev menu.
-      _orientationBeforeShowingMenu = [[UIDevice currentDevice] valueForKey:@"orientation"];
-      [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationPortrait) forKey:@"orientation"];
-    } else {
-      // Restore the original orientation that had been set before the dev menu was displayed.
-      [[UIDevice currentDevice] setValue:_orientationBeforeShowingMenu forKey:@"orientation"];
-    }
-    
-    // Ask the system to rotate the UI to device orientation that we've just set to fake value (see previous line of code).
-    [UIViewController attemptRotationToDeviceOrientation];
-    
-    if (isMenuVisible) {
-      // Add menu view controller as a child of the root view controller.
-      [_menuViewController willMoveToParentViewController:self];
-      [_menuViewController.view setFrame:self.view.frame];
-      [self.view addSubview:_menuViewController.view];
-      [_menuViewController didMoveToParentViewController:self];
-    } else {
-      // Detach menu view controller from the root view controller.
-      [_menuViewController willMoveToParentViewController:nil];
-      [_menuViewController.view removeFromSuperview];
-      [_menuViewController didMoveToParentViewController:nil];
-    }
-  }
-  if (completion) {
-    completion();
-  }
-}
-
-- (BOOL)isMenuVisible
-{
-  return _isMenuVisible;
-}
-
 - (void)showQRReader
 {
   [self moveHomeToVisible];
@@ -143,26 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveHomeToVisible
 {
-  __weak typeof(self) weakSelf = self;
-  [self setIsMenuVisible:NO completion:^{
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
-      
-      if (strongSelf.isMenuVisible) {
-        [strongSelf setIsMenuVisible:NO completion:nil];
-      }
-    }
-  }];
+  [[EXDevMenuManager sharedInstance] close];
+  [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
 
 // this is different from Util.reload()
 // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
 - (void)reloadVisibleApp
 {
-  if (_isMenuVisible) {
-    [self setIsMenuVisible:NO completion:nil];
-  }
+  [[EXDevMenuManager sharedInstance] close];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
@@ -201,9 +115,8 @@ NS_ASSUME_NONNULL_BEGIN
   // show nux if needed
   if (!self.isNuxFinished
       && appRecord == [EXKernel sharedInstance].visibleApp
-      && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord
-      && !self.isMenuVisible) {
-    [self setIsMenuVisible:YES completion:nil];
+      && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+    [[EXDevMenuManager sharedInstance] open];
   }
 }
 

@@ -2,30 +2,32 @@ package expo.modules.notifications.notifications.presentation.builders;
 
 import android.app.Notification;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.provider.Settings;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
+
+import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
+import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
 
 /**
  * {@link NotificationBuilder} interpreting a JSON request object.
  */
 public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
-  private static final String CONTENT_TITLE_KEY = "title";
-  private static final String CONTENT_TEXT_KEY = "message";
-  private static final String CONTENT_SUBTITLE_KEY = "subtitle";
-  private static final String SOUND_KEY = "sound";
-  private static final String BODY_KEY = "body";
-  private static final String VIBRATE_KEY = "vibrate";
-  private static final String PRIORITY_KEY = "priority";
-  private static final String THUMBNAIL_URI_KEY = "thumbnailUri";
-
+  public static final String META_DATA_DEFAULT_ICON_KEY = "expo.modules.notifications.default_notification_icon";
+  public static final String META_DATA_DEFAULT_COLOR_KEY = "expo.modules.notifications.default_notification_color";
+  public static final String EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY = "expo.notification_request";
   private static final String EXTRAS_BODY_KEY = "body";
 
   private static final long[] NO_VIBRATE_PATTERN = new long[]{0, 0};
@@ -36,35 +38,31 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
   protected NotificationCompat.Builder createBuilder() {
     NotificationCompat.Builder builder = super.createBuilder();
-    builder.setSmallIcon(getContext().getApplicationInfo().icon);
+    builder.setSmallIcon(getIcon());
     builder.setPriority(getPriority());
 
-    // We're setting the content only if there is anything to set
-    // otherwise the content title and text are displayed
-    // as if they were empty strings.
-    if (!getNotificationRequest().isNull(CONTENT_TITLE_KEY)) {
-      builder.setContentTitle(getNotificationRequest().optString(CONTENT_TITLE_KEY));
-    }
-    if (!getNotificationRequest().isNull(CONTENT_TEXT_KEY)) {
-      builder.setContentText(getNotificationRequest().optString(CONTENT_TEXT_KEY));
-    }
-    if (!getNotificationRequest().isNull(CONTENT_SUBTITLE_KEY)) {
-      builder.setSubText(getNotificationRequest().optString(CONTENT_SUBTITLE_KEY));
+    NotificationContent content = getNotificationContent();
+
+    builder.setAutoCancel(content.isAutoDismiss());
+
+    builder.setContentTitle(content.getTitle());
+    builder.setContentText(content.getText());
+    builder.setSubText(content.getSubtitle());
+    // Sets the text/contentText as the bigText to allow the notification to be expanded and the
+    // entire text to be viewed.
+    builder.setStyle(new NotificationCompat.BigTextStyle().bigText(content.getText()));
+
+    Number notificationColor = getColor();
+    if (notificationColor != null) {
+      builder.setColor(notificationColor.intValue());
     }
 
-    if (shouldPlaySound()) {
-      // Attach default notification sound to the NotificationCompat.Builder
-      builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
-    } else {
-      // Remove any sound attached to the NotificationCompat.Builder
-      builder.setSound(null);
-    }
-
-    if (shouldPlaySound() && shouldVibrate()) {
+    boolean shouldPlayDefaultSound = shouldPlaySound() && content.shouldPlayDefaultSound();
+    if (shouldPlayDefaultSound && shouldVibrate()) {
       builder.setDefaults(NotificationCompat.DEFAULT_ALL); // set sound, vibration and lights
     } else if (shouldVibrate()) {
       builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
-    } else if (shouldPlaySound()) {
+    } else if (shouldPlayDefaultSound) {
       builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
     } else {
       // Remove any sound or vibration attached by notification options.
@@ -75,19 +73,36 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
       builder.setVibrate(NO_VIBRATE_PATTERN);
     }
 
-    long[] vibrationPatternOverride = getVibrationPatternOverride();
+    if (shouldPlaySound() && content.getSound() != null) {
+      builder.setSound(content.getSound());
+    } else if (shouldPlayDefaultSound) {
+      builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+    }
+
+    long[] vibrationPatternOverride = content.getVibrationPattern();
     if (shouldVibrate() && vibrationPatternOverride != null) {
       builder.setVibrate(vibrationPatternOverride);
     }
 
-    // Add body - JSON data - to extras
-    Bundle extras = builder.getExtras();
-    extras.putString(EXTRAS_BODY_KEY, getNotificationRequest().optString(BODY_KEY));
-    builder.setExtras(extras);
-
-    if (!getNotificationRequest().isNull(THUMBNAIL_URI_KEY)) {
-      Log.w("expo-notifications", "Fetching large icon is not supported on this platform at the moment.");
+    if (content.getBody() != null) {
+      // Add body - JSON data - to extras
+      Bundle extras = builder.getExtras();
+      extras.putString(EXTRAS_BODY_KEY, content.getBody().toString());
+      builder.setExtras(extras);
     }
+
+    // Save the notification request in extras for later usage
+    // eg. in ExpoNotificationsService when we fetch active notifications.
+    // Otherwise we'd have to create expo.Notification from android.Notification
+    // and deal with two-way interpreting.
+    Bundle requestExtras = new Bundle();
+    // Class loader used in BaseBundle when unmarshalling notification extras
+    // cannot handle expo.modules.notifications.….NotificationRequest
+    // so we go around it by marshalling and unmarshalling the object ourselves.
+    requestExtras.putByteArray(EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY, marshallNotificationRequest(getNotification().getNotificationRequest()));
+    builder.addExtras(requestExtras);
+
+    builder.setContentIntent(getActionIntent(getContext(), DEFAULT_ACTION_IDENTIFIER, getNotification()));
 
     return builder;
   }
@@ -95,6 +110,29 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
   @Override
   public Notification build() {
     return createBuilder().build();
+  }
+
+  /**
+   * Marshalls {@link NotificationRequest} into to a byte array.
+   *
+   * @param request Notification request to marshall
+   * @return Given request marshalled to a byte array or null if the process failed.
+   */
+  @Nullable
+  protected byte[] marshallNotificationRequest(NotificationRequest request) {
+    try {
+      Parcel parcel = Parcel.obtain();
+      request.writeToParcel(parcel, 0);
+      byte[] bytes = parcel.marshall();
+      parcel.recycle();
+      return bytes;
+    } catch (Exception e) {
+      // If we couldn't marshall the request, let's not fail the whole build process.
+      // The request is only used to extract source request when fetching displayed notifications.
+      Log.e("expo-notifications", String.format("Could not marshalled notification request: %s.", request.getIdentifier()));
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**
@@ -108,8 +146,12 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
    * @return Whether the notification should play a sound.
    */
   private boolean shouldPlaySound() {
-    //                                                                         if SOUND_KEY is not an explicit false we fallback to true
-    return (getNotificationBehavior() == null || getNotificationBehavior().shouldPlaySound()) && !getNotificationRequest().optBoolean(SOUND_KEY, true);
+    boolean behaviorAllowsSound = getNotificationBehavior() == null || getNotificationBehavior().shouldPlaySound();
+
+    NotificationContent content = getNotificationContent();
+    boolean contentAllowsSound = content.shouldPlayDefaultSound() || content.getSound() != null;
+
+    return behaviorAllowsSound && contentAllowsSound;
   }
 
   /**
@@ -122,8 +164,12 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
    * @return Whether the notification should vibrate.
    */
   private boolean shouldVibrate() {
-    //                                                                         if VIBRATE_KEY is not an explicit false we fallback to true
-    return (getNotificationBehavior() == null || getNotificationBehavior().shouldPlaySound()) && !getNotificationRequest().optBoolean(VIBRATE_KEY, true);
+    boolean behaviorAllowsVibration = getNotificationBehavior() == null || getNotificationBehavior().shouldPlaySound();
+
+    NotificationContent content = getNotificationContent();
+    boolean contentAllowsVibration = content.shouldUseDefaultVibrationPattern() || content.getVibrationPattern() != null;
+
+    return behaviorAllowsVibration && contentAllowsVibration;
   }
 
   /**
@@ -140,83 +186,89 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
    * @return Priority of the notification, one of NotificationCompat.PRIORITY_*
    */
   private int getPriority() {
-    Number requestPriorityNumber = getPriorityFromString(getNotificationRequest().optString(PRIORITY_KEY));
+    NotificationPriority requestPriority = getNotificationContent().getPriority();
 
     // If we know of a behavior guideline, let's honor it...
     if (getNotificationBehavior() != null) {
       // ...by using the priority override...
-      Number priorityOverride = getPriorityFromString(getNotificationBehavior().getPriorityOverride());
+      NotificationPriority priorityOverride = getNotificationBehavior().getPriorityOverride();
       if (priorityOverride != null) {
-        return priorityOverride.intValue();
+        return priorityOverride.getNativeValue();
       }
 
       // ...or by setting min/max values for priority:
       // If the notification has no priority set, let's pick a neutral value and depend solely on the behavior.
-      int requestPriority =
-          requestPriorityNumber == null
-              ? NotificationCompat.PRIORITY_DEFAULT
-              : requestPriorityNumber.intValue();
+      int requestPriorityValue =
+          requestPriority != null
+              ? requestPriority.getNativeValue()
+              : NotificationPriority.DEFAULT.getNativeValue();
 
       if (getNotificationBehavior().shouldShowAlert()) {
         // Display as a heads-up notification, as per the behavior
         // while also allowing making the priority higher.
-        return Math.max(NotificationCompat.PRIORITY_HIGH, requestPriority);
+        return Math.max(NotificationCompat.PRIORITY_HIGH, requestPriorityValue);
       } else {
         // Do not display as a heads-up notification, but show in the notification tray
         // as per the behavior, while also allowing making the priority lower.
-        return Math.min(NotificationCompat.PRIORITY_DEFAULT, requestPriority);
+        return Math.min(NotificationCompat.PRIORITY_DEFAULT, requestPriorityValue);
       }
     }
 
     // No behavior is set, the only source of priority can be the request.
-    if (requestPriorityNumber != null) {
-      return requestPriorityNumber.intValue();
+    if (requestPriority != null) {
+      return requestPriority.getNativeValue();
     }
 
     // By default let's show the notification
     return NotificationCompat.PRIORITY_HIGH;
   }
 
-  @Nullable
-  protected Number getPriorityFromString(@Nullable String priorityString) {
-    if (priorityString == null) {
-      return null;
+  /**
+   * The method first tries to get the icon from the manifest's meta-data {@link #META_DATA_DEFAULT_ICON_KEY}.
+   * If a custom setting is not found, the method falls back to using app icon.
+   *
+   * @return Resource ID for icon that should be used as a notification icon.
+   */
+  protected int getIcon() {
+    try {
+      ApplicationInfo ai = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+      if (ai.metaData.containsKey(META_DATA_DEFAULT_ICON_KEY)) {
+        return ai.metaData.getInt(META_DATA_DEFAULT_ICON_KEY);
+      }
+    } catch (PackageManager.NameNotFoundException | ClassCastException e) {
+      Log.e("expo-notifications", "Could not have fetched default notification icon.");
     }
-
-    switch (priorityString) {
-      case "max":
-        return NotificationCompat.PRIORITY_MAX;
-      case "high":
-        return NotificationCompat.PRIORITY_HIGH;
-      case "default":
-        return NotificationCompat.PRIORITY_DEFAULT;
-      case "low":
-        return NotificationCompat.PRIORITY_LOW;
-      case "min":
-        return NotificationCompat.PRIORITY_MIN;
-      case "":
-        // A valid non-value
-        return null;
-      default:
-        Log.w("expo-notifications", "Unrecognized priority requested: " + priorityString + ".");
-        return null;
-    }
+    return getContext().getApplicationInfo().icon;
   }
 
-  private long[] getVibrationPatternOverride() {
-    try {
-      JSONArray vibrateJsonArray = getNotificationRequest().optJSONArray(VIBRATE_KEY);
-      if (vibrateJsonArray != null) {
-        long[] pattern = new long[vibrateJsonArray.length()];
-        for (int i = 0; i < vibrateJsonArray.length(); i++) {
-          pattern[i] = vibrateJsonArray.getLong(i);
-        }
-        return pattern;
-      }
-    } catch (JSONException e) {
-      Log.w("expo-notifications", "Failed to set custom vibration pattern from the notification: " + e.getMessage());
+  /**
+   * The method responsible for finding and returning a custom color used to color the notification icon.
+   * It first tries to use a custom color defined in notification content, then it tries to fetch color
+   * from resources (based on manifest's meta-data). If not found, returns null.
+   *
+   * @return A {@link Number}, if a custom color should be used for notification icon
+   * or null if the default should be used.
+   */
+  @Nullable
+  protected Number getColor() {
+    if (getNotificationContent().getColor() != null) {
+      return getNotificationContent().getColor();
     }
 
+    try {
+      ApplicationInfo ai = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+      if (ai.metaData.containsKey(META_DATA_DEFAULT_COLOR_KEY)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY), null);
+        } else {
+          return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY));
+        }
+      }
+    } catch (PackageManager.NameNotFoundException | Resources.NotFoundException | ClassCastException e) {
+      Log.e("expo-notifications", "Could not have fetched default notification color.");
+    }
+
+    // No custom color
     return null;
   }
 }

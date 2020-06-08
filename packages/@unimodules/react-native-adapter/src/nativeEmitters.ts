@@ -1,4 +1,4 @@
-import RCTDeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
-import RCTEventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import RCTDeviceEventEmitter from 'react-native-web/dist/vendor/react-native/NativeEventEmitter/RCTDeviceEventEmitter';
+import RCTEventEmitter from 'react-native-web/dist/vendor/react-native/emitter/EventEmitter';
 
 export { RCTEventEmitter, RCTDeviceEventEmitter };

@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { SessionUrlProvider } from './SessionUrlProvider';
 
 export class BareSessionUrlProvider implements SessionUrlProvider {
@@ -11,7 +13,10 @@ export class BareSessionUrlProvider implements SessionUrlProvider {
     return authUrl;
   }
 
-  getRedirectUrl(): string {
+  getRedirectUrl(urlPath?: string): string {
+    if (Platform.OS === 'web') {
+      return [window.location.origin, urlPath].filter(Boolean).join('/');
+    }
     throw new Error(
       "No default redirect URL could be found. If you're using the bare workflow, you'll need to provide this yourself."
     );

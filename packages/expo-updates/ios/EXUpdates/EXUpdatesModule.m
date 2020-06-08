@@ -26,12 +26,23 @@ UM_EXPORT_MODULE(ExpoUpdates);
 - (NSDictionary *)constantsToExport
 {
   EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
+  if (!controller.isStarted) {
+    return @{
+      @"isEnabled": @(NO)
+    };
+  }
   EXUpdatesUpdate *launchedUpdate = controller.launchedUpdate;
   if (!launchedUpdate) {
-    return @{};
+    return @{
+      @"isEnabled": @(NO)
+    };
   } else {
     return @{
-      @"manifest": launchedUpdate.rawManifest,
+      @"isEnabled": @(YES),
+      @"isUsingEmbeddedAssets": @(controller.isUsingEmbeddedAssets),
+      @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
+      @"manifest": launchedUpdate.rawManifest ?: @{},
+      @"releaseChannel": [EXUpdatesConfig sharedInstance].releaseChannel,
       @"localAssets": controller.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(controller.isEmergencyLaunch)
     };
@@ -43,6 +54,11 @@ UM_EXPORT_METHOD_AS(reload,
                     reloadAsync:(UMPromiseResolveBlock)resolve
                          reject:(UMPromiseRejectBlock)reject)
 {
+  if (![EXUpdatesAppController sharedInstance].isStarted) {
+    reject(@"ERR_UPDATES_DISABLED", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot use this method. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
+    return;
+  }
+
   [[EXUpdatesAppController sharedInstance] requestRelaunchWithCompletion:^(BOOL success) {
     if (success) {
       resolve(nil);
@@ -56,8 +72,8 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
                     checkForUpdateAsync:(UMPromiseResolveBlock)resolve
                                  reject:(UMPromiseRejectBlock)reject)
 {
-  if (![EXUpdatesAppController sharedInstance].isEnabled) {
-    reject(@"ERR_UPDATES_CHECK", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot check for updates. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
+  if (![EXUpdatesAppController sharedInstance].isStarted) {
+    reject(@"ERR_UPDATES_DISABLED", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot check for updates. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
     return;
   }
 
@@ -84,8 +100,8 @@ UM_EXPORT_METHOD_AS(fetchUpdateAsync,
                     fetchUpdateAsync:(UMPromiseResolveBlock)resolve
                               reject:(UMPromiseRejectBlock)reject)
 {
-  if (![EXUpdatesAppController sharedInstance].isEnabled) {
-    reject(@"ERR_UPDATES_FETCH", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot fetch updates. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
+  if (![EXUpdatesAppController sharedInstance].isStarted) {
+    reject(@"ERR_UPDATES_DISABLED", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot fetch updates. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
     return;
   }
 

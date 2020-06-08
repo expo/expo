@@ -9,9 +9,9 @@ it(`starts and stops observing on Android`, () => {
   expect(nativeModule.stopObserving).not.toHaveBeenCalled();
 
   // Add listeners
-  let subscription1 = sensor.addListener(() => {});
+  const subscription1 = sensor.addListener(() => {});
   expect(nativeModule.startObserving).toHaveBeenCalledTimes(1);
-  let subscription2 = sensor.addListener(() => {});
+  const subscription2 = sensor.addListener(() => {});
   expect(nativeModule.startObserving).toHaveBeenCalledTimes(1);
 
   // Remove listeners

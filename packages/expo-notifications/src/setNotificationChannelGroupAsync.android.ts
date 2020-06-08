@@ -1,9 +1,10 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import NotificationChannelGroupManager, {
+import NotificationChannelGroupManager from './NotificationChannelGroupManager';
+import {
   NotificationChannelGroup,
   NotificationChannelGroupInput,
-} from './NotificationChannelGroupManager';
+} from './NotificationChannelGroupManager.types';
 
 export default async function setNotificationChannelGroupAsync(
   groupId: string,

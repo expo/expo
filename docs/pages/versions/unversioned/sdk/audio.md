@@ -46,7 +46,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ### `Audio.setIsEnabledAsync(value)`
 
-Audio is enabled by default, but if you want to write your own Audio API in an ExpoKit app, you might want to disable the Audio API.
+Audio is enabled by default, but if you want to write your own Audio API in a bare workflow app, you might want to disable the Audio API.
 
 #### Arguments
 
@@ -68,7 +68,7 @@ We provide this API to customize the audio experience on iOS and Android.
 
   - `playsInSilentModeIOS` : a boolean selecting if your experience's audio should play in silent mode on iOS. This value defaults to `false`.
   - `allowsRecordingIOS` : a boolean selecting if recording is enabled on iOS. This value defaults to `false`. NOTE: when this flag is set to `true`, playback may be routed to the phone receiver instead of to the speaker.
-  - `staysActiveInBackground` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background. This value defaults to `false`. NOTE: For this option to work properly in standalone iOS apps you'll need to add a `UIBackgroundMode` to your app configuration (see [information below](#playing-or-recording-audio-in-background-ios)).
+  - `staysActiveInBackground` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background. This value defaults to `false`. **This is not available in Expo client for iOS, it will only work in standalone apps**. To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background-ios) to add `UIBackgroundMode` to your app configuration.
   - `interruptionModeIOS` : an enum selecting how your experience's audio should interact with the audio from other apps on iOS:
     - `INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS` : This is the default option. If this option is set, your experience's audio is mixed with audio playing in background apps.
     - `INTERRUPTION_MODE_IOS_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
@@ -77,7 +77,7 @@ We provide this API to customize the audio experience on iOS and Android.
   - `interruptionModeAndroid` : an enum selecting how your experience's audio should interact with the audio from other apps on Android:
     - `INTERRUPTION_MODE_ANDROID_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
     - `INTERRUPTION_MODE_ANDROID_DUCK_OTHERS` : This is the default option. If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
-  - `playThroughEarpieceAndroid` : set to true to route audio to earpiece (on Android).
+  - `playThroughEarpieceAndroid` : a boolean selecting if the audio is routed to earpiece (on Android). This value defaults to `false`.
 
 #### Returns
 
@@ -100,7 +100,7 @@ A `Promise` that will reject if the audio mode could not be enabled for the devi
 
 #### Playing or recording audio in background (iOS)
 
-Playing or recording audio in background works out of the box in Expo client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
 
 See an example of `app.json` that enables audio playback in background:
 

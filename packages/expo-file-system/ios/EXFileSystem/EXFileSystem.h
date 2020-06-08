@@ -17,6 +17,7 @@
 - (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
+
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
 
 @end
@@ -27,14 +28,13 @@
            withOptions:(NSDictionary *)optionxs
               resolver:(UMPromiseResolveBlock)resolve
               rejecter:(UMPromiseRejectBlock)reject;
+
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
         resolver:(UMPromiseResolveBlock)resolve
         rejecter:(UMPromiseRejectBlock)reject;
 
-
 @end
-
 
 @interface NSData (EXFileSystem)
 

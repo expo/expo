@@ -2,20 +2,24 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
-export default class BlurView extends React.Component {
-    render() {
-        let { tint, intensity, ...props } = this.props;
-        let backgroundColor = getBackgroundColor(intensity, tint);
-        return <View {...props} style={[this.props.style, { backgroundColor }]}/>;
+let BlurView = /** @class */ (() => {
+    class BlurView extends React.Component {
+        render() {
+            const { tint, intensity, ...props } = this.props;
+            const backgroundColor = getBackgroundColor(intensity, tint);
+            return React.createElement(View, Object.assign({}, props, { style: [this.props.style, { backgroundColor }] }));
+        }
     }
-}
-BlurView.propTypes = {
-    ...ViewPropTypes,
-    tint: PropTypes.oneOf(['light', 'default', 'dark']).isRequired,
-    intensity: PropTypes.number.isRequired,
-};
-BlurView.defaultProps = {
-    tint: 'default',
-    intensity: 100,
-};
+    BlurView.propTypes = {
+        ...ViewPropTypes,
+        tint: PropTypes.oneOf(['light', 'default', 'dark']).isRequired,
+        intensity: PropTypes.number.isRequired,
+    };
+    BlurView.defaultProps = {
+        tint: 'default',
+        intensity: 100,
+    };
+    return BlurView;
+})();
+export default BlurView;
 //# sourceMappingURL=BlurView.android.js.map

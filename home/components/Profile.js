@@ -1,31 +1,24 @@
 /* @flow */
+import dedent from 'dedent';
+import { take, takeRight } from 'lodash';
 import React from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
-import { take, takeRight } from 'lodash';
-import dedent from 'dedent';
-
+import ListItem from '../components/ListItem';
+import ScrollView from '../components/NavigationScrollView';
+import ProjectListItem from '../components/ProjectListItem';
+import RefreshControl from '../components/RefreshControl';
+import SectionHeader from '../components/SectionHeader';
+import { StyledText } from '../components/Text';
+import { StyledView } from '../components/Views';
 import Colors from '../constants/Colors';
-import PrimaryButton from './PrimaryButton';
+import SharedStyles from '../constants/SharedStyles';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
+import PrimaryButton from './PrimaryButton';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
-import SeeAllSnacksButton from './SeeAllSnacksButton';
-import SharedStyles from '../constants/SharedStyles';
-import SmallProjectCard from './SmallProjectCard';
-import SnackCard from './SnackCard';
-import ScrollView from '../components/NavigationScrollView';
-import { SectionLabelText, StyledText } from '../components/Text';
-import { SectionLabelContainer, StyledView } from '../components/Views';
+import SnackListItem from './SnackListItem';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -59,7 +52,7 @@ export default class Profile extends React.Component {
     const SkipConnectionNotification = true;
     if (!SkipConnectionNotification && !prevProps.data.error && this.props.data.error) {
       // NOTE(brentvatne): sorry for this
-      let isConnectionError = this.props.data.error.message.includes('No connection available');
+      const isConnectionError = this.props.data.error.message.includes('No connection available');
 
       if (isConnectionError) {
         // Should have some integrated alert banner
@@ -123,7 +116,7 @@ export default class Profile extends React.Component {
 
   _renderError = () => {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
+    const isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
       <ScrollView
@@ -189,7 +182,7 @@ export default class Profile extends React.Component {
   };
 
   _renderLegacyHeader = () => {
-    let { username } = this.props.data.user;
+    const { username } = this.props.data.user;
 
     return (
       <View style={styles.header}>
@@ -204,15 +197,16 @@ export default class Profile extends React.Component {
   };
 
   _renderApps = () => {
-    if (!this.props.data.user) {
+    const { data, isOwnProfile } = this.props;
+    if (!data.user) {
       return;
     }
 
-    let { apps, appCount } = this.props.data.user;
+    const { apps, appCount } = data.user;
     let content;
 
     if (!apps || !apps.length) {
-      content = <EmptyProfileProjectsNotice isOwnProfile={this.props.isOwnProfile} />;
+      content = <EmptyProfileProjectsNotice isOwnProfile={isOwnProfile} />;
     } else {
       let otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
       content = (
@@ -221,7 +215,6 @@ export default class Profile extends React.Component {
           <SeeAllProjectsButton
             apps={otherApps}
             appCount={appCount - MAX_APPS_TO_DISPLAY}
-            label="See all projects"
             onPress={this._handlePressProjectList}
           />
         </>
@@ -229,10 +222,8 @@ export default class Profile extends React.Component {
     }
 
     return (
-      <View style={{ marginBottom: 3 }}>
-        <SectionLabelContainer style={{ marginTop: 10 }}>
-          <SectionLabelText>PUBLISHED PROJECTS</SectionLabelText>
-        </SectionLabelContainer>
+      <View>
+        <SectionHeader title="Published projects" />
         {content}
       </View>
     );
@@ -243,30 +234,31 @@ export default class Profile extends React.Component {
       return;
     }
 
-    let { snacks } = this.props.data.user;
+    const { snacks } = this.props.data.user;
     let content;
 
     if (!snacks || !snacks.length) {
       content = <EmptyProfileSnacksNotice isOwnProfile={this.props.isOwnProfile} />;
     } else {
-      let otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
+      const otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
       content = (
         <>
           {take(snacks, MAX_SNACKS_TO_DISPLAY).map(this._renderSnack)}
-          <SeeAllSnacksButton
-            snacks={otherSnacks}
-            label="See all Snacks"
-            onPress={this._handlePressSnackList}
-          />
+          {otherSnacks.length > 0 && (
+            <ListItem
+              title="See all snacks"
+              onPress={this._handlePressSnackList}
+              arrowForward
+              last
+            />
+          )}
         </>
       );
     }
 
     return (
-      <View style={{ marginBottom: 3 }}>
-        <SectionLabelContainer style={{ marginTop: 10 }}>
-          <SectionLabelText>SAVED SNACKS</SectionLabelText>
-        </SectionLabelContainer>
+      <View>
+        <SectionHeader title="Saved snacks" />
         {content}
       </View>
     );
@@ -288,30 +280,23 @@ export default class Profile extends React.Component {
 
   _renderApp = (app: any, i: number) => {
     return (
-      <SmallProjectCard
+      <ProjectListItem
         key={i}
-        hideUsername
-        iconUrl={app.iconUrl}
-        projectName={app.name}
-        slug={app.packageName}
-        projectUrl={app.fullName}
-        privacy={app.privacy}
-        fullWidthBorder
+        url={app.fullName}
+        unlisted={app.privacy === 'unlisted'}
+        image={app.iconUrl}
+        title={app.name}
+        subtitle={app.packageName || app.fullName}
       />
     );
   };
 
   _renderSnack = (snack: any, i: number) => {
     return (
-      <SnackCard
-        key={i}
-        projectName={snack.name}
-        description={snack.description}
-        projectUrl={snack.fullName}
-        fullWidthBorder
-      />
+      <SnackListItem key={i} url={snack.fullName} title={snack.name} subtitle={snack.description} />
     );
   };
+
   _maybeRenderGithubAccount() {
     // ..
   }
@@ -326,6 +311,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderBottomWidth: 1,
+    marginBottom: 5,
   },
   headerAvatarContainer: {
     marginTop: 20,

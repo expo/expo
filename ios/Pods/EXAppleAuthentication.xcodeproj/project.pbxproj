@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2503843FA6A551C412F73B194D57B609 /* EXAppleAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 8CCF46F345F5F8127C454E0154B58CA0 /* EXAppleAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2F536D734FF17AC8C7D01D21402BA3B4 /* EXAppleAuthenticationMappings.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FB867B5D93E69F2FC2022E16E347A7 /* EXAppleAuthenticationMappings.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2FE7AA346E995832D78603B57B3E60F0 /* EXAppleAuthenticationRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 23E705E1FC47A8847DF40E8F301921FB /* EXAppleAuthenticationRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		47C278195EB2F5DCC5B505D92937530B /* EXAppleAuthenticationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0348F2904FB57D0688BB1CFAAF9B5B1F /* EXAppleAuthenticationRequest.m */; };
-		515DA5AD713CDD1A40623F4B7793FBC2 /* EXAppleAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A3746432BCE9DF8724BCA050832CC6E /* EXAppleAuthentication.m */; };
-		5967A0B297CA20EB7E5370D96C15083F /* EXAppleAuthenticationButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 274D10D97C0148E7EDF892385C5024EF /* EXAppleAuthenticationButton.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		93CCB147FA9B223DC1BF7308052BA6CB /* EXAppleAuthenticationButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A4BA5740E3C8F09EADF9310774DC7D2 /* EXAppleAuthenticationButton.m */; };
-		9B161892208FD1D1409EDEF61D1874E0 /* EXAppleAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BF45DAAA7053684BBEDD6F43B272FEE /* EXAppleAuthentication-dummy.m */; };
-		C29D204C638AAEBBBA7B40C12B4E954F /* EXAppleAuthenticationButtonViewManagers.m in Sources */ = {isa = PBXBuildFile; fileRef = CF0A0083967488756FC736E30B82B84B /* EXAppleAuthenticationButtonViewManagers.m */; };
-		D7DBCDA40930384792A0FB56A5810CD1 /* EXAppleAuthenticationMappings.m in Sources */ = {isa = PBXBuildFile; fileRef = FB521174EC3F2BEC3594684FD32AC4CB /* EXAppleAuthenticationMappings.m */; };
+		2503843FA6A551C412F73B194D57B609 /* EXAppleAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BD70C6972DAC2668FB58E958BDFA546 /* EXAppleAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2F536D734FF17AC8C7D01D21402BA3B4 /* EXAppleAuthenticationMappings.h in Headers */ = {isa = PBXBuildFile; fileRef = A477E524358E8837775788A0B99A71B7 /* EXAppleAuthenticationMappings.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2FE7AA346E995832D78603B57B3E60F0 /* EXAppleAuthenticationRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 120043B84931D16A6AA7FA7BA3C3BD0A /* EXAppleAuthenticationRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		47C278195EB2F5DCC5B505D92937530B /* EXAppleAuthenticationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A8ABD6F241055536F443A6DAE8869D /* EXAppleAuthenticationRequest.m */; };
+		515DA5AD713CDD1A40623F4B7793FBC2 /* EXAppleAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 53FB7ACCE6F467527DCBC28297482F0D /* EXAppleAuthentication.m */; };
+		5967A0B297CA20EB7E5370D96C15083F /* EXAppleAuthenticationButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E2BB284BD32853AFCACFBBCA854CAFC /* EXAppleAuthenticationButton.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		93CCB147FA9B223DC1BF7308052BA6CB /* EXAppleAuthenticationButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F019307BE45F3A50D3FB708B0F251BB /* EXAppleAuthenticationButton.m */; };
+		9B161892208FD1D1409EDEF61D1874E0 /* EXAppleAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C24865EE54F90BEC75AAD3D8D063DE15 /* EXAppleAuthentication-dummy.m */; };
+		C29D204C638AAEBBBA7B40C12B4E954F /* EXAppleAuthenticationButtonViewManagers.m in Sources */ = {isa = PBXBuildFile; fileRef = 58ABBB4E9847C0FF11FDCCFD9E6F97FB /* EXAppleAuthenticationButtonViewManagers.m */; };
+		D7DBCDA40930384792A0FB56A5810CD1 /* EXAppleAuthenticationMappings.m in Sources */ = {isa = PBXBuildFile; fileRef = 128574003734D6D09FBD1424C8C01CE3 /* EXAppleAuthenticationMappings.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,21 +30,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0348F2904FB57D0688BB1CFAAF9B5B1F /* EXAppleAuthenticationRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationRequest.m; path = EXAppleAuthentication/EXAppleAuthenticationRequest.m; sourceTree = "<group>"; };
-		1BF45DAAA7053684BBEDD6F43B272FEE /* EXAppleAuthentication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAppleAuthentication-dummy.m"; sourceTree = "<group>"; };
-		23E705E1FC47A8847DF40E8F301921FB /* EXAppleAuthenticationRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthenticationRequest.h; path = EXAppleAuthentication/EXAppleAuthenticationRequest.h; sourceTree = "<group>"; };
-		274D10D97C0148E7EDF892385C5024EF /* EXAppleAuthenticationButton.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthenticationButton.h; path = EXAppleAuthentication/EXAppleAuthenticationButton.h; sourceTree = "<group>"; };
+		0E2BB284BD32853AFCACFBBCA854CAFC /* EXAppleAuthenticationButton.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthenticationButton.h; path = EXAppleAuthentication/EXAppleAuthenticationButton.h; sourceTree = "<group>"; };
+		120043B84931D16A6AA7FA7BA3C3BD0A /* EXAppleAuthenticationRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthenticationRequest.h; path = EXAppleAuthentication/EXAppleAuthenticationRequest.h; sourceTree = "<group>"; };
+		128574003734D6D09FBD1424C8C01CE3 /* EXAppleAuthenticationMappings.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationMappings.m; path = EXAppleAuthentication/EXAppleAuthenticationMappings.m; sourceTree = "<group>"; };
+		1D4BF7F1FC077823A2D15B74CB3AB822 /* EXAppleAuthentication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAppleAuthentication.debug.xcconfig; sourceTree = "<group>"; };
+		2BD70C6972DAC2668FB58E958BDFA546 /* EXAppleAuthentication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthentication.h; path = EXAppleAuthentication/EXAppleAuthentication.h; sourceTree = "<group>"; };
 		3EF949863822776DBF9218B43233DCD0 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		46FB867B5D93E69F2FC2022E16E347A7 /* EXAppleAuthenticationMappings.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthenticationMappings.h; path = EXAppleAuthentication/EXAppleAuthenticationMappings.h; sourceTree = "<group>"; };
-		5A3746432BCE9DF8724BCA050832CC6E /* EXAppleAuthentication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthentication.m; path = EXAppleAuthentication/EXAppleAuthentication.m; sourceTree = "<group>"; };
-		6A4BA5740E3C8F09EADF9310774DC7D2 /* EXAppleAuthenticationButton.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationButton.m; path = EXAppleAuthentication/EXAppleAuthenticationButton.m; sourceTree = "<group>"; };
+		53FB7ACCE6F467527DCBC28297482F0D /* EXAppleAuthentication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthentication.m; path = EXAppleAuthentication/EXAppleAuthentication.m; sourceTree = "<group>"; };
+		58ABBB4E9847C0FF11FDCCFD9E6F97FB /* EXAppleAuthenticationButtonViewManagers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationButtonViewManagers.m; path = EXAppleAuthentication/EXAppleAuthenticationButtonViewManagers.m; sourceTree = "<group>"; };
 		7B4755A99E10CAB97BCA4DD05C93DE80 /* libEXAppleAuthentication.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAppleAuthentication.a; path = libEXAppleAuthentication.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		84811381A077B17F2FEF2C5E0B392529 /* EXAppleAuthentication.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAppleAuthentication.xcconfig; sourceTree = "<group>"; };
-		8CCF46F345F5F8127C454E0154B58CA0 /* EXAppleAuthentication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthentication.h; path = EXAppleAuthentication/EXAppleAuthentication.h; sourceTree = "<group>"; };
-		AA5022BDE1CB944D57F1BB4F97F3C024 /* EXAppleAuthentication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAppleAuthentication-prefix.pch"; sourceTree = "<group>"; };
-		CA0282BDA2B74E80F6E15BC1AC0DAA01 /* EXAppleAuthentication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAppleAuthentication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		CF0A0083967488756FC736E30B82B84B /* EXAppleAuthenticationButtonViewManagers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationButtonViewManagers.m; path = EXAppleAuthentication/EXAppleAuthenticationButtonViewManagers.m; sourceTree = "<group>"; };
-		FB521174EC3F2BEC3594684FD32AC4CB /* EXAppleAuthenticationMappings.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationMappings.m; path = EXAppleAuthentication/EXAppleAuthenticationMappings.m; sourceTree = "<group>"; };
+		7F019307BE45F3A50D3FB708B0F251BB /* EXAppleAuthenticationButton.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationButton.m; path = EXAppleAuthentication/EXAppleAuthenticationButton.m; sourceTree = "<group>"; };
+		A477E524358E8837775788A0B99A71B7 /* EXAppleAuthenticationMappings.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppleAuthenticationMappings.h; path = EXAppleAuthentication/EXAppleAuthenticationMappings.h; sourceTree = "<group>"; };
+		B021D0DDDD1C32336ABBB80F8485CBCE /* EXAppleAuthentication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAppleAuthentication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B6A8ABD6F241055536F443A6DAE8869D /* EXAppleAuthenticationRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppleAuthenticationRequest.m; path = EXAppleAuthentication/EXAppleAuthenticationRequest.m; sourceTree = "<group>"; };
+		C24865EE54F90BEC75AAD3D8D063DE15 /* EXAppleAuthentication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAppleAuthentication-dummy.m"; sourceTree = "<group>"; };
+		CCEECA8758E4E15CC1054A2C8CA02E63 /* EXAppleAuthentication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAppleAuthentication-prefix.pch"; sourceTree = "<group>"; };
+		EAA792F5B6A2AA6AF1D7258DA589A377 /* EXAppleAuthentication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAppleAuthentication.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,36 +67,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5B3C6A2FF799B0C3D0DDEFAC132F261A /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				84811381A077B17F2FEF2C5E0B392529 /* EXAppleAuthentication.xcconfig */,
-				1BF45DAAA7053684BBEDD6F43B272FEE /* EXAppleAuthentication-dummy.m */,
-				AA5022BDE1CB944D57F1BB4F97F3C024 /* EXAppleAuthentication-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXAppleAuthentication";
-			sourceTree = "<group>";
-		};
-		76AEEF548C0641FE5F108A5A6D2A0748 /* EXAppleAuthentication */ = {
-			isa = PBXGroup;
-			children = (
-				8CCF46F345F5F8127C454E0154B58CA0 /* EXAppleAuthentication.h */,
-				5A3746432BCE9DF8724BCA050832CC6E /* EXAppleAuthentication.m */,
-				274D10D97C0148E7EDF892385C5024EF /* EXAppleAuthenticationButton.h */,
-				6A4BA5740E3C8F09EADF9310774DC7D2 /* EXAppleAuthenticationButton.m */,
-				CF0A0083967488756FC736E30B82B84B /* EXAppleAuthenticationButtonViewManagers.m */,
-				46FB867B5D93E69F2FC2022E16E347A7 /* EXAppleAuthenticationMappings.h */,
-				FB521174EC3F2BEC3594684FD32AC4CB /* EXAppleAuthenticationMappings.m */,
-				23E705E1FC47A8847DF40E8F301921FB /* EXAppleAuthenticationRequest.h */,
-				0348F2904FB57D0688BB1CFAAF9B5B1F /* EXAppleAuthenticationRequest.m */,
-				B38BB65D7777271E9A3432F27891E753 /* Pod */,
-				5B3C6A2FF799B0C3D0DDEFAC132F261A /* Support Files */,
-			);
-			name = EXAppleAuthentication;
-			path = "../../packages/expo-apple-authentication/ios";
-			sourceTree = "<group>";
-		};
 		7891E34DB8572568F65E4BF41946B3AA /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -108,16 +79,35 @@
 			isa = PBXGroup;
 			children = (
 				7891E34DB8572568F65E4BF41946B3AA /* Dependencies */,
-				76AEEF548C0641FE5F108A5A6D2A0748 /* EXAppleAuthentication */,
+				9BADE8FF851411E313199156A2880D6F /* EXAppleAuthentication */,
 				CC9800BDE15456D0FCFF96BD3F725AE5 /* Frameworks */,
 				36955565CABA9B98F2031F1D34A02DB4 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		B38BB65D7777271E9A3432F27891E753 /* Pod */ = {
+		9BADE8FF851411E313199156A2880D6F /* EXAppleAuthentication */ = {
 			isa = PBXGroup;
 			children = (
-				CA0282BDA2B74E80F6E15BC1AC0DAA01 /* EXAppleAuthentication.podspec */,
+				2BD70C6972DAC2668FB58E958BDFA546 /* EXAppleAuthentication.h */,
+				53FB7ACCE6F467527DCBC28297482F0D /* EXAppleAuthentication.m */,
+				0E2BB284BD32853AFCACFBBCA854CAFC /* EXAppleAuthenticationButton.h */,
+				7F019307BE45F3A50D3FB708B0F251BB /* EXAppleAuthenticationButton.m */,
+				58ABBB4E9847C0FF11FDCCFD9E6F97FB /* EXAppleAuthenticationButtonViewManagers.m */,
+				A477E524358E8837775788A0B99A71B7 /* EXAppleAuthenticationMappings.h */,
+				128574003734D6D09FBD1424C8C01CE3 /* EXAppleAuthenticationMappings.m */,
+				120043B84931D16A6AA7FA7BA3C3BD0A /* EXAppleAuthenticationRequest.h */,
+				B6A8ABD6F241055536F443A6DAE8869D /* EXAppleAuthenticationRequest.m */,
+				B3A7F6ACBC61EA9676ECFCD7655ECAFB /* Pod */,
+				FFA57AEC5CFBE2F370B98526647EE139 /* Support Files */,
+			);
+			name = EXAppleAuthentication;
+			path = "../../packages/expo-apple-authentication/ios";
+			sourceTree = "<group>";
+		};
+		B3A7F6ACBC61EA9676ECFCD7655ECAFB /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				B021D0DDDD1C32336ABBB80F8485CBCE /* EXAppleAuthentication.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -127,6 +117,18 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FFA57AEC5CFBE2F370B98526647EE139 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				C24865EE54F90BEC75AAD3D8D063DE15 /* EXAppleAuthentication-dummy.m */,
+				CCEECA8758E4E15CC1054A2C8CA02E63 /* EXAppleAuthentication-prefix.pch */,
+				1D4BF7F1FC077823A2D15B74CB3AB822 /* EXAppleAuthentication.debug.xcconfig */,
+				EAA792F5B6A2AA6AF1D7258DA589A377 /* EXAppleAuthentication.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXAppleAuthentication";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,6 +283,30 @@
 			};
 			name = Release;
 		};
+		5BBD1CEEBE85F99B54E373ED40002D32 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1D4BF7F1FC077823A2D15B74CB3AB822 /* EXAppleAuthentication.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAppleAuthentication/EXAppleAuthentication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAppleAuthentication;
+				PRODUCT_NAME = EXAppleAuthentication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		65F0DA84B154EEF87455227A90B7B45B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -345,33 +371,9 @@
 			};
 			name = Debug;
 		};
-		DC41915EF992976F704A459C3402AD11 /* Debug */ = {
+		B7CB9AAC581ABB396DC22EA0959049EA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 84811381A077B17F2FEF2C5E0B392529 /* EXAppleAuthentication.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAppleAuthentication/EXAppleAuthentication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAppleAuthentication;
-				PRODUCT_NAME = EXAppleAuthentication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		F3EFE24C3C9CEB3F0F5D6BC68C9B4543 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 84811381A077B17F2FEF2C5E0B392529 /* EXAppleAuthentication.xcconfig */;
+			baseConfigurationReference = EAA792F5B6A2AA6AF1D7258DA589A377 /* EXAppleAuthentication.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -409,8 +411,8 @@
 		FB2874180965A20FA8E3098B90C080BD /* Build configuration list for PBXNativeTarget "EXAppleAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DC41915EF992976F704A459C3402AD11 /* Debug */,
-				F3EFE24C3C9CEB3F0F5D6BC68C9B4543 /* Release */,
+				5BBD1CEEBE85F99B54E373ED40002D32 /* Debug */,
+				B7CB9AAC581ABB396DC22EA0959049EA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

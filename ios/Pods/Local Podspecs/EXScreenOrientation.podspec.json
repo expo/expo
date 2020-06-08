@@ -1,6 +1,6 @@
 {
   "name": "EXScreenOrientation",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "summary": "Expo universal module for managing device's screen orientation",
   "description": "Expo universal module for managing device's screen orientation",
   "license": "MIT",

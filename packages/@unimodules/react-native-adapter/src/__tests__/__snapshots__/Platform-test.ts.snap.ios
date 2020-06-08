@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`matches snapshots 1`] = `
+Object {
+  "OS": "ios",
+  "isDOMAvailable": false,
+  "isNative": true,
+  "isWeb": false,
+}
+`;
