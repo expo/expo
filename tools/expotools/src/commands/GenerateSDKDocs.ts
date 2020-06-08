@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { Directories } from '../expotools';
+import { transformFileAsync } from '../Utils';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
@@ -70,19 +71,17 @@ async function action(options) {
 
     // Version the sourcecode URLs for the API pages
     const apiPages = await fs.readdir(path.join(targetSdkDirectory, 'sdk'));
-    apiPages.forEach(async (api) => {
-      const apiFilepath = path.join(targetSdkDirectory, 'sdk', api);
-      let content = await fs.readFile(apiFilepath, 'utf8');
-      const sourceCodeUrl = content.match(/.*sourceCodeUrl.*\n/);
-      if (sourceCodeUrl) {
-        sourceCodeUrl[0] = sourceCodeUrl[0].replace(
-          /\/tree\/[^/]*\//,
-          `/tree/sdk-${sdk.substring(0, 2)}/`
-        );
-        content = content.replace(/.*sourceCodeUrl.*\n/, sourceCodeUrl[0]);
-        await fs.writeFile(apiFilepath, content, 'utf8');
-      }
-    });
+    await Promise.all(
+      apiPages.map(async (api) => {
+        const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
+        await transformFileAsync(apiFilePath, [
+          {
+            pattern: /(sourceCodeUrl:.*?\/tree\/)([^\\]+)(\/.*?)/,
+            replaceWith: `$1${sdk.substring(0, 2)}$3`,
+          },
+        ]);
+      })
+    );
   }
 
   if (await fs.pathExists(targetExampleDirectory)) {
