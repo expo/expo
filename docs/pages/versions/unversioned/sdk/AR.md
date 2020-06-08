@@ -1,6 +1,6 @@
 ---
 title: AR
-sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AR.ts'
+sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-38/packages/expo/src/AR.ts'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
