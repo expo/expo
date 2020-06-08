@@ -26,6 +26,7 @@ import {
 } from './Discovery';
 import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
+import { generateHexStringAsync } from './PKCE';
 
 let _authLock = false;
 const sessionUrlProvider = getSessionUrlProvider();
@@ -203,4 +204,5 @@ export {
   ResponseType,
   resolveDiscoveryAsync,
   fetchDiscoveryAsync,
+  generateHexStringAsync,
 };

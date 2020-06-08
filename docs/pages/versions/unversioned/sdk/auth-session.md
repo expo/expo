@@ -302,10 +302,11 @@ Object returned after an auth request has completed.
 The client informs the authorization server of the
 desired grant type by using the a response type: [Section 3.1.1][s311].
 
-| Name  | Description                                     | Spec                   |
-| ----- | ----------------------------------------------- | ---------------------- |
-| Code  | For requesting an authorization code            | [Section 4.1.1][s411]. |
-| Token | For requesting an access token (implicit grant) | [Section 4.2.1][s421]  |
+| Name    | Description                                     | Spec                   |
+| ------- | ----------------------------------------------- | ---------------------- |
+| Code    | For requesting an authorization code            | [Section 4.1.1][s411]. |
+| Token   | For requesting an access token (implicit grant) | [Section 4.2.1][s421]  |
+| IdToken | Custom for Google OAuth ID Token auth           | N/A                    |
 
 ### `AuthRequestConfig`
 
@@ -313,7 +314,7 @@ Represents an OAuth authorization request as JSON.
 
 | Name                | Type                      | Description                                                    | Default | Spec                            |
 | ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ------------------------------- |
-| responseType        | `ResponseType`            | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
+| responseType        | `ResponseType | string`   | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
 | clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]              |
 | redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]           |
 | prompt              | `Prompt`                  | Should the user be prompted to login or consent again.         |         | [Section 3.1.2.1][oidc-authreq] |

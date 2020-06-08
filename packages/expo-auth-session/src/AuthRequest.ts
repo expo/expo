@@ -35,7 +35,7 @@ export class AuthRequest {
   // Public for testing
   public codeVerifier?: string;
 
-  readonly responseType: ResponseType;
+  readonly responseType: ResponseType | string;
   readonly clientId: string;
   readonly extraParams: Record<string, string>;
   readonly usePKCE?: boolean;

@@ -7,6 +7,7 @@ import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types'
 import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
 import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
+import { generateHexStringAsync } from './PKCE';
 let _authLock = false;
 const sessionUrlProvider = getSessionUrlProvider();
 export async function startAsync(options) {
@@ -133,5 +134,5 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
 }
 export * from './AuthRequestHooks';
 export { AuthError } from './Errors';
-export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, };
+export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
 //# sourceMappingURL=AuthSession.js.map

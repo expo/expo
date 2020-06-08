@@ -13,7 +13,7 @@ export declare class AuthRequest {
     state: Promise<string> | string;
     url: string | null;
     codeVerifier?: string;
-    readonly responseType: ResponseType;
+    readonly responseType: ResponseType | string;
     readonly clientId: string;
     readonly extraParams: Record<string, string>;
     readonly usePKCE?: boolean;
