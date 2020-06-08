@@ -41,8 +41,7 @@ import * as Font from 'expo-font';
 import { createIconSet } from '@expo/vector-icons';
 
 const glyphMap = { 'icon-name': 1234, test: '∆' };
-const expoAssetId = require("assets/fonts/custom-icon-font.ttf");
-const CustomIcon = createIconSet(glyphMap, 'FontName', expoAssetId);
+const CustomIcon = createIconSet(glyphMap, 'FontName', 'custom-icon-font.ttf');
 
 export default class CustomIconExample extends React.Component {  
   render() {
@@ -61,8 +60,8 @@ Convenience method to create a custom font based on a [Fontello](http://fontello
 // Once your custom font has been loaded...
 import { createIconSetFromFontello } from '@expo/vector-icons';
 import fontelloConfig from './config.json';
-const expoAssetId = require("assets/fonts/custom-icon-font.ttf");
-const Icon = createIconSetFromFontello(fontelloConfig, 'FontName', expoAssetId);
+// Both the font name and files exported from Fontello are most likely called "fontello"
+const Icon = createIconSetFromFontello(fontelloConfig, 'fontello', 'fontello.ttf');
 ```
 
 ### createIconSetFromIcoMoon
@@ -73,8 +72,7 @@ Convenience method to create a custom font based on an [IcoMoon](https://icomoon
 // Once your custom font has been loaded...
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
 import icoMoonConfig from './config.json';
-const expoAssetId = require("assets/fonts/custom-icon-font.ttf");
-const Icon = createIconSetFromIcoMoon(icoMoonConfig, 'FontName', expoAssetId);
+const Icon = createIconSetFromIcoMoon(icoMoonConfig, 'FontName', 'custom-icon-font.ttf');
 ```
 
 ## Icon images
