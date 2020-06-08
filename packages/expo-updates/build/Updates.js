@@ -57,6 +57,9 @@ export async function fetchUpdateAsync() {
     }
     return result;
 }
+export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
+    console.warn("This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!");
+}
 let _emitter;
 function _getEmitter() {
     if (!_emitter) {
