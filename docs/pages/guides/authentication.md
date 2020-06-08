@@ -475,7 +475,7 @@ export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'user_likes'],
+      scopes: ['public_profile','email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -553,7 +553,7 @@ export default function App() {
       responseType: ResponseType.Token,
       /* @end */
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'user_likes'],
+      scopes: ['public_profile','email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -604,6 +604,7 @@ export default function App() {
 
 <ImplicitTab>
 
+- It's important that you request at least the `['public_profile', 'email']` scopes, otherwise Firebase won't display the user info correctly in the auth panel.
 - Be sure to setup Facebook auth as described above, this is basically identical.
 - 🔥 Create a new Firebase project
 - Enable Facebook auth, save the project.
@@ -643,7 +644,7 @@ export default function App() {
       responseType: ResponseType.Token,
       /* @end */
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'user_likes'],
+      scopes: ['public_profile', 'email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
