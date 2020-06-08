@@ -1,6 +1,6 @@
 ---
 title: SQLite
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sqlite'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-sqlite'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

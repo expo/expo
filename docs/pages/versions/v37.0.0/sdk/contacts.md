@@ -1,6 +1,6 @@
 ---
 title: Contacts
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-contacts'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

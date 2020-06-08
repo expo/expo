@@ -1,6 +1,6 @@
 ---
 title: InAppPurchases
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-in-app-purchases'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-in-app-purchases'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
