@@ -1,6 +1,6 @@
 ---
 title: FaceDetector
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-face-detector'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-face-detector'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

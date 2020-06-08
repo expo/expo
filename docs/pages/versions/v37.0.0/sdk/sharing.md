@@ -1,6 +1,6 @@
 ---
 title: Sharing
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sharing'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-sharing'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

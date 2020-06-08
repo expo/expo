@@ -1,6 +1,6 @@
 ---
 title: SecureStore
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-secure-store'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-secure-store'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

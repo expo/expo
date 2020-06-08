@@ -1,6 +1,6 @@
 ---
 title: Video
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-av'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
