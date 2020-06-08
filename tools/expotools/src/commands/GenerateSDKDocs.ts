@@ -67,6 +67,22 @@ async function action(options) {
     );
 
     await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
+
+    // Version the sourcecode URLs for the API pages
+    const apiPages = await fs.readdir(path.join(targetSdkDirectory, 'sdk'));
+    apiPages.forEach(async (api) => {
+      const apiFilepath = path.join(targetSdkDirectory, 'sdk', api);
+      let content = await fs.readFile(apiFilepath, 'utf8');
+      const sourceCodeUrl = content.match(/.*sourceCodeUrl.*\n/);
+      if (sourceCodeUrl) {
+        sourceCodeUrl[0] = sourceCodeUrl[0].replace(
+          /\/tree\/[^/]*\//,
+          `/tree/sdk-${sdk.substring(0, 2)}/`
+        );
+        content = content.replace(/.*sourceCodeUrl.*\n/, sourceCodeUrl[0]);
+        await fs.writeFile(apiFilepath, content, 'utf8');
+      }
+    });
   }
 
   if (await fs.pathExists(targetExampleDirectory)) {
