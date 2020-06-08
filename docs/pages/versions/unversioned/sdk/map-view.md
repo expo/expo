@@ -99,15 +99,15 @@ Apple Maps will work with no extra configuration. For Google Maps:
 
 **Note:** This can also be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
 
-### Deploying Google Maps to ExpoKit for iOS
+### Deploying Google Maps to bare for iOS
 
-If you want to add MapView with Google Maps to an [ExpoKit](../../expokit/overview/) (ejected) project on iOS, you may need to manually provide a key by calling:
+If you want to add MapView with Google Maps to a bare (ejected) project on iOS, you may need to manually provide a key by calling:
 
 ```
 [GMSServices provideApiKey:@"your api key"]
 ```
 
-Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you ejected after already configuring Google Maps, the eject step may have already provided this for you.
+Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist`. If you ejected after already configuring Google Maps, the `eject` command may have already provided this for you.
 
 ### Web Setup
 
