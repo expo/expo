@@ -1,5 +1,6 @@
+import { Platform } from '@unimodules/core';
 import * as Facebook from 'expo-facebook';
-import { Platform } from 'react-native';
+
 import { isInteractive } from '../utils/Environment';
 
 export const name = 'Facebook';
@@ -38,7 +39,7 @@ export async function test(
         const result = await Facebook.logInWithReadPermissionsAsync();
         expect(result.type).toBeDefined();
         const accessToken = await Facebook.getUserAuthAsync();
-        expect(accessToken).toBeDefined();
+        expect(accessToken).toEqual(expect.any(String));
         await Facebook.logOutAsync();
         const unauthedAccessToken = await Facebook.getUserAuthAsync();
         expect(unauthedAccessToken).toBe(null);
