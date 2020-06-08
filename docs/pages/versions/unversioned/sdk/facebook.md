@@ -105,22 +105,7 @@ A map of options:
 
 If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
-Otherwise, returns `{ type: 'success' } & FacebookAuth`.
-
-- `FacebookAuth` type:
-
-  - **token (_string_)** Access token for the authenticated session. This token provides access to the Facebook Graph API.
-  - **userId (_string_)** App-scoped Facebook ID of the user.
-  - **appId (_string_)** Application ID used to initialize the Facebook SDK app.
-  - **permissions (_string[] | undefined_)** List of granted permissions.
-  - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
-  - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
-  - **expirationDate (_Date_)** Time at which the `token` expires.
-  - **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
-  - **refreshDate (_Date | undefined_)** The last time the `token` was refreshed (or when it was first obtained).
-  - **tokenSource (_string | undefined_)** _(Android only)_ Indicates how this `token` was obtained.
-  - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
-  - **graphDomain (_string | undefined_)** A website domain within the Graph API.
+Otherwise, returns `{ type: 'success' } &` [`FacebookAuth`][#facebookauth].
 
 ### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
 
@@ -184,20 +169,7 @@ You can use this method to check if the user should sign in or not.
 
 #### Returns
 
-- `FacebookAuth` type:
-
-  - **token (_string_)** Access token for the authenticated session. This will provide access to use with Facebook Graph API.
-  - **userId (_string_)** The ID of the user.
-  - **appId (_string_)** Application ID used to initialize the FBSDK app.
-  - **permissions (_string[] | undefined_)** List of granted permissions.
-  - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
-  - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
-  - **expirationDate (_Date_)** Gets the time at which the `token` expires.
-  - **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
-  - **refreshDate (_Date | undefined_)** Last time the `token` was refreshed (or when it was first obtained).
-  - **tokenSource (_string | undefined_)** _(Android only)_ Indicates how this `token` was obtained.
-  - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
-  - **graphDomain (_string | undefined_)** A website domain within the Graph API.
+- A promise that resolves a [`FacebookAuth`][#facebookauth].
 
 ```tsx
 async function toggleAuthAsync() {
@@ -210,6 +182,23 @@ async function toggleAuthAsync() {
   }
 }
 ```
+
+## Types
+
+### FacebookAuth
+
+- **token (_string_)** Access token for the authenticated session. This token provides access to the Facebook Graph API.
+- **userId (_string_)** App-scoped Facebook ID of the user.
+- **appId (_string_)** Application ID used to initialize the Facebook SDK app.
+- **permissions (_string[] | undefined_)** List of granted permissions.
+- **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
+- **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
+- **expirationDate (_Date_)** Time at which the `token` expires.
+- **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
+- **refreshDate (_Date | undefined_)** The last time the `token` was refreshed (or when it was first obtained).
+- **tokenSource (_string | undefined_)** _(Android only)_ Indicates how this `token` was obtained.
+- **signedRequest (_string | undefined_)** A valid raw signed request as a string.
+- **graphDomain (_string | undefined_)** A website domain within the Graph API.
 
 ## Error Codes
 
