@@ -176,7 +176,7 @@ Given a valid Facebook application ID in place of `<APP_ID>`, the code above wil
 
 Logs out of the currently authenticated session.
 
-### `Facebook.getAccessTokenAsync()`
+### `Facebook.getUserAuthAsync()`
 
 Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
 
@@ -201,7 +201,7 @@ You can use this method to check if the user should sign in or not.
 
 ```tsx
 async function toggleAuthAsync() {
-  const auth = await Facebook.getAccessTokenAsync();
+  const auth = await Facebook.getUserAuthAsync();
 
   if (!auth) {
     // Log in
@@ -241,7 +241,7 @@ async function getUserAsync() {
 async function requestAsync(path: string, token?: string): Promise<any> {
   let resolvedToken = token;
   if (!token) {
-    const auth = await Facebook.getAccessTokenAsync();
+    const auth = await Facebook.getUserAuthAsync();
     if (!auth) {
       throw new Error(
         'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.'

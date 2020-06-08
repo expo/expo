@@ -6,7 +6,7 @@ export declare function logInWithReadPermissionsAsync(options?: FacebookOptions)
  *
  * You can use this method to check if the user should sign in or not.
  */
-export declare function getAccessTokenAsync(): Promise<FacebookAuth | null>;
+export declare function getUserAuthAsync(): Promise<FacebookAuth | null>;
 /**
  * Logs out of the currently authenticated session.
  */
