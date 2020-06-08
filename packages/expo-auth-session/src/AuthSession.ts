@@ -24,9 +24,9 @@ import {
   ProviderMetadata,
   resolveDiscoveryAsync,
 } from './Discovery';
+import { generateHexStringAsync } from './PKCE';
 import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
-import { generateHexStringAsync } from './PKCE';
 
 let _authLock = false;
 const sessionUrlProvider = getSessionUrlProvider();
