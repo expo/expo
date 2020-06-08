@@ -163,7 +163,11 @@ To link to your standalone app, you need to specify a scheme for your app. You c
 
 Once you build your standalone app and install it to your device, you will be able to open it with links to `myapp://`.
 
-If your app is ejected, note that like some other parts of `app.json`, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your ejected app, see [this guide](../../expokit/advanced-expokit-topics/#changing-the-deep-link-scheme).
+If your app is ejected, note that like some other parts of `app.json`, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your bare app, you'll need to replace the existing scheme with the new one in the following locations:
+
+- `scheme` in `app.json`
+- Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Supporting/Info.plist`
+- In the `data android:scheme` tag in `android/app/src/main/AndroidManifest.xml`
 
 ### `Linking` module
 
@@ -253,7 +257,7 @@ This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard
 
 Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
 
-After deploying your AASA, you must also configure your app to use your associated domain. First, you need to add the `associatedDomains` [configuration](../../workflow/configuration#ios) to your `app.json` (make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains)). Second, you need to edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. To do so go in the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile after adding the service to the App ID.  This can be done by running `expo build:ios --clear-provisioning-profile` inside of your app directory. Next time you build your app, it will prompt you to create a new one.
+After deploying your AASA, you must also configure your app to use your associated domain. First, you need to add the `associatedDomains` [configuration](../../workflow/configuration#ios) to your `app.json` (make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains)). Second, you need to edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. To do so go in the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile after adding the service to the App ID. This can be done by running `expo build:ios --clear-provisioning-profile` inside of your app directory. Next time you build your app, it will prompt you to create a new one.
 
 At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple developer portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
 
