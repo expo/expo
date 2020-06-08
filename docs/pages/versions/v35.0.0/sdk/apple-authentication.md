@@ -1,6 +1,6 @@
 ---
 title: AppleAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-apple-authentication'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-35/packages/expo-apple-authentication'
 ---
 
 **`expo-apple-authentication`** provides Apple authentication for iOS 13+. It does not yet support lower iOS versions, Android, or web.

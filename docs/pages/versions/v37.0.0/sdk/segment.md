@@ -1,6 +1,6 @@
 ---
 title: Segment
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-segment'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-analytics-segment'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -1,6 +1,6 @@
 ---
 title: Print
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-print'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-print'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -1,6 +1,6 @@
 ---
 title: StoreReview
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-store-review'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-store-review'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
