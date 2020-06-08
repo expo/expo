@@ -47,7 +47,7 @@ export async function fetchUpdateAsync({ eventListener, } = {}) {
     };
 }
 export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
-    const errors = [];
+    let errors = [];
     if (Platform.OS !== 'android') {
         errors.push('This method is only supported on Android.');
         return { success: false, errors };
@@ -71,7 +71,7 @@ export async function clearUpdateCacheExperimentalAsync(sdkVersion) {
                 }
             }
         }));
-        errors.concat(results.filter(v => v !== 'success'));
+        errors = errors.concat(results.filter(v => v !== 'success'));
         if (!errors.length) {
             return { success: true, errors: [] };
         }

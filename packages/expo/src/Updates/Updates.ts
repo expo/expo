@@ -72,7 +72,7 @@ export async function fetchUpdateAsync({
 export async function clearUpdateCacheExperimentalAsync(
   sdkVersion?: string
 ): Promise<{ success: boolean; errors: string[] }> {
-  const errors: string[] = [];
+  let errors: string[] = [];
   if (Platform.OS !== 'android') {
     errors.push('This method is only supported on Android.');
     return { success: false, errors };
@@ -101,7 +101,7 @@ export async function clearUpdateCacheExperimentalAsync(
         }
       })
     );
-    errors.concat(results.filter(v => v !== 'success'));
+    errors = errors.concat(results.filter(v => v !== 'success'));
     if (!errors.length) {
       return { success: true, errors: [] };
     }
