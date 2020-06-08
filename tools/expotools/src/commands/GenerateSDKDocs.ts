@@ -4,8 +4,8 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Directories } from '../expotools';
 import { transformFileAsync } from '../Utils';
+import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
