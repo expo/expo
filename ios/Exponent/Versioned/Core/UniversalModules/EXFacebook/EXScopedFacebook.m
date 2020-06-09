@@ -84,8 +84,12 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   }
 
   NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-  options[@"appId"] = scopedFacebookAppId;
-  [super initializeAsync:options resolver:resolve rejecter:reject];
+  
+  NSMutableDictionary *nativeOptions = [NSMutableDictionary dictionaryWithDictionary:options];
+  // Overwrite the incoming app id with the Expo Facebook SDK app id.
+  nativeOptions[@"appId"] = scopedFacebookAppId;
+  
+  [super initializeAsync:nativeOptions resolver:resolve rejecter:reject];
 }
 
 - (void)setAutoInitEnabled:(BOOL)enabled resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
