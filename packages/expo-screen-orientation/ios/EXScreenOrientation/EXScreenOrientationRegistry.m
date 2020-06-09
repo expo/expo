@@ -231,11 +231,10 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (void)moduleDidBackground:(id)module
 {
-  // We save the mask to restore it when the app moves to the foreground.
-  // We don't want to wait for the module to call moduleDidForeground, cause it will add unnecessary rotation.
-  _lastOrientationMask = [self requiredOrientationMask];
-  
   if (_foregroundedModule == module) {
+    // We save the mask to restore it when the app moves to the foreground.
+    // We don't want to wait for the module to call moduleDidForeground, cause it will add unnecessary rotation.
+    _lastOrientationMask = [self requiredOrientationMask];
     _foregroundedModule = nil;
   }
 }
