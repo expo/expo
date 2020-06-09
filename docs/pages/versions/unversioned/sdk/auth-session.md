@@ -358,15 +358,15 @@ This can be used to present a dialog for switching accounts after the user has a
 
 ### `DiscoveryDocument`
 
-| Name                  | Type               | Description                                                                   | Spec                                    |
-| --------------------- | ------------------ | ----------------------------------------------------------------------------- | --------------------------------------- |
-| authorizationEndpoint | `string`           | Interact with the resource owner and obtain an authorization grant            | [Section 3.1][s31]                      |
-| tokenEndpoint         | `string`           | Obtain an access token by presenting its authorization grant or refresh token | [Section 3.2][s32]                      |
-| revocationEndpoint    | `?string`          | Used to revoke a token (generally for signing out)                            | [Section 2.1][s21]                      |
-| userInfoEndpoint      | `?string`          | URL to return info about the authenticated user                               | [UserInfo][userinfo]                    |
-| endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.                     | [OP Metadata][opmeta]                   |
-| registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint                        | [Dynamic Client Registration][oidc-dcr] |
-| discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                               | [ProviderMetadata][provider-meta]       |
+| Name                  | Type               | Description                                                          | Spec                                    |
+| --------------------- | ------------------ | -------------------------------------------------------------------- | --------------------------------------- |
+| authorizationEndpoint | `?string`          | Interact with the resource owner and obtain an authorization grant   | [Section 3.1][s31]                      |
+| tokenEndpoint         | `?string`          | Obtain an access token by presenting its auth grant or refresh token | [Section 3.2][s32]                      |
+| revocationEndpoint    | `?string`          | Used to revoke a token (generally for signing out)                   | [Section 2.1][s21]                      |
+| userInfoEndpoint      | `?string`          | URL to return info about the authenticated user                      | [UserInfo][userinfo]                    |
+| endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.            | [OP Metadata][opmeta]                   |
+| registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint               | [Dynamic Client Registration][oidc-dcr] |
+| discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                      | [ProviderMetadata][provider-meta]       |
 
 ### `Issuer`
 
