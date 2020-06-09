@@ -1,4 +1,4 @@
-export type FacebookAuth = {
+export type FacebookAuthentication = {
   /**
    * Access token for the authenticated session. This provides access to the Facebook Graph API.
    */
@@ -35,7 +35,6 @@ export type FacebookAuth = {
    * The last time the `token` was refreshed (or when it was first obtained).
    */
   refreshDate?: Date;
-
   /**
    * Android: Indicates how this `token` was obtained.
    */
@@ -57,7 +56,7 @@ export type FacebookLoginResult =
     }
   | ({
       type: 'success';
-    } & FacebookAuth);
+    } & FacebookAuthentication);
 
 export type FacebookOptions = {
   permissions?: string[];

@@ -5,10 +5,10 @@ export async function logInWithReadPermissionsAsync(options = {}) {
         throw new UnavailabilityError('Facebook', 'logInWithReadPermissionsAsync');
     }
     const nativeLoginResult = await ExponentFacebook.logInWithReadPermissionsAsync(options);
-    return transformFacebookLoginResult(nativeLoginResult);
+    return transformNativeFacebookLoginResult(nativeLoginResult);
 }
 /**
- * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
+ * Returns the `FacebookAuthentication` object if a user is authenticated, and `null` if no valid authentication exists.
  *
  * You can use this method to check if the user should sign in or not.
  */
@@ -17,7 +17,7 @@ export async function getUserAuthAsync() {
         throw new UnavailabilityError('Facebook', 'getUserAuthAsync');
     }
     const nativeAccessTokenResult = await ExponentFacebook.getUserAuthAsync();
-    return transformFacebookAuth(nativeAccessTokenResult);
+    return transformNativeFacebookAuthentication(nativeAccessTokenResult);
 }
 /**
  * Logs out of the currently authenticated session.
@@ -115,7 +115,7 @@ export async function setAdvertiserIDCollectionEnabledAsync(enabled) {
     }
     await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
 }
-function transformFacebookLoginResult(input) {
+function transformNativeFacebookLoginResult(input) {
     if (input.type === 'cancel')
         return input;
     return {
@@ -125,7 +125,7 @@ function transformFacebookLoginResult(input) {
         expirationDate: new Date(input.expirationDate),
     };
 }
-function transformFacebookAuth(input) {
+function transformNativeFacebookAuthentication(input) {
     if (!input)
         return input;
     return {

@@ -1,12 +1,12 @@
-import { FacebookAuth, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
-export { FacebookLoginResult, FacebookOptions, FacebookAuth };
+import { FacebookAuthentication, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
+export { FacebookLoginResult, FacebookOptions, FacebookAuthentication };
 export declare function logInWithReadPermissionsAsync(options?: FacebookOptions): Promise<FacebookLoginResult>;
 /**
- * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
+ * Returns the `FacebookAuthentication` object if a user is authenticated, and `null` if no valid authentication exists.
  *
  * You can use this method to check if the user should sign in or not.
  */
-export declare function getUserAuthAsync(): Promise<FacebookAuth | null>;
+export declare function getUserAuthAsync(): Promise<FacebookAuthentication | null>;
 /**
  * Logs out of the currently authenticated session.
  */

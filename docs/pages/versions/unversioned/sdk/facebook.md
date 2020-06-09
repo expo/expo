@@ -105,7 +105,7 @@ A map of options:
 
 If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
-Otherwise, returns `{ type: 'success' } &` [`FacebookAuth`][#facebookauth].
+Otherwise, returns `{ type: 'success' } &` [`FacebookAuthentication`][#facebookauthentication].
 
 ### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
 
@@ -163,13 +163,13 @@ Logs out of the currently authenticated session.
 
 ### `Facebook.getUserAuthAsync()`
 
-Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
+Returns the `FacebookAuthentication` object if a user is authenticated, and `null` if no valid authentication exists.
 
 You can use this method to check if the user should sign in or not.
 
 #### Returns
 
-- A promise that resolves a [`FacebookAuth`][#facebookauth].
+- A promise that resolves a [`FacebookAuthentication`][#facebookauthentication].
 
 ```tsx
 async function toggleAuthAsync() {
@@ -185,7 +185,7 @@ async function toggleAuthAsync() {
 
 ## Types
 
-### FacebookAuth
+### FacebookAuthentication
 
 - **token (_string_)** Access token for the authenticated session. This token provides access to the Facebook Graph API.
 - **userId (_string_)** App-scoped Facebook ID of the user.
@@ -208,7 +208,7 @@ Attempted to use the Facebook SDK before it was initialized. Ensure `initializeA
 
 ### `ERR_FACEBOOK_MISCONFIGURED`
 
-Failed to initialize the FBSDK app because the `appId` option wasn't provided and the `appId` couldn't be resolved automatically from the native configuration files.
+Failed to initialize the Facebook SDK app because the `appId` option wasn't provided and the `appId` couldn't be resolved automatically from the native configuration files.
 
 ### `ERR_FACEBOOK_LOGIN`
 

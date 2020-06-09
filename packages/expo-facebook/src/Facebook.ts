@@ -2,13 +2,13 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
 import {
-  FacebookAuth,
+  FacebookAuthentication,
   FacebookLoginResult,
   FacebookOptions,
   FacebookInitializationOptions,
 } from './Facebook.types';
 
-export { FacebookLoginResult, FacebookOptions, FacebookAuth };
+export { FacebookLoginResult, FacebookOptions, FacebookAuthentication };
 
 export async function logInWithReadPermissionsAsync(
   options: FacebookOptions = {}
@@ -19,22 +19,22 @@ export async function logInWithReadPermissionsAsync(
 
   const nativeLoginResult = await ExponentFacebook.logInWithReadPermissionsAsync(options);
 
-  return transformFacebookLoginResult(nativeLoginResult);
+  return transformNativeFacebookLoginResult(nativeLoginResult);
 }
 
 /**
- * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
+ * Returns the `FacebookAuthentication` object if a user is authenticated, and `null` if no valid authentication exists.
  *
  * You can use this method to check if the user should sign in or not.
  */
-export async function getUserAuthAsync(): Promise<FacebookAuth | null> {
+export async function getUserAuthAsync(): Promise<FacebookAuthentication | null> {
   if (!ExponentFacebook.getUserAuthAsync) {
     throw new UnavailabilityError('Facebook', 'getUserAuthAsync');
   }
 
   const nativeAccessTokenResult = await ExponentFacebook.getUserAuthAsync();
 
-  return transformFacebookAuth(nativeAccessTokenResult);
+  return transformNativeFacebookAuthentication(nativeAccessTokenResult);
 }
 
 /**
@@ -146,7 +146,7 @@ export async function setAdvertiserIDCollectionEnabledAsync(enabled: boolean): P
   await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
 }
 
-function transformFacebookLoginResult(input: FacebookLoginResult): FacebookLoginResult {
+function transformNativeFacebookLoginResult(input: FacebookLoginResult): FacebookLoginResult {
   if (input.type === 'cancel') return input;
 
   return {
@@ -158,7 +158,7 @@ function transformFacebookLoginResult(input: FacebookLoginResult): FacebookLogin
   };
 }
 
-function transformFacebookAuth(input: any): FacebookAuth | null {
+function transformNativeFacebookAuthentication(input: any): FacebookAuthentication | null {
   if (!input) return input;
   return {
     ...input,
