@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-sqlite`** gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
 
-An [example to do list app](https://github.com/expo/sqlite-example) is available that uses this module for storage.
+An [example to do list app](https://github.com/expo/examples/tree/master/with-sqlite) is available that uses this module for storage.
 
 <PlatformsSection android emulator ios simulator />
 
