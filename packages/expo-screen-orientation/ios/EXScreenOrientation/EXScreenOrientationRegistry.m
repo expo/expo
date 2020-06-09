@@ -33,10 +33,13 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
                                             selector:@selector(handleDeviceOrientationChange:)
                                                 name:UIDeviceOrientationDidChangeNotification
                                               object:[UIDevice currentDevice]];
-    UM_WEAKIFY(self);
+
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-      
+    });
+    
+    UM_WEAKIFY(self);
+    [UMUtilities performSynchronouslyOnMainThread:^{
       UM_ENSURE_STRONGIFY(self)
       if (@available(iOS 13, *)) {
         self.currentScreenOrientation = UIApplication.sharedApplication.windows[0].windowScene.interfaceOrientation;
@@ -44,8 +47,7 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
         // statusBarOrientation was deprecated in iOS 13
         self.currentScreenOrientation = UIApplication.sharedApplication.statusBarOrientation;
       }
-    });
-
+    }];
   }
   
   return self;
@@ -91,7 +93,7 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 - (UIInterfaceOrientationMask)requiredOrientationMask
 {
   // The app is moved to the foreground.
-  if (!_foregroundedModule && _lastOrientationMask) {
+  if (!_foregroundedModule) {
     return _lastOrientationMask;
   }
   
@@ -105,7 +107,6 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (UIInterfaceOrientationMask)currentOrientationMask
 {
-  
   __block UIInterfaceOrientationMask currentOrientationMask = [self requiredOrientationMask];
   [UMUtilities performSynchronouslyOnMainThread:^{
     currentOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
