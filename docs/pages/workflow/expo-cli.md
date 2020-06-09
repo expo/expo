@@ -319,7 +319,7 @@ Alias: `expo signin`
 </p>
 </details>
 
-<details><summary><h3>expo optimize</h3><p>Compress the assets in your Expo project.</p></summary>
+<details><summary><h3>npx expo-optimize</h3><p>Compress the assets in your Expo project.</p></summary>
 <p>
 
 Alias: `expo o`

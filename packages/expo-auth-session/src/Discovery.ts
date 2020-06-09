@@ -155,7 +155,7 @@ export interface DiscoveryDocument {
    *
    * [Section 3.1](https://tools.ietf.org/html/rfc6749#section-3.1)
    */
-  authorizationEndpoint: string;
+  authorizationEndpoint?: string;
   /**
    * Used by the client to obtain an access token by presenting its authorization grant or refresh token.
    * The token endpoint is used with every authorization grant except for the
@@ -163,7 +163,7 @@ export interface DiscoveryDocument {
    *
    * [Section 3.2](https://tools.ietf.org/html/rfc6749#section-3.2)
    */
-  tokenEndpoint: string;
+  tokenEndpoint?: string;
   /**
    * The spec requires a revocation endpoint but some providers (like Spotify) do not support one.
    *
@@ -172,6 +172,7 @@ export interface DiscoveryDocument {
   revocationEndpoint?: string;
   /**
    * URL of the OP's UserInfo Endpoint.
+   *
    * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
    */
   userInfoEndpoint?: string;

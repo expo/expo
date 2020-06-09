@@ -1,6 +1,6 @@
 ---
 title: KeepAwake
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-keep-awake'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-keep-awake'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

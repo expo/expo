@@ -1,6 +1,6 @@
 ---
 title: MediaLibrary
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-media-library'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
