@@ -11,7 +11,7 @@
 
 ### 🎉 New features
 
-- `expo-facebook` Added method to get authenticated Facebook access token `getUserAuthAsync()`. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
+- `expo-facebook` Added method to get Facebook authentication state. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
 - `expo-facebook` Added method to log out of Facebook `logOutAsync()`. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
 
 ### 🐛 Bug fixes
