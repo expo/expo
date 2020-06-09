@@ -87,10 +87,10 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     response.putStringArrayList("declinedPermissions", new ArrayList<>(accessToken.getDeclinedPermissions()));
     response.putStringArrayList("expiredPermissions", new ArrayList<>(accessToken.getExpiredPermissions()));
 
-    response.putInt("expirationDate", (int) accessToken.getExpires().getTime());
-    response.putInt("dataAccessExpirationDate", (int) accessToken.getDataAccessExpirationTime().getTime());
+    response.putDouble("expirationDate", accessToken.getExpires().getTime());
+    response.putDouble("dataAccessExpirationDate", accessToken.getDataAccessExpirationTime().getTime());
 
-    response.putInt("refreshDate", (int) accessToken.getLastRefresh().getTime());
+    response.putDouble("refreshDate", accessToken.getLastRefresh().getTime());
     response.putString("tokenSource", accessToken.getSource().name());
 
     return response;
