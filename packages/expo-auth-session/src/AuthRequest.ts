@@ -26,7 +26,7 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
  * Implements an authorization request.
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
-export class AuthRequest {
+export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   /**
    * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
@@ -34,6 +34,7 @@ export class AuthRequest {
   public url: string | null = null;
   // Public for testing
   public codeVerifier?: string;
+  public codeChallenge?: string;
 
   readonly responseType: ResponseType;
   readonly clientId: string;
@@ -41,10 +42,9 @@ export class AuthRequest {
   readonly usePKCE?: boolean;
   readonly codeChallengeMethod: CodeChallengeMethod;
   readonly redirectUri: string;
-  private readonly scopes: string[];
-  private readonly clientSecret?: string;
-  private codeChallenge?: string;
-  private prompt?: Prompt;
+  readonly scopes: string[];
+  readonly clientSecret?: string;
+  readonly prompt?: Prompt;
 
   constructor(request: AuthRequestConfig) {
     this.responseType = request.responseType ?? ResponseType.Code;

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- `authorizationEndpoint` and `tokenEndpoint` are now optional. ([#8736](https://github.com/expo/expo/pull/8736) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 1.3.1 — 2020-05-29
