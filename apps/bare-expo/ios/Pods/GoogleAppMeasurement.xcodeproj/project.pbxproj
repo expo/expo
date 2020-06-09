@@ -38,19 +38,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2BB7F494D359FCC89B6C6BA3298AA0F2 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppMeasurement.framework; path = Frameworks/GoogleAppMeasurement.framework; sourceTree = "<group>"; };
+		592442F389ACEEC9F19EC017010D2C6F /* GoogleAppMeasurement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleAppMeasurement.release.xcconfig; sourceTree = "<group>"; };
+		5EBF72FEAFF3B0BC5C6F51D8032B16C2 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppMeasurement.framework; path = Frameworks/GoogleAppMeasurement.framework; sourceTree = "<group>"; };
 		B14A6E5D41DC74FF5FB1D41790DF8C06 /* GoogleUtilities */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleUtilities; path = GoogleUtilities.xcodeproj; sourceTree = "<group>"; };
-		EDA8B3DAD4B4D1230E9E73D7E85BE4A0 /* GoogleAppMeasurement.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleAppMeasurement.xcconfig; sourceTree = "<group>"; };
+		BCF9098EBC5D5A318CF7964F16F0C55A /* GoogleAppMeasurement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleAppMeasurement.debug.xcconfig; sourceTree = "<group>"; };
 		F066E3ECBE8B460E55410B3554DDE30C /* nanopb */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nanopb; path = nanopb.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		2FC6D8FF459AC9F1EB6D7E020D42289E /* Frameworks */ = {
+		0A77AEB21D631C24D70A6B98333BAB41 /* GoogleAppMeasurement */ = {
 			isa = PBXGroup;
 			children = (
-				2BB7F494D359FCC89B6C6BA3298AA0F2 /* GoogleAppMeasurement.framework */,
+				6BF9C4876E66A94BE1B3B24ED0EA7A6B /* Frameworks */,
+				82FFDD6FC72466E41D3AC6A2572DA109 /* Support Files */,
 			);
-			name = Frameworks;
+			name = GoogleAppMeasurement;
+			path = GoogleAppMeasurement;
 			sourceTree = "<group>";
 		};
 		3B647B3A008BCD59F2938FB128EC1650 /* Products */ = {
@@ -60,10 +63,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		865081A612DC826B29EF01E4C15821F2 /* Support Files */ = {
+		6BF9C4876E66A94BE1B3B24ED0EA7A6B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EDA8B3DAD4B4D1230E9E73D7E85BE4A0 /* GoogleAppMeasurement.xcconfig */,
+				5EBF72FEAFF3B0BC5C6F51D8032B16C2 /* GoogleAppMeasurement.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		82FFDD6FC72466E41D3AC6A2572DA109 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				BCF9098EBC5D5A318CF7964F16F0C55A /* GoogleAppMeasurement.debug.xcconfig */,
+				592442F389ACEEC9F19EC017010D2C6F /* GoogleAppMeasurement.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/GoogleAppMeasurement";
@@ -74,7 +86,7 @@
 			children = (
 				EB666E07FEFBFC86E1B2EC6829262370 /* Dependencies */,
 				E258A4D52B19482E9DC37297C90F7999 /* Frameworks */,
-				E5188CC616EDC152E4D4F2B2FA9CF0D4 /* GoogleAppMeasurement */,
+				0A77AEB21D631C24D70A6B98333BAB41 /* GoogleAppMeasurement */,
 				3B647B3A008BCD59F2938FB128EC1650 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -84,16 +96,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		E5188CC616EDC152E4D4F2B2FA9CF0D4 /* GoogleAppMeasurement */ = {
-			isa = PBXGroup;
-			children = (
-				2FC6D8FF459AC9F1EB6D7E020D42289E /* Frameworks */,
-				865081A612DC826B29EF01E4C15821F2 /* Support Files */,
-			);
-			name = GoogleAppMeasurement;
-			path = GoogleAppMeasurement;
 			sourceTree = "<group>";
 		};
 		EB666E07FEFBFC86E1B2EC6829262370 /* Dependencies */ = {
@@ -154,6 +156,19 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1FA6A7D999021D7158BEF48E5593DECE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BCF9098EBC5D5A318CF7964F16F0C55A /* GoogleAppMeasurement.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		2F48833A9DAB270E347E33EFD8EE3D43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -218,33 +233,6 @@
 			};
 			name = Debug;
 		};
-		6B202394BE27FFA96332EADE06A57443 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = EDA8B3DAD4B4D1230E9E73D7E85BE4A0 /* GoogleAppMeasurement.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		9BC116D91E0B49D6FD68B19E74BEBA90 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = EDA8B3DAD4B4D1230E9E73D7E85BE4A0 /* GoogleAppMeasurement.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		AA7E32C1271CC6DC125B80BC42C3D151 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -305,6 +293,20 @@
 			};
 			name = Release;
 		};
+		EB8C1F222915C0E96C10AB7BE473718B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 592442F389ACEEC9F19EC017010D2C6F /* GoogleAppMeasurement.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -320,8 +322,8 @@
 		AE5BDF28C8239A90AEC78106B6E19D53 /* Build configuration list for PBXAggregateTarget "GoogleAppMeasurement" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9BC116D91E0B49D6FD68B19E74BEBA90 /* Debug */,
-				6B202394BE27FFA96332EADE06A57443 /* Release */,
+				1FA6A7D999021D7158BEF48E5593DECE /* Debug */,
+				EB8C1F222915C0E96C10AB7BE473718B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

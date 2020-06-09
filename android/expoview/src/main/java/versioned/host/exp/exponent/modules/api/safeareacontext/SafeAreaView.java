@@ -3,7 +3,9 @@ package versioned.host.exp.exponent.modules.api.safeareacontext;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 
 import com.facebook.react.bridge.ReactContext;
@@ -11,13 +13,16 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.view.ReactViewGroup;
 
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
 
 @SuppressLint("ViewConstructor")
-public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnGlobalLayoutListener {
+public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnPreDrawListener {
+  private SafeAreaViewMode mMode = SafeAreaViewMode.PADDING;
   private @Nullable EdgeInsets mInsets;
   private @Nullable EnumSet<SafeAreaViewEdges> mEdges;
+  private @Nullable View mProviderView;
 
   public SafeAreaView(Context context) {
     super(context);
@@ -40,14 +45,57 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnG
               ? mEdges
               : EnumSet.allOf(SafeAreaViewEdges.class);
 
-      SafeAreaViewLocalData localData = new SafeAreaViewLocalData(mInsets, edges);
+      SafeAreaViewLocalData localData = new SafeAreaViewLocalData(mInsets, mMode, edges);
 
       ReactContext reactContext = getReactContext(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {
         uiManager.setViewLocalData(getId(), localData);
+        waitForReactLayout();
       }
     }
+  }
+
+  // 5 seconds
+  private static final long MAX_WAIT_TIME_NANO = 5000000000L;
+
+  private void waitForReactLayout() {
+    // Block the main thread until the native module thread is finished with
+    // its current tasks. To do this we use the done boolean as a lock and enqueue
+    // a task on the native modules thread. When the task runs we can unblock the
+    // main thread. This should be safe as long as the native modules thread
+    // does not block waiting on the main thread.
+    final AtomicBoolean done = new AtomicBoolean(false);
+    final long startTime = System.nanoTime();
+    long waitTime = 0L;
+    getReactContext(this).runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        synchronized (done) {
+          done.set(true);
+          done.notify();
+        }
+      }
+    });
+    synchronized (done) {
+      while (!done.get() && waitTime < MAX_WAIT_TIME_NANO) {
+        try {
+          done.wait(MAX_WAIT_TIME_NANO / 1000000L);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        waitTime = System.nanoTime() - startTime;
+      }
+      // Timed out waiting.
+      if (waitTime >= MAX_WAIT_TIME_NANO) {
+        Log.w("SafeAreaView", "Timed out waiting for layout.");
+      }
+    }
+  }
+
+  public void setMode(SafeAreaViewMode mode) {
+    mMode = mode;
+    updateInsets();
   }
 
   public void setEdges(EnumSet<SafeAreaViewEdges> edges) {
@@ -55,19 +103,37 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnG
     updateInsets();
   }
 
-  private void maybeUpdateInsets() {
-    EdgeInsets edgeInsets = SafeAreaUtils.getSafeAreaInsets(getRootView(), this);
+  private boolean maybeUpdateInsets() {
+    if (mProviderView == null) {
+      return false;
+    }
+    EdgeInsets edgeInsets = SafeAreaUtils.getSafeAreaInsets(mProviderView);
     if (edgeInsets != null && (mInsets == null || !mInsets.equalsToEdgeInsets(edgeInsets))) {
       mInsets = edgeInsets;
       updateInsets();
+      return true;
     }
+    return false;
+  }
+
+  private View findProvider() {
+    ViewParent current = getParent();
+    while (current != null) {
+      if (current instanceof SafeAreaProvider) {
+        return (View) current;
+      }
+      current = current.getParent();
+    }
+    return this;
   }
 
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
 
-    getViewTreeObserver().addOnGlobalLayoutListener(this);
+    mProviderView = findProvider();
+
+    mProviderView.getViewTreeObserver().addOnPreDrawListener(this);
     maybeUpdateInsets();
   }
 
@@ -75,17 +141,18 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnG
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
 
-    getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    if (mProviderView != null) {
+      mProviderView.getViewTreeObserver().removeOnPreDrawListener(this);
+    }
+    mProviderView = null;
   }
 
   @Override
-  public void onGlobalLayout() {
-    maybeUpdateInsets();
-  }
-
-  @Override
-  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    maybeUpdateInsets();
-    super.onLayout(changed, left, top, right, bottom);
+  public boolean onPreDraw() {
+    boolean didUpdate = maybeUpdateInsets();
+    if (didUpdate) {
+      requestLayout();
+    }
+    return !didUpdate;
   }
 }

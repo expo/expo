@@ -121,13 +121,13 @@ let Asset = /** @class */ (() => {
         }
         async downloadAsync() {
             if (this.downloaded) {
-                return;
+                return this;
             }
             if (this.downloading) {
                 await new Promise((resolve, reject) => {
                     this._downloadCallbacks.push({ resolve, reject });
                 });
-                return;
+                return this;
             }
             this.downloading = true;
             try {
@@ -154,6 +154,7 @@ let Asset = /** @class */ (() => {
                 this.downloading = false;
                 this._downloadCallbacks = [];
             }
+            return this;
         }
     }
     Asset.byHash = {};

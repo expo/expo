@@ -7,16 +7,18 @@
 
 @property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, EXSessionTaskDelegate *> *tasks;
 @property (nonatomic) BOOL isActive;
+@property (nonatomic, weak) id<EXSessionHandler> sessionHandler;
 
 @end
 
 @implementation EXSessionTaskDispatcher
 
-- (instancetype)init
+- (instancetype)initWithSessionHandler:(id<EXSessionHandler>)sessionHandler;
 {
   if (self = [super init]) {
     _tasks = [NSMutableDictionary dictionary];
     _isActive = true;
+    _sessionHandler = sessionHandler;
   }
   return self;
 }
@@ -74,6 +76,10 @@
     EXSessionTaskDelegate *exTask = _tasks[dataTask];
     [exTask URLSession:session dataTask:dataTask didReceiveData:data];
   }
+}
+
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
+  [_sessionHandler invokeCompletionHandlerForSessionIdentifier:session.configuration.identifier];
 }
 
 @end

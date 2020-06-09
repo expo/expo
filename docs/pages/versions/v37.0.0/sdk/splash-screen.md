@@ -1,6 +1,6 @@
 ---
 title: SplashScreen
-sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/launch/SplashScreen.ts'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-splash-screen'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

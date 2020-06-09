@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/UMTaskManagerInterface/ABI38_0_0UMTaskManagerInterface/ABI38_0_0UMTaskManagerInterface.h

@@ -6,6 +6,3 @@
   url = git@github.com:expo/react-native.git
   branch = exp-latest
   update = checkout
-[submodule "packages/react-native-unimodules"]
-  path = packages/react-native-unimodules
-  url = git@github.com:unimodules/react-native-unimodules.git

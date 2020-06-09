@@ -149,7 +149,11 @@ to start build with `--clear-push-cert`. We will remove certificate from our ser
 
 When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
 
-If you would like to, we can also call your webhook once the build has finished. You can set up a webhook for your project using `expo webhooks:set --event build --url <webhook-url>` command. You will be asked to type a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
+### Setting up a webhook
+
+If you would like to, we can also alert you via a webhook once the build has finished. Webhooks need to be configured per-project, so if you want to be alerted about builds for both `@yourUsername/awesomeApp` and `@yourUsername/coolApp`, you need to run `expo webhooks:set --event build --url <webhook-url>` in each directory.
+
+After running that command, you'll be asked for a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
 
 We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook with JSON object with following fields:
 
@@ -160,7 +164,7 @@ We call your webhook using an HTTP POST request and we pass data in the request 
 
 Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
-This is how you can implement your server:
+Here's an example of how you can implement your server:
 
 ```javascript
 import crypto from 'crypto';
@@ -185,6 +189,8 @@ app.post('/webhook', (req, res) => {
 });
 app.listen(8080, () => console.log('Listening on port 8080'));
 ```
+
+> If you were to test the above webhook locally, you'd have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible to anyone with the URL `ngrok` gives you.
 
 You can always change your webhook URL and/or webhook secret using the same command you used to set up the webhook for the first time. To see what your webhook is currently set to, you can use `expo webhooks:show` command. If you would like us to stop sending requests to your webhook, simply run `expo webhooks:clear` in your project.
 

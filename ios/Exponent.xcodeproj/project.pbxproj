@@ -222,7 +222,6 @@
 		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
 		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
-		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
 		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
 		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -353,6 +352,7 @@
 		E2BF7EA6366243D98A78D9E8 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 93C9E2950F474416B3F7A60E /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1077,6 +1077,8 @@
 		EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */ = {isa = PBXFileReference; name = "RNCSlider.m"; path = "RNCSlider.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		1CF1D8E66E5B4C7A9476C145 /* RNCSliderManager.h */ = {isa = PBXFileReference; name = "RNCSliderManager.h"; path = "RNCSliderManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */ = {isa = PBXFileReference; name = "RNCSliderManager.m"; path = "RNCSliderManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		C5E293DD722E4378A24299D9 /* RNCSafeAreaViewMode.h */ = {isa = PBXFileReference; name = "RNCSafeAreaViewMode.h"; path = "RNCSafeAreaViewMode.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */ = {isa = PBXFileReference; name = "RNCSafeAreaViewMode.m"; path = "RNCSafeAreaViewMode.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2332,6 +2334,8 @@
 				BBB83C602479C3B50004FF8E /* RNCSafeAreaProvider.h */,
 				BBB83C612479C3B50004FF8E /* RNCSafeAreaViewManager.h */,
 				BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */,
+				C5E293DD722E4378A24299D9 /* RNCSafeAreaViewMode.h */,
+				6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */,
 			);
 			path = SafeAreaContext;
 			sourceTree = "<group>";
@@ -3045,6 +3049,7 @@
 				E2BF7EA6366243D98A78D9E8 /* RNCPickerManager.m in Sources */,
 				ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */,
 				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
+				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -53,8 +53,6 @@ public abstract class ExpoApplication extends MultiDexApplication {
     if (!Constants.isStandaloneApp()) {
       KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
     }
-
-    AppLoaderProvider.registerLoader(this, "react-native-headless", ExpoHeadlessAppLoader.class);
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {
       @Override
       public KernelInterface create() {
@@ -62,7 +60,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
       }
     });
 
-    ExponentKernelModuleProvider.setFactory(reactContext -> new ExponentKernelModule(reactContext));
+    ExponentKernelModuleProvider.setFactory(ExponentKernelModule::new);
 
     Exponent.initialize(this, this);
     NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());

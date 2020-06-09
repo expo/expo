@@ -18,6 +18,10 @@ export type WebBrowserOpenOptions = {
   /** Android only */
 
   /**
+   * Color of the secondary toolbar in either #AARRGGBB or #RRGGBB format.
+   */
+  secondaryToolbarColor?: string;
+  /**
    * Whether the browser should show the title of website on the toolbar.
    */
   showTitle?: boolean;

@@ -1,14 +1,12 @@
-import ExpoImage from 'expo-image';
 import * as React from 'react';
 import { StyleSheet, View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 
 import { Colors } from '../../constants';
+import { getImageComponent, getSelectedCompareComponent } from './ImageComponents';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
 import { ImageTest } from './types';
-
-const AnimatedExpoImage = Animated.createAnimatedComponent(ExpoImage);
 
 type PropsType = NavigationScreenProps & {
   test: ImageTest;
@@ -37,13 +35,13 @@ export default class ImageTestListItem extends React.Component<PropsType> {
           <ImageTestView
             style={styles.image}
             imageProps={imageProps}
-            ImageComponent={AnimatedExpoImage}
+            ImageComponent={getImageComponent()}
           />
           <View style={styles.spacer} />
           <ImageTestView
             style={styles.image}
             imageProps={imageProps}
-            ImageComponent={Animated.Image}
+            ImageComponent={getSelectedCompareComponent()}
           />
         </View>
       </TouchableOpacity>

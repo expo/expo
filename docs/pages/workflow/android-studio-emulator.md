@@ -6,7 +6,7 @@ If you don't have an Android device available to test with, we recommend using t
 
 ## Step 1: Set up Android Studio's tools
 
-- Install Android Studio 3.0+.
+- [Download](https://developer.android.com/studio) and install Android Studio 3.0+.
 
 - Go to Preferences -> Appearance & Behavior -> System Settings -> Android SDK. Click on the "SDK Tools" tab and make sure you have at least one version of the "Android SDK Build-Tools" installed.
 

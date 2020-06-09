@@ -22,10 +22,12 @@ import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
 public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPresentationModule {
   private final ExperienceId mExperienceId;
+  private final ScopedNotificationsUtils mScopedNotificationsUtils;
 
   public ScopedExpoNotificationPresentationModule(Context context, ExperienceId experienceId) {
     super(context);
     mExperienceId = experienceId;
+    mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
   }
 
   @Override
@@ -37,7 +39,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
   protected ArrayList<Bundle> serializeNotifications(Collection<Notification> notifications) {
     ArrayList<Bundle> serializedNotifications = new ArrayList<>();
     for (Notification notification : notifications) {
-      if (ScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
+      if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
         serializedNotifications.add(NotificationSerializer.toBundle(notification));
       }
     }
@@ -54,7 +56,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
         Collection<Notification> notifications = resultData.getParcelableArrayList(BaseNotificationsService.NOTIFICATIONS_KEY);
         if (resultCode == BaseNotificationsService.SUCCESS_CODE && notifications != null) {
           Notification notification = findNotification(notifications, identifier);
-          if (notification == null || !ScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
+          if (notification == null || !mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
             promise.resolve(null);
             return;
           }
@@ -78,7 +80,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
         if (resultCode == BaseNotificationsService.SUCCESS_CODE && notifications != null) {
           ArrayList<String> toDismiss = new ArrayList<>();
           for (Notification notification : notifications) {
-            if (ScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
+            if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
               toDismiss.add(notification.getNotificationRequest().getIdentifier());
             }
           }

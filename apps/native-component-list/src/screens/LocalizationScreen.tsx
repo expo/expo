@@ -1,8 +1,9 @@
+import { Picker } from '@react-native-community/picker';
+import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 import chunk from 'lodash/chunk';
 import React from 'react';
-import { Picker, ScrollView, StyleSheet, Text, View } from 'react-native';
-import * as Localization from 'expo-localization';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
@@ -27,7 +28,7 @@ interface State {
   locale?: string;
 }
 
-export default class LocalizationScreen extends React.Component<{}, State> {
+export default class LocalizationScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Localization',
   };
@@ -42,14 +43,14 @@ export default class LocalizationScreen extends React.Component<{}, State> {
     const preferredLocales = Localization.locales;
     const currentLocale = Localization.locale;
     this.setState({ preferredLocales, currentLocale });
-  }
+  };
 
   queryCurrencyCodes = async () => {
     if (this.state.isoCurrencyCodes.length === 0) {
       const isoCurrencyCodes = Localization.isoCurrencyCodes;
       this.setState({ isoCurrencyCodes });
     }
-  }
+  };
 
   prettyFormatCurrency = () => {
     let buffer = '';
@@ -72,50 +73,37 @@ export default class LocalizationScreen extends React.Component<{}, State> {
         currentColumn++;
       }
     }
-  }
+  };
 
   changeLocale = (locale: string) => {
     i18n.locale = locale;
     this.setState({ locale });
-  }
+  };
 
   render() {
     return (
       <ScrollView>
         <View style={styles.container}>
           <HeadingText>Current Locale</HeadingText>
-          <MonoText>
-            {JSON.stringify(this.state.currentLocale, null, 2)}
-          </MonoText>
+          <MonoText>{JSON.stringify(this.state.currentLocale, null, 2)}</MonoText>
 
           <HeadingText>Locales in Preference Order</HeadingText>
-          <ListButton
-            title="Show preferred Locales"
-            onPress={this.queryPreferredLocales}
-          />
-          {this.state.preferredLocales &&
-            this.state.preferredLocales.length > 0 && (
-              <MonoText>
-                {JSON.stringify(this.state.preferredLocales, null, 2)}
-              </MonoText>
-            )}
+          <ListButton title="Show preferred Locales" onPress={this.queryPreferredLocales} />
+          {this.state.preferredLocales && this.state.preferredLocales.length > 0 && (
+            <MonoText>{JSON.stringify(this.state.preferredLocales, null, 2)}</MonoText>
+          )}
 
           <HeadingText>Currency Codes</HeadingText>
-          <ListButton
-            title="Show first 100 currency codes"
-            onPress={this.queryCurrencyCodes}
-          />
-          {this.state.isoCurrencyCodes &&
-            this.state.isoCurrencyCodes.length > 0 && (
-              <MonoText>{this.prettyFormatCurrency()}</MonoText>
-            )}
+          <ListButton title="Show first 100 currency codes" onPress={this.queryCurrencyCodes} />
+          {this.state.isoCurrencyCodes && this.state.isoCurrencyCodes.length > 0 && (
+            <MonoText>{this.prettyFormatCurrency()}</MonoText>
+          )}
 
           <HeadingText>Localization Table</HeadingText>
           <Picker
             style={styles.picker}
             selectedValue={this.state.locale}
-            onValueChange={this.changeLocale}
-          >
+            onValueChange={this.changeLocale}>
             <Picker.Item label="🇺🇸 English" value="en" />
             <Picker.Item label="🇷🇺 Russian" value="ru" />
           </Picker>

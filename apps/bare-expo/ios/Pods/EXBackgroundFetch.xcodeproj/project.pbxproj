@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		29ACCC7A18FEF7383323D79A3CDA672B /* EXBackgroundFetch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ACFDF7BE04B8D13DEFA58BFBA35ED7A /* EXBackgroundFetch-dummy.m */; };
-		AB75B0DA948C8A633C79B9E6FA24FFF6 /* EXBackgroundFetchTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC6C17D6CC68DB8B697AF8463B712BE /* EXBackgroundFetchTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B3F999F0933422B5817529B475AB67C6 /* EXBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1B72DE1DFB94B25608E922365B0EE /* EXBackgroundFetch.m */; };
-		D0AF37C54E078D2AF05EA5D01BDBC379 /* EXBackgroundFetchTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = BA25FC7C6298FD228D89451D68045B5D /* EXBackgroundFetchTaskConsumer.m */; };
-		E21169A97857674FDA3C06E0ACD0673B /* EXBackgroundFetch.h in Headers */ = {isa = PBXBuildFile; fileRef = 18DD7D25773400210CEB4E8D5D7E6C6B /* EXBackgroundFetch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		29ACCC7A18FEF7383323D79A3CDA672B /* EXBackgroundFetch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC17D7420D59402389A3C95143D4E236 /* EXBackgroundFetch-dummy.m */; };
+		AB75B0DA948C8A633C79B9E6FA24FFF6 /* EXBackgroundFetchTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 3065A3071C3BE89317A7E8C1DC5870F3 /* EXBackgroundFetchTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B3F999F0933422B5817529B475AB67C6 /* EXBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 36FBA310A317953574E864C77C599621 /* EXBackgroundFetch.m */; };
+		D0AF37C54E078D2AF05EA5D01BDBC379 /* EXBackgroundFetchTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 395B7113CDC7AA3A8370ED71D074397F /* EXBackgroundFetchTaskConsumer.m */; };
+		E21169A97857674FDA3C06E0ACD0673B /* EXBackgroundFetch.h in Headers */ = {isa = PBXBuildFile; fileRef = E02F298BAEEACA30D8EBAE26601AAB3E /* EXBackgroundFetch.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,16 +32,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		02F5C70678440BF73C452180D4C9C228 /* EXBackgroundFetch.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBackgroundFetch.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		06D1B72DE1DFB94B25608E922365B0EE /* EXBackgroundFetch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBackgroundFetch.m; path = EXBackgroundFetch/EXBackgroundFetch.m; sourceTree = "<group>"; };
-		0EC6C17D6CC68DB8B697AF8463B712BE /* EXBackgroundFetchTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBackgroundFetchTaskConsumer.h; path = EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h; sourceTree = "<group>"; };
-		18DD7D25773400210CEB4E8D5D7E6C6B /* EXBackgroundFetch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBackgroundFetch.h; path = EXBackgroundFetch/EXBackgroundFetch.h; sourceTree = "<group>"; };
-		23D0119AE83A5D1856267B414D706E47 /* EXBackgroundFetch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBackgroundFetch-prefix.pch"; sourceTree = "<group>"; };
-		4ACFDF7BE04B8D13DEFA58BFBA35ED7A /* EXBackgroundFetch-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBackgroundFetch-dummy.m"; sourceTree = "<group>"; };
+		039EBA03978F6F52E9290C7C2F07D8DE /* EXBackgroundFetch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBackgroundFetch.debug.xcconfig; sourceTree = "<group>"; };
+		3065A3071C3BE89317A7E8C1DC5870F3 /* EXBackgroundFetchTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBackgroundFetchTaskConsumer.h; path = EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h; sourceTree = "<group>"; };
+		36FBA310A317953574E864C77C599621 /* EXBackgroundFetch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBackgroundFetch.m; path = EXBackgroundFetch/EXBackgroundFetch.m; sourceTree = "<group>"; };
+		395B7113CDC7AA3A8370ED71D074397F /* EXBackgroundFetchTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBackgroundFetchTaskConsumer.m; path = EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m; sourceTree = "<group>"; };
+		41E4C06E2E5D3A717905E4DF03CA3C91 /* EXBackgroundFetch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBackgroundFetch.release.xcconfig; sourceTree = "<group>"; };
 		72BD1A624439F4690EC30BAFFE717CFF /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		AC4CE6B2D03C7E41801FDADBA3E42390 /* EXBackgroundFetch.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBackgroundFetch.xcconfig; sourceTree = "<group>"; };
-		BA25FC7C6298FD228D89451D68045B5D /* EXBackgroundFetchTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBackgroundFetchTaskConsumer.m; path = EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m; sourceTree = "<group>"; };
 		BDED71367B1520A20534D21C679D9009 /* UMTaskManagerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMTaskManagerInterface; path = UMTaskManagerInterface.xcodeproj; sourceTree = "<group>"; };
+		C28B759F0F1E5BA6312F57DC24F17278 /* EXBackgroundFetch.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBackgroundFetch.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E02F298BAEEACA30D8EBAE26601AAB3E /* EXBackgroundFetch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBackgroundFetch.h; path = EXBackgroundFetch/EXBackgroundFetch.h; sourceTree = "<group>"; };
+		E63CDDB4DEC48A1C61D00D08B6630CD1 /* EXBackgroundFetch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBackgroundFetch-prefix.pch"; sourceTree = "<group>"; };
+		FC17D7420D59402389A3C95143D4E236 /* EXBackgroundFetch-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBackgroundFetch-dummy.m"; sourceTree = "<group>"; };
 		FDB0AE0BD07538DBE1EBB6C9C5D33BD4 /* libEXBackgroundFetch.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBackgroundFetch.a; path = libEXBackgroundFetch.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -56,30 +57,37 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1BF4124D9443AD470218B09DAFECD2C5 /* EXBackgroundFetch */ = {
+			isa = PBXGroup;
+			children = (
+				E02F298BAEEACA30D8EBAE26601AAB3E /* EXBackgroundFetch.h */,
+				36FBA310A317953574E864C77C599621 /* EXBackgroundFetch.m */,
+				3065A3071C3BE89317A7E8C1DC5870F3 /* EXBackgroundFetchTaskConsumer.h */,
+				395B7113CDC7AA3A8370ED71D074397F /* EXBackgroundFetchTaskConsumer.m */,
+				D7BB6DC39A5DF1DC1671C4F1F47AD34B /* Pod */,
+				32986B54C4864DCF682266582D2CFE48 /* Support Files */,
+			);
+			name = EXBackgroundFetch;
+			path = "../../../../packages/expo-background-fetch/ios";
+			sourceTree = "<group>";
+		};
 		2CB993A2E7049E4EB937239A48F7EA17 = {
 			isa = PBXGroup;
 			children = (
 				9107D52558731076C033B9D854D1112A /* Dependencies */,
-				F882E2402DE9FE79AFF6B6FDF33D34D5 /* EXBackgroundFetch */,
+				1BF4124D9443AD470218B09DAFECD2C5 /* EXBackgroundFetch */,
 				54DD2F9203960895CF4498875C01F34D /* Frameworks */,
 				ACBF79E158D36DD784059AC9B7709666 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		371A817B7D42CFC4DDA3065363E7C5F0 /* Pod */ = {
+		32986B54C4864DCF682266582D2CFE48 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				02F5C70678440BF73C452180D4C9C228 /* EXBackgroundFetch.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		52D344D5D4AFB98E77E5706FD54C39EA /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				AC4CE6B2D03C7E41801FDADBA3E42390 /* EXBackgroundFetch.xcconfig */,
-				4ACFDF7BE04B8D13DEFA58BFBA35ED7A /* EXBackgroundFetch-dummy.m */,
-				23D0119AE83A5D1856267B414D706E47 /* EXBackgroundFetch-prefix.pch */,
+				FC17D7420D59402389A3C95143D4E236 /* EXBackgroundFetch-dummy.m */,
+				E63CDDB4DEC48A1C61D00D08B6630CD1 /* EXBackgroundFetch-prefix.pch */,
+				039EBA03978F6F52E9290C7C2F07D8DE /* EXBackgroundFetch.debug.xcconfig */,
+				41E4C06E2E5D3A717905E4DF03CA3C91 /* EXBackgroundFetch.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXBackgroundFetch";
@@ -109,18 +117,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F882E2402DE9FE79AFF6B6FDF33D34D5 /* EXBackgroundFetch */ = {
+		D7BB6DC39A5DF1DC1671C4F1F47AD34B /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				18DD7D25773400210CEB4E8D5D7E6C6B /* EXBackgroundFetch.h */,
-				06D1B72DE1DFB94B25608E922365B0EE /* EXBackgroundFetch.m */,
-				0EC6C17D6CC68DB8B697AF8463B712BE /* EXBackgroundFetchTaskConsumer.h */,
-				BA25FC7C6298FD228D89451D68045B5D /* EXBackgroundFetchTaskConsumer.m */,
-				371A817B7D42CFC4DDA3065363E7C5F0 /* Pod */,
-				52D344D5D4AFB98E77E5706FD54C39EA /* Support Files */,
+				C28B759F0F1E5BA6312F57DC24F17278 /* EXBackgroundFetch.podspec */,
 			);
-			name = EXBackgroundFetch;
-			path = "../../../../packages/expo-background-fetch/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,9 +221,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		05F1B69101F796071C1F29520318119B /* Release */ = {
+		7103590B8F3E5B42249408618CCBB6C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AC4CE6B2D03C7E41801FDADBA3E42390 /* EXBackgroundFetch.xcconfig */;
+			baseConfigurationReference = 039EBA03978F6F52E9290C7C2F07D8DE /* EXBackgroundFetch.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -239,10 +241,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		A65E88A7B2B9CBA5E5DB6EAF9742FB3F /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -304,9 +306,9 @@
 			};
 			name = Release;
 		};
-		EDD3B2182E4D0A9F2D2051E94D180621 /* Debug */ = {
+		B795B4F9605A038109A2D6E03B9B1A7F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AC4CE6B2D03C7E41801FDADBA3E42390 /* EXBackgroundFetch.xcconfig */;
+			baseConfigurationReference = 41E4C06E2E5D3A717905E4DF03CA3C91 /* EXBackgroundFetch.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -324,9 +326,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		F33F9945B58DEC40F6ECB6879887CC59 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -407,8 +411,8 @@
 		78FDBBA42F6224C080499707400EF85E /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EDD3B2182E4D0A9F2D2051E94D180621 /* Debug */,
-				05F1B69101F796071C1F29520318119B /* Release */,
+				7103590B8F3E5B42249408618CCBB6C2 /* Debug */,
+				B795B4F9605A038109A2D6E03B9B1A7F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

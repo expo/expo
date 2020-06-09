@@ -19,23 +19,16 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		16323B052D71125F9BD40A9364A37253 /* UMFontScalersManagerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontScalersManagerInterface.h; path = UMFontInterface/UMFontScalersManagerInterface.h; sourceTree = "<group>"; };
-		1B3AC3D4B7DC71E8CDF7881F4E8F2025 /* UMFontProcessorInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontProcessorInterface.h; path = UMFontInterface/UMFontProcessorInterface.h; sourceTree = "<group>"; };
-		2334C01F9164735FB7717471FBC8D674 /* UMFontInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMFontInterface.xcconfig; sourceTree = "<group>"; };
-		7E923216D8CD9FAF6342F1E3C7BDF3B4 /* UMFontManagerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontManagerInterface.h; path = UMFontInterface/UMFontManagerInterface.h; sourceTree = "<group>"; };
-		9C89395B24A88C9EF73D8AF246EF5B3A /* UMFontScalerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontScalerInterface.h; path = UMFontInterface/UMFontScalerInterface.h; sourceTree = "<group>"; };
-		BE8095D449C14E1C1E6BEAFFA07A7287 /* UMFontInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMFontInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		1F034CB18C773DB398017314024E8487 /* UMFontScalersManagerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontScalersManagerInterface.h; path = UMFontInterface/UMFontScalersManagerInterface.h; sourceTree = "<group>"; };
+		5121BD889468A83E96041A246CF1B3AA /* UMFontScalerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontScalerInterface.h; path = UMFontInterface/UMFontScalerInterface.h; sourceTree = "<group>"; };
+		6B9FF493B87BA259E7F799B75FAECAA6 /* UMFontInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMFontInterface.release.xcconfig; sourceTree = "<group>"; };
+		DAD12BD134C2AB81685F0F7233C86076 /* UMFontInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMFontInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		EA19F58B2D1F6FF4C7AD390735C049A0 /* UMFontInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMFontInterface.debug.xcconfig; sourceTree = "<group>"; };
+		F0BF4996B1CDC890CC631C9978DE86BB /* UMFontProcessorInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontProcessorInterface.h; path = UMFontInterface/UMFontProcessorInterface.h; sourceTree = "<group>"; };
+		FF7F89C14DE47294A844484346C41AB6 /* UMFontManagerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFontManagerInterface.h; path = UMFontInterface/UMFontManagerInterface.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		477980F413E3C9584CC3A498176A3167 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				BE8095D449C14E1C1E6BEAFFA07A7287 /* UMFontInterface.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		4C4D2E427F42361CD84F5A29F545700E /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -43,18 +36,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		56DF00149B502F9296521A8E1A878ECC /* UMFontInterface */ = {
+		548AAFBD5705B2A2A3E8B3C110ADAC2B /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				7E923216D8CD9FAF6342F1E3C7BDF3B4 /* UMFontManagerInterface.h */,
-				1B3AC3D4B7DC71E8CDF7881F4E8F2025 /* UMFontProcessorInterface.h */,
-				9C89395B24A88C9EF73D8AF246EF5B3A /* UMFontScalerInterface.h */,
-				16323B052D71125F9BD40A9364A37253 /* UMFontScalersManagerInterface.h */,
-				477980F413E3C9584CC3A498176A3167 /* Pod */,
-				DD4368D83775EA2286E24FB8F39074FB /* Support Files */,
+				EA19F58B2D1F6FF4C7AD390735C049A0 /* UMFontInterface.debug.xcconfig */,
+				6B9FF493B87BA259E7F799B75FAECAA6 /* UMFontInterface.release.xcconfig */,
 			);
-			name = UMFontInterface;
-			path = "../../packages/unimodules-font-interface/ios";
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/UMFontInterface";
 			sourceTree = "<group>";
 		};
 		61ABB2DEE9338B7816AD324D5817F03D = {
@@ -62,17 +51,22 @@
 			children = (
 				DE190CB5F3A70B4C85D9A726DB7062D4 /* Frameworks */,
 				4C4D2E427F42361CD84F5A29F545700E /* Products */,
-				56DF00149B502F9296521A8E1A878ECC /* UMFontInterface */,
+				7E232E987C2CC88B8F17152F80B3865E /* UMFontInterface */,
 			);
 			sourceTree = "<group>";
 		};
-		DD4368D83775EA2286E24FB8F39074FB /* Support Files */ = {
+		7E232E987C2CC88B8F17152F80B3865E /* UMFontInterface */ = {
 			isa = PBXGroup;
 			children = (
-				2334C01F9164735FB7717471FBC8D674 /* UMFontInterface.xcconfig */,
+				FF7F89C14DE47294A844484346C41AB6 /* UMFontManagerInterface.h */,
+				F0BF4996B1CDC890CC631C9978DE86BB /* UMFontProcessorInterface.h */,
+				5121BD889468A83E96041A246CF1B3AA /* UMFontScalerInterface.h */,
+				1F034CB18C773DB398017314024E8487 /* UMFontScalersManagerInterface.h */,
+				E68D976EDE1DFE62D92FD110035B6558 /* Pod */,
+				548AAFBD5705B2A2A3E8B3C110ADAC2B /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/UMFontInterface";
+			name = UMFontInterface;
+			path = "../../packages/unimodules-font-interface/ios";
 			sourceTree = "<group>";
 		};
 		DE190CB5F3A70B4C85D9A726DB7062D4 /* Frameworks */ = {
@@ -80,6 +74,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E68D976EDE1DFE62D92FD110035B6558 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				DAD12BD134C2AB81685F0F7233C86076 /* UMFontInterface.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -110,20 +112,6 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		B12718409B2ABDB604E5BEBD93738236 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2334C01F9164735FB7717471FBC8D674 /* UMFontInterface.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		D95765BFAF7CD0F78D876EFA7E91AE2D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -248,9 +236,9 @@
 			};
 			name = Release;
 		};
-		FE0F020B6C343C0B7EDEB3CC5453A010 /* Release */ = {
+		ED82CC8ED339F5FCF94D6567BDA2D84D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2334C01F9164735FB7717471FBC8D674 /* UMFontInterface.xcconfig */;
+			baseConfigurationReference = 6B9FF493B87BA259E7F799B75FAECAA6 /* UMFontInterface.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -263,14 +251,28 @@
 			};
 			name = Release;
 		};
+		F5B6FEBEEA1CDA9C05BDFD0354573969 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA19F58B2D1F6FF4C7AD390735C049A0 /* UMFontInterface.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		4BB3B73CB6C91CE76014C6BADDDB4581 /* Build configuration list for PBXAggregateTarget "UMFontInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B12718409B2ABDB604E5BEBD93738236 /* Debug */,
-				FE0F020B6C343C0B7EDEB3CC5453A010 /* Release */,
+				F5B6FEBEEA1CDA9C05BDFD0354573969 /* Debug */,
+				ED82CC8ED339F5FCF94D6567BDA2D84D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

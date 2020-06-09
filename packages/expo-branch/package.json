@@ -1,6 +1,6 @@
 {
   "name": "expo-branch",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "main": "build/index.js",
   "types": "build/index.d.ts",

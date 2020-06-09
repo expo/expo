@@ -1,12 +1,11 @@
-import React from 'react';
-import { NavigationEvents } from 'react-navigation';
-import { StyleSheet, Text, View, NativeSyntheticEvent } from 'react-native';
-import { Notifications } from 'expo';
-
-import * as TaskManager from 'expo-task-manager';
-import MapView from 'react-native-maps';
-import * as Location from 'expo-location';
 import { BlurView } from 'expo-blur';
+import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
+import * as TaskManager from 'expo-task-manager';
+import React from 'react';
+import { StyleSheet, Text, View, NativeSyntheticEvent } from 'react-native';
+import MapView from 'react-native-maps';
+import { NavigationEvents } from 'react-navigation';
 
 import Button from '../../components/Button';
 
@@ -30,7 +29,7 @@ interface State {
   };
 }
 
-export interface MapEvent<T = {}>
+export interface MapEvent<T = object>
   extends NativeSyntheticEvent<
     T & {
       coordinate: {
@@ -44,7 +43,7 @@ export interface MapEvent<T = {}>
     }
   > {}
 
-export default class GeofencingScreen extends React.Component<{}, State> {
+export default class GeofencingScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Geofencing Map',
   };
@@ -73,7 +72,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
         longitudeDelta: 0.002,
       },
     });
-  }
+  };
 
   toggleGeofencing = async () => {
     if (this.state.isGeofencing) {
@@ -83,7 +82,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
       await Location.startGeofencingAsync(GEOFENCING_TASK, this.state.geofencingRegions);
     }
     this.setState({ isGeofencing: !this.state.isGeofencing });
-  }
+  };
 
   centerMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
@@ -97,7 +96,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
         longitudeDelta: 0.002,
       });
     }
-  }
+  };
 
   onMapPress = async ({ nativeEvent: { coordinate } }: MapEvent) => {
     const geofencingRegions = [...this.state.geofencingRegions];
@@ -114,7 +113,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
       // update existing geofencing task
       await Location.startGeofencingAsync(GEOFENCING_TASK, geofencingRegions);
     }
-  }
+  };
 
   renderRegions() {
     const { geofencingRegions } = this.state;
@@ -145,9 +144,8 @@ export default class GeofencingScreen extends React.Component<{}, State> {
             <Text style={styles.headingText}>
               {this.state.isGeofencing
                 ? 'You will be receiving notifications when the device enters or exits from selected regions.'
-                // tslint:disable-next-line: max-line-length
-                : 'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'
-              }
+                : // tslint:disable-next-line: max-line-length
+                  'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'}
             </Text>
           </BlurView>
         </View>
@@ -157,8 +155,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
           style={styles.mapView}
           initialRegion={this.state.initialRegion}
           onPress={this.onMapPress}
-          showsUserLocation
-        >
+          showsUserLocation>
           {this.renderRegions()}
         </MapView>
         <View style={styles.buttons}>
@@ -189,10 +186,13 @@ TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }: { data: any
   // tslint:disable-next-line no-console
   console.log(`${stateString} region ${region.identifier}`);
 
-  await Notifications.presentLocalNotificationAsync({
-    title: 'Expo Geofencing',
-    body: `You're ${stateString} a region ${region.identifier}`,
-    data: region,
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Expo Geofencing',
+      body: `You're ${stateString} a region ${region.identifier}`,
+      data: region,
+    },
+    trigger: null,
   });
 });
 

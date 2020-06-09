@@ -1,6 +1,6 @@
 ---
 title: Audio
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-av"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-34/packages/expo-av'
 ---
 
 Provides basic sample playback and recording.
@@ -11,9 +11,9 @@ Try the [playlist example app](https://expo.io/@documentation/playlist-example) 
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- `SplashScreen.show()` native method changes it's signature. Its third argument is now a `Boolean` flag that tells the system whether the `StatusBar` component should be `translucent`. Pass `false` to preserve the previous default behavior. ([#8535](https://github.com/expo/expo/pull/8535) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 0.3.1 — 2020-05-29
+
+*This version does not introduce any user-facing changes.*
 
 ## 0.3.0 — 2020-05-27
 

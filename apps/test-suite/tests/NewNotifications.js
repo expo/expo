@@ -59,8 +59,17 @@ export async function test(t) {
         t.expect(tokenFromEvent).toEqual(tokenFromMethodCall);
       });
 
+      t.fit('resolves when multiple calls are issued', async () => {
+        const results = await Promise.all([
+          Notifications.getDevicePushTokenAsync(),
+          Notifications.getDevicePushTokenAsync(),
+        ]);
+        t.expect(results[0].data).toBeDefined();
+        t.expect(results[0].data).toBe(results[1].data);
+      });
+
       // Not running this test on web since Expo push notification doesn't yet support web.
-      const itWithExpoPushToken = ['ios', 'android'].includes(Platform.OS) ? t.it : t.xit;
+      const itWithExpoPushToken = ['ios', 'android'].includes(Platform.OS) ? t.fit : t.xit;
       itWithExpoPushToken('fetches Expo push token', async () => {
         let experienceId = undefined;
         if (!Constants.manifest) {
@@ -74,6 +83,13 @@ export async function test(t) {
         });
         t.expect(expoPushToken.type).toBe('expo');
         t.expect(typeof expoPushToken.data).toBe('string');
+      });
+
+      itWithExpoPushToken('resolves when mixed multiple calls are issued', async () => {
+        await Promise.all([
+          Notifications.getExpoPushTokenAsync(),
+          Notifications.getDevicePushTokenAsync(),
+        ]);
       });
     });
 
@@ -654,6 +670,24 @@ export async function test(t) {
           })
         );
       });
+
+      if (Constants.appOwnership === 'expo') {
+        t.fit('includes the foreign persistent notification', async () => {
+          const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+          t.expect(displayedNotifications).toContain(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                identifier: t.jasmine.stringMatching(/^__expo_foreign_notification__#.*#\d+$/),
+                content: t.jasmine.objectContaining({
+                  data: t.jasmine.objectContaining({
+                    'android.contains.customView': true,
+                  }),
+                }),
+              }),
+            })
+          );
+        });
+      }
     });
 
     t.describe('dismissNotificationAsync()', () => {

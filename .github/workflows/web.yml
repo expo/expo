@@ -1,8 +1,8 @@
 name: Publish Expo Web
 on:
   pull_request:
-    types: [opened, synchronize]
     paths:
+      - .github/workflows/web.yml
       - yarn.lock
       - apps/**
       - packages/**
@@ -13,8 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
-          lfs: true
+          submodules: true
+      - name: Get cache key of git lfs files
+        id: git-lfs
+        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
+      - uses: actions/cache@v2
+        with:
+          path: .git/lfs
+          key: ${{ steps.git-lfs.outputs.sha256 }}
+      - run: git lfs pull
       - run: yarn global add expo-cli
       - name: Cache Node.js modules
         uses: actions/cache@v1

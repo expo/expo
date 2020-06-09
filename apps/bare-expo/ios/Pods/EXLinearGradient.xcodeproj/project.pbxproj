@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		03F7EF3E3310D7D33BA8B8676CBE6933 /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */; };
-		079C6BE2BCA1BF66805859B13C955CCD /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */; };
-		2271C5DE62BDA3E42803DFA7CE2CCBE7 /* EXLinearGradientLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = CB19A40E13F86DB24D4AB2EC10F4307E /* EXLinearGradientLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		392ABE8AD62225B353AC77B12EBE6D44 /* EXLinearGradientManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 22614A43CFAC3BA89CDA671165DC80F6 /* EXLinearGradientManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7D70CB55E5664751EEFEFDF7A9027353 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */; };
-		AD192289C856A89E30FA11708845755A /* EXLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B1DAE9E6A668E3CF8E04BDFD34B9CF6 /* EXLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F04F703CDAE714E411039040E0F8E7A7 /* EXLinearGradient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */; };
+		03F7EF3E3310D7D33BA8B8676CBE6933 /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 022565A4BEAF4A9EACCA89DEE3892DBC /* EXLinearGradientLayer.m */; };
+		079C6BE2BCA1BF66805859B13C955CCD /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D699F9B36DFF56DEC0D7BEDF24EBFAC /* EXLinearGradient.m */; };
+		2271C5DE62BDA3E42803DFA7CE2CCBE7 /* EXLinearGradientLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 246C5D6D0CBB6FAD45C502061D01398E /* EXLinearGradientLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		392ABE8AD62225B353AC77B12EBE6D44 /* EXLinearGradientManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4687D2F74269BAC9542BC14D0B5E11A6 /* EXLinearGradientManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7D70CB55E5664751EEFEFDF7A9027353 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D873A9A57EF8BD4A360EE511DB6723E /* EXLinearGradientManager.m */; };
+		AD192289C856A89E30FA11708845755A /* EXLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 90B0879E2A8CF5B97D532D9A23F1A747 /* EXLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F04F703CDAE714E411039040E0F8E7A7 /* EXLinearGradient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B330446C53B326736EFFA3C3B066F0 /* EXLinearGradient-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,18 +27,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		22614A43CFAC3BA89CDA671165DC80F6 /* EXLinearGradientManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradientManager.h; path = EXLinearGradient/EXLinearGradientManager.h; sourceTree = "<group>"; };
-		2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLinearGradient.xcconfig; sourceTree = "<group>"; };
-		3735C835B6743269112C98EED553CA50 /* EXLinearGradient-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLinearGradient-prefix.pch"; sourceTree = "<group>"; };
-		451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradientManager.m; path = EXLinearGradient/EXLinearGradientManager.m; sourceTree = "<group>"; };
-		80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradientLayer.m; path = EXLinearGradient/EXLinearGradientLayer.m; sourceTree = "<group>"; };
-		8CC2A29904195CC8B59BD15BC8D48D96 /* EXLinearGradient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLinearGradient.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9B1DAE9E6A668E3CF8E04BDFD34B9CF6 /* EXLinearGradient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradient.h; path = EXLinearGradient/EXLinearGradient.h; sourceTree = "<group>"; };
+		022565A4BEAF4A9EACCA89DEE3892DBC /* EXLinearGradientLayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradientLayer.m; path = EXLinearGradient/EXLinearGradientLayer.m; sourceTree = "<group>"; };
+		1D873A9A57EF8BD4A360EE511DB6723E /* EXLinearGradientManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradientManager.m; path = EXLinearGradient/EXLinearGradientManager.m; sourceTree = "<group>"; };
+		246C5D6D0CBB6FAD45C502061D01398E /* EXLinearGradientLayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradientLayer.h; path = EXLinearGradient/EXLinearGradientLayer.h; sourceTree = "<group>"; };
+		4687D2F74269BAC9542BC14D0B5E11A6 /* EXLinearGradientManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradientManager.h; path = EXLinearGradient/EXLinearGradientManager.h; sourceTree = "<group>"; };
+		46B330446C53B326736EFFA3C3B066F0 /* EXLinearGradient-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLinearGradient-dummy.m"; sourceTree = "<group>"; };
+		7CF39F6F3B1BFABFF48BDAA115640287 /* EXLinearGradient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLinearGradient.release.xcconfig; sourceTree = "<group>"; };
+		80DF5491B2A0DB7516AF4C16D9F0851D /* EXLinearGradient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLinearGradient.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		8D699F9B36DFF56DEC0D7BEDF24EBFAC /* EXLinearGradient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradient.m; path = EXLinearGradient/EXLinearGradient.m; sourceTree = "<group>"; };
+		90B0879E2A8CF5B97D532D9A23F1A747 /* EXLinearGradient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradient.h; path = EXLinearGradient/EXLinearGradient.h; sourceTree = "<group>"; };
 		C23B7DAF674C172C6F889FB6794E22E0 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		CB19A40E13F86DB24D4AB2EC10F4307E /* EXLinearGradientLayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradientLayer.h; path = EXLinearGradient/EXLinearGradientLayer.h; sourceTree = "<group>"; };
-		CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradient.m; path = EXLinearGradient/EXLinearGradient.m; sourceTree = "<group>"; };
 		D40185578F9176B06F2D1B1F7318403B /* libEXLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXLinearGradient.a; path = libEXLinearGradient.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLinearGradient-dummy.m"; sourceTree = "<group>"; };
+		E7BAFDF18EFD3C2DBC38560DF79D8E1A /* EXLinearGradient-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLinearGradient-prefix.pch"; sourceTree = "<group>"; };
+		F8B177D203FB185C3F891BFA484C6626 /* EXLinearGradient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLinearGradient.debug.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,11 +61,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		4BA46571FD49B707F5C57270BC1A2E3C /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				46B330446C53B326736EFFA3C3B066F0 /* EXLinearGradient-dummy.m */,
+				E7BAFDF18EFD3C2DBC38560DF79D8E1A /* EXLinearGradient-prefix.pch */,
+				F8B177D203FB185C3F891BFA484C6626 /* EXLinearGradient.debug.xcconfig */,
+				7CF39F6F3B1BFABFF48BDAA115640287 /* EXLinearGradient.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXLinearGradient";
+			sourceTree = "<group>";
+		};
 		5EF7739BAA287BA11A12541397367671 = {
 			isa = PBXGroup;
 			children = (
 				7E67F194E74C0E053F9769C7C0C46584 /* Dependencies */,
-				A85C9167BDDA2A11CC6CE8AB2CC5ABCB /* EXLinearGradient */,
+				C76BA3C660274F396401E676D27B3A84 /* EXLinearGradient */,
 				ACCD47C0734A56DB35C5B4087F0F27AB /* Frameworks */,
 				3BDEA285FE507B8E7EFF6ACC0A079627 /* Products */,
 			);
@@ -78,46 +91,35 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		9A6B5FA4A65C7C87B4944EA65E9F6673 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				8CC2A29904195CC8B59BD15BC8D48D96 /* EXLinearGradient.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		9C8B3A84BAFF44941F9B05085DCF8A33 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */,
-				F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */,
-				3735C835B6743269112C98EED553CA50 /* EXLinearGradient-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXLinearGradient";
-			sourceTree = "<group>";
-		};
-		A85C9167BDDA2A11CC6CE8AB2CC5ABCB /* EXLinearGradient */ = {
-			isa = PBXGroup;
-			children = (
-				9B1DAE9E6A668E3CF8E04BDFD34B9CF6 /* EXLinearGradient.h */,
-				CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */,
-				CB19A40E13F86DB24D4AB2EC10F4307E /* EXLinearGradientLayer.h */,
-				80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */,
-				22614A43CFAC3BA89CDA671165DC80F6 /* EXLinearGradientManager.h */,
-				451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */,
-				9A6B5FA4A65C7C87B4944EA65E9F6673 /* Pod */,
-				9C8B3A84BAFF44941F9B05085DCF8A33 /* Support Files */,
-			);
-			name = EXLinearGradient;
-			path = "../../../../packages/expo-linear-gradient/ios";
-			sourceTree = "<group>";
-		};
 		ACCD47C0734A56DB35C5B4087F0F27AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C76BA3C660274F396401E676D27B3A84 /* EXLinearGradient */ = {
+			isa = PBXGroup;
+			children = (
+				90B0879E2A8CF5B97D532D9A23F1A747 /* EXLinearGradient.h */,
+				8D699F9B36DFF56DEC0D7BEDF24EBFAC /* EXLinearGradient.m */,
+				246C5D6D0CBB6FAD45C502061D01398E /* EXLinearGradientLayer.h */,
+				022565A4BEAF4A9EACCA89DEE3892DBC /* EXLinearGradientLayer.m */,
+				4687D2F74269BAC9542BC14D0B5E11A6 /* EXLinearGradientManager.h */,
+				1D873A9A57EF8BD4A360EE511DB6723E /* EXLinearGradientManager.m */,
+				D4F405A5380CA9F6CA1ED6EBA6721F39 /* Pod */,
+				4BA46571FD49B707F5C57270BC1A2E3C /* Support Files */,
+			);
+			name = EXLinearGradient;
+			path = "../../../../packages/expo-linear-gradient/ios";
+			sourceTree = "<group>";
+		};
+		D4F405A5380CA9F6CA1ED6EBA6721F39 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				80DF5491B2A0DB7516AF4C16D9F0851D /* EXLinearGradient.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +211,57 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		58AF2A2358A306D108EB3CADC545F17D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7CF39F6F3B1BFABFF48BDAA115640287 /* EXLinearGradient.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLinearGradient;
+				PRODUCT_NAME = EXLinearGradient;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5CB076215BF69C3BBB19BBD768D11A06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F8B177D203FB185C3F891BFA484C6626 /* EXLinearGradient.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLinearGradient;
+				PRODUCT_NAME = EXLinearGradient;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		861C1C473E98B9E6F9FC5696D095FA07 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -273,30 +326,6 @@
 			};
 			name = Debug;
 		};
-		BC651C3741163F4A39A59E08F9DD1F6A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLinearGradient;
-				PRODUCT_NAME = EXLinearGradient;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		D1B9107A533FCBD3B0FA577EA5EC3BD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -357,31 +386,6 @@
 			};
 			name = Release;
 		};
-		F810FD2DB948A58CB57DB118D7D40A41 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLinearGradient;
-				PRODUCT_NAME = EXLinearGradient;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -397,8 +401,8 @@
 		AD1E4CC5BC01FDE00E8E7250F6853001 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC651C3741163F4A39A59E08F9DD1F6A /* Debug */,
-				F810FD2DB948A58CB57DB118D7D40A41 /* Release */,
+				5CB076215BF69C3BBB19BBD768D11A06 /* Debug */,
+				58AF2A2358A306D108EB3CADC545F17D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

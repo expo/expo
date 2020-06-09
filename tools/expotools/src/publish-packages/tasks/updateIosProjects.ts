@@ -39,13 +39,9 @@ export const updateIosProjects = new Task<TaskArgs>(
           return;
         }
 
-        logger.log(
-          '  ',
-          `${green(nativeApp.packageName)}: updating`,
-          podspecNames.map((podspecName) => green(podspecName!)).join(', ')
-        );
+        logger.log('  ', `${green(nativeApp.packageName)}: Reinstalling pods...`);
 
-        await spawnAsync('pod', ['update', ...podspecNames, '--no-repo-update'], {
+        await spawnAsync('pod', ['install', '--no-repo-update'], {
           cwd: path.join(nativeApp.path, 'ios'),
         });
       })

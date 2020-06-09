@@ -1,5 +1,7 @@
+import npmPacklist from 'npm-packlist';
+
 import * as Changelogs from '../../Changelogs';
-import { GitDirectory, GitFileLog } from '../../Git';
+import { GitDirectory, GitFileLog, GitFileStatus } from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { filterAsync } from '../../Utils';
@@ -30,10 +32,10 @@ export const findUnpublished = new Task<TaskArgs>(
 
       state.logs = logs;
       state.changelogChanges = changelogChanges;
-      state.minReleaseType = getMinReleaseType(parcel);
+      state.minReleaseType = await getMinReleaseTypeAsync(parcel);
 
       // Return whether the package has any unpublished changes or git logs couldn't be obtained.
-      return !logs || logs.commits.length > 0 || changelogChanges.totalCount > 0;
+      return !logs || logs.files.length > 0 || changelogChanges.totalCount > 0;
     });
 
     if (newParcels.length === 0) {
@@ -46,6 +48,7 @@ export const findUnpublished = new Task<TaskArgs>(
 
 /**
  * Gets lists of commits and files changed under given directory and since commit with given checksum.
+ * Returned files list is filtered out from files ignored by npm when it creates package's tarball.
  * Can return `null` if given commit is not an ancestor of head commit.
  */
 async function getPackageGitLogsAsync(
@@ -61,10 +64,18 @@ async function getPackageGitLogsAsync(
     toCommit: 'head',
   });
 
-  const files = await gitDir.logFilesAsync({
-    fromCommit: commits[commits.length - 1]?.hash,
+  const gitFiles = await gitDir.logFilesAsync({
+    fromCommit,
     toCommit: commits[0]?.hash,
   });
+
+  // Get an array of relative paths to files that will be shipped with the package.
+  const packlist = await npmPacklist({ path: gitDir.path });
+
+  // Filter git files to contain only deleted or "packlisted" files.
+  const files = gitFiles.filter(
+    (file) => file.status === GitFileStatus.D || packlist.includes(file.relativePath)
+  );
 
   return {
     commits,
@@ -75,20 +86,28 @@ async function getPackageGitLogsAsync(
 /**
  * Returns minimum release type for given parcel (doesn't take dependencies into account).
  */
-function getMinReleaseType(parcel: Parcel): ReleaseType {
+async function getMinReleaseTypeAsync(parcel: Parcel): Promise<ReleaseType> {
   const { logs, changelogChanges } = parcel.state;
 
   const unpublishedChanges = changelogChanges?.versions[Changelogs.UNPUBLISHED_VERSION_NAME];
   const hasBreakingChanges = unpublishedChanges?.[Changelogs.ChangeType.BREAKING_CHANGES]?.length;
-  const hasNativeChanges = logs && fileLogsContainNativeChanges(logs.files);
+  const hasNewFeatures = unpublishedChanges?.[Changelogs.ChangeType.NEW_FEATURES]?.length;
 
-  const releaseType = hasBreakingChanges
-    ? ReleaseType.MAJOR
-    : hasNativeChanges
-    ? ReleaseType.MINOR
-    : ReleaseType.PATCH;
+  // For breaking changes and new features we follow semver.
+  if (hasBreakingChanges) {
+    return ReleaseType.MAJOR;
+  }
+  if (hasNewFeatures) {
+    return ReleaseType.MINOR;
+  }
 
-  return releaseType;
+  // If the package is a native module, then we have to check whether there are any native changes.
+  if (await parcel.pkg.isNativeModuleAsync()) {
+    const hasNativeChanges = logs && fileLogsContainNativeChanges(logs.files);
+    return hasNativeChanges ? ReleaseType.MINOR : ReleaseType.PATCH;
+  }
+
+  return ReleaseType.PATCH;
 }
 
 /**
