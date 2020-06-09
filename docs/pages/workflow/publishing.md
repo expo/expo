@@ -91,7 +91,7 @@ re-build the binaries for your app for the change to take effect:
 - Change your `facebookScheme`
 - Change your bundled assets under `assetBundlePatterns`
 
-Additionally, changes to keys in Firebase configuration files (google-services.json and GoogleService-Info.plist) will require re-building the binaries to take effect on the iOS and Android app.
+Additionally, changes to keys in Firebase configuration files (google-services.json and GoogleService-Info.plist) will require re-building the binaries to take effect in the iOS or Android standalone app.
 
 ### On iOS, you can't share your published link
 
