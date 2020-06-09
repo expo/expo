@@ -2681,7 +2681,7 @@
   resolved "https://registry.yarnpkg.com/@types/i18n-js/-/i18n-js-3.0.3.tgz#84f66fb969741fecd91b854387e0682aa7fd70b7"
   integrity sha512-GiZzazvxQ5j+EA4Zf4MtDsSaokAR/gW7FxxTlHi2p2xKFUhwAUT0B/MB8WL77P1TcqAO3MefWorFFyZS8F7s0Q==
 
-"@types/invariant@^2.2.29":
+"@types/invariant@^2.2.29", "@types/invariant@^2.2.33":
   version "2.2.33"
   resolved "https://registry.yarnpkg.com/@types/invariant/-/invariant-2.2.33.tgz#ec5eec29c63bf5e4ca164e9feb3ef7337cdcbadb"
   integrity sha512-/jUNmS8d4bCKdqslfxW6dg/9Gksfzxz67IYfqApHn+HvHlMVXwYv2zpTDnS/yaK9BB0i0GlBTaYci0EFE62Hmw==
