@@ -37,7 +37,7 @@ that anyone can load your project from.
 
 If you haven't optimized your assets yet you will be prompted and asked
 if you'd like to do so when you run `expo publish`. This has the same effect
-as running `expo optimize` and will compress all of the PNGs and JPEGs in your project.
+as running `npx expo-optimize` and will compress all of the PNGs and JPEGs in your project.
 
 Any time you want to deploy an update, hit publish again and a new
 version will be available immediately to your users the next time they
