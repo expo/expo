@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `ScreenOrientation. getOrientationAsync` returning a wrong value when the application is starting. ([#8727](https://github.com/expo/expo/pull/8727) by [@lukmccall](https://github.com/lukmccall))
+
 ## 1.1.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
