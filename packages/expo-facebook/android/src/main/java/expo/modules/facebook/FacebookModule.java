@@ -28,6 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FacebookModule extends ExportedModule implements ActivityEventListener {
+  private final static String ERR_FACEBOOK_MISCONFIGURED = "ERR_FACEBOOK_MISCONFIGURED";
+  private final static String ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN";
+
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
   protected String mAppId;
@@ -130,7 +133,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
         }
       });
     } catch (Exception e) {
-      promise.reject("ERR_FACEBOOK_MISCONFIGURED", "An error occurred while trying to initialize a FBSDK app", e);
+      promise.reject(ERR_FACEBOOK_MISCONFIGURED, "An error occurred while trying to initialize a FBSDK app", e);
     }
   }
 
@@ -144,7 +147,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   @ExpoMethod
   public void logInWithReadPermissionsAsync(final ReadableArguments config, final Promise promise) {
     if (FacebookSdk.getApplicationId() == null) {
-      promise.reject("ERR_FACEBOOK_MISCONFIGURED", "No appId configured, required for initialization. " +
+      promise.reject(ERR_FACEBOOK_MISCONFIGURED, "No appId configured, required for initialization. " +
           "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml.");
     }
 
@@ -197,14 +200,14 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
       public void onError(FacebookException error) {
         LoginManager.getInstance().registerCallback(mCallbackManager, null);
 
-        promise.reject("ERR_FACEBOOK_LOGIN", "An error occurred while trying to log in to Facebook", error);
+        promise.reject(ERR_FACEBOOK_LOGIN, "An error occurred while trying to log in to Facebook", error);
       }
     });
 
     try {
       LoginManager.getInstance().logInWithReadPermissions(mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity(), permissions);
     } catch (FacebookException e) {
-      promise.reject("ERR_FACEBOOK_LOGIN", "An error occurred while trying to log in to Facebook", e);
+      promise.reject(ERR_FACEBOOK_LOGIN, "An error occurred while trying to log in to Facebook", e);
     }
   }
 
