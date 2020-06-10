@@ -4,7 +4,7 @@
 #import <EXNotifications/EXRemoteNotificationPermissionSingletonModule.h>
 
 // TODO: Remove once we deprecate and remove "notifications" permission type
-@interface EXRemoteNotificationPermissionRequester : NSObject <UMPermissionsRequester, EXRemoteNotificationPermissionDelegate>
+@interface EXLegacyRemoteNotificationPermissionRequester : NSObject <UMPermissionsRequester, EXRemoteNotificationPermissionDelegate>
 
 - (instancetype)initWithUserNotificationPermissionRequester:(id<UMPermissionsRequester>)userNotificationPermissionRequester
                                         permissionPublisher:(id<EXRemoteNotificationPermissionProgressPublisher>)permissionProgressPublisher

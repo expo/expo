@@ -24,7 +24,7 @@ const errorCodeMessages = {
     },
 };
 /**
- * Extends https://tools.ietf.org/html/rfc6749#section-4.1.2.1
+ * [Section 4.1.2.1](https://tools.ietf.org/html/rfc6749#section-4.1.2.1)
  */
 export class ResponseError extends CodedError {
     constructor(params, errorCodeType) {
@@ -47,7 +47,7 @@ export class ResponseError extends CodedError {
     }
 }
 /**
- * Extends https://tools.ietf.org/html/rfc6749#section-5.2
+ * [Section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2)
  */
 export class AuthError extends ResponseError {
     constructor(response) {
