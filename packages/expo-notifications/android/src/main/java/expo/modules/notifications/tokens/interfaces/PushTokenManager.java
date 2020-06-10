@@ -19,11 +19,4 @@ public interface PushTokenManager {
    *                 with {@link PushTokenManager#addListener(PushTokenListener)}.
    */
   void removeListener(PushTokenListener listener);
-
-  /**
-   * Notifies listeners of a new token.
-   *
-   * @param token New device push token.
-   */
-  void onNewToken(String token);
 }
