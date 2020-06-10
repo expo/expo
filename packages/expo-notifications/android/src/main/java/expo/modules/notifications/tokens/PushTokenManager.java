@@ -6,9 +6,10 @@ import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 import expo.modules.notifications.FirebaseListenerService;
+import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener;
 import expo.modules.notifications.tokens.interfaces.PushTokenListener;
 
-public class PushTokenManager implements SingletonModule, expo.modules.notifications.tokens.interfaces.PushTokenManager {
+public class PushTokenManager implements SingletonModule, FirebaseTokenListener, expo.modules.notifications.tokens.interfaces.PushTokenManager {
   private static final String SINGLETON_NAME = "PushTokenManager";
 
   /**
@@ -72,6 +73,7 @@ public class PushTokenManager implements SingletonModule, expo.modules.notificat
    *
    * @param token New device push token.
    */
+  @Override
   public void onNewToken(String token) {
     for (WeakReference<PushTokenListener> listenerReference : mListenerReferenceMap.values()) {
       PushTokenListener listener = listenerReference.get();
