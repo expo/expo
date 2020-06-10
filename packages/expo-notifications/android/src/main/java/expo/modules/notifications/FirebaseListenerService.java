@@ -12,13 +12,12 @@ import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 import expo.modules.notifications.notifications.service.BaseNotificationsService;
-import expo.modules.notifications.tokens.PushTokenManager;
+import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener;
 
 /**
  * Subclass of FirebaseMessagingService responsible for dispatching new tokens and remote messages.
@@ -37,22 +36,22 @@ public class FirebaseListenerService extends FirebaseMessagingService {
    * A weak map of listeners -> reference. Used to check quickly whether given listener
    * is already registered and to iterate over when notifying of new token.
    */
-  private static WeakHashMap<PushTokenManager, WeakReference<PushTokenManager>> sTokenListenersReferences = new WeakHashMap<>();
+  private static WeakHashMap<FirebaseTokenListener, WeakReference<FirebaseTokenListener>> sTokenListenersReferences = new WeakHashMap<>();
 
   /**
-   * Used only by {@link PushTokenManager} instances. If you look for a place to register
-   * your listener, use {@link PushTokenManager} singleton module.
+   * Used only by {@link FirebaseTokenListener} instances. If you look for a place to register
+   * your listener, use {@link FirebaseTokenListener} singleton module.
    * <p>
-   * Purposefully the argument is expected to be a {@link PushTokenManager} and just a listener.
+   * Purposefully the argument is expected to be a {@link FirebaseTokenListener} and just a listener.
    * <p>
    * This class doesn't hold strong references to listeners, so you need to own your listeners.
    *
    * @param listener A listener instance to be informed of new push device tokens.
    */
-  public static void addTokenListener(PushTokenManager listener) {
+  public static void addTokenListener(FirebaseTokenListener listener) {
     // Checks whether this listener has already been registered
     if (!sTokenListenersReferences.containsKey(listener)) {
-      WeakReference<PushTokenManager> listenerReference = new WeakReference<>(listener);
+      WeakReference<FirebaseTokenListener> listenerReference = new WeakReference<>(listener);
       sTokenListenersReferences.put(listener, listenerReference);
       // Since it's a new listener and we know of a last valid token, let's let them know.
       if (sLastToken != null) {
@@ -70,8 +69,8 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   public void onNewToken(@NonNull String token) {
     super.onNewToken(token);
 
-    for (WeakReference<PushTokenManager> listenerReference : sTokenListenersReferences.values()) {
-      PushTokenManager listener = listenerReference.get();
+    for (WeakReference<FirebaseTokenListener> listenerReference : sTokenListenersReferences.values()) {
+      FirebaseTokenListener listener = listenerReference.get();
       if (listener != null) {
         listener.onNewToken(token);
       }
