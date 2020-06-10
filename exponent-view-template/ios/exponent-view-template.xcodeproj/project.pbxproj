@@ -39,6 +39,7 @@
 		B5DB047E1F3A684600E91581 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B5DB047F1F3A684600E91581 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-exponent-view-template.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F196B53624913A0100A10179 /* prepare-detached-build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "prepare-detached-build.sh"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,10 +74,11 @@
 		B56386381DB9693800A0598C = {
 			isa = PBXGroup;
 			children = (
+				F196B535249139A200A10179 /* Build-Phases */,
 				B56386431DB9693800A0598C /* exponent-view-template */,
-				B56386421DB9693800A0598C /* Products */,
-				5B29BC350A332C58878A9F13 /* Pods */,
 				1A42804E64B7E9E0AB8B6799 /* Frameworks */,
+				5B29BC350A332C58878A9F13 /* Pods */,
+				B56386421DB9693800A0598C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -114,6 +116,14 @@
 				B563865E1DB96A5E00A0598C /* main.m */,
 			);
 			path = Supporting;
+			sourceTree = "<group>";
+		};
+		F196B535249139A200A10179 /* Build-Phases */ = {
+			isa = PBXGroup;
+			children = (
+				F196B53624913A0100A10179 /* prepare-detached-build.sh */,
+			);
+			path = "Build-Phases";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,6 +172,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -266,7 +277,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nexport PATH=\"$(if [ -f ~/.expo/PATH ]; then echo $PATH:$(cat ~/.expo/PATH); else echo $PATH; fi)\"\nexpo prepare-detached-build --platform ios \"${SRCROOT}/..\"\n";
+			shellScript = "$SRCROOT/Build-Phases/prepare-detached-build.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
