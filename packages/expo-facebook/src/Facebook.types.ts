@@ -1,14 +1,14 @@
 export type FacebookAuthentication = {
   /**
-   * Access token for the authenticated session. This provides access to the Facebook Graph API.
+   * Access token for the authenticated session. This token provides access to the Facebook Graph API.
    */
   token: string;
   /**
-   * Facebook app-scoped user ID.
+   * App-scoped Facebook ID of the user.
    */
   userId: string;
   /**
-   * Application ID used to initialize the FBSDK app.
+   * Application ID used to initialize the Facebook SDK app.
    */
   appId: string;
   /**
@@ -24,7 +24,7 @@ export type FacebookAuthentication = {
    */
   expiredPermissions?: string[];
   /**
-   * Gets the time at which the `token` expires.
+   * Time at which the `token` expires.
    */
   expirationDate: Date;
   /**
@@ -32,11 +32,11 @@ export type FacebookAuthentication = {
    */
   dataAccessExpirationDate: Date;
   /**
-   * The last time the `token` was refreshed (or when it was first obtained).
+   * The last time the `token` was refreshed (or when it was first obtained)
    */
   refreshDate?: Date;
   /**
-   * Android: Indicates how this `token` was obtained.
+   * _(Android only)_ Indicates how this `token` was obtained.
    */
   tokenSource?: string;
   /**
@@ -45,6 +45,7 @@ export type FacebookAuthentication = {
   signedRequest?: string;
   /**
    * A website domain within the Graph API.
+   *
    * https://developers.facebook.com/docs/graph-api/reference/v5.0/domain
    */
   graphDomain?: string;
