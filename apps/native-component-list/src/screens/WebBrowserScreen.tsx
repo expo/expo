@@ -1,5 +1,4 @@
 import { Picker } from '@react-native-community/picker';
-import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
@@ -26,6 +25,7 @@ interface Package {
 interface State {
   showTitle: boolean;
   toolbarColor?: string;
+  secondaryToolbarColor?: string;
   authResult?: Record<string, string> | null;
   controlsColorText?: string;
   shouldPrompt: boolean;
@@ -51,6 +51,8 @@ export default class WebBrowserScreen extends React.Component<object, State> {
     showInRecents: false,
     toolbarColor: Colors.tintColor.replace(/^#/, ''),
     controlsColorText: Colors.headerTitle.replace(/^#/, ''),
+    readerMode: false,
+    enableDefaultShare: false,
   };
 
   componentDidMount() {
@@ -126,6 +128,7 @@ export default class WebBrowserScreen extends React.Component<object, State> {
     const args = {
       showTitle: this.state.showTitle,
       toolbarColor: this.state.toolbarColor && `#${this.state.toolbarColor}`,
+      secondaryToolbarColor: this.state.secondaryToolbarColor && `#${this.state.secondaryToolbarColor}`,
       controlsColor: this.state.controlsColorText && `#${this.state.controlsColorText}`,
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
@@ -139,11 +142,16 @@ export default class WebBrowserScreen extends React.Component<object, State> {
 
   handleToolbarColorInputChanged = (toolbarColor: string) => this.setState({ toolbarColor });
 
+  handleSecondaryToolbarColorInputChanged = (secondaryToolbarColor: string) =>
+    this.setState({ secondaryToolbarColor });
+
   handleControlsColorInputChanged = (controlsColorText: string) =>
     this.setState({ controlsColorText });
 
-  packageSelected = (value: string) => {
-    this.setState({ selectedPackage: value });
+  packageSelected = (value: string | number) => {
+    if (typeof value === 'string') {
+      this.setState({ selectedPackage: value });
+    }
   };
 
   handleShowTitleChanged = (showTitle: boolean) => this.setState({ showTitle });
@@ -176,6 +184,15 @@ export default class WebBrowserScreen extends React.Component<object, State> {
   renderAndroidChoices = () =>
     Platform.OS === 'android' && (
       <>
+        <View style={styles.label}>
+          <Text>Secondary toolbar color (#rrggbb):</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="RRGGBB"
+            onChangeText={this.handleSecondaryToolbarColorInputChanged}
+            value={this.state.secondaryToolbarColor}
+          />
+        </View>
         <View style={styles.label}>
           <Text>Show Title</Text>
           <Switch
