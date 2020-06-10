@@ -72,7 +72,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   
   NSString *type = EXConvertMimeTypeToUTI(options[@"type"] ?: @"*/*");
   
-  _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == NO ? NO : YES;
+  _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
   UM_WEAKIFY(self);
 
