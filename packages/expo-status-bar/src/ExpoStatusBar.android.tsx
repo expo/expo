@@ -31,6 +31,7 @@ export default function ExpoStatusBar(props: StatusBarProps) {
 
   return (
     <StatusBar
+      translucent={translucent}
       barStyle={barStyle}
       backgroundColor={backgroundColor}
       animated={animated}

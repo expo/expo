@@ -16,6 +16,6 @@ export default function ExpoStatusBar(props) {
     if (translucent && !backgroundColor) {
         backgroundColor = 'transparent';
     }
-    return (React.createElement(StatusBar, { barStyle: barStyle, backgroundColor: backgroundColor, animated: animated, hidden: hidden }));
+    return (React.createElement(StatusBar, { translucent: translucent, barStyle: barStyle, backgroundColor: backgroundColor, animated: animated, hidden: hidden }));
 }
 //# sourceMappingURL=ExpoStatusBar.android.js.map
