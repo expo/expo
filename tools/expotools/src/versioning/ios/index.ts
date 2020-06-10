@@ -304,7 +304,7 @@ async function generateVersionedExpoAsync(versionName: string): Promise<void> {
   await fs.copy(path.join(IOS_DIR, 'Exponent', 'Versioned'), versionedExpoKitPath);
 
   await fs.copy(
-    path.join(EXPO_DIR, 'ExpoKit.podspec'),
+    path.join(EXPO_DIR, 'ios', 'ExpoKit.podspec'),
     path.join(versionedExpoKitPath, 'ExpoKit.podspec')
   );
 
