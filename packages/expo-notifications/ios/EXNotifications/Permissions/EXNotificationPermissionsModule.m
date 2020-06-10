@@ -5,14 +5,14 @@
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
-#import <EXNotifications/EXRemoteNotificationPermissionRequester.h>
+#import <EXNotifications/EXLegacyRemoteNotificationPermissionRequester.h>
 #import <EXNotifications/EXUserFacingNotificationsPermissionsRequester.h>
 
 @interface EXNotificationPermissionsModule ()
 
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, strong) EXUserFacingNotificationsPermissionsRequester *requester;
-@property (nonatomic, strong) EXRemoteNotificationPermissionRequester *legacyRemoteNotificationsRequester;
+@property (nonatomic, strong) EXLegacyRemoteNotificationPermissionRequester *legacyRemoteNotificationsRequester;
 
 @end
 
@@ -54,7 +54,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
   if (!_legacyRemoteNotificationsRequester) {
     // TODO: Remove once we deprecate and remove "notifications" permission type
-    _legacyRemoteNotificationsRequester = [[EXRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:_requester permissionPublisher:[moduleRegistry getSingletonModuleForName:@"RemoteNotificationPermissionPublisher"] withMethodQueue:self.methodQueue];
+    _legacyRemoteNotificationsRequester = [[EXLegacyRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:_requester permissionPublisher:[moduleRegistry getSingletonModuleForName:@"RemoteNotificationPermissionPublisher"] withMethodQueue:self.methodQueue];
   }
   [UMPermissionsMethodsDelegate registerRequesters:@[_requester, _legacyRemoteNotificationsRequester]
                             withPermissionsManager:_permissionsManager];
