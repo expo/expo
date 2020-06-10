@@ -1,9 +1,9 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXNotifications/EXRemoteNotificationPermissionRequester.h>
+#import <EXNotifications/EXLegacyRemoteNotificationPermissionRequester.h>
 #import <UMCore/UMUtilities.h>
 
-@interface EXRemoteNotificationPermissionRequester ()
+@interface EXLegacyRemoteNotificationPermissionRequester ()
 
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
@@ -14,7 +14,7 @@
 
 @end
 
-@implementation EXRemoteNotificationPermissionRequester
+@implementation EXLegacyRemoteNotificationPermissionRequester
 
 + (NSString *)permissionType
 {

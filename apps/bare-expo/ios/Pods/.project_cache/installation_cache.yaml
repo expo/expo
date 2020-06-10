@@ -599,10 +599,10 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXLegacyRemoteNotificationPermissionRequester.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXLegacyRemoteNotificationPermissionRequester.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionRequester.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionRequester.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionSingletonModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionSingletonModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
@@ -1552,7 +1552,7 @@ CACHE_KEYS:
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 71dcb769da78260074adb01e3fcad0bb
-    CHECKSUM: 14c793e8b0bfe51e74dcdbe75dd14ee7498b88b8
+    CHECKSUM: b11a34881faac509cad5578726c98161ad4d275c
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.m"
@@ -1570,11 +1570,13 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewLocalData.m"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewManager.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewManager.m"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewMode.h"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewMode.m"
       - "../../../../node_modules/react-native-safe-area-context/LICENSE"
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (2.0.3)
+      - react-native-safe-area-context (3.0.2)
   react-native-segmented-control:
     BUILD_SETTINGS_CHECKSUM:
       react-native-segmented-control: 20fafd243e368fe6c0831976de96de6a
