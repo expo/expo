@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed compatibility with `expo-permissions` below `9.0.0` (the _duplicate symbols_ problem). ([#8753](https://github.com/expo/expo/pull/8753) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 0.3.1 — 2020-06-03
 
 ### 🎉 New features
