@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Move android files form `kotlin` to `java` directory in order to conform to our build scripts ([#8746](https://github.com/expo/expo/pull/8746) by [@mczernek](https://github.com/mczernek))
+
 ### 🎉 New features
+
+- Add template native test file along with suggested test dependencies ([#8746](https://github.com/expo/expo/pull/8746) by [@mczernek](https://github.com/mczernek))
 
 ### 🐛 Bug fixes
 
