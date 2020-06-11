@@ -464,8 +464,8 @@ public class Exponent {
     return sourceFile.exists();
   }
 
-  // As OTAs piles up, the JS bundles will consume quite an amount of storage space
-  // App developers, if find needed, can purge all the existing cache
+  // This method does nothing (`directory.delete` must be called on an empty directory)
+  // But it is relied on in previous SDKs. 
   public boolean clearAllJSBundleCache(final String abiVersion) throws IOException {
     final File filesDir = mContext.getFilesDir();
     final File directory = new File(filesDir, abiVersion);

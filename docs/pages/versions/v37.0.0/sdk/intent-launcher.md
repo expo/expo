@@ -1,6 +1,6 @@
 ---
 title: IntentLauncher
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-intent-launcher'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-intent-launcher'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

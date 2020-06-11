@@ -1,6 +1,6 @@
 ---
 title: FirebaseAnalytics
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-firebase-analytics'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-firebase-analytics'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

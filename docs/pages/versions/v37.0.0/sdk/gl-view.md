@@ -1,6 +1,6 @@
 ---
 title: GLView
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-gl'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-gl'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -2,16 +2,24 @@ package expo.modules.image;
 
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.request.RequestOptions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.yoga.YogaConstants;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
+import expo.modules.image.drawing.BorderDrawable;
+import expo.modules.image.drawing.OutlineProvider;
 import expo.modules.image.enums.ImageResizeMode;
 import expo.modules.image.events.ImageLoadEventsManager;
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor;
@@ -26,6 +34,8 @@ public class ExpoImageView extends AppCompatImageView {
   private OkHttpClientProgressInterceptor mProgressInterceptor;
   private RequestManager mRequestManager;
   private RCTEventEmitter mEventEmitter;
+  private OutlineProvider mOutlineProvider;
+  private BorderDrawable mBorderDrawable;
 
   private ReadableMap mSourceMap;
   private GlideUrl mLoadedSource;
@@ -36,7 +46,10 @@ public class ExpoImageView extends AppCompatImageView {
     mEventEmitter = context.getJSModule(RCTEventEmitter.class);
     mRequestManager = requestManager;
     mProgressInterceptor = progressInterceptor;
+    mOutlineProvider = new OutlineProvider(context);
 
+    setOutlineProvider(mOutlineProvider);
+    setClipToOutline(true);
     setScaleType(ImageResizeMode.COVER.getScaleType());
   }
 
@@ -47,6 +60,39 @@ public class ExpoImageView extends AppCompatImageView {
   /* package */ void setResizeMode(ImageResizeMode resizeMode) {
     setScaleType(resizeMode.getScaleType());
     // TODO: repeat mode handling
+  }
+
+  void setBorderRadius(int position, float borderRadius) {
+    boolean isInvalidated = mOutlineProvider.setBorderRadius(borderRadius, position);
+    if (isInvalidated) {
+      invalidateOutline();
+      if (!mOutlineProvider.hasEqualCorners()) {
+        invalidate();
+      }
+    }
+
+    // Setting the border-radius doesn't necessarily mean that a border
+    // should to be drawn. Only update the border-drawable when needed.
+    if (mBorderDrawable != null) {
+      borderRadius = !YogaConstants.isUndefined(borderRadius) ? PixelUtil.toPixelFromDIP(borderRadius) : borderRadius;
+      if (position == 0) {
+        mBorderDrawable.setRadius(borderRadius);
+      } else {
+        mBorderDrawable.setRadius(borderRadius, position - 1);
+      }
+    }
+  }
+
+  void setBorderWidth(int position, float width) {
+    getOrCreateBorderDrawable().setBorderWidth(position, width);
+  }
+
+  void setBorderColor(int position, float rgb, float alpha) {
+    getOrCreateBorderDrawable().setBorderColor(position, rgb, alpha);
+  }
+
+  void setBorderStyle(@Nullable String style) {
+    getOrCreateBorderDrawable().setBorderStyle(style);
   }
 
   /* package */ void onAfterUpdateTransaction() {
@@ -102,5 +148,58 @@ public class ExpoImageView extends AppCompatImageView {
     }
     options.fitCenter();
     return options;
+  }
+
+  private BorderDrawable getOrCreateBorderDrawable() {
+    if (mBorderDrawable == null) {
+      mBorderDrawable = new BorderDrawable(getContext());
+      mBorderDrawable.setCallback(this);
+      float[] borderRadii = mOutlineProvider.getBorderRadii();
+      for (int i = 0; i < borderRadii.length; i++) {
+        float borderRadius = borderRadii[i];
+        borderRadius = !YogaConstants.isUndefined(borderRadius) ? PixelUtil.toPixelFromDIP(borderRadius) : borderRadius;
+        if (i == 0) {
+          mBorderDrawable.setRadius(borderRadius);
+        } else {
+          mBorderDrawable.setRadius(borderRadius, i - 1);
+        }
+      }
+    }
+    return mBorderDrawable;
+  }
+
+  // Drawing overrides
+
+  @Override
+  public void invalidateDrawable(@NonNull Drawable drawable) {
+    super.invalidateDrawable(drawable);
+    if (drawable == mBorderDrawable) {
+      invalidate();
+    }
+  }
+
+  @Override
+  public void draw(Canvas canvas) {
+
+    // When the border-radii are not all the same, a convex-path
+    // is used for the Outline. Unfortunately clipping is not supported
+    // for convex-paths and we fallback to Canvas clipping.
+    mOutlineProvider.clipCanvasIfNeeded(canvas, this);
+    super.draw(canvas);
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    super.onDraw(canvas);
+
+    // Draw borders on top of the background and image
+    if (mBorderDrawable != null) {
+      int layoutDirection = I18nUtil.getInstance().isRTL(getContext())
+        ? LAYOUT_DIRECTION_RTL
+        : LAYOUT_DIRECTION_LTR;
+      mBorderDrawable.setResolvedLayoutDirection(layoutDirection);
+      mBorderDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+      mBorderDrawable.draw(canvas);
+    }
   }
 }

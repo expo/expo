@@ -1,6 +1,6 @@
 ---
 title: AuthSession
-sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthSession.ts'
+sourceCodeUrl: 'https://github.com/expo/expo/sdk-38/master/packages/expo-auth-session'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -358,15 +358,15 @@ This can be used to present a dialog for switching accounts after the user has a
 
 ### `DiscoveryDocument`
 
-| Name                  | Type               | Description                                                                   | Spec                                    |
-| --------------------- | ------------------ | ----------------------------------------------------------------------------- | --------------------------------------- |
-| authorizationEndpoint | `string`           | Interact with the resource owner and obtain an authorization grant            | [Section 3.1][s31]                      |
-| tokenEndpoint         | `string`           | Obtain an access token by presenting its authorization grant or refresh token | [Section 3.2][s32]                      |
-| revocationEndpoint    | `?string`          | Used to revoke a token (generally for signing out)                            | [Section 2.1][s21]                      |
-| userInfoEndpoint      | `?string`          | URL to return info about the authenticated user                               | [UserInfo][userinfo]                    |
-| endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.                     | [OP Metadata][opmeta]                   |
-| registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint                        | [Dynamic Client Registration][oidc-dcr] |
-| discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                               | [ProviderMetadata][provider-meta]       |
+| Name                  | Type               | Description                                                          | Spec                                    |
+| --------------------- | ------------------ | -------------------------------------------------------------------- | --------------------------------------- |
+| authorizationEndpoint | `?string`          | Interact with the resource owner and obtain an authorization grant   | [Section 3.1][s31]                      |
+| tokenEndpoint         | `?string`          | Obtain an access token by presenting its auth grant or refresh token | [Section 3.2][s32]                      |
+| revocationEndpoint    | `?string`          | Used to revoke a token (generally for signing out)                   | [Section 2.1][s21]                      |
+| userInfoEndpoint      | `?string`          | URL to return info about the authenticated user                      | [UserInfo][userinfo]                    |
+| endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.            | [OP Metadata][opmeta]                   |
+| registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint               | [Dynamic Client Registration][oidc-dcr] |
+| discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                      | [ProviderMetadata][provider-meta]       |
 
 ### `Issuer`
 
@@ -451,6 +451,10 @@ const result = await AuthSession.startAsync({
 ### Filtering out AuthSession events in Linking handlers
 
 There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
+
+#### With React Navigation v5
+
+If you are using deep linking with React Navigation v5, filtering through `Linking.addEventListener` will not be sufficient, because deep linking is [handled differently](https://reactnavigation.org/docs/configuring-links/#advanced-cases). Instead, to filter these events you can add a custom `getStateFromPath` function to your linking configuration, and then filter by URL in the same way as described above.
 
 #
 

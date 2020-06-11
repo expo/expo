@@ -447,7 +447,7 @@ export default function App() {
   - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
 <AuthCodeTab>
 
@@ -475,7 +475,7 @@ export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'user_likes'],
+      scopes: ['public_profile','email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -553,7 +553,7 @@ export default function App() {
       responseType: ResponseType.Token,
       /* @end */
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'user_likes'],
+      scopes: ['public_profile','email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -576,6 +576,103 @@ export default function App() {
       /* @info Use this access token to interact with user data on the provider's server. */
       const { access_token } = response.params;
       /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({
+        /* @end */
+          useProxy,
+          windowFeatures: { width: 700, height: 600 }
+        });
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</ImplicitTab>
+
+<ImplicitTab>
+
+- It's important that you request at least the `['public_profile', 'email']` scopes, otherwise Firebase won't display the user info correctly in the auth panel.
+- Be sure to setup Facebook auth as described above, this is basically identical.
+- 🔥 Create a new Firebase project
+- Enable Facebook auth, save the project.
+
+<SnackInline label='Facebook Firebase' dependencies={['expo-auth-session', 'expo-web-browser', 'firebase']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import firebase from 'firebase';
+import { Button, Platform } from 'react-native';
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    /* Config */
+  });
+}
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+};
+
+const useProxy = Platform.select({ web: false, default: true });
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
+      clientId: '<YOUR FBID>',
+      scopes: ['public_profile', 'email', 'user_likes'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        useProxy,
+        // For usage in bare and standalone
+        // Use your FBID here. The path MUST be `authorize`.
+        native: 'fb111111111111://authorize',
+      }),
+      extraParams: {
+        // Use `popup` on web for a better experience
+        display: Platform.select({ web: 'popup' }),
+        // Optionally you can use this to rerequest declined permissions
+        auth_type: 'rerequest',
+      },
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+
+      /* @info Create a Facebook credential with the <code>access_token</code> */
+      const credential = firebase.auth.FacebookAuthProvider.credential(access_token);
+      /* @end */
+      // Sign in with the credential from the Facebook user.
+      firebase.auth().signInWithCredential(credential)
     }
   }, [response]);
 

@@ -77,7 +77,7 @@ We provide this API to customize the audio experience on iOS and Android.
   - `interruptionModeAndroid` : an enum selecting how your experience's audio should interact with the audio from other apps on Android:
     - `INTERRUPTION_MODE_ANDROID_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
     - `INTERRUPTION_MODE_ANDROID_DUCK_OTHERS` : This is the default option. If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
-  - `playThroughEarpieceAndroid` : set to true to route audio to earpiece (on Android).
+  - `playThroughEarpieceAndroid` : a boolean selecting if the audio is routed to earpiece (on Android). This value defaults to `false`.
 
 #### Returns
 

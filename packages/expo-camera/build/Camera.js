@@ -1,8 +1,7 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+import * as React from 'react';
+import { findNodeHandle } from 'react-native';
 import { PermissionStatus, } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
@@ -205,25 +204,6 @@ let Camera = /** @class */ (() => {
         flashMode: CameraManager.FlashMode,
         autoFocus: CameraManager.AutoFocus,
         whiteBalance: CameraManager.WhiteBalance,
-    };
-    Camera.propTypes = {
-        ...ViewPropTypes,
-        zoom: PropTypes.number,
-        ratio: PropTypes.string,
-        focusDepth: PropTypes.number,
-        onMountError: PropTypes.func,
-        pictureSize: PropTypes.string,
-        onCameraReady: PropTypes.func,
-        useCamera2Api: PropTypes.bool,
-        onBarCodeScanned: PropTypes.func,
-        barCodeScannerSettings: PropTypes.object,
-        onFacesDetected: PropTypes.func,
-        faceDetectorSettings: PropTypes.object,
-        type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        flashMode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        videoStabilizationMode: PropTypes.number,
-        whiteBalance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
     };
     Camera.defaultProps = {
         zoom: 0,
