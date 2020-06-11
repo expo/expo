@@ -966,7 +966,7 @@ export default function App() {
 - You can change the UI language by setting `extraParams.hl` to an ISO language code (ex: `fr`, `en-US`). Defaults to the best estimation based on the users browser.
 - You can set which email address to use ahead of time by setting `extraParams.login_hint`.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 <AuthCodeTab>
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -1002,12 +1002,11 @@ export default function App() {
 
       // Optional
       extraParams: {
-        // Change language
-        hl: 'fr',
-        // Select the user
-        login_hint: 'user@gmail.com',
+        /// Change language
+        // hl: 'fr',
+        /// Select the user
+        // login_hint: 'user@gmail.com',
       },
-      scopes: ['openid', 'profile'],
     },
     discovery
   );
@@ -1082,12 +1081,11 @@ export default function App() {
 
       // Optional
       extraParams: {
-        // Change language
-        hl: 'fr',
-        // Select the user
-        login_hint: 'user@gmail.com',
+        /// Change language
+        // hl: 'fr',
+        /// Select the user
+        // login_hint: 'user@gmail.com',
       },
-      scopes: ['openid', 'profile'],
     },
     discovery
   );
@@ -1117,6 +1115,123 @@ export default function App() {
 ```
 
 </SnackInline>
+
+</ImplicitTab>
+
+<ImplicitTab>
+
+- 🔥 Create a new Firebase project
+- Enable Google auth
+  - Open "Web SDK configuration"
+  - Save "Web client ID" you'll need it later
+  - Press Save
+- Replace `YOUR_GUID` with your "Web client ID" and open this link:
+  - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
+- Under "URIs" add your hosts URLs
+  - Web dev: https://localhost:19006
+  - Expo Client Proxy: https://auth.expo.io
+- Under "Authorized redirect URIs"
+  - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
+  - Expo Client Proxy: https://auth.expo.io/@yourname/your-app
+
+<img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
+
+<SnackInline label='Google Firebase' dependencies={['expo-auth-session', 'expo-web-browser', 'firebase']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest, useAutoDiscovery, generateHexStringAsync } from 'expo-auth-session';
+import firebase from 'firebase';
+import { Button, Platform } from 'react-native';
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    /* Config */
+  });
+}
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+const useProxy = Platform.select({ web: false, default: true });
+
+// Generate a random hex string for the nonce parameter
+function useNonce() {
+  const [nonce, setNonce] = React.useState(null);
+  React.useEffect(() => {
+    generateHexStringAsync(16).then(value => setNonce(value));
+  }, []);
+  return nonce;
+}
+
+export default function App() {
+  const nonce = useNonce();
+  // Endpoint
+  const discovery = useAutoDiscovery('https://accounts.google.com');
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>id_token</code>, which Firebase expects. */
+      responseType: ResponseType.IdToken,
+      /* @end */
+      /* @info This comes from the Firebase Google authentication panel. */
+      clientId: 'Your-Web-Client-ID.apps.googleusercontent.com',
+      /* @end */
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        useProxy,
+      }),
+      scopes: [
+        'openid',
+        'profile',
+        'email',
+      ],
+      extraParams: {
+        nonce,
+      }
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { id_token } = response.params;
+      /* @end */
+
+      /* @info Create a Google credential with the <code>id_token</code> */
+      const credential = firebase.auth.GoogleAuthProvider.credential(id_token);
+      /* @end */
+      firebase.auth().signInWithCredential(credential);
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request || !nonce)}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+- 💡 This auth is different because it requires the following to retrieve the `id_token` parameter:
+  - `openid` in the `scope`s
+  - `responseType` set to `ResponseType.IdToken` (`'id_token'`)
+  - `extraParams.nonce` must be defined.
 
 </ImplicitTab>
 
