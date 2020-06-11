@@ -8,5 +8,8 @@
   },
   "author": "",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "expo-cli": "3.21.5"
+  }
 }
