@@ -3,9 +3,8 @@ import {
   UnavailabilityError,
   requireNativeViewManager,
 } from '@unimodules/core';
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import { Platform, View, findNodeHandle } from 'react-native';
 
 import { configureLogging } from './GLUtils';
 import {
@@ -48,12 +47,6 @@ const NativeView = requireNativeViewManager('ExponentGLView');
  */
 export class GLView extends React.Component<GLViewProps> {
   static NativeView: any;
-  static propTypes = {
-    onContextCreate: PropTypes.func,
-    msaaSamples: PropTypes.number,
-    nativeRef_EXPERIMENTAL: PropTypes.func,
-    ...ViewPropTypes,
-  };
 
   static defaultProps = {
     msaaSamples: 4,

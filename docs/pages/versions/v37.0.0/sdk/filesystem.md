@@ -1,6 +1,6 @@
 ---
 title: FileSystem
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-file-system'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

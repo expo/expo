@@ -1,6 +1,8 @@
 import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import * as FileSystem from 'expo-file-system';
 import { EventEmitter, EventSubscription } from 'fbemitter';
+import { Platform } from 'react-native';
 
 import ExponentUpdates from './ExponentUpdates';
 
@@ -67,11 +69,59 @@ export async function fetchUpdateAsync({
   };
 }
 
-export async function clearUpdateCacheExperimentalAsync(abiVersion: string): Promise<void> {
-  if (!ExponentUpdates.clearUpdateCacheAsync) {
-    throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
+export async function clearUpdateCacheExperimentalAsync(
+  sdkVersion?: string
+): Promise<{ success: boolean; errors: string[] }> {
+  let errors: string[] = [];
+  if (Platform.OS !== 'android') {
+    errors.push('This method is only supported on Android.');
+    return { success: false, errors };
   }
-  return ExponentUpdates.clearUpdateCacheAsync(abiVersion);
+
+  if (Constants.manifest && FileSystem.documentDirectory) {
+    const sdkBundlesPath =
+      FileSystem.documentDirectory + sdkVersion ?? Constants.manifest.sdkVersion;
+    const sdkBundleFiles = await FileSystem.readDirectoryAsync(sdkBundlesPath);
+
+    const results = await Promise.all(
+      sdkBundleFiles.map(async filename => {
+        let fullpath = sdkBundlesPath + '/' + filename;
+        // In java, we use `getPath`, which decodes, so we need to double-encode these values
+        fullpath = fullpath.replace('%40', '%2540').replace('%2F', '%252F');
+
+        const bundleUrlStringHashcode = hashCode(Constants.manifest.bundleUrl);
+        const isCurrentlyRunningBundle = filename.includes(bundleUrlStringHashcode);
+        if (!isCurrentlyRunningBundle) {
+          try {
+            await FileSystem.deleteAsync(fullpath);
+            return 'success';
+          } catch (e) {
+            return e.message;
+          }
+        }
+      })
+    );
+    errors = errors.concat(results.filter(v => v !== 'success'));
+    if (!errors.length) {
+      return { success: true, errors: [] };
+    }
+  } else {
+    errors.push('This method is only available in standalone apps.');
+  }
+
+  return { success: false, errors };
+}
+
+export function hashCode(string: string): string {
+  const length = string.length;
+  let hash = 0,
+    i = 0;
+  if (length > 0) {
+    while (i < length) {
+      hash = ((hash << 5) - hash + string.charCodeAt(i++)) | 0;
+    }
+  }
+  return hash.toString();
 }
 
 let _emitter: EventEmitter | null;

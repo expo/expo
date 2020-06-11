@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Calendar.getEventsAsync` crashing when `recurrenceRules` are incorrect. ([#8760](https://github.com/expo/expo/pull/8760) by [@lukmccall](https://github.com/lukmccall))
+
 ## 8.2.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
