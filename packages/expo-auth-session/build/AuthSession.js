@@ -5,6 +5,7 @@ import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
 import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types';
 import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
+import { generateHexStringAsync } from './PKCE';
 import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 let _authLock = false;
@@ -133,5 +134,5 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
 }
 export * from './AuthRequestHooks';
 export { AuthError } from './Errors';
-export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, };
+export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
 //# sourceMappingURL=AuthSession.js.map

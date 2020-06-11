@@ -36,7 +36,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   public codeVerifier?: string;
   public codeChallenge?: string;
 
-  readonly responseType: ResponseType;
+  readonly responseType: ResponseType | string;
   readonly clientId: string;
   readonly extraParams: Record<string, string>;
   readonly usePKCE?: boolean;
