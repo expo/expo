@@ -19,6 +19,7 @@ export { default as scheduleNotificationAsync } from './scheduleNotificationAsyn
 export { default as cancelScheduledNotificationAsync } from './cancelScheduledNotificationAsync';
 export { default as cancelAllScheduledNotificationsAsync } from './cancelAllScheduledNotificationsAsync';
 export * from './TokenEmitter';
+export * from './NotificationCategories';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
 export * from './NotificationPermissions';
