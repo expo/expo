@@ -15,7 +15,7 @@ export declare function isSupported(): void;
  */
 export declare function requestReview(): Promise<void>;
 /**
- * Get your app's store URLs from the `app.config.js` or `app.json`
+ * Get your app's store URLs from `app.config.js` or `app.json`:
  * - iOS: https://docs.expo.io/versions/latest/workflow/configuration#appstoreurlurl-to-your-app-on-the-apple-app-store-if-you-have-deployed-it-there-this-is-used-to-link-to-your-store-page-from-your-expo-project-page-if-your-app-is-public
  * - Android: https://docs.expo.io/versions/latest/workflow/configuration#playstoreurlurl-to-your-app-on-the-google-play-store-if-you-have-deployed-it-there-this-is-used-to-link-to-your-store-page-from-your-expo-project-page-if-your-app-is-public
  * - web: returns `null`

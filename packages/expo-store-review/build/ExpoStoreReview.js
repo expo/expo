@@ -5,7 +5,7 @@ export default {
     },
     async isAvailableAsync() {
         // true on Android, false on web
-        return Platform.OS !== 'web';
+        return Platform.OS === 'android';
     },
     // Unimplemented on web and Android
     requestReview: null,

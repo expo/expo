@@ -25,7 +25,8 @@ export function isSupported() {
  */
 export async function requestReview() {
     if (StoreReview?.requestReview) {
-        return await StoreReview.requestReview();
+        await StoreReview.requestReview();
+        return;
     }
     // If StoreReview is unavailable then get the store URL from `app.config.js` or `app.json` and open the store
     const url = storeUrl();
@@ -44,7 +45,7 @@ export async function requestReview() {
     }
 }
 /**
- * Get your app's store URLs from the `app.config.js` or `app.json`
+ * Get your app's store URLs from `app.config.js` or `app.json`:
  * - iOS: https://docs.expo.io/versions/latest/workflow/configuration#appstoreurlurl-to-your-app-on-the-apple-app-store-if-you-have-deployed-it-there-this-is-used-to-link-to-your-store-page-from-your-expo-project-page-if-your-app-is-public
  * - Android: https://docs.expo.io/versions/latest/workflow/configuration#playstoreurlurl-to-your-app-on-the-google-play-store-if-you-have-deployed-it-there-this-is-used-to-link-to-your-store-page-from-your-expo-project-page-if-your-app-is-public
  * - web: returns `null`
