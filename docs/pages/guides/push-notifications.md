@@ -45,7 +45,7 @@ export default class AppContainer extends React.Component {
         alert('Failed to get push token for push notification!');
         return;
       }
-      token = await Notifications.getExpoPushTokenAsync();
+      const token = await Notifications.getExpoPushTokenAsync();
       console.log(token);
       this.setState({ expoPushToken: token });
     } else {
