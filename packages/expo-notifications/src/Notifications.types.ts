@@ -258,3 +258,9 @@ export type Action = {
   isAuthenticationRequired?: boolean;
   doNotOpenInForeground?: boolean;
 };
+
+export type Category = {
+  identifier: string;
+  actionIds: string[];
+  hiddenPreviewsBodyPlaceholder: string;
+};

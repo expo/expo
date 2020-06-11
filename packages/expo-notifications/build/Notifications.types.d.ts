@@ -232,4 +232,9 @@ export declare type Action = {
     isAuthenticationRequired?: boolean;
     doNotOpenInForeground?: boolean;
 };
+export declare type Category = {
+    identifier: string;
+    actionIds: string[];
+    hiddenPreviewsBodyPlaceholder: string;
+};
 export {};

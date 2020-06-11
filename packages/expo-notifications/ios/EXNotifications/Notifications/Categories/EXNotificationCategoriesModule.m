@@ -20,6 +20,24 @@ UM_EXPORT_MODULE(ExpoNotificationCategoriesModule);
 
 # pragma mark - Exported methods
 
+UM_EXPORT_METHOD_AS(getCategoriesAsync,
+                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+{
+  [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    NSMutableArray* existingCategories = [NSMutableArray new];
+    for (UNNotificationCategory *category in categories) {
+      NSMutableDictionary *categoryDictionary = [NSMutableDictionary dictionary];
+      categoryDictionary[@"identifier"] = category.identifier;
+      categoryDictionary[@"actionIds"] = [self parseIdsFromActions: category.actions];
+      if (@available(iOS 11, *)) {
+        categoryDictionary[@"hiddenPreviewsBodyPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
+      }
+      [existingCategories addObject:categoryDictionary];
+    }
+    resolve(existingCategories);
+  }];
+}
+
 UM_EXPORT_METHOD_AS(createCategoryAsync,
                  createCategoryWithCategoryId:(NSString *)categoryId
                  actions:(NSArray *)actions
@@ -110,6 +128,15 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
   }
 
   return [UNNotificationAction actionWithIdentifier:actionId title:buttonTitle options:options];
+}
+
+- (NSMutableArray *)parseIdsFromActions:(NSArray<UNNotificationAction *> *)actions
+{
+  NSMutableArray* ids = [NSMutableArray new];
+  for (UNNotificationAction *action in actions) {
+    [ids addObject:action.identifier];
+  }
+  return ids;
 }
 
 @end
