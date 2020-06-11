@@ -29,8 +29,8 @@ export function isSupported(): void {
  */
 export async function requestReview(): Promise<void> {
   if (StoreReview?.requestReview) {
-   await StoreReview.requestReview();
-   return;
+    await StoreReview.requestReview();
+    return;
   }
   // If StoreReview is unavailable then get the store URL from `app.config.js` or `app.json` and open the store
   const url = storeUrl();
