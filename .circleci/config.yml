@@ -284,9 +284,6 @@ workflows:
     when: << pipeline.parameters.release_apk >>
     jobs:
       - client_android
-      - client_android_apk_release:
-          requires:
-            - client_android
 
   shell_app_ios:
     when: << pipeline.parameters.shell_ios >>
