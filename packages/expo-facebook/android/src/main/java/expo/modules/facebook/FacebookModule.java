@@ -68,7 +68,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
   
   @ExpoMethod
-  public void getUserAuthAsync(Promise promise) {
+  public void getCredentialStateAsync(Promise promise) {
     AccessToken accessToken = AccessToken.getCurrentAccessToken();
     promise.resolve(accessTokenToBundle(accessToken));
   }

@@ -84,11 +84,11 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
   }
 
   @Override
-  public void getUserAuthAsync(Promise promise) {
+  public void getCredentialStateAsync(Promise promise) {
     if (!mIsInitialized) {
       promise.reject(ERR_FACEBOOK_UNINITIALIZED, "Facebook SDK has not been initialized yet.");
     }
-    super.getUserAuthAsync(promise);
+    super.getCredentialStateAsync(promise);
   }
 
   @Override

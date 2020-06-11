@@ -105,7 +105,7 @@ A map of options:
 
 If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
-Otherwise, returns `{ type: 'success' } &` [`FacebookAuthentication`][#facebookauthentication].
+Otherwise, returns `{ type: 'success' } &` [`FacebookAuthenticationCredential`][#facebookauthenticationcredential].
 
 ### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
 
@@ -161,19 +161,19 @@ Given a valid Facebook application ID in place of `<APP_ID>`, the code above wil
 
 Logs out of the currently authenticated session.
 
-### `Facebook.getUserAuthAsync()`
+### `Facebook.getCredentialStateAsync()`
 
-Returns the `FacebookAuthentication` object if a user is authenticated, and `null` if no valid authentication exists.
+Returns the `FacebookAuthenticationCredential` object if a user is authenticated, and `null` if no valid authentication exists.
 
 You can use this method to check if the user should sign in or not.
 
 #### Returns
 
-- A promise that resolves a [`FacebookAuthentication`][#facebookauthentication].
+- A promise that resolves a [`FacebookAuthenticationCredential`][#facebookauthenticationcredential].
 
 ```tsx
 async function toggleAuthAsync() {
-  const auth = await Facebook.getUserAuthAsync();
+  const auth = await Facebook.getCredentialStateAsync();
 
   if (!auth) {
     // Log in
@@ -185,7 +185,7 @@ async function toggleAuthAsync() {
 
 ## Types
 
-### FacebookAuthentication
+### FacebookAuthenticationCredential
 
 - **token (_string_)** Access token for the authenticated session. This token provides access to the Facebook Graph API.
 - **userId (_string_)** App-scoped Facebook ID of the user.
@@ -230,7 +230,7 @@ async function getUserAsync() {
 async function requestAsync(path: string, token?: string): Promise<any> {
   let resolvedToken = token;
   if (!token) {
-    const auth = await Facebook.getUserAuthAsync();
+    const auth = await Facebook.getCredentialStateAsync();
     if (!auth) {
       throw new Error(
         'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.'

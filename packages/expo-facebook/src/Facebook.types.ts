@@ -1,4 +1,4 @@
-export type FacebookAuthentication = {
+export type FacebookAuthenticationCredential = {
   /**
    * Access token for the authenticated session. This token provides access to the Facebook Graph API.
    */
@@ -57,7 +57,7 @@ export type FacebookLoginResult =
     }
   | ({
       type: 'success';
-    } & FacebookAuthentication);
+    } & FacebookAuthenticationCredential);
 
 export type FacebookOptions = {
   permissions?: string[];

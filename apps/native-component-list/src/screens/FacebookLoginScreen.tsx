@@ -40,7 +40,7 @@ export default class FacebookLoginScreen extends React.Component {
         />
         <ListButton onPress={() => Facebook.logOutAsync()} title="Log out of Facebook" />
         <ListButton
-          onPress={async () => this.setState({ user: await Facebook.getUserAuthAsync() })}
+          onPress={async () => this.setState({ user: await Facebook.getCredentialStateAsync() })}
           title="Get Access Token"
         />
         {this.state.user && <MonoText>{JSON.stringify(this.state.user, null, 2)}</MonoText>}

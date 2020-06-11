@@ -38,10 +38,10 @@ export async function test(
       it(`authenticates, gets data, and logs out`, async () => {
         const result = await Facebook.logInWithReadPermissionsAsync();
         expect(result.type).toBeDefined();
-        const accessToken = await Facebook.getUserAuthAsync();
+        const accessToken = await Facebook.getCredentialStateAsync();
         expect(accessToken).toEqual(expect.any(String));
         await Facebook.logOutAsync();
-        const unauthedAccessToken = await Facebook.getUserAuthAsync();
+        const unauthedAccessToken = await Facebook.getCredentialStateAsync();
         expect(unauthedAccessToken).toBe(null);
       });
     } else {

@@ -8,16 +8,16 @@ export async function logInWithReadPermissionsAsync(options = {}) {
     return transformNativeFacebookLoginResult(nativeLoginResult);
 }
 /**
- * Returns the `FacebookAuthentication` object if a user is authenticated, and `null` if no valid authentication exists.
+ * Returns the `FacebookAuthenticationCredential` object if a user is authenticated, and `null` if no valid authentication exists.
  *
  * You can use this method to check if the user should sign in or not.
  */
-export async function getUserAuthAsync() {
-    if (!ExponentFacebook.getUserAuthAsync) {
-        throw new UnavailabilityError('Facebook', 'getUserAuthAsync');
+export async function getCredentialStateAsync() {
+    if (!ExponentFacebook.getCredentialStateAsync) {
+        throw new UnavailabilityError('Facebook', 'getCredentialStateAsync');
     }
-    const nativeAccessTokenResult = await ExponentFacebook.getUserAuthAsync();
-    return transformNativeFacebookAuthentication(nativeAccessTokenResult);
+    const nativeAccessTokenResult = await ExponentFacebook.getCredentialStateAsync();
+    return transformNativeFacebookAuthenticationCredential(nativeAccessTokenResult);
 }
 /**
  * Logs out of the currently authenticated session.
@@ -125,7 +125,7 @@ function transformNativeFacebookLoginResult(input) {
         expirationDate: new Date(input.expirationDate),
     };
 }
-function transformNativeFacebookAuthentication(input) {
+function transformNativeFacebookAuthenticationCredential(input) {
     if (!input)
         return input;
     return {

@@ -1,4 +1,4 @@
-export declare type FacebookAuthentication = {
+export declare type FacebookAuthenticationCredential = {
     /**
      * Access token for the authenticated session. This token provides access to the Facebook Graph API.
      */
@@ -54,7 +54,7 @@ export declare type FacebookLoginResult = {
     type: 'cancel';
 } | ({
     type: 'success';
-} & FacebookAuthentication);
+} & FacebookAuthenticationCredential);
 export declare type FacebookOptions = {
     permissions?: string[];
 };

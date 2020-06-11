@@ -2,13 +2,13 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
 import {
-  FacebookAuthentication,
+  FacebookAuthenticationCredential,
   FacebookLoginResult,
   FacebookOptions,
   FacebookInitializationOptions,
 } from './Facebook.types';
 
-export { FacebookLoginResult, FacebookOptions, FacebookAuthentication };
+export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential };
 
 export async function logInWithReadPermissionsAsync(
   options: FacebookOptions = {}
@@ -23,18 +23,18 @@ export async function logInWithReadPermissionsAsync(
 }
 
 /**
- * Returns the `FacebookAuthentication` object if a user is authenticated, and `null` if no valid authentication exists.
+ * Returns the `FacebookAuthenticationCredential` object if a user is authenticated, and `null` if no valid authentication exists.
  *
  * You can use this method to check if the user should sign in or not.
  */
-export async function getUserAuthAsync(): Promise<FacebookAuthentication | null> {
-  if (!ExponentFacebook.getUserAuthAsync) {
-    throw new UnavailabilityError('Facebook', 'getUserAuthAsync');
+export async function getCredentialStateAsync(): Promise<FacebookAuthenticationCredential | null> {
+  if (!ExponentFacebook.getCredentialStateAsync) {
+    throw new UnavailabilityError('Facebook', 'getCredentialStateAsync');
   }
 
-  const nativeAccessTokenResult = await ExponentFacebook.getUserAuthAsync();
+  const nativeAccessTokenResult = await ExponentFacebook.getCredentialStateAsync();
 
-  return transformNativeFacebookAuthentication(nativeAccessTokenResult);
+  return transformNativeFacebookAuthenticationCredential(nativeAccessTokenResult);
 }
 
 /**
@@ -158,7 +158,9 @@ function transformNativeFacebookLoginResult(input: FacebookLoginResult): Faceboo
   };
 }
 
-function transformNativeFacebookAuthentication(input: any): FacebookAuthentication | null {
+function transformNativeFacebookAuthenticationCredential(
+  input: any
+): FacebookAuthenticationCredential | null {
   if (!input) return input;
   return {
     ...input,
