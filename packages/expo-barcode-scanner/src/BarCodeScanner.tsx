@@ -1,8 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Platform, ViewProps, ViewPropTypes } from 'react-native';
+import * as React from 'react';
+import { Platform, ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
@@ -43,13 +42,6 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
 
   static ConversionTables = {
     type: Type,
-  };
-
-  static propTypes = {
-    ...ViewPropTypes,
-    onBarCodeScanned: PropTypes.func,
-    barCodeTypes: PropTypes.array,
-    type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   };
 
   static defaultProps = {
