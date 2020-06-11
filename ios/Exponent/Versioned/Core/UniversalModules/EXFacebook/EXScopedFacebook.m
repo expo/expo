@@ -19,7 +19,7 @@
 - (void)logOutAsync:(UMPromiseResolveBlock)resolve
            rejecter:(UMPromiseRejectBlock)reject;
 
-- (void)getCredentialStateAsync:(UMPromiseResolveBlock)resolve
+- (void)getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve
                    rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)setAutoInitEnabled:(BOOL)enabled
@@ -112,14 +112,14 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   [super logInWithReadPermissionsWithConfig:config resolver:resolve rejecter:reject];
 }
 
-- (void)getCredentialStateAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
     reject(@"ERR_FACEBOOK_UNINITIALIZED", @"Facebook SDK has not been initialized yet.", nil);
     return;
   }
-  [super getCredentialStateAsync:resolve rejecter:reject];
+  [super getAuthenticationCredentialAsync:resolve rejecter:reject];
 }
 
 - (void)logOutAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject

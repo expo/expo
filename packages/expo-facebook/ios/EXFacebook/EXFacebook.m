@@ -85,8 +85,8 @@ UM_EXPORT_METHOD_AS(logOutAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getCredentialStateAsync,
-                    getCredentialStateAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(getAuthenticationCredentialAsync,
+                    getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   FBSDKAccessToken *currentAccessToken = [FBSDKAccessToken currentAccessToken];

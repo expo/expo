@@ -12,11 +12,11 @@ export async function logInWithReadPermissionsAsync(options = {}) {
  *
  * You can use this method to check if the user should sign in or not.
  */
-export async function getCredentialStateAsync() {
-    if (!ExponentFacebook.getCredentialStateAsync) {
-        throw new UnavailabilityError('Facebook', 'getCredentialStateAsync');
+export async function getAuthenticationCredentialAsync() {
+    if (!ExponentFacebook.getAuthenticationCredentialAsync) {
+        throw new UnavailabilityError('Facebook', 'getAuthenticationCredentialAsync');
     }
-    const nativeAccessTokenResult = await ExponentFacebook.getCredentialStateAsync();
+    const nativeAccessTokenResult = await ExponentFacebook.getAuthenticationCredentialAsync();
     return transformNativeFacebookAuthenticationCredential(nativeAccessTokenResult);
 }
 /**
