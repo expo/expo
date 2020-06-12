@@ -55,7 +55,7 @@ To access these values at runtime, you can use the [Expo Constants API](/version
 - All apps in the iTunes Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
 - Apple will ask you whether your app uses the IDFA. Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
 
-> **Note**: No data is sent to Segment from your app unless you explicitly do so using the `Segment` API. However, because that code is present in your binary (even if it's unused), you need to say your app uses the IDFA. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained). 
+> **Note**: No data is sent to Segment from your app unless you explicitly do so using the `Segment` API. However, because that code is present in your binary (even if it's unused), you need to say your app uses the IDFA. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained).
 
 ## Android Permissions
 
@@ -84,20 +84,32 @@ If your app asks for [system permissions](/versions/latest/sdk/permissions/) fro
 
 The full list of keys Expo provides by default can be seen [here](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/Supporting/Info.plist#L28-L41). Unlike with Android, on iOS it is not possible to filter the list of permissions an app may request at a native level. This means that by default, your app will ship with all of these default boilerplate strings embedded in the binary. You can provide any overrides you want in the `infoPlist` configuration. Because these strings are configured at the native level, they will only be published when you build a new binary with `expo build`.
 
-## Localizing system dialogs on iOS
+## Localizing your iOS app
 
-If your app uses a language besides English, you can optionally provide [localized](/versions/latest/sdk/localization/) strings for the system dialogs. For example, in `app.json`, you can provide
+If you plan on shipping your app to different countries, regions, or just want it to support various languages, you can provide [localized](/versions/latest/sdk/localization/) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](https://docs.expo.io/workflow/configuration/#ios). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
 
+```json
+  "expo" : {
+    ...
+    "ios" : {
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
+    },
+    "locales": {
+      "ru": "./languages/russian.json"
+    }
+  }
 ```
-"locales": {
-  "ru": "./languages/russian.json"
-}
-```
 
-...where `russian.json` looks like:
+The keys provided to `locales` should be the [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, and the value should point to a JSON file that looks something like this:
 
-```
+```json
+// russian.json
 {
-  "NSContactsUsageDescription": "Hello Russian words"
+  "CFBundleDisplayName": "Привет",
+  "NSContactsUsageDescription": "Эти слова по русски"
 }
 ```
+
+Now, iOS knows to set the display name of your app to `Привет` whenever it's installed on a device with the language set to Russian.
