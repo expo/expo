@@ -1,5 +1,6 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 import { PermissionStatus } from 'expo-modules-core';
+import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/Recording';
 function getStatusFromMedia(media) {
     if (!media) {
         return {
@@ -71,6 +72,17 @@ function setStatusForMedia(media, status) {
     }
     return getStatusFromMedia(media);
 }
+let mediaRecorder = null;
+let mediaRecorderUptimeOfLastStartResume = 0;
+let mediaRecorderDurationAlreadyRecorded = 0;
+let mediaRecorderIsRecording = false;
+function getAudioRecorderDurationMillis() {
+    let duration = mediaRecorderDurationAlreadyRecorded;
+    if (mediaRecorderIsRecording && mediaRecorderUptimeOfLastStartResume > 0) {
+        duration += Date.now() - mediaRecorderUptimeOfLastStartResume;
+    }
+    return duration;
+}
 export default {
     get name() {
         return 'ExponentAV';
@@ -128,12 +140,82 @@ export default {
     },
     /* Recording */
     //   async setUnloadedCallbackForAndroidRecording() {},
-    async getAudioRecordingStatus() { },
-    async prepareAudioRecorder() { },
-    async startAudioRecording() { },
-    async pauseAudioRecording() { },
-    async stopAudioRecording() { },
-    async unloadAudioRecorder() { },
+    async getAudioRecordingStatus() {
+        return {
+            canRecord: mediaRecorder?.state === 'recording' || mediaRecorder?.state === 'inactive',
+            isRecording: mediaRecorder?.state === 'recording',
+            isDoneRecording: false,
+            durationMillis: getAudioRecorderDurationMillis(),
+            uri: null,
+        };
+    },
+    async prepareAudioRecorder(options) {
+        if (typeof navigator !== 'undefined' && !navigator.mediaDevices) {
+            throw new Error('No media devices available');
+        }
+        mediaRecorderUptimeOfLastStartResume = 0;
+        mediaRecorderDurationAlreadyRecorded = 0;
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new window.MediaRecorder(stream, options?.web || RECORDING_OPTIONS_PRESET_HIGH_QUALITY.web);
+        mediaRecorder.addEventListener('pause', () => {
+            mediaRecorderDurationAlreadyRecorded = getAudioRecorderDurationMillis();
+            mediaRecorderIsRecording = false;
+        });
+        mediaRecorder.addEventListener('resume', () => {
+            mediaRecorderUptimeOfLastStartResume = Date.now();
+            mediaRecorderIsRecording = true;
+        });
+        mediaRecorder.addEventListener('start', () => {
+            mediaRecorderUptimeOfLastStartResume = Date.now();
+            mediaRecorderDurationAlreadyRecorded = 0;
+            mediaRecorderIsRecording = true;
+        });
+        mediaRecorder.addEventListener('stop', () => {
+            mediaRecorderDurationAlreadyRecorded = getAudioRecorderDurationMillis();
+            mediaRecorderIsRecording = false;
+        });
+        const { uri, ...status } = await this.getAudioRecordingStatus();
+        return { uri: null, status };
+    },
+    async startAudioRecording() {
+        if (mediaRecorder === null) {
+            throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
+        }
+        if (mediaRecorder.state === 'paused') {
+            mediaRecorder.resume();
+        }
+        else {
+            mediaRecorder.start();
+        }
+        return this.getAudioRecordingStatus();
+    },
+    async pauseAudioRecording() {
+        if (mediaRecorder === null) {
+            throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
+        }
+        // Set status to paused
+        mediaRecorder.pause();
+        return this.getAudioRecordingStatus();
+    },
+    async stopAudioRecording() {
+        if (mediaRecorder === null) {
+            throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
+        }
+        if (mediaRecorder.state === 'inactive') {
+            return this.getAudioRecordingStatus();
+        }
+        const dataPromise = new Promise(resolve => mediaRecorder.addEventListener('dataavailable', e => resolve(e.data)));
+        mediaRecorder.stop();
+        const data = await dataPromise;
+        const url = URL.createObjectURL(data);
+        return {
+            ...(await this.getAudioRecordingStatus()),
+            uri: url,
+        };
+    },
+    async unloadAudioRecorder() {
+        mediaRecorder = null;
+    },
     // Recording isn't available on the web
     async getPermissionsAsync() {
         return {
