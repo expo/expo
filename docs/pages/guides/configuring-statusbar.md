@@ -31,8 +31,8 @@ This option can be used to specify whether the status bar content (icons and tex
 
 The valid values are:
 
-- `light-content` - The status bar content is light colored (usually white).
-- `dark-content` - The status bar content is dark colored (usually dark grey). This is only available on Android 6.0 onwards. It will fallback to `light-content` in older versions. This is the default value.
+- `light-content` - The status bar content is light colored (usually white). This is equivalent to `expo-status-bar` `style="light"`.
+- `dark-content` - The status bar content is dark colored (usually dark grey). This is equivalent to `expo-status-bar` `style="dark"`. This is only available on Android 6.0 onwards. It will fallback to `light-content` in older versions. This is the default value.
 
 > Note: If you choose `light-content` and have either a very light image set as the `SplashScreen` or `backgroundColor` set to a light color, the status bar icons may blend in and not be visible.
 > Same goes for `dark-content` when you have a very dark image set as the `SplashScreen` or `backgroundColor` set to a dark color.
@@ -67,7 +67,7 @@ Defaults to `false`.
 
 ## Updating the status bar while your app is running
 
-The `StatusBar` component provided by [expo-status-bar](../../sdk/status-bar/) allows you to control the appearance of the status bar while your app is running. [expo-status-bar](../../sdk/status-bar/) also provides imperative methods such as `setBarStyle(barStyle)` to control the style through function calls rather than the `StatusBar` component, if you find that to be helpful for your use case.
+The `StatusBar` component provided by [expo-status-bar](../../sdk/status-bar/) allows you to control the appearance of the status bar while your app is running. [expo-status-bar](../../sdk/status-bar/) also provides imperative methods such as `setStatusBarStyle(style)` to control the style through function calls rather than the `StatusBar` component, if you find that to be helpful for your use case.
 
 To fix the contrast issue from the screenshot at the top of this guide, we could use the following code:
 
@@ -82,7 +82,7 @@ export default function Playlists() {
       {/* other code here to show the screen */}
 
       {/* use light text instead of dark text in the status bar to provide more contrast with a dark background */}
-      <StatusBar barStyle="light-content" />
+      <StatusBar style="light" />
     </View>
   );
 }
@@ -99,9 +99,9 @@ export default function Playlists() {
 
 ## Themes and status bar styles
 
-If you use `expo-status-bar` to control your status bar `barStyle`, the `barStyle="default"` configuration will automatically pick the appropriate default style depending on the color scheme currently used by the app. Please note that if you provide a way for users to toggle between color schemes rather than using the operating system theme, this will not have the intended behavior, and you should use `barStyle="light-content"` and `barStyle="dark-content"` as needed depending on the selected color scheme.
+If you use `expo-status-bar` to control your status bar style, the `style="auto"` configuration will automatically pick the appropriate default style depending on the color scheme currently used by the app (this is the default behavior, if you leave out the style prop entirely then `auto` will be used). Please note that if you provide a way for users to toggle between color schemes rather than using the operating system theme, this will not have the intended behavior, and you should use `style="light"` and `style="dark"` as needed depending on the selected color scheme.
 
-> 💡This is only supported in SDK 38 or higher. Prior to SDK 38, `default` will not change depending on your color scheme.
+> 💡Automatic theme detection is only supported in SDK 38 or higher. Prior to SDK 38, `auto` will not change depending on your color scheme, it will always assume that the theme is light.
 
 ## Factoring the status bar in with your layout
 

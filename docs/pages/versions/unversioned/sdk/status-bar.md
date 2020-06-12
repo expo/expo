@@ -1,7 +1,7 @@
 ---
 id: statusbar
 title: StatusBar
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-status-bar'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-status-bar'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -38,7 +38,7 @@ export default class App extends React.Component {
           justifyContent: 'center',
         }}>
         <Text style={{ color: '#fff' }}>Notice that the status bar has light text!</Text>
-        <StatusBar barStyle="light-content" />
+        <StatusBar style="light" />
       </View>
     );
   }
@@ -57,14 +57,13 @@ import { StatusBar } from 'expo-status-bar';
 
 - [`StatusBar`](#statusbar)
 
-
 **[Methods](#methods)**
 
-- [`setBackgroundColor(backgroundColor)`](#setbackgroundcolorbackgroundcolor)
-- [`setHidden(hidden)`](#sethiddenhidden)
-- [`setNetworkActivityIndicatorVisible(visible)`](#setnetworkactivityindicatorvisiblevisible)
-- [`setStatusBar(barStyle)`](#setstatusbarbarstyle)
-- [`setTranslucent(translucent)`](#settranslucenttranslucent)
+- [`setStatusBarBackgroundColor(backgroundColor)`](#setstatusbarbackgroundcolorbackgroundcolor)
+- [`setStatusBarHidden(hidden)`](#setstatusbarhiddenhidden)
+- [`setStatusBarNetworkActivityIndicatorVisible(visible)`](#setstatusbarnetworkactivityindicatorvisiblevisible)
+- [`setStatusBarStyle(style)`](#setstatusbarstylestyle)
+- [`setStatusBarTranslucent(translucent)`](#setstatusbartranslucenttranslucent)
 
 **[Types](#types)**
 
@@ -82,17 +81,17 @@ You will likely have multiple `StatusBar` components mounted in the same app at 
 
 #### Props
 
-- **barStyle (_[StatusBarStyle](#statusbarstyle)_)** - The color of the status bar text.
-- **animated (_boolean_)** - If the transition between status bar property changes, such as `barStyle`, should be animated.
+- **style (_[StatusBarStyle](#statusbarstyle)_)** - The color of the status bar text.
+- **animated (_boolean_)** - If the transition between status bar property changes, such as `style`, should be animated.
 - **hidden (_boolean_)** - If the status bar should be hidden.
 - **networkActivityIndicatorVisible (_boolean_)** - If the network activity indicator should be visible. _[iOS only]_
-- **showHideTransition (_[StatusBarAnimation](#statusbaranimation)_)** - The transition effect when showing and hiding the status bar. Defaults to `'fade'`. _[iOS only]_
+- **hideTransitionAnimation (_[StatusBarAnimation](#statusbaranimation)_)** - The transition effect when showing and hiding the status bar. Defaults to `'fade'`. _[iOS only]_
 - **backgroundColor (_string_)** - The background color of the status bar. _[Android only]_
 - **translucent (_boolean_)** - Whether the app can draw under the status bar. When `true`, content will be rendered under the status bar. This is always `true` on iOS and cannot be changed. On Android, the default is also `true` unless you have explicitly configured the `androidStatusBar.translucent` key in `app.json` to `false`. _[Android only]_
 
 ## Methods
 
-### `setBackgroundColor(backgroundColor)`
+### `setStatusBarBackgroundColor(backgroundColor)`
 
 Set the background color of the status bar. _[Android only]_
 
@@ -100,7 +99,7 @@ Set the background color of the status bar. _[Android only]_
 
 - **backgroundColor (_string_)** - The background color of the status bar.
 
-### `setHidden(hidden)`
+### `setStatusBarHidden(hidden)`
 
 Toggle visibility of the status bar.
 
@@ -108,7 +107,7 @@ Toggle visibility of the status bar.
 
 - **hidden (_boolean_)** - If the status bar should be hidden.
 
-### `setNetworkActivityIndicatorVisible(visible)`
+### `setStatusBarNetworkActivityIndicatorVisible(visible)`
 
 Toggle visibility of the network activity indicator. _[iOS only]_
 
@@ -116,15 +115,15 @@ Toggle visibility of the network activity indicator. _[iOS only]_
 
 - **visible (_boolean_)** - If the network activity indicator should be visible.
 
-### `setBarStyle(barStyle)`
+### `setStatusBarStyle(style)`
 
 Set the bar style of the status bar.
 
 #### Arguments
 
-- **barStyle (_[StatusBarStyle](#statusbarstyle)_)** - The color of the status bar text.
+- **style (_[StatusBarStyle](#statusbarstyle)_)** - The color of the status bar text.
 
-### `setTranslucent(translucent)`
+### `setStatusBarTranslucent(translucent)`
 
 Set the translucency of the status bar. _[Android only]_
 
@@ -144,4 +143,4 @@ See the props of the [StatusBar](#statusbar) component.
 
 ### `StatusBarStyle`
 
-A string, either: `'default'`, `'light-content'`, or `'dark-content'`.
+A string, either: `'auto'`, `'inverted'`, `'light'`, or `'dark'`.
