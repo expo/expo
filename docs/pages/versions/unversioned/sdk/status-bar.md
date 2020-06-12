@@ -59,8 +59,8 @@ import { StatusBar } from 'expo-status-bar';
 
 **[Methods](#methods)**
 
-- [`setStatusBarBackgroundColor(backgroundColor)`](#setstatusbarbackgroundcolorbackgroundcolor)
-- [`setStatusBarHidden(hidden)`](#setstatusbarhiddenhidden)
+- [`setStatusBarBackgroundColor(backgroundColor, animated)`](#setstatusbarbackgroundcolorbackgroundcolor-animated)
+- [`setStatusBarHidden(hidden, animation)`](#setstatusbarhiddenhidden-animation)
 - [`setStatusBarNetworkActivityIndicatorVisible(visible)`](#setstatusbarnetworkactivityindicatorvisiblevisible)
 - [`setStatusBarStyle(style)`](#setstatusbarstylestyle)
 - [`setStatusBarTranslucent(translucent)`](#setstatusbartranslucenttranslucent)
@@ -91,21 +91,23 @@ You will likely have multiple `StatusBar` components mounted in the same app at 
 
 ## Methods
 
-### `setStatusBarBackgroundColor(backgroundColor)`
+### `setStatusBarBackgroundColor(backgroundColor, animated)`
 
 Set the background color of the status bar. _[Android only]_
 
 #### Arguments
 
 - **backgroundColor (_string_)** - The background color of the status bar.
+- **animated (_boolean_)** - `true` to animate the background color change, `false` to change immediately.
 
-### `setStatusBarHidden(hidden)`
+### `setStatusBarHidden(hidden, animation)`
 
 Toggle visibility of the status bar.
 
 #### Arguments
 
 - **hidden (_boolean_)** - If the status bar should be hidden.
+- **animation (_[StatusBarAnimation](#statusbaranimation)_)** - Animation to use when toggling hidden, defaults to `'none'`.
 
 ### `setStatusBarNetworkActivityIndicatorVisible(visible)`
 

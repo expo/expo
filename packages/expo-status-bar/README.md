@@ -3,7 +3,7 @@
 Provides the same interface as the React Native [StatusBar API](https://reactnative.dev/docs/statusbar), but with slightly different defaults to work great in Expo environments.
 
 - Default to `translucent={true}` on Android.
-- The `barStyle="default"` maps to `barStyle="dark-content"` when the app is locked to light mode, and `barStyle="light-content"` when the app is locked to dark mode.
+- The `style="auto"` maps to a dark status bar when in light mode and a light status bar when in dark moded. `style="inverted"` inverts this behavior.
 
 # API documentation
 
