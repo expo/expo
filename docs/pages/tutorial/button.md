@@ -47,7 +47,8 @@ const styles = StyleSheet.create({
     color: '#888',
     fontSize: 18,
     marginHorizontal: 15,
-    marginBottom: 10,
+    /* @info It adds a margin of 10px below the Text */
+    marginBottom: 10,/* @end */
   },
 });
 ```
