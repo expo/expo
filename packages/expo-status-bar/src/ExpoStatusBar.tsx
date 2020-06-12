@@ -1,1 +1,6 @@
-export { StatusBar as default } from 'react-native';
+import { StatusBarProps } from './StatusBar.types';
+
+// StatusBar does nothing on web currently
+export default function ExpoStatusBar(props: StatusBarProps) {
+  return null;
+}
