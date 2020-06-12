@@ -21,14 +21,20 @@ export default class BlurViewScreen extends React.Component {
     const animateInConfig = {
       duration: 2500,
       toValue: 100,
+      useNativeDriver: false,
       isInteraction: false,
     };
-    const animateOutconfig = { duration: 2500, toValue: 0, isInteraction: false };
+    const animateOutconfig = {
+      duration: 2500,
+      toValue: 0,
+      isInteraction: false,
+      useNativeDriver: false,
+    };
 
     Animated.timing(intensity, animateInConfig).start(() => {
       Animated.timing(intensity, animateOutconfig).start(this._animate);
     });
-  }
+  };
 
   render() {
     const uri = 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png';
@@ -40,8 +46,7 @@ export default class BlurViewScreen extends React.Component {
           padding: 50,
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         {['default', 'light', 'dark'].map(tint => (
           <View
             key={tint}
@@ -49,8 +54,7 @@ export default class BlurViewScreen extends React.Component {
               padding: 6,
               alignItems: 'center',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             <Image style={{ width: 180, height: 180 }} source={{ uri }} />
 
             <AnimatedBlurView
