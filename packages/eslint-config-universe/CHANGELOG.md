@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Remove 'react/style-prop-object'
+
 ### 🐛 Bug fixes
 
 ## 3.0.2 — 2020-05-27

@@ -57,7 +57,7 @@ const sections = [
       'Authentication',
       'App Icons',
       'Create a Splash Screen',
-      'Configuring StatusBar',
+      'Configuring the Status Bar',
       'Configuring OTA Updates',
       'Preloading & Caching Assets',
       'Offline Support',

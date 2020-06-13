@@ -2936,6 +2936,11 @@ expo-sqlite@~8.2.1:
     "@expo/websql" "^1.0.1"
     lodash "^4.17.15"
 
+expo-status-bar@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-0.2.1.tgz#3f0a7b8246d87f658e13e5f17b5d62b7fdabbb83"
+  integrity sha512-3HLx5D4BPt7XW1NXdnw+lNrB37wwHbhaB+9FPJ+u3MdNe3kSj7yMSi912rN1R3JNejZ6BNFQ+woHIQ47oONZsA==
+
 expo-web-browser@~8.3.1:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-8.3.1.tgz#c88cc349dfa1db31cfdbe365753b6840054d0152"
