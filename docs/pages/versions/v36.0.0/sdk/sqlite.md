@@ -63,7 +63,36 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
   - **sqlStatement (_string_)** -- A string containing a database query to execute expressed as SQL. The string may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
   - **arguments (_array_)** -- An array of values (numbers or strings) to substitute for `?` placeholders in the SQL statement.
   - **success (_function_)** -- Called when the query is successfully completed during the transaction. Takes two parameters: the transaction itself, and a `ResultSet` object (see below) with the results of the query.
-  - **error (_function_)** -- Called if an error occured executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
+  - **error (_function_)** -- Called if an error occurred executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
+
+  #### Notes
+  
+  - To rollback a transaction either omit error callback (`null`) or return `true` from it:
+  ```js
+  // rollback automatically
+  tx.executeSql("...", [])
+  tx.executeSql("...", [], null, null)
+  
+  // handle error and rollback:
+  tx.executeSql("...", [], null, (tx, error) => {
+    console.error('SQL error, rollback...', error)
+    return true // rollback current transaction
+  })
+  ```
+
+  - `executeSql` calls can be nested:
+  ```js
+  tx.executeSql("...", [], (tx, resultSet) => {
+    // additional query in case of success
+    tx.executeSql("...", [])
+  }, (tx, error) => {
+    // recovery query in case of error
+    tx.executeSql("...", [])
+    
+    // error is handled
+    return false // do not rollback
+  })
+  ```
 
 ### `ResultSet` objects
 
