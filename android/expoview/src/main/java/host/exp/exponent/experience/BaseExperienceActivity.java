@@ -182,7 +182,10 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    mReactInstanceManager.call("onConfigurationChanged", this, newConfig);
+
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("onConfigurationChanged", this, newConfig);
+    }
   }
 
   protected void consumeErrorQueue() {
