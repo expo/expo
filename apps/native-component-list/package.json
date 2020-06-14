@@ -80,7 +80,6 @@
     "path": "^0.12.7",
     "pixi.js": "^4.6.1",
     "processing-js": "^1.6.6",
-    "prop-types": "^15.6.0",
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "react-native": "0.62.2",
