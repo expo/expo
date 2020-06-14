@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `isNetworkAsset` key for `AssetInfo` result from `getAssetInfoAsync`. ([#0000])(https://github.com/expo/expo/pull/0000) by [@jarvisluong](https://github.com/jarvisluong)
+- Added `isNetworkAsset` key for `AssetInfo` result from `getAssetInfoAsync`. ([#8800])(https://github.com/expo/expo/pull/8800) by [@jarvisluong](https://github.com/jarvisluong)
 
 ### 🐛 Bug fixes
 
