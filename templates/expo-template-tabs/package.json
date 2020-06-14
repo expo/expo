@@ -26,6 +26,7 @@
     "expo-font": "~8.2.1",
     "expo-linking": "^1.0.1",
     "expo-splash-screen": "~0.3.1",
+    "expo-status-bar": "^0.2.1",
     "expo-web-browser": "~8.3.1",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",

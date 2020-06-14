@@ -106,19 +106,15 @@ export default function AppContainer() {
 function App() {
   const colorScheme = useColorScheme();
 
-  const themeStatusBarStyle =
-    colorScheme === 'light' ? 'dark-content' : 'light-content';
-  const themeTextStyle =
-    colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
+  const themeStatusBarStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
+  const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
   const themeContainerStyle =
     colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
   return (
     <SafeAreaView style={[styles.container, themeContainerStyle]}>
       <StatusBar barStyle={themeStatusBarStyle} />
-      <Text style={[styles.text, themeTextStyle]}>
-        Color scheme: {colorScheme}
-      </Text>
+      <Text style={[styles.text, themeTextStyle]}>Color scheme: {colorScheme}</Text>
     </SafeAreaView>
   );
 }
@@ -143,3 +139,10 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+## Tips
+
+While you're developing, you may want to change your simulator's or device's appearance.
+
+- If working with an iOS emulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
+- If using a real device or an Android emulator, you can toggle the system dark mode setting in the device's settings.

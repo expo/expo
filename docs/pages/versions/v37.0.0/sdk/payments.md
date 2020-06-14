@@ -1,12 +1,12 @@
 ---
 title: Payments
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-payments-stripe'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-payments-stripe'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
+Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via the bare workflow, and Stripe on Android (plus Android Pay in bare).
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
@@ -252,7 +252,7 @@ const source = await stripe.createSourceWithParamsAsync(params);
 
 ## ApplePay [iOS]
 
-Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-expokit).
+Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-bare).
 
 ### `openApplePaySetupAsync()`
 
@@ -433,7 +433,7 @@ try {
 
 ## AndroidPay
 
-Android Pay (also known as Google Pay) is currently only supported on ExpoKit apps. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
+Android Pay (also known as Google Pay) is currently only supported in the bare workflow. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
 
 ```xml
 <meta-data
@@ -764,7 +764,7 @@ A source object returned from creating a source (via `createSourceWithParamsAsyn
 }
 ```
 
-## Enabling Apple Pay in ExpoKit
+## Enabling Apple Pay in bare
 
 If you want to use Apple Pay for payments, you'll need to set up your merchant ID in XCode first. Note that you do not need to go through this process to use the Payments module - you can still process payments with Stripe without going through the steps in this section.
 

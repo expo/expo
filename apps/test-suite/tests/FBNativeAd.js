@@ -4,8 +4,6 @@ import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
-
 const {
   NativeAdsManager,
   AdSettings,
@@ -41,9 +39,9 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
       <AdIconView />
       <View>
         <AdTriggerView>
-          {nativeAd.advertiserName && <Text>{nativeAd.advertiserName}</Text>}
-          {nativeAd.sponsoredTranslation && <Text>{nativeAd.sponsoredTranslation}</Text>}
-          {nativeAd.headline && <Text>{nativeAd.headline}</Text>}
+          {nativeAd.advertiserName ? <Text>{nativeAd.advertiserName}</Text> : null}
+          {nativeAd.sponsoredTranslation ? <Text>{nativeAd.sponsoredTranslation}</Text> : null}
+          {nativeAd.headline ? <Text>{nativeAd.headline}</Text> : null}
         </AdTriggerView>
       </View>
     </View>
@@ -69,28 +67,34 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('FacebookAds.NativeAd', () => {
-    const mountAndWaitFor = (child, propName = 'onAdLoaded') =>
-      originalMountAndWaitFor(child, propName, setPortalChild);
-
-    let nativeAd;
-
-    t.beforeAll(async () => {
-      nativeAd = await mountAndWaitFor(
-        <FullNativeAd adsManager={new NativeAdsManager(placementId)} />
-      );
-    });
-    t.afterEach(async () => await cleanupPortal());
-
     t.describe('when given a valid placementId', () => {
-      t.it('nativeAd properly mounted', () => {
-        t.expect(nativeAd).not.toBeNull();
-        t.expect(typeof nativeAd).toEqual('object');
-      });
+      let nativeAd;
+
+      const mountAndWaitFor = child =>
+        new Promise((resolve, reject) => {
+          const clonedChild = React.cloneElement(child, { onAdLoaded: resolve, onError: reject });
+          setPortalChild(clonedChild);
+        });
+
+      t.it(
+        'nativeAd properly mounted',
+        async () => {
+          try {
+            nativeAd = await mountAndWaitFor(
+              <FullNativeAd adsManager={new NativeAdsManager(placementId)} />
+            );
+            t.expect(nativeAd).not.toBeNull();
+            t.expect(typeof nativeAd).toEqual('object');
+          } finally {
+            await cleanupPortal();
+          }
+        },
+        30000
+      );
 
       variables.forEach(variable => {
         t.it(`checking if variable ${variable} is not null`, () => {
-          let value = nativeAd[variable];
-          t.expect(value).not.toBeNull();
+          t.expect(nativeAd ? nativeAd[variable] : null).not.toBeNull();
         });
       });
     });

@@ -158,22 +158,24 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
 - (void)startAndShowLaunchScreen:(UIWindow *)window
 {
+  NSBundle *mainBundle = [NSBundle mainBundle];
   UIViewController *rootViewController = [UIViewController new];
-  NSArray *views;
-  @try {
-    NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-    views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
-  } @catch (NSException *_) {
-    NSLog(@"LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
-  }
-  if (views) {
+  NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+  
+  if ([mainBundle pathForResource:launchScreen ofType:@"nib"] != nil) {
+    NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     rootViewController.view = views.firstObject;
     rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil) {
+    UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
+    rootViewController = [launchScreenStoryboard instantiateInitialViewController];
   } else {
+    NSLog(@"Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.");
     UIView *view = [UIView new];
-    view.backgroundColor = [UIColor whiteColor];;
+    view.backgroundColor = [UIColor whiteColor];
     rootViewController.view = view;
   }
+  
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
 

@@ -1,6 +1,6 @@
 ---
 title: FacebookAds
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-facebook'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-ads-facebook'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

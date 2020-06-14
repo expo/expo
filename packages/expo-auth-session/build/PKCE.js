@@ -50,4 +50,14 @@ export async function buildCodeAsync(size = 128) {
     const codeChallenge = await deriveChallengeAsync(codeVerifier);
     return { codeVerifier, codeChallenge };
 }
+/**
+ * Digest a random string with hex encoding, useful for creating `nonce`s.
+ */
+export async function generateHexStringAsync(size) {
+    const value = await generateRandomAsync(size);
+    const buffer = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value, {
+        encoding: Crypto.CryptoEncoding.HEX,
+    });
+    return convertToUrlSafeString(buffer);
+}
 //# sourceMappingURL=PKCE.js.map

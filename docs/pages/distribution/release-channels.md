@@ -5,6 +5,7 @@ title: Release Channels
 ## Introduction
 
 Use release channels in Expo to send out different versions of your application to your users by giving them a URL or configuring your standalone app. You should use release channels if:
+
 - You have an app in production and need a testing environment.
 - You have multiple versions of your app.
 
@@ -44,9 +45,9 @@ If you have a new version that you dont want v1 users getting, release v2 of you
 
 You can continue updating v1 of your app with `expo publish --release-channel prod-v1`, and users who havent updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
 
-## Using Release Channels with ExpoKit
+## Using Release Channels in the bare workflow
 
-Since `expo build` does not apply to ExpoKit projects, you can edit the native project's release channel manually by modifying the `releaseChannel` key in [EXShell.plist](https://github.com/expo/expo/blob/master/ios/Exponent/Supporting/EXShell.plist) (iOS) or the `RELEASE_CHANNEL` value in [AppConstants.java](https://github.com/expo/expo/blob/master/android/app/src/main/java/host/exp/exponent/generated/AppConstants.java) (Android).
+Since `expo build` does not apply to bare projects (yet), you can edit the native project's release channel manually by modifying the `EXUpdatesReleaseChannel` key in `Expo.plist` (iOS) or the `releaseChannel` meta-data tag value in `AndroidManifest.xml` (Android).
 
 ## Using Release Channels for Environment Variable Configuration
 
@@ -61,13 +62,12 @@ Say you have a workflow of releasing builds like this:
 - `expo publish --release-channel staging-v1`
 - `expo publish --release-channel staging-v2`
 
-
 You can create a function that looks for the specific release and sets the correct variable.
 
 ```javascript
 function getApiUrl(releaseChannel) {
-  if (releaseChannel === undefined) return App.apiUrl.dev // since releaseChannels are undefined in dev, return your default.
-  if (releaseChannel.indexOf('prod') !== -1) return App.apiUrl.prod // this would pick up prod-v1, prod-v2, prod-v3
-  if (releaseChannel.indexOf('staging') !== -1) return App.apiUrl.staging // return staging environment variables
+  if (releaseChannel === undefined) return App.apiUrl.dev; // since releaseChannels are undefined in dev, return your default.
+  if (releaseChannel.indexOf('prod') !== -1) return App.apiUrl.prod; // this would pick up prod-v1, prod-v2, prod-v3
+  if (releaseChannel.indexOf('staging') !== -1) return App.apiUrl.staging; // return staging environment variables
 }
 ```

@@ -62,3 +62,14 @@ export async function buildCodeAsync(
 
   return { codeVerifier, codeChallenge };
 }
+
+/**
+ * Digest a random string with hex encoding, useful for creating `nonce`s.
+ */
+export async function generateHexStringAsync(size: number): Promise<string> {
+  const value = await generateRandomAsync(size);
+  const buffer = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value, {
+    encoding: Crypto.CryptoEncoding.HEX,
+  });
+  return convertToUrlSafeString(buffer);
+}

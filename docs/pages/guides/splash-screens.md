@@ -103,15 +103,14 @@ There is a slight difference when it comes down to **standalone Android applicat
 In this scenario extra attention should be paid to [`android.splash` section](../../workflow/configuration/#android) configuration inside [`app.json`](../../workflow/configuration/#android).
 
 Depending on the `resizeMode` you will get the following behavior:
+
 - **contain** - on Android, the splash screen API is unable to stretch/scale the splash image (see the **native** mode). As a result, the `contain` mode will initially display only the background color, and when the initial view hierarchy is mounted then `splash.image` will be displayed.
 - **cover** - this mode has the limitations as **contain** for the same reasons.
-- **native** - in this mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up. Android (unlike iOS) does not support stretching the provided image, so the application will  present the given image centered on the screen. By default `splash.image` would be used as the `xxxdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
+- **native** - in this mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up. Android (unlike iOS) does not support stretching the provided image, so the application will present the given image centered on the screen. By default `splash.image` would be used as the `xxxdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
 
-### Ejected ExpoKit apps
+### Bare workflow apps
 
-If you run `expo eject` (choosing the ExpoKit option) on iOS and your app already uses the splash API, the resulting ExpoKit project will contain an Interface Builder launch screen file configured correctly for your app. After this, if you want to make changes to your app's splash screen, just edit the Interface Builder file directly.
-
-For people who run `expo eject` without the splash API, we add `isSplashScreenDisabled: YES` in your EXShell plist (iOS). If you later decide to use a splash screen in your ejected iOS project, add an Interface Builder file called `LaunchScreen` to your Xcode project, and delete this key from the plist.
+To setup and customize your splash screen in a bare app, refer to [this guide](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 ### Known issues
 

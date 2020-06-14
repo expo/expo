@@ -56,6 +56,10 @@ Please take a look at the [`res/drawable/splashscreen.xml`](#resdrawablesplashsc
 
 `expo-splash-screen` supports per-appearance splash screens that respond to system appearance changes on iOS 13+ and dark-mode changes on Android 10+.
 
+### StatusBar customization
+
+`expo-splash-screen` allows customization of the StatusBar according to the [ReactNative StatusBar API](https://reactnative.dev/docs/statusbar).
+
 ## 📚 API
 
 ```tsx
@@ -70,7 +74,7 @@ This method makes the native splash screen stay visible until [`SplashScreen.hid
 
 Preventing default autohiding might come in handy if your application needs to prepare/download some resources and/or make some API calls before first rendering some actual view hierarchy.
 
-### Returns
+#### Returns
 
 A `Promise` that resolves to `true` when preventing autohiding succeeded and to `false` if the native splash screen is already prevented from autohiding (for instance, if you've already called this method).
 `Promise` rejection most likely means that native splash screen cannot be prevented from autohiding (it's already hidden when this method was executed).
@@ -79,7 +83,7 @@ A `Promise` that resolves to `true` when preventing autohiding succeeded and to 
 
 Hides the native splash screen. Only works if the native splash screen has been previously prevented from autohiding by calling [`SplashScreen.preventAutoHideAsync()`](#splashscreenpreventautohideasync) method.
 
-### Returns
+#### Returns
 
 A `Promise` that resolves to `true` once the splash screen becomes hidden and to `false` if the splash screen is already hidden.
 
@@ -225,6 +229,7 @@ The guide below shows how to configure your Xcode project to use a single image 
 3. [Select `Content Mode` for the `ImageView` in `SplashScreen.storyboard`](#-select-content-mode-for-the-imageview-in-splashscreenstoryboard)
 4. [Mark `SplashScreen.storyboard` as the LaunchScreen](#-mark-splashscreenstoryboard-as-the-launchscreen)
 5. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode)
+6. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar)
 
 #### 🛠 Add an image to `Images.xcassets`
 
@@ -433,6 +438,27 @@ You might want to add a separate image for `dark` mode. If the system is switche
 If you're targeting a version of iOS < 11 then you cannot use `named color` feature and instead you need to generate images with desired background colors that are going to be used as the background for splash screen view.
 There is this awesome 1x1px png online generator: http://www.1x1px.me (use it to generate two 1x1px images with desired background colors for different color modes).
 
+#### 🛠 (<em>optional</em>) Customize StatusBar
+
+You might want to customize the StatusBar appearance during the time the SplashScreen is being shown.
+
+1. Customize `StatusBar hiding` flag:
+- open main project view, select your project name from `TARGETS` panel and navigate to `Info` tab,
+- add or modify `Status bar initially hidden` attribute with desired value.
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-statusBar-hidden.png" height="350" />
+</details>
+
+2. Customize `StatusBar style` option:
+- open main project view, select your project name from `TARGETS` panel and navigate to `Info` tab,
+- add or modify `Status bar style` attribute with desired value. 
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-statusBar-style.png" height="350" />
+</details>
 
 ## 🤖 Configure Android
 
@@ -452,8 +478,9 @@ The easiest way to configure the splash screen in bare React Native projects is 
 6. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
 7. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
 8. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
+9. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
 
-#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Class rootViewClass)`
+#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Boolean statusBarTranslucent)`
 
 This native method is used to hook `SplashScreen` into the native view hierarchy that is attached to the provided activity.
 
@@ -616,6 +643,102 @@ Values in this file are going to picked by the system when it is switched to `da
 
 You might want to provide a separate splash screen image for dark mode usage, and place it under the `res/drawable-night` directory with exactly the same name as the normal one.
 This step is optional, because you might want to have the same image in both `light` and `dark` modes (e.g. you have just a light-themed logo and you want to have different background colors in different modes).
+
+#### 🛠 (<em>optional</em>) Customize StatusBar
+
+You might want to customize the StatusBar appearance during the time the SplashScreen is being shown.
+
+1. Customize `StatusBar hiding` flag
+
+To have the StatusBar completely hidden you need to update your `res/values/styles.xml` file with the following entry (to prevent StatusBar from hiding either remove this entry or enter `false` as the value):
+
+```diff
+  <!-- Main/SplashScreen activity theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@drawable/splashscreen</item>
++   <item name="android:windowFullscreen">true</item>
+    <!-- Other style properties -->
+  </style>
+```
+
+If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night`, `res/values-night-v23`, etc.), be sure to update these files accordingly.
+
+Read more about `android:windowFullscreen` flag in [official Android documentation](https://developer.android.com/reference/android/R.attr#windowFullscreen).
+
+2. Customize `StatusBar style` option
+
+This option is only available for Android devices running Android 6.0 or greater.
+To enforce `light` or `dark` StatusBar style for given system color mode, you have to prepare or update your `res/values-v23/styles.xml` file with the following entry (as of this option being supported since API 23, you have to configure specifically named directory containing separate configuration files):
+
+```diff
+  <!-- Main/SplashScreen activity theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@drawable/splashscreen</item>
++   <item name="android:windowLightStatusBar">true|false</item>
+    <!-- Other style properties -->
+  </style>
+```
+
+Available values:
+  - `true` for having dark-colored icons,
+  - `false` for having light-colored icons.
+
+If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night-v23` (for dark color mode), etc.), be sure to update these files accordingly.
+
+Read more about `android:windowLightStatusBar` flag in [official Android documentation](https://developer.android.com/reference/android/R.attr#windowLightStatusBar).
+
+To read more about Android multi-API-level support see [this official documentation](https://developer.android.com/guide/topics/resources/providing-resources).
+
+3. Customize `StatusBar color` option (a.k.a. `background color` of the StatusBar component)
+
+To achieve custom background color you need to create a new color resource and provide it to the SplashScreen `style` description.
+
+Create new color resource in your `res/values/colors.xml` (if your application supports dark mode, consider adding different color in `res/values-night/colors.xml` file):
+
+```diff
+  <resources>
+    <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
+    <color name="splashscreen_background">#D0D0C0</color>
++   <color name="splashscreen_statusbar_color">#(AA)RRGGBB</color> <!-- #AARRGGBB or #RRGGBB format -->
+  </resources>
+```
+
+Update your `res/values/styles.xml` file with the following entry:
+
+```diff
+  <!-- Main/SplashScreen activity theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@drawable/splashscreen</item>
++   <item name="android:statusBarColor">@color/splashscreen_statusbar_color</item>
+    <!-- Other style properties -->
+  </style>
+```
+
+If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night`, `res/values-night-v23`, etc.), be sure to update these files accordingly.
+
+Read more about `android:statusBarColor` option in [official Android documentation](https://developer.android.com/reference/android/R.attr#statusBarColor).
+
+4. Customize `StatusBar translucent` flag
+
+When the StatusBar is translucent, the app will be able to draw under the StatusBar component area.
+
+To make the StatusBar translucent update your `MainActivity` file with the following content:
+
+```diff
+public class MainActivity extends ReactActivity {
+
+   @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // SplashScreen.show(...) has to be called after super.onCreate(...)
+    // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
+-   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, false);
++   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, true);
+  }
+
+  ...
+}
+```
 
 ## 👏 Contributing
 

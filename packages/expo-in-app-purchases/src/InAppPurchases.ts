@@ -34,14 +34,13 @@ const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 let connected = false;
 let purchaseUpdatedSubscription: Subscription;
 
-export async function connectAsync(): Promise<IAPQueryResponse> {
+export async function connectAsync(): Promise<void> {
   if (connected) {
     throw new ConnectionError(errors.ALREADY_CONNECTED);
   }
 
-  const result = await ExpoInAppPurchases.connectAsync();
+  await ExpoInAppPurchases.connectAsync();
   connected = true;
-  return result;
 }
 
 export async function getProductsAsync(itemList: string[]): Promise<IAPQueryResponse> {

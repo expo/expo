@@ -53,7 +53,7 @@ export enum ChangeType {
 export const UNPUBLISHED_VERSION_NAME = 'Unpublished';
 
 export const VERSION_EMPTY_PARAGRAPH_TEXT =
-  '*This version does not introduce any user-facing changes.*\n';
+  '_This version does not introduce any user-facing changes._\n';
 
 /**
  * Depth of headings that mean the version containing following changes.

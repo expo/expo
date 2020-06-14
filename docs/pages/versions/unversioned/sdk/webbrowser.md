@@ -74,7 +74,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   - **dismissButtonStyle (_optional_) (_string_)** -- (_iOS only_) The style of the dismiss button. Should be one of: `done`, `close`, or `cancel`.
   - **enableBarCollapsing (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website.
   - **enableDefaultShare (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether a default share item should be added to the menu.
-  - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
+  - **browserPackage (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
   - **readerMode (_optional_) (_boolean_)** -- (_iOS only_) a boolean determining whether Safari should enter Reader mode, if it is available.
   - **secondaryToolbarColor (_optional_) (_string_)** -- (_Android only_) color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`

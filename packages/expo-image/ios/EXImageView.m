@@ -1,9 +1,13 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import <expo-image/EXImageView.h>
+#import <expo-image/EXImageBorders.h>
+#import <expo-image/EXImageCornerRadii.h>
 #import <React/RCTConvert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTI18nUtil.h>
+#import <React/RCTBorderDrawing.h>
 
 static NSString * const sourceUriKey = @"uri";
 static NSString * const sourceScaleKey = @"scale";
@@ -13,10 +17,14 @@ static NSString * const sourceHeightKey = @"height";
 @interface EXImageView ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, strong) SDAnimatedImageView *imageView;
 @property (nonatomic, strong) NSDictionary *source;
 @property (nonatomic, assign) RCTResizeMode resizeMode;
 @property (nonatomic, assign) BOOL needsReload;
 @property (nonatomic, assign) CGSize intrinsicContentSize;
+@property (nonatomic, strong) EXImageCornerRadii *cornerRadii;
+@property (nonatomic, strong) EXImageBorders *borders;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, CALayer *> *cachedBorderLayers;
 
 @end
 
@@ -28,8 +36,18 @@ static NSString * const sourceHeightKey = @"height";
     _bridge = bridge;
     _needsReload = NO;
     _resizeMode = RCTResizeModeCover;
-    self.contentMode = [EXImageTypes resizeModeToContentMode:_resizeMode];
     _intrinsicContentSize = CGSizeZero;
+    _reactLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
+    _cornerRadii = [EXImageCornerRadii new];
+    _borders = [EXImageBorders new];
+    _cachedBorderLayers = [NSMutableDictionary dictionary];
+    
+    _imageView = [[SDAnimatedImageView alloc]initWithFrame:self.bounds];
+    _imageView.contentMode = [EXImageTypes resizeModeToContentMode:_resizeMode];
+    _imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+    _imageView.layer.masksToBounds = YES;
+    
+    [self addSubview:_imageView];
   }
   return self;
 }
@@ -37,7 +55,7 @@ static NSString * const sourceHeightKey = @"height";
 - (void)dealloc
 {
   // Stop any active operations or downloads
-  [self sd_cancelCurrentImageLoad];
+  [_imageView sd_cancelCurrentImageLoad];
 }
 
 # pragma mark -  Custom prop setters
@@ -59,7 +77,7 @@ static NSString * const sourceHeightKey = @"height";
   // and requires a reload of the image for the post-process function to run.
   _needsReload = _needsReload || (resizeMode == RCTResizeModeRepeat) || (_resizeMode == RCTResizeModeRepeat);
   _resizeMode = resizeMode;
-  self.contentMode = [EXImageTypes resizeModeToContentMode:resizeMode];
+  _imageView.contentMode = [EXImageTypes resizeModeToContentMode:resizeMode];
 }
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
@@ -75,11 +93,11 @@ static NSString * const sourceHeightKey = @"height";
   // We want to call onError, onLoadEnd for the previous image load
   // before calling onLoadStart for the next image load.
   [self sd_cancelCurrentImageLoad];
-
+  
   if (self.onLoadStart) {
     self.onLoadStart(@{});
   }
-
+  
   NSURL *imageURL = [RCTConvert NSURL:_source[sourceUriKey]];
   NSNumber *scale = _source[sourceScaleKey];
   NSNumber *width = _source[sourceWidthKey];
@@ -94,7 +112,7 @@ static NSString * const sourceHeightKey = @"height";
   }
   
   NSMutableDictionary *context = [NSMutableDictionary new];
-
+  
   // Only apply custom scale factors when neccessary. The scale factor
   // affects how the image is rendered when resizeMode `center` and `repeat`
   // are used. On animated images, applying a scale factor may cause
@@ -102,13 +120,13 @@ static NSString * const sourceHeightKey = @"height";
   if (scale && scale.doubleValue != 1.0) {
     [context setValue:scale forKey:SDWebImageContextImageScaleFactor];
   }
-
-  [self sd_setImageWithURL:imageURL
-          placeholderImage:nil
-                   options:SDWebImageAvoidAutoSetImage
-                   context:context
-                  progress:[self progressBlock]
-                 completed:[self completionBlock]];
+  
+  [_imageView sd_setImageWithURL:imageURL
+                placeholderImage:nil
+                         options:SDWebImageAvoidAutoSetImage
+                         context:context
+                        progress:[self progressBlock]
+                       completed:[self completionBlock]];
 }
 
 - (SDImageLoaderProgressBlock)progressBlock
@@ -120,12 +138,12 @@ static NSString * const sourceHeightKey = @"height";
       // Nothing to do
       return;
     }
-
+    
     if (strongSelf.onProgress) {
       strongSelf.onProgress(@{
         @"loaded": @(receivedSize),
         @"total": @(expectedSize)
-      });
+                            });
     }
   };
 }
@@ -143,7 +161,7 @@ static NSString * const sourceHeightKey = @"height";
       // Nothing to do
       return;
     }
-
+    
     // Modifications to the image like changing the resizing-mode or cap-insets
     // cannot be handled using a SDWebImage transformer, because they don't change
     // the image-data and this causes this "meta" data to be lost in the SDWebImage caching process.
@@ -158,10 +176,10 @@ static NSString * const sourceHeightKey = @"height";
     if (!width && !height) {
       [strongSelf updateIntrinsicContentSize:image.size internalAsset:NO];
     }
-
+    
     // Update image
-    strongSelf.image = image;
-
+    strongSelf.imageView.image = image;
+    
     if (error && strongSelf.onError) {
       strongSelf.onError(@{
         @"error": error.localizedDescription,
@@ -173,7 +191,7 @@ static NSString * const sourceHeightKey = @"height";
             @"failureReason": error.localizedFailureReason ?: [NSNull null],
             @"recoverySuggestion": error.localizedRecoverySuggestion ?: [NSNull null]
         }
-      });
+                         });
     } else if (image && strongSelf.onLoad) {
       strongSelf.onLoad(@{
         @"cacheType": @([EXImageTypes convertToCacheTypeEnum:cacheType]),
@@ -183,11 +201,58 @@ static NSString * const sourceHeightKey = @"height";
             @"height": @(image.size.height),
             @"mediaType": [EXImageTypes sdImageFormatToMediaType:image.sd_imageFormat] ?: [NSNull null]
         }
-      });
+                        });
     }
   };
 }
 
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  if (![_imageView.backgroundColor isEqual:backgroundColor]) {
+    _imageView.backgroundColor = backgroundColor;
+    [self.layer setNeedsDisplay];
+  }
+}
+
+- (void)reactSetFrame:(CGRect)frame
+{
+  CGSize oldSize = self.bounds.size;
+  [super reactSetFrame:frame];
+  if (!CGSizeEqualToSize(self.bounds.size, oldSize)) {
+    [self.layer setNeedsDisplay];
+  }
+}
+
+- (void)displayLayer:(CALayer *)layer
+{
+  if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
+    return;
+  }
+  
+  CGRect bounds = self.bounds;
+  [_cornerRadii updateShadowPathForLayer:self.layer bounds:bounds];
+  [_cornerRadii updateClipMaskForLayer:_imageView.layer bounds:bounds];
+  
+  RCTCornerRadii cornerRadii = [_cornerRadii radiiForBounds:bounds];
+  [_borders updateLayersForView:_imageView cornerRadii:cornerRadii bounds:bounds cachedLayers:_cachedBorderLayers];
+}
+
+- (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+{
+  if (_reactLayoutDirection != layoutDirection) {
+    _reactLayoutDirection = layoutDirection;
+    _cornerRadii.layoutDirection = layoutDirection;
+    _borders.layoutDirection = layoutDirection;
+    [self.layer setNeedsDisplay];
+  }
+  
+  if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+    self.semanticContentAttribute = layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight
+    ? UISemanticContentAttributeForceLeftToRight
+    : UISemanticContentAttributeForceRightToLeft;
+  }
+}
 
 # pragma mark -  Intrinsic content size
 
@@ -212,5 +277,72 @@ static NSString * const sourceHeightKey = @"height";
     }
   }
 }
+
+#pragma mark - Border Radius
+
+#define borderRadius(side, corner2)                      \
+-(CGFloat)border##side##Radius                           \
+{                                                        \
+return [_cornerRadii radiusForCorner:corner2];           \
+}                                                        \
+-(void)setBorder##side##Radius : (CGFloat)radius         \
+{                                                        \
+if ([_cornerRadii setRadius:radius corner:corner2]) {    \
+[self.layer setNeedsDisplay];                          \
+}                                                        \
+}
+
+borderRadius(,EXImageCornerAll)
+borderRadius(TopLeft, EXImageCornerTopLeft)
+borderRadius(TopRight, EXImageCornerTopRight)
+borderRadius(TopStart, EXImageCornerTopStart)
+borderRadius(TopEnd, EXImageCornerTopEnd)
+borderRadius(BottomLeft, EXImageCornerBottomLeft)
+borderRadius(BottomRight, EXImageCornerBottomRight)
+borderRadius(BottomStart, EXImageCornerBottomStart)
+borderRadius(BottomEnd, EXImageCornerBottomEnd)
+
+
+#pragma mark Border Color / Width / Style
+
+#define borderEdge(side, border2)                         \
+-(CGColorRef)border##side##Color                          \
+{                                                         \
+return [_borders colorForBorder:border2];                 \
+}                                                         \
+-(void)setBorder##side##Color : (CGColorRef)color         \
+{                                                         \
+if ([_borders setColor:color border:border2]) {           \
+[self.layer setNeedsDisplay];                           \
+}                                                         \
+}                                                         \
+-(CGFloat)border##side##Width                             \
+{                                                         \
+return [_borders widthForBorder:border2];                 \
+}                                                         \
+-(void)setBorder##side##Width : (CGFloat)width            \
+{                                                         \
+if ([_borders setWidth:width border:border2]) {           \
+[self.layer setNeedsDisplay];                           \
+}                                                         \
+}                                                         \
+-(RCTBorderStyle)border##side##Style                      \
+{                                                         \
+return [_borders styleForBorder:border2];                 \
+}                                                         \
+-(void)setBorder##side##Style : (RCTBorderStyle)style     \
+{                                                         \
+if ([_borders setStyle:style border:border2]) {           \
+[self.layer setNeedsDisplay];                           \
+}                                                         \
+}
+
+borderEdge(,EXImageBorderAll)
+borderEdge(Top,EXImageBorderTop)
+borderEdge(Right,EXImageBorderRight)
+borderEdge(Bottom,EXImageBorderBottom)
+borderEdge(Left,EXImageBorderLeft)
+borderEdge(Start,EXImageBorderStart)
+borderEdge(End,EXImageBorderEnd)
 
 @end

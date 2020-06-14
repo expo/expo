@@ -15,6 +15,7 @@ type AdContainerProps<P> = {
   adsManager: AdsManager;
   // TODO: rename this to onAdLoad
   onAdLoaded?: ((ad: NativeAd) => void) | null;
+  onError?: (error: Error) => void;
 } & Pick<P, Exclude<keyof P, keyof AdProps>>;
 
 type AdContainerState = {
@@ -41,7 +42,8 @@ export default function withNativeAd<P>(
   Component: React.ComponentType<P & AdProps>
 ): React.ComponentType<AdContainerProps<P>> {
   return class NativeAdContainer extends React.Component<AdContainerProps<P>, AdContainerState> {
-    _subscription: EventSubscription | null = null;
+    _readySubscription: EventSubscription | null = null;
+    _errorSubscription: EventSubscription | null = null;
     _nativeAdViewRef = React.createRef<NativeAdView>();
     _adMediaViewNodeHandle: number | null = null;
     _adIconViewNodeHandle: number | null = null;
@@ -60,16 +62,31 @@ export default function withNativeAd<P>(
     componentDidMount() {
       if (!this.state.canRequestAds) {
         // On mounting, listen to the ads manager to learn when it is ready to display ads
-        this._subscription = this.props.adsManager.onAdsLoaded(() => {
+        this._readySubscription = this.props.adsManager.onAdsLoaded(() => {
           this.setState({ canRequestAds: true });
         });
       }
+      this._errorSubscription = this.props.adsManager.onAdsErrored(error => {
+        // From what I, @sjchmiela, understand, an error may be encountered multiple times
+        // and it does *not* mean that the manager is not able to request ads at all -
+        // - this may have been an intermittent error -- that's why we don't set canRequestAds to false
+        // here.
+        // If the configuration is invalid from the start, the manager will never emit
+        // the onAdsLoaded event and the component would never think it could request ads.
+        if (this.props.onError) {
+          this.props.onError(error);
+        }
+      });
     }
 
     componentWillUnmount() {
-      if (this._subscription) {
-        this._subscription.remove();
-        this._subscription = null;
+      if (this._readySubscription) {
+        this._readySubscription.remove();
+        this._readySubscription = null;
+      }
+      if (this._errorSubscription) {
+        this._errorSubscription.remove();
+        this._errorSubscription = null;
       }
     }
 

@@ -447,7 +447,7 @@ export default function App() {
   - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
 <AuthCodeTab>
 
@@ -475,7 +475,7 @@ export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'user_likes'],
+      scopes: ['public_profile','email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -553,7 +553,7 @@ export default function App() {
       responseType: ResponseType.Token,
       /* @end */
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'user_likes'],
+      scopes: ['public_profile','email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -576,6 +576,103 @@ export default function App() {
       /* @info Use this access token to interact with user data on the provider's server. */
       const { access_token } = response.params;
       /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({
+        /* @end */
+          useProxy,
+          windowFeatures: { width: 700, height: 600 }
+        });
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</ImplicitTab>
+
+<ImplicitTab>
+
+- It's important that you request at least the `['public_profile', 'email']` scopes, otherwise Firebase won't display the user info correctly in the auth panel.
+- Be sure to setup Facebook auth as described above, this is basically identical.
+- 🔥 Create a new Firebase project
+- Enable Facebook auth, save the project.
+
+<SnackInline label='Facebook Firebase' dependencies={['expo-auth-session', 'expo-web-browser', 'firebase']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import firebase from 'firebase';
+import { Button, Platform } from 'react-native';
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    /* Config */
+  });
+}
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+};
+
+const useProxy = Platform.select({ web: false, default: true });
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
+      clientId: '<YOUR FBID>',
+      scopes: ['public_profile', 'email', 'user_likes'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        useProxy,
+        // For usage in bare and standalone
+        // Use your FBID here. The path MUST be `authorize`.
+        native: 'fb111111111111://authorize',
+      }),
+      extraParams: {
+        // Use `popup` on web for a better experience
+        display: Platform.select({ web: 'popup' }),
+        // Optionally you can use this to rerequest declined permissions
+        auth_type: 'rerequest',
+      },
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+
+      /* @info Create a Facebook credential with the <code>access_token</code> */
+      const credential = firebase.auth.FacebookAuthProvider.credential(access_token);
+      /* @end */
+      // Sign in with the credential from the Facebook user.
+      firebase.auth().signInWithCredential(credential)
     }
   }, [response]);
 
@@ -869,7 +966,7 @@ export default function App() {
 - You can change the UI language by setting `extraParams.hl` to an ISO language code (ex: `fr`, `en-US`). Defaults to the best estimation based on the users browser.
 - You can set which email address to use ahead of time by setting `extraParams.login_hint`.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 <AuthCodeTab>
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -905,12 +1002,11 @@ export default function App() {
 
       // Optional
       extraParams: {
-        // Change language
-        hl: 'fr',
-        // Select the user
-        login_hint: 'user@gmail.com',
+        /// Change language
+        // hl: 'fr',
+        /// Select the user
+        // login_hint: 'user@gmail.com',
       },
-      scopes: ['openid', 'profile'],
     },
     discovery
   );
@@ -985,12 +1081,11 @@ export default function App() {
 
       // Optional
       extraParams: {
-        // Change language
-        hl: 'fr',
-        // Select the user
-        login_hint: 'user@gmail.com',
+        /// Change language
+        // hl: 'fr',
+        /// Select the user
+        // login_hint: 'user@gmail.com',
       },
-      scopes: ['openid', 'profile'],
     },
     discovery
   );
@@ -1020,6 +1115,123 @@ export default function App() {
 ```
 
 </SnackInline>
+
+</ImplicitTab>
+
+<ImplicitTab>
+
+- 🔥 Create a new Firebase project
+- Enable Google auth
+  - Open "Web SDK configuration"
+  - Save "Web client ID" you'll need it later
+  - Press Save
+- Replace `YOUR_GUID` with your "Web client ID" and open this link:
+  - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
+- Under "URIs" add your hosts URLs
+  - Web dev: https://localhost:19006
+  - Expo Client Proxy: https://auth.expo.io
+- Under "Authorized redirect URIs"
+  - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
+  - Expo Client Proxy: https://auth.expo.io/@yourname/your-app
+
+<img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
+
+<SnackInline label='Google Firebase' dependencies={['expo-auth-session', 'expo-web-browser', 'firebase']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest, useAutoDiscovery, generateHexStringAsync } from 'expo-auth-session';
+import firebase from 'firebase';
+import { Button, Platform } from 'react-native';
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    /* Config */
+  });
+}
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+const useProxy = Platform.select({ web: false, default: true });
+
+// Generate a random hex string for the nonce parameter
+function useNonce() {
+  const [nonce, setNonce] = React.useState(null);
+  React.useEffect(() => {
+    generateHexStringAsync(16).then(value => setNonce(value));
+  }, []);
+  return nonce;
+}
+
+export default function App() {
+  const nonce = useNonce();
+  // Endpoint
+  const discovery = useAutoDiscovery('https://accounts.google.com');
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>id_token</code>, which Firebase expects. */
+      responseType: ResponseType.IdToken,
+      /* @end */
+      /* @info This comes from the Firebase Google authentication panel. */
+      clientId: 'Your-Web-Client-ID.apps.googleusercontent.com',
+      /* @end */
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        useProxy,
+      }),
+      scopes: [
+        'openid',
+        'profile',
+        'email',
+      ],
+      extraParams: {
+        nonce,
+      }
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { id_token } = response.params;
+      /* @end */
+
+      /* @info Create a Google credential with the <code>id_token</code> */
+      const credential = firebase.auth.GoogleAuthProvider.credential(id_token);
+      /* @end */
+      firebase.auth().signInWithCredential(credential);
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request || !nonce)}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+- 💡 This auth is different because it requires the following to retrieve the `id_token` parameter:
+  - `openid` in the `scope`s
+  - `responseType` set to `ResponseType.IdToken` (`'id_token'`)
+  - `extraParams.nonce` must be defined.
 
 </ImplicitTab>
 

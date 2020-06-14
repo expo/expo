@@ -5,6 +5,38 @@ title: Using Custom Fonts
 Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. And since each
 operating system has its own set of platform fonts, if you want to produce an experience that is consistent for all users, you'll want to use your own fonts in your project. This guide will show you how to do that.
 
+## Using a Google Font
+
+Expo has first-class support for all fonts listed in [Google Fonts](https://fonts.google.com/). To use one of these, check out the [Expo Google Fonts](https://github.com/expo/google-fonts) project. With these packages you can quickly integrate any font or font variants.
+
+To use the Inter font you can install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
+
+```sh
+$ expo install expo-font @expo-google-fonts/inter
+```
+
+After that, you can integrate this in your project by using the `useFonts` hook in the root of your app.
+
+```js
+import React from 'react';
+import { useFonts, Inter_900Black } from '@expo-google-fonts/inter';
+
+export default function App() {
+  let [fontsLoaded] = useFonts({
+    Inter_900Black,
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
+
+  return (
+    <Text style={{ fontFamily: 'Inter_900Black' }}>Inter Black</Text>
+  );
+}
+```
+
+
 ## A minimal but complete working example
 
 To create a new project including this example, run `npx create-react-native-app --template with-custom-font` in your terminal.
@@ -44,8 +76,6 @@ for you, that's fine; the platform default font can vary depending on the operat
 ## Getting a font
 
 The first thing you'll need is a font file. In this example, we use Inter Black from the free and open source [Inter font family](https://rsms.me/inter/) by Rasmus Anderson. The convention in Expo apps is to put your fonts in an `./assets/fonts` directory, but you can put them anywhere you like.
-
-Another great resource for fonts is Google Fonts, which is made available conveniently through the [@expo/google-fonts](https://github.com/expo/google-fonts) package.
 
 ### Supported font formats
 

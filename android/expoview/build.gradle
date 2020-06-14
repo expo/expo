@@ -6,7 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '37.0.0'
+version = '38.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -144,7 +144,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:37.0.0'
+  api 'com.facebook.react:react-native:38.0.0'
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
@@ -180,6 +180,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_38
+  api 'host.exp:reactandroid-abi38_0_0:1.0.0'
+  // END_SDK_38
   // BEGIN_SDK_37
   api 'host.exp:reactandroid-abi37_0_0:1.0.0'
   // END_SDK_37
