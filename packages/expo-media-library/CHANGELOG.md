@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `isNetworkAsset` key for `AssetInfo` result from `getAssetInfoAsync`. ([#0000])(https://github.com/expo/expo/pull/0000) by [@jarvisluong](https://github.com/jarvisluong)
+
 ### 🐛 Bug fixes
 
 ## 8.2.1 — 2020-05-29
