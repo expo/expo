@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Handled the crash when calling `getAssetInfoAsync` on a slow motion video on iOS. ([#8802](https://github.com/expo/expo/pull/8802 by [@jarvisluong](https://github.com/jarvisluong))
+- Handled the crash when calling `getAssetInfoAsync` on a slow motion video on iOS. ([#8802](https://github.com/expo/expo/pull/8802) by [@jarvisluong](https://github.com/jarvisluong))
 
 ## 8.2.1 — 2020-05-29
 
