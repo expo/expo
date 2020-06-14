@@ -410,6 +410,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                                  completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
         result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
         result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
+        result[@"isNetworkAsset"] = [info objectForKey:PHContentEditingInputResultIsInCloudKey];
         
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;
@@ -424,6 +425,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                                                 resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
         AVURLAsset *urlAsset = (AVURLAsset *)asset;
         result[@"localUri"] = [[urlAsset URL] absoluteString];
+        result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
         resolve(result);
       }];
     }
