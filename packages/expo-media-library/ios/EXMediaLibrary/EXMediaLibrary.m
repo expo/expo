@@ -422,9 +422,31 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
       [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                       options:options
                                                 resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-        AVURLAsset *urlAsset = (AVURLAsset *)asset;
-        result[@"localUri"] = [[urlAsset URL] absoluteString];
-        resolve(result);
+        // Slow motion videos are returned as an AVComposition instance
+        if ([asset isKindOfClass:[AVComposition class]]) {
+            NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"MediaLibrary"];
+            [self.fileSystem ensureDirExistsWithPath:directory];
+            NSString *videoOutoutFileName = [NSString stringWithFormat:@"slowMoVideo-%d.mov",arc4random() % 1000];
+            NSString *videoFileOutputPath = [directory stringByAppendingPathComponent:videoOutoutFileName];
+            NSURL *videoFileOutputURL = [NSURL fileURLWithPath:videoFileOutputPath];
+            
+            AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:asset presetName:AVAssetExportPresetHighestQuality];
+            exporter.outputURL = videoFileOutputURL;
+            exporter.outputFileType = AVFileTypeQuickTimeMovie;
+            exporter.shouldOptimizeForNetworkUse = YES;
+                                
+            [exporter exportAsynchronouslyWithCompletionHandler:^{
+                if (exporter.status == AVAssetExportSessionStatusCompleted) {
+                    result[@"localUri"] = videoFileOutputURL.absoluteString;
+                    resolve(result);
+                }
+            }];
+            
+        } else {
+            AVURLAsset *urlAsset = (AVURLAsset *)asset;
+            result[@"localUri"] = [[urlAsset URL] absoluteString];
+            resolve(result);
+        }
       }];
     }
   } else {
