@@ -12,7 +12,7 @@ iOS: Values are stored using the [keychain services](https://developer.apple.com
 
 Android: Values are stored in [`SharedPreferences`](https://developer.android.com/training/basics/data-storage/shared-preferences.html), encrypted with [Android's Keystore system](https://developer.android.com/training/articles/keystore.html).
 
-**Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, but we will throw an error starting from SDK 35.**
+**Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, but in a future SDK version, we may throw an error.**
 
 <PlatformsSection android emulator ios simulator />
 
