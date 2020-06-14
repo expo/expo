@@ -53,6 +53,7 @@ export type AssetInfo = Asset & {
   location?: Location;
   exif?: object;
   isFavorite?: boolean; //iOS only
+  isNetworkAsset?: boolean; //iOS only
 };
 
 export type Location = {

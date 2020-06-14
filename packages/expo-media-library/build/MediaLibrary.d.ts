@@ -36,6 +36,7 @@ export declare type AssetInfo = Asset & {
     location?: Location;
     exif?: object;
     isFavorite?: boolean;
+    isNetworkAsset?: boolean;
 };
 export declare type Location = {
     latitude: number;
