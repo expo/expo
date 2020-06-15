@@ -599,7 +599,7 @@ Alias: `expo u`
 </p>
 </details>
 
-<details><summary><h3>expo webhooks:sset</h3><p>Set a webhook for the project.</p></summary>
+<details><summary><h3>expo webhooks:set</h3><p>Set a webhook for the project.</p></summary>
 <p>
 
 | Option              | Description                                                                                                             |
