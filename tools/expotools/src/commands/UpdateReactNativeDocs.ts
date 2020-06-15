@@ -20,7 +20,11 @@ type DocsSummary = {
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
-const RN_WEBSITE_DIR = path.join(DOCS_DIR, 'react-native-website');
+const SDK_DOCS_DIR = path.join(DOCS_DIR, 'pages', 'versions');
+
+const RN_REPO_DIR = path.join(DOCS_DIR, 'react-native-website');
+const RN_WEBSITE_DIR = path.join(RN_REPO_DIR, 'website');
+const RN_DOCS_DIR = path.join(RN_REPO_DIR, 'docs');
 
 const PREFIX_ADDED = 'ADDED_';
 const PREFIX_REMOVED = 'REMOVED_';
@@ -104,17 +108,17 @@ async function validateGitStatusAsync() {
 async function updateDocsAsync(options: Options) {
   console.log(`Updating ${chalk.cyan('react-native-website')} submodule...`);
 
-  await spawnAsync('git', ['checkout', 'master'], { cwd: RN_WEBSITE_DIR });
-  await spawnAsync('git', ['pull'], { cwd: RN_WEBSITE_DIR });
+  await spawnAsync('git', ['checkout', 'master'], { cwd: RN_REPO_DIR });
+  await spawnAsync('git', ['pull'], { cwd: RN_REPO_DIR });
 
   try {
-    await spawnAsync('git', ['checkout', options.from], { cwd: RN_WEBSITE_DIR });
+    await spawnAsync('git', ['checkout', options.from], { cwd: RN_REPO_DIR });
   } catch (error) {
     throw new Error(`The --from commit "${options.from}" doesn't exists in the submodule.`);
   }
 
   try {
-    await spawnAsync('git', ['checkout', options.to], { cwd: RN_WEBSITE_DIR });
+    await spawnAsync('git', ['checkout', options.to], { cwd: RN_REPO_DIR });
   } catch (error) {
     throw new Error(`The --to commit "${options.to}" doesn't exists in the submodule.`);
   }
@@ -123,7 +127,7 @@ async function updateDocsAsync(options: Options) {
 async function getLocalFilesAsync(options: Options) {
   console.log(`Resolving local docs from ${chalk.yellow(options.sdk)} folder...`);
 
-  const versionedDocsPath = path.join(DOCS_DIR, 'pages', 'versions', options.sdk, 'react-native');
+  const versionedDocsPath = path.join(SDK_DOCS_DIR, options.sdk, 'react-native');
   const files = await fs.promises.readdir(versionedDocsPath);
 
   return files.map(entry => entry.replace('.md', ''));
@@ -132,8 +136,7 @@ async function getLocalFilesAsync(options: Options) {
 async function getUpstreamFilesAsync(options: Options) {
   console.log(`Resolving upstream docs from ${chalk.cyan('react-native-website')} submodule...`);
 
-  const docsPath = path.join(RN_WEBSITE_DIR, 'docs');
-  const sidebarPath = path.join(RN_WEBSITE_DIR, 'website', 'sidebars.json');
+  const sidebarPath = path.join(RN_WEBSITE_DIR, 'sidebars.json');
   const sidebarData = await fs.readJson(sidebarPath);
 
   let relevantNestedDocs: any[] = [];
@@ -164,7 +167,7 @@ async function getUpstreamFilesAsync(options: Options) {
   });
 
   for (const entry of relevantDocs.flat()) {
-    const docExists = await fs.pathExists(path.join(docsPath, `${entry}.md`));
+    const docExists = await fs.pathExists(path.join(RN_DOCS_DIR, `${entry}.md`));
     const docIsIgnored = DOCS_IGNORED.includes(entry);
 
     if (docExists && !docIsIgnored) {
@@ -196,9 +199,11 @@ async function applyRemovedFilesAsync(options: Options, summary: DocsSummary) {
       continue;
     }
 
+    const sdkDocsDir = path.join(SDK_DOCS_DIR, options.sdk, 'react-native');
+
     await fs.move(
-      path.join(DOCS_DIR, 'pages', 'versions', options.sdk, 'react-native', `${entry}.md`),
-      path.join(DOCS_DIR, 'pages', 'versions', options.sdk, 'react-native', `${PREFIX_REMOVED}${entry}.md`),
+      path.join(sdkDocsDir, `${entry}.md`),
+      path.join(sdkDocsDir, `${PREFIX_REMOVED}${entry}.md`),
     );
   }
 
@@ -216,8 +221,8 @@ async function applyAddedFilesAsync(options: Options, summary: DocsSummary) {
     }
 
     await fs.copyFile(
-      path.join(RN_WEBSITE_DIR, 'docs', `${entry}.md`),
-      path.join(DOCS_DIR, 'pages', 'versions', options.sdk, 'react-native', `${PREFIX_ADDED}${entry}.md`),
+      path.join(RN_DOCS_DIR, `${entry}.md`),
+      path.join(SDK_DOCS_DIR, options.sdk, 'react-native', `${PREFIX_ADDED}${entry}.md`),
     );
   }
 
@@ -230,10 +235,9 @@ async function applyChangedFilesAsync(options: Options, summary: DocsSummary) {
   }
 
   for (const entry of summary.changed) {
-    const upstreamDir = path.join(RN_WEBSITE_DIR, 'docs');
-    const diffPath = path.join(DOCS_DIR, 'pages', 'versions', options.sdk, 'react-native', `${entry}.diff`);
+    const diffPath = path.join(SDK_DOCS_DIR, options.sdk, 'react-native', `${entry}.diff`);
 
-    const { output: diff } = await spawnAsync('git', ['format-patch', `${options.from}..HEAD`, '--relative', `${entry}.md`, '--stdout'], { cwd: upstreamDir });
+    const { output: diff } = await spawnAsync('git', ['format-patch', `${options.from}..HEAD`, '--relative', `${entry}.md`, '--stdout'], { cwd: RN_DOCS_DIR });
     await fs.writeFile(diffPath, diff.join(''));
   }
 
