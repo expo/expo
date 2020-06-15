@@ -81,7 +81,7 @@ function App() {
     return (
       <View>
         <Text>Permission is not granted</Text>
-        <Button title="Grant permission" onPress={askPermission} />
+        <Button title="Grant permission" onPress={askForPermission} />
       </View>
     );
   }
