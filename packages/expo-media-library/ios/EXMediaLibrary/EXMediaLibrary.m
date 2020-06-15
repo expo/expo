@@ -426,8 +426,8 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
         if ([asset isKindOfClass:[AVComposition class]]) {
             NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"MediaLibrary"];
             [self.fileSystem ensureDirExistsWithPath:directory];
-            NSString *videoOutoutFileName = [NSString stringWithFormat:@"slowMoVideo-%d.mov",arc4random() % 1000];
-            NSString *videoFileOutputPath = [directory stringByAppendingPathComponent:videoOutoutFileName];
+            NSString *videoOutputFileName = [NSString stringWithFormat:@"slowMoVideo-%d.mov",arc4random() % 1000];
+            NSString *videoFileOutputPath = [directory stringByAppendingPathComponent:videoOutputFileName];
             NSURL *videoFileOutputURL = [NSURL fileURLWithPath:videoFileOutputPath];
             
             AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:asset presetName:AVAssetExportPresetHighestQuality];
