@@ -22,6 +22,8 @@ RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
 
+RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
+
 - (UIView *)view
 {
   return [[EXImageView alloc] initWithBridge:self.bridge];
