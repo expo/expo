@@ -37,13 +37,13 @@ async function action(input: Options) {
     await getUpstreamFilesAsync(options),
   );
 
-  console.log('');
+  console.log();
 
   await applyChangedFilesAsync(options, summary);
   await applyAddedFilesAsync(options, summary);
   await applyRemovedFilesAsync(options, summary);
 
-  console.log('');
+  console.log();
   console.log('Update completed successfully.');
   console.log('Please check the files in the versioned react-native folder.');
   console.log('To revert the changes, use `git clean -xdf .` and `git checkout .` in the versioned folder.');
@@ -85,7 +85,7 @@ async function validateGitStatusAsync() {
     default: false,
   });
 
-  console.log('');
+  console.log();
 
   return useDirtyGit;
 }
@@ -133,11 +133,11 @@ async function getUpstreamFilesAsync(options: Options) {
       ...sidebarData.components.Props,
     ];
   } catch (error) {
-    console.log('');
+    console.log();
     console.log(`There was an ${chalk.red('error')} extracting the sidebar information.`);
     console.log(`Please double-check the sidebar and update the relevant sections in this script.`);
     console.log(`${chalk.dim(`- ${sidebarPath}`)}`);
-    console.log('');
+    console.log();
     throw error;
   }
 
