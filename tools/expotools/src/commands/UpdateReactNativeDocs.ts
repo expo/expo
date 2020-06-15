@@ -6,6 +6,18 @@ import inquirer from 'inquirer';
 
 import { Directories } from '../expotools';
 
+type Options = {
+  sdk: string;
+  from: string;
+  to: string;
+};
+
+type DocsSummary = {
+  removed: string[];
+  added: string[];
+  changed: string[];
+};
+
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
 const RN_WEBSITE_DIR = path.join(DOCS_DIR, 'react-native-website');
@@ -227,18 +239,6 @@ async function applyChangedFilesAsync(options: Options, summary: DocsSummary) {
   }
 
   console.log(`Upstream ${chalk.yellow(`changed ${summary.changed.length} files`)}, see "*.diff" files.`);
-}
-
-interface Options {
-  sdk: string;
-  from: string;
-  to: string;
-}
-
-interface DocsSummary {
-  removed: string[];
-  added: string[];
-  changed: string[];
 }
 
 export default (program) => {
