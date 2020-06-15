@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import inquirer from 'inquirer';
 
+import logger from '../Logger';
 import { Directories } from '../expotools';
 
 type Options = {
@@ -28,6 +29,7 @@ const RN_DOCS_DIR = path.join(RN_REPO_DIR, 'docs');
 
 const PREFIX_ADDED = 'ADDED_';
 const PREFIX_REMOVED = 'REMOVED_';
+const SUFFIX_CHANGED = '.diff';
 
 const DOCS_IGNORED = [
   'appregistry',
@@ -52,28 +54,31 @@ async function action(input: Options) {
     await getUpstreamFilesAsync(options),
   );
 
-  console.log();
+  logger.log();
 
-  await applyChangedFilesAsync(options, summary);
   await applyAddedFilesAsync(options, summary);
+  await applyChangedFilesAsync(options, summary);
   await applyRemovedFilesAsync(options, summary);
 
-  console.log();
-  console.log('Update completed successfully.');
-  console.log('Please check the files in the versioned react-native folder.');
-  console.log('To revert the changes, use `git clean -xdf .` and `git checkout .` in the versioned folder.');
+  logCompleted(options);
 }
 
 async function getOptions(input: Options): Promise<Options> {
   const questions: inquirer.Question[] = [];
+  const existingSdks = (await fs.promises.readdir(SDK_DOCS_DIR, { withFileTypes: true }))
+      .filter(entry => entry.isDirectory() && entry.name !== 'latest')
+      .map(entry => entry.name.replace(/v([0-9]+)/, '$1'));
+
+  if (input.sdk && !existingSdks.includes(input.sdk)) {
+    throw new Error(`SDK docs ${input.sdk} does not exist, please create it with "et generate-sdk-docs"`);
+  }
 
   if (!input.sdk) {
     questions.push({
-      type: 'input',
+      type: 'list',
       name: 'sdk',
-      message: 'What Expo SDK version do you want to update? (e.g. unversioned)',
-      filter: (value: string) => value.trim(),
-      validate: (value: string) => value.length !== 0,
+      message: 'What Expo SDK version do you want to update?',
+      choices: existingSdks,
     });
   }
 
@@ -97,8 +102,7 @@ async function getOptions(input: Options): Promise<Options> {
 }
 
 async function validateGitStatusAsync() {
-  console.log();
-  console.log('Checking local repository status...');
+  logger.info('\n📑 Checking local repository status...')
 
   const result = await spawnAsync('git', ['status', '--porcelain']);
   const status = result.stdout === '' ? 'clean' : 'dirty';
@@ -107,8 +111,8 @@ async function validateGitStatusAsync() {
     return true;
   }
 
-  console.log(`${chalk.bold('Warning!')} Your git working tree is ${chalk.red('dirty')}.`);
-  console.log(`It's recommended to ${chalk.bold('commit all your changes before proceeding')}, so you can revert the changes made by this command if necessary.`);
+  logger.warn(`⚠️  Your git working tree is`, chalk.underline('dirty'));
+  logger.info(`It's recommended to ${chalk.bold('commit all your changes before proceeding')}, so you can revert the changes made by this command if necessary.`);
 
   const { useDirtyGit } = await inquirer.prompt({
     type: 'confirm',
@@ -117,13 +121,13 @@ async function validateGitStatusAsync() {
     default: false,
   });
 
-  console.log();
+  logger.log();
 
   return useDirtyGit;
 }
 
 async function updateDocsAsync(options: Options) {
-  console.log(`Updating ${chalk.cyan('react-native-website')} submodule...`);
+  logger.info(`📚 Updating ${chalk.cyan('react-native-website')} submodule...`);
 
   await spawnAsync('git', ['checkout', 'master'], { cwd: RN_REPO_DIR });
   await spawnAsync('git', ['pull'], { cwd: RN_REPO_DIR });
@@ -142,16 +146,22 @@ async function updateDocsAsync(options: Options) {
 }
 
 async function getLocalFilesAsync(options: Options) {
-  console.log(`Resolving local docs from ${chalk.yellow(options.sdk)} folder...`);
+  logger.info('🔎 Resolving local docs from', chalk.underline(options.sdk), 'folder...');
 
   const versionedDocsPath = path.join(SDK_DOCS_DIR, options.sdk, 'react-native');
   const files = await fs.promises.readdir(versionedDocsPath);
 
-  return files.map(entry => entry.replace('.md', ''));
+  return files
+    .filter(entry => (
+      !entry.endsWith(SUFFIX_CHANGED)
+      && !entry.startsWith(PREFIX_ADDED)
+      && !entry.startsWith(PREFIX_REMOVED)
+    ))
+    .map(entry => entry.replace('.md', ''));
 }
 
 async function getUpstreamFilesAsync(options: Options) {
-  console.log(`Resolving upstream docs from ${chalk.cyan('react-native-website')} submodule...`);
+  logger.info('🔎 Resolving upstream docs from', chalk.underline('react-native-website'), 'submodule...');
 
   const sidebarPath = path.join(RN_WEBSITE_DIR, 'sidebars.json');
   const sidebarData = await fs.readJson(sidebarPath);
@@ -164,11 +174,9 @@ async function getUpstreamFilesAsync(options: Options) {
       ...sidebarData.components.Props,
     ];
   } catch (error) {
-    console.log();
-    console.log(`There was an ${chalk.red('error')} extracting the sidebar information.`);
-    console.log(`Please double-check the sidebar and update the relevant sections in this script.`);
-    console.log(`${chalk.dim(`- ${sidebarPath}`)}`);
-    console.log();
+    logger.error('\n🚫 There was an error extracting the sidebar information.');
+    logger.info('Please double-check the sidebar and update the "relevantNestedDocs" in this script.');
+    logger.info(chalk.dim(`./${path.relative(process.cwd(), sidebarPath)}\n`));
     throw error;
   }
 
@@ -208,7 +216,7 @@ function getDocsSummary(localFiles: string[], upstreamFiles: string[]): DocsSumm
 
 async function applyRemovedFilesAsync(options: Options, summary: DocsSummary) {
   if (!summary.removed.length) {
-    return console.log(`Upstream did not ${chalk.red('remove')} any files`);
+    return logger.info('🤷‍ Upstream did not', chalk.red('remove'), 'any files');
   }
 
   for (const entry of summary.removed) {
@@ -224,12 +232,12 @@ async function applyRemovedFilesAsync(options: Options, summary: DocsSummary) {
     );
   }
 
-  console.log(`Upstream ${chalk.red(`removed ${summary.removed.length} files`)}, see "${PREFIX_REMOVED}*.md" files.`);
+  logger.info('➖ Upstream', chalk.underline(`removed ${summary.removed.length} files`), `see "${PREFIX_REMOVED}*.md" files.`);
 }
 
 async function applyAddedFilesAsync(options: Options, summary: DocsSummary) {
   if (!summary.added.length) {
-    return console.log(`Upstream did not ${chalk.green('add')} any files`);
+    return logger.info('🤷‍ Upstream did not', chalk.green('add'), 'any files');
   }
 
   for (const entry of summary.added) {
@@ -243,22 +251,31 @@ async function applyAddedFilesAsync(options: Options, summary: DocsSummary) {
     );
   }
 
-  console.log(`Upstream ${chalk.green(`added ${summary.removed.length} files`)}, see "${PREFIX_ADDED}*.md" files.`);
+  logger.info(`➕ Upstream ${chalk.underline(`added ${summary.added.length} files`)}, see "${PREFIX_ADDED}*.md" files.`);
 }
 
 async function applyChangedFilesAsync(options: Options, summary: DocsSummary) {
   if (!summary.changed.length) {
-    return console.log(`Upstream did not ${chalk.yellow('change')} any files`);
+    return logger.info('🤷‍ Upstream did not', chalk.yellow('change'), 'any files');
   }
 
   for (const entry of summary.changed) {
-    const diffPath = path.join(SDK_DOCS_DIR, options.sdk, 'react-native', `${entry}.diff`);
+    const diffPath = path.join(SDK_DOCS_DIR, options.sdk, 'react-native', `${entry}${SUFFIX_CHANGED}`);
 
     const { output: diff } = await spawnAsync('git', ['format-patch', `${options.from}..HEAD`, '--relative', `${entry}.md`, '--stdout'], { cwd: RN_DOCS_DIR });
     await fs.writeFile(diffPath, diff.join(''));
   }
 
-  console.log(`Upstream ${chalk.yellow(`changed ${summary.changed.length} files`)}, see "*.diff" files.`);
+  logger.info('➗ Upstream', chalk.underline(`changed ${summary.changed.length} files`), `see "*${SUFFIX_CHANGED}" files.`);
+}
+
+function logCompleted(options: Options): void {
+  const versionedDir = path.join(SDK_DOCS_DIR, options.sdk, 'react-native');
+
+  logger.success('\n✅ Update completed.');
+  logger.info('Please check the files in the versioned react-native folder.');
+  logger.info('To revert the changes, use `git clean -xdf .` and `git checkout .` in the versioned folder:');
+  logger.info(chalk.dim(`./${path.relative(process.cwd(), versionedDir)}\n`));
 }
 
 export default (program) => {
