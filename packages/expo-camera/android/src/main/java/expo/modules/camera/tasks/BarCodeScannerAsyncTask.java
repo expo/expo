@@ -12,12 +12,12 @@ public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Ba
   private BarCodeScannerAsyncTaskDelegate mDelegate;
 
   public BarCodeScannerAsyncTask(
-      BarCodeScannerAsyncTaskDelegate delegate,
-      BarCodeScanner barCodeScanner,
-      byte[] imageData,
-      int width,
-      int height,
-      int rotation
+    BarCodeScannerAsyncTaskDelegate delegate,
+    BarCodeScanner barCodeScanner,
+    byte[] imageData,
+    int width,
+    int height,
+    int rotation
   ) {
     mImageData = imageData;
     mWidth = width;
