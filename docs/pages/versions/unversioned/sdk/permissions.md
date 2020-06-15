@@ -63,7 +63,7 @@ Get or ask permission for protected functionality within the app. This returns t
 - **permissionTypes (_Type|Type[]_)** -- One or more types to get or ask permission for. After the permission status is fetched, you can show different UI based on the current status.
 - **permissionOptions** -- Optional configuration to change the behavior of the hook.
   - **get (_boolean_)** -- Retrieves the permission status without interacting with the user, `true` by default.
-  - **ask (_boolean_)** -- Prompts the user with the requested permission directly. without using the `askPermission` callback, `false` by default.
+  - **ask (_boolean_)** -- Prompts the user with the requested permission directly. Without using the `askPermission` callback, `false` by default.
 
 #### Returns
 
