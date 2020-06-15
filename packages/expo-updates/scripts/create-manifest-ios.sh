@@ -4,7 +4,9 @@ set -eo pipefail
 
 DEST="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 ENTRY_FILE=${ENTRY_FILE:-index.js}
-ASSETS_URL="http://localhost:8081/"${ENTRY_FILE%.js}".assets?platform=ios&dev=false"
+RCT_METRO_PORT=${RCT_METRO_PORT:=8081}
+REACT_NATIVE_PACKAGER_HOSTNAME=${REACT_NATIVE_PACKAGER_HOSTNAME:-"localhost:$RCT_METRO_PORT"}
+ASSETS_URL="http://$REACT_NATIVE_PACKAGER_HOSTNAME/"${ENTRY_FILE%.js}".assets?platform=ios&dev=false"
 NODE_BINARY=${NODE_BINARY:-node}
 
 if ! [ -x "$(command -v $NODE_BINARY)" ]; then
