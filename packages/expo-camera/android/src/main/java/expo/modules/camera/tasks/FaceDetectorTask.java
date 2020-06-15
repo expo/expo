@@ -37,6 +37,11 @@ public class FaceDetectorTask {
   }
 
   public void execute() {
+    if (mFaceDetector == null) {
+      // onFaceDetectionError takes care of onFaceDetectingTaskCompleted
+      mDelegate.onFaceDetectionError(null);
+      return;
+    }
     mFaceDetector.detectFaces(mImageData, mWidth, mHeight, mRotation, mMirrored, mScaleX, mScaleY, result -> {
       if (result != null) {
         mDelegate.onFacesDetected(result);
