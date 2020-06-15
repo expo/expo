@@ -1,9 +1,12 @@
 package expo.modules.camera.tasks;
 
+import android.util.Pair;
+
+import org.unimodules.core.interfaces.CodedThrowable;
 import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 
-public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, BarCodeScannerResult> {
+public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Pair<BarCodeScannerResult, CodedThrowable>> {
   private final BarCodeScanner mBarCodeScanner;
   private byte[] mImageData;
   private int mWidth;
@@ -28,7 +31,7 @@ public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Ba
   }
 
   @Override
-  protected BarCodeScannerResult doInBackground(Void... ignored) {
+  protected Pair<BarCodeScannerResult, CodedThrowable> doInBackground(Void... ignored) {
     if (isCancelled() || mDelegate == null) {
       return null;
     }
@@ -37,10 +40,12 @@ public class BarCodeScannerAsyncTask extends android.os.AsyncTask<Void, Void, Ba
   }
 
   @Override
-  protected void onPostExecute(BarCodeScannerResult result) {
+  protected void onPostExecute(Pair<BarCodeScannerResult, CodedThrowable> result) {
     super.onPostExecute(result);
     if (result != null) {
-      mDelegate.onBarCodeScanned(result);
+      if (result.first != null) {
+        mDelegate.onBarCodeScanned(result.first);
+      }
     }
     mDelegate.onBarCodeScanningTaskCompleted();
   }
