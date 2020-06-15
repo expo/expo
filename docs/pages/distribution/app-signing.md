@@ -73,7 +73,7 @@ See [here](https://developer.android.com/studio/publish/app-signing) to find mor
 
 > **Note:** Unless you submitted your app to the Google Play Store in 2017 or earlier, this probably does not apply to you.
 
-In order to use app signing by Google Play, follow instructions bellow.
+In order to use app signing by Google Play, follow the instructions below.
 
 1. Backup your old keystore and credentials with `expo fetch:android:keystore`
 
