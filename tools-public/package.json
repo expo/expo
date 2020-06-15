@@ -4,15 +4,12 @@
   "private": true,
   "author": "650 Industries",
   "license": "Copyright 2013-present 650 Industries",
-  "scripts": {
-    "postinstall": "patch-package"
-  },
   "dependencies": {
     "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
-    "@expo/xdl": "57.8.6",
+    "@expo/xdl": "^57.9.14",
     "@exponent/spawn-async": "^1.2.4",
-    "expo-cli": "3.10.1",
+    "expo-cli": "3.21.6",
     "fs-extra": "^4.0.2",
     "gulp": "^4.0.0",
     "ip": "^1.1.5",
@@ -22,8 +19,5 @@
     "request-promise-native": "^1.0.5",
     "sharp": "^0.25.0",
     "uuid": "^3.1.0"
-  },
-  "devDependencies": {
-    "patch-package": "^6.2.2"
   }
 }
