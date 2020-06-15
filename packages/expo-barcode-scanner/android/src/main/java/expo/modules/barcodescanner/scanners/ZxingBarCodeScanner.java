@@ -54,7 +54,11 @@ public class ZxingBarCodeScanner extends ExpoBarCodeScanner {
       byte[] rotated = new byte[data.length];
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-          rotated[x * height + height - y - 1] = data[x + y * width];
+          int sourceIx = x + y * width;
+          int destIx = x * height + height - y - 1;
+          if (sourceIx >= 0 && sourceIx < data.length && destIx >= 0 && destIx < data.length) {
+            rotated[destIx] = data[sourceIx];
+          }
         }
       }
       width = width + height;
