@@ -141,7 +141,7 @@ async function renderExpoKitPodfileAsync(
 
   await IosPodsTools.renderPodfileAsync(podfileTemplatePath, podfilePath, {
     TARGET_NAME: 'exponent-view-template',
-    EXPOKIT_PATH: '../../ios',
+    EXPOKIT_PATH: '../..',
     REACT_NATIVE_PATH: '../../react-native-lab/react-native',
     UNIVERSAL_MODULES_PATH: '../../packages',
   });
