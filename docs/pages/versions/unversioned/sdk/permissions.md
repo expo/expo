@@ -159,7 +159,7 @@ An object with information about the permissions, including status, expiration, 
 The top-level `status`, `expires` and `canAskAgain` keys are a reduction of the values from each individual permission.
 If all single permissions have a `status` of `'denied'`, then that the top level `status` is `denied`; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. Otherwise, `status` is`undetermined`.
 If any single permission has a `status` different then `granted`, then top-level `granted` is `false`. Otherwise, it is `true`.
-Top-level `expires` has value of the earliest expirated permission.
+Top-level `expires` has value of the earliest expirating permission.
 
 Examples `[...componentsValues] => topLevelStatus`:
 
