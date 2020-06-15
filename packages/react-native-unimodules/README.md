@@ -10,7 +10,7 @@ If you have an existing project you'd like to install it into, please read the f
 
 ## 📦 Installation
 
-**This project requires that you use CocoaPods on iOS**, to set it up follow relevant parts of [this guide](https://facebook.github.io/react-native/docs/integration-with-existing-apps#3-install-cocoapods). React Native >= 0.60 ships with CocoaPods support by default, so this should be easy if you're already on that version.
+**This project requires that you use CocoaPods on iOS**, to set it up follow relevant parts of [this guide](https://reactnative.dev/docs/integration-with-existing-apps#3-install-cocoapods). React Native >= 0.60 ships with CocoaPods support by default, so this should be easy if you're already on that version.
 
 ```bash
 npm install react-native-unimodules

@@ -23,7 +23,7 @@ expo install expo-auth-session
 
 ### Configuration
 
-To use this module, you need to set up React Native deep linking in your application. For more information, check out [React Native documentation](https://facebook.github.io/react-native/docs/linking#basic-usage).
+To use this module, you need to set up React Native deep linking in your application. For more information, check out [React Native documentation](https://reactnative.dev/docs/linking).
 
 #### Add support for React Native deep linking
 
