@@ -2,7 +2,6 @@ package expo.modules.camera;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.CamcorderProfile;
 import android.net.Uri;
