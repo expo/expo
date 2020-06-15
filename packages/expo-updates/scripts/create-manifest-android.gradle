@@ -17,6 +17,12 @@ def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 def entryFile = config.entryFile ?: "index.js"
 def assetsFile = entryFile.take(entryFile.lastIndexOf('.')) + ".assets"
 
+def reactNativeDevServerPort() {
+  return project.getProperties().get("reactNativeDevServerPort") ?: "8081"
+}
+
+def reactNativePackagerHostname = System.getenv('REACT_NATIVE_PACKAGER_HOSTNAME') ?: "localhost:${reactNativeDevServerPort()}"
+
 afterEvaluate {
   def projectRoot = file("../../")
   def inputExcludes = ["android/**", "ios/**"]
@@ -55,9 +61,9 @@ afterEvaluate {
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         // in cmd, & must be escaped with ^
         assetsFile = assetsFile.replace('&', '^&');
-        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android^&dev=false", assetsDir)
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://$reactNativePackagerHostname/$assetsFile?platform=android^&dev=false", assetsDir)
       } else {
-        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android&dev=false", assetsDir)
+        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://$reactNativePackagerHostname/$assetsFile?platform=android&dev=false", assetsDir)
       }
 
       enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
