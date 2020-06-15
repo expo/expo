@@ -279,6 +279,11 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onBarCodeScanError(CodedThrowable throwable) {
+    if (!mShouldScanBarCodes) {
+      return;
+    }
+
+    CameraViewHelper.emitBarCodeScanError(mModuleRegistry.getModule(EventEmitter.class), this, throwable);
   }
 
   public void onBarCodeScanningTaskCompleted() {
