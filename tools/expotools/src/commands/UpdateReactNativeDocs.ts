@@ -39,7 +39,7 @@ const DOCS_IGNORED = [
 ];
 
 async function action(input: Options) {
-  const options = getOptions(input);
+  const options = await getOptions(input);
 
   if (!await validateGitStatusAsync()) {
     return;
@@ -64,23 +64,40 @@ async function action(input: Options) {
   console.log('To revert the changes, use `git clean -xdf .` and `git checkout .` in the versioned folder.');
 }
 
-function getOptions(input: Options): Options {
+async function getOptions(input: Options): Promise<Options> {
+  const questions: inquirer.Question[] = [];
+
   if (!input.sdk) {
-    throw new Error('Must run with `--sdk SDK_VERSION` to know which SDK version the docs belongs to.');
+    questions.push({
+      type: 'input',
+      name: 'sdk',
+      message: 'What Expo SDK version do you want to update? (e.g. unversioned)',
+      filter: (value: string) => value.trim(),
+      validate: (value: string) => value.length !== 0,
+    });
   }
 
   if (!input.from) {
-    throw new Error('Must run with `--from RN_COMMIT` to know the start of the changes.');
+    questions.push({
+      type: 'input',
+      name: 'from',
+      message: 'From which commit of the React Native Website do you want to update? (e.g. 9806ddd)',
+      filter: (value: string) => value.trim(),
+      validate: (value: string) => value.length !== 0,
+    });
   }
 
+  const answers = questions.length > 0 ? await inquirer.prompt(questions) : {};
+
   return {
-    sdk: input.sdk,
-    from: input.from,
+    sdk: answers.sdk || input.sdk,
+    from: answers.from || input.from,
     to: input.to || 'master',
   };
 }
 
 async function validateGitStatusAsync() {
+  console.log();
   console.log('Checking local repository status...');
 
   const result = await spawnAsync('git', ['status', '--porcelain']);
