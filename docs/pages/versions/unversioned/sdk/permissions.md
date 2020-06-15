@@ -75,7 +75,7 @@ Get or ask permission for protected functionality within the app. This returns t
 
 ```tsx
 function App() {
-  const [permission, askPermission] = usePermissions(Permissions.CAMERA, { ask: true });
+  const [permission, askForPermission] = usePermissions(Permissions.CAMERA, { ask: true });
 
   if (!permission || permission.status !== 'granted') {
     return (
