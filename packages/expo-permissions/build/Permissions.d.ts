@@ -1,4 +1,5 @@
 import { PermissionResponse, PermissionType, PermissionMap, PermissionStatus, PermissionExpiration, PermissionInfo } from './Permissions.types';
+export { usePermissions } from './PermissionsHooks';
 export { PermissionStatus, PermissionResponse, PermissionExpiration, PermissionMap, PermissionInfo, PermissionType, };
 export declare const CAMERA = "camera";
 export declare const CAMERA_ROLL = "cameraRoll";
