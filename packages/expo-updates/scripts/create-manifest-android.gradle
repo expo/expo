@@ -18,8 +18,7 @@ def entryFile = config.entryFile ?: "index.js"
 def assetsFile = entryFile.take(entryFile.lastIndexOf('.')) + ".assets"
 
 def reactNativeDevServerPort() {
-    def value = project.getProperties().get("reactNativeDevServerPort")
-    return value != null ? value : "8081"
+  return project.getProperties().get("reactNativeDevServerPort") ?: "8081"
 }
 
 def reactNativePackagerHostname = System.getenv('REACT_NATIVE_PACKAGER_HOSTNAME') ?: "localhost:${reactNativeDevServerPort()}"
