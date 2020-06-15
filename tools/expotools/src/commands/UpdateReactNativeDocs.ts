@@ -31,7 +31,6 @@ const DOCS_IGNORED = [
   'drawerlayoutandroid',
   'linking',
   'settings',
-  'settings',
   'systrace',
 ];
 
