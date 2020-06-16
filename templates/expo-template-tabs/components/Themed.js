@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Text as DefaultText, View as DefaultView, useColorScheme } from 'react-native';
+import { Text as DefaultText, View as DefaultView } from 'react-native';
 
 import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
 
 export function useThemeColor(props, colorName) {
   const theme = useColorScheme();
@@ -17,8 +18,6 @@ export function useThemeColor(props, colorName) {
 export function Text(props) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-
-  console.log({ color, lightColor, darkColor });
 
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
