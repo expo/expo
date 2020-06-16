@@ -384,7 +384,7 @@ jobs:
               -zcf "/tmp/$TARBALL" \
               expo-client-build/Exponent.xcarchive \
               ios
-            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
       - run:
           name: Expo Client shell app url
           command: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/ios-expo-client-$CIRCLE_SHA1.tar.gz"
@@ -437,7 +437,7 @@ jobs:
                     shellAppBase-builds \
                     shellAppWorkspaces \
                     ios
-                  ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+                  aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
                   echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
                   echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
                   echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
