@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- `Localization.region` now returns `null` when a partial `locale` is defined by the browser on web.
+
 ## 8.2.1 — 2020-05-29
 
 _This version does not introduce any user-facing changes._
