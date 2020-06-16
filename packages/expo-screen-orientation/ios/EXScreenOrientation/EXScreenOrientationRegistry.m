@@ -38,6 +38,8 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
       
+      // TODO: Fix me
+      // We should do it synchronously. However, if we do it, the detox tests timed out.
       UM_ENSURE_STRONGIFY(self)
       if (@available(iOS 13, *)) {
         self.currentScreenOrientation = UIApplication.sharedApplication.windows[0].windowScene.interfaceOrientation;
