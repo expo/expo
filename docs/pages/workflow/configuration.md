@@ -446,6 +446,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ### `"ios"`
 
+Configuration that is specific to the iOS platform.
+
 ```javascript
 {
   "ios": {
@@ -673,7 +675,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ### `"android"`
 
-**Standalone Apps Only**. Android standalone app specific configuration
+Configuration that is specific to the Android platform.
 
 ```javascript
 {
@@ -976,6 +978,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 ```
 
 ### `"web"`
+
+Configuration that is specific to the web platform.
 
 ```javascript
 {
