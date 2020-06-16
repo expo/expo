@@ -64,7 +64,7 @@ export class PullRequestManager {
     const changelogEntries = {
       [DEFAULT_CHANGELOG_ENTRY_KEY]: {
         type: ChangelogEntryType.BUG_FIXES,
-        message: this.prTitle.replace(/^(\[[^\]]\])+/g, '').trim(),
+        message: this.prTitle.replace(/\[[^\]]*\]/g, '').trim(),
       },
     };
 
