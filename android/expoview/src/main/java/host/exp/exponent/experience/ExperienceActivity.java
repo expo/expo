@@ -46,8 +46,8 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
-import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentUrls;
@@ -102,7 +102,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private boolean mIsShellApp;
   private String mIntentUri;
   private boolean mIsReadyForBundle;
-  private boolean mWillBeReloaded = false;
 
   private RemoteViews mNotificationRemoteViews;
   private Handler mNotificationAnimationHandler;
@@ -268,7 +267,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     registerForNotifications();
   }
 
-  @Override 
+  @Override
   public void onWindowFocusChanged(boolean hasFocus) {
     super.onWindowFocusChanged(hasFocus);
     // Check for manifest to avoid calling this when first loading an experience
@@ -427,7 +426,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
       if (!isValidVersion) {
         KernelProvider.getInstance().handleError(mSDKVersion + " is not a valid SDK version. Options are " +
-            TextUtils.join(", ", Constants.SDK_VERSIONS_LIST) + ", " + RNObject.UNVERSIONED + ".");
+          TextUtils.join(", ", Constants.SDK_VERSIONS_LIST) + ", " + RNObject.UNVERSIONED + ".");
         return;
       }
     }
@@ -448,12 +447,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
     ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(mManifest, this);
-    mWillBeReloaded = ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
+    ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
+
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
     // Activity could be restarted due to Dark Mode change, only pop options if that will not happen
-    if (mKernel.hasOptionsForManifestUrl(manifestUrl) && !mWillBeReloaded) {
+    if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
       KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered
@@ -527,7 +527,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     // To prevents starting application twice, we start react instance only if we know that the current activity won't be restarted.
     // Restart of the activity could be triggered by dark mode change.
-    if (!isDebugModeEnabled() && !mWillBeReloaded) {
+    if (!isDebugModeEnabled()) {
       final boolean finalIsReadyForBundle = mIsReadyForBundle;
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
         @Override
@@ -553,8 +553,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
 
         mReactInstanceManager.callRecursive("getCurrentReactContext")
-            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-            .call("emit", "Exponent.notification", event.toWriteableMap(mDetachSdkVersion, "received"));
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+          .call("emit", "Exponent.notification", event.toWriteableMap(mDetachSdkVersion, "received"));
       } catch (Throwable e) {
         EXL.e(TAG, e);
       }
@@ -572,8 +572,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
 
           mReactInstanceManager.callRecursive("getCurrentReactContext")
-              .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-              .call("emit", "Exponent.openUri", uri);
+            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+            .call("emit", "Exponent.openUri", uri);
         }
 
         BranchManager.handleLink(this, options.uri, mDetachSdkVersion);
@@ -584,8 +584,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
 
         mReactInstanceManager.callRecursive("getCurrentReactContext")
-            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-            .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mDetachSdkVersion, "selected"));
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+          .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mDetachSdkVersion, "selected"));
       }
     } catch (Throwable e) {
       EXL.e(TAG, e);
@@ -656,13 +656,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // Home
     Intent homeIntent = new Intent(this, LauncherActivity.class);
     remoteViews.setOnClickPendingIntent(R.id.home_image_button, PendingIntent.getActivity(this, 0,
-        homeIntent, 0));
+      homeIntent, 0));
 
     // Info
     // Doing PendingIntent.getActivity doesn't work here - it opens the activity in the main
     // stack and not in the experience's stack
     remoteViews.setOnClickPendingIntent(R.id.home_text_button, PendingIntent.getService(this, 0,
-        ExponentIntentService.getActionInfoScreen(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
+      ExponentIntentService.getActionInfoScreen(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
 
     if (!mIsShellApp) {
       // Share
@@ -672,17 +672,17 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       shareIntent.putExtra(Intent.EXTRA_SUBJECT, name + " on Exponent");
       shareIntent.putExtra(Intent.EXTRA_TEXT, mManifestUrl);
       remoteViews.setOnClickPendingIntent(R.id.share_button, PendingIntent.getActivity(this, 0,
-          Intent.createChooser(shareIntent, "Share a link to " + name), PendingIntent.FLAG_UPDATE_CURRENT));
+        Intent.createChooser(shareIntent, "Share a link to " + name), PendingIntent.FLAG_UPDATE_CURRENT));
 
       // Save
       remoteViews.setOnClickPendingIntent(R.id.save_button, PendingIntent.getService(this, 0,
-          ExponentIntentService.getActionSaveExperience(this, mManifestUrl),
-          PendingIntent.FLAG_UPDATE_CURRENT));
+        ExponentIntentService.getActionSaveExperience(this, mManifestUrl),
+        PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
     // Reload
     remoteViews.setOnClickPendingIntent(R.id.reload_button, PendingIntent.getService(this, 0,
-        ExponentIntentService.getActionReloadExperience(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
+      ExponentIntentService.getActionReloadExperience(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
 
     mNotificationRemoteViews = remoteViews;
 
@@ -692,11 +692,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     new ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel();
     mNotificationBuilder = new NotificationCompat.Builder(this, NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_ID)
-        .setContent(mNotificationRemoteViews)
-        .setSmallIcon(R.drawable.notification_icon)
-        .setShowWhen(false)
-        .setOngoing(true)
-        .setPriority(Notification.PRIORITY_MAX);
+      .setContent(mNotificationRemoteViews)
+      .setSmallIcon(R.drawable.notification_icon)
+      .setShowWhen(false)
+      .setOngoing(true)
+      .setPriority(Notification.PRIORITY_MAX);
 
     mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
     notificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());

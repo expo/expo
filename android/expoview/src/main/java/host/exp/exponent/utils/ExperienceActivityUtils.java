@@ -12,20 +12,18 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.ViewCompat;
-
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
-import host.exp.expoview.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class ExperienceActivityUtils {
 
@@ -84,18 +82,11 @@ public class ExperienceActivityUtils {
    * Returns true if activity will be reloaded after night mode change.
    * Otherwise returns false.
    **/
-  public static boolean overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
+  public static void overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
     String userInterfaceStyle = readUserInterfaceStyleFromManifest(manifest);
     int mode = nightModeFromString(userInterfaceStyle);
-    boolean isNightModeCurrentlyOn = activity.getResources().getBoolean(R.bool.dark_mode);
-    boolean willBeReloaded = false;
-    if (mode != AppCompatDelegate.MODE_NIGHT_AUTO) {
-      willBeReloaded = isNightModeCurrentlyOn && mode == AppCompatDelegate.MODE_NIGHT_NO
-        || !isNightModeCurrentlyOn && mode == AppCompatDelegate.MODE_NIGHT_YES;
-    }
 
     activity.getDelegate().setLocalNightMode(mode);
-    return willBeReloaded;
   }
 
   private static int nightModeFromString(@Nullable String userInterfaceStyle) {
@@ -133,10 +124,10 @@ public class ExperienceActivityUtils {
    * (https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_TRANSLUCENT_STATUS)
    * (https://developer.android.com/reference/android/R.attr.html#windowTranslucentStatus)
    * Instead it's using {@link WindowInsets} to limit available space on the screen ({@link com.facebook.react.modules.statusbar.StatusBarModule#setTranslucent(boolean)}).
-   *
+   * <p>
    * In case 'android:'windowTranslucentStatus' is used in activity's theme, it has to be removed in order to make RN's Status Bar API work.
    * Out approach to achieve translucency of StatusBar has to be aligned with RN's approach to ensure {@link com.facebook.react.modules.statusbar.StatusBarModule} works.
-   *
+   * <p>
    * Links to follow in case of need of more detailed understating.
    * https://chris.banes.dev/talks/2017/becoming-a-master-window-fitter-lon/
    * https://www.youtube.com/watch?v=_mGDMVRO3iE
@@ -195,11 +186,11 @@ public class ExperienceActivityUtils {
   @UiThread
   public static void setColor(final int color, final Activity activity) {
     activity
-        .getWindow()
-        .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+      .getWindow()
+      .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
     activity
-        .getWindow()
-        .setStatusBarColor(color);
+      .getWindow()
+      .setStatusBarColor(color);
   }
 
   @UiThread
@@ -209,14 +200,14 @@ public class ExperienceActivityUtils {
     View decorView = activity.getWindow().getDecorView();
     if (translucent) {
       decorView.setOnApplyWindowInsetsListener(
-          (v, insets) -> {
-            WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-            return defaultInsets.replaceSystemWindowInsets(
-                defaultInsets.getSystemWindowInsetLeft(),
-                0,
-                defaultInsets.getSystemWindowInsetRight(),
-                defaultInsets.getSystemWindowInsetBottom());
-          });
+        (v, insets) -> {
+          WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+          return defaultInsets.replaceSystemWindowInsets(
+            defaultInsets.getSystemWindowInsetLeft(),
+            0,
+            defaultInsets.getSystemWindowInsetRight(),
+            defaultInsets.getSystemWindowInsetBottom());
+        });
     } else {
       decorView.setOnApplyWindowInsetsListener(null);
     }
@@ -274,109 +265,109 @@ public class ExperienceActivityUtils {
   // endregion
 
   public static void setTaskDescription(final ExponentManifest exponentManifest,
-    final JSONObject manifest, final Activity activity){
-      final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-      final int color = exponentManifest.getColorFromManifest(manifest);
+                                        final JSONObject manifest, final Activity activity) {
+    final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+    final int color = exponentManifest.getColorFromManifest(manifest);
 
-      exponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-        @Override
-        public void onLoadBitmap(Bitmap bitmap) {
-          // This if statement is only needed so the compiler doesn't show an error.
-          try {
-            activity.setTaskDescription(new ActivityManager.TaskDescription(
-                manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
-                bitmap,
-                color
-            ));
-          } catch (Throwable e) {
-            EXL.e(TAG, e);
-          }
-        }
-      });
-    }
-
-    public static void setNavigationBar(final JSONObject manifest, final Activity activity){
-      JSONObject navBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_NAVIGATION_BAR_KEY);
-      if (navBarOptions == null) {
-        return;
-      }
-
-      // Set background color of navigation bar
-      String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
-      if (navBarColor != null && ColorParser.isValid(navBarColor)) {
+    exponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
+      @Override
+      public void onLoadBitmap(Bitmap bitmap) {
+        // This if statement is only needed so the compiler doesn't show an error.
         try {
-          activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-          activity.getWindow().setNavigationBarColor(Color.parseColor(navBarColor));
+          activity.setTaskDescription(new ActivityManager.TaskDescription(
+            manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
+            bitmap,
+            color
+          ));
         } catch (Throwable e) {
           EXL.e(TAG, e);
         }
       }
+    });
+  }
 
-      // Set icon color of navigation bar
-      String navBarAppearance = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE);
-      if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        try {
-          activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-          activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-          if (navBarAppearance.equals("dark-content")) {
-            View decorView = activity.getWindow().getDecorView();
-            int flags = decorView.getSystemUiVisibility();
-            flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            decorView.setSystemUiVisibility(flags);
-          }
-        } catch (Throwable e) {
-          EXL.e(TAG, e);
-        }
-      }
-
-
-      // Set visibility of navigation bar
-      String navBarVisible = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
-      if (navBarVisible != null) {
-        // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
-        // design your app to hide the status bar whenever you hide the navigation bar."
-        View decorView = activity.getWindow().getDecorView();
-        int flags = decorView.getSystemUiVisibility();
-
-        switch (navBarVisible) {
-          case "leanback":
-            flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
-            break;
-          case "immersive":
-            flags |= ( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE);
-            break;
-          case "sticky-immersive":
-            flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            break;
-        }
-
-        decorView.setSystemUiVisibility(flags);
-      }
+  public static void setNavigationBar(final JSONObject manifest, final Activity activity) {
+    JSONObject navBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_NAVIGATION_BAR_KEY);
+    if (navBarOptions == null) {
+      return;
     }
 
-
-    public static void setRootViewBackgroundColor(final JSONObject manifest, final View rootView) {
-      String colorString;
-
+    // Set background color of navigation bar
+    String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
+    if (navBarColor != null && ColorParser.isValid(navBarColor)) {
       try {
-        colorString = manifest.
-            getJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).
-            getString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
-      } catch (JSONException e) {
-        colorString = manifest.optString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
-      }
-
-      if (colorString == null || !ColorParser.isValid(colorString)) {
-        colorString = "#ffffff";
-      }
-
-      try {
-        int color = Color.parseColor(colorString);
-        rootView.setBackgroundColor(color);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        activity.getWindow().setNavigationBarColor(Color.parseColor(navBarColor));
       } catch (Throwable e) {
         EXL.e(TAG, e);
-        rootView.setBackgroundColor(Color.WHITE);
       }
     }
+
+    // Set icon color of navigation bar
+    String navBarAppearance = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE);
+    if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      try {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        if (navBarAppearance.equals("dark-content")) {
+          View decorView = activity.getWindow().getDecorView();
+          int flags = decorView.getSystemUiVisibility();
+          flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+          decorView.setSystemUiVisibility(flags);
+        }
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
+    }
+
+
+    // Set visibility of navigation bar
+    String navBarVisible = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
+    if (navBarVisible != null) {
+      // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
+      // design your app to hide the status bar whenever you hide the navigation bar."
+      View decorView = activity.getWindow().getDecorView();
+      int flags = decorView.getSystemUiVisibility();
+
+      switch (navBarVisible) {
+        case "leanback":
+          flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
+          break;
+        case "immersive":
+          flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE);
+          break;
+        case "sticky-immersive":
+          flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+          break;
+      }
+
+      decorView.setSystemUiVisibility(flags);
+    }
   }
+
+
+  public static void setRootViewBackgroundColor(final JSONObject manifest, final View rootView) {
+    String colorString;
+
+    try {
+      colorString = manifest.
+        getJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).
+        getString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
+    } catch (JSONException e) {
+      colorString = manifest.optString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
+    }
+
+    if (colorString == null || !ColorParser.isValid(colorString)) {
+      colorString = "#ffffff";
+    }
+
+    try {
+      int color = Color.parseColor(colorString);
+      rootView.setBackgroundColor(color);
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
+      rootView.setBackgroundColor(Color.WHITE);
+    }
+  }
+}
