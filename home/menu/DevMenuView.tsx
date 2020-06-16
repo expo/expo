@@ -1,13 +1,13 @@
 import React from 'react';
 import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
 
-import * as DevMenu from './DevMenuModule';
-import DevMenuButton from './DevMenuButton';
 import { StyledView } from '../components/Views';
-import DevMenuTaskInfo from './DevMenuTaskInfo';
-import DevMenuOnboarding from './DevMenuOnboarding';
-import DevMenuCloseButton from './DevMenuCloseButton';
 import DevMenuBottomSheetContext, { Context } from './DevMenuBottomSheetContext';
+import DevMenuButton from './DevMenuButton';
+import DevMenuCloseButton from './DevMenuCloseButton';
+import * as DevMenu from './DevMenuModule';
+import DevMenuOnboarding from './DevMenuOnboarding';
+import DevMenuTaskInfo from './DevMenuTaskInfo';
 
 type Props = {
   task: { [key: string]: any };

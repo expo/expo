@@ -1,7 +1,8 @@
-import * as React from 'react';
-import { useTheme } from 'react-navigation';
-import { StyleSheet, View, ScrollView } from 'react-native';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import * as React from 'react';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { useTheme } from 'react-navigation';
+
 import Colors from '../constants/Colors';
 
 type ViewProps = View['props'];
@@ -21,8 +22,8 @@ interface StyledScrollViewProps extends ScrollViewProps {
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 function useThemeBackgroundColor(props: Props | StyledScrollViewProps, colorName: ThemedColors) {
-  let theme = useTheme();
-  let colorFromProps = props[`${theme}BackgroundColor`];
+  const theme = useTheme();
+  const colorFromProps = props[`${theme}BackgroundColor`];
 
   if (colorFromProps) {
     return colorFromProps;
@@ -32,8 +33,8 @@ function useThemeBackgroundColor(props: Props | StyledScrollViewProps, colorName
 }
 
 function useThemeBorderColor(props: Props, colorName: ThemedColors) {
-  let theme = useTheme();
-  let colorFromProps = props[`${theme}BorderColor`];
+  const theme = useTheme();
+  const colorFromProps = props[`${theme}BorderColor`];
 
   if (colorFromProps) {
     return colorFromProps;
@@ -44,16 +45,16 @@ function useThemeBorderColor(props: Props, colorName: ThemedColors) {
 
 export const StyledScrollView = React.forwardRef(
   (props: StyledScrollViewProps, ref?: React.Ref<ScrollView>) => {
-    let { style, ...otherProps } = props;
-    let backgroundColor = useThemeBackgroundColor(props, 'absolute');
+    const { style, ...otherProps } = props;
+    const backgroundColor = useThemeBackgroundColor(props, 'absolute');
 
     return <ScrollView {...otherProps} style={[{ backgroundColor }, style]} ref={ref} />;
   }
 );
 
 export const Separator = (props: View['props']) => {
-  let theme = useTheme();
-  let { style, ...otherProps } = props;
+  const theme = useTheme();
+  const { style, ...otherProps } = props;
 
   return (
     <View
@@ -64,8 +65,8 @@ export const Separator = (props: View['props']) => {
 };
 
 export const SectionLabelContainer = (props: View['props']) => {
-  let theme = useTheme();
-  let { style, ...otherProps } = props;
+  const theme = useTheme();
+  const { style, ...otherProps } = props;
 
   return (
     <View
@@ -80,8 +81,8 @@ export const SectionLabelContainer = (props: View['props']) => {
 };
 
 export const GenericCardContainer = (props: View['props']) => {
-  let theme = useTheme();
-  let { style, ...otherProps } = props;
+  const theme = useTheme();
+  const { style, ...otherProps } = props;
 
   return (
     <View
@@ -99,13 +100,13 @@ export const GenericCardContainer = (props: View['props']) => {
 };
 
 export const GenericCardBody = (props: View['props']) => {
-  let { style, ...otherProps } = props;
+  const { style, ...otherProps } = props;
 
   return <View style={[styles.genericCardBody, style]} {...otherProps} />;
 };
 
 export const StyledView = (props: Props) => {
-  let {
+  const {
     style,
     lightBackgroundColor: _lightBackgroundColor,
     darkBackgroundColor: _darkBackgroundColor,
@@ -114,8 +115,8 @@ export const StyledView = (props: Props) => {
     ...otherProps
   } = props;
 
-  let backgroundColor = useThemeBackgroundColor(props, 'cardBackground');
-  let borderColor = useThemeBorderColor(props, 'cardSeparator');
+  const backgroundColor = useThemeBackgroundColor(props, 'cardBackground');
+  const borderColor = useThemeBorderColor(props, 'cardSeparator');
 
   return (
     <View
@@ -135,12 +136,12 @@ type ButtonProps = Props & TouchableNativeFeedbackSafe['props'];
 
 // Extend this if you ever need to customize ripple color
 function useRippleColor(_props: any) {
-  let theme = useTheme();
+  const theme = useTheme();
   return theme === 'light' ? '#ccc' : '#fff';
 }
 
 export const StyledButton = (props: ButtonProps) => {
-  let {
+  const {
     style,
     lightBackgroundColor: _lightBackgroundColor,
     darkBackgroundColor: _darkBackgroundColor,
@@ -149,9 +150,9 @@ export const StyledButton = (props: ButtonProps) => {
     ...otherProps
   } = props;
 
-  let backgroundColor = useThemeBackgroundColor(props, 'cardBackground');
-  let borderColor = useThemeBorderColor(props, 'cardSeparator');
-  let rippleColor = useRippleColor(props);
+  const backgroundColor = useThemeBackgroundColor(props, 'cardBackground');
+  const borderColor = useThemeBorderColor(props, 'cardSeparator');
+  const rippleColor = useRippleColor(props);
 
   return (
     <TouchableNativeFeedbackSafe

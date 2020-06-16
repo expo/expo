@@ -1,3 +1,4 @@
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
@@ -6,7 +7,6 @@ import React from 'react';
 import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 import { NavigationEvents } from 'react-navigation';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';
 import Colors from '../constants/Colors';
@@ -43,7 +43,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
   }
 
   didFocus = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {
       AppState.addEventListener('change', this.handleAppStateChange);

@@ -1,9 +1,9 @@
 /* @flow */
 
-import React from 'react';
-import { withNavigation } from 'react-navigation';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 

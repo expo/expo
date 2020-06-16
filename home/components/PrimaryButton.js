@@ -1,5 +1,6 @@
 /* @flow */
 
+import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -9,12 +10,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 
 export default class PrimaryButton extends React.Component {
   render() {
     // eslint-disable-next-line no-unused-vars
-    let { children, isLoading, plain, style, textStyle, ...props } = this.props;
+    const { children, isLoading, plain, style, textStyle, ...props } = this.props;
 
     return (
       <TouchableNativeFeedback
