@@ -34,12 +34,12 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
                                                 name:UIDeviceOrientationDidChangeNotification
                                               object:[UIDevice currentDevice]];
 
+    UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    });
-    
-    UM_WEAKIFY(self);
-    [UMUtilities performSynchronouslyOnMainThread:^{
+      
+      // TODO: Fix me
+      // We should do it synchronously. However, if we do it, the detox tests timed out.
       UM_ENSURE_STRONGIFY(self)
       if (@available(iOS 13, *)) {
         self.currentScreenOrientation = UIApplication.sharedApplication.windows[0].windowScene.interfaceOrientation;
@@ -47,7 +47,7 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
         // statusBarOrientation was deprecated in iOS 13
         self.currentScreenOrientation = UIApplication.sharedApplication.statusBarOrientation;
       }
-    }];
+    });
   }
   
   return self;
