@@ -37,6 +37,25 @@ if (Platform.isDOMAvailable) {
   });
 }
 
+if (Platform.isDOMAvailable) {
+  describe('region', () => {
+    it(`can resolve a region with a partial locale`, async () => {
+      jest.spyOn(navigator, 'language', 'get').mockReturnValue('en');
+
+      const Localization = require('../ExpoLocalization').default;
+      expect(Localization.locale).toBe('en');
+      expect(Localization.region).toBe(null);
+    });
+    xit(`can resolve a region from a full locale`, async () => {
+      jest.spyOn(navigator, 'language', 'get').mockReturnValue('en-us');
+
+      const Localization = require('../ExpoLocalization').default;
+      expect(Localization.locale).toBe('en-us');
+      expect(Localization.region).toBe('US');
+    });
+  });
+}
+
 describe(`Localization defines constants`, () => {
   it(`Gets the current device region`, async () => {
     const result = Localization.region;

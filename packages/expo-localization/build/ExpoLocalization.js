@@ -36,9 +36,9 @@ export default {
     },
     get region() {
         const { locale } = this;
-        if (typeof locale === 'string' && locale.length) {
-            const isoCountryCode = locale.substring(locale.lastIndexOf('-') + 1);
-            return isoCountryCode.toUpperCase();
+        if (typeof locale === 'string') {
+            const [, iso] = locale.split('-');
+            return iso ? iso.toUpperCase() : null;
         }
         return null;
     },
