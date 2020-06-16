@@ -532,3 +532,12 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 -    }
    }
  }
+ ```
+
+#### Remove Pods Target EXUpdates (Optional)
+
+If, after following above steps, your `npm run ios` or `yarn ios` fails and you see `EXUpdates` in logs, follow the steps below:
+
+- Open the iOS directory in Xcode
+- Go to Pods module on right side
+- In the targets, find `EXUpdates`, right click and delete
