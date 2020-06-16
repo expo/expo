@@ -134,6 +134,22 @@ commands:
       - checkout
       - run: echo 'export PATH=$PATH:$CIRCLE_WORKING_DIRECTORY/bin' >> $BASH_ENV
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
+  install_node:
+    parameters:
+      platform:
+        type: string
+      nodejs_version:
+        type: string
+    steps:
+      - run:
+          name: Install node << parameters.nodejs_version >>
+          command: |
+            NODEJS_ARCHIVE="/tmp/nodejs.tar.xz"
+            if [ ! -f "$NODEJS_ARCHIVE" ]; then
+              curl -o $NODEJS_ARCHIVE -SL "https://nodejs.org/dist/v<< parameters.nodejs_version >>/node-v<< parameters.nodejs_version >>-<< parameters.platform >>-x64.tar.xz"
+            fi
+            tar -xJf $NODEJS_ARCHIVE -C /usr/local --strip-components=1 --exclude CHANGELOG.md --exclude README.md --exclude LICENSE
+            ln -s /usr/local/bin/node /usr/local/bin/nodejs
   decrypt_secrets_if_possible:
     steps:
       - run:
@@ -381,6 +397,9 @@ jobs:
         default: true
     steps:
       - setup
+      - install_node:
+          platform: darwin
+          nodejs_version: 14.4.0
       - update_submodules
       - git_lfs_pull
       - fetch_cocoapods_specs
@@ -530,7 +549,6 @@ jobs:
           name: Upload APK to Google Play and release to production
           working_directory: ~/project
           command: fastlane android prod_release
-
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
 #   test_suite_publish:
