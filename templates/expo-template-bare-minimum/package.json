@@ -13,6 +13,7 @@
   "dependencies": {
     "expo": "~38.0.0",
     "expo-splash-screen": "~0.3.1",
+    "expo-status-bar": "^1.0.0",
     "expo-updates": "~0.2.8",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
