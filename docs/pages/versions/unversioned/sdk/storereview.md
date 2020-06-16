@@ -8,9 +8,11 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, allowing you to ask the user to rate your app without ever having to leave the app itself.
 
-> If this is used in Android the device will attempt to link to the Play Store using `ReactNative.Linking` and the `android.playStoreUrl` from the `app.json` instead.
+> If this is used in Android the device will attempt to link to the Play Store using native `Linking` and the `android.playStoreUrl` from `app.config.js` or `app.json` instead.
 
 <PlatformsSection android emulator ios simulator />
+
+![](/static/images/store-review.png)
 
 ## Installation
 
