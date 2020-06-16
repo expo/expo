@@ -14,8 +14,6 @@ let BarCodeScanner = /** @class */ (() => {
             super(...arguments);
             this.lastEvents = {};
             this.lastEventsTimes = {};
-            // coordinates of cornerPoints and boundingBox are represented in DP (Display-Indepent Points) unit
-            // React Native is using the same unit
             this.onObjectDetected = (callback) => ({ nativeEvent, }) => {
                 const { type } = nativeEvent;
                 if (this.lastEvents[type] &&

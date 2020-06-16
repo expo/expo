@@ -1,14 +1,12 @@
 package expo.modules.barcodescanner;
 
 import android.os.Bundle;
-import androidx.core.util.Pools;
-import android.util.Pair;
-
-import java.util.List;
 
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.modules.barcodescanner.utils.BarCodeScannerEventHelper;
+
+import androidx.core.util.Pools;
+import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<BarCodeScannedEvent> EVENTS_POOL =
@@ -16,26 +14,21 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
 
   private BarCodeScannerResult mBarCode;
   private int mViewTag;
-  private List<Bundle> mCornerPoints;
-  private Bundle mBoundingBox;
 
   private BarCodeScannedEvent() {}
 
-  public static BarCodeScannedEvent obtain(int viewTag, BarCodeScannerResult barCode, float density) {
+  public static BarCodeScannedEvent obtain(int viewTag, BarCodeScannerResult barCode) {
     BarCodeScannedEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new BarCodeScannedEvent();
     }
-    event.init(viewTag, barCode, density);
+    event.init(viewTag, barCode);
     return event;
   }
 
-  private void init(int viewTag, BarCodeScannerResult barCode, float density) {
+  private void init(int viewTag, BarCodeScannerResult barCode) {
     mViewTag = viewTag;
     mBarCode = barCode;
-    Pair<List<Bundle>, Bundle> bundles = BarCodeScannerEventHelper.getCornerPointsAndBoundingBox(barCode.getCornerPoints(), density);
-    mCornerPoints = bundles.first;
-    mBoundingBox = bundles.second;
   }
 
   /**
@@ -58,16 +51,8 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
 
   @Override
   public Bundle getEventBody() {
-    Bundle event = new Bundle();
+    Bundle event = BarCodeScannerResultSerializer.toBundle(mBarCode);
     event.putInt("target", mViewTag);
-    event.putString("data", mBarCode.getValue());
-    event.putInt("type", mBarCode.getType());
-    if (!mCornerPoints.isEmpty()) {
-      Bundle cornerPoints[] = new Bundle[mCornerPoints.size()];
-      event.putParcelableArray("cornerPoints", mCornerPoints.toArray(cornerPoints));
-      event.putBundle("bounds", mBoundingBox);
-    }
-
     return event;
   }
 }
