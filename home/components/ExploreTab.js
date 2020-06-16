@@ -1,20 +1,18 @@
 /* @flow */
 
+import dedent from 'dedent';
 import React from 'react';
 import { ActivityIndicator, Platform, TouchableOpacity, StyleSheet, View } from 'react-native';
+import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { useTheme, FlatList } from 'react-navigation';
 
-import InfiniteScrollView from 'react-native-infinite-scroll-view';
-
-import dedent from 'dedent';
-
-import Colors from '../constants/Colors';
 import FeatureFlags from '../FeatureFlags';
-import ProjectCard from './ProjectCard';
-import PrimaryButton from './PrimaryButton';
+import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import { StyledText } from './Text';
+import PrimaryButton from './PrimaryButton';
+import ProjectCard from './ProjectCard';
 import SectionHeader from './SectionHeader';
+import { StyledText } from './Text';
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -43,7 +41,7 @@ class ExploreTab extends React.Component {
 
   _renderError() {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
+    const isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
@@ -83,7 +81,7 @@ class ExploreTab extends React.Component {
 
   _renderContent() {
     let extraOptions = {};
-    let { theme } = this.props;
+    const { theme } = this.props;
 
     if (FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS) {
       extraOptions = {
@@ -132,7 +130,7 @@ class ExploreTab extends React.Component {
 }
 
 export default props => {
-  let theme = useTheme();
+  const theme = useTheme();
 
   return <ExploreTab {...props} theme={theme} />;
 };

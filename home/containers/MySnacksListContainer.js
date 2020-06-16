@@ -39,7 +39,7 @@ const MySnacksQuery = gql`
 
 export default graphql(MySnacksQuery, {
   props: props => {
-    let { data } = props;
+    const { data } = props;
 
     let apps, appCount, snacks;
     if (data.me) {
@@ -66,7 +66,7 @@ export default graphql(MySnacksQuery, {
               return previousData;
             }
 
-            let combinedData = {
+            const combinedData = {
               me: {
                 ...previousData.me,
                 ...fetchMoreResult.me,

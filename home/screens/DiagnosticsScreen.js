@@ -1,12 +1,12 @@
 import React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { ThemeContext } from 'react-navigation';
 import { BaseButton } from 'react-native-gesture-handler';
+import { ThemeContext } from 'react-navigation';
 
 import ScrollView from '../components/NavigationScrollView';
+import { StyledText } from '../components/Text';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
-import { StyledText } from '../components/Text';
 
 class ShadowButton extends React.Component {
   static contextType = ThemeContext;

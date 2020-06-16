@@ -5,7 +5,7 @@ type SignInResult = {
 };
 
 export async function signInAsync(username: string, password: string): Promise<SignInResult> {
-  let api = new ApiV2HttpClient();
+  const api = new ApiV2HttpClient();
   return await api.postAsync('auth/loginAsync', {
     username,
     password,
@@ -17,7 +17,7 @@ export async function signOutAsync(sessionSecret: string | null): Promise<void> 
     return;
   }
 
-  let api = new ApiV2HttpClient();
+  const api = new ApiV2HttpClient();
   await api.postAsync('auth/logout');
 }
 
@@ -39,7 +39,7 @@ type SignUpResult = {
 };
 
 export async function signUpAsync(data: SignUpData): Promise<SignUpResult> {
-  let api = new ApiV2HttpClient();
+  const api = new ApiV2HttpClient();
   return await api.postAsync('auth/createOrUpdateUser', {
     userData: {
       connection: 'Username-Password-Authentication',

@@ -37,7 +37,7 @@ export class FormInput extends React.Component {
   }
 
   render() {
-    let { style, ...props } = this.props;
+    const { style, ...props } = this.props;
 
     return (
       <View style={styles.inputContainer}>
@@ -116,14 +116,14 @@ export class FormInput extends React.Component {
   }
 
   _getAnimatedLabelStyles = () => {
-    let { labelPosition } = this.state;
+    const { labelPosition } = this.state;
 
-    let opacity = labelPosition.interpolate({
+    const opacity = labelPosition.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 1],
     });
 
-    let translateY = labelPosition.interpolate({
+    const translateY = labelPosition.interpolate({
       inputRange: [0, 1],
       outputRange: [30, 0],
     });

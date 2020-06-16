@@ -4,15 +4,14 @@ import React from 'react';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 
-import SessionActions from '../redux/SessionActions';
-
 import Analytics from '../api/Analytics';
 import AuthApi from '../api/AuthApi';
 import CloseButton from '../components/CloseButton';
-import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import { StyledScrollView as ScrollView } from '../components/Views';
+import Colors from '../constants/Colors';
+import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
@@ -218,7 +217,7 @@ export default class SignUpScreen extends React.Component {
   };
 
   _handleSubmit = async () => {
-    let { isLoading } = this.state;
+    const { isLoading } = this.state;
 
     if (isLoading) {
       return;
@@ -230,7 +229,7 @@ export default class SignUpScreen extends React.Component {
       await AuthApi.signUpAsync(this.state);
       Analytics.track(Analytics.events.USER_CREATED_ACCOUNT, { github: false });
 
-      let signInResult = await AuthApi.signInAsync(this.state.email, this.state.password);
+      const signInResult = await AuthApi.signInAsync(this.state.email, this.state.password);
 
       if (this._isMounted) {
         this.props.dispatch(
@@ -245,7 +244,7 @@ export default class SignUpScreen extends React.Component {
   };
 
   _handleError = (error: Error) => {
-    let errorMessage = error.message || 'Sorry, something went wrong.';
+    const errorMessage = error.message || 'Sorry, something went wrong.';
     alert(errorMessage);
   };
 }

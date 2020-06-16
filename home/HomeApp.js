@@ -1,14 +1,14 @@
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { connect } from 'react-redux';
 import { Appearance } from 'react-native-appearance';
 import { Assets as StackAssets } from 'react-navigation-stack';
-import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { connect } from 'react-redux';
 import url from 'url';
 
 import Navigation from './navigation/Navigation';
@@ -25,7 +25,7 @@ Asset.loadAsync(StackAssets);
 @connect(data => App.getDataProps(data))
 export default class App extends React.Component {
   static getDataProps(data) {
-    let { settings } = data;
+    const { settings } = data;
 
     return {
       preferredAppearance: settings.preferredAppearance,
@@ -112,7 +112,7 @@ export default class App extends React.Component {
       return <AppLoading />;
     }
 
-    let { preferredAppearance, colorScheme } = this.props;
+    const { preferredAppearance, colorScheme } = this.props;
     let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
     if (theme === 'no-preference') {
       theme = 'light';

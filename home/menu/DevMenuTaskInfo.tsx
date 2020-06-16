@@ -1,9 +1,9 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
+import DevIndicator from '../components/DevIndicator';
 import { StyledText } from '../components/Text';
 import FriendlyUrls from '../legacy/FriendlyUrls';
-import DevIndicator from '../components/DevIndicator';
 
 type Props = {
   task: { [key: string]: any };

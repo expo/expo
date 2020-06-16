@@ -53,7 +53,7 @@ class ProjectList extends React.PureComponent {
   };
 
   _renderContent = () => {
-    let { theme } = this.props;
+    const { theme } = this.props;
 
     return (
       <FlatList
@@ -144,7 +144,7 @@ class ProjectList extends React.PureComponent {
 }
 
 export default props => {
-  let theme = useTheme();
+  const theme = useTheme();
 
   return <ProjectList {...props} theme={theme} />;
 };
