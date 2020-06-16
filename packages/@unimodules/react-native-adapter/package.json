@@ -33,7 +33,8 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-web": "~0.11"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
