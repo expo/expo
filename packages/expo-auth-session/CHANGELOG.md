@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added missing `peerDependencies`
+- Remove `fbjs` dependency
 - Created `ResponseType.IdToken` for id_token responses. ([#8719](https://github.com/expo/expo/pull/8719) by [@EvanBacon](https://github.com/EvanBacon))
 - `authorizationEndpoint` and `tokenEndpoint` are now optional. ([#8736](https://github.com/expo/expo/pull/8736) by [@EvanBacon](https://github.com/EvanBacon))
 
@@ -13,7 +15,7 @@
 
 ## 1.3.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 1.3.0 — 2020-05-27
 
