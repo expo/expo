@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { View, createElement } from 'react-native';
+import { View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import ExponentAV from './ExponentAV';
