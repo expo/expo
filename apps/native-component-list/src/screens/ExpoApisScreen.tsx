@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 
 import { Screens } from '../navigation/ExpoApis';
 import ComponentListScreen from './ComponentListScreen';
+import { Platform } from '@unimodules/core';
 
 try {
   require('react-native-branch').default.subscribe((bundle: any) => {
@@ -15,13 +16,14 @@ try {
   // Branch is not available, do nothing
 }
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+if (Platform.OS !== 'web')
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
 
 export default class ExpoApisScreen extends React.Component {
   static path = '';
