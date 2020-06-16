@@ -87,6 +87,7 @@ public class ExponentManifest {
   public static final String MANIFEST_LOADED_FROM_CACHE_KEY = "loadedFromCache";
   public static final String MANIFEST_SLUG = "slug";
   public static final String MANIFEST_ANDROID_INFO_KEY = "android";
+  public static final String MANIFEST_KEYBOARD_LAYOUT_MODE_KEY = "softwareKeyboardLayoutMode";
 
   // Statusbar
   public static final String MANIFEST_STATUS_BAR_KEY = "androidStatusBar";

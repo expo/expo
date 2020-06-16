@@ -971,6 +971,13 @@ Configuration for how and when the app should request OTA JavaScript updates
         ]
       }
     ]
+
+    /*
+      Determines how the software keyboard will impact the layout of your application. This maps
+      to the "android:windowSoftInputMode" property. Defaults to "resize".
+      Valid values: "resize", "pan".
+    */
+    "softwareKeyboardLayoutMode": STRING,
   }
 }
 ```
