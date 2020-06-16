@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 
 export const userMediaRequested: boolean = false;
 export const mountedInstances: any[] = [];
@@ -113,7 +113,7 @@ export async function getUserMediaAsync(constraints: MediaStreamConstraints): Pr
 export function canGetUserMedia(): boolean {
   return (
     // SSR
-    canUseDOM &&
+    Platform.isDOMAvailable &&
     // Has any form of media API
     !!(
       (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
