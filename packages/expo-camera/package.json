@@ -34,7 +34,7 @@
     "preset": "expo-module-scripts/ios"
   },
   "peerDependencies": {
-    "@unimodules/core": "*",
+    "@unimodules/core": "~5.1.2",
     "react": "*",
     "react-native": "*",
     "unimodules-camera-interface": "*",
@@ -44,7 +44,6 @@
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
-    "fbjs": "1.0.0",
     "invariant": "2.2.4",
     "lodash": "^4.6.0"
   },
