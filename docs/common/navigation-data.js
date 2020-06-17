@@ -20,6 +20,7 @@ const DIR_MAPPING = {
   workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
+  'regulatory-compliance': 'Regulatory Compliance',
 };
 
 const processUrl = path => {
