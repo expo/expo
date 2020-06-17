@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid/v4';
-import NotificationPresenter from './NotificationPresenter';
+import NotificationPresenter from './NotificationPresenterModule';
 let warningMessageShown = false;
 export default async function presentNotificationAsync(content, identifier = uuidv4()) {
     if (__DEV__ && !warningMessageShown) {

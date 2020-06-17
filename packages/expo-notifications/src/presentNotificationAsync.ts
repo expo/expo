@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 
-import NotificationPresenter from './NotificationPresenter';
+import NotificationPresenter from './NotificationPresenterModule';
 import { NotificationContentInput } from './Notifications.types';
 
 let warningMessageShown = false;
