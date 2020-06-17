@@ -22,7 +22,7 @@
   "devDependencies": {
     "@babel/core": "^7.8.6",
     "@types/react": "~16.9.23",
-    "@types/react-native": "~0.61.17",
+    "@types/react-native": "~0.62.13",
     "babel-preset-expo": "~8.1.0",
     "typescript": "~3.8.3"
   }
