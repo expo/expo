@@ -1,7 +1,5 @@
-import { NativeModulesProxy, ProxyNativeModule } from '@unimodules/core';
+import { NativeModulesProxy } from '@unimodules/core';
 
-export interface PushTokenManagerModule extends ProxyNativeModule {
-  getDevicePushTokenAsync: () => Promise<string>;
-}
+import { PushTokenManagerModule } from './PushTokenManager.types';
 
 export default (NativeModulesProxy.ExpoPushTokenManager as any) as PushTokenManagerModule;
