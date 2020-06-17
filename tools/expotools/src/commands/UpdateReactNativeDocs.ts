@@ -1,9 +1,9 @@
-import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import path from 'path';
 import inquirer from 'inquirer';
+import path from 'path';
 
+import { GitDirectory } from '../Git';
 import logger from '../Logger';
 import { Directories } from '../expotools';
 
@@ -40,10 +40,14 @@ const DOCS_IGNORED = [
   'systrace',
 ];
 
+const rootRepo = new GitDirectory(path.resolve('.'));
+const rnRepo = new GitDirectory(RN_REPO_DIR);
+const rnDocsRepo = new GitDirectory(RN_DOCS_DIR);
+
 async function action(input: Options) {
   const options = await getOptions(input);
 
-  if (!await validateGitStatusAsync()) {
+  if (!(await validateGitStatusAsync())) {
     return;
   }
 
@@ -51,7 +55,7 @@ async function action(input: Options) {
 
   const summary = getDocsSummary(
     await getLocalFilesAsync(options),
-    await getUpstreamFilesAsync(options),
+    await getUpstreamFilesAsync(options)
   );
 
   logger.log();
@@ -66,11 +70,13 @@ async function action(input: Options) {
 async function getOptions(input: Options): Promise<Options> {
   const questions: inquirer.Question[] = [];
   const existingSdks = (await fs.promises.readdir(SDK_DOCS_DIR, { withFileTypes: true }))
-      .filter(entry => entry.isDirectory() && entry.name !== 'latest')
-      .map(entry => entry.name.replace(/v([0-9]+)/, '$1'));
+    .filter(entry => entry.isDirectory() && entry.name !== 'latest')
+    .map(entry => entry.name.replace(/v([0-9]+)/, '$1'));
 
   if (input.sdk && !existingSdks.includes(input.sdk)) {
-    throw new Error(`SDK docs ${input.sdk} does not exist, please create it with "et generate-sdk-docs"`);
+    throw new Error(
+      `SDK docs ${input.sdk} does not exist, please create it with "et generate-sdk-docs"`
+    );
   }
 
   if (!input.sdk) {
@@ -86,7 +92,8 @@ async function getOptions(input: Options): Promise<Options> {
     questions.push({
       type: 'input',
       name: 'from',
-      message: 'From which commit of the React Native Website do you want to update? (e.g. 9806ddd)',
+      message:
+        'From which commit of the React Native Website do you want to update? (e.g. 9806ddd)',
       filter: (value: string) => value.trim(),
       validate: (value: string) => value.length !== 0,
     });
@@ -102,9 +109,9 @@ async function getOptions(input: Options): Promise<Options> {
 }
 
 async function validateGitStatusAsync() {
-  logger.info('\n📑 Checking local repository status...')
+  logger.info('\n📑 Checking local repository status...');
 
-  const result = await spawnAsync('git', ['status', '--porcelain']);
+  const result = await rootRepo.runAsync(['status', '--porcelain']);
   const status = result.stdout === '' ? 'clean' : 'dirty';
 
   if (status === 'clean') {
@@ -112,7 +119,11 @@ async function validateGitStatusAsync() {
   }
 
   logger.warn(`⚠️  Your git working tree is`, chalk.underline('dirty'));
-  logger.info(`It's recommended to ${chalk.bold('commit all your changes before proceeding')}, so you can revert the changes made by this command if necessary.`);
+  logger.info(
+    `It's recommended to ${chalk.bold(
+      'commit all your changes before proceeding'
+    )}, so you can revert the changes made by this command if necessary.`
+  );
 
   const { useDirtyGit } = await inquirer.prompt({
     type: 'confirm',
@@ -129,18 +140,14 @@ async function validateGitStatusAsync() {
 async function updateDocsAsync(options: Options) {
   logger.info(`📚 Updating ${chalk.cyan('react-native-website')} submodule...`);
 
-  await spawnAsync('git', ['checkout', 'master'], { cwd: RN_REPO_DIR });
-  await spawnAsync('git', ['pull'], { cwd: RN_REPO_DIR });
+  await rnRepo.runAsync(['checkout', 'master']);
+  await rnRepo.pullAsync({});
 
-  try {
-    await spawnAsync('git', ['checkout', options.from], { cwd: RN_REPO_DIR });
-  } catch (error) {
+  if (!(await rnRepo.tryAsync(['checkout', options.from]))) {
     throw new Error(`The --from commit "${options.from}" doesn't exists in the submodule.`);
   }
 
-  try {
-    await spawnAsync('git', ['checkout', options.to], { cwd: RN_REPO_DIR });
-  } catch (error) {
+  if (!(await rnRepo.tryAsync(['checkout', options.to]))) {
     throw new Error(`The --to commit "${options.to}" doesn't exists in the submodule.`);
   }
 }
@@ -152,16 +159,21 @@ async function getLocalFilesAsync(options: Options) {
   const files = await fs.promises.readdir(versionedDocsPath);
 
   return files
-    .filter(entry => (
-      !entry.endsWith(SUFFIX_CHANGED)
-      && !entry.startsWith(PREFIX_ADDED)
-      && !entry.startsWith(PREFIX_REMOVED)
-    ))
+    .filter(
+      entry =>
+        !entry.endsWith(SUFFIX_CHANGED) &&
+        !entry.startsWith(PREFIX_ADDED) &&
+        !entry.startsWith(PREFIX_REMOVED)
+    )
     .map(entry => entry.replace('.md', ''));
 }
 
 async function getUpstreamFilesAsync(options: Options) {
-  logger.info('🔎 Resolving upstream docs from', chalk.underline('react-native-website'), 'submodule...');
+  logger.info(
+    '🔎 Resolving upstream docs from',
+    chalk.underline('react-native-website'),
+    'submodule...'
+  );
 
   const sidebarPath = path.join(RN_WEBSITE_DIR, 'sidebars.json');
   const sidebarData = await fs.readJson(sidebarPath);
@@ -175,7 +187,9 @@ async function getUpstreamFilesAsync(options: Options) {
     ];
   } catch (error) {
     logger.error('\n🚫 There was an error extracting the sidebar information.');
-    logger.info('Please double-check the sidebar and update the "relevantNestedDocs" in this script.');
+    logger.info(
+      'Please double-check the sidebar and update the "relevantNestedDocs" in this script.'
+    );
     logger.info(chalk.dim(`./${path.relative(process.cwd(), sidebarPath)}\n`));
     throw error;
   }
@@ -207,9 +221,9 @@ function getDocsSummary(localFiles: string[], upstreamFiles: string[]): DocsSumm
   const removed = localFiles.filter(entry => !upstreamFiles.includes(entry));
   const added = upstreamFiles.filter(entry => !localFiles.includes(entry));
 
-  const changed = upstreamFiles.filter(entry => (
-    !(removed.includes(entry) || added.includes(entry))
-  ));
+  const changed = upstreamFiles.filter(
+    entry => !(removed.includes(entry) || added.includes(entry))
+  );
 
   return { removed, added, changed };
 }
@@ -228,11 +242,15 @@ async function applyRemovedFilesAsync(options: Options, summary: DocsSummary) {
 
     await fs.move(
       path.join(sdkDocsDir, `${entry}.md`),
-      path.join(sdkDocsDir, `${PREFIX_REMOVED}${entry}.md`),
+      path.join(sdkDocsDir, `${PREFIX_REMOVED}${entry}.md`)
     );
   }
 
-  logger.info('➖ Upstream', chalk.underline(`removed ${summary.removed.length} files`), `see "${PREFIX_REMOVED}*.md" files.`);
+  logger.info(
+    '➖ Upstream',
+    chalk.underline(`removed ${summary.removed.length} files`),
+    `see "${PREFIX_REMOVED}*.md" files.`
+  );
 }
 
 async function applyAddedFilesAsync(options: Options, summary: DocsSummary) {
@@ -247,11 +265,15 @@ async function applyAddedFilesAsync(options: Options, summary: DocsSummary) {
 
     await fs.copyFile(
       path.join(RN_DOCS_DIR, `${entry}.md`),
-      path.join(SDK_DOCS_DIR, options.sdk, 'react-native', `${PREFIX_ADDED}${entry}.md`),
+      path.join(SDK_DOCS_DIR, options.sdk, 'react-native', `${PREFIX_ADDED}${entry}.md`)
     );
   }
 
-  logger.info(`➕ Upstream ${chalk.underline(`added ${summary.added.length} files`)}, see "${PREFIX_ADDED}*.md" files.`);
+  logger.info(
+    `➕ Upstream ${chalk.underline(
+      `added ${summary.added.length} files`
+    )}, see "${PREFIX_ADDED}*.md" files.`
+  );
 }
 
 async function applyChangedFilesAsync(options: Options, summary: DocsSummary) {
@@ -260,13 +282,29 @@ async function applyChangedFilesAsync(options: Options, summary: DocsSummary) {
   }
 
   for (const entry of summary.changed) {
-    const diffPath = path.join(SDK_DOCS_DIR, options.sdk, 'react-native', `${entry}${SUFFIX_CHANGED}`);
+    const diffPath = path.join(
+      SDK_DOCS_DIR,
+      options.sdk,
+      'react-native',
+      `${entry}${SUFFIX_CHANGED}`
+    );
 
-    const { output: diff } = await spawnAsync('git', ['format-patch', `${options.from}..HEAD`, '--relative', `${entry}.md`, '--stdout'], { cwd: RN_DOCS_DIR });
+    const { output: diff } = await rnDocsRepo.runAsync([
+      'format-patch',
+      `${options.from}..HEAD`,
+      '--relative',
+      `${entry}.md`,
+      '--stdout',
+    ]);
+
     await fs.writeFile(diffPath, diff.join(''));
   }
 
-  logger.info('➗ Upstream', chalk.underline(`changed ${summary.changed.length} files`), `see "*${SUFFIX_CHANGED}" files.`);
+  logger.info(
+    '➗ Upstream',
+    chalk.underline(`changed ${summary.changed.length} files`),
+    `see "*${SUFFIX_CHANGED}" files.`
+  );
 }
 
 function logCompleted(options: Options): void {
@@ -274,16 +312,20 @@ function logCompleted(options: Options): void {
 
   logger.success('\n✅ Update completed.');
   logger.info('Please check the files in the versioned react-native folder.');
-  logger.info('To revert the changes, use `git clean -xdf .` and `git checkout .` in the versioned folder:');
+  logger.info(
+    'To revert the changes, use `git clean -xdf .` and `git checkout .` in the versioned folder:'
+  );
   logger.info(chalk.dim(`./${path.relative(process.cwd(), versionedDir)}\n`));
 }
 
-export default (program) => {
+export default program => {
   program
     .command('update-react-native-docs')
     .option('--sdk <string>', 'SDK version to merge with (e.g. `unversioned` or `37.0.0`)')
     .option('--from <commit>', 'React Native Docs commit to start from')
     .option('--to <commit>', 'React Native Docs commit to end at (defaults to `master`)')
-    .description(`Fetches the React Native Docs changes in the commit range and create diffs to manually merge it.`)
+    .description(
+      `Fetches the React Native Docs changes in the commit range and create diffs to manually merge it.`
+    )
     .asyncAction(action);
 };
