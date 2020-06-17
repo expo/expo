@@ -2,7 +2,9 @@
 
 package host.exp.exponent.experience;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -13,6 +15,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
@@ -174,6 +177,15 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     Fresco.initialize(getApplicationContext());
 
     // TODO: OkHttpClientProvider leaks Activity. Clean it up.
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("onConfigurationChanged", this, newConfig);
+    }
   }
 
   protected void consumeErrorQueue() {
