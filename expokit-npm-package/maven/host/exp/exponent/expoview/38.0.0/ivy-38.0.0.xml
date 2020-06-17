@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="38.0.0" status="integration" publication="20200605151338"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="38.0.0" status="integration" publication="20200617160834"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -345,6 +345,7 @@
     <dependency org="androidx.vectordrawable" name="vectordrawable-animated" rev="1.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.interpolator" name="interpolator" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.drawerlayout" name="drawerlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.swiperefreshlayout" name="swiperefreshlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.fresco" name="fresco" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.fresco" name="fbcore" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.fresco" name="drawee" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -361,7 +362,6 @@
     <dependency org="com.squareup.okio" name="okio" rev="1.15.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.12.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.fbjni" name="fbjni-java-only" rev="0.0.3" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.swiperefreshlayout" name="swiperefreshlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.fresco" name="animated-gif" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.fresco" name="animated-base" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.fresco" name="animated-drawable" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
