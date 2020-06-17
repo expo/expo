@@ -441,6 +441,10 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                 if (exporter.status == AVAssetExportSessionStatusCompleted) {
                     result[@"localUri"] = videoFileOutputURL.absoluteString;
                     resolve(result);
+                } else if (exporter.status == AVAssetExportSessionStatusFailed) {
+                    reject(@"E_EXPORT_FAILED", @"Could not export the requested video.", nil);
+                } else if (exporter.status == AVAssetExportSessionStatusCancelled) {
+                    reject(@"E_EXPORT_CANCELLED", @"The video export operation is cancelled", nil);
                 }
             }];
             
