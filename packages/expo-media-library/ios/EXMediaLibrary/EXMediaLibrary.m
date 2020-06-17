@@ -24,6 +24,8 @@ NSString *const EXAssetMediaTypeAll = @"all";
 
 NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
+NSString *const EXMediaLibraryCachesDirectory = @"MediaLibrary";
+
 @interface EXMediaLibrary ()
 
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
@@ -424,7 +426,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                                                 resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
         // Slow motion videos are returned as an AVComposition instance
         if ([asset isKindOfClass:[AVComposition class]]) {
-            NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"MediaLibrary"];
+            NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:EXMediaLibraryCachesDirectory];
             [self.fileSystem ensureDirExistsWithPath:directory];
             NSString *videoOutputFileName = [NSString stringWithFormat:@"slowMoVideo-%d.mov",arc4random() % 1000];
             NSString *videoFileOutputPath = [directory stringByAppendingPathComponent:videoOutputFileName];
