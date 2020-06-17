@@ -1,3 +1,4 @@
+import { UnavailabilityError } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 
 import NotificationPresenter from './NotificationPresenterModule';
@@ -15,5 +16,10 @@ export default async function presentNotificationAsync(
     );
     warningMessageShown = true;
   }
+
+  if (!NotificationPresenter.presentNotificationAsync) {
+    throw new UnavailabilityError('Notifications', 'presentNotificationAsync');
+  }
+
   return await NotificationPresenter.presentNotificationAsync(identifier, content);
 }
