@@ -6,7 +6,7 @@ export default {
   addListener: () => {
     if (!warningHasBeenShown) {
       console.warn(
-        '[expo-notifications] Notifications handling is not yet fully supported on web. Handling notifications will have no effect.'
+        '[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.'
       );
       warningHasBeenShown = true;
     }
