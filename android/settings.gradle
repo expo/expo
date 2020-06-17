@@ -11,7 +11,6 @@ project(':unimodules-test-core').projectDir = new File(rootDir, '../packages/uni
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
-    "abi38_0_0",
     "abi37_0_0",
     "abi36_0_0",
     "abi35_0_0",
