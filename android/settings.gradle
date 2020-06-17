@@ -9,7 +9,6 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
-    "abi38_0_0",
     "abi37_0_0",
     "abi36_0_0",
     "abi35_0_0",
