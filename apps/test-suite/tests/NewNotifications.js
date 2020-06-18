@@ -597,6 +597,96 @@ export async function test(t) {
       });
     });
 
+    t.describe('Notification Categories', () => {
+      const vanillaButton = {
+        actionId: 'vanillaButton',
+        buttonTitle: 'Plain Option',
+        isDestructive: false,
+        isAuthenticationRequired: false,
+      };
+      const textResponseButton = {
+        actionId: 'textResponseButton',
+        buttonTitle: 'Click to Respond with Text',
+        textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
+        isDestructive: false,
+        isAuthenticationRequired: false,
+      };
+      const allTestCategoryIds = ['categoryIdNumber1', 'categoryIdNumber2'];
+
+      afterEach(async () => {
+        allTestCategoryIds.forEach(async id => {
+          await Notifications.deleteNotificationCategoryAsync(id);
+        });
+      });
+
+      t.describe('getNotificationCategoriesAsync()', () => {
+        t.it('returns an empty array if there are no categories', async () => {
+          t.expect(await Notifications.getNotificationCategoriesAsync()).toHaveLength(0);
+        });
+
+        t.it('returns an array with the just-created categories', async () => {
+          await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
+            textResponseButton,
+          ]);
+          await Notifications.setNotificationCategoryAsync('categoryIdNumber2', [vanillaButton]);
+          t.expect(await Notifications.getNotificationCategoriesAsync()).toHaveLength(2);
+        });
+      });
+
+      t.describe('setNotificationCategoriesAsync()', () => {
+        t.it('creates a category with one action successfully', async () => {
+          expect(
+            await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
+              textResponseButton,
+            ])
+          ).resolves.toEqual({
+            categoryIdentifier: 'categoryIdNumber1',
+            actions: [textResponseButton],
+          });
+          expect(await Notifications.getNotificationCategoriesAsync()).toHaveLength(1);
+        });
+
+        t.it('creates a category with two actions successfully', async () => {
+          expect(
+            await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
+              textResponseButton,
+              vanillaButton,
+            ])
+          ).resolves.toEqual({
+            categoryIdentifier: 'categoryIdNumber1',
+            actions: [textResponseButton, vanillaButton],
+          });
+          expect(await Notifications.getNotificationCategoriesAsync()).toHaveLength(1);
+        });
+      });
+      t.describe('deleteNotificationCategoriesAsync()', () => {
+        t.it('deleting a category that does not exist does nothing', async () => {
+          const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
+          expect(
+            await Notifications.deleteNotificationCategoryAsync('nonExistentCategoryId')
+          ).resolves();
+          const categoriesAfter = await Notifications.getNotificationCategoriesAsync();
+          expect(categoriesAfter.length).toEqual(categoriesBefore.length);
+        });
+
+        t.it('deleting a category reduces the number of categories by 1', async () => {
+          t.it(
+            'returns an array of length 1 after creating 2 categories & deleting 1',
+            async () => {
+              await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
+                textResponseButton,
+              ]);
+              await Notifications.setNotificationCategoryAsync('categoryIdNumber2', [
+                vanillaButton,
+              ]);
+              await Notifications.deleteNotificationCategoryAsync('categoryIdNumber2');
+              t.expect(await Notifications.getNotificationCategoriesAsync()).toHaveLength(1);
+            }
+          );
+        });
+      });
+    });
+
     t.describe('getBadgeCountAsync', () => {
       t.it('resolves with an integer', async () => {
         const badgeCount = await Notifications.getBadgeCountAsync();
