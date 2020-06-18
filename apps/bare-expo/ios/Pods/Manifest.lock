@@ -507,6 +507,8 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
     - ReactCommon/callinvoker (= 0.62.2)
+  - RNCMaskedView (0.1.10):
+    - React
   - RNGestureHandler (1.6.1):
     - React
   - RNReanimated (1.9.0):
@@ -626,6 +628,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../../../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/callinvoker (from `../../../react-native-lab/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/ReactCommon`)
+  - "RNCMaskedView (from `../../../node_modules/@react-native-community/masked-view`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
@@ -835,6 +838,8 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../../../react-native-lab/react-native/ReactCommon"
+  RNCMaskedView:
+    :path: "../../../node_modules/@react-native-community/masked-view"
   RNGestureHandler:
     :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -972,6 +977,7 @@ SPEC CHECKSUMS:
   React-RCTText: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
+  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNReanimated: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
   RNScreens: 62211832af51e0aebcf6e8c36bcf7dd65592f244
@@ -993,4 +999,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5e336c4046a5cf7924b429b07035b2e33d122cdd
 
-COCOAPODS: 1.9.2
+COCOAPODS: 1.9.3
