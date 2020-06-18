@@ -31,11 +31,11 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
 
   @ExpoMethod
   public void setNotificationCategoryAsync(final String identifier, ArrayList actions, final Promise promise) {
-
+    promise.resolve("it works");
   }
 
   @ExpoMethod
   public void deleteNotificationCategoryAsync(String identifier, final Promise promise) {
-   
+   promise.resolve("it works");
   }
 }
