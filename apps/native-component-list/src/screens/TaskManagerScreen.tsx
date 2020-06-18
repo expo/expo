@@ -26,15 +26,15 @@ export default function TaskManagerScreen(props: {
     setTasks(tasks);
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      let isActive = true;
-      TaskManager.getRegisteredTasksAsync().then(tasks => {
-        if (isActive) setTasks(tasks);
-      });
-      return () => (isActive = false);
-    }, [setTasks])
-  );
+  const onFocus = React.useCallback(() => {
+    let isActive = true;
+    TaskManager.getRegisteredTasksAsync().then(tasks => {
+      if (isActive) setTasks(tasks);
+    });
+    return () => (isActive = false);
+  }, [setTasks]);
+
+  useFocusEffect(onFocus);
 
   const unregisterTask = async (taskName: string) => {
     await TaskManager.unregisterTaskAsync(taskName);

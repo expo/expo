@@ -78,34 +78,34 @@ export default function GeofencingScreen() {
   const mapViewRef = React.useRef<MapView>(null);
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      let isActive = true;
+  const onFocus = React.useCallback(() => {
+    let isActive = true;
 
-      (async () => {
-        await Location.requestPermissionsAsync();
+    (async () => {
+      await Location.requestPermissionsAsync();
 
-        const { coords } = await Location.getCurrentPositionAsync();
-        const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
-        const geofencingRegions = await getSavedRegions();
+      const { coords } = await Location.getCurrentPositionAsync();
+      const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
+      const geofencingRegions = await getSavedRegions();
 
-        if (isActive) {
-          dispatch({
-            type: 'update',
-            isGeofencing,
-            geofencingRegions,
-            initialRegion: {
-              latitude: coords.latitude,
-              longitude: coords.longitude,
-              latitudeDelta: 0.004,
-              longitudeDelta: 0.002,
-            },
-          });
-        }
-      })();
-      return () => (isActive = false);
-    }, [])
-  );
+      if (isActive) {
+        dispatch({
+          type: 'update',
+          isGeofencing,
+          geofencingRegions,
+          initialRegion: {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            latitudeDelta: 0.004,
+            longitudeDelta: 0.002,
+          },
+        });
+      }
+    })();
+    return () => (isActive = false);
+  }, []);
+
+  useFocusEffect(onFocus);
 
   const toggleGeofencing = React.useCallback(async () => {
     if (state.isGeofencing) {

@@ -3,7 +3,7 @@ import format from 'date-format';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { AppState, AppStateStatus, AsyncStorage, StyleSheet, Text, View } from 'react-native';
+import { AsyncStorage, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
@@ -23,12 +23,11 @@ export default function BackgroundFetchScreen() {
     }
   }, [appState]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      refreshLastFetchDateAsync();
-      checkStatusAsync();
-    }, [])
-  );
+  const onFocus = React.useCallback(() => {
+    refreshLastFetchDateAsync();
+    checkStatusAsync();
+  }, []);
+  useFocusEffect(onFocus);
 
   const refreshLastFetchDateAsync = async () => {
     const lastFetchDateStr = await AsyncStorage.getItem(LAST_FETCH_DATE_KEY);
