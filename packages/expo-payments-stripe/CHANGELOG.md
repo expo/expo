@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.2.3 — 2020-06-18
+
+### 🐛 Bug fixes
+
 - Fixed misuse of the native module that caused an unhandled Promise being rejected when `cancelApplePayRequestAsync` was called. ([#8864](https://github.com/expo/expo/pull/8864) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 8.2.2 — 2020-06-01
