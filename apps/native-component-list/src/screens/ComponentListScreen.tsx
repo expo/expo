@@ -1,17 +1,16 @@
+import { EvilIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
   FlatList,
+  ListRenderItem,
   PixelRatio,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-  StatusBar,
-  ListRenderItem,
 } from 'react-native';
-import { withNavigation, NavigationScreenProps } from 'react-navigation';
-
-import { EvilIcons } from '@expo/vector-icons';
+import { NavigationScreenProps, withNavigation } from 'react-navigation';
 
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
@@ -56,7 +55,6 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
             this._listView = view!;
           }}
           initialNumToRender={25}
-          stickySectionHeadersEnabled
           removeClippedSubviews={false}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"

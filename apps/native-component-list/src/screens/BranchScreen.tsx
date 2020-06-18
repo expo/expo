@@ -1,8 +1,8 @@
-import React from 'react';
-import { Alert, Button, StyleSheet, Text, View, Platform } from 'react-native';
 import Constants from 'expo-constants';
+import React from 'react';
+import { Alert, Button, Platform, StyleSheet, Text, View } from 'react-native';
 
-let Branch = null;
+let Branch: any = null;
 if (Platform.OS !== 'web') {
   try {
     Branch = require('react-native-branch').default;
@@ -50,7 +50,7 @@ export default class BranchScreen extends React.Component {
     const branchUniversalObject = await this._getOrCreateBranchObjectAsync();
     const { completed, error } = await branchUniversalObject.showShareSheet({}, {});
     if (error) {
-      Alert.alert('Oups', 'Something bad happened: ' + error.message);
+      Alert.alert('Oops', 'Something bad happened: ' + error.message);
     } else if (completed) {
       Alert.alert('Share completed!');
     } else {

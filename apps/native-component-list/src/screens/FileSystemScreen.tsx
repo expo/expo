@@ -1,3 +1,5 @@
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
 import React from 'react';
 import {
   Alert,
@@ -8,15 +10,14 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import { Asset } from 'expo-asset';
+
 import ListButton from '../components/ListButton';
 
 interface State {
   downloadProgress: number;
 }
 
-export default class FileSystemScreen extends React.Component<{}, State> {
+export default class FileSystemScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'FileSystem',
   };

@@ -1,5 +1,5 @@
-import React from 'react';
 import { Pedometer } from 'expo-sensors';
+import React from 'react';
 import { Alert, ScrollView, Text } from 'react-native';
 
 import ListButton from '../components/ListButton';
@@ -8,7 +8,7 @@ interface State {
   stepCount?: number;
 }
 
-export default class PedometerScreen extends React.Component<{}, State> {
+export default class PedometerScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Pedometer',
   };
@@ -33,10 +33,7 @@ export default class PedometerScreen extends React.Component<{}, State> {
             const start = new Date();
             start.setDate(end.getDate() - 1);
             const result = await Pedometer.getStepCountAsync(start, end);
-            Alert.alert(
-              'Pedometer result',
-              `Number of steps for the last day: ${result.steps}`
-            );
+            Alert.alert('Pedometer result', `Number of steps for the last day: ${result.steps}`);
           }}
           title="Get steps count"
         />
@@ -57,9 +54,7 @@ export default class PedometerScreen extends React.Component<{}, State> {
           }}
           title="Stop listening for step count updates"
         />
-        {this.state.stepCount !== undefined && (
-          <Text>Total steps {this.state.stepCount}</Text>
-        )}
+        {this.state.stepCount !== undefined && <Text>Total steps {this.state.stepCount}</Text>}
       </ScrollView>
     );
   }

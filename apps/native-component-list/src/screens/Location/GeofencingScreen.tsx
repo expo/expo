@@ -3,7 +3,7 @@ import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { StyleSheet, Text, View, NativeSyntheticEvent } from 'react-native';
+import { NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 import { NavigationEvents } from 'react-navigation';
 

@@ -1,14 +1,14 @@
-import React from 'react';
 import * as MediaLibrary from 'expo-media-library';
+import React from 'react';
 import {
   FlatList,
+  ListRenderItem,
+  Platform,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
-  Platform,
-  Switch,
-  ListRenderItem,
 } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 
@@ -19,10 +19,7 @@ interface State {
   albums: MediaLibrary.Album[];
 }
 
-export default class MediaAlbumsScreen extends React.Component<
-  NavigationScreenProps,
-  State
-> {
+export default class MediaAlbumsScreen extends React.Component<NavigationScreenProps, State> {
   static navigationOptions = {
     title: 'MediaLibrary Albums',
   };
@@ -53,7 +50,7 @@ export default class MediaAlbumsScreen extends React.Component<
 
   openAlbum = (album: MediaLibrary.Album) => {
     this.props.navigation.navigate('MediaLibrary', { album });
-  }
+  };
 
   renderItem: ListRenderItem<MediaLibrary.Album> = ({ item }) => {
     return (
@@ -65,7 +62,7 @@ export default class MediaAlbumsScreen extends React.Component<
         <MonoText>{JSON.stringify(item, null, 2)}</MonoText>
       </TouchableOpacity>
     );
-  }
+  };
 
   renderContent() {
     const { albums } = this.state;
@@ -74,7 +71,7 @@ export default class MediaAlbumsScreen extends React.Component<
       return (
         <View style={styles.noAlbums}>
           <Text>
-            {'You don\'t have any media albums! You can create one from asset details screen.'}
+            {"You don't have any media albums! You can create one from asset details screen."}
           </Text>
         </View>
       );

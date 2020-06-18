@@ -1,11 +1,11 @@
-import React from 'react';
 import * as TaskManager from 'expo-task-manager';
-import { NavigationEvents, NavigationScreenProps } from 'react-navigation';
+import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { NavigationEvents, NavigationScreenProps } from 'react-navigation';
 
 import Button from '../components/Button';
-import MonoText from '../components/MonoText';
 import HeadingText from '../components/HeadingText';
+import MonoText from '../components/MonoText';
 
 interface State {
   tasks?: TaskManager.RegisteredTask[];
@@ -25,17 +25,17 @@ export default class TaskManagerScreen extends React.Component<NavigationScreenP
   updateRegisteredTasks = async () => {
     const tasks = await TaskManager.getRegisteredTasksAsync();
     this.setState({ tasks });
-  }
+  };
 
   unregisterTask = async (taskName: string) => {
     await TaskManager.unregisterTaskAsync(taskName);
     await this.updateRegisteredTasks();
-  }
+  };
 
   unregisterAllTasks = async () => {
     await TaskManager.unregisterAllTasksAsync();
     await this.updateRegisteredTasks();
-  }
+  };
 
   renderButtons() {
     const { tasks } = this.state;

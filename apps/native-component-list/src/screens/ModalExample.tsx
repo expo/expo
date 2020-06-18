@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Text, View, StyleSheet } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import Touchable from 'react-native-platform-touchable';
 
 import { Colors, Layout } from '../constants';
@@ -9,7 +9,7 @@ interface State {
   animationType?: 'none' | 'slide' | 'fade';
 }
 
-export default class ModalExample extends React.Component<{}, State> {
+export default class ModalExample extends React.Component<object, State> {
   readonly state: State = {
     modalVisible: false,
     animationType: 'none',
@@ -22,8 +22,7 @@ export default class ModalExample extends React.Component<{}, State> {
           visible={false}
           onRequestClose={() => {
             alert('Modal has been closed.');
-          }}
-        >
+          }}>
           <View />
         </Modal>
 
@@ -33,8 +32,7 @@ export default class ModalExample extends React.Component<{}, State> {
           visible={this.state.modalVisible}
           onRequestClose={() => {
             alert('Modal has been closed.');
-          }}
-        >
+          }}>
           <View style={styles.modalContainer}>
             <View>
               <Text>Hello World!</Text>
@@ -42,8 +40,7 @@ export default class ModalExample extends React.Component<{}, State> {
                 style={styles.button}
                 onPress={() => {
                   this.setState({ modalVisible: false });
-                }}
-              >
+                }}>
                 <Text style={styles.buttonText}>Hide Modal</Text>
               </Touchable>
             </View>
@@ -53,8 +50,7 @@ export default class ModalExample extends React.Component<{}, State> {
           style={styles.button}
           onPress={() => {
             this.setState({ modalVisible: true, animationType: 'slide' });
-          }}
-        >
+          }}>
           <Text style={styles.buttonText}>Show modal (slide)</Text>
         </Touchable>
 
@@ -64,8 +60,7 @@ export default class ModalExample extends React.Component<{}, State> {
           style={styles.button}
           onPress={() => {
             this.setState({ modalVisible: true, animationType: 'fade' });
-          }}
-        >
+          }}>
           <Text style={styles.buttonText}>Show modal (fade)</Text>
         </Touchable>
       </View>

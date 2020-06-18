@@ -1,6 +1,7 @@
-import React from 'react';
-import { Alert, Platform, ScrollView, TextInput, View } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import React from 'react';
+import { Alert, Platform, ScrollView, TextInput } from 'react-native';
+
 import ListButton from '../components/ListButton';
 
 interface State {
@@ -8,7 +9,7 @@ interface State {
   value?: string;
 }
 
-export default class SecureStoreScreen extends React.Component<{}, State> {
+export default class SecureStoreScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'SecureStore',
   };
@@ -19,15 +20,13 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
     try {
       console.log('securestore: ' + SecureStore);
       await SecureStore.setItemAsync(key, value, {});
-      Alert.alert(
-        'Success!',
-        'Value: ' + value + ', stored successfully for key: ' + key,
-        [{ text: 'OK', onPress: () => {} }]
-      );
+      Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
+        { text: 'OK', onPress: () => {} },
+      ]);
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  }
+  };
 
   _getValue = async (key: string) => {
     try {
@@ -38,18 +37,16 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  }
+  };
 
   _deleteValue = async (key: string) => {
     try {
       await SecureStore.deleteItemAsync(key, {});
-      Alert.alert('Success!', 'Value deleted', [
-        { text: 'OK', onPress: () => {} },
-      ]);
+      Alert.alert('Success!', 'Value deleted', [{ text: 'OK', onPress: () => {} }]);
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  }
+  };
 
   render() {
     return (
@@ -57,8 +54,7 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
         style={{
           flex: 1,
           padding: 10,
-        }}
-      >
+        }}>
         <TextInput
           style={{
             marginBottom: 10,
@@ -100,10 +96,7 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
           />
         )}
         {this.state.key && (
-          <ListButton
-            onPress={() => this._getValue(this.state.key!)}
-            title="Get value with key"
-          />
+          <ListButton onPress={() => this._getValue(this.state.key!)} title="Get value with key" />
         )}
         {this.state.key && (
           <ListButton
