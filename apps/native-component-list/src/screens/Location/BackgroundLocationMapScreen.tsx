@@ -1,13 +1,12 @@
-import React from 'react';
-import { EventEmitter, EventSubscription } from 'fbemitter';
-import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
-import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-
-import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
+import { EventEmitter, EventSubscription } from 'fbemitter';
+import React from 'react';
+import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
+import MapView from 'react-native-maps';
+import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
@@ -26,7 +25,9 @@ const locationAccuracyStates: { [key in Location.Accuracy]: Location.Accuracy } 
   [Location.Accuracy.BestForNavigation]: Location.Accuracy.Lowest,
 };
 
-const locationActivityTypes: { [key in Location.ActivityType]: Location.ActivityType | undefined } = {
+const locationActivityTypes: {
+  [key in Location.ActivityType]: Location.ActivityType | undefined;
+} = {
   [Location.ActivityType.Other]: Location.ActivityType.AutomotiveNavigation,
   [Location.ActivityType.AutomotiveNavigation]: Location.ActivityType.Fitness,
   [Location.ActivityType.Fitness]: Location.ActivityType.OtherNavigation,
@@ -67,7 +68,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
   eventSubscription?: EventSubscription;
 
   didFocus = async () => {
-    if (!await Location.isBackgroundLocationAvailableAsync()) {
+    if (!(await Location.isBackgroundLocationAvailableAsync())) {
       alert('Background location is not available in this application.');
       this.props.navigation.goBack();
       return;
@@ -79,7 +80,8 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
       AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
         // tslint:disable-next-line max-line-length
-        error: 'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
+        error:
+          'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
       });
       return;
     } else {
@@ -115,7 +117,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
         longitudeDelta: 0.002,
       },
     });
-  }
+  };
 
   handleAppStateChange = (nextAppState: string) => {
     if (nextAppState !== 'active') {
@@ -128,7 +130,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
     }
 
     this.didFocus();
-  }
+  };
 
   componentWillUnmount() {
     if (this.eventSubscription) {
@@ -169,7 +171,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
   clearLocations = async () => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
     this.setState({ savedLocations: [] });
-  }
+  };
 
   toggleTracking = async () => {
     await AsyncStorage.removeItem(STORAGE_KEY);
@@ -180,7 +182,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
       await this.startLocationUpdates();
     }
     this.setState({ savedLocations: [] });
-  }
+  };
 
   onAccuracyChange = () => {
     const accuracy = locationAccuracyStates[this.state.accuracy];
@@ -191,7 +193,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
       // Restart background task with the new accuracy.
       this.startLocationUpdates(accuracy);
     }
-  }
+  };
 
   toggleLocationIndicator = async () => {
     const showsBackgroundLocationIndicator = !this.state.showsBackgroundLocationIndicator;
@@ -201,7 +203,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
         await this.startLocationUpdates();
       }
     });
-  }
+  };
 
   toggleActivityType = () => {
     if (this.state.activityType) {
@@ -215,7 +217,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
       // Restart background task with the new activity type
       this.startLocationUpdates();
     }
-  }
+  };
 
   onCenterMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
@@ -229,7 +231,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
         longitudeDelta: 0.002,
       });
     }
-  }
+  };
 
   renderPolyline() {
     const { savedLocations } = this.state;
@@ -262,8 +264,7 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
           ref={this.mapViewRef}
           style={styles.mapView}
           initialRegion={this.state.initialRegion}
-          showsUserLocation
-        >
+          showsUserLocation>
           {this.renderPolyline()}
         </MapView>
         <View style={styles.buttons} pointerEvents="box-none">
@@ -272,7 +273,9 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
               {Platform.OS === 'android' ? null : (
                 <Button style={styles.button} onPress={this.toggleLocationIndicator}>
                   <View style={styles.buttonContentWrapper}>
-                    <Text style={styles.text}>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
+                    <Text style={styles.text}>
+                      {this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}
+                    </Text>
                     <Text style={styles.text}> background </Text>
                     <FontAwesome name="location-arrow" size={20} color="white" />
                     <Text style={styles.text}> indicator</Text>
@@ -280,9 +283,14 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
                 </Button>
               )}
               {Platform.OS === 'android' ? null : (
-                <Button style={styles.button}
+                <Button
+                  style={styles.button}
                   onPress={this.toggleActivityType}
-                  title={this.state.activityType ? `Activity type: ${Location.ActivityType[this.state.activityType]}` : 'No activity type'}
+                  title={
+                    this.state.activityType
+                      ? `Activity type: ${Location.ActivityType[this.state.activityType]}`
+                      : 'No activity type'
+                  }
                 />
               )}
               <Button

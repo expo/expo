@@ -1,8 +1,9 @@
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
-import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location';
+
 import ListButton from '../../components/ListButton';
 
 type OmitNested<T, K1 extends keyof T, K2 extends keyof T[K1]> = Pick<T, Exclude<keyof T, K1>> &
@@ -43,9 +44,9 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     } = position;
     return {
       coords: restCoords,
-      ...restPosition
+      ...restPosition,
     };
-  }
+  };
 
   _findSingleLocationWithPolyfill = () => {
     this.setState({ searchingLocation: true });
@@ -60,7 +61,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
       },
       { enableHighAccuracy: true }
     );
-  }
+  };
 
   _startWatchingLocationWithPolyfill = () => {
     const watchId = navigator.geolocation.watchPosition(
@@ -88,7 +89,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     };
 
     this.setState({ subscription });
-  }
+  };
 
   _findSingleLocation = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -105,7 +106,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     } finally {
       this.setState({ searchingLocation: false });
     }
-  }
+  };
 
   _startWatchingLocation = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -127,12 +128,12 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     );
 
     this.setState({ subscription });
-  }
+  };
 
   _stopWatchingLocation = async () => {
     this.state.subscription!.remove();
     this.setState({ subscription: undefined, watchLocation: undefined });
-  }
+  };
 
   _getSingleHeading = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -147,7 +148,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     } finally {
       this.setState({ searchingHeading: false });
     }
-  }
+  };
 
   _startWatchingHeading = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -159,12 +160,12 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
       this.setState({ watchHeading: heading });
     });
     this.setState({ headingSubscription: subscription });
-  }
+  };
 
   _stopWatchingHeading = async () => {
     this.state.headingSubscription!.remove();
     this.setState({ headingSubscription: undefined, watchHeading: undefined });
-  }
+  };
 
   _checkProviderStatus = async () => {
     this.setState({
@@ -177,15 +178,15 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
       providerStatus: status,
       checkingProviderStatus: false,
     });
-  }
+  };
 
   _goToBackgroundLocationMap = () => {
     this.props.navigation.navigate('BackgroundLocationMap');
-  }
+  };
 
   _goToGeofencingMap = () => {
     this.props.navigation.navigate('Geofencing');
-  }
+  };
 
   _renderPolyfillSwitch = () => {
     return (
@@ -197,8 +198,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
           justifyContent: 'center',
           marginVertical: 10,
           paddingRight: 30,
-        }}
-      >
+        }}>
         <Switch
           style={{ marginHorizontal: 10 }}
           onValueChange={polyfill => {
@@ -209,7 +209,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         <Text style={{ fontSize: 12 }}>Use navigator.geolocation polyfill</Text>
       </View>
     );
-  }
+  };
 
   renderSingleLocation = () => {
     if (this.state.searchingLocation) {
@@ -243,7 +243,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         />
       </View>
     );
-  }
+  };
 
   renderProviderStatus = () => {
     if (this.state.checkingProviderStatus) {
@@ -266,7 +266,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     }
 
     return <ListButton onPress={this._checkProviderStatus} title="Check provider status" />;
-  }
+  };
 
   renderWatchLocation = () => {
     if (this.state.watchLocation) {
@@ -301,7 +301,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         title="Watch my location"
       />
     );
-  }
+  };
 
   renderWatchCompass = () => {
     if (this.state.watchHeading) {
@@ -317,7 +317,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     }
 
     return <ListButton onPress={this._startWatchingHeading} title="Watch my heading (compass)" />;
-  }
+  };
 
   renderSingleCompass = () => {
     if (this.state.searchingHeading) {
@@ -342,7 +342,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         <ListButton onPress={this._getSingleHeading} title="Find my heading (compass) heading" />
       </View>
     );
-  }
+  };
 
   renderLocationMapButton() {
     return (

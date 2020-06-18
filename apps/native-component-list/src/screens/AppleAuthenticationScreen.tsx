@@ -2,7 +2,7 @@ import Slider from '@react-native-community/slider';
 import { Subscription } from '@unimodules/core';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import React from 'react';
-import { Alert, AsyncStorage, ScrollView, StyleSheet, View, Text, Button } from 'react-native';
+import { Alert, AsyncStorage, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import MonoText from '../components/MonoText';
 
@@ -19,19 +19,19 @@ type State = {
   buttonType: AppleAuthentication.AppleAuthenticationButtonType;
   cornerRadius: number;
   credentials?: AppleAuthentication.AppleAuthenticationCredential | null;
-  credentialState?: AppleAuthentication.AppleAuthenticationCredentialState;
-}
+  credentialState: AppleAuthentication.AppleAuthenticationCredentialState | null;
+};
 
 const USER_CREDENTIAL_KEY = 'ExpoNativeComponentList/AppleAuthentication';
 
 const CREDENTIAL_MESSAGES = {
   [AppleAuthenticationCredentialState.REVOKED]: 'Your authorization has been revoked.',
-  [AppleAuthenticationCredentialState.AUTHORIZED]: 'You\'re authorized.',
-  [AppleAuthenticationCredentialState.NOT_FOUND]: 'You\'re not registered yet.',
+  [AppleAuthenticationCredentialState.AUTHORIZED]: "You're authorized.",
+  [AppleAuthenticationCredentialState.NOT_FOUND]: "You're not registered yet.",
   [AppleAuthenticationCredentialState.TRANSFERRED]: 'Credentials transferred.', // Whatever that means...
 };
 
-export default class AppleAuthenticationScreen extends React.Component<{}, State> {
+export default class AppleAuthenticationScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Apple Authentication',
   };
@@ -42,6 +42,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
     buttonType: AppleAuthenticationButtonType.SIGN_IN,
     cornerRadius: 5,
     credentials: null,
+    credentialState: null,
   };
 
   _subscription?: Subscription;
@@ -71,10 +72,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
   signIn = async () => {
     try {
       const credentials = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthenticationScope.FULL_NAME,
-          AppleAuthenticationScope.EMAIL,
-        ],
+        requestedScopes: [AppleAuthenticationScope.FULL_NAME, AppleAuthenticationScope.EMAIL],
         state: 'this-is-a-test',
       });
       this.setState({ credentials });
@@ -85,16 +83,13 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
     } catch (error) {
       alert(error);
     }
-  }
+  };
 
   refresh = async () => {
     try {
       const credentials = await AppleAuthentication.refreshAsync({
-        requestedScopes: [
-          AppleAuthenticationScope.FULL_NAME,
-          AppleAuthenticationScope.EMAIL,
-        ],
-        user: await this.getUserIdentifier(),
+        requestedScopes: [AppleAuthenticationScope.FULL_NAME, AppleAuthenticationScope.EMAIL],
+        user: (await this.getUserIdentifier())!,
         state: 'this-is-a-test',
       });
       this.setState({ credentials });
@@ -102,33 +97,35 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
     } catch (error) {
       alert(error);
     }
-  }
+  };
 
   signOut = async () => {
     try {
       const credentials = await AppleAuthentication.signOutAsync({
-        user: await this.getUserIdentifier(),
+        user: (await this.getUserIdentifier())!,
         state: 'this-is-a-test',
       });
       this.setState({ credentials: null, credentialState: null });
     } catch (error) {
       alert(error);
     }
-  }
+  };
 
   async checkCredentials() {
     try {
-      const user = await this.getUserIdentifier();
+      const user = (await this.getUserIdentifier())!;
       const credentialState = await AppleAuthentication.getCredentialStateAsync(user);
       this.setState({ credentialState });
     } catch (e) {
       // Obtaining a user or the credentials failed - fallback to not found.
       this.setState({ credentialState: AppleAuthenticationCredentialState.NOT_FOUND });
     }
-  };
+  }
 
-  async getUserIdentifier(): Promise<string> {
-    return this.state.credentials && this.state.credentials.user || await AsyncStorage.getItem(USER_CREDENTIAL_KEY);
+  async getUserIdentifier(): Promise<string | null> {
+    return (
+      this.state.credentials?.user ?? (await AsyncStorage.getItem(USER_CREDENTIAL_KEY)) ?? null
+    );
   }
 
   isAuthorized(): boolean {
@@ -149,15 +146,17 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
         <View style={styles.container}>
           <Text>SignIn with Apple is not available</Text>
         </View>
-      )
+      );
     }
 
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContainer}>
         <View style={styles.credentialStateContainer}>
-          <Text style={styles.credentialStateText}>
-            {CREDENTIAL_MESSAGES[this.state.credentialState]}
-          </Text>
+          {this.state.credentialState && (
+            <Text style={styles.credentialStateText}>
+              {CREDENTIAL_MESSAGES[this.state.credentialState]}
+            </Text>
+          )}
         </View>
         <View style={styles.buttonContainer}>
           <AppleAuthentication.AppleAuthenticationButton
@@ -169,17 +168,19 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
           />
         </View>
         <View style={styles.controlsContainer}>
-          <Text style={styles.controlsText}>
-            Button Style:
-          </Text>
+          <Text style={styles.controlsText}>Button Style:</Text>
           <View style={styles.controlsButtonsContainer}>
             <Button
               title={`${AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle.WHITE]}`}
               onPress={() => this.setState({ buttonStyle: AppleAuthenticationButtonStyle.WHITE })}
             />
             <Button
-              title={`${AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle.WHITE_OUTLINE]}`}
-              onPress={() => this.setState({ buttonStyle: AppleAuthenticationButtonStyle.WHITE_OUTLINE })}
+              title={`${
+                AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle.WHITE_OUTLINE]
+              }`}
+              onPress={() =>
+                this.setState({ buttonStyle: AppleAuthenticationButtonStyle.WHITE_OUTLINE })
+              }
             />
             <Button
               title={`${AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle.BLACK]}`}
@@ -188,9 +189,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
           </View>
         </View>
         <View style={styles.controlsContainer}>
-          <Text style={styles.controlsText}>
-            Button Type:
-          </Text>
+          <Text style={styles.controlsText}>Button Type:</Text>
           <View style={styles.controlsButtonsContainer}>
             <Button
               title={`${AppleAuthenticationButtonType[AppleAuthenticationButtonType.SIGN_IN]}`}
@@ -210,22 +209,25 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
           <Text style={styles.controlsText}>
             Button Corner Radius: {this.state.cornerRadius.toFixed(2)}
           </Text>
-          <Slider minimumValue={0} maximumValue={20} value={this.state.cornerRadius} onValueChange={cornerRadius => this.setState({ cornerRadius })} />
+          <Slider
+            minimumValue={0}
+            maximumValue={20}
+            value={this.state.cornerRadius}
+            onValueChange={cornerRadius => this.setState({ cornerRadius })}
+          />
         </View>
-        { this.state.credentials &&
+        {this.state.credentials && (
           <View>
             <Text>Credentials data:</Text>
-            <MonoText>
-              {JSON.stringify(this.state.credentials, null, 2)}
-            </MonoText>
+            <MonoText>{JSON.stringify(this.state.credentials, null, 2)}</MonoText>
           </View>
-        }
-        { this.isAuthorized() &&
+        )}
+        {this.isAuthorized() && (
           <View style={styles.credentialsContainer}>
             <Button title="Sign out" onPress={this.signOut} />
             <Button title="Refresh" onPress={this.refresh} />
           </View>
-        }
+        )}
       </ScrollView>
     );
   }

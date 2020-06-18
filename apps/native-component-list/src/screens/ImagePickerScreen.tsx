@@ -1,8 +1,8 @@
+import { Video } from 'expo-av';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Image, Platform, ScrollView, View } from 'react-native';
-import { Video } from 'expo-av';
-import * as Permissions from 'expo-permissions';
-import * as ImagePicker from 'expo-image-picker';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
@@ -20,7 +20,7 @@ interface State {
   selection?: ImagePicker.ImagePickerResult;
 }
 
-export default class ImagePickerScreen extends React.Component<{}, State> {
+export default class ImagePickerScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'ImagePicker',
   };
@@ -38,7 +38,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
     } else {
       this.setState({ selection: result });
     }
-  }
+  };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
     await requestPermissionAsync(Permissions.CAMERA_ROLL);
@@ -51,7 +51,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
     } else {
       this.setState({ selection: result });
     }
-  }
+  };
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
@@ -68,9 +68,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
           title="Take video"
         />
         <ListButton
-          onPress={() =>
-            this.showCamera(ImagePicker.MediaTypeOptions.All, true)
-          }
+          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.All, true)}
           title="Open camera and edit"
         />
         <ListButton
@@ -86,9 +84,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
           title="Pick video"
         />
         <ListButton
-          onPress={() =>
-            this.showPicker(ImagePicker.MediaTypeOptions.All, true)
-          }
+          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.All, true)}
           title="Pick photo and edit"
         />
 
@@ -113,8 +109,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
             justifyContent: 'center',
             flex: 1,
             backgroundColor: '#000000',
-          }}
-        >
+          }}>
           {selection.type === 'video' ? (
             <Video
               source={{ uri: selection.uri }}
@@ -133,5 +128,5 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
         <MonoText>{JSON.stringify(selection, null, 2)}</MonoText>
       </View>
     );
-  }
+  };
 }

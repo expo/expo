@@ -1,6 +1,6 @@
+import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
-import { BlurView } from 'expo-blur';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 export default class BlurViewScreen extends React.Component {

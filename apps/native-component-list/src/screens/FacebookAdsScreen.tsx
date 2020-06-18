@@ -1,6 +1,6 @@
 import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 
@@ -65,9 +65,13 @@ class ChangingFullAd extends React.Component<
             onValueChange={() => this.setState({ expanded: !this.state.expanded })}
           />
         </View>
-        <AdOptionsView iconSize={40} iconColor="#ff0000" style={{
-          backgroundColor: 'white',
-        }} />
+        <AdOptionsView
+          iconSize={40}
+          iconColor="#ff0000"
+          style={{
+            backgroundColor: 'white',
+          }}
+        />
         <View style={styles.nativeRow}>
           <AdIconView style={styles.iconView} />
           <View style={styles.nativeColumn}>
@@ -123,7 +127,7 @@ export default class App extends React.Component {
       .catch(err => {
         console.log(err);
       });
-  }
+  };
 
   onBannerAdPress = () => console.log('Ad clicked!');
 

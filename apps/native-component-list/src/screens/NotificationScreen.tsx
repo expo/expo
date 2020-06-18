@@ -2,7 +2,7 @@ import { Subscription } from '@unimodules/core';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
-import { Alert, ScrollView, Platform } from 'react-native';
+import { Alert, Platform, ScrollView } from 'react-native';
 
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 import HeadingText from '../components/HeadingText';

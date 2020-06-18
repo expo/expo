@@ -1,14 +1,14 @@
-import React from 'react';
-import * as Permissions from 'expo-permissions';
-import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
 import {
   ScrollView,
+  StyleProp,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  StyleProp,
+  View,
   ViewStyle,
 } from 'react-native';
 

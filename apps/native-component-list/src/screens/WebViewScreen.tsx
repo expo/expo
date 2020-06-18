@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 interface MessageEvent {
@@ -32,7 +32,8 @@ export default class WebViewScreen extends React.Component {
           source={{ uri: 'https://expo.io/' }}
           onLoadEnd={this.handleLoadEnd}
           onMessage={this.handleMessage}
-          injectedJavaScript={injectedJavaScript} />
+          injectedJavaScript={injectedJavaScript}
+        />
         {this.state.loading && <ActivityIndicator style={StyleSheet.absoluteFill} />}
       </View>
     );

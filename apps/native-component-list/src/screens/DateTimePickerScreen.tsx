@@ -1,7 +1,7 @@
-import { ScrollView, StyleSheet, View, Text, Button, Platform, TextInput } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
 import moment from 'moment';
+import React, { useState } from 'react';
+import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 // This example is a refactored copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
 // Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
