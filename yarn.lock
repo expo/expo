@@ -3182,6 +3182,11 @@
     semver "^7.3.2"
     tsutils "^3.17.1"
 
+"@use-expo/permissions@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@use-expo/permissions/-/permissions-2.0.0.tgz#1befc01397eed277f24beda137b110721fbe4868"
+  integrity sha512-2g1H7spi5bvamx849V0mwEwU2EEpA+p5vbS9FfRMFB+zIAuzOFQmHxfN/1nJNebJW5auXQJYCpL6wan0AoZrdA==
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"
