@@ -4,11 +4,12 @@ import { View } from 'react-native';
 import { BlurProps } from './BlurView.types';
 import getBackgroundColor from './getBackgroundColor';
 
-const BlurView = React.forwardRef<View, BlurProps>(
-  ({ tint = 'default', intensity = 100, style, ...props }, ref) => {
+class BlurView extends React.Component<BlurProps> {
+  render() {
+    const { tint = 'default', intensity = 100, style, ...props } = this.props;
     const backgroundColor = getBackgroundColor(intensity, tint);
-    return <View {...props} ref={ref} style={[style, { backgroundColor }]} />;
+    return <View {...props} style={[style, { backgroundColor }]} />;
   }
-);
+}
 
 export default BlurView;
