@@ -34,7 +34,7 @@ export const region = ExpoLocalization.region;
  * Returns if the system's language is written from Right-to-Left.
  * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
  *
- * Returns `false` in SSR environments.
+ * Returns `false` in Server Side Rendering (SSR) environments.
  */
 export const isRTL = ExpoLocalization.isRTL;
 /**

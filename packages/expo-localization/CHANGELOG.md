@@ -4,17 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- `Localization.region` changed from `undefined | string` to `null | string` on web to match iOS.
+- `Localization.region` changed from `undefined | string` to `null | string` on web to match iOS. ([#8824](https://github.com/expo/expo/pull/8824) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
-- Added doc blocks for everything.
-- Added support for SSR environments.
-- `Localization.isRTL` defaults to `false` in node environments.
+- Added doc blocks for everything. ([#8824](https://github.com/expo/expo/pull/8824) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for SSR environments. ([#8824](https://github.com/expo/expo/pull/8824) by [@EvanBacon](https://github.com/EvanBacon))
+- `Localization.isRTL` defaults to `false` in node environments. ([#8824](https://github.com/expo/expo/pull/8824) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
-- `Localization.region` now returns `null` when a partial `locale` is defined by the browser on web.
+- `Localization.region` now returns `null` when a partial `locale` is defined by the browser on web. ([#8824](https://github.com/expo/expo/pull/8824) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 8.2.1 — 2020-05-29
 
