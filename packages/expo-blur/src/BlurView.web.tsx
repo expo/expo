@@ -4,12 +4,13 @@ import { View } from 'react-native';
 import { BlurProps } from './BlurView.types';
 import getBackgroundColor from './getBackgroundColor';
 
-const BlurView = React.forwardRef<View, BlurProps>(
-  ({ tint = 'default', intensity = 50, style, ...props }, ref) => {
+class BlurView extends React.Component<BlurProps> {
+  render() {
+    const { tint = 'default', intensity = 50, style, ...props } = this.props;
     const blurStyle = getBlurStyle({ tint, intensity });
-    return <View {...props} ref={ref} style={[style, blurStyle]} />;
+    return <View {...props} style={[style, blurStyle]} />;
   }
-);
+}
 
 function isBlurSupported(): boolean {
   // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
