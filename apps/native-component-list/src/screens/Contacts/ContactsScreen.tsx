@@ -80,9 +80,11 @@ function ContactsView({ navigation }: Props) {
     setRefreshing(false);
   };
 
-  useFocusEffect(() => {
-    loadAsync();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      loadAsync();
+    }, [])
+  );
 
   return (
     <ContactsList

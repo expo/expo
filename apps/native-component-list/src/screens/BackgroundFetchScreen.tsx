@@ -6,6 +6,7 @@ import React from 'react';
 import { AppState, AppStateStatus, AsyncStorage, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
+import useAppState from '../utilities/useAppState';
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 const LAST_FETCH_DATE_KEY = 'background-fetch-date';
@@ -14,21 +15,20 @@ export default function BackgroundFetchScreen() {
   const [isRegistered, setIsRegistered] = React.useState<boolean>(false);
   const [fetchDate, setFetchDate] = React.useState<Date | null>(null);
   const [status, setStatus] = React.useState<BackgroundFetch.Status | null>(null);
+  const appState = useAppState(null);
 
   React.useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'active') {
-        refreshLastFetchDateAsync();
-      }
-    };
-    AppState.addEventListener('change', handleAppStateChange);
-    return () => AppState.removeEventListener('change', handleAppStateChange);
-  }, []);
+    if (appState === 'active') {
+      refreshLastFetchDateAsync();
+    }
+  }, [appState]);
 
-  useFocusEffect(() => {
-    refreshLastFetchDateAsync();
-    checkStatusAsync();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshLastFetchDateAsync();
+      checkStatusAsync();
+    }, [])
+  );
 
   const refreshLastFetchDateAsync = async () => {
     const lastFetchDateStr = await AsyncStorage.getItem(LAST_FETCH_DATE_KEY);

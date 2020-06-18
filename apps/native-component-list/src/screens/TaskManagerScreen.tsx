@@ -21,18 +21,20 @@ export default function TaskManagerScreen(props: {
 }) {
   const [tasks, setTasks] = React.useState<TaskManager.RegisteredTask[]>([]);
 
-  React.useEffect(() => {
-    updateRegisteredTasks();
-  }, []);
-
   const updateRegisteredTasks = async () => {
     const tasks = await TaskManager.getRegisteredTasksAsync();
     setTasks(tasks);
   };
 
-  useFocusEffect(() => {
-    updateRegisteredTasks();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+      TaskManager.getRegisteredTasksAsync().then(tasks => {
+        if (isActive) setTasks(tasks);
+      });
+      return () => (isActive = false);
+    }, [setTasks])
+  );
 
   const unregisterTask = async (taskName: string) => {
     await TaskManager.unregisterTaskAsync(taskName);
