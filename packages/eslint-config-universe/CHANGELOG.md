@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Upgraded `@typescript-eslint/eslint-plugin` to 3.3.0 and `@typescript-eslint/parser` to 3.3.0. [See the v3 changelog for `typescript-eslint`.](https://github.com/typescript-eslint/typescript-eslint/releases/tag/v3.0.0)
+- Removed the React linting configuration from `eslint-config-universe/node`. If you want to lint React, extend `['universe/node', 'universe/shared/react']`.
+
 ### 🎉 New features
 
-- Remove 'react/style-prop-object'
+- Disable `react/style-prop-object` lint rule.
+- Support ESLint v7.
 
 ### 🐛 Bug fixes
 
