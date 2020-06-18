@@ -24,6 +24,7 @@ import androidx.core.view.ViewCompat;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import host.exp.expoview.R;
 
 public class ExperienceActivityUtils {
 
@@ -78,15 +79,33 @@ public class ExperienceActivityUtils {
 
   // region user interface style - light/dark/automatic mode
 
+
   /**
+   * @deprecated Do not use in SDK38 and above! Use {@link ExperienceActivityUtils#overrideUiMode(JSONObject, AppCompatActivity)} instead.
    * Returns true if activity will be reloaded after night mode change.
    * Otherwise returns false.
    **/
-  public static void overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
+  @Deprecated
+  public static boolean overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
     String userInterfaceStyle = readUserInterfaceStyleFromManifest(manifest);
     int mode = nightModeFromString(userInterfaceStyle);
+    boolean isNightModeCurrentlyOn = activity.getResources().getBoolean(R.bool.dark_mode);
+    boolean willBeReloaded = false;
+    if (mode != AppCompatDelegate.MODE_NIGHT_AUTO) {
+      willBeReloaded = isNightModeCurrentlyOn && mode == AppCompatDelegate.MODE_NIGHT_NO
+        || !isNightModeCurrentlyOn && mode == AppCompatDelegate.MODE_NIGHT_YES;
+    }
 
     activity.getDelegate().setLocalNightMode(mode);
+    return willBeReloaded;
+  }
+
+  /**
+   * Sets uiMode to according to what is being set in manifest.
+   **/
+  public static void overrideUiMode(JSONObject manifest, AppCompatActivity activity) {
+    String userInterfaceStyle = readUserInterfaceStyleFromManifest(manifest);
+    activity.getDelegate().setLocalNightMode(nightModeFromString(userInterfaceStyle));
   }
 
   private static int nightModeFromString(@Nullable String userInterfaceStyle) {

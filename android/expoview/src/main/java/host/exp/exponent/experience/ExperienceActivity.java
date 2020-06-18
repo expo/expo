@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentIntentService;
@@ -102,6 +103,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private boolean mIsShellApp;
   private String mIntentUri;
   private boolean mIsReadyForBundle;
+
+  // TODO: Remove this flag and assume it is always false, once we drop support for SDK37
+  private boolean mWillBeReloaded = false;
 
   private RemoteViews mNotificationRemoteViews;
   private Handler mNotificationAnimationHandler;
@@ -447,13 +451,18 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
     ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(mManifest, this);
-    ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
 
+    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("38.0.0")) {
+      ExperienceActivityUtils.overrideUiMode(mManifest, this);
+      mWillBeReloaded = false;
+    } else {
+      mWillBeReloaded = ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
+    }
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
     // Activity could be restarted due to Dark Mode change, only pop options if that will not happen
-    if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
+    if (mKernel.hasOptionsForManifestUrl(manifestUrl) && !mWillBeReloaded) {
       KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered
@@ -527,7 +536,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     // To prevents starting application twice, we start react instance only if we know that the current activity won't be restarted.
     // Restart of the activity could be triggered by dark mode change.
-    if (!isDebugModeEnabled()) {
+    if (!isDebugModeEnabled() && !mWillBeReloaded) {
       final boolean finalIsReadyForBundle = mIsReadyForBundle;
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
         @Override
