@@ -20,7 +20,7 @@ UM_EXPORT_MODULE(ExpoNotificationCategoriesModule);
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getCategoriesAsync,
+UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
                  resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
@@ -38,8 +38,8 @@ UM_EXPORT_METHOD_AS(getCategoriesAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(createCategoryAsync,
-                 createCategoryWithCategoryId:(NSString *)categoryId
+UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
+                 setNotificationCategoryWithCategoryId:(NSString *)categoryId
                  actions:(NSArray *)actions
                  previewPlaceholder:(NSString *)previewPlaceholder
                  resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
@@ -76,8 +76,8 @@ UM_EXPORT_METHOD_AS(createCategoryAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(deleteCategoryAsync,
-                 deleteCategoryWithCategoryId:(NSString *)categoryId
+UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
+                 deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
                  resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
   NSString *internalCategoryId = [self internalIdForIdentifier:categoryId];

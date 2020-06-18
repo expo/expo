@@ -221,7 +221,7 @@ export interface NotificationBehavior {
     shouldSetBadge: boolean;
     priority?: AndroidNotificationPriority;
 }
-export declare type Action = {
+export interface NotificationAction {
     actionId: string;
     buttonTitle: string;
     textInput?: {
@@ -231,10 +231,10 @@ export declare type Action = {
     isDestructive?: boolean;
     isAuthenticationRequired?: boolean;
     doNotOpenInForeground?: boolean;
-};
-export declare type Category = {
+}
+export interface NotificationCategory {
     identifier: string;
     actionIds: string[];
     hiddenPreviewsBodyPlaceholder: string;
-};
+}
 export {};

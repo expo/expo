@@ -1,15 +1,15 @@
 import { NativeModulesProxy, ProxyNativeModule } from '@unimodules/core';
 
-import { Action, Category } from './Notifications.types';
+import { NotificationAction, NotificationCategory } from './Notifications.types';
 
 export interface NotificationCategoriesModule extends ProxyNativeModule {
-  getCategoriesAsync: () => Promise<Category[]>;
-  createCategoryAsync: (
+  getNotificationCategoriesAsync: () => Promise<NotificationCategory[]>;
+  setNotificationCategoryAsync: (
     name: string,
-    actions: Action[],
+    actions: NotificationAction[],
     previewPlaceholder?: string
   ) => Promise<void>;
-  deleteCategoryAsync: (name: string) => Promise<void>;
+  deleteNotificationCategoryAsync: (name: string) => Promise<void>;
 }
 
 export default (NativeModulesProxy.ExpoNotificationCategoriesModule as any) as NotificationCategoriesModule;

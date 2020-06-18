@@ -247,7 +247,7 @@ export interface NotificationBehavior {
   priority?: AndroidNotificationPriority;
 }
 
-export type Action = {
+export interface NotificationAction {
   actionId: string;
   buttonTitle: string;
   textInput?: {
@@ -257,10 +257,10 @@ export type Action = {
   isDestructive?: boolean;
   isAuthenticationRequired?: boolean;
   doNotOpenInForeground?: boolean;
-};
+}
 
-export type Category = {
+export interface NotificationCategory {
   identifier: string;
   actionIds: string[];
   hiddenPreviewsBodyPlaceholder: string;
-};
+}

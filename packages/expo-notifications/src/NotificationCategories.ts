@@ -1,34 +1,38 @@
 import { UnavailabilityError, Platform } from '@unimodules/core';
 
 import NotificationCategoriesModule from './NotificationCategoriesModule';
-import { Action, Category } from './Notifications.types';
+import { NotificationAction, NotificationCategory } from './Notifications.types';
 
-export async function getCategoriesAsync(): Promise<Category[]> {
-  if (!NotificationCategoriesModule.getCategoriesAsync) {
-    throw new UnavailabilityError('Notifications', 'getCategoriesAsync');
+export async function getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {
+  if (!NotificationCategoriesModule.getNotificationCategoriesAsync) {
+    throw new UnavailabilityError('Notifications', 'getNotificationCategoriesAsync');
   }
 
-  return await NotificationCategoriesModule.getCategoriesAsync();
+  return await NotificationCategoriesModule.getNotificationCategoriesAsync();
 }
 
-export async function createCategoryAsync(
+export async function setNotificationCategoryAsync(
   name: string,
-  actions: Action[],
+  actions: NotificationAction[],
   previewPlaceholder?: string
 ): Promise<void> {
-  if (!NotificationCategoriesModule.createCategoryAsync) {
-    throw new UnavailabilityError('Notifications', 'createCategoryAsync');
+  if (!NotificationCategoriesModule.setNotificationCategoryAsync) {
+    throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
   }
 
   return Platform.OS === 'ios'
-    ? await NotificationCategoriesModule.createCategoryAsync(name, actions, previewPlaceholder)
-    : await NotificationCategoriesModule.createCategoryAsync(name, actions);
+    ? await NotificationCategoriesModule.setNotificationCategoryAsync(
+        name,
+        actions,
+        previewPlaceholder
+      )
+    : await NotificationCategoriesModule.setNotificationCategoryAsync(name, actions);
 }
 
-export async function deleteCategoryAsync(name: string): Promise<void> {
-  if (!NotificationCategoriesModule.deleteCategoryAsync) {
-    throw new UnavailabilityError('Notifications', 'deleteCategoryAsync');
+export async function deleteNotificationCategoryAsync(identifier: string): Promise<void> {
+  if (!NotificationCategoriesModule.deleteNotificationCategoryAsync) {
+    throw new UnavailabilityError('Notifications', 'deleteNotificationCategoryAsync');
   }
 
-  return await NotificationCategoriesModule.deleteCategoryAsync(name);
+  return await NotificationCategoriesModule.deleteNotificationCategoryAsync(identifier);
 }
