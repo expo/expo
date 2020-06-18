@@ -38,8 +38,8 @@ async function action(options) {
         const args = ['--watch', 'false', '--passWithNoTests'];
 
         if (process.env.CI) {
-          // Limit to one worker on CIs
-          args.push('--maxWorkers', '1');
+          // Limit to two workers in CI environments
+          args.push('--maxWorkers', '2');
         }
         await runScriptAsync(pkg, 'test', args);
       }
