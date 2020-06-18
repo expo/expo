@@ -1,8 +1,9 @@
-import React from 'react';
-import { Alert, ScrollView, Platform } from 'react-native';
 import * as Facebook from 'expo-facebook';
-import MonoText from '../components/MonoText';
+import React from 'react';
+import { Alert, Platform, ScrollView } from 'react-native';
+
 import ListButton from '../components/ListButton';
+import MonoText from '../components/MonoText';
 
 const appId = '1201211719949057';
 

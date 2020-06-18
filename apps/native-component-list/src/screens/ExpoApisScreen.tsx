@@ -1,10 +1,10 @@
+import { Platform } from '@unimodules/core';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
 import { Alert } from 'react-native';
 
 import { Screens } from '../navigation/ExpoApis';
 import ComponentListScreen from './ComponentListScreen';
-import { Platform } from '@unimodules/core';
 
 try {
   require('react-native-branch').default.subscribe((bundle: any) => {

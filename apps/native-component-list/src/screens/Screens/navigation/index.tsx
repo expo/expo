@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
 import { NavigationScreenConfig, NavigationScreenProps } from 'react-navigation';
+
 import createStackNavigator from '../../../navigation/createStackNavigator';
 
 export { default as LifecycleAwareView } from './LifecycleAwareView';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Platform, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView, useSafeArea, SafeAreaConsumer } from 'react-native-safe-area-context';
+import { SafeAreaConsumer, SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
 
 import HeadingText from '../components/HeadingText';
 

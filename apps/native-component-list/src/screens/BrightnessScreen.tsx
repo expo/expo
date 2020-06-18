@@ -15,7 +15,7 @@ interface State {
 
 const brightnessTypes: string[] = ['Brightness', 'SystemBrightness'];
 
-export default class BrightnessScreen extends React.Component<{}, State> {
+export default class BrightnessScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Brightness',
   };

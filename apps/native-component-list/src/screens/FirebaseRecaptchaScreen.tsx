@@ -1,6 +1,6 @@
 import {
-  FirebaseRecaptchaVerifierModal,
   FirebaseAuthApplicationVerifier,
+  FirebaseRecaptchaVerifierModal,
 } from 'expo-firebase-recaptcha';
 import * as React from 'react';
 import { Alert, ScrollView } from 'react-native';
@@ -24,7 +24,7 @@ interface State {
   firebaseConfig?: any;
 }
 
-export default class FirebaseRecaptchaScreen extends React.Component<{}, State> {
+export default class FirebaseRecaptchaScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'FirebaseRecaptcha',
   };

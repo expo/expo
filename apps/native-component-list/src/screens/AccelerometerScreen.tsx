@@ -1,15 +1,16 @@
-import { Accelerometer } from 'expo-sensors';
 import * as Permissions from 'expo-permissions';
+import { Accelerometer } from 'expo-sensors';
 import React from 'react';
 import {
+  ActivityIndicator,
   Animated,
   Button,
   Dimensions,
   StyleSheet,
   Text,
   View,
-  ActivityIndicator,
 } from 'react-native';
+
 import { Colors } from '../constants';
 
 const COUNT = 5;

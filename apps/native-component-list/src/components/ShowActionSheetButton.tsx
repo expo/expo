@@ -1,7 +1,6 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
-
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const icon = (name: string) => <MaterialCommunityIcons key={name} name={name} size={24} />;
 
@@ -48,16 +47,14 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
       : null;
     const destructiveButtonIndex = 0;
     const cancelButtonIndex = 3;
-    const textStyle = withCustomStyles
-      ? { fontSize: 20, fontWeight: '500', color: 'blue' }
-      : null;
+    const textStyle = withCustomStyles ? { fontSize: 20, fontWeight: '500', color: 'blue' } : null;
     const titleTextStyle = withCustomStyles
       ? {
-        fontSize: 24,
-        textAlign: 'center',
-        fontWeight: '700',
-        color: 'orange',
-      }
+          fontSize: 24,
+          textAlign: 'center',
+          fontWeight: '700',
+          color: 'orange',
+        }
       : null;
     const messageTextStyle = withCustomStyles
       ? { fontSize: 12, color: 'purple', textAlign: 'right' }
@@ -82,7 +79,7 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
         onSelection(buttonIndex);
       }
     );
-  }
+  };
 
   render() {
     const { title } = this.props;
@@ -91,14 +88,12 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
         <MaterialCommunityIcons.Button
           name="code-tags"
           backgroundColor="#3e3e3e"
-          onPress={this._showActionSheet}
-        >
+          onPress={this._showActionSheet}>
           <Text
             style={{
               fontSize: 15,
               color: '#fff',
-            }}
-          >
+            }}>
             {title}
           </Text>
         </MaterialCommunityIcons.Button>

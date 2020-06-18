@@ -1,7 +1,6 @@
-import * as IntentLauncher from 'expo-intent-launcher';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';

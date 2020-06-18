@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import * as Linking from 'expo-linking';
+import React from 'react';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Colors from '../constants/Colors';
 import Button from './Button';

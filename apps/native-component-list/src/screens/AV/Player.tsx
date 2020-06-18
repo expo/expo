@@ -1,18 +1,19 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
+  GestureResponderEvent,
   Platform,
   ScrollView,
+  StyleProp,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  GestureResponderEvent,
-  StyleProp,
+  View,
   ViewStyle,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Slider from './Slider';
+
 import Colors from '../../constants/Colors';
+import Slider from '@react-native-community/slider';
 
 interface Props {
   header?: JSX.Element;
@@ -64,20 +65,20 @@ export default class Player extends React.Component<Props, State> {
   _playFromPosition = (position: number) =>
     this.props
       .setPositionAsync(position)
-      .then(() => this.setState({ userIsDraggingSlider: false }))
+      .then(() => this.setState({ userIsDraggingSlider: false }));
 
   _toggleLooping = () => this.props.setIsLoopingAsync(!this.props.isLooping);
 
   _toggleIsMuted = () => this.props.setIsMutedAsync(!this.props.isMuted);
 
   _toggleSlowRate = () =>
-    this.props.setRateAsync(this.props.rate < 1 ? 1 : 0.5, this.props.shouldCorrectPitch)
+    this.props.setRateAsync(this.props.rate < 1 ? 1 : 0.5, this.props.shouldCorrectPitch);
 
   _toggleFastRate = () =>
-    this.props.setRateAsync(this.props.rate > 1 ? 1 : 2, this.props.shouldCorrectPitch)
+    this.props.setRateAsync(this.props.rate > 1 ? 1 : 2, this.props.shouldCorrectPitch);
 
   _toggleShouldCorrectPitch = () =>
-    this.props.setRateAsync(this.props.rate, !this.props.shouldCorrectPitch)
+    this.props.setRateAsync(this.props.rate, !this.props.shouldCorrectPitch);
 
   _renderPlayPauseButton = () => {
     let onPress = this._pause;
@@ -93,7 +94,7 @@ export default class Player extends React.Component<Props, State> {
         <Ionicons name={iconName} style={[styles.icon, styles.playPauseIcon]} />
       </TouchableOpacity>
     );
-  }
+  };
 
   _maybeRenderErrorOverlay = () => {
     if (this.props.errorMessage) {
@@ -104,7 +105,7 @@ export default class Player extends React.Component<Props, State> {
       );
     }
     return null;
-  }
+  };
 
   _renderAuxiliaryButton = ({
     disable,
@@ -127,8 +128,7 @@ export default class Player extends React.Component<Props, State> {
         key={title}
         style={[styles.button, active && styles.activeButton]}
         disabled={!this.props.isLoaded}
-        onPress={onPress}
-      >
+        onPress={onPress}>
         <Ionicons
           name={`ios-${iconName}`}
           style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
@@ -136,7 +136,7 @@ export default class Player extends React.Component<Props, State> {
         <Text style={[styles.buttonText, active && styles.activeButtonText]}>{title}</Text>
       </TouchableOpacity>
     );
-  }
+  };
 
   render() {
     return (
