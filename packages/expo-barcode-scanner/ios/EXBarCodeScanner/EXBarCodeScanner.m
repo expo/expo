@@ -16,6 +16,7 @@
 @property (nonatomic, copy, nullable) void (^onBarCodeScanned)(NSDictionary*);
 @property (nonatomic, assign, getter=isScanningBarCodes) BOOL barCodesScanning;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *settings;
+@property (nonatomic, weak) AVCaptureVideoPreviewLayer *previewLayer;
 
 @property (nonatomic, strong) NSDictionary<NSString *, id<ZXReader>> *zxingBarcodeReaders;
 @property (nonatomic, assign) CGFloat zxingFPSProcessed;
@@ -205,7 +206,7 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
 
   for (AVMetadataObject *metadata in metadataObjects) {
     if ([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
-      AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
+      AVMetadataMachineReadableCodeObject *codeMetadata =  (AVMetadataMachineReadableCodeObject *) [_previewLayer transformedMetadataObjectForMetadataObject:metadata];
       for (id barcodeType in _settings[EX_BARCODE_TYPES_KEY]) {
         // some barcodes aren't handled properly by iOS SDK build-in reader -> zxing handles it in separate flow
         if ([_zxingBarcodeReaders objectForKey:barcodeType]) {

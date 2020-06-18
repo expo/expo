@@ -14,21 +14,23 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
 
   private BarCodeScannerResult mBarCode;
   private int mViewTag;
+  private float mDensity;
 
   private BarCodeScannedEvent() {}
 
-  public static BarCodeScannedEvent obtain(int viewTag, BarCodeScannerResult barCode) {
+  public static BarCodeScannedEvent obtain(int viewTag, BarCodeScannerResult barCode, float density) {
     BarCodeScannedEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new BarCodeScannedEvent();
     }
-    event.init(viewTag, barCode);
+    event.init(viewTag, barCode, density);
     return event;
   }
 
-  private void init(int viewTag, BarCodeScannerResult barCode) {
+  private void init(int viewTag, BarCodeScannerResult barCode, float density) {
     mViewTag = viewTag;
     mBarCode = barCode;
+    mDensity = density;
   }
 
   /**
@@ -51,7 +53,7 @@ public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
 
   @Override
   public Bundle getEventBody() {
-    Bundle event = BarCodeScannerResultSerializer.toBundle(mBarCode);
+    Bundle event = BarCodeScannerResultSerializer.toBundle(mBarCode, mDensity);
     event.putInt("target", mViewTag);
     return event;
   }

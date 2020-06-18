@@ -2,7 +2,7 @@ import { BarCodeScanner, BarCodePoint, BarCodeEvent, BarCodeBounds } from 'expo-
 import * as Permissions from 'expo-permissions';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
-import { Button, PixelRatio, Platform, StyleSheet, Text, View } from 'react-native';
+import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 import * as Svg from 'react-native-svg';
 import { NavigationEvents } from 'react-navigation';
 
@@ -46,7 +46,9 @@ export default class BarcodeScannerExample extends React.Component<object, State
   };
 
   toggleAlertingAboutResult = () => {
-    this.setState({ alerting: !this.state.alerting });
+    this.setState(({ alerting }) => ({
+      alerting: !alerting,
+    }));
   };
 
   toggleScreenOrientationState = () => {
@@ -160,58 +162,28 @@ export default class BarcodeScannerExample extends React.Component<object, State
   }
 
   toggleType = () =>
-    this.setState({
+    this.setState(({ type }) => ({
       type:
-        this.state.type === BarCodeScanner.Constants.Type.back
+        type === BarCodeScanner.Constants.Type.back
           ? BarCodeScanner.Constants.Type.front
           : BarCodeScanner.Constants.Type.back,
-    });
+    }));
 
   toggleText = () =>
-    this.setState({
-      showText: !this.state.showText,
-    });
+    this.setState(({ showText }) => ({
+      showText: !showText,
+    }));
 
   toggleBoundingBox = () =>
-    this.setState({
-      showBoundingBox: !this.state.showBoundingBox,
-    });
+    this.setState(({ showBoundingBox }) => ({
+      showBoundingBox: !showBoundingBox,
+    }));
 
   getPointsString = (barCodePoints?: BarCodePoint[]): string | undefined => {
     if (!barCodePoints) {
       return;
     }
-
-    const pixelRatio = PixelRatio.get();
-    return barCodePoints
-      .map(point => {
-        const x = Math.round(point.x / pixelRatio);
-        const y = Math.round(point.y / pixelRatio);
-        return `${x},${y}`;
-      })
-      .join(' ');
-  };
-
-  scaleBoundingBox = (boundingBox: BarCodeBounds) => {
-    const pixelRatio = PixelRatio.get();
-    return {
-      origin: {
-        x: boundingBox.origin.x / pixelRatio,
-        y: boundingBox.origin.y / pixelRatio,
-      },
-      size: {
-        width: boundingBox.size.width / pixelRatio,
-        height: boundingBox.size.height / pixelRatio,
-      },
-    };
-  };
-
-  scaleCornerPoints = (points: BarCodePoint[]) => {
-    const pixelRatio = PixelRatio.get();
-    return points.map(point => ({
-      x: point.x / pixelRatio,
-      y: point.y / pixelRatio,
-    }));
+    return barCodePoints.map(({ x, y }) => `${Math.round(x)},${Math.round(y)}`).join(' ');
   };
 
   handleBarCodeScanned = (barCodeEvent: BarCodeEvent) => {
@@ -220,11 +192,10 @@ export default class BarcodeScannerExample extends React.Component<object, State
         alert(JSON.stringify(barCodeEvent));
       });
     }
-
     this.setState({
       data: barCodeEvent.data,
-      cornerPoints: barCodeEvent.cornerPoints && this.scaleCornerPoints(barCodeEvent.cornerPoints),
-      boundingBox: barCodeEvent.bounds && this.scaleBoundingBox(barCodeEvent.bounds),
+      cornerPoints: barCodeEvent.cornerPoints,
+      boundingBox: barCodeEvent.bounds,
       cornerPointsString: this.getPointsString(barCodeEvent.cornerPoints),
     });
   };

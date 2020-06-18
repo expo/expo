@@ -70,8 +70,12 @@ public class BarCodeScannerView extends ViewGroup {
   public void onBarCodeScanned(BarCodeScannerResult barCode) {
     EventEmitter emitter = mModuleRegistry.getModule(EventEmitter.class);
     transformBarCodeScannerResultToViewCoordinates(barCode);
-    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode);
+    BarCodeScannedEvent event = BarCodeScannedEvent.obtain(this.getId(), barCode, getDisplayDensity());
     emitter.emit(this.getId(), event);
+  }
+
+  private float getDisplayDensity() {
+    return this.getResources().getDisplayMetrics().density;
   }
 
   private void transformBarCodeScannerResultToViewCoordinates(BarCodeScannerResult barCode) {

@@ -124,7 +124,7 @@ public class BarCodeScannerModule extends ExportedModule {
         List<Bundle> resultList = new ArrayList<>();
         for (BarCodeScannerResult result : results) {
           if (types.contains(result.getType())) {
-            resultList.add(BarCodeScannerResultSerializer.toBundle(result));
+            resultList.add(BarCodeScannerResultSerializer.toBundle(result, 1.0f));
           }
         }
         promise.resolve(resultList);

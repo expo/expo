@@ -90,7 +90,14 @@
   result[@"data"] = barCodeScannerResult.stringValue;
   
   if (barCodeScannerResult.corners.count) {
-    result[@"cornerPoints"] = barCodeScannerResult.corners;
+    NSMutableArray<NSDictionary *> *cornerPointsResult = [NSMutableArray new];
+    for (NSDictionary *point in barCodeScannerResult.corners) {
+      [cornerPointsResult addObject:@{
+        @"x": point[@"X"],
+        @"y": point[@"Y"]
+      }];
+    }
+    result[@"cornerPoints"] = cornerPointsResult;
     result[@"bounds"] = @{
       @"origin": @{
           @"x": @(barCodeScannerResult.bounds.origin.x),
@@ -118,47 +125,8 @@
     }
   }
   result[@"data"] = data;
-  
-  [EXBarCodeScannerUtils attachTo:result cornerPointsAndBoundingBoxFrom:barCodeScannerResult.resultPoints];
-  
-  return result;
-}
-
-+ (void)attachTo:(NSMutableDictionary *)dictionary cornerPointsAndBoundingBoxFrom:(NSArray<ZXResultPoint *> *)points
-{
-  if (!points.count) {
-    return;
-  }
-  
-  float minX = FLT_MAX;
-  float minY = FLT_MAX;
-  float maxX = FLT_MIN;
-  float maxY = FLT_MIN;
-  
-  NSMutableArray<NSDictionary *> *cornerPointsResult = [NSMutableArray new];
-  for (ZXResultPoint *point in points) {
-    minX = MIN(minX, point.x);
-    minY = MIN(minY, point.y);
-    maxX = MAX(maxX, point.x);
-    maxY = MAX(maxY, point.y);
     
-    [cornerPointsResult addObject:@{
-      @"x": @(point.x),
-      @"y": @(point.y)
-    }];
-  }
-  
-  dictionary[@"cornerPoints"] = cornerPointsResult;
-  dictionary[@"bounds"] = @{
-    @"origin": @{
-        @"x": @(minX),
-        @"y": @(minY),
-    },
-    @"size": @{
-        @"width": @(maxX - minX),
-        @"width": @(maxY - minY),
-    }
-  };
+  return result;
 }
 
 + (NSString *)zxingFormatToString:(ZXBarcodeFormat)format
@@ -172,6 +140,5 @@
       return @"unknown";
   }
 }
-
 
 @end

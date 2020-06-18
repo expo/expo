@@ -47,6 +47,7 @@
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     _previewLayer.needsDisplayOnBoundsChange = YES;
+    [_barCodeScanner setPreviewLayer:_previewLayer];
 #endif
     _paused = NO;
     
