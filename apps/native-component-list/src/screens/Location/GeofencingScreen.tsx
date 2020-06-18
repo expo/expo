@@ -80,29 +80,34 @@ export default function GeofencingScreen() {
   const mapViewRef = React.useRef<MapView>(null);
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
-  const didFocus = React.useCallback(async () => {
-    await Location.requestPermissionsAsync();
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
 
-    const { coords } = await Location.getCurrentPositionAsync();
-    const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
-    const geofencingRegions = await getSavedRegions();
+      (async () => {
+        await Location.requestPermissionsAsync();
 
-    dispatch({
-      type: 'update',
-      isGeofencing,
-      geofencingRegions,
-      initialRegion: {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        latitudeDelta: 0.004,
-        longitudeDelta: 0.002,
-      },
-    });
-  }, []);
+        const { coords } = await Location.getCurrentPositionAsync();
+        const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
+        const geofencingRegions = await getSavedRegions();
 
-  useFocusEffect(() => {
-    didFocus();
-  });
+        if (isActive) {
+          dispatch({
+            type: 'update',
+            isGeofencing,
+            geofencingRegions,
+            initialRegion: {
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+              latitudeDelta: 0.004,
+              longitudeDelta: 0.002,
+            },
+          });
+        }
+      })();
+      return () => (isActive = false);
+    }, [])
+  );
 
   const toggleGeofencing = React.useCallback(async () => {
     if (state.isGeofencing) {
@@ -128,24 +133,21 @@ export default function GeofencingScreen() {
     }
   }, []);
 
-  const onMapPress = React.useCallback(
-    async ({ nativeEvent: { coordinate } }: MapEvent) => {
-      const next = [...state.geofencingRegions];
-      next.push({
-        identifier: `${coordinate.latitude},${coordinate.longitude}`,
-        latitude: coordinate.latitude,
-        longitude: coordinate.longitude,
-        radius: 50,
-      });
-      dispatch({ type: 'updateRegions', geofencingRegions: next });
+  const onMapPress = async ({ nativeEvent: { coordinate } }: MapEvent) => {
+    const next = [...state.geofencingRegions];
+    next.push({
+      identifier: `${coordinate.latitude},${coordinate.longitude}`,
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude,
+      radius: 50,
+    });
+    dispatch({ type: 'updateRegions', geofencingRegions: next });
 
-      if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
-        // update existing geofencing task
-        await Location.startGeofencingAsync(GEOFENCING_TASK, next);
-      }
-    },
-    [state.geofencingRegions]
-  );
+    if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
+      // update existing geofencing task
+      await Location.startGeofencingAsync(GEOFENCING_TASK, next);
+    }
+  };
 
   const renderRegions = React.useCallback(() => {
     return state.geofencingRegions.map(region => {
