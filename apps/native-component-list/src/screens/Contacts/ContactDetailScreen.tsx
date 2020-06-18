@@ -8,11 +8,11 @@ import * as Permissions from 'expo-permissions';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import ContactDetailList, { DetailListItem } from './ContactDetailList';
-import ContactsAvatar from './ContactsAvatar';
 import * as ContactUtils from './ContactUtils';
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import ContactsAvatar from './ContactsAvatar';
 
 const isIos = Platform.OS === 'ios';
 
@@ -39,12 +39,7 @@ export default function ContactDetailScreen(props: any) {
   return <ContactDetailView navigation={props.navigation} route={props.route} />;
 }
 
-ContactDetailScreen.navigationOptions = ({
-  navigation,
-}: // route: {
-//   params: { id },
-// },
-any) => ({
+ContactDetailScreen.navigationOptions = ({ navigation }: any) => ({
   title: 'Contacts',
   headerRight: (
     <HeaderContainerRight>
@@ -67,12 +62,7 @@ any) => ({
   ),
 });
 
-function ContactDetailView({
-  navigation,
-}: // route: {
-//   params: { id },
-// },
-any) {
+function ContactDetailView({ navigation }: any) {
   const id = navigation.getParam('id');
   const [contact, setContact] = React.useState<Contacts.Contact | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
