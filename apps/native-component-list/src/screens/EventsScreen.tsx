@@ -1,11 +1,12 @@
+import { RouteProp } from '@react-navigation/native';
+import * as Calendar from 'expo-calendar';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import * as Calendar from 'expo-calendar';
+
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-import { RouteProp } from '@react-navigation/native';
 
 const EventRow: React.FunctionComponent<{
   event: Calendar.Event;

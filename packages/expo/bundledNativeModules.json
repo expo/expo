@@ -44,7 +44,7 @@
   "expo-location": "~8.2.1",
   "expo-mail-composer": "~8.2.1",
   "expo-media-library": "~8.2.1",
-  "expo-payments-stripe": "~8.2.2",
+  "expo-payments-stripe": "~8.2.3",
   "expo-permissions": "~9.0.1",
   "expo-print": "~9.0.1",
   "expo-random": "~8.2.1",

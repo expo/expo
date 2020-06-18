@@ -49,6 +49,7 @@ function StoreReviewScreen({ navigation }: Props) {
     </View>
   );
 }
+StoreReviewScreen.navigationOptions = { title: 'Store Review' };
 
 const styles = StyleSheet.create({
   container: {

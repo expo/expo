@@ -1,13 +1,13 @@
-import React from 'react';
-import { Image, Platform, View, ScrollView, StyleSheet, Alert, PixelRatio } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import * as ImagePicker from 'expo-image-picker';
 import * as FaceDetector from 'expo-face-detector';
+import * as ImagePicker from 'expo-image-picker';
+import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import { Alert, Image, PixelRatio, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
+import { scaledFace, scaledLandmarks } from '../components/Face';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-import { scaledFace, scaledLandmarks } from '../components/Face';
-import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
 
 async function requestPermissionAsync(permission: Permissions.PermissionType) {
   // Image Picker doesn't need permissions in the web
@@ -29,7 +29,7 @@ interface State {
 }
 
 const imageViewSize = 300;
-export default class FeceDetectorScreen extends React.Component<{}, State> {
+export default class FeceDetectorScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'FaceDetector',
   };

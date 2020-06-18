@@ -8,20 +8,20 @@ import React from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
-import ContactsList from './ContactsList';
 import * as ContactUtils from './ContactUtils';
+import ContactsList from './ContactsList';
 
 type StackParams = {
   ContactDetail: { id: string };
 };
 
+type Props = {
+  navigation: StackNavigationProp<StackParams>;
+};
+
 const CONTACT_PAGE_SIZE = 500;
 
-export default function ContactsScreen({
-  navigation,
-}: {
-  navigation: StackNavigationProp<StackParams>;
-}) {
+export default function ContactsScreen({ navigation }: Props) {
   const [permission] = usePermissions(Permissions.CONTACTS, { ask: true });
 
   if (!permission) {
@@ -35,26 +35,21 @@ export default function ContactsScreen({
   return <ContactsView navigation={navigation} />;
 }
 
-function ContactsView({ navigation }: { navigation: StackNavigationProp<StackParams> }) {
-  let _rawContacts: Record<string, Contacts.Contact> = {};
+function ContactsView({ navigation }: Props) {
+  let rawContacts: Record<string, Contacts.Contact> = {};
 
   const [contacts, setContacts] = React.useState<Contacts.Contact[]>([]);
-  const [hasPreviousPage, setHasPreviousPage] = React.useState<boolean>(true);
-  const [hasNextPage, setHasNextPage] = React.useState<boolean>(true);
-  const [refreshing, setRefreshing] = React.useState<boolean>(false);
+  const [hasNextPage, setHasNextPage] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const onPressItem = React.useCallback(
     (id: string) => {
-      // tslint:disable-next-line no-console
       navigation.navigate('ContactDetail', { id });
     },
     [navigation]
   );
 
-  const loadAsync = async (
-    { distanceFromEnd }: { distanceFromEnd?: number } = {},
-    restart = false
-  ) => {
+  const loadAsync = async (event: { distanceFromEnd?: number } = {}, restart = false) => {
     if (!hasNextPage || refreshing || Platform.OS === 'web') {
       return;
     }
@@ -74,14 +69,13 @@ function ContactsView({ navigation }: { navigation: StackNavigationProp<StackPar
     const { data: nextContacts } = payload;
 
     if (restart) {
-      _rawContacts = {};
+      rawContacts = {};
     }
 
     for (const contact of nextContacts) {
-      _rawContacts[contact.id] = contact;
+      rawContacts[contact.id] = contact;
     }
-    setContacts(Object.values(_rawContacts));
-    setHasPreviousPage(payload.hasPreviousPage);
+    setContacts(Object.values(rawContacts));
     setHasNextPage(payload.hasNextPage);
     setRefreshing(false);
   };
@@ -117,32 +111,20 @@ const styles = StyleSheet.create({
   },
 });
 
-function AddContactHeaderButton() {
-  return (
-    <HeaderIconButton
-      name="md-add"
-      onPress={async () => {
-        const randomContact = { note: 'Likes expo...' };
-        // @ts-ignore
-        ContactUtils.presentNewContactFormAsync({ contact: randomContact });
-        // ContactUtils.presentUnknownContactFormAsync({
-        //   contact: randomContact,
-        // });
-      }}
-    />
-  );
-}
-
 ContactsScreen.navigationOptions = () => {
   return {
     title: 'Contacts',
-    headerRight: Platform.select<any>({
-      web: () => null,
-      default: () => (
-        <HeaderContainerRight>
-          <AddContactHeaderButton />
-        </HeaderContainerRight>
-      ),
-    }),
+    headerRight: () => (
+      <HeaderContainerRight>
+        <HeaderIconButton
+          disabled={Platform.select({ web: true, default: false })}
+          name="md-add"
+          onPress={() => {
+            const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
+            ContactUtils.presentNewContactFormAsync({ contact: randomContact });
+          }}
+        />
+      </HeaderContainerRight>
+    ),
   };
 };

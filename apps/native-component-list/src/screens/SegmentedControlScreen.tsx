@@ -1,15 +1,17 @@
-import SegmentedControl from '@react-native-community/segmented-control';
+import SegmentedControl, {
+  NativeSegmentedControlIOSChangeEvent,
+} from '@react-native-community/segmented-control';
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, NativeSyntheticEvent } from 'react-native';
 
 // This example is a copy from https://github.com/react-native-community/segmented-control/blob/master/example
 
 const SegmentedControlScreen = () => {
   const [values] = useState(['One', 'Two', 'Three']);
   const [value, setValue] = useState('Unselected');
-  const [selectedIndex, setIndex] = useState(undefined);
+  const [selectedIndex, setIndex] = useState<number | undefined>(undefined);
 
-  const _onChange = event => {
+  const _onChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setIndex(event.nativeEvent.selectedSegmentIndex);
   };
 

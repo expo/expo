@@ -1,18 +1,18 @@
-import React from 'react';
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library';
+import React from 'react';
 import {
   FlatList,
+  ListRenderItem,
+  Platform,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
-  Platform,
-  Switch,
-  ListRenderItem,
 } from 'react-native';
 
 import MonoText from '../../components/MonoText';
-import { StackNavigationProp } from '@react-navigation/stack';
 
 interface State {
   includeSmartAlbums: boolean;
@@ -37,7 +37,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
     this.fetchAlbums();
   }
 
-  componentDidUpdate(_: {}, lastState: State) {
+  componentDidUpdate(_: object, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
       this.fetchAlbums();
     }

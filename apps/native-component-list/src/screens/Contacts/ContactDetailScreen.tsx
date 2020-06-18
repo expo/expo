@@ -8,11 +8,11 @@ import * as Permissions from 'expo-permissions';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import ContactDetailList, { DetailListItem } from './ContactDetailList';
-import ContactsAvatar from './ContactsAvatar';
 import * as ContactUtils from './ContactUtils';
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import ContactsAvatar from './ContactsAvatar';
 
 const isIos = Platform.OS === 'ios';
 

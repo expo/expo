@@ -52,7 +52,6 @@ function ComponentListScreen(props: Props) {
   return (
     <FlatList<ListElement>
       initialNumToRender={25}
-      stickySectionHeadersEnabled
       removeClippedSubviews={false}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"

@@ -41,6 +41,7 @@ module.exports = {
             fixWith: 'object',
           },
         },
+        extendDefaults: false,
       },
     ],
     '@typescript-eslint/consistent-type-assertions': [

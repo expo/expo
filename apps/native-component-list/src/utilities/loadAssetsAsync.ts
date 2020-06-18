@@ -1,8 +1,8 @@
-import * as Font from 'expo-font';
-import { Asset } from 'expo-asset';
-import { Platform } from 'react-native';
-import { Assets as StackAssets } from '@react-navigation/stack';
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Assets as StackAssets } from '@react-navigation/stack';
+import { Asset } from 'expo-asset';
+import * as Font from 'expo-font';
+import { Platform } from 'react-native';
 
 import Icons from '../constants/Icons';
 

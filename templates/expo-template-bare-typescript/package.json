@@ -25,6 +25,7 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@types/react": "~16.9.23",
+    "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.61.23",
     "babel-preset-expo": "~8.1.0",
     "jest-expo": "~37.0.0",

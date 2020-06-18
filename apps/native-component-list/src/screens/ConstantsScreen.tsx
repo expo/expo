@@ -1,9 +1,10 @@
+import Constants from 'expo-constants';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import Constants from 'expo-constants';
-import Colors from '../constants/Colors';
+
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
+import Colors from '../constants/Colors';
 
 interface State {
   value?: string | (() => void);

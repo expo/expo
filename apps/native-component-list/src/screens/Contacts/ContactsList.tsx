@@ -4,34 +4,35 @@ import { FlatList, FlatListProps, ListRenderItem, StyleProp, ViewStyle } from 'r
 
 import ContactsListItem from './ContactsListItem';
 
-export default class ContactsList extends React.Component<
-  {
-    onPressItem: (id: string) => void;
-    style?: StyleProp<ViewStyle>;
-    data: Contacts.Contact[];
-  } & Pick<
-    FlatListProps<Contacts.Contact>,
-    Exclude<keyof FlatListProps<Contacts.Contact>, 'renderItem' | 'keyExtractor' | 'data'>
-  >
-> {
-  onPressItem = (id: string) => {
-    this.props.onPressItem && this.props.onPressItem(id);
-  };
+type Props = {
+  onPressItem: (id: string) => void;
+  style?: StyleProp<ViewStyle>;
+  data: Contacts.Contact[];
+} & Pick<
+  FlatListProps<Contacts.Contact>,
+  Exclude<keyof FlatListProps<Contacts.Contact>, 'renderItem' | 'keyExtractor' | 'data'>
+>;
 
-  renderItem: ListRenderItem<Contacts.Contact> = ({ item }) => (
-    <ContactsListItem key={item.id} contactId={item.id} {...item} onPress={this.onPressItem} />
+export default function ContactsList({ data, style, onPressItem, ...props }: Props) {
+  const renderItem: ListRenderItem<Contacts.Contact> = React.useCallback(
+    ({ item }) => (
+      <ContactsListItem
+        key={item.id}
+        contactId={item.id}
+        {...item}
+        onPress={(id: string) => onPressItem?.(id)}
+      />
+    ),
+    [onPressItem]
   );
 
-  render() {
-    const { data, style, ...props } = this.props;
-    return (
-      <FlatList<Contacts.Contact>
-        {...props}
-        style={[{ flex: 1 }, style]}
-        keyExtractor={item => item.id}
-        data={data}
-        renderItem={this.renderItem}
-      />
-    );
-  }
+  return (
+    <FlatList<Contacts.Contact>
+      {...props}
+      style={[{ flex: 1 }, style]}
+      keyExtractor={item => item.id}
+      data={data}
+      renderItem={renderItem}
+    />
+  );
 }
