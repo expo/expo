@@ -57,6 +57,27 @@ public class ExperienceActivityUtils {
     }
   }
 
+  public static void updateSoftwareKeyboardLayoutMode(JSONObject manifest, Activity activity) {
+    if (manifest == null) {
+      return;
+    }
+
+    String keyboardLayoutMode = readSoftwareKeyboardLayoutModeFromManifest(manifest);
+
+    // It's only necessary to set this manually for pan, resize is the default for the activity.
+    if (keyboardLayoutMode.equals("pan")) {
+      activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+    }
+  }
+
+  @Nullable
+  private static String readSoftwareKeyboardLayoutModeFromManifest(JSONObject manifest) {
+    if (manifest.has(ExponentManifest.MANIFEST_ANDROID_INFO_KEY) && manifest.optJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).has(ExponentManifest.MANIFEST_KEYBOARD_LAYOUT_MODE_KEY)) {
+      return manifest.optJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).optString(ExponentManifest.MANIFEST_KEYBOARD_LAYOUT_MODE_KEY, "resize");
+    }
+    return "resize";
+  }
+
   // region user interface style - light/dark/automatic mode
 
   /**

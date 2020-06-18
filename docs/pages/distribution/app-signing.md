@@ -73,9 +73,7 @@ See [here](https://developer.android.com/studio/publish/app-signing) to find mor
 
 > **Note:** Unless you submitted your app to the Google Play Store in 2017 or earlier, this probably does not apply to you.
 
-Expo provides a command that will guide you through the entire process! Just run `expo opt-in-google-play-signing` from your project directory and follow the instructions. Afterwards, the old version of your keystore will be backed up to your working directory, and the credentials for that keystore will be printed in the CLI. As always, before you start, backup your keystore and credentials to a safe location.
-
-If you'd rather handle this process on your own:
+In order to use app signing by Google Play, follow the instructions below.
 
 1. Backup your old keystore and credentials with `expo fetch:android:keystore`
 

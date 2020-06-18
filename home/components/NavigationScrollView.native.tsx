@@ -12,8 +12,8 @@ interface StyledScrollViewProps extends ScrollViewProps {
 }
 
 function useThemeBackgroundColor(props: StyledScrollViewProps, colorName: ThemedColors) {
-  let theme = useTheme();
-  let colorFromProps = props[`${theme}BackgroundColor`];
+  const theme = useTheme();
+  const colorFromProps = props[`${theme}BackgroundColor`];
 
   if (colorFromProps) {
     return colorFromProps;
@@ -23,8 +23,8 @@ function useThemeBackgroundColor(props: StyledScrollViewProps, colorName: Themed
 }
 
 export default (props: ScrollViewProps) => {
-  let { style, ...otherProps } = props;
-  let backgroundColor = useThemeBackgroundColor(props, 'bodyBackground');
+  const { style, ...otherProps } = props;
+  const backgroundColor = useThemeBackgroundColor(props, 'bodyBackground');
 
   return <ScrollView style={[{ backgroundColor }, style]} {...otherProps} />;
 };

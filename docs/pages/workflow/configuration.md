@@ -446,6 +446,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ### `"ios"`
 
+Configuration that is specific to the iOS platform.
+
 ```javascript
 {
   "ios": {
@@ -673,7 +675,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ### `"android"`
 
-**Standalone Apps Only**. Android standalone app specific configuration
+Configuration that is specific to the Android platform.
 
 ```javascript
 {
@@ -971,11 +973,20 @@ Configuration for how and when the app should request OTA JavaScript updates
         ]
       }
     ]
+
+    /*
+      Determines how the software keyboard will impact the layout of your application. This maps
+      to the "android:windowSoftInputMode" property. Defaults to "resize". Only Supported in SDK 38 and higher.
+      Valid values: "resize", "pan".
+    */
+    "softwareKeyboardLayoutMode": STRING,
   }
 }
 ```
 
 ### `"web"`
+
+Configuration that is specific to the web platform.
 
 ```javascript
 {

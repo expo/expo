@@ -4,8 +4,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 import { ThemeContext } from 'react-navigation';
-import { StyledView } from './Views';
+
 import { StyledText } from './Text';
+import { StyledView } from './Views';
 
 export class FormInput extends React.Component {
   static contextType = ThemeContext;
@@ -41,7 +42,7 @@ export class FormInput extends React.Component {
   }
 
   _handleLayoutLabel = (e: any) => {
-    let width = e.nativeEvent.layout.width;
+    const width = e.nativeEvent.layout.width;
     this.setState({ labelWidth: width });
   };
 
@@ -68,7 +69,7 @@ export class FormInput extends React.Component {
   };
 
   render() {
-    let { label, hideBottomBorder, style, ...props } = this.props;
+    const { label, hideBottomBorder, style, ...props } = this.props;
 
     return (
       <StyledView

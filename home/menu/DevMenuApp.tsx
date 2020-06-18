@@ -1,18 +1,18 @@
 import React from 'react';
-import { ThemeContext } from 'react-navigation';
 import { AppRegistry, StyleSheet } from 'react-native';
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import { ThemeContext } from 'react-navigation';
 
+import LocalStorage from '../storage/LocalStorage';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuView from './DevMenuView';
-import LocalStorage from '../storage/LocalStorage';
 
 function useUserSettings(renderId): { preferredAppearance?: string } {
-  let [settings, setSettings] = React.useState({});
+  const [settings, setSettings] = React.useState({});
 
   React.useEffect(() => {
     async function getUserSettings() {
-      let settings = await LocalStorage.getSettingsAsync();
+      const settings = await LocalStorage.getSettingsAsync();
       setSettings(settings);
     }
 

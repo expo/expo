@@ -6,11 +6,13 @@
 
 ### 🎉 New features
 
+- Remove `fbjs` dependency
+
 ### 🐛 Bug fixes
 
 ## 2.2.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 2.2.0 — 2020-05-27
 

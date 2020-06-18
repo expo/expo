@@ -3,10 +3,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { StyledView } from '../components/Views';
 import Colors from '../constants/Colors';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
-import { StyledView } from '../components/Views';
 
 @connect(data => ExploreScreen.getDataProps(data))
 export default class ExploreScreen extends React.Component {

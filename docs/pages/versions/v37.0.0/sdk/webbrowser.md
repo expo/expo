@@ -75,7 +75,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
   - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
-  - **browserPackage (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
+  - **browserPackage (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsersAsync](#webbrowsergetcustomtabssupportingbrowsersasync) method.
 
   Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
@@ -213,7 +213,7 @@ Dismisses the presented web browser.
 
 The promise resolves with `{ type: 'dismiss' }`.
 
-### `WebBrowser.getCustomTabsSupportingBrowsers`
+### `WebBrowser.getCustomTabsSupportingBrowsersAsync()`
 
 _Android only_
 
@@ -249,5 +249,3 @@ You're method can still run in an async function but there cannot be any long ru
 **Web only:** The current environment doesn't support crypto. Ensure you are running from a secure origin (https).
 
 When using Expo CLI you can run `expo start:web --https` or `expo start --web --https` to open your web page in a secure development environment.
-
-#

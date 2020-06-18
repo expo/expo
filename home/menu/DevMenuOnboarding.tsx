@@ -1,6 +1,5 @@
-import React from 'react';
 import Constants from 'expo-constants';
-import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
+import React from 'react';
 import {
   Dimensions,
   Platform,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity as TouchableOpacityRN,
   View,
 } from 'react-native';
+import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
 
 import { StyledText } from '../components/Text';
 import { StyledView } from '../components/Views';

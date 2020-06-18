@@ -25,8 +25,9 @@ npm install expo-screen-orientation
 
 1. Run `npx pod-install` after installing the npm package.
 2. Open the `AppDelegate.m` of your application.
-3. Import `<EXScreenOrientation/EXScreenOrientationViewController.h>`
-4. In `-application:didFinishLaunchingWithOptions:launchOptions` change default `root view controller` to `EXScreenOrientationViewController`:
+3. Make sure your `AppDelegate` extends `UMAppDelegateWrapper` as shown [here](https://gist.github.com/lukmccall/d2b97b2dde0d1aa04a245a369ffdd153).
+4. Import `<EXScreenOrientation/EXScreenOrientationViewController.h>`
+5. In `-application:didFinishLaunchingWithOptions:launchOptions` change default `root view controller` to `EXScreenOrientationViewController`:
 
    Replace
 

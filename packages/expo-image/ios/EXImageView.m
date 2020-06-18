@@ -153,6 +153,7 @@ static NSString * const sourceHeightKey = @"height";
   RCTResizeMode resizeMode = _resizeMode;
   NSNumber *width = _source && _source[sourceWidthKey] ? _source[sourceWidthKey] : nil;
   NSNumber *height = _source && _source[sourceHeightKey] ? _source[sourceHeightKey] : nil;
+  UIColor *tintColor = _tintColor;
   
   __weak EXImageView *weakSelf = self;
   return ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
@@ -166,6 +167,9 @@ static NSString * const sourceHeightKey = @"height";
     // cannot be handled using a SDWebImage transformer, because they don't change
     // the image-data and this causes this "meta" data to be lost in the SDWebImage caching process.
     if (image) {
+      if (tintColor) {
+        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      }
       if (resizeMode == RCTResizeModeRepeat) {
         image = [image resizableImageWithCapInsets:UIEdgeInsetsZero resizingMode:UIImageResizingModeTile];
       }
@@ -344,5 +348,16 @@ borderEdge(Bottom,EXImageBorderBottom)
 borderEdge(Left,EXImageBorderLeft)
 borderEdge(Start,EXImageBorderStart)
 borderEdge(End,EXImageBorderEnd)
+
+#pragma mark - Tint color
+
+- (void)setTintColor:(UIColor *)tintColor
+{
+  if (![_tintColor isEqual:tintColor]) {
+    _tintColor = tintColor;
+    _imageView.tintColor = tintColor;
+    _needsReload = YES;
+  }
+}
 
 @end

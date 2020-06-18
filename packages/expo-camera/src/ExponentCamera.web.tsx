@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
-import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
+import { findNodeHandle, StyleSheet, View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 import {
   CameraCapturedPicture,

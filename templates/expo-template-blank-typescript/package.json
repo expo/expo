@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "expo": "~38.0.0",
+    "expo-status-bar": "^1.0.0",
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.0.tar.gz",
@@ -20,7 +21,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
-    "@types/react": "~16.9.36",
+    "@types/react": "~16.9.23",
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.61.17",
     "babel-preset-expo": "~8.1.0",

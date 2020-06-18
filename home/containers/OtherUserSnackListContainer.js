@@ -40,7 +40,7 @@ const UsersSnacksQuery = gql`
 
 export default graphql(UsersSnacksQuery, {
   props: props => {
-    let { data } = props;
+    const { data } = props;
     let apps, appCount, snacks;
     if (data.user && data.user.byUsername) {
       apps = data.user.byUsername.apps;
@@ -66,7 +66,7 @@ export default graphql(UsersSnacksQuery, {
               return previousData;
             }
 
-            let combinedData = {
+            const combinedData = {
               user: {
                 ...previousData.user,
                 ...fetchMoreResult.user,
