@@ -75,7 +75,7 @@
       },
       @"size": @{
           @"width": @(barCodeScannerResult.bounds.size.width),
-          @"width": @(barCodeScannerResult.bounds.size.height),
+          @"height": @(barCodeScannerResult.bounds.size.height),
       }
     };
   }

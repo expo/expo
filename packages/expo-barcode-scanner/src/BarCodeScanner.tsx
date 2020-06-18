@@ -80,7 +80,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   static async scanFromURLAsync(
     url: string,
     barCodeTypes: string[] = Object.values(BarCodeType)
-  ): Promise<BarCodeScannerResult> {
+  ): Promise<BarCodeScannerResult[]> {
     if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
       throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
     }

@@ -206,7 +206,13 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
 
   for (AVMetadataObject *metadata in metadataObjects) {
     if ([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
-      AVMetadataMachineReadableCodeObject *codeMetadata =  (AVMetadataMachineReadableCodeObject *) [_previewLayer transformedMetadataObjectForMetadataObject:metadata];
+      AVMetadataMachineReadableCodeObject *codeMetadata;
+      if (_previewLayer) {
+        codeMetadata = (AVMetadataMachineReadableCodeObject *)[_previewLayer transformedMetadataObjectForMetadataObject:metadata];
+      } else {
+        codeMetadata = (AVMetadataMachineReadableCodeObject *)metadata;
+      }
+
       for (id barcodeType in _settings[EX_BARCODE_TYPES_KEY]) {
         // some barcodes aren't handled properly by iOS SDK build-in reader -> zxing handles it in separate flow
         if ([_zxingBarcodeReaders objectForKey:barcodeType]) {
