@@ -9,7 +9,7 @@ export interface NotificationCategoriesModule extends ProxyNativeModule {
     actions: NotificationAction[],
     previewPlaceholder?: string
   ) => Promise<void>;
-  deleteNotificationCategoryAsync: (name: string) => Promise<void>;
+  deleteNotificationCategoryAsync: (identifier: string) => Promise<void>;
 }
 
 export default (NativeModulesProxy.ExpoNotificationCategoriesModule as any) as NotificationCategoriesModule;
