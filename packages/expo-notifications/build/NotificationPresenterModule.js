@@ -1,3 +1,5 @@
-import { NativeModulesProxy } from '@unimodules/core';
-export default NativeModulesProxy.ExpoNotificationPresenter;
+export default {
+    addListener: () => { },
+    removeListeners: () => { },
+};
 //# sourceMappingURL=NotificationPresenterModule.js.map
