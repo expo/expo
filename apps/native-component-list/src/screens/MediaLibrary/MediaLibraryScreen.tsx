@@ -1,5 +1,6 @@
 import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { usePermissions } from '@use-expo/permissions';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
@@ -59,100 +60,100 @@ type Links = {
 
 type Props = { navigation: StackNavigationProp<Links>; route: RouteProp<Links, 'MediaLibrary'> };
 
-export default function MediaLibraryScreen(props: Props) {
-  const [refreshing, setRefreshing] = React.useState<boolean>(true);
+type FetchState = {
+  refreshing: boolean;
+  assets: MediaLibrary.Asset[];
+  endCursor: string | null;
+  hasNextPage: boolean | null;
+};
+
+const initialState: FetchState = {
+  refreshing: true,
+  assets: [],
+  endCursor: null,
+  hasNextPage: null,
+};
+
+function reducer(
+  state: FetchState,
+  action:
+    | ({ type: 'reset' } & Pick<FetchState, 'refreshing'>)
+    | ({ type: 'fetched' } & Omit<FetchState, 'refreshing'>)
+): FetchState {
+  switch (action.type) {
+    case 'reset':
+      return { ...initialState, refreshing: action.refreshing };
+    case 'fetched':
+      return { ...state, refreshing: false };
+  }
+}
+
+export default function MediaLibraryScreen({ navigation, route }: Props) {
+  const album = route.params?.album;
+
+  const [permission] = usePermissions(Permissions.CAMERA_ROLL, { ask: true });
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+  const [sortBy, setSortBy] = React.useState<MediaLibrary.SortByKey>(MediaLibrary.SortBy.default);
+
   const [mediaType, setMediaType] = React.useState<MediaLibrary.MediaTypeValue>(
     MediaLibrary.MediaType.photo
   );
-  const [assets, setAssets] = React.useState<MediaLibrary.Asset[]>([]);
-  const [sortBy, setSortBy] = React.useState<MediaLibrary.SortByKey>(MediaLibrary.SortBy.default);
-  const [endCursor, setEndCursor] = React.useState<string | null>(null);
-  const [hasNextPage, setHasNextPage] = React.useState<boolean | null>(null);
-  const [permission, setPermission] = React.useState<MediaLibrary.PermissionStatus>(
-    MediaLibrary.PermissionStatus.UNDETERMINED
+
+  const isLoadingAssets = React.useRef(false);
+
+  const loadMoreAssets = React.useCallback(
+    async (currentAssets = state.assets, cursor = state.endCursor) => {
+      if (isLoadingAssets.current || (cursor === state.endCursor && state.hasNextPage === false)) {
+        return;
+      }
+
+      isLoadingAssets.current = true;
+
+      const {
+        assets,
+        endCursor: nextEndCursor,
+        hasNextPage: nextHasNextPage,
+      } = await MediaLibrary.getAssetsAsync({
+        first: PAGE_SIZE,
+        after: cursor ?? undefined,
+        mediaType,
+        sortBy,
+        album: album?.id,
+      });
+
+      const lastAsset = currentAssets[currentAssets.length - 1];
+
+      if (!lastAsset || lastAsset.id === cursor) {
+        dispatch({
+          type: 'fetched',
+          assets: ([] as MediaLibrary.Asset[]).concat(currentAssets, assets),
+          endCursor: nextEndCursor,
+          hasNextPage: nextHasNextPage,
+        });
+      }
+
+      isLoadingAssets.current = false;
+    },
+    [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, album?.id]
   );
 
-  let isLoadingAssets = false;
+  const refresh = React.useCallback(
+    (refreshingFlag = true) => {
+      dispatch({ type: 'reset', refreshing: refreshingFlag });
+      loadMoreAssets();
+    },
+    [loadMoreAssets]
+  );
 
-  let libraryChangeSubscription: { remove: () => void } | null = null;
-
-  const componentDidFocus = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    setPermission(status);
-    setAssets([]);
-    setEndCursor(null);
-    setHasNextPage(null);
-    loadMoreAssets();
-
-    if (libraryChangeSubscription) {
-      libraryChangeSubscription.remove();
-    }
-    libraryChangeSubscription = MediaLibrary.addListener(() => {
-      loadMoreAssets([]);
-    });
-  };
-
-  React.useEffect(() => {
-    return () => {
-      libraryChangeSubscription!.remove();
-    };
-  }, []);
-
-  const getAlbum = () => {
-    return props.route.params.album;
-  };
-
-  const loadMoreAssets = async (currentAssets = assets, cursor = endCursor) => {
-    if (isLoadingAssets || (cursor === endCursor && hasNextPage === false)) {
-      return;
-    }
-
-    const album = getAlbum();
-
-    isLoadingAssets = true;
-
-    const {
-      assets,
-      endCursor: nextEndCursor,
-      hasNextPage: nextHasNextPage,
-    } = await MediaLibrary.getAssetsAsync({
-      first: PAGE_SIZE,
-      after: cursor ?? undefined,
-      mediaType,
-      sortBy,
-      album: album?.id,
-    });
-
-    const lastAsset = currentAssets[currentAssets.length - 1];
-
-    if (!lastAsset || lastAsset.id === cursor) {
-      setAssets(([] as MediaLibrary.Asset[]).concat(currentAssets, assets));
-      setEndCursor(nextEndCursor);
-      setHasNextPage(nextHasNextPage);
-      setRefreshing(false);
-    }
-
-    isLoadingAssets = false;
-  };
-
-  const refresh = (refreshingFlag = true) => {
-    setAssets([]);
-    setEndCursor(null);
-    setHasNextPage(null);
-    setRefreshing(refreshingFlag);
-
-    loadMoreAssets();
-  };
-
-  const toggleMediaType = () => {
+  const toggleMediaType = React.useCallback(() => {
     setMediaType(mediaTypeStates[mediaType]);
     refresh(false);
-  };
+  }, [mediaType, setMediaType, refresh]);
 
-  const toggleSortBy = () => {
+  const toggleSortBy = React.useCallback(() => {
     setSortBy(sortByStates[sortBy]);
     refresh(false);
-  };
+  }, [sortBy, setSortBy, refresh]);
 
   const keyExtractor = (item: MediaLibrary.Asset) => item.id;
 
@@ -160,27 +161,31 @@ export default function MediaLibraryScreen(props: Props) {
     loadMoreAssets();
   };
 
-  const onCellPress = (asset: MediaLibrary.Asset) => {
-    props.navigation.navigate('MediaDetails', {
-      asset,
-      album: getAlbum(),
-      onGoBack: refresh,
-    });
-  };
+  const onCellPress = React.useCallback(
+    (asset: MediaLibrary.Asset) => {
+      navigation.navigate('MediaDetails', {
+        asset,
+        album,
+        onGoBack: refresh,
+      });
+    },
+    [navigation, album, refresh]
+  );
 
-  const renderRowItem: ListRenderItem<MediaLibrary.Asset> = ({ item }) => {
-    return (
-      <MediaLibraryCell
-        style={{ width: WINDOW_SIZE.width / COLUMNS }}
-        asset={item}
-        onPress={onCellPress}
-      />
-    );
-  };
+  const renderRowItem: ListRenderItem<MediaLibrary.Asset> = React.useCallback(
+    ({ item }) => {
+      return (
+        <MediaLibraryCell
+          style={{ width: WINDOW_SIZE.width / COLUMNS }}
+          asset={item}
+          onPress={onCellPress}
+        />
+      );
+    },
+    [onCellPress]
+  );
 
-  const renderHeader = () => {
-    const album = getAlbum();
-
+  const renderHeader = React.useCallback(() => {
     return (
       <View style={styles.header}>
         <HeadingText style={styles.headerText}>
@@ -197,17 +202,17 @@ export default function MediaLibraryScreen(props: Props) {
         </View>
       </View>
     );
-  };
+  }, [mediaType, album, sortBy, toggleMediaType, toggleSortBy]);
 
-  const renderFooter = () => {
-    if (refreshing) {
+  const renderFooter = React.useCallback(() => {
+    if (state.refreshing) {
       return (
         <View style={styles.footer}>
           <ActivityIndicator animating />
         </View>
       );
     }
-    if (assets.length === 0) {
+    if (state.assets.length === 0) {
       return (
         <View style={styles.noAssets}>
           <Text>{`You don't have any assets with type: ${mediaType}`}</Text>
@@ -215,16 +220,23 @@ export default function MediaLibraryScreen(props: Props) {
       );
     }
     return null;
-  };
+  }, [state.refreshing, state.assets, mediaType]);
 
-  useFocusEffect(() => {
-    componentDidFocus();
-  });
+  const onFocus = React.useCallback(() => {
+    dispatch({ type: 'reset', refreshing: true });
+    loadMoreAssets();
+    const libraryChangeSubscription = MediaLibrary.addListener(() => {
+      loadMoreAssets([]);
+    });
+    return () => libraryChangeSubscription.remove();
+  }, [loadMoreAssets]);
+
+  useFocusEffect(onFocus);
 
   if (!permission) {
     return null;
   }
-  if (permission !== 'granted') {
+  if (!permission.granted) {
     return (
       <View style={styles.permissions}>
         <Text>
@@ -238,7 +250,7 @@ export default function MediaLibraryScreen(props: Props) {
   return (
     <FlatList
       contentContainerStyle={styles.flatList}
-      data={assets}
+      data={state.assets}
       numColumns={COLUMNS}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.5}
@@ -246,7 +258,7 @@ export default function MediaLibraryScreen(props: Props) {
       renderItem={renderRowItem}
       ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+      refreshControl={<RefreshControl refreshing={state.refreshing} onRefresh={refresh} />}
     />
   );
 }
