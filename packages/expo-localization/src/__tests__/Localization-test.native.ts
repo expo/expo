@@ -47,9 +47,8 @@ afterEach(() => {
 describe(`Localization methods`, () => {
   it(`expect async to return locale`, async () => {
     function validateString(result) {
-      expect(result).toBeDefined();
       expect(typeof result).toBe('string');
-      expect(result.length > 0).toBe(true);
+      if (result) expect(result.length > 0).toBe(true);
     }
 
     function validateStringArray(result) {
@@ -81,15 +80,13 @@ describe(`Localization defines constants`, () => {
   it(`Gets the current device region`, async () => {
     const result = Localization.region;
 
-    expect(result).toBeDefined();
     expect(typeof result).toBe('string');
-    expect(result.length > 0).toBe(true);
+    if (result) expect(result.length > 0).toBe(true);
   });
 
   it(`Gets the current locale`, async () => {
     const result = Localization.locale;
 
-    expect(result).toBeDefined();
     expect(typeof result).toBe('string');
     expect(result.length > 0).toBe(true);
   });
@@ -97,7 +94,6 @@ describe(`Localization defines constants`, () => {
   it(`Gets the preferred locales`, async () => {
     const result = Localization.locales;
 
-    expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
     expect(result.length > 0).toBe(true);
     expect(result[0]).toBe(Localization.locale);
@@ -105,7 +101,7 @@ describe(`Localization defines constants`, () => {
 
   it(`Gets ISO currency codes`, async () => {
     const result = Localization.isoCurrencyCodes;
-    expect(result).toBeDefined();
+
     expect(Array.isArray(result)).toBe(true);
     for (const iso of result) {
       expect(typeof iso).toBe('string');
@@ -115,7 +111,7 @@ describe(`Localization defines constants`, () => {
 
   it(`Gets the current timzezone`, async () => {
     const result = Localization.timezone;
-    expect(result).toBeDefined();
+
     expect(typeof result).toBe('string');
     expect(result.length > 0).toBe(true);
     // Format: expect something like America/Los_Angeles or America/Chihuahua
@@ -124,7 +120,7 @@ describe(`Localization defines constants`, () => {
 
   it(`Gets the current layout direction (LTR only)`, async () => {
     const result = Localization.isRTL;
-    expect(result).toBeDefined();
+
     expect(result).toBe(false);
   });
 });
