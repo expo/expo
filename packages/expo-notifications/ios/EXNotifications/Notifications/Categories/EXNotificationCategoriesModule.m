@@ -26,13 +26,7 @@ UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
     for (UNNotificationCategory *category in categories) {
-      NSMutableDictionary *categoryDictionary = [NSMutableDictionary dictionary];
-      categoryDictionary[@"identifier"] = category.identifier;
-      categoryDictionary[@"actionIds"] = [self parseIdsFromActions: category.actions];
-      if (@available(iOS 11, *)) {
-        categoryDictionary[@"hiddenPreviewsBodyPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
-      }
-      [existingCategories addObject:categoryDictionary];
+      [existingCategories addObject:[self parseCategoryToJson:category]];
     }
     resolve(existingCategories);
   }];
@@ -72,7 +66,7 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
     }
     [newCategories addObject:newCategory];
     [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
-    resolve(nil);
+    resolve([self parseCategoryToJson:newCategory]);
   }];
 }
 
@@ -130,13 +124,27 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return [UNNotificationAction actionWithIdentifier:actionId title:buttonTitle options:options];
 }
 
-- (NSMutableArray *)parseIdsFromActions:(NSArray<UNNotificationAction *> *)actions
+- (NSMutableDictionary *)parseCategoryToJson:(UNNotificationCategory *)category
 {
-  NSMutableArray* ids = [NSMutableArray new];
-  for (UNNotificationAction *action in actions) {
-    [ids addObject:action.identifier];
+  NSMutableDictionary* parsedCategory = [NSMutableDictionary dictionary];
+  if (@available(iOS 11, *)) {
+    parsedCategory[@"hiddenPreviewsBodyPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
   }
-  return ids;
+  parsedCategory[@"actions"] = [self parseActionIdAndTitle: category.actions];
+  parsedCategory[@"identifier"] = category.identifier;
+  return parsedCategory;
+}
+
+- (NSMutableArray *)parseActionIdAndTitle:(NSArray<UNNotificationAction *> *)actions
+{
+  NSMutableArray* parsedActions = [NSMutableArray new];
+  for (UNNotificationAction *action in actions) {
+    NSMutableDictionary *actionDictionary = [NSMutableDictionary dictionary];
+    actionDictionary[@"title"] = action.title;
+    actionDictionary[@"identifier"] = action.identifier;
+    [parsedActions addObject:actionDictionary];
+  }
+  return parsedActions;
 }
 
 @end

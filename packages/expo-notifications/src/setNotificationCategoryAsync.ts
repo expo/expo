@@ -1,13 +1,13 @@
 import { UnavailabilityError, Platform } from '@unimodules/core';
 
 import NotificationCategoriesModule from './NotificationCategoriesModule';
-import { NotificationAction } from './Notifications.types';
+import { NotificationAction, NotificationCategory } from './Notifications.types';
 
 export default async function setNotificationCategoryAsync(
   name: string,
   actions: NotificationAction[],
   previewPlaceholder?: string
-): Promise<void> {
+): Promise<NotificationCategory> {
   if (!NotificationCategoriesModule.setNotificationCategoryAsync) {
     throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
   }

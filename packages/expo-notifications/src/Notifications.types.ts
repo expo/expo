@@ -262,5 +262,5 @@ export interface NotificationAction {
 export interface NotificationCategory {
   identifier: string;
   actionIds: string[];
-  hiddenPreviewsBodyPlaceholder: string;
+  hiddenPreviewsBodyPlaceholder?: string;
 }
