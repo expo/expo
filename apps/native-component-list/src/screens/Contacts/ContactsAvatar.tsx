@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Image, Text, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
 import Colors from '../../constants/Colors';
@@ -11,7 +11,6 @@ export default class Avatar extends React.PureComponent<{
 }> {
   get image(): JSX.Element {
     const { image } = this.props;
-    const source = image;
     if (typeof image === 'string') {
       return <Image style={styles.image} source={{ uri: image }} />;
     } else if (typeof image === 'function') {
@@ -51,8 +50,7 @@ export default class Avatar extends React.PureComponent<{
         disabled={!onPress}
         onPress={this.onPress}
         accessibilityTraits="image"
-        style={[styles.container, style]}
-      >
+        style={[styles.container, style]}>
         {this.contents}
       </TouchableOpacity>
     );

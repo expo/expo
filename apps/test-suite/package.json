@@ -54,9 +54,6 @@
     "react-native-gesture-handler": "~1.6.0",
     "react-native-safe-area-view": "^0.14.8",
     "react-native-web": "^0.11.0",
-    "react-navigation": "^4.1.0-alpha.1",
-    "react-navigation-stack": "1.6.0-alpha.1",
-    "react-navigation-tabs": "^2.4.1",
     "sinon": "^7.1.1"
   },
   "devDependencies": {

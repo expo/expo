@@ -1,20 +1,19 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createBrowserApp } from '@react-navigation/web';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import * as Linking from 'expo-linking';
 import React from 'react';
 import { Platform } from 'react-native';
-import {
-  createAppContainer,
-  createSwitchNavigator,
-  NavigationRouteConfigMap,
-} from 'react-navigation';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
 import TestSuite from 'test-suite/AppNavigator';
+
 import Colors from './src/constants/Colors';
 
+type NavigationRouteConfigMap = React.ReactElement;
+
 type RoutesConfig = {
-  TestSuite: NavigationRouteConfigMap;
-  ExpoApis?: NavigationRouteConfigMap;
-  ExpoComponents?: NavigationRouteConfigMap;
+  'test-suite': NavigationRouteConfigMap;
+  apis?: NavigationRouteConfigMap;
+  components?: NavigationRouteConfigMap;
 };
 
 type NativeComponentListExportsType = null | {
@@ -30,16 +29,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 }
 
 const routes: RoutesConfig = {
-  TestSuite: {
-    screen: TestSuite,
-    path: 'test-suite',
-    navigationOptions: {
-      tabBarIcon: ({ focused }: { focused: boolean }) => {
-        const color = focused ? Colors.activeTintColor : Colors.inactiveTintColor;
-        return <MaterialCommunityIcons name="format-list-checks" size={27} color={color} />;
-      },
-    },
-  },
+  'test-suite': TestSuite,
 };
 
 // We'd like to get rid of `native-component-list` being a part of the final bundle.
@@ -53,40 +43,73 @@ const Redirect = optionalRequire(() =>
 ) as any;
 
 if (NativeComponentList) {
-  routes.ExpoApis = NativeComponentList.ExpoApis;
-  routes.ExpoComponents = NativeComponentList.ExpoComponents;
+  routes.apis = NativeComponentList.apis;
+  routes.components = NativeComponentList.components;
 }
 
-const MainNavigator = createBottomTabNavigator(routes, {
-  initialRouteName: 'TestSuite',
-  tabBarOptions: {
-    labelStyle: {
-      fontSize: 12,
-    },
-    activeTintColor: Colors.activeTintColor,
-    inactiveTintColor: Colors.inactiveTintColor,
-    safeAreaInset: {
-      top: 5,
-      right: 'always',
-      bottom: 'always',
-      left: 'always',
+const Tab = createBottomTabNavigator();
+
+const Switch = createStackNavigator();
+
+const linking = {
+  prefixes: [Platform.select({ web: Linking.makeUrl('/'), default: 'bareexpo://' })],
+  config: {
+    main: {
+      path: '',
+      initialRouteName: 'test-suite',
+      screens: {
+        apis: {
+          initialRouteName: 'ExpoApis',
+          screens: {
+            ExpoApis: '',
+          },
+        },
+        components: {
+          initialRouteName: 'ExpoComponents',
+          screens: {
+            ExpoComponents: '',
+            GL: '/gl',
+            SVG: '/svg',
+            SVGExample: '/svg/example',
+          },
+        },
+      },
     },
   },
-});
-
-const switchRoutes: Record<string, any> = {
-  main: { screen: MainNavigator, path: '' },
 };
 
-if (Redirect) {
-  switchRoutes.redirect = Redirect;
+function TabNavigator() {
+  return (
+    <Tab.Navigator
+      tabBarOptions={{
+        activeTintColor: Colors.activeTintColor,
+        inactiveTintColor: Colors.inactiveTintColor,
+        safeAreaInsets: {
+          top: 5,
+        },
+      }}
+      initialRouteName="test-suite">
+      {Object.keys(routes).map(name => (
+        <Tab.Screen
+          name={name}
+          key={name}
+          component={routes[name]}
+          options={() => {
+            return {
+              title: `Load: ${name}`,
+            };
+          }}
+        />
+      ))}
+    </Tab.Navigator>
+  );
 }
 
-const SwitchRedirectNavigator = createSwitchNavigator(switchRoutes);
-
-const createApp = Platform.select({
-  web: input => createBrowserApp(input),
-  default: input => createAppContainer(input),
-});
-
-export default createApp(SwitchRedirectNavigator);
+export default () => (
+  <NavigationContainer linking={linking}>
+    <Switch.Navigator headerMode="none" initialRouteName="main">
+      {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+      <Switch.Screen name="main" component={TabNavigator} />
+    </Switch.Navigator>
+  </NavigationContainer>
+);

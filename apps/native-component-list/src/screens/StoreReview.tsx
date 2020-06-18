@@ -1,63 +1,53 @@
+import { StackNavigationProp } from '@react-navigation/stack';
+import * as StoreReview from 'expo-store-review';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import * as StoreReview from 'expo-store-review';
 
 import Button from '../components/Button';
-import CannyFooter from '../components/CannyFooter';
 import Colors from '../constants/Colors';
 
-class StoreReviewScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Store Review',
-  };
+type Props = {
+  navigation: StackNavigationProp<any>;
+};
 
-  state = {
-    isAvailable: false,
-  };
+function getStoreUrlInfo(): string {
+  const storeUrl = StoreReview.storeUrl();
+  if (storeUrl) {
+    return `On iOS <10.3, or Android devices pressing this button will open ${storeUrl}.`;
+  }
+  return 'You will need to add ios.appStoreUrl, and android.playStoreUrl to your app.config.js in order to use this feature on Android.';
+}
 
-  async componentDidMount() {
-    const isAvailable = await StoreReview.isAvailableAsync();
-    this.setState({
-      isAvailable,
+function StoreReviewScreen({ navigation }: Props) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Store Review',
     });
-  }
+  }, [navigation]);
 
-  onRequestReview = () => StoreReview.requestReview();
+  const [isAvailable, setAvailable] = React.useState<boolean>(false);
 
-  get isSupportedText() {
-    return this.state.isAvailable ? 'is available :D' : 'is not available! D:';
-  }
+  React.useEffect(() => {
+    StoreReview.isAvailableAsync().then(setAvailable);
+  }, []);
 
-  get storeUrl() {
-    const storeUrl = StoreReview.storeUrl();
-    if (storeUrl) {
-      return `On iOS <10.3, or Android devices pressing this button will open ${storeUrl}.`;
-    } else {
-      return 'You will need to add ios.appStoreUrl, and android.playStoreUrl to your app.json in order to use this feature.';
-    }
-  }
+  const isSupportedText = isAvailable ? 'is available' : 'is not available!';
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <View>
-          <View style={styles.textContainer}>
-            <Text style={styles.isSupportedText}>Native Store Review {this.isSupportedText}</Text>
-            <Text style={styles.storeUrlText}>{this.storeUrl}</Text>
-          </View>
-
-          <Button
-            onPress={this.onRequestReview}
-            style={styles.button}
-            buttonStyle={!StoreReview.hasAction() ? styles.disabled : undefined}
-            title="Request a Review!"
-          />
-        </View>
-
-        <CannyFooter />
+  return (
+    <View style={styles.container}>
+      <View style={styles.textContainer}>
+        <Text style={styles.isSupportedText}>Native Store Review {isSupportedText}</Text>
+        <Text style={styles.storeUrlText}>{getStoreUrlInfo()}</Text>
       </View>
-    );
-  }
+
+      <Button
+        onPress={StoreReview.requestReview}
+        style={styles.button}
+        buttonStyle={!StoreReview.hasAction() ? styles.disabled : undefined}
+        title="Request a Review!"
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -65,7 +55,6 @@ const styles = StyleSheet.create({
     padding: 16,
     flex: 1,
     backgroundColor: Colors.greyBackground,
-    justifyContent: 'space-between',
   },
   textContainer: {
     marginBottom: 16,

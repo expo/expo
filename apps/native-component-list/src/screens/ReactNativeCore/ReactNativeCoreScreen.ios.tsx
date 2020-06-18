@@ -8,34 +8,29 @@ import {
   Image,
   ProgressViewIOS,
   RefreshControl,
+  ScrollView,
   SectionList,
   SegmentedControlIOS,
-  Switch,
   StatusBar,
-  ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableHighlight,
-  View,
+  TouchableOpacity,
   TouchableOpacityProps,
+  View,
 } from 'react-native';
+import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler';
 import WebView from 'react-native-webview';
 // @ts-ignore
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
-// @ts-ignore
-import { NavigationScreenProps, ScrollView as NavigationScrollView } from 'react-navigation';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
 import ModalExample from '../ModalExample';
 
-export default class ReactNativeCoreScreen extends React.Component<NavigationScreenProps> {
-  static navigationOptions = {
-    title: 'React Native Core',
-  };
-
+export default class ReactNativeCoreScreen extends React.Component<{}> {
   state = {
     isRefreshing: false,
   };

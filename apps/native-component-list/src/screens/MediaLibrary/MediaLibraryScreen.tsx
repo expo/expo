@@ -1,23 +1,24 @@
-import React from 'react';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
+import React from 'react';
 import {
   ActivityIndicator,
   Button as RNButton,
   Dimensions,
-  View,
-  Text,
-  StyleSheet,
   FlatList,
-  RefreshControl,
   ListRenderItem,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-import { NavigationEvents, NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
 
-import Colors from '../../constants/Colors';
-import MediaLibraryCell from './MediaLibraryCell';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
+import Colors from '../../constants/Colors';
+import MediaLibraryCell from './MediaLibraryCell';
 
 const COLUMNS = 3;
 const PAGE_SIZE = COLUMNS * 10;
@@ -50,143 +51,135 @@ interface State {
   sortBy: MediaLibrary.SortByKey;
 }
 
-export default class MediaLibraryScreen extends React.Component<NavigationScreenProps, State> {
-  static navigationOptions: NavigationScreenConfig<{}> = ({ navigation }) => {
-    const goToAlbums = () => navigation.navigate('MediaAlbums');
-    const clearAlbumSelection = () => navigation.setParams({ album: null });
-    const { params } = navigation.state;
-    const isAlbumSet = params && params.album;
+type Links = {
+  MediaLibrary: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
+  MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
+  MediaAlbums: undefined;
+};
 
-    return {
-      title: 'MediaLibrary',
-      headerRight: (
-        <View style={{ marginRight: 5 }}>
-          <RNButton
-            title={isAlbumSet ? 'Show all' : 'Albums'}
-            onPress={isAlbumSet ? clearAlbumSelection : goToAlbums}
-            color={Colors.tintColor}
-          />
-        </View>
-      ),
-    };
-  }
+type Props = { navigation: StackNavigationProp<Links>; route: RouteProp<Links, 'MediaLibrary'> };
 
-  readonly state: State = {
-    assets: [],
-    refreshing: true,
-    mediaType: MediaLibrary.MediaType.photo,
-    sortBy: MediaLibrary.SortBy.default,
+export default function MediaLibraryScreen(props: Props) {
+  const [refreshing, setRefreshing] = React.useState<boolean>(true);
+  const [mediaType, setMediaType] = React.useState<MediaLibrary.MediaTypeValue>(
+    MediaLibrary.MediaType.photo
+  );
+  const [assets, setAssets] = React.useState<MediaLibrary.Asset[]>([]);
+  const [sortBy, setSortBy] = React.useState<MediaLibrary.SortByKey>(MediaLibrary.SortBy.default);
+  const [endCursor, setEndCursor] = React.useState<string | null>(null);
+  const [hasNextPage, setHasNextPage] = React.useState<boolean | null>(null);
+  const [permission, setPermission] = React.useState<MediaLibrary.PermissionStatus>(
+    MediaLibrary.PermissionStatus.UNDETERMINED
+  );
+
+  let isLoadingAssets = false;
+
+  let libraryChangeSubscription: { remove: () => void } | null = null;
+
+  const componentDidFocus = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    setPermission(status);
+    setAssets([]);
+    setEndCursor(null);
+    setHasNextPage(null);
+    loadMoreAssets();
+
+    if (libraryChangeSubscription) {
+      libraryChangeSubscription.remove();
+    }
+    libraryChangeSubscription = MediaLibrary.addListener(() => {
+      loadMoreAssets([]);
+    });
   };
 
-  isLoadingAssets = false;
+  React.useEffect(() => {
+    return () => {
+      libraryChangeSubscription!.remove();
+    };
+  }, []);
 
-  libraryChangeSubscription?: { remove: () => void };
+  const getAlbum = () => {
+    return props.route.params.album;
+  };
 
-  componentDidFocus = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    this.setState({ permission: status, assets: [], endCursor: undefined, hasNextPage: undefined });
-    this.loadMoreAssets();
-
-    if (this.libraryChangeSubscription) {
-      this.libraryChangeSubscription.remove();
-    }
-    this.libraryChangeSubscription = MediaLibrary.addListener(() => {
-      this.loadMoreAssets([]);
-    });
-  }
-
-  componentWillUnmount() {
-    this.libraryChangeSubscription!.remove();
-    this.libraryChangeSubscription = undefined;
-  }
-
-  getAlbum() {
-    const { params } = this.props.navigation.state;
-    return params && params.album;
-  }
-
-  async loadMoreAssets(currentAssets = this.state.assets, cursor = this.state.endCursor) {
-    if (
-      this.isLoadingAssets ||
-      (cursor === this.state.endCursor && this.state.hasNextPage === false)
-    ) {
+  const loadMoreAssets = async (currentAssets = assets, cursor = endCursor) => {
+    if (isLoadingAssets || (cursor === endCursor && hasNextPage === false)) {
       return;
     }
 
-    const { state } = this;
-    const album = this.getAlbum();
+    const album = getAlbum();
 
-    this.isLoadingAssets = true;
+    isLoadingAssets = true;
 
-    const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
+    const {
+      assets,
+      endCursor: nextEndCursor,
+      hasNextPage: nextHasNextPage,
+    } = await MediaLibrary.getAssetsAsync({
       first: PAGE_SIZE,
-      after: cursor,
-      mediaType: state.mediaType,
-      sortBy: state.sortBy,
-      album: album && album.id,
+      after: cursor ?? undefined,
+      mediaType,
+      sortBy,
+      album: album?.id,
     });
 
     const lastAsset = currentAssets[currentAssets.length - 1];
 
     if (!lastAsset || lastAsset.id === cursor) {
-      this.setState({
-        assets: ([] as MediaLibrary.Asset[]).concat(currentAssets, assets),
-        endCursor,
-        hasNextPage,
-        refreshing: false,
-      });
+      setAssets(([] as MediaLibrary.Asset[]).concat(currentAssets, assets));
+      setEndCursor(nextEndCursor);
+      setHasNextPage(nextHasNextPage);
+      setRefreshing(false);
     }
 
-    this.isLoadingAssets = false;
-  }
+    isLoadingAssets = false;
+  };
 
-  refresh = (refreshingFlag = true) => {
-    this.setState(
-      { assets: [], endCursor: undefined, hasNextPage: undefined, refreshing: refreshingFlag },
-      () => {
-        this.loadMoreAssets();
-      }
-    );
-  }
+  const refresh = (refreshingFlag = true) => {
+    setAssets([]);
+    setEndCursor(null);
+    setHasNextPage(null);
+    setRefreshing(refreshingFlag);
 
-  toggleMediaType = () => {
-    const mediaType = mediaTypeStates[this.state.mediaType];
-    this.setState({ mediaType });
-    this.refresh(false);
-  }
+    loadMoreAssets();
+  };
 
-  toggleSortBy = () => {
-    const sortBy = sortByStates[this.state.sortBy];
-    this.setState({ sortBy });
-    this.refresh(false);
-  }
+  const toggleMediaType = () => {
+    setMediaType(mediaTypeStates[mediaType]);
+    refresh(false);
+  };
 
-  keyExtractor = (item: MediaLibrary.Asset) => item.id;
+  const toggleSortBy = () => {
+    setSortBy(sortByStates[sortBy]);
+    refresh(false);
+  };
 
-  onEndReached = () => {
-    this.loadMoreAssets();
-  }
+  const keyExtractor = (item: MediaLibrary.Asset) => item.id;
 
-  onCellPress = (asset: MediaLibrary.Asset) => {
-    this.props.navigation.navigate('MediaDetails', {
+  const onEndReached = () => {
+    loadMoreAssets();
+  };
+
+  const onCellPress = (asset: MediaLibrary.Asset) => {
+    props.navigation.navigate('MediaDetails', {
       asset,
-      album: this.getAlbum(),
-      onGoBack: this.refresh,
+      album: getAlbum(),
+      onGoBack: refresh,
     });
-  }
+  };
 
-  renderRowItem: ListRenderItem<MediaLibrary.Asset> = ({ item }) => {
+  const renderRowItem: ListRenderItem<MediaLibrary.Asset> = ({ item }) => {
     return (
       <MediaLibraryCell
         style={{ width: WINDOW_SIZE.width / COLUMNS }}
         asset={item}
-        onPress={this.onCellPress}
+        onPress={onCellPress}
       />
     );
-  }
+  };
 
-  renderHeader = () => {
-    const album = this.getAlbum();
+  const renderHeader = () => {
+    const album = getAlbum();
 
     return (
       <View style={styles.header}>
@@ -197,22 +190,16 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
         <View style={styles.headerButtons}>
           <Button
             style={styles.button}
-            title={`Media type: ${this.state.mediaType}`}
-            onPress={this.toggleMediaType}
+            title={`Media type: ${mediaType}`}
+            onPress={toggleMediaType}
           />
-          <Button
-            style={styles.button}
-            title={`Sort by key: ${this.state.sortBy}`}
-            onPress={this.toggleSortBy}
-          />
+          <Button style={styles.button} title={`Sort by key: ${sortBy}`} onPress={toggleSortBy} />
         </View>
       </View>
     );
-  }
+  };
 
-  renderFooter = () => {
-    const { assets, refreshing, mediaType } = this.state;
-
+  const renderFooter = () => {
     if (refreshing) {
       return (
         <View style={styles.footer}>
@@ -228,50 +215,60 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
       );
     }
     return null;
+  };
+
+  useFocusEffect(() => {
+    componentDidFocus();
+  });
+
+  if (!permission) {
+    return null;
   }
-
-  renderContent() {
-    const { assets, permission, refreshing } = this.state;
-
-    if (!permission) {
-      return null;
-    }
-    if (permission !== 'granted') {
-      return (
-        <View style={styles.permissions}>
-          <Text>
-            Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access
-            in Settings.
-          </Text>
-        </View>
-      );
-    }
-
+  if (permission !== 'granted') {
     return (
-      <FlatList
-        contentContainerStyle={styles.flatList}
-        data={assets}
-        numColumns={COLUMNS}
-        keyExtractor={this.keyExtractor}
-        onEndReachedThreshold={0.5}
-        onEndReached={this.onEndReached}
-        renderItem={this.renderRowItem}
-        ListHeaderComponent={this.renderHeader}
-        ListFooterComponent={this.renderFooter}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.refresh} />}
-      />
-    );
-  }
-
-  render() {
-    return (
-      <View style={styles.mediaGallery}>
-        <NavigationEvents onDidFocus={this.componentDidFocus} />
-        {this.renderContent()}
+      <View style={styles.permissions}>
+        <Text>
+          Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access in
+          Settings.
+        </Text>
       </View>
     );
   }
+
+  return (
+    <FlatList
+      contentContainerStyle={styles.flatList}
+      data={assets}
+      numColumns={COLUMNS}
+      keyExtractor={keyExtractor}
+      onEndReachedThreshold={0.5}
+      onEndReached={onEndReached}
+      renderItem={renderRowItem}
+      ListHeaderComponent={renderHeader}
+      ListFooterComponent={renderFooter}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+    />
+  );
 }
+
+MediaLibraryScreen.navigationOptions = ({ navigation, route }: Props) => {
+  const goToAlbums = () => navigation.navigate('MediaAlbums');
+  const clearAlbumSelection = () => navigation.setParams({ album: null });
+  const isAlbumSet = route.params.album;
+
+  return {
+    title: 'MediaLibrary',
+    headerRight: (
+      <View style={{ marginRight: 5 }}>
+        <RNButton
+          title={isAlbumSet ? 'Show all' : 'Albums'}
+          onPress={isAlbumSet ? clearAlbumSelection : goToAlbums}
+          color={Colors.tintColor}
+        />
+      </View>
+    ),
+  };
+};
 
 const styles = StyleSheet.create({
   mediaGallery: {

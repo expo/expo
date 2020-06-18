@@ -1,57 +1,39 @@
 import { AppLoading } from 'expo';
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { NavigationNavigator } from 'react-navigation';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import loadAssetsAsync from '../utilities/loadAssetsAsync';
 
-const initialState = {
-  appIsReady: false,
-};
+export default function LoadAssetsNavigationWrapper<T>(InnerNavigator: React.FC<T>) {
+  function LoadAssetsCustomNavigator(props: T) {
+    const [isReady, setReady] = React.useState(false);
 
-type State = typeof initialState;
+    React.useEffect(() => {
+      _loadAssetsAsync();
+    }, []);
 
-export default function LoadAssetsNavigationWrapper(InnerNavigator: NavigationNavigator) {
-  const LoadAssetsCustomNavigator = class LoadAssetsCustomNavigator extends React.Component<
-    any,
-    State
-  > {
-    readonly state: State = initialState;
-    router = InnerNavigator.router;
-
-    componentDidMount() {
-      this._loadAssetsAsync();
-    }
-
-    async _loadAssetsAsync() {
+    const _loadAssetsAsync = async () => {
       try {
         await loadAssetsAsync();
       } catch (e) {
         console.log({ e });
       } finally {
-        this.setState({ appIsReady: true });
+        setReady(true);
       }
-    }
+    };
 
-    render() {
-      if (this.state.appIsReady) {
-        return <InnerNavigator {...this.props} />;
-      } else {
-        if (AppLoading) {
-          return <AppLoading />;
-        } else {
-          return (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" />
-            </View>
-          );
-        }
-      }
+    if (isReady) {
+      return <InnerNavigator {...props} />;
     }
-  };
-
-  // @ts-ignore
-  LoadAssetsCustomNavigator.router = InnerNavigator.router;
+    if (AppLoading) {
+      return <AppLoading />;
+    }
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return LoadAssetsCustomNavigator;
 }

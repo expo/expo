@@ -12,10 +12,6 @@ if (Platform.OS !== 'web') {
 }
 
 export default class BranchScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Branch',
-  };
-
   _branchUniversalObject?: any;
 
   async _getOrCreateBranchObjectAsync() {

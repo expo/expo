@@ -20,7 +20,7 @@ function setTraceTemplate {
 APP=$1
 PLATFORM=$2
 MODULES=$(join_by , "${@:3}") 
-LINK="bareexpo://${APP}/select/${MODULES}"
+LINK="bareexpo://${APP}/run?tests=${MODULES}"
 
 echo " ☛  Opening ${MODULES} in ${APP}..."
 if [ $PLATFORM = "android" ]; then

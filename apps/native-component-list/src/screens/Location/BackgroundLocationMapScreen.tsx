@@ -1,13 +1,13 @@
-import React from 'react';
-import { EventEmitter, EventSubscription } from 'fbemitter';
-import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
-import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-
-import MapView from 'react-native-maps';
+import { useFocusEffect } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
+import { EventEmitter, EventSubscription } from 'fbemitter';
+import * as React from 'react';
+import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
+import MapView from 'react-native-maps';
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
@@ -26,7 +26,9 @@ const locationAccuracyStates: { [key in Location.Accuracy]: Location.Accuracy } 
   [Location.Accuracy.BestForNavigation]: Location.Accuracy.Lowest,
 };
 
-const locationActivityTypes: { [key in Location.ActivityType]: Location.ActivityType | undefined } = {
+const locationActivityTypes: {
+  [key in Location.ActivityType]: Location.ActivityType | undefined;
+} = {
   [Location.ActivityType.Other]: Location.ActivityType.AutomotiveNavigation,
   [Location.ActivityType.AutomotiveNavigation]: Location.ActivityType.Fitness,
   [Location.ActivityType.Fitness]: Location.ActivityType.OtherNavigation,
@@ -35,55 +37,41 @@ const locationActivityTypes: { [key in Location.ActivityType]: Location.Activity
 };
 
 interface Props {
-  navigation: NavigationScreenProp<{}, any>;
+  navigation: StackNavigationProp<any>;
 }
 
-interface State {
-  accuracy: Location.Accuracy;
-  activityType?: Location.ActivityType;
-  isTracking: boolean;
-  savedLocations: [];
-  geofencingRegions: [];
-  initialRegion?: any;
-  showsBackgroundLocationIndicator: boolean;
-  error?: string;
-}
+export default function BackgroundLocationMapScreen(props: Props) {
+  const mapViewRef = React.useRef<MapView>(null);
+  const [isTracking, setIsTracking] = React.useState<boolean>(false);
+  const [savedLocations, setSavedLocations] = React.useState([]);
+  const [activityType, setActivityType] = React.useState<Location.ActivityType | undefined>();
+  const [error, setError] = React.useState<string | null>(null);
+  const [accuracy, setAccuracy] = React.useState<Location.Accuracy>(Location.Accuracy.High);
+  const [initialRegion, setInitialRegion] = React.useState<any>();
+  const [showsBackgroundLocationIndicator, setShowsBackgroundLocationIndicator] = React.useState<
+    boolean
+  >(false);
 
-export default class BackgroundLocationMapScreen extends React.Component<Props, State> {
-  static navigationOptions = {
-    title: 'Background location',
-  };
+  const [eventSubscription, setSubscription] = React.useState<EventSubscription | null>(null);
 
-  mapViewRef = React.createRef<MapView>();
-
-  readonly state: State = {
-    accuracy: Location.Accuracy.High,
-    isTracking: false,
-    showsBackgroundLocationIndicator: false,
-    savedLocations: [],
-    geofencingRegions: [],
-  };
-
-  eventSubscription?: EventSubscription;
-
-  didFocus = async () => {
-    if (!await Location.isBackgroundLocationAvailableAsync()) {
+  const didFocus = async () => {
+    if (!(await Location.isBackgroundLocationAvailableAsync())) {
       alert('Background location is not available in this application.');
-      this.props.navigation.goBack();
+      props.navigation.goBack();
       return;
     }
 
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {
-      AppState.addEventListener('change', this.handleAppStateChange);
-      this.setState({
-        // tslint:disable-next-line max-line-length
-        error: 'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
-      });
+      AppState.addEventListener('change', handleAppStateChange);
+      // tslint:disable-next-line max-line-length
+      setError(
+        'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.'
+      );
       return;
     } else {
-      this.setState({ error: undefined });
+      setError(null);
     }
 
     const { coords } = await Location.getCurrentPositionAsync();
@@ -92,57 +80,63 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
       ({ taskName }) => taskName === LOCATION_UPDATES_TASK
     );
     const savedLocations = await getSavedLocations();
-    const accuracy = (task && task.options.accuracy) || this.state.accuracy;
+    const nextAccuracy = task?.options.accuracy ?? accuracy;
 
-    this.eventSubscription = locationEventsEmitter.addListener('update', (locations: any) => {
-      this.setState({ savedLocations: locations });
-    });
+    setSubscription(
+      locationEventsEmitter.addListener('update', (locations: any) => {
+        setSavedLocations(locations);
+      })
+    );
 
     if (!isTracking) {
       alert('Click `Start tracking` to start getting location updates.');
     }
 
-    this.setState({
-      accuracy,
-      activityType: task && task.options.activityType,
-      isTracking,
-      showsBackgroundLocationIndicator: task && task.options.showsBackgroundLocationIndicator,
-      savedLocations,
-      initialRegion: {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        latitudeDelta: 0.004,
-        longitudeDelta: 0.002,
-      },
+    setAccuracy(nextAccuracy);
+    setIsTracking(isTracking);
+    setShowsBackgroundLocationIndicator(task && task.options.showsBackgroundLocationIndicator);
+    setActivityType(task?.options.activityType);
+    setSavedLocations(savedLocations);
+    setInitialRegion({
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      latitudeDelta: 0.004,
+      longitudeDelta: 0.002,
     });
-  }
+  };
 
-  handleAppStateChange = (nextAppState: string) => {
+  const handleAppStateChange = (nextAppState: string) => {
     if (nextAppState !== 'active') {
       return;
     }
 
-    if (this.state.initialRegion) {
-      AppState.removeEventListener('change', this.handleAppStateChange);
+    if (initialRegion) {
+      AppState.removeEventListener('change', handleAppStateChange);
       return;
     }
 
-    this.didFocus();
-  }
+    didFocus();
+  };
 
-  componentWillUnmount() {
-    if (this.eventSubscription) {
-      this.eventSubscription.remove();
-    }
-    AppState.removeEventListener('change', this.handleAppStateChange);
-  }
+  useFocusEffect(() => {
+    didFocus();
+  });
 
-  async startLocationUpdates(accuracy = this.state.accuracy) {
+  React.useEffect(() => {
+    return () => {
+      if (eventSubscription) {
+        eventSubscription.remove();
+      }
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
+  }, []);
+
+  const startLocationUpdates = async (acc = accuracy) => {
     await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {
-      accuracy,
-      activityType: this.state.activityType,
-      pausesUpdatesAutomatically: this.state.activityType != null,
-      showsBackgroundLocationIndicator: this.state.showsBackgroundLocationIndicator,
+      accuracy: acc,
+      activityType,
+      pausesUpdatesAutomatically: activityType != null,
+      showsBackgroundLocationIndicator,
       deferredUpdatesInterval: 60 * 1000, // 1 minute
       deferredUpdatesDistance: 100, // 100 meters
       foregroundService: {
@@ -152,74 +146,71 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
       },
     });
 
-    if (!this.state.isTracking) {
+    if (!isTracking) {
       alert(
         // tslint:disable-next-line max-line-length
         'Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.'
       );
     }
-    this.setState({ isTracking: true });
-  }
+    setIsTracking(true);
+  };
 
-  async stopLocationUpdates() {
+  const stopLocationUpdates = async () => {
     await Location.stopLocationUpdatesAsync(LOCATION_UPDATES_TASK);
-    this.setState({ isTracking: false });
-  }
+    setIsTracking(false);
+  };
 
-  clearLocations = async () => {
+  const clearLocations = async () => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
-    this.setState({ savedLocations: [] });
-  }
+    setSavedLocations([]);
+  };
 
-  toggleTracking = async () => {
+  const toggleTracking = async () => {
     await AsyncStorage.removeItem(STORAGE_KEY);
 
-    if (this.state.isTracking) {
-      await this.stopLocationUpdates();
+    if (isTracking) {
+      await stopLocationUpdates();
     } else {
-      await this.startLocationUpdates();
+      await startLocationUpdates();
     }
-    this.setState({ savedLocations: [] });
-  }
+    setSavedLocations([]);
+  };
 
-  onAccuracyChange = () => {
-    const accuracy = locationAccuracyStates[this.state.accuracy];
+  const onAccuracyChange = () => {
+    const currentAccuracy = locationAccuracyStates[accuracy];
 
-    this.setState({ accuracy });
+    setAccuracy(currentAccuracy);
 
-    if (this.state.isTracking) {
+    if (isTracking) {
       // Restart background task with the new accuracy.
-      this.startLocationUpdates(accuracy);
+      startLocationUpdates(currentAccuracy);
     }
-  }
+  };
 
-  toggleLocationIndicator = async () => {
-    const showsBackgroundLocationIndicator = !this.state.showsBackgroundLocationIndicator;
+  const toggleLocationIndicator = async () => {
+    setShowsBackgroundLocationIndicator(!showsBackgroundLocationIndicator);
+    if (isTracking) {
+      await startLocationUpdates();
+    }
+  };
 
-    this.setState({ showsBackgroundLocationIndicator }, async () => {
-      if (this.state.isTracking) {
-        await this.startLocationUpdates();
-      }
-    });
-  }
-
-  toggleActivityType = () => {
-    if (this.state.activityType) {
-      const nextActivityType = locationActivityTypes[this.state.activityType];
-      this.setState({ activityType: nextActivityType });
+  const toggleActivityType = () => {
+    if (activityType) {
+      const nextActivityType = locationActivityTypes[activityType];
+      setActivityType(nextActivityType);
     } else {
-      this.setState({ activityType: Location.ActivityType.Other });
+      setActivityType(Location.ActivityType.Other);
     }
 
-    if (this.state.isTracking) {
+    if (isTracking) {
       // Restart background task with the new activity type
-      this.startLocationUpdates();
+      startLocationUpdates();
     }
-  }
+  };
 
-  onCenterMap = async () => {
+  const onCenterMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
-    const mapView = this.mapViewRef.current;
+    const mapView = mapViewRef.current;
 
     if (mapView) {
       mapView.animateToRegion({
@@ -229,11 +220,9 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
         longitudeDelta: 0.002,
       });
     }
-  }
+  };
 
-  renderPolyline() {
-    const { savedLocations } = this.state;
-
+  const renderPolyline = () => {
     if (savedLocations.length === 0) {
       return null;
     }
@@ -245,72 +234,80 @@ export default class BackgroundLocationMapScreen extends React.Component<Props, 
         strokeColor={Colors.tintColor}
       />
     );
+  };
+
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
   }
 
-  render() {
-    if (this.state.error) {
-      return <Text style={styles.errorText}>{this.state.error}</Text>;
-    }
+  if (!initialRegion) {
+    return null;
+  }
 
-    if (!this.state.initialRegion) {
-      return <NavigationEvents onDidFocus={this.didFocus} />;
-    }
-
-    return (
-      <View style={styles.screen}>
-        <MapView
-          ref={this.mapViewRef}
-          style={styles.mapView}
-          initialRegion={this.state.initialRegion}
-          showsUserLocation
-        >
-          {this.renderPolyline()}
-        </MapView>
-        <View style={styles.buttons} pointerEvents="box-none">
-          <View style={styles.topButtons}>
-            <View style={styles.buttonsColumn}>
-              {Platform.OS === 'android' ? null : (
-                <Button style={styles.button} onPress={this.toggleLocationIndicator}>
-                  <View style={styles.buttonContentWrapper}>
-                    <Text style={styles.text}>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
-                    <Text style={styles.text}> background </Text>
-                    <FontAwesome name="location-arrow" size={20} color="white" />
-                    <Text style={styles.text}> indicator</Text>
-                  </View>
-                </Button>
-              )}
-              {Platform.OS === 'android' ? null : (
-                <Button style={styles.button}
-                  onPress={this.toggleActivityType}
-                  title={this.state.activityType ? `Activity type: ${Location.ActivityType[this.state.activityType]}` : 'No activity type'}
-                />
-              )}
-              <Button
-                title={`Accuracy: ${Location.Accuracy[this.state.accuracy]}`}
-                style={styles.button}
-                onPress={this.onAccuracyChange}
-              />
-            </View>
-            <View style={styles.buttonsColumn}>
-              <Button style={styles.button} onPress={this.onCenterMap}>
-                <MaterialIcons name="my-location" size={20} color="white" />
+  return (
+    <View style={styles.screen}>
+      <MapView
+        ref={mapViewRef}
+        style={styles.mapView}
+        initialRegion={initialRegion}
+        showsUserLocation>
+        {renderPolyline()}
+      </MapView>
+      <View style={styles.buttons} pointerEvents="box-none">
+        <View style={styles.topButtons}>
+          <View style={styles.buttonsColumn}>
+            {Platform.OS === 'android' ? null : (
+              <Button style={styles.button} onPress={toggleLocationIndicator}>
+                <View style={styles.buttonContentWrapper}>
+                  <Text style={styles.text}>
+                    {showsBackgroundLocationIndicator ? 'Hide' : 'Show'}
+                  </Text>
+                  <Text style={styles.text}> background </Text>
+                  <FontAwesome name="location-arrow" size={20} color="white" />
+                  <Text style={styles.text}> indicator</Text>
+                </View>
               </Button>
-            </View>
-          </View>
-
-          <View style={styles.bottomButtons}>
-            <Button title="Clear locations" style={styles.button} onPress={this.clearLocations} />
+            )}
+            {Platform.OS === 'android' ? null : (
+              <Button
+                style={styles.button}
+                onPress={toggleActivityType}
+                title={
+                  activityType
+                    ? `Activity type: ${Location.ActivityType[activityType]}`
+                    : 'No activity type'
+                }
+              />
+            )}
             <Button
-              title={this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
+              title={`Accuracy: ${Location.Accuracy[accuracy]}`}
               style={styles.button}
-              onPress={this.toggleTracking}
+              onPress={onAccuracyChange}
             />
           </View>
+          <View style={styles.buttonsColumn}>
+            <Button style={styles.button} onPress={onCenterMap}>
+              <MaterialIcons name="my-location" size={20} color="white" />
+            </Button>
+          </View>
+        </View>
+
+        <View style={styles.bottomButtons}>
+          <Button title="Clear locations" style={styles.button} onPress={clearLocations} />
+          <Button
+            title={isTracking ? 'Stop tracking' : 'Start tracking'}
+            style={styles.button}
+            onPress={toggleTracking}
+          />
         </View>
       </View>
-    );
-  }
+    </View>
+  );
 }
+
+BackgroundLocationMapScreen.navigationOptions = {
+  title: 'Background location',
+};
 
 async function getSavedLocations() {
   try {

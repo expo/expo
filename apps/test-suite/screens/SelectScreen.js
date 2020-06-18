@@ -26,6 +26,17 @@ function ListItem({ title, onPressItem, selected, id }) {
   );
 }
 
+function createQueryString(tests) {
+  if (!Array.isArray(tests) || !tests.every(v => typeof v === 'string')) {
+    throw new Error(
+      `test-suite: Cannot create query string for runner. Expected array of strings, instead got: ${tests}`
+    );
+  }
+  const uniqueTests = [...new Set(tests)];
+  // Skip encoding or React Navigation will encode twice
+  return uniqueTests.join(' ');
+}
+
 export default class SelectScreen extends React.PureComponent {
   state = {
     selected: new Set(),
@@ -60,8 +71,10 @@ export default class SelectScreen extends React.PureComponent {
   }
 
   checkLinking = incomingTests => {
-    const testNames = incomingTests.split(',').map(v => v.trim());
-    this.props.navigation.navigate('RunTests', { selected: new Set(testNames) });
+    // TODO(Bacon): bare-expo should pass a space-separated string.
+    const tests = incomingTests.split(',').map(v => v.trim());
+    const query = createQueryString(tests);
+    this.props.navigation.navigate('run', { tests: query });
   };
 
   _handleOpenURL = ({ url }) => {
@@ -77,8 +90,10 @@ export default class SelectScreen extends React.PureComponent {
 
     if (url.includes('/all')) {
       // Test all available modules
-      this.props.navigation.navigate('RunTests', {
-        selected: new Set(getTestModules().map(m => m.name)),
+      const query = createQueryString(getTestModules().map(m => m.name));
+
+      this.props.navigation.navigate('run', {
+        tests: query,
       });
       return;
     }
@@ -102,10 +117,6 @@ export default class SelectScreen extends React.PureComponent {
       })
       .catch(err => console.error('Failed to load initial URL', err));
   }
-
-  static navigationOptions = {
-    title: 'Expo Test Suite',
-  };
 
   _keyExtractor = ({ name }) => name;
 
@@ -141,7 +152,9 @@ export default class SelectScreen extends React.PureComponent {
     if (selected.length === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
-      this.props.navigation.navigate('RunTests', { selected });
+      const query = createQueryString([...selected]);
+
+      this.props.navigation.navigate('run', { tests: query });
       this.setState({ selected: new Set() });
     }
   };
@@ -173,10 +186,15 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
-  const paddingVertical = (bottom || 12) + 8;
+  const isRunningInDetox = !!global.DETOX;
+  const paddingVertical = 16;
 
   return (
-    <View style={[styles.buttonRow, { paddingLeft: left, paddingRight: right }]}>
+    <View
+      style={[
+        styles.buttonRow,
+        { paddingBottom: isRunningInDetox ? 0 : bottom, paddingLeft: left, paddingRight: right },
+      ]}>
       <FooterButton
         style={{ paddingVertical, alignItems: 'flex-start' }}
         title={buttonTitle}

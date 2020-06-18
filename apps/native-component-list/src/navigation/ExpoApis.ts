@@ -129,9 +129,7 @@ const optionalScreens: {
   ViewShot,
 };
 
-interface ScreensObjectType {
-  [key: string]: React.ComponentType;
-}
+type ScreensObjectType = Record<string, React.ComponentType>;
 
 export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>(
   (acc, [key, screen]) => {

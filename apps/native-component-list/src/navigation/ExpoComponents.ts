@@ -57,7 +57,18 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   Camera,
   DateTimePicker,
   GL,
-  ...GLScreens,
+  ...Object.keys(GLScreens ?? {}).reduce((prev, screenName) => {
+    const entry = GLScreens[screenName];
+    const screen = entry.screen ?? entry;
+    screen.navigationOptions = {
+      title: screen.title,
+    };
+    // console.log('entry: ', screen.title);
+    return {
+      ...prev,
+      [screenName]: screen,
+    };
+  }, {}),
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,
