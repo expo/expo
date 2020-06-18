@@ -1,6 +1,6 @@
-import ApiV2HttpClient from '../ApiV2HttpClient';
-import ApiV2Error from '../ApiV2Error';
 import Store from '../../redux/Store';
+import ApiV2Error from '../ApiV2Error';
+import ApiV2HttpClient from '../ApiV2HttpClient';
 
 jest.mock('react-native', () => {
   const ReactNative = jest.requireActual('react-native');
@@ -32,8 +32,8 @@ afterEach(() => {
 it(`supports GET requests`, async () => {
   _setFakeHttpResponse('{"data": {"test":"yes"}}');
 
-  let client = new ApiV2HttpClient();
-  let response = await client.getAsync('example', { a: 1, b: true, c: 'hi' });
+  const client = new ApiV2HttpClient();
+  const response = await client.getAsync('example', { a: 1, b: true, c: 'hi' });
   expect(response).toEqual({ test: 'yes' });
   expect(global.fetch.mock.calls.length).toBe(1);
   expect(global.fetch.mock.calls[0][0]).toMatchSnapshot();
@@ -44,8 +44,8 @@ it(`supports GET requests`, async () => {
 it(`supports POST requests`, async () => {
   _setFakeHttpResponse('{"data": {"test":"yes"}}');
 
-  let client = new ApiV2HttpClient();
-  let response = await client.postAsync('example', {
+  const client = new ApiV2HttpClient();
+  const response = await client.postAsync('example', {
     a: 1,
     b: true,
     c: 'hi',
@@ -61,17 +61,17 @@ it(`supports POST requests`, async () => {
 });
 
 it(`supports slashes in method names`, async () => {
-  let client = new ApiV2HttpClient();
+  const client = new ApiV2HttpClient();
   await client.getAsync('prefix/method');
   expect(global.fetch.mock.calls.length).toBe(1);
   expect(global.fetch.mock.calls[0][0]).toMatch(/\/api\/v2\/prefix\/method$/);
 });
 
 it(`sets custom Expo headers`, async () => {
-  let client = new ApiV2HttpClient();
+  const client = new ApiV2HttpClient();
   await client.getAsync('example');
 
-  let headers = global.fetch.mock.calls[0][1].headers;
+  const headers = global.fetch.mock.calls[0][1].headers;
   expect(headers['Expo-SDK-Version']).toBe('12.0.0,11.0.0');
   expect(headers['Expo-Platform']).toBe('ios');
   expect(headers['expo-session']).toBeUndefined();
@@ -82,17 +82,17 @@ it(`includes the session token`, async () => {
     session: { sessionSecret: 'test-secret' },
   });
 
-  let client = new ApiV2HttpClient();
+  const client = new ApiV2HttpClient();
   await client.getAsync('example');
 
-  let headers = global.fetch.mock.calls[0][1].headers;
+  const headers = global.fetch.mock.calls[0][1].headers;
   expect(headers['expo-session']).toBe('test-secret');
 });
 
 it(`handles API errors`, async () => {
   _setFakeHttpResponse('{"errors": [{"message":"Intentional","code":"TEST_CODE"}]}');
 
-  let client = new ApiV2HttpClient();
+  const client = new ApiV2HttpClient();
   try {
     await client.getAsync('example');
     throw new Error('Expected API client to throw an error');
@@ -106,7 +106,7 @@ it(`handles API errors`, async () => {
 it(`handles malformed responses`, async () => {
   _setFakeHttpResponse('Bad gateway');
 
-  let client = new ApiV2HttpClient();
+  const client = new ApiV2HttpClient();
   try {
     await client.getAsync('example');
     throw new Error('Expected API client to throw an error');

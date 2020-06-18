@@ -37,7 +37,7 @@ class Selectable extends React.Component {
   };
 
   render() {
-    let child = React.cloneElement(React.Children.only(this.props.children), {
+    const child = React.cloneElement(React.Children.only(this.props.children), {
       selected: this.state.isSelected,
     });
 

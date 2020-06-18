@@ -5,14 +5,14 @@ import { StyleSheet, TextInput } from 'react-native';
 import { connect } from 'react-redux';
 
 import Analytics from '../api/Analytics';
-import SessionActions from '../redux/SessionActions';
-import Colors from '../constants/Colors';
+import ApolloClient from '../api/ApolloClient';
+import AuthApi from '../api/AuthApi';
 import CloseButton from '../components/CloseButton';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
-import AuthApi from '../api/AuthApi';
-import ApolloClient from '../api/ApolloClient';
 import { StyledScrollView as ScrollView } from '../components/Views';
+import Colors from '../constants/Colors';
+import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
@@ -122,7 +122,7 @@ export default class SignInScreen extends React.Component {
   };
 
   _handleSubmit = async () => {
-    let { email, password, isLoading } = this.state;
+    const { email, password, isLoading } = this.state;
 
     if (isLoading) {
       return;
@@ -131,9 +131,9 @@ export default class SignInScreen extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      let result = await AuthApi.signInAsync(email, password);
+      const result = await AuthApi.signInAsync(email, password);
       if (this._isMounted) {
-        let trackingOpts = {
+        const trackingOpts = {
           id: result.id,
           usernameOrEmail: email,
         };
@@ -151,7 +151,7 @@ export default class SignInScreen extends React.Component {
   };
 
   _handleError = (error: Error) => {
-    let message = error.message || 'Sorry, something went wrong.';
+    const message = error.message || 'Sorry, something went wrong.';
     alert(message);
   };
 }

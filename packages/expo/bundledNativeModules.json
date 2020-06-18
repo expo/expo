@@ -101,5 +101,6 @@
   "expo-splash-screen": "~0.3.1",
   "firebase": "7.9.0",
   "@react-native-community/picker": "1.6.0",
-  "@react-native-community/slider": "3.0.0"
+  "@react-native-community/slider": "3.0.0",
+  "expo-status-bar": "^1.0.0"
 }

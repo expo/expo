@@ -1,6 +1,4 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
-import BottomSheet from 'reanimated-bottom-sheet';
 import {
   Dimensions,
   EventSubscription,
@@ -8,9 +6,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
+import BottomSheet from 'reanimated-bottom-sheet';
 
-import * as DevMenu from './DevMenuModule';
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
+import * as DevMenu from './DevMenuModule';
 
 type Props = {
   uuid: string;

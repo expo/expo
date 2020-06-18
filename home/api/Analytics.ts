@@ -1,8 +1,8 @@
-import Constants from 'expo-constants';
 import * as Amplitude from 'expo-analytics-amplitude';
+import Constants from 'expo-constants';
 
-import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
 import Environment from '../utils/Environment';
+import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
 
 let isInitialized = false;
 const { manifest } = Constants;

@@ -7,10 +7,8 @@ import React from 'react';
 import { AppState, Clipboard, View } from 'react-native';
 
 import Environment from '../utils/Environment';
-
-import QRCodeButton from './QRCodeButton';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
-import ListItem from '../components/ListItem';
+import QRCodeButton from './QRCodeButton';
 
 const CLIPBOARD_POLL_INTERVAL = 2000;
 
@@ -83,7 +81,7 @@ export default class ProjectTools extends React.Component {
   }
 
   _fetchClipboardContentsAsync = async (): Promise<void> => {
-    let clipboardContents = await Clipboard.getString();
+    const clipboardContents = await Clipboard.getString();
 
     if (clipboardContents !== this.state.clipboardContents) {
       requestAnimationFrame(() => {

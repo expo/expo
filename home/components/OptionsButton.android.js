@@ -31,7 +31,7 @@ export default class OptionsButton extends React.Component {
   }
 
   _handlePress = () => {
-    let handle = findNodeHandle(this._anchor);
+    const handle = findNodeHandle(this._anchor);
     NativeModules.UIManager.showPopupMenu(
       handle,
       ['Report this user'],

@@ -31,7 +31,7 @@ class ProjectListItem extends React.PureComponent<Props> {
   }
 
   private renderRightContent(): React.ReactNode {
-    const { unlisted, releaseChannel } = this.props;
+    const { releaseChannel } = this.props;
     return (
       <View style={styles.rightContentContainer}>
         {/* TODO: revisit this when we support "private" - unlisted is }
