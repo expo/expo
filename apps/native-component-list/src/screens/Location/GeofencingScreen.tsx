@@ -71,8 +71,6 @@ function reducer(
       return { ...state, geofencingRegions: [] };
     case 'toggle':
       return { ...state, isGeofencing: !state.isGeofencing };
-    default:
-      throw new Error();
   }
 }
 
