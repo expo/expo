@@ -22,7 +22,10 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - run: yarn global add expo-cli
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.4.0'
+      - run: yarn global add expo-cli@3
       - name: Cache Node.js modules
         uses: actions/cache@v1
         with:
