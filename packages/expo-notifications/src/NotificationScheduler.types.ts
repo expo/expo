@@ -1,3 +1,18 @@
+import { ProxyNativeModule } from '@unimodules/core';
+
+import { NotificationRequest, NotificationContentInput } from './Notifications.types';
+
+export interface NotificationSchedulerModule extends ProxyNativeModule {
+  getAllScheduledNotificationsAsync?: () => Promise<NotificationRequest[]>;
+  scheduleNotificationAsync?: (
+    identifier: string,
+    notificationContent: NotificationContentInput,
+    trigger: NotificationTriggerInput
+  ) => Promise<string>;
+  cancelScheduledNotificationAsync?: (identifier: string) => Promise<void>;
+  cancelAllScheduledNotificationsAsync?: () => Promise<void>;
+}
+
 // ISO8601 calendar pattern-matching
 export interface CalendarTriggerInput {
   type: 'calendar';

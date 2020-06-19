@@ -59,7 +59,7 @@ export async function test(t) {
         t.expect(tokenFromEvent).toEqual(tokenFromMethodCall);
       });
 
-      t.fit('resolves when multiple calls are issued', async () => {
+      t.it('resolves when multiple calls are issued', async () => {
         const results = await Promise.all([
           Notifications.getDevicePushTokenAsync(),
           Notifications.getDevicePushTokenAsync(),
@@ -69,7 +69,7 @@ export async function test(t) {
       });
 
       // Not running this test on web since Expo push notification doesn't yet support web.
-      const itWithExpoPushToken = ['ios', 'android'].includes(Platform.OS) ? t.fit : t.xit;
+      const itWithExpoPushToken = ['ios', 'android'].includes(Platform.OS) ? t.it : t.xit;
       itWithExpoPushToken('fetches Expo push token', async () => {
         let experienceId = undefined;
         if (!Constants.manifest) {
@@ -86,8 +86,15 @@ export async function test(t) {
       });
 
       itWithExpoPushToken('resolves when mixed multiple calls are issued', async () => {
+        let experienceId = undefined;
+        if (!Constants.manifest) {
+          // Absence of manifest means we're running out of managed workflow
+          // in bare-expo. @exponent/bare-expo "experience" has been configured
+          // to use Apple Push Notification key that will work in bare-expo.
+          experienceId = '@exponent/bare-expo';
+        }
         await Promise.all([
-          Notifications.getExpoPushTokenAsync(),
+          Notifications.getExpoPushTokenAsync({ experienceId }),
           Notifications.getDevicePushTokenAsync(),
         ]);
       });
@@ -1304,7 +1311,7 @@ export async function test(t) {
         };
 
         t.beforeEach(async () => {
-          Notifications.cancelAllScheduledNotificationsAsync();
+          await Notifications.cancelAllScheduledNotificationsAsync();
           Notifications.setNotificationHandler({
             handleNotification: async () => {
               timesSpyHasBeenCalled += 1;
@@ -1315,9 +1322,9 @@ export async function test(t) {
           });
         });
 
-        t.afterEach(() => {
+        t.afterEach(async () => {
           Notifications.setNotificationHandler(null);
-          Notifications.cancelAllScheduledNotificationsAsync();
+          await Notifications.cancelAllScheduledNotificationsAsync();
         });
 
         t.it(

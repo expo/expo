@@ -138,7 +138,7 @@ export default class NotificationScreen extends React.Component<
 
   _presentLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
-    Notifications.scheduleNotificationAsync({
+    await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Here is a scheduled notification!',
         body: 'This is the body',
@@ -154,7 +154,7 @@ export default class NotificationScreen extends React.Component<
 
   _LEGACY_presentLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
-    Notifications.presentNotificationAsync({
+    await Notifications.presentNotificationAsync({
       title: 'Here is a local notification!',
       body: 'This is the body',
       data: {
@@ -166,7 +166,7 @@ export default class NotificationScreen extends React.Component<
 
   _scheduleLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
-    Notifications.scheduleNotificationAsync({
+    await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Here is a local notification!',
         body: 'This is the body',

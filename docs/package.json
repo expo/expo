@@ -41,7 +41,7 @@
     "cowsay": "^1.4.0",
     "danger": "^9.2.10",
     "http-server": "^0.11.1",
-    "minimist": "^1.2.2",
+    "minimist": "^1.2.3",
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0"
   }

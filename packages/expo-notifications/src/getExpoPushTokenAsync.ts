@@ -1,4 +1,4 @@
-import { Platform, CodedError } from '@unimodules/core';
+import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 
@@ -137,6 +137,10 @@ function getExpoPushToken(data: any) {
 
 async function getDeviceIdAsync() {
   try {
+    if (!InstallationIdProvider.getInstallationIdAsync) {
+      throw new UnavailabilityError('InstallationIdProvider', 'getInstallationIdAsync');
+    }
+
     return await InstallationIdProvider.getInstallationIdAsync();
   } catch (e) {
     throw new CodedError(
