@@ -14,7 +14,7 @@
     "gulp": "^4.0.0",
     "ip": "^1.1.5",
     "lodash": "^4.17.13",
-    "minimist": "^1.2.2",
+    "minimist": "^1.2.3",
     "request": "^2.72.0",
     "request-promise-native": "^1.0.5",
     "sharp": "^0.25.0",
