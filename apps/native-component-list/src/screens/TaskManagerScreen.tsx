@@ -8,10 +8,6 @@ import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
-interface State {
-  tasks?: TaskManager.RegisteredTask[];
-}
-
 export default function TaskManagerScreen(props: {
   navigation: StackNavigationProp<{
     BackgroundLocationMap: undefined;
