@@ -530,9 +530,10 @@ jobs:
       - update_submodules
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
-          working_directory: ~/expo/tools/expotools
+          working_directory: ~/project/tools/expotools
       - attach_workspace:
           at: android/app/build/outputs/apk
+      - bundle_install
       - run: expotools client-build --platform android --release
 
   client_android_release_google_play:
