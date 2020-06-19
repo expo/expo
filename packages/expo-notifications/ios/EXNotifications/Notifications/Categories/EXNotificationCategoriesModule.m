@@ -75,16 +75,18 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
                  resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
   NSString *internalCategoryId = [self internalIdForIdentifier:categoryId];
+  __block NSNumber *didDelete = [NSNumber numberWithBool:NO];
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     for (UNNotificationCategory *category in newCategories) {
       if ([category.identifier isEqualToString:internalCategoryId]) {
         [newCategories removeObject:category];
+        didDelete = [NSNumber numberWithBool:YES];
         break;
       }
     }
     [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
-    resolve(nil);
+    resolve(didDelete);
   }];
 }
 
@@ -99,52 +101,75 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
 
 - (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
 {
-  NSString *actionId = [self internalIdForIdentifier:params[@"actionId"]];
+  NSString *identifier = [self internalIdForIdentifier:params[@"identifier"]];
   NSString *buttonTitle = params[@"buttonTitle"];
-
+  //NSDictionary *actionOptions = params[@"options"];
   UNNotificationActionOptions options = UNNotificationActionOptionNone;
-  if (![params[@"doNotOpenInForeground"] boolValue]) {
+  if (![params[@"options"][@"doNotOpenInForeground"] boolValue]) {
     options += UNNotificationActionOptionForeground;
   }
-  if ([params[@"isDestructive"] boolValue]) {
+  if ([params[@"options"][@"isDestructive"] boolValue]) {
     options += UNNotificationActionOptionDestructive;
   }
-  if ([params[@"isAuthenticationRequired"] boolValue]) {
+  if ([params[@"options"][@"isAuthenticationRequired"] boolValue]) {
     options += UNNotificationActionOptionAuthenticationRequired;
   }
 
   if ([params[@"textInput"] isKindOfClass:[NSDictionary class]]) {
-    return [UNTextInputNotificationAction actionWithIdentifier:actionId
+    return [UNTextInputNotificationAction actionWithIdentifier:identifier
                                                          title:buttonTitle
                                                        options:options
                                           textInputButtonTitle:params[@"textInput"][@"submitButtonTitle"]
                                           textInputPlaceholder:params[@"textInput"][@"placeholder"]];
   }
 
-  return [UNNotificationAction actionWithIdentifier:actionId title:buttonTitle options:options];
+  return [UNNotificationAction actionWithIdentifier:identifier title:buttonTitle options:options];
 }
 
 - (NSMutableDictionary *)parseCategoryToJson:(UNNotificationCategory *)category
 {
   NSMutableDictionary* parsedCategory = [NSMutableDictionary dictionary];
+  parsedCategory[@"identifier"] = category.identifier;
+  parsedCategory[@"actions"] = [self parseActions: category.actions];
   if (@available(iOS 11, *)) {
     parsedCategory[@"hiddenPreviewsBodyPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
   }
-  parsedCategory[@"actions"] = [self parseActionIdAndTitle: category.actions];
-  parsedCategory[@"identifier"] = category.identifier;
   return parsedCategory;
 }
 
-- (NSMutableArray *)parseActionIdAndTitle:(NSArray<UNNotificationAction *> *)actions
+- (NSMutableArray *)parseActions:(NSArray *)actions
 {
   NSMutableArray* parsedActions = [NSMutableArray new];
-  for (UNNotificationAction *action in actions) {
+  for (NSUInteger i = 0; i < [actions count]; i++)
+  {
     NSMutableDictionary *actionDictionary = [NSMutableDictionary dictionary];
-    actionDictionary[@"title"] = action.title;
-    actionDictionary[@"identifier"] = action.identifier;
+    if ([actions[i] isKindOfClass:[UNTextInputNotificationAction class]]) {
+      UNTextInputNotificationAction *action = actions[i];
+      NSMutableDictionary *textInputOptions = [NSMutableDictionary dictionary];
+      textInputOptions[@"placeholder"] = action.textInputPlaceholder;
+      textInputOptions[@"submitButtonTitle"] = action.textInputButtonTitle;
+      actionDictionary[@"textInput"] = textInputOptions;
+      actionDictionary[@"buttonTitle"] = action.title;
+      actionDictionary[@"identifier"] = action.identifier;
+      actionDictionary[@"options"] = [self parseOptions:action.options];
+    } else {
+      UNNotificationAction *action = actions[i];
+      actionDictionary[@"buttonTitle"] = action.title;
+      actionDictionary[@"identifier"] = action.identifier;
+      actionDictionary[@"options"] = [self parseOptions:action.options];
+    }
     [parsedActions addObject:actionDictionary];
   }
   return parsedActions;
+}
+
+- (NSMutableDictionary *)parseOptions:(NSUInteger)options
+{
+  NSMutableDictionary* parsedOptions = [NSMutableDictionary dictionary];
+  parsedOptions[@"doNotOpenInForeground"] =  [NSNumber numberWithBool:((options & UNNotificationActionOptionForeground) == 0)];
+  parsedOptions[@"isDestructive"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionDestructive) != 0)];
+  parsedOptions[@"isAuthenticationRequired"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionAuthenticationRequired) != 0)];
+  return parsedOptions;
 }
 
 @end

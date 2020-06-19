@@ -248,19 +248,21 @@ export interface NotificationBehavior {
 }
 
 export interface NotificationAction {
-  actionId: string;
+  identifier: string;
   buttonTitle: string;
   textInput?: {
     submitButtonTitle: string;
     placeholder: string;
   };
-  isDestructive?: boolean;
-  isAuthenticationRequired?: boolean;
-  doNotOpenInForeground?: boolean;
+  options: {
+    isDestructive?: boolean;
+    isAuthenticationRequired?: boolean;
+    doNotOpenInForeground?: boolean;
+  };
 }
 
 export interface NotificationCategory {
   identifier: string;
-  actionIds: string[];
+  actions: NotificationAction[];
   hiddenPreviewsBodyPlaceholder?: string;
 }

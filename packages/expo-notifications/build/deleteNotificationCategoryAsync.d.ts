@@ -1,1 +1,1 @@
-export default function deleteNotificationCategoryAsync(identifier: string): Promise<void>;
+export default function deleteNotificationCategoryAsync(identifier: string): Promise<boolean>;
