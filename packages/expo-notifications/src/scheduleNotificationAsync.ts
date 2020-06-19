@@ -1,3 +1,4 @@
+import { UnavailabilityError } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 
 import NotificationScheduler from './NotificationScheduler';
@@ -13,6 +14,10 @@ import {
 export default async function scheduleNotificationAsync(
   request: NotificationRequestInput
 ): Promise<string> {
+  if (!NotificationScheduler.scheduleNotificationAsync) {
+    throw new UnavailabilityError('Notifications', 'scheduleNotificationAsync');
+  }
+
   return await NotificationScheduler.scheduleNotificationAsync(
     request.identifier ?? uuidv4(),
     request.content,
