@@ -58,6 +58,13 @@ const linking = {
       path: '',
       initialRouteName: 'test-suite',
       screens: {
+        'test-suite': {
+          path: 'test-suite',
+          screens: {
+            select: '',
+            run: '/run',
+          },
+        },
         apis: {
           initialRouteName: 'ExpoApis',
           screens: {
