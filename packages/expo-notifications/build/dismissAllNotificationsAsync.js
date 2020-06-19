@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import NotificationPresenter from './NotificationPresenter';
+import NotificationPresenter from './NotificationPresenterModule';
 export default async function dismissAllNotificationsAsync() {
     if (!NotificationPresenter.dismissAllNotificationsAsync) {
         throw new UnavailabilityError('Notifications', 'dismissAllNotificationsAsync');

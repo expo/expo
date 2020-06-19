@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import NotificationPresenter from './NotificationPresenter';
+import NotificationPresenter from './NotificationPresenterModule';
 import { Notification } from './Notifications.types';
 
 export default async function getPresentedNotificationsAsync(): Promise<Notification[]> {
