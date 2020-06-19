@@ -11,6 +11,12 @@ class UnimodulesPlugin implements Plugin<Project> {
             }
         }
 
+        project.configurations.configureEach {
+            if (it.getName().startsWith('test') && project.file('./src/test').exists()) {
+                project.dependencies.add(it.getName(), project.project(':unimodules-test-core'))
+            }
+        }
+
         project.ext.unimodule = {
             String dep, Closure closure = null ->
                 Object dependency = null;
