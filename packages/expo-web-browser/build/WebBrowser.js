@@ -126,7 +126,7 @@ let _onWebBrowserCloseAndroid = null;
 // If the initial AppState.currentState is null, we assume that the first call to
 // AppState#change event is not actually triggered by a real change,
 // is triggered instead by the bridge capturing the current state
-// (https://facebook.github.io/react-native/docs/appstate#basic-usage)
+// (https://reactnative.dev/docs/appstate#basic-usage)
 let _isAppStateAvailable = AppState.currentState !== null;
 function _onAppStateChangeAndroid(state) {
     if (!_isAppStateAvailable) {

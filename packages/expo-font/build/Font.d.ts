@@ -26,7 +26,7 @@ export declare function isLoaded(fontFamily: string): boolean;
 export declare function isLoading(fontFamily: string): boolean;
 /**
  * Natively load a font for use with Text elements.
- * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://facebook.github.io/react-native/docs/text#style) style prop with React Native Text elements.
+ * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://reactnative.dev/docs/text#style) style prop with React Native Text elements.
  * @param source the font asset that should be loaded into the `fontFamily` namespace.
  */
 export declare function loadAsync(fontFamilyOrFontMap: string | {
