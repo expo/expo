@@ -63,7 +63,6 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
     screen.navigationOptions = {
       title: screen.title,
     };
-    // console.log('entry: ', screen.title);
     return {
       ...prev,
       [screenName]: screen,
