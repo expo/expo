@@ -617,7 +617,31 @@ export async function test(t) {
         },
         textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
       };
-      const allTestCategoryIds = ['categoryIdNumber1', 'categoryIdNumber2'];
+      const testCategory1 = {
+        identifier: 'testNotificationCategory1',
+        actions: [vanillaButton],
+        options: {
+          previewPlaceholder: 'preview goes here',
+          customDismissAction: false,
+          allowInCarPlay: false,
+          showTitle: false,
+          showSubtitle: false,
+          allowAnnouncement: false,
+        },
+      };
+      const testCategory2 = {
+        identifier: 'testNotificationCategory2',
+        actions: [vanillaButton, textResponseButton],
+        options: {
+          customDismissAction: false,
+          allowInCarPlay: false,
+          showTitle: true,
+          showSubtitle: true,
+          allowAnnouncement: false,
+        },
+      };
+
+      const allTestCategoryIds = ['testNotificationCategory1', 'testNotificationCategory2'];
 
       t.describe('getNotificationCategoriesAsync()', () => {
         t.afterEach(async () => {
@@ -626,15 +650,34 @@ export async function test(t) {
           });
         });
         t.it('returns an empty array if there are no categories', async () => {
-          alert(JSON.stringify(await Notifications.getNotificationCategoriesAsync()));
           t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(0);
         });
 
         t.it('returns an array with the just-created categories', async () => {
-          await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
-            textResponseButton,
-          ]);
-          await Notifications.setNotificationCategoryAsync('categoryIdNumber2', [vanillaButton]);
+          await Notifications.setNotificationCategoryAsync(
+            'testNotificationCategory1',
+            [vanillaButton],
+            {
+              previewPlaceholder: 'preview goes here',
+              customDismissAction: false,
+              allowInCarPlay: false,
+              showTitle: false,
+              showSubtitle: false,
+              allowAnnouncment: false,
+            }
+          );
+          await Notifications.setNotificationCategoryAsync(
+            'testNotificationCategory2',
+            [vanillaButton, textResponseButton],
+            {
+              intentIdentifiers: ['testIdentifier'],
+              customDismissAction: true,
+              allowInCarPlay: false,
+              showTitle: true,
+              showSubtitle: false,
+              allowAnnouncment: false,
+            }
+          );
           t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(2);
         });
       });
@@ -646,28 +689,36 @@ export async function test(t) {
           });
         });
         t.it('creates a category with one action successfully', async () => {
-          t.expect(
-            await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
-              textResponseButton,
-            ])
-          ).toEqual({
-            identifier: 'categoryIdNumber1',
-            actions: [textResponseButton],
-          });
-          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(1);
+          const resultCategory = await Notifications.setNotificationCategoryAsync(
+            'testNotificationCategory1',
+            [vanillaButton],
+            {
+              previewPlaceholder: 'preview goes here',
+              customDismissAction: false,
+              allowInCarPlay: false,
+              showTitle: false,
+              showSubtitle: false,
+              allowAnnouncment: false,
+            }
+          );
+
+          t.expect(resultCategory).toEqual(testCategory1);
         });
 
         t.it('creates a category with two actions successfully', async () => {
-          t.expect(
-            await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
-              textResponseButton,
-              vanillaButton,
-            ])
-          ).toEqual({
-            identifier: 'categoryIdNumber1',
-            actions: [textResponseButton, vanillaButton],
-          });
-          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(1);
+          const resultCategory = await Notifications.setNotificationCategoryAsync(
+            'testNotificationCategory2',
+            [vanillaButton, textResponseButton],
+            {
+              customDismissAction: false,
+              allowInCarPlay: false,
+              showTitle: true,
+              showSubtitle: true,
+              allowAnnouncment: false,
+            }
+          );
+
+          t.expect(resultCategory).toEqual(t.jasmine.objectContaining(testCategory2));
         });
       });
 
@@ -687,19 +738,50 @@ export async function test(t) {
         });
 
         t.it('deleting a category that does exist returns true', async () => {
-          await Notifications.setNotificationCategoryAsync('categoryIdNumber2', [vanillaButton]);
-          t.expect(await Notifications.deleteNotificationCategoryAsync('categoryIdNumber1')).toBe(
-            true
+          await Notifications.setNotificationCategoryAsync(
+            'testNotificationCategory2',
+            [vanillaButton, textResponseButton],
+            {
+              intentIdentifiers: ['testIdentifier'],
+              customDismissAction: true,
+              allowInCarPlay: false,
+              showTitle: true,
+              showSubtitle: false,
+              allowAnnouncment: false,
+            }
           );
+          t.expect(
+            await Notifications.deleteNotificationCategoryAsync('testNotificationCategory2')
+          ).toBe(true);
         });
 
         t.it('returns an array of length 1 after creating 2 categories & deleting 1', async () => {
-          await Notifications.setNotificationCategoryAsync('categoryIdNumber1', [
-            textResponseButton,
-          ]);
-          await Notifications.setNotificationCategoryAsync('categoryIdNumber2', [vanillaButton]);
+          await Notifications.setNotificationCategoryAsync(
+            'testNotificationCategory1',
+            [vanillaButton],
+            {
+              previewPlaceholder: 'preview goes here',
+              customDismissAction: false,
+              allowInCarPlay: false,
+              showTitle: false,
+              showSubtitle: false,
+              allowAnnouncment: false,
+            }
+          );
+          await Notifications.setNotificationCategoryAsync(
+            'testNotificationCategory2',
+            [vanillaButton, textResponseButton],
+            {
+              intentIdentifiers: ['testIdentifier'],
+              customDismissAction: true,
+              allowInCarPlay: false,
+              showTitle: true,
+              showSubtitle: false,
+              allowAnnouncment: false,
+            }
+          );
           const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
-          await Notifications.deleteNotificationCategoryAsync('categoryIdNumber1');
+          await Notifications.deleteNotificationCategoryAsync('testNotificationCategory1');
           const categoriesAfter = await Notifications.getNotificationCategoriesAsync();
           t.expect(categoriesBefore.length - 1).toEqual(categoriesAfter.length);
         });
