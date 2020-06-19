@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Do not publish native tests to npm. Fix native android dependencies used in tests - kotlin and testing libraries. ([#8881](https://github.com/expo/expo/pull/8881) by [@mczernek](https://github.com/mczernek))
+
 ## 8.3.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
