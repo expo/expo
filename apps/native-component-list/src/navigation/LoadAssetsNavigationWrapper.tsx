@@ -35,6 +35,9 @@ export default function LoadAssetsNavigationWrapper<T>(InnerNavigator: React.FC<
     );
   }
 
+  // @ts-ignore: navigationOptions
+  LoadAssetsCustomNavigator.navigationOptions = InnerNavigator.navigationOptions;
+
   return LoadAssetsCustomNavigator;
 }
 

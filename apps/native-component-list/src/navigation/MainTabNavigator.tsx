@@ -25,7 +25,12 @@ export default () => (
       inactiveTintColor: Colors.tabIconDefault,
     }}>
     {Object.keys(Screens).map(name => (
-      <Tab.Screen name={name} key={name} component={Screens[name]} />
+      <Tab.Screen
+        name={name}
+        key={name}
+        component={Screens[name]}
+        options={Screens[name].navigationOptions}
+      />
     ))}
   </Tab.Navigator>
 );

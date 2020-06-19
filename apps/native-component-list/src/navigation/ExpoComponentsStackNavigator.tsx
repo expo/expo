@@ -12,15 +12,6 @@ import StackConfig from './StackConfig';
 const Stack = createStackNavigator();
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
-  React.useLayoutEffect(() => {
-    props.navigation.setOptions({
-      title: 'Expo Components',
-      tabBarLabel: 'Components',
-      tabBarIcon: ({ focused }: { focused: boolean }) => {
-        return <TabIcon name="cards-playing-outline" focused={focused} />;
-      },
-    });
-  }, [props.navigation]);
   return (
     <Stack.Navigator {...props} {...StackConfig}>
       <Stack.Screen
@@ -39,4 +30,11 @@ function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationPr
     </Stack.Navigator>
   );
 }
+ExpoComponentsStackNavigator.navigationOptions = {
+  title: 'Expo Components',
+  tabBarLabel: 'Components',
+  tabBarIcon: ({ focused }: { focused: boolean }) => {
+    return <TabIcon name="cards-playing-outline" focused={focused} />;
+  },
+};
 export default LoadAssetsNavigationWrapper(ExpoComponentsStackNavigator);

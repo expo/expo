@@ -9,15 +9,6 @@ import StackConfig from './StackConfig';
 const Stack = createStackNavigator();
 
 function ReactNativeCoreStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
-  React.useLayoutEffect(() => {
-    props.navigation.setOptions({
-      title: 'React Native Core',
-      tabBarLabel: 'React Native',
-      tabBarIcon: ({ focused }: { focused: boolean }) => {
-        return <TabIcon name="react" focused={focused} />;
-      },
-    });
-  }, [props.navigation]);
   return (
     <Stack.Navigator {...props} {...StackConfig}>
       <Stack.Screen
@@ -28,4 +19,11 @@ function ReactNativeCoreStackNavigator(props: { navigation: BottomTabNavigationP
     </Stack.Navigator>
   );
 }
+ReactNativeCoreStackNavigator.navigationOptions = {
+  title: 'React Native Core',
+  tabBarLabel: 'React Native',
+  tabBarIcon: ({ focused }: { focused: boolean }) => {
+    return <TabIcon name="react" focused={focused} />;
+  },
+};
 export default ReactNativeCoreStackNavigator;

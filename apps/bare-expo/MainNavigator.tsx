@@ -94,11 +94,7 @@ function TabNavigator() {
           name={name}
           key={name}
           component={routes[name]}
-          options={() => {
-            return {
-              title: `Load: ${name}`,
-            };
-          }}
+          options={routes[name].navigationOptions}
         />
       ))}
     </Tab.Navigator>

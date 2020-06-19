@@ -11,16 +11,6 @@ import StackConfig from './StackConfig';
 const Stack = createStackNavigator();
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
-  React.useLayoutEffect(() => {
-    props.navigation.setOptions({
-      title: 'Expo APIs',
-      tabBarLabel: 'APIs',
-      tabBarIcon: ({ focused }: { focused: boolean }) => {
-        return <TabIcon name="exponent-box" focused={focused} />;
-      },
-    });
-  }, [props.navigation]);
-
   return (
     <Stack.Navigator {...props} {...StackConfig}>
       <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
@@ -35,4 +25,12 @@ function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any
     </Stack.Navigator>
   );
 }
+ExpoApisStackNavigator.navigationOptions = {
+  title: 'Expo APIs',
+  tabBarLabel: 'APIs',
+  tabBarIcon: ({ focused }: { focused: boolean }) => {
+    return <TabIcon name="exponent-box" focused={focused} />;
+  },
+};
+
 export default LoadAssetsNavigationWrapper(ExpoApisStackNavigator);
