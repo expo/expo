@@ -324,7 +324,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
   }
 
   private void executeTaskWithLocationBundles(ArrayList<Bundle> locationBundles, TaskExecutionCallback callback) {
-    if (locationBundles.size() > 0) {
+    if (locationBundles.size() > 0 && mTask != null) {
       Bundle data = new Bundle();
       data.putParcelableArrayList("locations", locationBundles);
       mTask.execute(data, null, callback);
