@@ -1,3 +1,5 @@
-import { NativeModulesProxy } from '@unimodules/core';
-export default NativeModulesProxy.ExpoNotificationPermissionsModule;
+export default {
+    addListener: () => { },
+    removeListeners: () => { },
+};
 //# sourceMappingURL=NotificationPermissionsModule.js.map

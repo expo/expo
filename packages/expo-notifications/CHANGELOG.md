@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed total incompatibility with the web platform – calling unsupported methods will now throw a readable `UnavailabilityError`. ([#8853](https://github.com/expo/expo/pull/8853) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 0.3.2 — 2020-06-10
 
 ### 🐛 Bug fixes

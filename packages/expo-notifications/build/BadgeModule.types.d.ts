@@ -3,7 +3,7 @@ import { Options as BadginOptions } from 'badgin';
 export declare type WebSetBadgeCountOptions = BadginOptions;
 declare type SetBadgeCountOptions = WebSetBadgeCountOptions | undefined;
 export interface BadgeModule extends ProxyNativeModule {
-    getBadgeCountAsync: () => Promise<number>;
-    setBadgeCountAsync: (badgeCount: number, options: SetBadgeCountOptions) => Promise<boolean>;
+    getBadgeCountAsync?: () => Promise<number>;
+    setBadgeCountAsync?: (badgeCount: number, options: SetBadgeCountOptions) => Promise<boolean>;
 }
 export {};
