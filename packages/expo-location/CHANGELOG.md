@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Added some safety cheks to prevent NullPointerExceptions in background location on Android. ([#8864](https://github.com/expo/expo/pull/8864) by [@mczernek](https://github.com/mczernek))
+- Added some safety checks to prevent NullPointerExceptions in background location on Android. ([#8864](https://github.com/expo/expo/pull/8864) by [@mczernek](https://github.com/mczernek))
 
 ## 8.2.1 — 2020-05-29
 
