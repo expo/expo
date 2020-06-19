@@ -42,16 +42,6 @@ const sortByStates: { [key in MediaLibrary.SortByKey]: MediaLibrary.SortByKey } 
   [MediaLibrary.SortBy.duration]: MediaLibrary.SortBy.default,
 };
 
-interface State {
-  assets: MediaLibrary.Asset[];
-  endCursor?: string;
-  hasNextPage?: boolean;
-  permission?: Permissions.PermissionStatus;
-  refreshing: boolean;
-  mediaType: MediaLibrary.MediaTypeValue;
-  sortBy: MediaLibrary.SortByKey;
-}
-
 type Links = {
   MediaLibrary: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
   MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
@@ -62,104 +52,168 @@ type Props = { navigation: StackNavigationProp<Links>; route: RouteProp<Links, '
 
 type FetchState = {
   refreshing: boolean;
+  fetching: boolean;
   assets: MediaLibrary.Asset[];
   endCursor: string | null;
-  hasNextPage: boolean | null;
+  hasNextPage: boolean;
 };
 
 const initialState: FetchState = {
   refreshing: true,
+  fetching: true,
   assets: [],
   endCursor: null,
-  hasNextPage: null,
+  hasNextPage: true,
 };
 
 function reducer(
   state: FetchState,
-  action:
-    | ({ type: 'reset' } & Pick<FetchState, 'refreshing'>)
-    | ({ type: 'fetched' } & Omit<FetchState, 'refreshing'>)
+  {
+    type,
+    ...action
+  }: ({ type: 'reset' } & Partial<FetchState>) | ({ type: 'update' } & Partial<FetchState>)
 ): FetchState {
-  switch (action.type) {
+  switch (type) {
     case 'reset':
-      return { ...initialState, refreshing: action.refreshing };
-    case 'fetched':
-      return { ...state, refreshing: false };
+      return { ...initialState, ...action };
+    case 'update':
+      return { ...state, ...action };
   }
 }
 
 export default function MediaLibraryScreen({ navigation, route }: Props) {
   const album = route.params?.album;
 
-  const [permission] = usePermissions(Permissions.CAMERA_ROLL, { ask: true });
-  const [state, dispatch] = React.useReducer(reducer, initialState);
-  const [sortBy, setSortBy] = React.useState<MediaLibrary.SortByKey>(MediaLibrary.SortBy.default);
+  // Set the navigation options
+  React.useLayoutEffect(() => {
+    const goToAlbums = () => navigation.navigate('MediaAlbums');
+    const clearAlbumSelection = () => navigation.setParams({ album: null });
 
+    navigation.setOptions({
+      title: 'Media Library',
+      headerRight: () => (
+        <View style={{ marginRight: 5 }}>
+          <RNButton
+            title={album ? 'Show all' : 'Albums'}
+            onPress={album ? clearAlbumSelection : goToAlbums}
+            color={Colors.tintColor}
+          />
+        </View>
+      ),
+    });
+  }, [album, navigation]);
+
+  // Ensure the permissions are granted.
+  const [permission] = usePermissions(Permissions.CAMERA_ROLL, { ask: true });
+
+  if (!permission) {
+    return null;
+  }
+  if (!permission.granted) {
+    return (
+      <View style={styles.permissions}>
+        <Text>
+          Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access in
+          Settings.
+        </Text>
+      </View>
+    );
+  }
+
+  return <MediaLibraryView navigation={navigation} route={route} />;
+}
+
+// The fetching and sorting logic is split out from the navigation and permission logic for simplicity.
+function MediaLibraryView({ navigation, route }: Props) {
+  const album = route.params?.album;
+
+  const isLoadingAssets = React.useRef(false);
+
+  const [sortBy, setSortBy] = React.useState<MediaLibrary.SortByKey>(MediaLibrary.SortBy.default);
   const [mediaType, setMediaType] = React.useState<MediaLibrary.MediaTypeValue>(
     MediaLibrary.MediaType.photo
   );
 
-  const isLoadingAssets = React.useRef(false);
+  const [state, dispatch] = React.useReducer(reducer, initialState);
 
-  const loadMoreAssets = React.useCallback(
-    async (currentAssets = state.assets, cursor = state.endCursor) => {
-      if (isLoadingAssets.current || (cursor === state.endCursor && state.hasNextPage === false)) {
-        return;
-      }
+  // Update without showing the refresh indicator whenever the sorting parameters change.
+  React.useEffect(() => {
+    dispatch({ type: 'reset', refreshing: false });
+  }, [mediaType, sortBy, album?.id]);
 
-      isLoadingAssets.current = true;
+  const toggleMediaType = React.useCallback(() => {
+    setMediaType(mediaTypeStates[mediaType]);
+  }, [setMediaType, mediaType]);
 
-      const {
-        assets,
-        endCursor: nextEndCursor,
-        hasNextPage: nextHasNextPage,
-      } = await MediaLibrary.getAssetsAsync({
+  const toggleSortBy = React.useCallback(() => {
+    setSortBy(sortByStates[sortBy]);
+  }, [setSortBy, sortBy]);
+
+  const loadMoreAssets = React.useCallback(async () => {
+    if (
+      // if a fetch operation is still in progress or there are no more assets then bail out.
+      isLoadingAssets.current ||
+      !state.hasNextPage
+    ) {
+      return;
+    }
+    // Prevent fetching while another request is still in progress.
+    isLoadingAssets.current = true;
+
+    try {
+      // Make a native request for assets.
+      const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
         first: PAGE_SIZE,
-        after: cursor ?? undefined,
+        after: state.endCursor ?? undefined,
         mediaType,
         sortBy,
         album: album?.id,
       });
 
-      const lastAsset = currentAssets[currentAssets.length - 1];
+      // Get the last asset currently in the state.
+      const lastAsset = state.assets[state.assets.length - 1];
 
-      if (!lastAsset || lastAsset.id === cursor) {
+      const shouldUpdateState = !lastAsset || lastAsset.id === state.endCursor;
+      // Guard against updating on an unmounted component.
+      if (shouldUpdateState) {
         dispatch({
-          type: 'fetched',
-          assets: ([] as MediaLibrary.Asset[]).concat(currentAssets, assets),
-          endCursor: nextEndCursor,
-          hasNextPage: nextHasNextPage,
+          type: 'update',
+          fetching: false,
+          refreshing: false,
+          assets: ([] as MediaLibrary.Asset[]).concat(state.assets, assets),
+          endCursor,
+          hasNextPage,
         });
       }
-
+    } finally {
+      // Toggle this back to false in a finally to ensure we can reload later, even if an error ocurred.
       isLoadingAssets.current = false;
-    },
-    [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, album?.id]
-  );
+    }
+  }, [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, album?.id]);
 
-  const refresh = React.useCallback(
-    (refreshingFlag = true) => {
-      dispatch({ type: 'reset', refreshing: refreshingFlag });
+  // Fetch data whenever the state.fetching value is true.
+  React.useEffect(() => {
+    if (state.fetching) {
       loadMoreAssets();
-    },
-    [loadMoreAssets]
+    }
+  }, [loadMoreAssets, state.fetching]);
+
+  const refresh = React.useCallback((refreshing = true) => {
+    dispatch({ type: 'reset', refreshing });
+  }, []);
+
+  // Subscribe to state changes
+  useFocusEffect(
+    React.useCallback(() => {
+      // When new media is added or removed, update the library
+      const subscription = MediaLibrary.addListener(() => {
+        dispatch({ type: 'update', fetching: true, endCursor: null, hasNextPage: true });
+      });
+      return () => {
+        subscription.remove();
+      };
+    }, [])
   );
-
-  const toggleMediaType = React.useCallback(() => {
-    setMediaType(mediaTypeStates[mediaType]);
-    refresh(false);
-  }, [mediaType, setMediaType, refresh]);
-
-  const toggleSortBy = React.useCallback(() => {
-    setSortBy(sortByStates[sortBy]);
-    refresh(false);
-  }, [sortBy, setSortBy, refresh]);
-
-  const keyExtractor = (item: MediaLibrary.Asset) => item.id;
-
-  const onEndReached = () => {
-    loadMoreAssets();
-  };
 
   const onCellPress = React.useCallback(
     (asset: MediaLibrary.Asset) => {
@@ -222,30 +276,11 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     return null;
   }, [state.refreshing, state.assets, mediaType]);
 
-  const onFocus = React.useCallback(() => {
-    dispatch({ type: 'reset', refreshing: true });
-    loadMoreAssets();
-    const libraryChangeSubscription = MediaLibrary.addListener(() => {
-      loadMoreAssets([]);
-    });
-    return () => libraryChangeSubscription.remove();
-  }, [loadMoreAssets]);
+  const keyExtractor = (item: MediaLibrary.Asset) => item.id;
 
-  useFocusEffect(onFocus);
-
-  if (!permission) {
-    return null;
-  }
-  if (!permission.granted) {
-    return (
-      <View style={styles.permissions}>
-        <Text>
-          Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access in
-          Settings.
-        </Text>
-      </View>
-    );
-  }
+  const onEndReached = React.useCallback(() => {
+    dispatch({ type: 'update', fetching: true });
+  }, []);
 
   return (
     <FlatList
@@ -262,25 +297,6 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     />
   );
 }
-
-MediaLibraryScreen.navigationOptions = ({ navigation, route }: Props) => {
-  const goToAlbums = () => navigation.navigate('MediaAlbums');
-  const clearAlbumSelection = () => navigation.setParams({ album: null });
-  const isAlbumSet = route.params.album;
-
-  return {
-    title: 'MediaLibrary',
-    headerRight: (
-      <View style={{ marginRight: 5 }}>
-        <RNButton
-          title={isAlbumSet ? 'Show all' : 'Albums'}
-          onPress={isAlbumSet ? clearAlbumSelection : goToAlbums}
-          color={Colors.tintColor}
-        />
-      </View>
-    ),
-  };
-};
 
 const styles = StyleSheet.create({
   mediaGallery: {
