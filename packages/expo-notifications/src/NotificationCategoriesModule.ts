@@ -1,13 +1,22 @@
 import { NativeModulesProxy, ProxyNativeModule } from '@unimodules/core';
 
-import { NotificationAction, NotificationCategory } from './Notifications.types';
+import { NotificationCategory } from './Notifications.types';
 
 export interface NotificationCategoriesModule extends ProxyNativeModule {
   getNotificationCategoriesAsync: () => Promise<NotificationCategory[]>;
   setNotificationCategoryAsync: (
-    name: string,
+    identifier: string,
     actions: NotificationAction[],
-    previewPlaceholder?: string
+    options?: {
+      previewPlaceholder?: string;
+      intentIdentifiers?: string[];
+      categorySummaryFormat?: string;
+      customDismissAction?: boolean;
+      allowInCarPlay?: boolean;
+      showTitle?: boolean;
+      showSubtitle?: boolean;
+      allowAnnouncment?: boolean;
+    }
   ) => Promise<NotificationCategory>;
   deleteNotificationCategoryAsync: (identifier: string) => Promise<boolean>;
 }

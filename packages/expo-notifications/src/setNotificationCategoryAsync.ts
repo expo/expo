@@ -1,22 +1,27 @@
 import { UnavailabilityError, Platform } from '@unimodules/core';
 
 import NotificationCategoriesModule from './NotificationCategoriesModule';
-import { NotificationAction, NotificationCategory } from './Notifications.types';
+import { NotificationCategory } from './Notifications.types';
 
 export default async function setNotificationCategoryAsync(
-  name: string,
+  identifier: string,
   actions: NotificationAction[],
-  previewPlaceholder?: string
+  options?: {
+    previewPlaceholder?: string;
+    intentIdentifiers?: string[];
+    categorySummaryFormat?: string;
+    customDismissAction?: boolean;
+    allowInCarPlay?: boolean;
+    showTitle?: boolean;
+    showSubtitle?: boolean;
+    allowAnnouncment?: boolean;
+  }
 ): Promise<NotificationCategory> {
   if (!NotificationCategoriesModule.setNotificationCategoryAsync) {
     throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
   }
 
   return Platform.OS === 'ios'
-    ? await NotificationCategoriesModule.setNotificationCategoryAsync(
-        name,
-        actions,
-        previewPlaceholder
-      )
-    : await NotificationCategoriesModule.setNotificationCategoryAsync(name, actions);
+    ? await NotificationCategoriesModule.setNotificationCategoryAsync(identifier, actions, options)
+    : await NotificationCategoriesModule.setNotificationCategoryAsync(identifier, actions);
 }

@@ -264,5 +264,14 @@ export interface NotificationAction {
 export interface NotificationCategory {
   identifier: string;
   actions: NotificationAction[];
-  hiddenPreviewsBodyPlaceholder?: string;
+  options?: {
+    previewPlaceholder?: string;
+    intentIdentifiers?: string[];
+    categorySummaryFormat?: string;
+    customDismissAction?: boolean;
+    allowInCarPlay?: boolean;
+    showTitle?: boolean;
+    showSubtitle?: boolean;
+    allowAnnouncment?: boolean;
+  };
 }
