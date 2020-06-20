@@ -79,7 +79,7 @@ You may have noticed that when we ran `expo publish` the CLI warned us about opt
 
 Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.io/@notbrent/blearexp](https://expo.io/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
 
-On iOS, you can only open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), then your teammates can open your projects as well. Another option to be able to open any published managed app from within the Expo client is to do a custom build of the Expo iOS client. [Read more about that here](../../guides/adhoc-builds/).
+On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app from within the Expo client is to do a custom build of the Expo iOS client. [Read more about that here](../../guides/adhoc-builds/).
 
 ## Building and deploying
 
