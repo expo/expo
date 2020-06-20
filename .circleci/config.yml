@@ -525,7 +525,7 @@ jobs:
           slack_webhook: $SLACK_ANDROID_WEBHOOK
 
   client_android_apk_release:
-    executor: js
+    executor: android
     steps:
       - setup
       - run: sudo apt-get install rsync
