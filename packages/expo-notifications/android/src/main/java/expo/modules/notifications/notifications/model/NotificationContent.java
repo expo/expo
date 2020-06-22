@@ -31,6 +31,7 @@ public class NotificationContent implements Parcelable, Serializable {
   private NotificationPriority mPriority;
   private Number mColor;
   private boolean mAutoDismiss;
+  private String mCategoryId;
 
   protected NotificationContent() {
   }
@@ -104,6 +105,10 @@ public class NotificationContent implements Parcelable, Serializable {
     return mAutoDismiss;
   }
 
+  public String getCategoryId() {
+    return mCategoryId;
+  }
+
   @Override
   public int describeContents() {
     return 0;
@@ -129,6 +134,7 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readSerializable();
     mAutoDismiss = in.readByte() == 1;
+    mCategoryId = in.readString();
   }
 
   @Override
@@ -145,6 +151,7 @@ public class NotificationContent implements Parcelable, Serializable {
     dest.writeSerializable(mPriority != null ? mPriority.getNativeValue() : null);
     dest.writeSerializable(mColor);
     dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
+    dest.writeString(mCategoryId);
   }
 
   //                                           EXPONOTIFCONTENT02
@@ -170,6 +177,7 @@ public class NotificationContent implements Parcelable, Serializable {
     out.writeObject(mPriority != null ? mPriority.getNativeValue() : null);
     out.writeObject(mColor);
     out.writeByte(mAutoDismiss ? 1 : 0);
+    out.writeObject(mCategoryId);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -210,6 +218,7 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readObject();
     mAutoDismiss = in.readByte() == 1;
+    mCategoryId = (String) in.readObject();
   }
 
   private void readObjectNoData() throws ObjectStreamException {
@@ -228,6 +237,7 @@ public class NotificationContent implements Parcelable, Serializable {
     private NotificationPriority mPriority;
     private Number mColor;
     private boolean mAutoDismiss;
+    private String mCategoryId;
 
     public Builder() {
       useDefaultSound();
@@ -298,6 +308,11 @@ public class NotificationContent implements Parcelable, Serializable {
       return this;
     }
 
+    public Builder setCategoryId(String categoryId) {
+      mCategoryId = categoryId;
+      return this;
+    }
+
     public NotificationContent build() {
       NotificationContent content = new NotificationContent();
       content.mTitle = mTitle;
@@ -312,6 +327,7 @@ public class NotificationContent implements Parcelable, Serializable {
       content.mPriority = mPriority;
       content.mColor = mColor;
       content.mAutoDismiss = mAutoDismiss;
+      content.mCategoryId = mCategoryId;
       return content;
     }
   }
