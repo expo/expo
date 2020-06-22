@@ -24,6 +24,7 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 
 /**
  * Implements an authorization request.
+ *
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
 export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
@@ -32,7 +33,6 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
    */
   public state: Promise<string> | string;
   public url: string | null = null;
-  // Public for testing
   public codeVerifier?: string;
   public codeChallenge?: string;
 

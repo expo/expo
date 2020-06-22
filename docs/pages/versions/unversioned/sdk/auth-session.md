@@ -126,6 +126,8 @@ When the prompt method completes then the response will be fulfilled.
 
 > 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](/guides/authentication#identity-4) for more info.
 
+If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()` to get a `TokenResponse` instance which you can use to easily refresh the token.
+
 #### Arguments
 
 - **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#authrequestconfig) that specifies what provider to use.
@@ -183,6 +185,46 @@ Fetch a `DiscoveryDocument` from a well-known resource provider that supports au
 #### Returns
 
 - **discovery (_DiscoveryDocument_)** -- A discovery document that can be used for authentication.
+
+### `AuthSession.exchangeCodeAsync()`
+
+Exchange an authorization code for an access token that can be used to get data from the provider.
+
+#### Arguments
+
+- **config (_TokenRequestConfig_)** -- Configuration used to exchange the code for a token.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument_)** -- A discovery document with a valid `tokenEndpoint` URL.
+
+### `AuthSession.refreshAsync()`
+
+Refresh an access token.
+
+- If the provider didn't return a `refresh_token` then the access token may not be refreshed.
+- If the provider didn't return a `expires_in` then it's assumed that the token does not expire.
+- Determine if a token needs refreshed via `TokenResponse.isTokenFresh()` or `shouldRefresh()` on an instance of `TokenResponse`.
+
+#### Arguments
+
+- **config (_TokenRequestConfig_)** -- Configuration used to refresh the given access token.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument_)** -- A discovery document with a valid `tokenEndpoint` URL.
+
+### `AuthSession.revokeAsync()`
+
+Revoke a token with a provider. This makes the token unusable, effectively requiring the user to login again.
+
+#### Arguments
+
+- **config (_RevokeTokenRequestConfig_)** -- Configuration used to revoke a refresh or access token.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument_)** -- A discovery document with a valid `revocationEndpoint` URL. Many providers do not support this feature.
 
 ### `AuthSession.startAsync(options)`
 
@@ -357,6 +399,30 @@ This can be used to present a dialog for switching accounts after the user has a
 | Consent       | Server should prompt the user for consent before returning information to the client.              | `consent_required`                       |
 | SelectAccount | Server should prompt the user to select an account. Can be used to switch accounts.                | `account_selection_required`             |
 
+### `GrantType`
+
+Grant type values used in dynamic client registration and auth requests.
+
+[Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
+
+| Name              | Description                                                       |
+| ----------------- | ----------------------------------------------------------------- |
+| AuthorizationCode | Used for exchanging an authorization code for one or more tokens. |
+| Implicit          | Used when obtaining an access token.                              |
+| RefreshToken      | Used when exchanging a refresh token for a new token.             |
+| ClientCredentials | Used for client credentials flow.                                 |
+
+### `TokenTypeHint`
+
+A hint about the type of the token submitted for revocation. If not included then the server should attempt to deduce the token type.
+
+[Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+
+| Name         | Description               |
+| ------------ | ------------------------- |
+| AccessToken  | Provided an access token. |
+| RefreshToken | Provided a refresh token. |
+
 ### `DiscoveryDocument`
 
 | Name                  | Type               | Description                                                          | Spec                                    |
@@ -368,6 +434,55 @@ This can be used to present a dialog for switching accounts after the user has a
 | endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.            | [OP Metadata][opmeta]                   |
 | registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint               | [Dynamic Client Registration][oidc-dcr] |
 | discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                      | [ProviderMetadata][provider-meta]       |
+
+### `TokenRequestConfig`
+
+Shared properties for token requests (refresh, exchange, revoke).
+
+| Name         | Type                      | Description                                             | Spec |
+| ------------ | ------------------------- | ------------------------------------------------------- | ---- |
+| clientId     | `string`                  | Unique ID representing the info provided by the client  |      | [Section 2.2][s22] |
+| clientSecret | `?string`                 | Client secret supplied by an auth provider              |      | [Section 2.3.1][s231] |
+| extraParams  | `?Record<string, string>` | Extra query params that'll be added to the query string |      | `N/A` |
+| scopes       | `?string[]`               | List of strings to request access to                    |      | [Section 3.3][s33] |
+
+### `AccessTokenRequestConfig`
+
+> Extends `TokenRequestConfig` meaning all properties of `TokenRequestConfig` can be used.
+
+Config used to exchange an authorization code for an access token.
+
+[Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
+
+| Name        | Type      | Description                                                                                              | Spec                  |
+| ----------- | --------- | -------------------------------------------------------------------------------------------------------- | --------------------- |
+| code        | `string`  | The authorization code received from the authorization server.                                           | [Section 3.1][s31]    |
+| redirectUri | `?string` | If the `redirectUri` parameter was included in the `AuthRequest`, then it must be supplied here as well. | [Section 3.1.2][s312] |
+
+### `RefreshTokenRequestConfig`
+
+> Extends `TokenRequestConfig` meaning all properties of `TokenRequestConfig` can be used.
+
+Config used to request a token refresh, or code exchange.
+
+[Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+
+| Name         | Type     | Description                             |
+| ------------ | -------- | --------------------------------------- |
+| refreshToken | `string` | The refresh token issued to the client. |
+
+### `RevokeTokenRequestConfig`
+
+> Extends `Partial<TokenRequestConfig>` meaning all properties of `TokenRequestConfig` can optionally be used.
+
+Used for revoking a token.
+
+[Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+
+| Name          | Type             | Description                                                  | Spec               |
+| ------------- | ---------------- | ------------------------------------------------------------ | ------------------ |
+| token         | `string`         | The token that the client wants to get revoked.              | [Section 3.1][s31] |
+| tokenTypeHint | `?TokenTypeHint` | A hint about the type of the token submitted for revocation. | [Section 3.2][s32] |
 
 ### `Issuer`
 
@@ -389,6 +504,12 @@ Options passed to `makeRedirectUriAsync`.
 | path            | `?string`  | Optional path to append to a URI                                                                    |
 | preferLocalhost | `?boolean` | Attempt to convert the Expo server IP address to localhost. Should only be used with iOS simulators |
 | useProxy        | `?boolean` | Should use the `auth.expo.io` proxy                                                                 |
+
+### `TokenType`
+
+Access token type [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
+
+`'bearer' | 'mac'`
 
 ## Usage in the bare React Native app
 

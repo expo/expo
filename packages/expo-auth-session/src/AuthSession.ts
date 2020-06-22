@@ -186,7 +186,7 @@ async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInR
 }
 
 export * from './AuthRequestHooks';
-export { AuthError } from './Errors';
+export { AuthError, TokenError } from './Errors';
 
 export {
   AuthSessionOptions,
@@ -206,3 +206,19 @@ export {
   fetchDiscoveryAsync,
   generateHexStringAsync,
 };
+
+export {
+  // Token classes
+  TokenResponse,
+  AccessTokenRequest,
+  RefreshTokenRequest,
+  RevokeTokenRequest,
+  // Token methods
+  revokeAsync,
+  refreshAsync,
+  exchangeCodeAsync,
+  fetchUserInfoAsync,
+} from './TokenRequest';
+
+// Token types
+export * from './TokenRequest.types';
