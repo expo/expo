@@ -541,6 +541,9 @@ jobs:
       - attach_workspace:
           at: android/app/build/outputs/apk
       - bundle_install
+      - run:
+          name: Decode release keystore
+          command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run: expotools client-build --platform android --release
 
   client_android_release_google_play:
