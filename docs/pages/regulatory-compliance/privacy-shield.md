@@ -1,5 +1,6 @@
 ---
 title: Privacy Shield and Expo
+sidebar_title: Privacy Shield
 ---
 
 ## Is Expo Privacy Shield certified?
