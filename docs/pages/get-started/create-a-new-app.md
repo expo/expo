@@ -63,4 +63,4 @@ The Expo client is configured by default to automatically reload the app wheneve
 
 ## Up next
 
-We suggest [following a tutorial](../../tutorial/planning/) before proceeding to the rest of the documentation, this will guide you through building a simple but meaningful project. [Continue](../../tutorial/planning).
+We suggest [following a tutorial](../../tutorial/planning/) before proceeding to the rest of the documentation, this will guide you through building a simple but meaningful project. [Continue](../../tutorial/planning/).
