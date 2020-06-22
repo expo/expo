@@ -319,14 +319,13 @@ This error method will add the missing description for more context on what went
 
 Object returned after an auth request has completed.
 
-| Name          | Type                     | Description                                                                | Default |
-| ------------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
-| type          | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
-| url           | `string`                 | Auth URL that was opened                                                   |         |
-| error         | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
-| params        | `Record<string, string>` | Query params from the `url` as an object                                   |         |
-| errorCode     | `string | null`          | Legacy error code query param, use `error` instead                         |         |
-| tokenResponse | `TokenResponse | null`   | Access token returned only in implicit auth flows (`ResponseType.Token`)   |         |
+| Name      | Type                     | Description                                                                | Default |
+| --------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
+| type      | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
+| url       | `string`                 | Auth URL that was opened                                                   |         |
+| error     | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
+| params    | `Record<string, string>` | Query params from the `url` as an object                                   |         |
+| errorCode | `string | null`          | Legacy error code query param, use `error` instead                         |         |
 
 - If the user cancelled the auth session by closing the browser or popup, the result is `{ type: 'cancel' }`.
 - If the auth is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.

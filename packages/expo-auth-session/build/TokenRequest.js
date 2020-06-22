@@ -47,6 +47,26 @@ export class TokenResponse {
         // if there is no expiration time but we have an access token, it is assumed to never expire
         return true;
     }
+    /**
+     * Creates a `TokenResponse` from query parameters returned from an `AuthRequest`.
+     *
+     * @param params
+     */
+    static fromQueryParams(params) {
+        return new TokenResponse({
+            accessToken: params.access_token,
+            refreshToken: params.refresh_token,
+            scope: params.scope,
+            state: params.state,
+            idToken: params.id_token,
+            // @ts-ignore: Expected specific string
+            tokenType: params.token_type,
+            // @ts-ignore: Expected number
+            expiresIn: params.expires_in,
+            // @ts-ignore: Expected number
+            issuedAt: params.issued_at,
+        });
+    }
     applyResponseConfig(response) {
         this.accessToken = response.accessToken ?? this.accessToken;
         this.tokenType = response.tokenType ?? this.tokenType ?? 'bearer';
@@ -333,14 +353,14 @@ export function revokeAsync(config, discovery) {
     return request.performAsync(discovery);
 }
 /**
- * Request generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
+ * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
  *
  * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
  *
  * @param config The `accessToken` for a user, returned from a code exchange or auth request.
  * @param discovery The `userInfoEndpoint` for a provider.
  */
-export function requestUserInfoAsync(config, discovery) {
+export function fetchUserInfoAsync(config, discovery) {
     if (!discovery.userInfoEndpoint) {
         throw new Error('User info endpoint is not defined in the service config discovery document');
     }

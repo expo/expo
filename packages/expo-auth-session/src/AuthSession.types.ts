@@ -1,5 +1,4 @@
 import { AuthError } from './Errors';
-import { TokenResponse } from './TokenRequest';
 
 export type AuthSessionOptions = {
   authUrl: string;
@@ -14,11 +13,6 @@ export type AuthSessionResult =
       errorCode: string | null;
       error?: AuthError | null;
       params: { [key: string]: string };
-      /**
-       * The access token response returned **only** in implicit auth flows (`ResponseType.Token`).
-       * Response is parsed from the `params`.
-       */
-      tokenResponse: TokenResponse | null;
       url: string;
     };
 

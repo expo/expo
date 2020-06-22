@@ -15,7 +15,6 @@ import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
-import { TokenResponse } from './TokenRequest';
 
 const sessionUrlProvider = getSessionUrlProvider();
 
@@ -185,7 +184,6 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     const { params, errorCode } = QueryParams.getQueryParams(url);
     const { state, error = errorCode } = params;
 
-    let tokenResponse: TokenResponse | null = null;
     let parsedError: AuthError | null = null;
     if (state !== this.state) {
       // This is a non-standard error
@@ -197,28 +195,12 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     } else if (error) {
       parsedError = new AuthError({ error, ...params });
     }
-    if (params.access_token) {
-      tokenResponse = new TokenResponse({
-        accessToken: params.access_token,
-        refreshToken: params.refresh_token,
-        scope: params.scope,
-        state: params.state,
-        idToken: params.id_token,
-        // @ts-ignore: Expected string
-        tokenType: params.token_type,
-        // @ts-ignore: Expected number
-        expiresIn: params.expires_in,
-        // @ts-ignore: Expected number
-        issuedAt: params.issued_at,
-      });
-    }
 
     return {
       type: parsedError ? 'error' : 'success',
       error: parsedError,
       url,
       params,
-      tokenResponse,
       // Return errorCode for legacy
       errorCode,
     };

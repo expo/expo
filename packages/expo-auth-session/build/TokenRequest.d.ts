@@ -22,6 +22,12 @@ export declare class TokenResponse implements TokenResponseConfig {
      * -10 minutes in seconds
      */
     secondsMargin?: number): boolean;
+    /**
+     * Creates a `TokenResponse` from query parameters returned from an `AuthRequest`.
+     *
+     * @param params
+     */
+    static fromQueryParams(params: Record<string, string>): TokenResponse;
     accessToken: string;
     tokenType: TokenType;
     expiresIn?: number;
@@ -146,12 +152,12 @@ export declare function refreshAsync(config: RefreshTokenRequestConfig, discover
  */
 export declare function revokeAsync(config: RevokeTokenRequestConfig, discovery: Pick<ServiceConfig.DiscoveryDocument, 'revocationEndpoint'>): Promise<boolean>;
 /**
- * Request generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
+ * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
  *
  * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
  *
  * @param config The `accessToken` for a user, returned from a code exchange or auth request.
  * @param discovery The `userInfoEndpoint` for a provider.
  */
-export declare function requestUserInfoAsync(config: Pick<TokenResponse, 'accessToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'userInfoEndpoint'>): Promise<Record<string, any>>;
+export declare function fetchUserInfoAsync(config: Pick<TokenResponse, 'accessToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'userInfoEndpoint'>): Promise<Record<string, any>>;
 export {};
