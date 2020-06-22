@@ -91,7 +91,7 @@ public class RNObject {
 
   public static Object versionedEnum(String sdkVersion, String clazz, String value) {
     try {
-      return new RNObject("com.facebook.react.common.LifecycleState").loadVersion(sdkVersion).rnClass().getDeclaredField("RESUMED").get(null);
+      return new RNObject(clazz).loadVersion(sdkVersion).rnClass().getDeclaredField(value).get(null);
     } catch (IllegalAccessException | NoSuchFieldException e) {
       EXL.e(TAG, e);
       return null;
