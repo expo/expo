@@ -54,7 +54,6 @@ export async function startAsync(options) {
         type: errorCode ? 'error' : 'success',
         params,
         errorCode,
-        tokenResponse: null,
         url: result.url,
     };
 }
@@ -140,7 +139,7 @@ export {
 // Token classes
 TokenResponse, AccessTokenRequest, RefreshTokenRequest, RevokeTokenRequest, 
 // Token methods
-revokeAsync, refreshAsync, exchangeCodeAsync, requestUserInfoAsync, } from './TokenRequest';
+revokeAsync, refreshAsync, exchangeCodeAsync, fetchUserInfoAsync, } from './TokenRequest';
 // Token types
 export * from './TokenRequest.types';
 //# sourceMappingURL=AuthSession.js.map

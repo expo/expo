@@ -1,9 +1,9 @@
 import invariant from 'invariant';
 import { Platform } from 'react-native';
+import * as Base64 from './Base64';
 import { TokenError } from './Errors';
 import { requestAsync } from './Fetch';
 import { GrantType, } from './TokenRequest.types';
-import * as Base64 from './Base64';
 /**
  * Returns the current time in seconds.
  */

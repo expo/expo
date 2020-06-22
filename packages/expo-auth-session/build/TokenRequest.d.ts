@@ -1,6 +1,6 @@
 import * as ServiceConfig from './Discovery';
 import { Headers } from './Fetch';
-import { GrantType, RevokeTokenRequestConfig, TokenRequestConfig, TokenResponseConfig, TokenType, TokenTypeHint, RefreshTokenRequestConfig, AccessTokenRequestConfig } from './TokenRequest.types';
+import { AccessTokenRequestConfig, GrantType, RefreshTokenRequestConfig, RevokeTokenRequestConfig, TokenRequestConfig, TokenResponseConfig, TokenType, TokenTypeHint } from './TokenRequest.types';
 /**
  * Returns the current time in seconds.
  */
