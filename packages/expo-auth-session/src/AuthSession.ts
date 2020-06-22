@@ -24,6 +24,7 @@ import {
   ProviderMetadata,
   resolveDiscoveryAsync,
 } from './Discovery';
+import { generateHexStringAsync } from './PKCE';
 import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 
@@ -204,6 +205,7 @@ export {
   ResponseType,
   resolveDiscoveryAsync,
   fetchDiscoveryAsync,
+  generateHexStringAsync,
 };
 
 export {

@@ -28,17 +28,12 @@ Note that FCM is not currently available for Expo iOS apps.
 
 Finally, make a new build of your app by running `expo build:android`.
 
-### ExpoKit projects
+### Bare projects
 
-If you do the above setup before ejecting to ExpoKit, your FCM notifications will continue to work properly without any extra steps after ejecting. However, if your project is already ejected to ExpoKit and you want to set up FCM retroactively, you'll need to do the following:
+If you do the above setup before ejecting to bare, your FCM notifications will continue to work properly without any extra steps after ejecting. However, if your project is already ejected to bare and you want to set up FCM retroactively, you'll need to:
 
-1. Remove [GCM Section](https://github.com/expo/expo/blob/a44b8a65484d26a141550af59090c86432272ae5/template-files/android/AndroidManifest.xml#L238-L268) in `android/app/src/main/AndroidManifest.xml`.
-
-2. Copy the same `google-services.json` file into the `android/app` directory. If that file already exists, you should overwrite it.
-
-3. In `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` change `FCM_ENABLED` from `false` to `true`.
-
-4. If your project is SDK 28 or below, you'll also need to add [these lines](https://github.com/expo/expo/blob/a44b8a65484d26a141550af59090c86432272ae5/template-files/android/AndroidManifest.xml#L270-L292) to `android/app/src/main/AndroidManifest.xml`.
+- [Setup `react-native-firebase`](https://docs.expo.io/guides/setup-native-firebase/#android-1)
+- Copy the same `google-services.json` file into the `android/app` directory. If that file already exists, you should overwrite it.
 
 ## Uploading Server Credentials
 

@@ -10,7 +10,7 @@ async function assertExists(testFile, expectedToExist, expect) {
   }
 }
 
-async function loadAndSaveFle(fileInfo, expect) {
+async function loadAndSaveFile(fileInfo, expect) {
   await FS.deleteAsync(fileInfo.localUri, { idempotent: true });
   await assertExists(fileInfo, false, expect);
   const { md5, headers } = await FS.downloadAsync(fileInfo.remoteUri, fileInfo.localUri, {
@@ -49,8 +49,17 @@ const audioFile = {
 
 const numbers = ['0123456789', '9876543210'];
 
+export async function loadAttachmentsAsync(expect) {
+  const files = [pngFile, gifFile, audioFile];
+  await Promise.all(files.map(file => loadAndSaveFile(file, expect)));
+}
+
+export async function cleanupAttachmentsAsync(expect) {
+  const files = [pngFile, gifFile, audioFile];
+  await Promise.all(files.map(file => cleanupFile(file, expect)));
+}
+
 export async function testSMSComposeWithSingleImageAttachment(expect) {
-  await loadAndSaveFle(pngFile, expect);
   const contentUri = await FS.getContentUriAsync(pngFile.localUri);
   await SMS.sendSMSAsync(numbers, 'test with image', {
     attachments: {
@@ -59,12 +68,9 @@ export async function testSMSComposeWithSingleImageAttachment(expect) {
       filename: 'image.png',
     },
   });
-  await cleanupFile(pngFile, expect);
 }
 
 export async function testSMSComposeWithTwoImageAttachments(expect) {
-  await loadAndSaveFle(gifFile, expect);
-  await loadAndSaveFle(pngFile, expect);
   await SMS.sendSMSAsync(numbers, 'test with two images', {
     attachments: [
       {
@@ -79,12 +85,9 @@ export async function testSMSComposeWithTwoImageAttachments(expect) {
       },
     ],
   });
-  await cleanupFile(gifFile, expect);
-  await cleanupFile(pngFile, expect);
 }
 
 export async function testSMSComposeWithAudioAttachment(expect) {
-  await loadAndSaveFle(audioFile, expect);
   await SMS.sendSMSAsync(numbers, 'test with audio', {
     attachments: [
       {
@@ -94,5 +97,4 @@ export async function testSMSComposeWithAudioAttachment(expect) {
       },
     ],
   });
-  await cleanupFile(audioFile, expect);
 }

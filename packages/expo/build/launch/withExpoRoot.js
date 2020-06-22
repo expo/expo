@@ -18,12 +18,11 @@ export default function withExpoRoot(AppRootComponent) {
             exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
         };
         if (__DEV__ && Platform.OS === 'android') {
-            return (<RootErrorBoundary>
-          <AppRootComponent {...combinedProps}/>
-        </RootErrorBoundary>);
+            return (React.createElement(RootErrorBoundary, null,
+                React.createElement(AppRootComponent, Object.assign({}, combinedProps))));
         }
         else {
-            return <AppRootComponent {...combinedProps}/>;
+            return React.createElement(AppRootComponent, Object.assign({}, combinedProps));
         }
     };
 }

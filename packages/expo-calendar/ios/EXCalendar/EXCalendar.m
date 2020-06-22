@@ -155,6 +155,8 @@ UM_EXPORT_METHOD_AS(saveCalendarAsync,
 
     if (sourceId) {
       calendar.source = [self.eventStore sourceWithIdentifier:sourceId];
+    } else {
+      calendar.source = [type isEqualToString:@"event"] ? self.eventStore.defaultCalendarForNewEvents.source : self.eventStore.defaultCalendarForNewReminders.source;
     }
   }
 

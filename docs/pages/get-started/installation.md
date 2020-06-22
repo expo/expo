@@ -6,7 +6,7 @@ There are two tools that you need to develop apps with Expo: a local development
 
 ## 1. Local development tool: Expo CLI
 
-Expo CLI is a tool for developing apps with Expo. In addition the command-line interface (CLI) it also has a web-based graphical user interface (GUI) that pops up in your web browser when you start your project &mdash; you can use this if you're not yet comfortable with the using terminal or just prefer GUIs, both have similar capabilities.
+Expo CLI is a tool for developing apps with Expo. In addition to the command-line interface (CLI) it also has a web-based graphical user interface (GUI) that pops up in your web browser when you start your project &mdash; you can use this if you're not yet comfortable with the using terminal or just prefer GUIs, both have similar capabilities.
 
 ### Pre-requisities
 

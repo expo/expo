@@ -56,9 +56,7 @@ public class SafeAreaProviderManager extends ViewGroupManager<SafeAreaProvider> 
         .build();
   }
 
-  @Nullable
-  @Override
-  public Map<String, Object> getExportedViewConstants() {
+  private @Nullable Map<String, Object> getInitialWindowMetrics() {
     Activity activity = mContext.getCurrentActivity();
     if (activity == null) {
       return null;
@@ -70,18 +68,24 @@ public class SafeAreaProviderManager extends ViewGroupManager<SafeAreaProvider> 
     }
 
     View contentView = decorView.findViewById(android.R.id.content);
-    EdgeInsets insets = SafeAreaUtils.getSafeAreaInsets(decorView, contentView);
+    EdgeInsets insets = SafeAreaUtils.getSafeAreaInsets(decorView);
     Rect frame = SafeAreaUtils.getFrame(decorView, contentView);
     if (insets == null || frame == null) {
       return null;
     }
     return MapBuilder.<String, Object>of(
+        "insets",
+        SerializationUtils.edgeInsetsToJavaMap(insets),
+        "frame",
+        SerializationUtils.rectToJavaMap(frame));
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedViewConstants() {
+    return MapBuilder.<String, Object>of(
         "initialWindowMetrics",
-        MapBuilder.<String, Object>of(
-            "insets",
-            SerializationUtils.edgeInsetsToJavaMap(insets),
-            "frame",
-            SerializationUtils.rectToJavaMap(frame)));
+        getInitialWindowMetrics());
 
   }
 }

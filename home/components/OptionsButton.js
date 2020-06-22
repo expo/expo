@@ -18,8 +18,8 @@ class OptionsButton extends React.Component {
   }
 
   _handlePress = () => {
-    let options = ['Report this user', 'Cancel'];
-    let cancelButtonIndex = 1;
+    const options = ['Report this user', 'Cancel'];
+    const cancelButtonIndex = 1;
     this.props.showActionSheetWithOptions(
       {
         options,

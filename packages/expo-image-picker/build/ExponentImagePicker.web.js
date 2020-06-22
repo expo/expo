@@ -1,6 +1,5 @@
-import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'unimodules-permissions-interface';
-import uuidv4 from 'uuid/v4';
+import { v4 } from 'uuid';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {
     [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',
@@ -28,10 +27,10 @@ export default {
      * Delegate to expo-permissions to request camera permissions
      */
     async getCameraPermissionsAsync() {
-        return Permissions.getAsync(Permissions.CAMERA);
+        return permissionGrantedResponse();
     },
     async requestCameraPermissionsAsync() {
-        return Permissions.askAsync(Permissions.CAMERA);
+        return permissionGrantedResponse();
     },
     /*
      * Camera roll permissions don't need to be requested on web, so we always
@@ -58,7 +57,7 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
     input.style.display = 'none';
     input.setAttribute('type', 'file');
     input.setAttribute('accept', mediaTypeFormat);
-    input.setAttribute('id', uuidv4());
+    input.setAttribute('id', v4());
     if (allowsMultipleSelection) {
         input.setAttribute('multiple', 'multiple');
     }

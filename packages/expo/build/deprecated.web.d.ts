@@ -1,3 +1,3 @@
-import * as AR from './AR';
+import * as Linking from 'expo-linking';
 import * as Updates from './Updates/Updates';
-export { AR, Updates };
+export { Updates, Linking };

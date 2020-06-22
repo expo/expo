@@ -1,7 +1,6 @@
 import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, } from '@unimodules/core';
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';
 const packageJSON = require('../package.json');
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
@@ -43,16 +42,15 @@ let GLView = /** @class */ (() => {
         render() {
             const { onContextCreate, // eslint-disable-line no-unused-vars
             msaaSamples, ...viewProps } = this.props;
-            return (<View {...viewProps}>
-        <NativeView ref={this._setNativeRef} style={{
-                flex: 1,
-                ...(Platform.OS === 'ios'
-                    ? {
-                        backgroundColor: 'transparent',
-                    }
-                    : {}),
-            }} onSurfaceCreate={this._onSurfaceCreate} msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}/>
-      </View>);
+            return (React.createElement(View, Object.assign({}, viewProps),
+                React.createElement(NativeView, { ref: this._setNativeRef, style: {
+                        flex: 1,
+                        ...(Platform.OS === 'ios'
+                            ? {
+                                backgroundColor: 'transparent',
+                            }
+                            : {}),
+                    }, onSurfaceCreate: this._onSurfaceCreate, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
         }
         async startARSessionAsync() {
             if (!ExponentGLViewManager.startARSessionAsync) {
@@ -86,12 +84,6 @@ let GLView = /** @class */ (() => {
             return await GLView.takeSnapshotAsync(exglCtxId, options);
         }
     }
-    GLView.propTypes = {
-        onContextCreate: PropTypes.func,
-        msaaSamples: PropTypes.number,
-        nativeRef_EXPERIMENTAL: PropTypes.func,
-        ...ViewPropTypes,
-    };
     GLView.defaultProps = {
         msaaSamples: 4,
     };

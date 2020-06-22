@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		277A506929F5ECF9A93DCC97025E6FA5 /* EXImagePickerCameraRollPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = C477F6617F3BDF8B60523DFD4152C148 /* EXImagePickerCameraRollPermissionRequester.m */; };
-		2F90C834CF73B3B1FBF0586B704088DD /* EXImagePickerCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = A2E051500836C492BC9224BE0C47A8C8 /* EXImagePickerCameraPermissionRequester.m */; };
-		3B2E21EFF559E682A22C5C17299B0868 /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 62C1AE41C4EB4E60D6BF3A6ACC5F996B /* EXImagePicker.m */; };
-		590BCFBBA169526F2C2F42833AC1E0B4 /* EXImagePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BF38751532DDFD19C8E73C038C93D8B /* EXImagePicker-dummy.m */; };
-		7FDA14B2F1E482DEAF487F1F1B14804B /* EXImagePickerCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C9FFDC275FBCDD06502683C450ADB2D /* EXImagePickerCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9EAA819D06622956E293F2CB41F1279A /* EXImagePickerCameraRollPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 689575EE1506D0540A30561EFC34CA4E /* EXImagePickerCameraRollPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		ECDD85E7142AF999647B2948E8629C09 /* EXImagePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F94404DBB4984A08DB927B8E67ED505 /* EXImagePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		277A506929F5ECF9A93DCC97025E6FA5 /* EXImagePickerCameraRollPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 59B925051BB4162FE47BD766DDCA69C6 /* EXImagePickerCameraRollPermissionRequester.m */; };
+		2F90C834CF73B3B1FBF0586B704088DD /* EXImagePickerCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4A02F53FF34934F118C961A4037A2 /* EXImagePickerCameraPermissionRequester.m */; };
+		3B2E21EFF559E682A22C5C17299B0868 /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = DEEFD681499EDFD54B78A2F78FD239BF /* EXImagePicker.m */; };
+		590BCFBBA169526F2C2F42833AC1E0B4 /* EXImagePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B52AA8E9CEFF9DE4DB4D553C86E8116E /* EXImagePicker-dummy.m */; };
+		7FDA14B2F1E482DEAF487F1F1B14804B /* EXImagePickerCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 615C72D2D3FED24257822BC5D80B804A /* EXImagePickerCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9EAA819D06622956E293F2CB41F1279A /* EXImagePickerCameraRollPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B333DA7876E4F6BCB7BFC36286BD4D2 /* EXImagePickerCameraRollPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ECDD85E7142AF999647B2948E8629C09 /* EXImagePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 773E81694DD2A29854FE985FF2D2A17A /* EXImagePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,19 +42,20 @@
 
 /* Begin PBXFileReference section */
 		06B58C74DC77D0B742F38CACDA15496E /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		0C9FFDC275FBCDD06502683C450ADB2D /* EXImagePickerCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImagePickerCameraPermissionRequester.h; path = EXImagePicker/EXImagePickerCameraPermissionRequester.h; sourceTree = "<group>"; };
-		354BF7F78376A6B5074E760BCA0BFC73 /* EXImagePicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXImagePicker-prefix.pch"; sourceTree = "<group>"; };
+		1B333DA7876E4F6BCB7BFC36286BD4D2 /* EXImagePickerCameraRollPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImagePickerCameraRollPermissionRequester.h; path = EXImagePicker/EXImagePickerCameraRollPermissionRequester.h; sourceTree = "<group>"; };
+		2DE4A02F53FF34934F118C961A4037A2 /* EXImagePickerCameraPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImagePickerCameraPermissionRequester.m; path = EXImagePicker/EXImagePickerCameraPermissionRequester.m; sourceTree = "<group>"; };
+		329F4C9D8CC8F3E8D969BA9453464009 /* EXImagePicker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImagePicker.release.xcconfig; sourceTree = "<group>"; };
 		3711B7B53CB96BE7381459CCDAA5FDCA /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		5032D49263B35796E571F19AB6BCE126 /* EXImagePicker.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImagePicker.xcconfig; sourceTree = "<group>"; };
-		62C1AE41C4EB4E60D6BF3A6ACC5F996B /* EXImagePicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImagePicker.m; path = EXImagePicker/EXImagePicker.m; sourceTree = "<group>"; };
-		689575EE1506D0540A30561EFC34CA4E /* EXImagePickerCameraRollPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImagePickerCameraRollPermissionRequester.h; path = EXImagePicker/EXImagePickerCameraRollPermissionRequester.h; sourceTree = "<group>"; };
-		7BF38751532DDFD19C8E73C038C93D8B /* EXImagePicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXImagePicker-dummy.m"; sourceTree = "<group>"; };
-		8F94404DBB4984A08DB927B8E67ED505 /* EXImagePicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImagePicker.h; path = EXImagePicker/EXImagePicker.h; sourceTree = "<group>"; };
+		505BCE6B4F333E47FAF84698F3D88595 /* EXImagePicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImagePicker.debug.xcconfig; sourceTree = "<group>"; };
+		59B925051BB4162FE47BD766DDCA69C6 /* EXImagePickerCameraRollPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImagePickerCameraRollPermissionRequester.m; path = EXImagePicker/EXImagePickerCameraRollPermissionRequester.m; sourceTree = "<group>"; };
+		615C72D2D3FED24257822BC5D80B804A /* EXImagePickerCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImagePickerCameraPermissionRequester.h; path = EXImagePicker/EXImagePickerCameraPermissionRequester.h; sourceTree = "<group>"; };
+		773E81694DD2A29854FE985FF2D2A17A /* EXImagePicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImagePicker.h; path = EXImagePicker/EXImagePicker.h; sourceTree = "<group>"; };
 		93C36725210BD366B6B994A3BB29CC7B /* libEXImagePicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXImagePicker.a; path = libEXImagePicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A2E051500836C492BC9224BE0C47A8C8 /* EXImagePickerCameraPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImagePickerCameraPermissionRequester.m; path = EXImagePicker/EXImagePickerCameraPermissionRequester.m; sourceTree = "<group>"; };
+		AB4820B5E3D093B4C136FDDB76293C4A /* EXImagePicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXImagePicker-prefix.pch"; sourceTree = "<group>"; };
+		B52AA8E9CEFF9DE4DB4D553C86E8116E /* EXImagePicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXImagePicker-dummy.m"; sourceTree = "<group>"; };
+		BB7850BCE4CA1DB8A5D37CC73AA70142 /* EXImagePicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXImagePicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		BBAD60C9DE01602879E7CC60F0D2A5D4 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		C477F6617F3BDF8B60523DFD4152C148 /* EXImagePickerCameraRollPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImagePickerCameraRollPermissionRequester.m; path = EXImagePicker/EXImagePickerCameraRollPermissionRequester.m; sourceTree = "<group>"; };
-		DDD0465DAE394B64B8EDDAD29149B825 /* EXImagePicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXImagePicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DEEFD681499EDFD54B78A2F78FD239BF /* EXImagePicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImagePicker.m; path = EXImagePicker/EXImagePicker.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,22 +69,50 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		001B5BD9E4919B8CBA4EF7FE5ED643FB /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				BB7850BCE4CA1DB8A5D37CC73AA70142 /* EXImagePicker.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		22B13487E9A16995573B7805EF5F50D3 = {
 			isa = PBXGroup;
 			children = (
 				BA0E2F71834390B8606FBE2E6D9F6811 /* Dependencies */,
-				AC9592749D3A1C8EF84DF42943A7DCDC /* EXImagePicker */,
+				65C1BC2055FF3D2CF046439F4D22A050 /* EXImagePicker */,
 				ABD5108974AC5F4D5E3D986652BC6BCB /* Frameworks */,
 				94B0BA0E2FAD38BAC8479C8896A6F152 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		7DDCDCC21795BF7E946CC1A4D3C97242 /* Pod */ = {
+		3C25810D970F1F9458500A060ED0DF3E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				DDD0465DAE394B64B8EDDAD29149B825 /* EXImagePicker.podspec */,
+				B52AA8E9CEFF9DE4DB4D553C86E8116E /* EXImagePicker-dummy.m */,
+				AB4820B5E3D093B4C136FDDB76293C4A /* EXImagePicker-prefix.pch */,
+				505BCE6B4F333E47FAF84698F3D88595 /* EXImagePicker.debug.xcconfig */,
+				329F4C9D8CC8F3E8D969BA9453464009 /* EXImagePicker.release.xcconfig */,
 			);
-			name = Pod;
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXImagePicker";
+			sourceTree = "<group>";
+		};
+		65C1BC2055FF3D2CF046439F4D22A050 /* EXImagePicker */ = {
+			isa = PBXGroup;
+			children = (
+				773E81694DD2A29854FE985FF2D2A17A /* EXImagePicker.h */,
+				DEEFD681499EDFD54B78A2F78FD239BF /* EXImagePicker.m */,
+				615C72D2D3FED24257822BC5D80B804A /* EXImagePickerCameraPermissionRequester.h */,
+				2DE4A02F53FF34934F118C961A4037A2 /* EXImagePickerCameraPermissionRequester.m */,
+				1B333DA7876E4F6BCB7BFC36286BD4D2 /* EXImagePickerCameraRollPermissionRequester.h */,
+				59B925051BB4162FE47BD766DDCA69C6 /* EXImagePickerCameraRollPermissionRequester.m */,
+				001B5BD9E4919B8CBA4EF7FE5ED643FB /* Pod */,
+				3C25810D970F1F9458500A060ED0DF3E /* Support Files */,
+			);
+			name = EXImagePicker;
+			path = "../../../../packages/expo-image-picker/ios";
 			sourceTree = "<group>";
 		};
 		94B0BA0E2FAD38BAC8479C8896A6F152 /* Products */ = {
@@ -101,22 +130,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		AC9592749D3A1C8EF84DF42943A7DCDC /* EXImagePicker */ = {
-			isa = PBXGroup;
-			children = (
-				8F94404DBB4984A08DB927B8E67ED505 /* EXImagePicker.h */,
-				62C1AE41C4EB4E60D6BF3A6ACC5F996B /* EXImagePicker.m */,
-				0C9FFDC275FBCDD06502683C450ADB2D /* EXImagePickerCameraPermissionRequester.h */,
-				A2E051500836C492BC9224BE0C47A8C8 /* EXImagePickerCameraPermissionRequester.m */,
-				689575EE1506D0540A30561EFC34CA4E /* EXImagePickerCameraRollPermissionRequester.h */,
-				C477F6617F3BDF8B60523DFD4152C148 /* EXImagePickerCameraRollPermissionRequester.m */,
-				7DDCDCC21795BF7E946CC1A4D3C97242 /* Pod */,
-				C167917D363ACBBF6EAF8CAA0A537EB3 /* Support Files */,
-			);
-			name = EXImagePicker;
-			path = "../../../../packages/expo-image-picker/ios";
-			sourceTree = "<group>";
-		};
 		BA0E2F71834390B8606FBE2E6D9F6811 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -125,17 +138,6 @@
 				06B58C74DC77D0B742F38CACDA15496E /* UMPermissionsInterface */,
 			);
 			name = Dependencies;
-			sourceTree = "<group>";
-		};
-		C167917D363ACBBF6EAF8CAA0A537EB3 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				5032D49263B35796E571F19AB6BCE126 /* EXImagePicker.xcconfig */,
-				7BF38751532DDFD19C8E73C038C93D8B /* EXImagePicker-dummy.m */,
-				354BF7F78376A6B5074E760BCA0BFC73 /* EXImagePicker-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXImagePicker";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -309,9 +311,9 @@
 			};
 			name = Debug;
 		};
-		6863600F0F4991F002B04B0190E5C303 /* Release */ = {
+		289758A5F5A0518892BD13F4E6C7AEA9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5032D49263B35796E571F19AB6BCE126 /* EXImagePicker.xcconfig */;
+			baseConfigurationReference = 329F4C9D8CC8F3E8D969BA9453464009 /* EXImagePicker.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -329,6 +331,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -394,9 +397,9 @@
 			};
 			name = Release;
 		};
-		DADDC023F4FD23E1DDC26A54952DBD31 /* Debug */ = {
+		D2A57525E3066C57D0C4FF6EE5FB2124 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5032D49263B35796E571F19AB6BCE126 /* EXImagePicker.xcconfig */;
+			baseConfigurationReference = 505BCE6B4F333E47FAF84698F3D88595 /* EXImagePicker.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -414,6 +417,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -433,8 +437,8 @@
 		77CBC2FBF86106F46B4261B5BFBAC7EF /* Build configuration list for PBXNativeTarget "EXImagePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DADDC023F4FD23E1DDC26A54952DBD31 /* Debug */,
-				6863600F0F4991F002B04B0190E5C303 /* Release */,
+				D2A57525E3066C57D0C4FF6EE5FB2124 /* Debug */,
+				289758A5F5A0518892BD13F4E6C7AEA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

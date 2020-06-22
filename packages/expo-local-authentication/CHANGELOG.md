@@ -1,8 +1,21 @@
 # Changelog
 
-## master
+## Unpublished
 
 ### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix crash when `NSFaceIDUsageDescription` is not provided and device fallback is disabled. ([#8595](https://github.com/expo/expo/pull/8595) by [@tsapeta](https://github.com/tsapeta))
+- Added missing biometric permission to Android. ([#8692](https://github.com/expo/expo/pull/8692) by [@byCedric](https://github.com/byCedric))
+
+## 9.1.1 — 2020-05-29
+
+*This version does not introduce any user-facing changes.*
+
+## 9.1.0 — 2020-05-27
 
 ### 🎉 New features
 

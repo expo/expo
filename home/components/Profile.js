@@ -159,7 +159,7 @@ export default class Profile extends React.Component {
       return this._renderLegacyHeader();
     }
 
-    let { firstName, lastName, username, profilePhoto } = this.props.data.user;
+    const { firstName, lastName, username, profilePhoto } = this.props.data.user;
 
     return (
       <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
@@ -208,7 +208,7 @@ export default class Profile extends React.Component {
     if (!apps || !apps.length) {
       content = <EmptyProfileProjectsNotice isOwnProfile={isOwnProfile} />;
     } else {
-      let otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
+      const otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
       content = (
         <>
           {take(apps, MAX_APPS_TO_DISPLAY).map(this._renderApp)}
@@ -244,7 +244,7 @@ export default class Profile extends React.Component {
       content = (
         <>
           {take(snacks, MAX_SNACKS_TO_DISPLAY).map(this._renderSnack)}
-          {otherSnacks.length && (
+          {otherSnacks.length > 0 && (
             <ListItem
               title="See all snacks"
               onPress={this._handlePressSnackList}

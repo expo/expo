@@ -6,7 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '37.0.0'
+version = '38.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -55,7 +55,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
   }
 }
 
@@ -144,7 +144,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:37.0.0'
+  api 'com.facebook.react:react-native:38.0.0'
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
@@ -154,7 +154,6 @@ dependencies {
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-updates',
-        'expo-notifications'
         'expo-splash-screen'
       ]
   ])
@@ -181,6 +180,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_38
+  api 'host.exp:reactandroid-abi38_0_0:1.0.0'
+  // END_SDK_38
   // BEGIN_SDK_37
   api 'host.exp:reactandroid-abi37_0_0:1.0.0'
   // END_SDK_37
@@ -237,7 +239,7 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
-  
+
   // react-native-screens
   api 'androidx.fragment:fragment:1.2.2'
   api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
@@ -246,8 +248,8 @@ dependencies {
   api 'com.google.firebase:firebase-core:17.2.3'
   api 'com.google.firebase:firebase-messaging:20.1.2'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:10.2.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
+  api 'com.jakewharton:butterknife:10.2.1'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // Used only in Expo client, see Analytics.java

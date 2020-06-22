@@ -1,5 +1,6 @@
 'use strict';
 
+import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
@@ -48,7 +49,7 @@ export function test(t) {
               [],
               (tx, results) => {
                 t.expect(results.rows.length).toEqual(3);
-                t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
+                t.expect(results.rows.item(0).j).toBeCloseTo(23.4);
               },
               onError
             );
@@ -58,41 +59,44 @@ export function test(t) {
         );
       });
 
-      const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
-      t.expect(exists).toBeTruthy();
+      if (Platform.OS !== 'web') {
+        const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(exists).toBeTruthy();
+      }
     });
 
-    t.it(
-      'should work with a downloaded .db file',
-      async () => {
-        await FS.downloadAsync(
-          Asset.fromModule(require('../assets/asset-db.db')).uri,
-          `${FS.documentDirectory}SQLite/downloaded.db`
-        );
-
-        const db = SQLite.openDatabase('downloaded.db');
-        await new Promise((resolve, reject) => {
-          db.transaction(
-            tx => {
-              const nop = () => {};
-              const onError = (tx, error) => reject(error);
-              tx.executeSql(
-                'SELECT * FROM Users',
-                [],
-                (tx, results) => {
-                  t.expect(results.rows.length).toEqual(3);
-                  t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
-                },
-                onError
-              );
-            },
-            reject,
-            resolve
+    if (Platform.OS !== 'web') {
+      t.it(
+        'should work with a downloaded .db file',
+        async () => {
+          await FS.downloadAsync(
+            Asset.fromModule(require('../assets/asset-db.db')).uri,
+            `${FS.documentDirectory}SQLite/downloaded.db`
           );
-        });
-      },
-      30000
-    );
+
+          const db = SQLite.openDatabase('downloaded.db');
+          await new Promise((resolve, reject) => {
+            db.transaction(
+              tx => {
+                const onError = (tx, error) => reject(error);
+                tx.executeSql(
+                  'SELECT * FROM Users',
+                  [],
+                  (tx, results) => {
+                    t.expect(results.rows.length).toEqual(3);
+                    t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
+                  },
+                  onError
+                );
+              },
+              reject,
+              resolve
+            );
+          });
+        },
+        30000
+      );
+    }
 
     t.it('should be able to recreate db from scratch by deleting file', async () => {
       {
@@ -132,12 +136,12 @@ export function test(t) {
         });
       }
 
-      {
+      if (Platform.OS !== 'web') {
         const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(exists).toBeTruthy();
       }
 
-      {
+      if (Platform.OS !== 'web') {
         await FS.deleteAsync(`${FS.documentDirectory}SQLite/test.db`);
         const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(exists).toBeFalsy();
@@ -211,10 +215,10 @@ export function test(t) {
               'SELECT * FROM Nulling',
               [],
               (tx, results) => {
-                t.expect(results.rows._array[0].x).toBeNull();
-                t.expect(results.rows._array[0].y).toBeNull();
-                t.expect(results.rows._array[1].x).toBeNull();
-                t.expect(results.rows._array[1].y).toBeNull();
+                t.expect(results.rows.item(0).x).toBeNull();
+                t.expect(results.rows.item(0).y).toBeNull();
+                t.expect(results.rows.item(1).x).toBeNull();
+                t.expect(results.rows.item(1).y).toBeNull();
               },
               onError
             );
@@ -224,54 +228,61 @@ export function test(t) {
         );
       });
 
-      const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
-      t.expect(exists).toBeTruthy();
+      if (Platform.OS !== 'web') {
+        const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(exists).toBeTruthy();
+      }
     });
 
-    t.it('should support PRAGMA statements', async () => {
-      const db = SQLite.openDatabase('test.db');
-      await new Promise((resolve, reject) => {
-        db.transaction(
-          tx => {
-            const nop = () => {};
-            const onError = (tx, error) => reject(error);
+    // Do not try to test PRAGMA statements support in web
+    // as it is expected to not be working.
+    // See https://stackoverflow.com/a/10298712
+    if (Platform.OS !== 'web') {
+      t.it('should support PRAGMA statements', async () => {
+        const db = SQLite.openDatabase('test.db');
+        await new Promise((resolve, reject) => {
+          db.transaction(
+            tx => {
+              const nop = () => {};
+              const onError = (tx, error) => reject(error);
 
-            tx.executeSql('DROP TABLE IF EXISTS SomeTable;', [], nop, onError);
-            tx.executeSql(
-              'CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
-              [],
-              nop,
-              onError
-            );
-            // a result-returning pragma
-            tx.executeSql(
-              'PRAGMA table_info(SomeTable);',
-              [],
-              (tx, results) => {
-                t.expect(results.rows.length).toEqual(2);
-                t.expect(results.rows._array[0].name).toEqual('id');
-                t.expect(results.rows._array[1].name).toEqual('name');
-              },
-              onError
-            );
-            // a no-result pragma
-            tx.executeSql('PRAGMA case_sensitive_like = true;', [], nop, onError);
-            // a setter/getter pragma
-            tx.executeSql('PRAGMA user_version = 123;', [], nop, onError);
-            tx.executeSql(
-              'PRAGMA user_version;',
-              [],
-              (tx, results) => {
-                t.expect(results.rows.length).toEqual(1);
-                t.expect(results.rows._array[0].user_version).toEqual(123);
-              },
-              onError
-            );
-          },
-          reject,
-          resolve
-        );
+              tx.executeSql('DROP TABLE IF EXISTS SomeTable;', [], nop, onError);
+              tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+                [],
+                nop,
+                onError
+              );
+              // a result-returning pragma
+              tx.executeSql(
+                'PRAGMA table_info(SomeTable);',
+                [],
+                (tx, results) => {
+                  t.expect(results.rows.length).toEqual(2);
+                  t.expect(results.rows.item(0).name).toEqual('id');
+                  t.expect(results.rows.item(1).name).toEqual('name');
+                },
+                onError
+              );
+              // a no-result pragma
+              tx.executeSql('PRAGMA case_sensitive_like = true;', [], nop, onError);
+              // a setter/getter pragma
+              tx.executeSql('PRAGMA user_version = 123;', [], nop, onError);
+              tx.executeSql(
+                'PRAGMA user_version;',
+                [],
+                (tx, results) => {
+                  t.expect(results.rows.length).toEqual(1);
+                  t.expect(results.rows.item(0).user_version).toEqual(123);
+                },
+                onError
+              );
+            },
+            reject,
+            resolve
+          );
+        });
       });
-    });
+    }
   });
 }

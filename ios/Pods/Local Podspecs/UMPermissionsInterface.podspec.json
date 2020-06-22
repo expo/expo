@@ -1,6 +1,6 @@
 {
   "name": "UMPermissionsInterface",
-  "version": "5.1.0",
+  "version": "5.2.1",
   "summary": "An interface for permissions modules",
   "description": "An interface for permissions modules",
   "license": "MIT",

@@ -43,23 +43,15 @@ export default function DevLoadingView() {
             nativeDevLoadingViewEventEmitter.removeListener('devLoadingView:showMessage', handleShowMessage);
             nativeDevLoadingViewEventEmitter.removeListener('devLoadingView:hide', handleHide);
         };
-    }, []);
+    }, [translateY]);
     if (isDevLoading || isAnimating) {
-        return (<Animated.View style={[styles.animatedContainer, { transform: [{ translateY }] }]} pointerEvents="none">
-        <SafeAreaView style={styles.banner} edges={['bottom']}>
-          <View style={styles.contentContainer}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.text}>{isDevLoading ? 'Refreshing...' : 'Refreshed'}</Text>
-            </View>
-
-            <View style={{ flex: 1 }}>
-              <Text style={styles.subtitle}>
-                {isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"}
-              </Text>
-            </View>
-          </View>
-        </SafeAreaView>
-      </Animated.View>);
+        return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
+            React.createElement(SafeAreaView, { style: styles.banner, edges: ['bottom'] },
+                React.createElement(View, { style: styles.contentContainer },
+                    React.createElement(View, { style: { flexDirection: 'row' } },
+                        React.createElement(Text, { style: styles.text }, isDevLoading ? 'Refreshing...' : 'Refreshed')),
+                    React.createElement(View, { style: { flex: 1 } },
+                        React.createElement(Text, { style: styles.subtitle }, isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"))))));
     }
     else {
         return null;

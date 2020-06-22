@@ -120,6 +120,9 @@ These values can be used to define how data is read / written.
 These values can be used to define how sessions work on iOS.
 
 - **FileSystem.FileSystemSessionType.BACKGROUND** -- Using this mode means that the downloading/uploading session on the native side will work even if the application is moved to background. If the task completes while the application is in background, the Promise will be either resolved immediately or (if the application execution has already been stopped) once the app is moved to foreground again.
+
+  > **Note**: The background session doesn't fail if the server or your connection is down. Rather, it continues retrying until the task succeeds or is canceled manually.
+
 - **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
 
 ### `FileSystem.FileSystemUploadOptions`
@@ -387,6 +390,8 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
 
   - **totalBytesWritten (_number_)** -- The total bytes written by the download operation.
   - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation. A value of `-1` means that the server did not return the `Content-Length` header and the total size is unknown. Without this header, you won't be able to track the download progress.
+
+  > **Note**: When the app has been moved to the background, this callback won't be fired until it's moved to the foreground.
 
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download. This is set on the `DownloadResumable` object automatically when a download is paused. When initializing a new `DownloadResumable` this should be `null`.
 

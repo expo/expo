@@ -1,9 +1,9 @@
-import React from 'react';
 import { Asset } from 'expo-asset';
 import { Video } from 'expo-av';
+import React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from './Player';
-import { StyleProp, ViewStyle } from 'react-native';
 
 interface State {
   isLoaded: boolean;

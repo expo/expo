@@ -140,7 +140,7 @@ class Stripe {
   // @deprecated use cancelNativePayRequest
   cancelApplePayRequestAsync = (): Promise<void> => {
     checkInit(this);
-    return StripeModule.cancelApplePayRequestAsync();
+    return StripeModule.cancelApplePayRequest();
   };
 
   // no corresponding android impl exists

@@ -112,7 +112,7 @@ async function renderExpoKitPodspecAsync(
   expoKitPath: string,
   templateFilesPath: string
 ): Promise<void> {
-  const podspecPath = path.join(expoKitPath, 'ExpoKit.podspec');
+  const podspecPath = path.join(expoKitPath, 'ios', 'ExpoKit.podspec');
   const podspecTemplatePath = path.join(templateFilesPath, 'ios', 'ExpoKit.podspec');
 
   console.log(
@@ -143,6 +143,7 @@ async function renderExpoKitPodfileAsync(
     TARGET_NAME: 'exponent-view-template',
     EXPOKIT_PATH: '../..',
     REACT_NATIVE_PATH: '../../react-native-lab/react-native',
+    UNIVERSAL_MODULES_PATH: '../../packages',
   });
 }
 

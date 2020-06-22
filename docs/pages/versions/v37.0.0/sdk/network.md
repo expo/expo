@@ -1,6 +1,6 @@
 ---
 title: Network
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-network'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-network'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

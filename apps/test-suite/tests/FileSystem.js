@@ -410,7 +410,10 @@ export async function test({ describe, expect, it, ...t }) {
 
       let error;
       try {
-        await FS.downloadAsync('https://nonexistent-subdomain.expo.io', localUri, { md5: true });
+        await FS.downloadAsync('https://nonexistent-subdomain.expo.io', localUri, {
+          md5: true,
+          sessionType: FS.FileSystemSessionType.FOREGROUND,
+        });
       } catch (e) {
         error = e;
       }

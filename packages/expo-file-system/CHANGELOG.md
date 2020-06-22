@@ -1,6 +1,20 @@
 # Changelog
 
-## master
+## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix background URL session completion handler not being called. ([#8599](https://github.com/expo/expo/pull/8599) by [@lukmccall](https://github.com/lukmccall))
+
+## 9.0.1 — 2020-05-29
+
+*This version does not introduce any user-facing changes.*
+
+## 9.0.0 — 2020-05-27
 
 ### 🛠 Breaking changes
 
@@ -12,5 +26,3 @@
 
 - Add `FileSystem.uploadAsync` method. ([#7380](https://github.com/expo/expo/pull/7380) by [@lukmccall](https://github.com/lukmccall))
 - Add ability to read Android `raw` and `drawable` resources in `FileSystem.getInfoAsync`, `FileSystem.readAsStringAsync`, and `FileSystem.copyAsync`. ([#8104](https://github.com/expo/expo/pull/8104) by [@esamelson](https://github.com/esamelson))
-
-### 🐛 Bug fixes

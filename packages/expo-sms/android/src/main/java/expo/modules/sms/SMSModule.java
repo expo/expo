@@ -69,38 +69,46 @@ public class SMSModule extends ExportedModule implements LifecycleEventListener 
       return;
     }
 
-    Intent SMSIntent = new Intent(Intent.ACTION_SEND);
+    Intent smsIntent;
+
+    List<Map<String, String>> attachments = null;
+    if (options != null && options.containsKey(OPTIONS_ATTACHMENTS_KEY)) {
+      attachments = (List<Map<String, String>>) options.get(OPTIONS_ATTACHMENTS_KEY);
+    }
+
+    // ACTION_SEND causes a weird flicker on Android 10 devices if the messaging app is not already
+    // open in the background, but it seems to be the only intent type that works for including
+    // attachments, so we use it if there are attachments and fall back to ACTION_SENDTO otherwise.
+    if (attachments != null && !attachments.isEmpty()) {
+      smsIntent = new Intent(Intent.ACTION_SEND);
+      smsIntent.setType("text/plain");
+      smsIntent.putExtra("address", constructRecipients(addresses));
+
+      Map<String, String> attachment = attachments.get(0);
+      smsIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(attachment.get("uri")));
+      smsIntent.setType(attachment.get("mimeType"));
+    } else {
+      smsIntent = new Intent(Intent.ACTION_SENDTO);
+      smsIntent.setData(Uri.parse("smsto:" + constructRecipients(addresses)));
+    }
+
     String defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(getContext());
     if (defaultSMSPackage != null){
-      SMSIntent.setPackage(defaultSMSPackage);
+      smsIntent.setPackage(defaultSMSPackage);
     } else {
       promise.reject(ERROR_TAG + "_NO_SMS_APP", "No messaging application available");
       return;
     }
-    SMSIntent.setType("text/plain");
-    final String smsTo = constructRecipients(addresses);
-    SMSIntent.putExtra("address", smsTo);
 
-    SMSIntent.putExtra("exit_on_sent", true);
-    SMSIntent.putExtra("compose_mode", true);
-    SMSIntent.putExtra(Intent.EXTRA_TEXT, message);
-    SMSIntent.putExtra("sms_body", message);
-
-    if (options != null) {
-      if (options.containsKey(OPTIONS_ATTACHMENTS_KEY)) {
-        final List<Map<String, String>> attachments = (List<Map<String, String>>) options.get(OPTIONS_ATTACHMENTS_KEY);
-        if (attachments != null && !attachments.isEmpty()) {
-          Map<String, String> attachment = attachments.get(0);
-          SMSIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(attachment.get("uri")));
-          SMSIntent.setType(attachment.get("mimeType"));
-        }
-      }
-    }
+    smsIntent.putExtra("exit_on_sent", true);
+    smsIntent.putExtra("compose_mode", true);
+    smsIntent.putExtra(Intent.EXTRA_TEXT, message);
+    smsIntent.putExtra("sms_body", message);
 
     mPendingPromise = promise;
 
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    activityProvider.getCurrentActivity().startActivity(SMSIntent);
+    activityProvider.getCurrentActivity().startActivity(smsIntent);
 
     mSMSComposerOpened = true;
   }

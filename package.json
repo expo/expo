@@ -23,10 +23,10 @@
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.8.0"
+    "react-native-unimodules": "~0.10.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "eslint": "^7.2.0",
     "expo-yarn-workspaces": "*",
     "prettier": "^1.19.0"
   }

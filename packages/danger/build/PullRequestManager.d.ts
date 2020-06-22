@@ -6,7 +6,6 @@ export declare enum ChangelogEntryType {
     NEW_FEATURES = 1,
     BREAKING_CHANGES = 2
 }
-export declare const DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
 export declare type ChangelogEntry = {
     type: ChangelogEntryType;
     message: string;
@@ -18,9 +17,14 @@ export declare type ChangelogEntries = {
 };
 export declare type PullRequest = GitHubPRDSL | Octokit.PullsListResponseItem;
 export declare class PullRequestManager {
-    private pullRequest;
     private githubApi;
+    private _shouldGeneratePR;
+    private changelogSection;
+    private prTitle;
+    private prHeadRef;
+    private prNumber;
     constructor(pullRequest: PullRequest, githubApi: GithubApiWrapper);
+    shouldGeneratePR(): boolean;
     /**
      * Gets suggested changelog entries from PR provided in the constructor.
      *
@@ -31,6 +35,7 @@ export declare class PullRequestManager {
      * Otherwise, it tries to parse PR's body.
      */
     parseChangelogSuggestionFromDescription(): ChangelogEntries;
+    private preprocessPR;
     createOrUpdatePRAsync(missingEntries: {
         packageName: string;
         content: string;

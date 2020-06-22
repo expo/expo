@@ -45,7 +45,7 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
       public void onSuccess(ExperienceDBObject experience) {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
-          int sdkVersion = ABIVersion.toNumber(manifest.getString("sdkVersion"));
+          int sdkVersion = ABIVersion.toNumber(manifest.getString("sdkVersion")) / 10000;
 
           // If an experience is on SDK newer than 38, that is SDK39 and beyond up till UNVERSIONED
           // we only use the new notifications API as it is going to be removed from SDK39.

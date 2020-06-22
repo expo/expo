@@ -1,8 +1,8 @@
 import * as GoogleSignIn from 'expo-google-sign-in';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { getGUID } from '../api/guid';
 
+import { getGUID } from '../api/guid';
 import GoogleSignInButton from '../components/GoogleSignInButton';
 
 GoogleSignIn.allowInClient();
@@ -16,7 +16,7 @@ interface State {
   };
 }
 
-export default class GoogleSignInScreen extends React.Component<{}, State> {
+export default class GoogleSignInScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Native Google Sign-In',
   };

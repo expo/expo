@@ -1,6 +1,6 @@
 ---
 title: MailComposer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-mail-composer'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-mail-composer'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

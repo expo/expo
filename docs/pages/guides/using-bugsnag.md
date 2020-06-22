@@ -50,10 +50,11 @@ This will install the [`@bugsnag/expo`](https://www.npmjs.com/package/@bugsnag/e
 #### Capturing React render errors
 
 An [error boundary](https://reactjs.org/docs/error-boundaries.html) component is included which you can use to wrap your application. When render errors happen, they will be reported to Bugsnag along with any React-specific info that was available at the time.
+
 To catch all render errors in your application and show a custom error screen to your users, follow this example:
 
 ```js
-const ErrorBoundary = bugsnagClient.getPlugin('react');
+const ErrorBoundary = Bugsnag.getPlugin('react');
 
 export default () => (
   <ErrorBoundary FallbackComponent={ErrorView}>

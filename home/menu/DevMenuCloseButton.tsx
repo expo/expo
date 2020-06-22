@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
   Platform,
@@ -5,9 +6,8 @@ import {
   TouchableHighlight as TouchableHighlightRN,
   View,
 } from 'react-native';
-import { ThemeContext } from 'react-navigation';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TouchableHighlight as TouchableHighlightGH } from 'react-native-gesture-handler';
+import { ThemeContext } from 'react-navigation';
 
 type Props = {
   style: any;

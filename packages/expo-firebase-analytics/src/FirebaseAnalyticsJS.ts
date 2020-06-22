@@ -172,6 +172,18 @@ class FirebaseAnalyticsJS {
     }
   }
 
+  private static isValidName(name: string, maxLength: number): boolean {
+    return !!(
+      name &&
+      name.length &&
+      name.length <= maxLength &&
+      name.match(/^[A-Za-z][A-Za-z_\d]*$/) &&
+      !name.startsWith('firebase_') &&
+      !name.startsWith('google_') &&
+      !name.startsWith('ga_')
+    );
+  }
+
   /**
    * Parses an event (as passed to logEvent) and throws an error when the
    * event-name or parameters are invalid.
@@ -184,18 +196,9 @@ class FirebaseAnalyticsJS {
     eventName: string,
     eventParams?: { [key: string]: any }
   ): FirebaseAnalyticsJSCodedEvent {
-    if (
-      !eventName ||
-      !eventName.length ||
-      eventName.length > 40 ||
-      eventName[0] === '_' ||
-      !eventName.match(/^[A-Za-z_]+$/) ||
-      eventName.startsWith('firebase_') ||
-      eventName.startsWith('google_') ||
-      eventName.startsWith('ga_')
-    ) {
+    if (!FirebaseAnalyticsJS.isValidName(eventName, 40)) {
       throw new Error(
-        'Invalid event-name specified. Should contain 1 to 40 alphanumeric characters or underscores. The name must start with an alphabetic character.'
+        `Invalid event-name (${eventName}) specified. Should contain 1 to 40 alphanumeric characters or underscores. The name must start with an alphabetic character.`
       );
     }
     const params: FirebaseAnalyticsJSCodedEvent = {
@@ -226,18 +229,9 @@ class FirebaseAnalyticsJS {
     userPropertyName: string,
     userPropertyValue: any
   ): string {
-    if (
-      !userPropertyName.length ||
-      userPropertyName.length > 24 ||
-      userPropertyName[0] === '_' ||
-      !userPropertyName.match(/^[A-Za-z_]+$/) ||
-      userPropertyName === 'user_id' ||
-      userPropertyName.startsWith('firebase_') ||
-      userPropertyName.startsWith('google_') ||
-      userPropertyName.startsWith('ga_')
-    ) {
+    if (!FirebaseAnalyticsJS.isValidName(userPropertyName, 24) || userPropertyName === 'user_id') {
       throw new Error(
-        'Invalid user-property name specified. Should contain 1 to 24 alphanumeric characters or underscores. The name must start with an alphabetic character.'
+        `Invalid user-property name (${userPropertyName}) specified. Should contain 1 to 24 alphanumeric characters or underscores. The name must start with an alphabetic character.`
       );
     }
     if (

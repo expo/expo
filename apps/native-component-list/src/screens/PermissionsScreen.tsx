@@ -1,13 +1,13 @@
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   ScrollView,
-  View,
   StyleSheet,
   Text,
   TouchableOpacity,
   TouchableOpacityProps,
+  View,
 } from 'react-native';
-import * as Permissions from 'expo-permissions';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -41,7 +41,7 @@ interface State {
   permissionsFunction: 'askAsync' | 'getAsync';
 }
 
-export default class PermissionsScreen extends React.Component<{}, State> {
+export default class PermissionsScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Permissions',
   };
@@ -53,7 +53,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
   invokePermissionsFunction = async (...types: Permissions.PermissionType[]) => {
     const result = await Permissions[this.state.permissionsFunction](...types);
     alert(JSON.stringify(result, null, 2));
-  }
+  };
 
   renderSinglePermissionsButtons() {
     const permissions: Array<[string, Permissions.PermissionType]> = [
@@ -71,9 +71,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
     return permissions.map(([permissionName, permissionType]) => (
       <View key={permissionType} style={styles.button}>
         <Button
-          onPress={() =>
-            this.invokePermissionsFunction(permissionType)
-          }
+          onPress={() => this.invokePermissionsFunction(permissionType)}
           title={`Permissions.${permissionName}`}
         />
       </View>
@@ -82,10 +80,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
 
   render() {
     return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <View>
           <Text style={styles.switchText}>
             Function to be invoked Permissions.
@@ -96,18 +91,14 @@ export default class PermissionsScreen extends React.Component<{}, State> {
               <Button
                 disabled={this.state.permissionsFunction === 'askAsync'}
                 title="askAsync"
-                onPress={() =>
-                  this.setState({ permissionsFunction: 'askAsync' })
-                }
+                onPress={() => this.setState({ permissionsFunction: 'askAsync' })}
               />
             </View>
             <View style={styles.switchButton}>
               <Button
                 disabled={this.state.permissionsFunction === 'getAsync'}
                 title="getAsync"
-                onPress={() =>
-                  this.setState({ permissionsFunction: 'getAsync' })
-                }
+                onPress={() => this.setState({ permissionsFunction: 'getAsync' })}
               />
             </View>
           </View>

@@ -1,6 +1,6 @@
-import React from 'react';
-import { PixelRatio, View, Text, Switch } from 'react-native';
 import { Audio } from 'expo-av';
+import React from 'react';
+import { PixelRatio, Switch, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import ListButton from '../../components/ListButton';
@@ -46,16 +46,16 @@ export default class AudioModeSelector extends React.Component<{}, State> {
     } catch (error) {
       alert(error.message);
     }
-  }
+  };
 
   _modesEqual = (modeA: Mode, modeB: Mode) =>
     modeA.interruptionModeIOS === modeB.interruptionModeIOS &&
     modeA.playsInSilentModeIOS === modeB.playsInSilentModeIOS &&
     modeA.allowsRecordingIOS === modeB.allowsRecordingIOS &&
-    modeA.staysActiveInBackground === modeB.staysActiveInBackground
+    modeA.staysActiveInBackground === modeB.staysActiveInBackground;
 
   _setMode = (interruptionModeIOS: number) => () =>
-    this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeIOS } })
+    this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeIOS } });
 
   _renderToggle = ({
     title,
@@ -65,7 +65,11 @@ export default class AudioModeSelector extends React.Component<{}, State> {
   }: {
     title: string;
     disabled?: boolean;
-    valueName: 'interruptionModeIOS' | 'playsInSilentModeIOS' | 'allowsRecordingIOS' | 'staysActiveInBackground';
+    valueName:
+      | 'interruptionModeIOS'
+      | 'playsInSilentModeIOS'
+      | 'allowsRecordingIOS'
+      | 'staysActiveInBackground';
     value?: boolean;
   }) => (
     <View
@@ -76,8 +80,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         paddingVertical: 5,
         borderBottomWidth: 1.0 / PixelRatio.get(),
         borderBottomColor: '#cccccc',
-      }}
-    >
+      }}>
       <Text style={{ flex: 1, fontSize: 16 }}>{title}</Text>
       <Switch
         disabled={disabled}
@@ -89,7 +92,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         }
       />
     </View>
-  )
+  );
 
   _renderModeSelector = ({
     title,
@@ -105,7 +108,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
       title={`${this.state.modeToSet.interruptionModeIOS === value ? '✓ ' : ''}${title}`}
       onPress={this._setMode(value)}
     />
-  )
+  );
 
   render() {
     return (

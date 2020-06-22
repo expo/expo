@@ -45,6 +45,7 @@ extern const NSInteger AIRMapMaxZoomLevel;
 @property (nonatomic, assign) CGFloat minZoomLevel;
 @property (nonatomic, assign) CGFloat maxZoomLevel;
 @property (nonatomic, assign) CGPoint compassOffset;
+@property (nonatomic, assign) UIEdgeInsets mapPadding;
 
 @property (nonatomic, assign) CLLocationCoordinate2D pendingCenter;
 @property (nonatomic, assign) MKCoordinateSpan pendingSpan;
@@ -66,6 +67,7 @@ extern const NSInteger AIRMapMaxZoomLevel;
 @property (nonatomic, copy) RCTDirectEventBlock onMarkerDragEnd;
 @property (nonatomic, copy) RCTDirectEventBlock onCalloutPress;
 @property (nonatomic, copy) RCTDirectEventBlock onRegionChange;
+@property (nonatomic, copy) RCTBubblingEventBlock onUserLocationChange;
 
 - (void)cacheViewIfNeeded;
 - (void)beginLoading;

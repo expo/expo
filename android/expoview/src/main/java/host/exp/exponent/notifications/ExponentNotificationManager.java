@@ -25,8 +25,11 @@ import javax.inject.Inject;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.R;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ExponentNotificationManager {
@@ -239,6 +242,27 @@ public class ExponentNotificationManager {
       mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
     } catch (JSONException e) {
       e.printStackTrace();
+    }
+  }
+
+  public List<Integer> getAllNotificationsIds(String experienceId) {
+    try {
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+      if (metadata == null) {
+        return Collections.emptyList();
+      }
+      JSONArray notifications = metadata.optJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_ALL_NOTIFICATION_IDS);
+      if (notifications == null) {
+        return Collections.emptyList();
+      }
+      List<Integer> notificationsIds = new ArrayList<>();
+      for (int i = 0; i < notifications.length(); i++) {
+        notificationsIds.add(notifications.getInt(i));
+      }
+      return notificationsIds;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return Collections.emptyList();
     }
   }
 

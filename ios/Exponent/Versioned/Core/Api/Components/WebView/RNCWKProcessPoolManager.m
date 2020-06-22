@@ -10,6 +10,7 @@
 
 @interface RNCWKProcessPoolManager() {
     WKProcessPool *_sharedProcessPool;
+    NSMutableDictionary<NSString *, WKProcessPool *> *_pools;
 }
 @end
 
@@ -25,11 +26,32 @@
     }
 }
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _pools = [NSMutableDictionary new];
+    }
+    return self;
+}
+
 - (WKProcessPool *)sharedProcessPool {
     if (!_sharedProcessPool) {
         _sharedProcessPool = [[WKProcessPool alloc] init];
     }
     return _sharedProcessPool;
+}
+
+- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId
+{
+    if (!experienceId) {
+        return [self sharedProcessPool];
+    }
+
+    if (!_pools[experienceId]) {
+        _pools[experienceId] = [[WKProcessPool alloc] init];
+    }
+
+    return _pools[experienceId];
 }
 
 @end

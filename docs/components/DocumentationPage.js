@@ -18,6 +18,9 @@ import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
+  max-width: 1440px;
+  background: #fff;
+  margin: 0 auto;
   padding: 24px 24px 24px 32px;
 
   hr {

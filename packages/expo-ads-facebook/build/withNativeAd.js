@@ -15,7 +15,8 @@ export default function withNativeAd(Component) {
     return class NativeAdContainer extends React.Component {
         constructor(props) {
             super(props);
-            this._subscription = null;
+            this._readySubscription = null;
+            this._errorSubscription = null;
             this._nativeAdViewRef = React.createRef();
             this._adMediaViewNodeHandle = null;
             this._adIconViewNodeHandle = null;
@@ -78,15 +79,30 @@ export default function withNativeAd(Component) {
         componentDidMount() {
             if (!this.state.canRequestAds) {
                 // On mounting, listen to the ads manager to learn when it is ready to display ads
-                this._subscription = this.props.adsManager.onAdsLoaded(() => {
+                this._readySubscription = this.props.adsManager.onAdsLoaded(() => {
                     this.setState({ canRequestAds: true });
                 });
             }
+            this._errorSubscription = this.props.adsManager.onAdsErrored(error => {
+                // From what I, @sjchmiela, understand, an error may be encountered multiple times
+                // and it does *not* mean that the manager is not able to request ads at all -
+                // - this may have been an intermittent error -- that's why we don't set canRequestAds to false
+                // here.
+                // If the configuration is invalid from the start, the manager will never emit
+                // the onAdsLoaded event and the component would never think it could request ads.
+                if (this.props.onError) {
+                    this.props.onError(error);
+                }
+            });
         }
         componentWillUnmount() {
-            if (this._subscription) {
-                this._subscription.remove();
-                this._subscription = null;
+            if (this._readySubscription) {
+                this._readySubscription.remove();
+                this._readySubscription = null;
+            }
+            if (this._errorSubscription) {
+                this._errorSubscription.remove();
+                this._errorSubscription = null;
             }
         }
         render() {
@@ -95,19 +111,13 @@ export default function withNativeAd(Component) {
             }
             const { adsManager } = this.props;
             const props = this._getForwardedProps();
-            const viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
-          <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
-            <AdIconViewContext.Provider value={this._adIconViewContextValue}>
-              <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
-                  {this.state.ad ? <Component {...props} nativeAd={this.state.ad}/> : null}
-                </AdOptionsViewContext.Provider>
-              </AdTriggerViewContext.Provider>
-            </AdIconViewContext.Provider>
-          </AdMediaViewContext.Provider>
-        </NativeAdView>);
+            const viewHierarchy = (React.createElement(NativeAdView, { ref: this._nativeAdViewRef, adsManager: adsManager.placementId, onAdLoaded: this._handleAdLoaded },
+                React.createElement(AdMediaViewContext.Provider, { value: this._adMediaViewContextValue },
+                    React.createElement(AdIconViewContext.Provider, { value: this._adIconViewContextValue },
+                        React.createElement(AdTriggerViewContext.Provider, { value: this._adTriggerViewContextValue },
+                            React.createElement(AdOptionsViewContext.Provider, { value: this._adOptionsViewContextValue }, this.state.ad ? React.createElement(Component, Object.assign({}, props, { nativeAd: this.state.ad })) : null))))));
             if (NativeAdLayout) {
-                return <NativeAdLayout>{viewHierarchy}</NativeAdLayout>;
+                return React.createElement(NativeAdLayout, null, viewHierarchy);
             }
             return viewHierarchy;
         }

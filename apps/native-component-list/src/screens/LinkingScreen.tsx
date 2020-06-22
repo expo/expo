@@ -1,7 +1,6 @@
-import * as IntentLauncher from 'expo-intent-launcher';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
@@ -64,7 +63,7 @@ export default function LinkingScreen() {
     if (url) {
       alert(`Linking url event: ${url}`);
     }
-  }, [url]);
+  });
 
   return (
     <ScrollView style={styles.container}>
@@ -74,14 +73,7 @@ export default function LinkingScreen() {
           Linking.openSettings();
         }}
       />
-      <Button
-        disabled={Platform.OS !== 'android'}
-        title="Send Intent"
-        onPress={() => {
-          Linking.sendIntent(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
-        }}
-      />
-      {url && <TextInputButton text={url} />}
+      {url && <TextInputButton text={Linking.makeUrl('deep-link')} />}
       <TextInputButton text="https://github.com/search?q=Expo" />
       <TextInputButton text="https://www.expo.io" />
       <TextInputButton text="http://www.expo.io" />

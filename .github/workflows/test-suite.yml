@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '13.8.0'
+          node-version: '14.4.0'
       - uses: actions/checkout@v2
         with:
           submodules: true
@@ -51,7 +51,7 @@ jobs:
           status: ${{ job.status }}
           fields: commit,author,action,message
           author_name: test suite web
-    
+
   ios:
     runs-on: macos-10.15
     steps:

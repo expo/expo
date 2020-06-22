@@ -304,7 +304,7 @@ async function generateVersionedExpoAsync(versionName: string): Promise<void> {
   await fs.copy(path.join(IOS_DIR, 'Exponent', 'Versioned'), versionedExpoKitPath);
 
   await fs.copy(
-    path.join(EXPO_DIR, 'ExpoKit.podspec'),
+    path.join(EXPO_DIR, 'ios', 'ExpoKit.podspec'),
     path.join(versionedExpoKitPath, 'ExpoKit.podspec')
   );
 
@@ -499,8 +499,8 @@ async function generateReactPodspecAsync(versionedReactNativePath, versionName) 
   await _transformFileContentsAsync(specFilename, (fileString) => {
     // replace React/* dependency with ${versionedReactPodName}/*
     fileString = fileString.replace(
-      /(ss\.dependency\s+)"React\/(\S+)"/g,
-      `$1"${versionedReactPodName}/$2"`
+      /(\.dependency\s+)"React([^"]+)"/g,
+      `$1"${versionedReactPodName}$2"`
     );
 
     fileString = fileString.replace('/RCTTV', `/${versionName}RCTTV`);

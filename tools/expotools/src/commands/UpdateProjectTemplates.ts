@@ -114,24 +114,6 @@ async function yarnTemplateAsync(templatePath: string): Promise<void> {
   });
 }
 
-/**
- * Updates `sdkVersion` in template's `app.json` file.
- *
- * @param templatePath Root path of the template.
- * @param sdkVersion SDK version string to which to upgrade.
- */
-async function updateTemplateSdkVersionAsync(
-  templatePath: string,
-  sdkVersion: string
-): Promise<void> {
-  const appJsonPath = path.join(templatePath, 'app.json');
-
-  if (await fs.pathExists(appJsonPath)) {
-    console.log(chalk.yellow('>'), `Setting SDK version to ${chalk.cyan(sdkVersion)}...`);
-    await JsonFile.setAsync(appJsonPath, 'expo.sdkVersion', sdkVersion);
-  }
-}
-
 async function action(options: ActionOptions) {
   // At this point of the release process all platform should have the same newest SDK version.
   const sdkVersion = options.sdkVersion ?? (await getNewestSDKVersionAsync('ios'));
@@ -153,7 +135,6 @@ async function action(options: ActionOptions) {
 
   for (const template of templates) {
     await updateTemplateAsync(template, modulesToUpdate, sdkVersion);
-    await updateTemplateSdkVersionAsync(template.path, sdkVersion);
     await yarnTemplateAsync(template.path);
     console.log(chalk.yellow('>'), chalk.green('Success!'), '\n');
   }

@@ -1,12 +1,35 @@
 # Changelog
 
-## master
+## Unpublished
 
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 0.2.9 — 2020-06-15
+
+### 🐛 Bug fixes
+
+- Fixed issue where launch screen on iOS doesn't show whilst updates are being retrieved if it is contained within a storyboard instead of a nib. ([#8750](https://github.com/expo/expo/pull/8750) by [@MattsTheChief](https://github.com/MattsTheChief))
+- Fixed an issue where the REACT_NATIVE_PACKAGER_HOSTNAME env var was not respected in the build scripts for iOS or Android.
+
+## 0.2.8 — 2020-05-29
+
+*This version does not introduce any user-facing changes.*
+
+## 0.2.7 - 2020-05-27
+
+### 🐛 Bug fixes
+
+- Added a better error message to the `create-manifest-ios.sh` script in case the Xcode shell cannot find the node binary.
+- Added an optional `bundleIn${targetName}` field to Gradle build script config. ([#8464](https://github.com/expo/expo/pull/8464) by [@rickysullivan](https://github.com/rickysullivan))
+- Fixed a bug on iOS with bundling assets from outside the project root.
+
+## 0.2.6 — 2020-05-27
+
+*This version does not introduce any user-facing changes.*
 
 ## 0.2.5
 

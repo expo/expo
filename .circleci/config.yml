@@ -240,7 +240,7 @@ commands:
 executors:
   android:
     docker:
-      - image: circleci/android:api-28-ndk-r17b
+      - image: circleci/android:api-29-ndk
     resource_class: xlarge
   js:
     docker:
@@ -265,19 +265,6 @@ executors:
       GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
-  # Android and iOS clients
-  client:
-    unless: << pipeline.parameters.release >>
-    jobs:
-      - client_android
-      # Disabled until further notice
-      # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
-      # - test_suite_publish
-      # - android_test_suite:
-      #     requires:
-      #       - test_suite_publish
-      - client_ios
-
   release_simulator:
     when: << pipeline.parameters.release_simulator >>
     jobs:
@@ -314,18 +301,6 @@ workflows:
     when: << pipeline.parameters.expo_client >>
     jobs:
       - expo_client_build
-
-  shell_app_nightly:
-    triggers:
-      - schedule:
-          cron: '20 5 * * 2,4,6'
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - shell_app_ios_build:
-          upload: false
 
 jobs:
   client_ios:

@@ -49,6 +49,8 @@ The Expo SDK provides access to device/system functionality such as camera, push
 
 ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../../expokit/eject/).
 
+**ExpoKit is deprecated and support for ExpoKit will be removed after SDK 38. We recommend ejecting to the bare workflow instead.**
+
 ### iOS
 
 The operating system used on iPhone, iPad, and Apple TV. Expo currently runs on iOS for iPhone and iPad.

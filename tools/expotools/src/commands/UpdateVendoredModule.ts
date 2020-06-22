@@ -38,6 +38,7 @@ interface VendoredModuleUpdateStep {
 interface VendoredModuleConfig {
   repoUrl: string;
   packageName?: string;
+  packageJsonPath?: string;
   installableInManagedApps?: boolean;
   semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
@@ -240,7 +241,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
-        sourceIosPath: 'ios',
+        sourceIosPath: 'apple',
         targetIosPath: 'Api/Components/WebView',
         sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/webview',
         targetAndroidPath: 'modules/api/components/webview',
@@ -340,6 +341,35 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/SegmentedControl',
+      },
+    ],
+  },
+  '@react-native-community/picker': {
+    repoUrl: 'https://github.com/react-native-community/react-native-picker',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/Picker',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/picker',
+        targetAndroidPath: 'modules/api/components/picker',
+        sourceAndroidPackage: 'com.reactnativecommunity.picker',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
+      },
+    ],
+  },
+  '@react-native-community/slider': {
+    repoUrl: 'https://github.com/react-native-community/react-native-slider',
+    installableInManagedApps: true,
+    packageJsonPath: 'src',
+    steps: [
+      {
+        sourceIosPath: 'src/ios',
+        targetIosPath: 'Api/Components/Slider',
+        sourceAndroidPath: 'src/android/src/main/java/com/reactnativecommunity/slider',
+        targetAndroidPath: 'modules/api/components/slider',
+        sourceAndroidPackage: 'com.reactnativecommunity.slider',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.slider',
       },
     ],
   },
@@ -728,7 +758,7 @@ async function action(options: ActionOptions) {
   const { name, version } = await JsonFile.readAsync<{
     name: string;
     version: string;
-  }>(path.join(tmpDir, 'package.json'));
+  }>(path.join(tmpDir, moduleConfig.packageJsonPath ?? '', 'package.json'));
   const semverPrefix =
     (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
   const versionRange = `${semverPrefix}${version}`;

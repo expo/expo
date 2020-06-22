@@ -19,9 +19,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		528462FF59790EE54889F0C28277191F /* UMCameraInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMCameraInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		5521CA1E754E65BA45AE2914EFD69FC3 /* UMCameraInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCameraInterface.xcconfig; sourceTree = "<group>"; };
-		96D73D20E955F0BC7DD70CB87973008D /* UMCameraInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMCameraInterface.h; path = UMCameraInterface/UMCameraInterface.h; sourceTree = "<group>"; };
+		429194027E15FD9D7D13254F915B0D99 /* UMCameraInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMCameraInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCameraInterface.debug.xcconfig; sourceTree = "<group>"; };
+		E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCameraInterface.release.xcconfig; sourceTree = "<group>"; };
+		F86BCEB0D923CE54D56063784351B8D9 /* UMCameraInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMCameraInterface.h; path = UMCameraInterface/UMCameraInterface.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -37,8 +38,19 @@
 			children = (
 				2412B8B6375E1043322569ED3DAFF1A5 /* Frameworks */,
 				940AFEEAF2F312D6EE2BF115BF4D7064 /* Products */,
-				D93369848DF83A649A2A06BFDB831E27 /* UMCameraInterface */,
+				3F3F599C07684EC8C581CC638569CAF9 /* UMCameraInterface */,
 			);
+			sourceTree = "<group>";
+		};
+		3F3F599C07684EC8C581CC638569CAF9 /* UMCameraInterface */ = {
+			isa = PBXGroup;
+			children = (
+				F86BCEB0D923CE54D56063784351B8D9 /* UMCameraInterface.h */,
+				F014B88D967C5FF7A1C0108D319C3EBA /* Pod */,
+				F2299DD78D596DFBEC5A0985DE63FA77 /* Support Files */,
+			);
+			name = UMCameraInterface;
+			path = "../../../../packages/unimodules-camera-interface/ios";
 			sourceTree = "<group>";
 		};
 		940AFEEAF2F312D6EE2BF115BF4D7064 /* Products */ = {
@@ -48,29 +60,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		96770C137C01C3D914007FDBA15537F4 /* Pod */ = {
+		F014B88D967C5FF7A1C0108D319C3EBA /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				528462FF59790EE54889F0C28277191F /* UMCameraInterface.podspec */,
+				429194027E15FD9D7D13254F915B0D99 /* UMCameraInterface.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		D93369848DF83A649A2A06BFDB831E27 /* UMCameraInterface */ = {
+		F2299DD78D596DFBEC5A0985DE63FA77 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				96D73D20E955F0BC7DD70CB87973008D /* UMCameraInterface.h */,
-				96770C137C01C3D914007FDBA15537F4 /* Pod */,
-				F4AFCEFFAA0B5D3154F8D3DA66FE3B9E /* Support Files */,
-			);
-			name = UMCameraInterface;
-			path = "../../../../packages/unimodules-camera-interface/ios";
-			sourceTree = "<group>";
-		};
-		F4AFCEFFAA0B5D3154F8D3DA66FE3B9E /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				5521CA1E754E65BA45AE2914EFD69FC3 /* UMCameraInterface.xcconfig */,
+				D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */,
+				E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMCameraInterface";
@@ -104,6 +106,21 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
+		1150F028DF0436DE37C1D501817A7011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		153E90E26CD871F2FA0ABBEA5CB92648 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -161,21 +178,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		34F77C64AEB7CB53F1763F46B6C29E22 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5521CA1E754E65BA45AE2914EFD69FC3 /* UMCameraInterface.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -243,9 +245,9 @@
 			};
 			name = Debug;
 		};
-		9A3E5CEE28960CF962DFDA97FFC71649 /* Debug */ = {
+		C6E15C9F7F0B2A693760580A84BD2ED7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5521CA1E754E65BA45AE2914EFD69FC3 /* UMCameraInterface.xcconfig */;
+			baseConfigurationReference = D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -272,8 +274,8 @@
 		A0D4BF1EC36A7EB9632B445111810A55 /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9A3E5CEE28960CF962DFDA97FFC71649 /* Debug */,
-				34F77C64AEB7CB53F1763F46B6C29E22 /* Release */,
+				C6E15C9F7F0B2A693760580A84BD2ED7 /* Debug */,
+				1150F028DF0436DE37C1D501817A7011 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

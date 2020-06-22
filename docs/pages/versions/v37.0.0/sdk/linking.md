@@ -1,6 +1,6 @@
 ---
 title: Linking
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Linking'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo/src/Linking'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

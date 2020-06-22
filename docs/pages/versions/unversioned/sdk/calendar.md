@@ -161,7 +161,7 @@ Creates a new calendar on the device, allowing events to be added later and disp
   - **title (_string_)** -- Required
   - **color (_string_)** -- Required
   - **entityType (_string_)** -- Required (iOS only)
-  - **sourceId (_string_)** -- Required (iOS only). ID of the source to be used for the calendar. Likely the same as the source for any other locally stored calendars.
+  - **sourceId (_string_)** -- (iOS only) ID of the source to be used for the calendar. Likely the same as the source for any other locally stored calendars.
   - **source (_object_)** -- Required (Android only). Object representing the source to be used for the calendar.
 
     - **isLocalAccount (_boolean_)** -- Whether this source is the local phone account. Must be `true` if `type` is undefined.

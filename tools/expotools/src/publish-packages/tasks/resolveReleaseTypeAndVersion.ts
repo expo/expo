@@ -52,6 +52,13 @@ function resolveSuggestedVersion(
   releaseType: ReleaseType,
   prereleaseIdentifier?: string | null
 ): string {
+  // If the version to bump is not published yet, then we do want to use it instead,
+  // no matter which release type is suggested.
+  // TODO: do we need to make an exception for prerelease versions?
+  if (!otherVersions.includes(versionToBump) && semver.valid(versionToBump)) {
+    return versionToBump;
+  }
+
   const targetPrereleaseIdentifier = prereleaseIdentifier ?? getPrereleaseIdentifier(versionToBump);
 
   // Higher version might have already been published from another place,

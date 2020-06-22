@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		29774CB5E401DDAE460280DAE4F607F0 /* EXImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = E1C4BEE3D00EF30AF330BE3BC2F08065 /* EXImageLoader.m */; };
-		605B6D4487F832007D15DE4CFF894C58 /* EXImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DA4B9AE5E5F6FA82E4BB353C5FA44FF /* EXImageLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7B836031765959BC39F8353C9977CCEA /* EXImageLoader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 86C193FF7552F068883F7129ED87B412 /* EXImageLoader-dummy.m */; };
+		29774CB5E401DDAE460280DAE4F607F0 /* EXImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE8A1D311246B8642D90C802815CA1F /* EXImageLoader.m */; };
+		605B6D4487F832007D15DE4CFF894C58 /* EXImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 51B5D70582609791E79D230B96A2421F /* EXImageLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7B836031765959BC39F8353C9977CCEA /* EXImageLoader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 18B574D33E07CD8E54D78BDFCAB9A058 /* EXImageLoader-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,15 +37,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1DA4B9AE5E5F6FA82E4BB353C5FA44FF /* EXImageLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageLoader.h; path = EXImageLoader/EXImageLoader.h; sourceTree = "<group>"; };
+		0C3A943017D22D3DF9E5E1D60998582D /* EXImageLoader.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXImageLoader.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		18B574D33E07CD8E54D78BDFCAB9A058 /* EXImageLoader-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXImageLoader-dummy.m"; sourceTree = "<group>"; };
+		27AD49923E4B0C33DEF6BFC291D54297 /* EXImageLoader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImageLoader.debug.xcconfig; sourceTree = "<group>"; };
+		2FE8A1D311246B8642D90C802815CA1F /* EXImageLoader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageLoader.m; path = EXImageLoader/EXImageLoader.m; sourceTree = "<group>"; };
 		32B62E17B3CFA1FDA8D2A03C77FB8409 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 		37833AB416B07806C2B25A3F00F7413F /* libEXImageLoader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXImageLoader.a; path = libEXImageLoader.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		447090E983087E27388C5A2B37CA744F /* EXImageLoader.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImageLoader.xcconfig; sourceTree = "<group>"; };
-		86C193FF7552F068883F7129ED87B412 /* EXImageLoader-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXImageLoader-dummy.m"; sourceTree = "<group>"; };
+		51B5D70582609791E79D230B96A2421F /* EXImageLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageLoader.h; path = EXImageLoader/EXImageLoader.h; sourceTree = "<group>"; };
 		94E9A140D8BF40A34C7617D262635874 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		D416867A86A58995FF7311D42182D40F /* EXImageLoader-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXImageLoader-prefix.pch"; sourceTree = "<group>"; };
-		E1C4BEE3D00EF30AF330BE3BC2F08065 /* EXImageLoader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageLoader.m; path = EXImageLoader/EXImageLoader.m; sourceTree = "<group>"; };
-		F389F8ED771F9E6C921069A72C450BE6 /* EXImageLoader.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXImageLoader.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A397878C9F36CEB8B3F5E6EC0C647A42 /* EXImageLoader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImageLoader.release.xcconfig; sourceTree = "<group>"; };
+		B0384D7C6F3EAED3F785D93CCA247C32 /* EXImageLoader-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXImageLoader-prefix.pch"; sourceTree = "<group>"; };
 		FBA689F18DD4F66250170D58319F6AE9 /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -67,23 +68,32 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		63ABD574447CDA41E63D474446D83A10 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				447090E983087E27388C5A2B37CA744F /* EXImageLoader.xcconfig */,
-				86C193FF7552F068883F7129ED87B412 /* EXImageLoader-dummy.m */,
-				D416867A86A58995FF7311D42182D40F /* EXImageLoader-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXImageLoader";
-			sourceTree = "<group>";
-		};
 		70B7DC1FBF0565121BCA2887CFD89219 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				37833AB416B07806C2B25A3F00F7413F /* libEXImageLoader.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		92E4397A49E949ABC9908F00AB2560BB /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				0C3A943017D22D3DF9E5E1D60998582D /* EXImageLoader.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		95C30F53FE8A496F634583114393069E /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				18B574D33E07CD8E54D78BDFCAB9A058 /* EXImageLoader-dummy.m */,
+				B0384D7C6F3EAED3F785D93CCA247C32 /* EXImageLoader-prefix.pch */,
+				27AD49923E4B0C33DEF6BFC291D54297 /* EXImageLoader.debug.xcconfig */,
+				A397878C9F36CEB8B3F5E6EC0C647A42 /* EXImageLoader.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXImageLoader";
 			sourceTree = "<group>";
 		};
 		9635B9A28461A6FD809EE43B4AD5A500 /* Dependencies */ = {
@@ -100,30 +110,22 @@
 			isa = PBXGroup;
 			children = (
 				9635B9A28461A6FD809EE43B4AD5A500 /* Dependencies */,
-				C2D2E58C223443EB8E0C5D7BA7E31253 /* EXImageLoader */,
+				D145A4AD55974C9D5DC89522CB3A8C73 /* EXImageLoader */,
 				10DC8051DA634BCB8569E7EB411726B9 /* Frameworks */,
 				70B7DC1FBF0565121BCA2887CFD89219 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		C2D2E58C223443EB8E0C5D7BA7E31253 /* EXImageLoader */ = {
+		D145A4AD55974C9D5DC89522CB3A8C73 /* EXImageLoader */ = {
 			isa = PBXGroup;
 			children = (
-				1DA4B9AE5E5F6FA82E4BB353C5FA44FF /* EXImageLoader.h */,
-				E1C4BEE3D00EF30AF330BE3BC2F08065 /* EXImageLoader.m */,
-				FD488EC96D3944F920635F16B8F8EB9C /* Pod */,
-				63ABD574447CDA41E63D474446D83A10 /* Support Files */,
+				51B5D70582609791E79D230B96A2421F /* EXImageLoader.h */,
+				2FE8A1D311246B8642D90C802815CA1F /* EXImageLoader.m */,
+				92E4397A49E949ABC9908F00AB2560BB /* Pod */,
+				95C30F53FE8A496F634583114393069E /* Support Files */,
 			);
 			name = EXImageLoader;
 			path = "../../packages/expo-image-loader/ios";
-			sourceTree = "<group>";
-		};
-		FD488EC96D3944F920635F16B8F8EB9C /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				F389F8ED771F9E6C921069A72C450BE6 /* EXImageLoader.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -229,6 +231,55 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1B41856D52BD355C22646543BB913CA5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A397878C9F36CEB8B3F5E6EC0C647A42 /* EXImageLoader.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXImageLoader;
+				PRODUCT_NAME = EXImageLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2FBCEDE4916CFC3928306EF8FA91DEF4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27AD49923E4B0C33DEF6BFC291D54297 /* EXImageLoader.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXImageLoader;
+				PRODUCT_NAME = EXImageLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		4BF3B0D9AF2E676D6ED9FD1B89395D5B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -353,63 +404,14 @@
 			};
 			name = Release;
 		};
-		B6AAEB9639F7369DA77B05C443738450 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 447090E983087E27388C5A2B37CA744F /* EXImageLoader.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXImageLoader;
-				PRODUCT_NAME = EXImageLoader;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		DD126D70DB1DFA93CE01114908548714 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 447090E983087E27388C5A2B37CA744F /* EXImageLoader.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXImageLoader;
-				PRODUCT_NAME = EXImageLoader;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		E0338F805DB48298B2E97D540EAB2C6A /* Build configuration list for PBXNativeTarget "EXImageLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DD126D70DB1DFA93CE01114908548714 /* Debug */,
-				B6AAEB9639F7369DA77B05C443738450 /* Release */,
+				2FBCEDE4916CFC3928306EF8FA91DEF4 /* Debug */,
+				1B41856D52BD355C22646543BB913CA5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

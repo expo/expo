@@ -30,6 +30,10 @@ export enum ResponseType {
    * For requesting an access token (implicit grant) as described by [Section 4.2.1](https://tools.ietf.org/html/rfc6749#section-4.2.1).
    */
   Token = 'token',
+  /**
+   * A custom registered type for getting an `id_token` from Google OAuth.
+   */
+  IdToken = 'id_token',
 }
 
 /**
@@ -93,7 +97,7 @@ export interface AuthRequestConfig {
    *
    * @default ResponseType.Code
    */
-  responseType?: ResponseType;
+  responseType?: ResponseType | string;
   /**
    * A unique string representing the registration information provided by the client.
    * The client identifier is not a secret; it is exposed to the resource owner and shouldn't be used

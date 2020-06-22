@@ -37,7 +37,7 @@ that anyone can load your project from.
 
 If you haven't optimized your assets yet you will be prompted and asked
 if you'd like to do so when you run `expo publish`. This has the same effect
-as running `expo optimize` and will compress all of the PNGs and JPEGs in your project.
+as running `npx expo-optimize` and will compress all of the PNGs and JPEGs in your project.
 
 Any time you want to deploy an update, hit publish again and a new
 version will be available immediately to your users the next time they
@@ -90,6 +90,8 @@ re-build the binaries for your app for the change to take effect:
 - Change your app `scheme`
 - Change your `facebookScheme`
 - Change your bundled assets under `assetBundlePatterns`
+
+Additionally, changes to keys in Firebase configuration files (google-services.json and GoogleService-Info.plist) will require re-building the binaries to take effect in the iOS or Android standalone app.
 
 ### On iOS, you can't share your published link
 

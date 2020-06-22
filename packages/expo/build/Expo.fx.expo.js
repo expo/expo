@@ -1,6 +1,7 @@
 import './environment/validate.fx';
 import './environment/logging.fx';
 import './environment/muteWarnings.fx';
+import './environment/LogBox.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
 import Constants from 'expo-constants';
@@ -23,9 +24,8 @@ if (__DEV__) {
         AppRegistry.setWrapperComponentProvider = provider => {
             function PatchedProviderComponent(props) {
                 const ProviderComponent = provider();
-                return (<DevAppContainer>
-            <ProviderComponent {...props}/>
-          </DevAppContainer>);
+                return (React.createElement(DevAppContainer, null,
+                    React.createElement(ProviderComponent, Object.assign({}, props))));
             }
             originalSetWrapperComponentProvider(() => PatchedProviderComponent);
         };

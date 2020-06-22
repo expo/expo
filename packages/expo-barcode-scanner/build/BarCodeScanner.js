@@ -1,8 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Platform, ViewPropTypes } from 'react-native';
+import * as React from 'react';
+import { Platform } from 'react-native';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
@@ -59,7 +58,7 @@ let BarCodeScanner = /** @class */ (() => {
         render() {
             const nativeProps = this.convertNativeProps(this.props);
             const { onBarCodeScanned } = this.props;
-            return (<ExpoBarCodeScannerView {...nativeProps} onBarCodeScanned={this.onObjectDetected(onBarCodeScanned)}/>);
+            return (React.createElement(ExpoBarCodeScannerView, Object.assign({}, nativeProps, { onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) })));
         }
         convertNativeProps(props) {
             const newProps = mapValues(props, this.convertProp);
@@ -78,12 +77,6 @@ let BarCodeScanner = /** @class */ (() => {
     };
     BarCodeScanner.ConversionTables = {
         type: Type,
-    };
-    BarCodeScanner.propTypes = {
-        ...ViewPropTypes,
-        onBarCodeScanned: PropTypes.func,
-        barCodeTypes: PropTypes.array,
-        type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     };
     BarCodeScanner.defaultProps = {
         type: Type.back,

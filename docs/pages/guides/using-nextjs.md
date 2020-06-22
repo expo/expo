@@ -17,11 +17,11 @@ Using Expo with Next.js means you can share all of your existing components and 
 - Open: `http://localhost:3000/`
 
 - [🏁 Setup](#-setup)
-  - [Expo projects with Next.js](#expo-projects-with-nextjs)
-  - [Next.js projects with Expo](#nextjs-projects-with-expo)
+  - [Add Next.js to Expo projects](#add-nextjs-to-expo-projects)
+  - [Add Expo to Next.js projects](#add-expo-to-nextjs-projects)
   - [Manual setup](#manual-setup)
 - [Guides](#guides)
-  - [Deploy to Now](#deploy-to-now)
+  - [Deploy to Vercel](#deploy-to-vercel)
   - [Image support](#image-support)
   - [Font support](#font-support)
   - [Offline support](#offline-support)
@@ -76,7 +76,7 @@ In this approach you would be using SSR for web in your universal project. This 
 </p>
 </details>
 
-### Next.js projects with Expo
+### Add Expo to Next.js projects
 
 > This is for already existing Next.js projects.
 
@@ -151,9 +151,11 @@ Optionally you can set the project up manually (not recommended).
 
 ## Guides
 
-### Deploy to Now
+### Deploy to Vercel
 
-This is Zeit's preferred method for deploying Next.js projects to production.
+(Formerly ZEIT Now)
+
+This is Vercel's preferred method for deploying Next.js projects to production.
 
 - Add a **build** script to your `package.json`
   ```json
@@ -163,8 +165,8 @@ This is Zeit's preferred method for deploying Next.js projects to production.
     }
   }
   ```
-- Install the Now CLI: `npm i -g now`
-- Deploy to Now: `now`
+- Install the Vercel CLI: `npm i -g vercel`
+- Deploy to Vercel: `vercel`
 
 ### Polyfill setImmediate
 
@@ -402,7 +404,7 @@ With the regular `expo start:web` or `expo start --web` commands [web push notif
 <details><summary>Instructions</summary>
 <p>
 
-To use it with other services such as ZEIT Now, you would need appropriate configuration to
+To use it with other services such as Vercel, you would need appropriate configuration to
 
 - let `/service-worker.js` serve the file content of `/public/service-worker.js`, and
 - let `/workbox-service-worker.js` serve the file content of a service worker, which be:
@@ -410,7 +412,7 @@ To use it with other services such as ZEIT Now, you would need appropriate confi
   - `/_next/public/workbox-service-worker.js` if you are using [next-offline](https://github.com/hanford/next-offline), or
   - your own service worker file.
 
-Here is an example `now.json` configuration file:
+Here is an example `vercel.json` configuration file:
 
 ```json
 {

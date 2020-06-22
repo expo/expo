@@ -2,11 +2,15 @@
 title: Using TypeScript
 ---
 
-[TypeScript](https://www.typescriptlang.org/) - "JavaScript that scales." TypeScript is a superset of JavaScript which gives you static types and powerful tooling in [Visual Studio Code](https://code.visualstudio.com/) including autocompletion and useful inline warnings for type errors.
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-TypeScript has first-class support in Expo &mdash; the JavaScript portion of the Expo SDK is built using TypeScript. So let's look at how you can use it.
+> 💡 Example: [TypeScript](https://github.com/expo/examples/tree/master/with-typescript)
+
+Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of the Expo SDK is completely written in TypeScript.
 
 ## Starting from scratch: using a TypeScript template
+
+<TerminalBlock cmd={['expo init -t expo-template-blank-typescript']} />
 
 The easiest way to get started is to initialize your new project using a TypeScript template. When you run `expo init` choose one of the templates with TypeScript in the name and then run `yarn tsc` or `npx tsc` to typecheck the project.
 
@@ -14,18 +18,27 @@ When you create new source files in your project you should use the `.ts` extens
 
 ## Integrating TypeScript in your existing project
 
-- Initialize a new project using a TypeScript template as described above.
-- Copy over `tsconfig.json` to your project
-- Install the appropriate package versions specified in the new projects `package.json` for `@types/react`, `@types/react-native`, and `typescript`
-- Rename files to convert them to TypeScript. For example, you would rename `App.js` to `App.tsx`. We use the `.tsx` extension because the file includes React components (using JSX). If the file did not include any React components, we should use the `.ts` file extension.
+Create a config file and copy over the defaults from: [`tsconfig.json`](https://github.com/expo/expo/blob/master/templates/expo-template-blank-typescript/tsconfig.json)
+
+<TerminalBlock cmd={['curl https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank-typescript/tsconfig.json -o tsconfig.json']} />
+
+Install types in your project.
+
+<TerminalBlock cmd={['yarn add --dev typescript @types/react @types/react-native @types/react-dom']} />
+
+Rename files to convert them to TypeScript. For example, you would rename `App.js` to `App.tsx`.
+
+<TerminalBlock cmd={['mv App.js App.tsx']} />
+
+Use the `.tsx` extension if the file includes React components (JSX). If the file did not include any JSX, you can use the `.ts` file extension.
 
 ## Code editor integration
 
-Visual Studio Code itself is written in TypeScript and has fantastic support for it out of the box. Other editors may require editional setup, consult the documentation for your editor as needed.
+Visual Studio Code itself is written in TypeScript and has fantastic support for it out of the box. Other editors may require additional setup.
 
 ## Configuring the TypeScript compiler
 
-`tsconfig.json` contains a variety of options that allow you to customize the behavior of the TypeScript compiler. For example, by default we enable `"noEmit"`, which tells the compiler only to typecheck and not to actually output the compiled JavaScript files (Metro, the React Native packager, takes care of that for us).
+`tsconfig.json` contains a variety of options that allow you to customize the behavior of the TypeScript compiler. For example, by default we enable `"noEmit"`, which tells the compiler only to typecheck and not to actually output the compiled JavaScript files (Metro, the default bundler for native React projects, takes care of that for you).
 
 ```json
 {
@@ -43,7 +56,6 @@ Visual Studio Code itself is written in TypeScript and has fantastic support for
 The default configuration is forgiving and makes it easier to adopt TypeScript. If you'd like to opt-in to more strict type checking, you can add `"strict": true` to the `compilerOptions`. We recommend enabling this to minimize the chance of introducing runtime errors.
 
 Certain language features may require additional configuration, for example if you'd like to use decorators you will need to add the `experimentalDecorators` option. For more information on the available properties see the [TypeScript compiler options documentation](https://www.typescriptlang.org/docs/handbook/compiler-options.html) documentation.
-
 
 ## Learning how to use TypeScript
 

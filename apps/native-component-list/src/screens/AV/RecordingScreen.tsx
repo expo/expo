@@ -1,10 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
+import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
-import Recorder from './Recorder';
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
+import Recorder from './Recorder';
 
 interface State {
   recordingUri?: string;
@@ -25,7 +25,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
         <HeadingText>Last recording</HeadingText>
         <Player source={{ uri: this.state.recordingUri }} />
       </React.Fragment>
-    ) : null
+    ) : null;
 
   render() {
     return (

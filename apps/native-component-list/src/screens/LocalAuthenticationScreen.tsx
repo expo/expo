@@ -1,15 +1,18 @@
+import * as LocalAuthentication from 'expo-local-authentication';
 import React from 'react';
 import { Text, View } from 'react-native';
-import * as LocalAuthentication from 'expo-local-authentication';
+
 import Button from '../components/Button';
+import MonoText from '../components/MonoText';
 
 interface State {
   waiting: boolean;
+  supportedAuthenticationTypes?: string[];
   hasHardware?: boolean;
   isEnrolled?: boolean;
 }
 
-export default class LocalAuthenticationScreen extends React.Component<{}, State> {
+export default class LocalAuthenticationScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'LocalAuthentication',
   };
@@ -23,19 +26,35 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
   }
 
   async checkDevicePossibilities() {
-    const hasHardware = await LocalAuthentication.hasHardwareAsync();
-    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-
-    this.setState({ hasHardware, isEnrolled });
+    const [hasHardware, isEnrolled, supportedAuthenticationTypes] = await Promise.all([
+      LocalAuthentication.hasHardwareAsync(),
+      LocalAuthentication.isEnrolledAsync(),
+      this.getAuthenticationTypes(),
+    ]);
+    this.setState({ hasHardware, isEnrolled, supportedAuthenticationTypes });
   }
 
-  authenticate = async () => {
+  async getAuthenticationTypes() {
+    return (await LocalAuthentication.supportedAuthenticationTypesAsync()).map(
+      type => LocalAuthentication.AuthenticationType[type]
+    );
+  }
+
+  authenticateWithFallback = () => {
+    this.authenticate(true);
+  };
+
+  authenticateWithoutFallback = () => {
+    this.authenticate(false);
+  };
+
+  async authenticate(withFallback: boolean = true) {
     this.setState({ waiting: true });
     try {
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: 'Authenticate',
         cancelLabel: 'Cancel label',
-        disableDeviceFallback: true,
+        disableDeviceFallback: !withFallback,
       });
       if (result.success) {
         alert('Authenticated!');
@@ -45,50 +64,35 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
     } finally {
       this.setState({ waiting: false });
     }
-  };
-
-  checkAuthenticationsTypes = async () => {
-    const result = await LocalAuthentication.supportedAuthenticationTypesAsync();
-    const stringResult = result
-      .map(type => {
-        switch (type) {
-          case LocalAuthentication.AuthenticationType.FINGERPRINT:
-            return 'FINGERPRINT';
-          case LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION:
-            return 'FACIAL_RECOGNITION';
-          default:
-            throw new Error(`Unrecognised authentication type returned: '${type}'`);
-        }
-      })
-      .join(', ');
-    alert(stringResult ? `Available types: ${stringResult}` : 'No available authentication types!');
-  };
+  }
 
   render() {
-    const { hasHardware, isEnrolled } = this.state;
+    const { waiting, ...capabilities } = this.state;
 
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={{ paddingBottom: 30 }}>
-          <Text>
-            LocalAuthentication.hasHardwareAsync():
-            <Text style={{ fontWeight: 'bold' }}>{` ${hasHardware}`}</Text>
-          </Text>
-          <Text>
-            LocalAuthentication.isEnrolledAsync():
-            <Text style={{ fontWeight: 'bold' }}>{` ${isEnrolled}`}</Text>
-          </Text>
+          <Text>Device capabilities:</Text>
+          <MonoText textStyle={{ fontSize: 14 }}>{JSON.stringify(capabilities, null, 2)}</MonoText>
         </View>
-        <Button
-          style={{ margin: 5 }}
-          onPress={this.authenticate}
-          title={this.state.waiting ? 'Waiting for authentication... ' : 'Authenticate'}
-        />
-        <Button
-          style={{ margin: 5 }}
-          onPress={this.checkAuthenticationsTypes}
-          title="Check available authentications types"
-        />
+        <View style={{ height: 200 }}>
+          {waiting ? (
+            <Text>Waiting for authentication...</Text>
+          ) : (
+            <View>
+              <Button
+                style={{ margin: 5 }}
+                onPress={this.authenticateWithFallback}
+                title="Authenticate with device fallback"
+              />
+              <Button
+                style={{ margin: 5 }}
+                onPress={this.authenticateWithoutFallback}
+                title="Authenticate without device fallback"
+              />
+            </View>
+          )}
+        </View>
       </View>
     );
   }

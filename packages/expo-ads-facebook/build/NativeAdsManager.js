@@ -3,6 +3,7 @@ import { EventEmitter } from 'fbemitter';
 const { CTKNativeAdManager } = NativeModulesProxy;
 const nativeAdEmitter = new NativeEventEmitter(CTKNativeAdManager);
 const EVENT_DID_BECOME_VALID = 'AdsManagerDidBecomeValid';
+const EVENT_DID_ERROR = 'AdsManagerDidError';
 class NativeAdsManager {
     /**
      * Creates an instance of AdsManager with a given placementId and adsToRequest.
@@ -39,6 +40,12 @@ class NativeAdsManager {
                 this.eventEmitter.emit(EVENT_DID_BECOME_VALID);
             }
         });
+        nativeAdEmitter.addListener('CTKNativeAdManagerErrored', ({ placementId, error: { code, message } }) => {
+            if (this.placementId === placementId) {
+                const error = new Error(`Facebook Ads could not load (code ${code}): ${message}`);
+                this.eventEmitter.emit(EVENT_DID_ERROR, error);
+            }
+        });
     }
     /**
      * Used to listening for state changes
@@ -54,6 +61,9 @@ class NativeAdsManager {
             };
         }
         return this.eventEmitter.once(EVENT_DID_BECOME_VALID, listener);
+    }
+    onAdsErrored(listener) {
+        return this.eventEmitter.addListener(EVENT_DID_ERROR, listener);
     }
     /**
      * Disables auto refreshing for this native ad manager

@@ -47,6 +47,18 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  AR: {
+    enumerable: true,
+    get() {
+      if (__DEV__) {
+        setTimeout(() => {
+          throw new Error(
+            'The AR module has been removed from the Expo package. See https://expo.fyi/deprecating-ar for more information.'
+          );
+        }, 1000);
+      }
+    },
+  },
   AuthSession: {
     enumerable: true,
     get() {

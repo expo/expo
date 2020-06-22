@@ -9,7 +9,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -58,6 +58,8 @@ In development mode, or any other environment in which `expo-updates` is disable
 ### `Updates.reloadAsync()`
 
 Instructs the app to reload using the most recently downloaded version. This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+
+It is not recommended to place any meaningful logic after a call to `await Updates.reloadAsync()`. This is because the `Promise` is resolved after verifying that the app can be reloaded, and immediately before posting an asynchronous task to the main thread to actually reload the app. It is unsafe to make any assumptions about whether any more JS code will be executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and the state of the native module and main threads.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 

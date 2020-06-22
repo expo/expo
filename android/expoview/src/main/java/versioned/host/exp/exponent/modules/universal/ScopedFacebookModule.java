@@ -16,6 +16,9 @@ import expo.modules.facebook.FacebookModule;
 import host.exp.exponent.kernel.ExperienceId;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {
+  private final static String ERR_FACEBOOK_UNINITIALIZED = "ERR_FACEBOOK_UNINITIALIZED";
+
+
   private boolean mIsInitialized = false;
   private SharedPreferences mSharedPreferences;
 
@@ -67,17 +70,33 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
   }
 
   @Override
-  public void initializeAsync(String appId, String appName, Promise promise) {
+  public void initializeAsync(ReadableArguments options, final Promise promise) {
     mIsInitialized = true;
-    super.initializeAsync(appId, appName, promise);
+    super.initializeAsync(options, promise);
   }
 
   @Override
   public void logInWithReadPermissionsAsync(ReadableArguments config, Promise promise) {
     if (!mIsInitialized) {
-      promise.reject("E_NO_INIT", "Facebook SDK has not been initialized yet.");
+      promise.reject(ERR_FACEBOOK_UNINITIALIZED, "Facebook SDK has not been initialized yet.");
     }
     super.logInWithReadPermissionsAsync(config, promise);
+  }
+
+  @Override
+  public void getAuthenticationCredentialAsync(Promise promise) {
+    if (!mIsInitialized) {
+      promise.reject(ERR_FACEBOOK_UNINITIALIZED, "Facebook SDK has not been initialized yet.");
+    }
+    super.getAuthenticationCredentialAsync(promise);
+  }
+
+  @Override
+  public void logOutAsync(final Promise promise) {
+    if (!mIsInitialized) {
+      promise.reject(ERR_FACEBOOK_UNINITIALIZED, "Facebook SDK has not been initialized yet.");
+    }
+    super.logOutAsync(promise);
   }
 
   @Override

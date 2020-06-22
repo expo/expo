@@ -1,6 +1,6 @@
 ---
 title: Brightness
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-brightness'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-brightness'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

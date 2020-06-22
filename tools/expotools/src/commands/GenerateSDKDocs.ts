@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { transformFileAsync } from '../Utils';
 import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
@@ -46,7 +47,7 @@ async function action(options) {
 
     await fs.remove(path.join(SDK_DOCS_DIR, 'unversioned', 'react-native'));
 
-    await spawnAsync('yarn', ['run', 'import-react-native-docs'], {
+    await spawnAsync('et', ['update-react-native-docs', '--sdk', 'unversioned'], {
       stdio: 'inherit',
       cwd: DOCS_DIR,
     });
@@ -67,6 +68,20 @@ async function action(options) {
     );
 
     await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
+
+    // Version the sourcecode URLs for the API pages
+    const apiPages = await fs.readdir(path.join(targetSdkDirectory, 'sdk'));
+    await Promise.all(
+      apiPages.map(async (api) => {
+        const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
+        await transformFileAsync(apiFilePath, [
+          {
+            pattern: /(sourceCodeUrl:.*?\/tree\/)(sdk-\d*)(\/packages[^\n]*)/,
+            replaceWith: `$1sdk-${sdk.substring(0, 2)}$3`,
+          },
+        ]);
+      })
+    );
   }
 
   if (await fs.pathExists(targetExampleDirectory)) {

@@ -81,7 +81,8 @@ public class RNTimePickerDialogFragment extends DialogFragment {
                   onTimeSetListener,
                   hour,
                   minute,
-                  is24hour
+                  is24hour,
+                  display
           );
       }
     }
@@ -90,7 +91,8 @@ public class RNTimePickerDialogFragment extends DialogFragment {
             onTimeSetListener,
             hour,
             minute,
-            is24hour
+            is24hour,
+            display
     );
   }
 

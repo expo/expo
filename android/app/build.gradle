@@ -24,8 +24,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 124
-    versionName '2.15.1'
+    versionCode 128
+    versionName '2.16.0'
     // END VERSIONS
 
     multiDexEnabled true
@@ -58,7 +58,9 @@ android {
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       consumerProguardFiles 'proguard-rules.pro'
-      signingConfig signingConfigs.release
+      if (!System.getenv("ANDROID_UNSIGNED")) {
+        signingConfig signingConfigs.release
+      }
     }
   }
   lintOptions {
@@ -114,7 +116,7 @@ dependencies {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:10.2.0'
+  implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
@@ -167,7 +169,7 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:37.0.0@aar') {
+  implementation('host.exp.exponent:expoview:38.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -178,11 +180,18 @@ dependencies {
 
   // BEGIN_SDK_UNVERSIONED
   implementation(project(path: ':expoview'))
+
+  implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // END_SDK_UNVERSIONED
 
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+
+  // BEGIN_SDK_38
+  implementation(project(':expoview-abi38_0_0'))
+  // END_SDK_38
 
 
   // BEGIN_SDK_37
@@ -221,7 +230,6 @@ dependencies {
         'expo-module-template',
         'expo-bluetooth',
         'expo-in-app-purchases',
-        'expo-notifications',
         'expo-payments-stripe',
         'expo-updates',
         'expo-splash-screen'

@@ -14,7 +14,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 <InstallSection packageName="expo-facebook" />
 
-For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
+For ejected (see: [bare](../../introduction/managed-vs-bare/)) apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
 
 ## Configuration
 

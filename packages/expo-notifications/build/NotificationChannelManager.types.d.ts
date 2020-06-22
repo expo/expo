@@ -1,3 +1,4 @@
+import { ProxyNativeModule } from '@unimodules/core';
 export declare enum AndroidNotificationVisibility {
     UNKNOWN = 0,
     PUBLIC = 1,
@@ -70,4 +71,10 @@ export declare type NotificationChannelInput = RequiredBy<Omit<NotificationChann
     audioAttributes?: AudioAttributesInput;
     sound?: string | null;
 }, 'name' | 'importance'>;
+export interface NotificationChannelManager extends ProxyNativeModule {
+    getNotificationChannelsAsync?: () => Promise<NotificationChannel[] | null>;
+    getNotificationChannelAsync?: (channelId: string) => Promise<NotificationChannel | null>;
+    setNotificationChannelAsync?: (channelId: string, channelConfiguration: NotificationChannelInput) => Promise<NotificationChannel | null>;
+    deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
+}
 export {};

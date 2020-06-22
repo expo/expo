@@ -17,7 +17,7 @@ fi
 # 6. rev                   : 0.62.2
 REACT_NATIVE_VERSION=$(yarn why react-native | grep Found | cut -d '@' -f2 | rev | cut -c 2- | rev)
 
-if [ -d "node_modules/react-native/android/$REACT_NATIVE_VERSION" ]; then
+if [ -d "node_modules/react-native/android/com/facebook/react/react-native/$REACT_NATIVE_VERSION" ]; then
     echo " ✅ React Android is installed"
 else
     echo " ⚠️  Compiling React Android (~5-10 minutes)..."

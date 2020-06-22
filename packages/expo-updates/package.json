@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.2.5",
+  "version": "0.2.9",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -35,7 +35,8 @@
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "expo-constants": "*"
+    "expo-constants": "*",
+    "expo-file-system": "*"
   },
   "dependencies": {
     "fbemitter": "^2.1.1",
@@ -43,6 +44,5 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
-  },
-  "gitHead": "723cc9b4f9d327eedea8b769bc64e08004aa151e"
+  }
 }

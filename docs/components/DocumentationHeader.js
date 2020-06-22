@@ -45,6 +45,8 @@ const STYLES_NAV = css`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  max-width: 1440px;
+  margin: 0 auto;
   height: 58px;
   width: 100%;
   padding: 0 24px 0 24px;

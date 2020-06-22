@@ -1,16 +1,16 @@
+import { EvilIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
   FlatList,
+  ListRenderItem,
   PixelRatio,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-  ListRenderItem,
 } from 'react-native';
-import { withNavigation, NavigationScreenProps } from 'react-navigation';
-
-import { EvilIcons } from '@expo/vector-icons';
+import { NavigationScreenProps, withNavigation } from 'react-navigation';
 
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
@@ -49,21 +49,22 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
 
   render() {
     return (
-      // @ts-ignore
-      <FlatList<ListElement>
-        ref={view => {
-          this._listView = view!;
-        }}
-        initialNumToRender={25}
-        stickySectionHeadersEnabled
-        removeClippedSubviews={false}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        contentContainerStyle={{ backgroundColor: '#fff' }}
-        data={this.props.apis}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderExampleSection}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList<ListElement>
+          ref={view => {
+            this._listView = view!;
+          }}
+          initialNumToRender={25}
+          removeClippedSubviews={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          contentContainerStyle={{ backgroundColor: '#fff' }}
+          data={this.props.apis}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderExampleSection}
+        />
+        <StatusBar hidden={false} />
+      </View>
     );
   }
 

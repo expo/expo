@@ -4,13 +4,17 @@
 #import <React/RCTUIManager.h>
 
 #import "RNCSafeAreaViewLocalData.h"
+#import "RNCSafeAreaViewMode.h"
 #import "RNCSafeAreaViewEdges.h"
 #import "RCTView+SafeAreaCompat.h"
+#import "RNCSafeAreaProvider.h"
 
 @implementation RNCSafeAreaView {
   __weak RCTBridge *_bridge;
   UIEdgeInsets _currentSafeAreaInsets;
+  RNCSafeAreaViewMode _mode;
   RNCSafeAreaViewEdges _edges;
+  __weak UIView * _Nullable _providerView;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -18,7 +22,7 @@
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
     // Defaults
-    _emulateUnlessSupported = YES;
+    _mode = RNCSafeAreaViewModePadding;
     _edges = RNCSafeAreaViewEdgesAll;
   }
 
@@ -39,38 +43,38 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
   return [NSString stringWithFormat:@"%@; RNCSafeAreaInsets = %@; appliedRNCSafeAreaInsets = %@>",
           superDescription,
-          NSStringFromUIEdgeInsets([self realOrEmulateSafeAreaInsets:self.emulateUnlessSupported]),
+          NSStringFromUIEdgeInsets([_providerView safeAreaInsetsOrEmulate]),
           NSStringFromUIEdgeInsets(_currentSafeAreaInsets)];
 }
 
 - (void)safeAreaInsetsDidChange
 {
+  [super safeAreaInsetsDidChange];
   [self invalidateSafeAreaInsets];
-}
-
-- (void)invalidateSafeAreaInsets
-{
-  [self setSafeAreaInsets:[self realOrEmulateSafeAreaInsets:self.emulateUnlessSupported]];
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
 
-  if (!self.nativeSafeAreaSupport && self.emulateUnlessSupported) {
+  if (!self.nativeSafeAreaSupport) {
     [self invalidateSafeAreaInsets];
   }
 }
 
-- (void)updateLocalData
+- (void)didMoveToWindow
 {
-  RNCSafeAreaViewLocalData *localData = [[RNCSafeAreaViewLocalData alloc] initWithInsets:_currentSafeAreaInsets
-                                                                                   edges:_edges];
-  [_bridge.uiManager setLocalData:localData forView:self];
+  _providerView = [self findNearestProvider];
+  [self invalidateSafeAreaInsets];
 }
 
-- (void)setSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
+- (void)invalidateSafeAreaInsets
 {
+  if (_providerView == nil) {
+    return;
+  }
+  UIEdgeInsets safeAreaInsets = [_providerView safeAreaInsetsOrEmulate];
+
   if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
     return;
   }
@@ -79,24 +83,35 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   [self updateLocalData];
 }
 
-- (void)setEmulateUnlessSupported:(BOOL)emulateUnlessSupported
+- (UIView *)findNearestProvider
 {
-  if (_emulateUnlessSupported == emulateUnlessSupported) {
-    return;
+  UIView *current = self.reactSuperview;
+  while (current != nil) {
+    if ([current isKindOfClass:RNCSafeAreaProvider.class] ) {
+      return current;
+    }
+    current = current.reactSuperview;
   }
-
-  _emulateUnlessSupported = emulateUnlessSupported;
-
-  if ([self nativeSafeAreaSupport]) {
-    return;
-  }
-
-  [self invalidateSafeAreaInsets];
+  return self;
 }
 
-- (void)setEdges:(RNCSafeAreaViewEdges)edges {
+- (void)updateLocalData
+{
+  RNCSafeAreaViewLocalData *localData = [[RNCSafeAreaViewLocalData alloc] initWithInsets:_currentSafeAreaInsets
+                                                                                    mode:_mode
+                                                                                   edges:_edges];
+  [_bridge.uiManager setLocalData:localData forView:self];
+}
+
+- (void)setMode:(RNCSafeAreaViewMode)mode
+{
+  _mode = mode;
+  [self updateLocalData];
+}
+
+- (void)setEdges:(RNCSafeAreaViewEdges)edges
+{
   _edges = edges;
-  
   [self updateLocalData];
 }
 
