@@ -2,8 +2,6 @@
 
 package host.exp.exponent;
 
-import android.util.Log;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -88,6 +86,15 @@ public class RNObject {
       return abiVersion.substring(3);
     } else {
       return UNVERSIONED;
+    }
+  }
+
+  public static Object versionedEnum(String sdkVersion, String clazz, String value) {
+    try {
+      return new RNObject("com.facebook.react.common.LifecycleState").loadVersion(sdkVersion).rnClass().getDeclaredField("RESUMED").get(null);
+    } catch (IllegalAccessException | NoSuchFieldException e) {
+      EXL.e(TAG, e);
+      return null;
     }
   }
 
