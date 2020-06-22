@@ -16,7 +16,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
-  const toBeClosedTo = (value, expected, inaccuracy) => {
+  const testPoint = (value, expected, inaccuracy) => {
     t.expect(value).toBeGreaterThanOrEqual(expected - inaccuracy);
     t.expect(value).toBeLessThan(expected + inaccuracy);
   };
@@ -30,11 +30,11 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     t.expect(typeof bounds.size.width).toBe('number');
     t.expect(typeof bounds.size.height).toBe('number');
 
-    toBeClosedTo(bounds.origin.x, expectedBounds.origin.x, originInaccuracy);
-    toBeClosedTo(bounds.origin.y, expectedBounds.origin.y, originInaccuracy);
+    testPoint(bounds.origin.x, expectedBounds.origin.x, originInaccuracy);
+    testPoint(bounds.origin.y, expectedBounds.origin.y, originInaccuracy);
 
-    toBeClosedTo(bounds.size.width, expectedBounds.size.width, sizeInaccuracy);
-    toBeClosedTo(bounds.size.height, expectedBounds.size.height, sizeInaccuracy);
+    testPoint(bounds.size.width, expectedBounds.size.width, sizeInaccuracy);
+    testPoint(bounds.size.height, expectedBounds.size.height, sizeInaccuracy);
   };
 
   describeWithPermissions('BarCodeScanner', () => {

@@ -27,10 +27,10 @@ public class BarCodeScannerResultSerializer {
     ArrayList<Bundle> convertedCornerPoints = new ArrayList<>();
     Bundle boundingBox = new Bundle();
 
-    float minX = Integer.MAX_VALUE;
-    float minY = Integer.MAX_VALUE;
-    float maxX = Integer.MIN_VALUE;
-    float maxY = Integer.MIN_VALUE;
+    float minX = Float.MAX_VALUE;
+    float minY = Float.MAX_VALUE;
+    float maxX = Float.MIN_VALUE;
+    float maxY = Float.MIN_VALUE;
 
     for (int i = 0; i < cornerPoints.size(); i += 2) {
       float x = ((float) cornerPoints.get(i)) / density;

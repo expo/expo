@@ -140,7 +140,7 @@ Object of type `BarCodePoint` contains following keys:
 - **x (_number_)** -- The x value.
 - **y (_number_)** -- The y value.
 
-Those coordinates are represented in the coordinate space of the barcode source. For example, when a point is on the bar code scanner preview those values will be adjusted to this space.
+Those coordinates are represented in the coordinate space of the barcode source. For example, when you are using the bar code scanner view, those values will be adjusted to this space.
 
 ### `BarCodeScanner.BarCodeSize`
 
@@ -161,7 +161,7 @@ Object of type `BarCodeBounds` contains following keys:
 Object of type `BarCodeScannerResult` contains following keys:
 
 - **type (_BarCodeScanner.Constants.BarCodeType_)** -- The barcode type.
-- **data (_string_)** -- the information encoded in the bar code.
+- **data (_string_)** -- The information encoded in the bar code.
 - **bounds : [BarCodeScanner.BarCodeBounds](#barcodescannerbarcodebounds)** -- (_Optional_) The `BarCodeBounds` object.
 - **cornerPoints : Array\<[BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)\>** -- (_Optional_) Corner points of the bounding box.
 
