@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Unimodules applying `unimodules-core.gradle` would have `unimodule-test-core` module added as a dependency in android test flavors. ([#8881](https://github.com/expo/expo/pull/8881) by [@mczernek](https://github.com/mczernek))
+- Expo modules applying `unimodules-core.gradle` now depends on `unimodule-test-core` in Android test flavors. ([#8881](https://github.com/expo/expo/pull/8881) by [@mczernek](https://github.com/mczernek))
 - App delegates can now handle background URL session events via `application:handleEventsForBackgroundURLSession:completionHandler:` method on iOS. ([#8599](https://github.com/expo/expo/pull/8599) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes

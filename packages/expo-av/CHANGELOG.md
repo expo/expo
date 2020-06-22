@@ -11,8 +11,6 @@
 
 ### 🐛 Bug fixes
 
-- Do not publish native tests to npm. ([#8881](https://github.com/expo/expo/pull/8881) by [@mczernek](https://github.com/mczernek))
-
 ## 8.2.1 — 2020-05-29
 
 _This version does not introduce any user-facing changes._
