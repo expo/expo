@@ -446,6 +446,7 @@ jobs:
     executor: android
     steps:
       - setup
+      - run: sudo apt-get update
       - run: sudo apt-get install rsync
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
       - install_yarn
@@ -528,6 +529,7 @@ jobs:
     executor: android
     steps:
       - setup
+      - run: sudo apt-get update
       - run: sudo apt-get install rsync
       - update_submodules
       - decrypt_secrets_if_possible
