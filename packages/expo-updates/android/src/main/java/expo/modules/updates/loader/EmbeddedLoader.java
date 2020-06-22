@@ -75,7 +75,7 @@ public class EmbeddedLoader {
         sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(context, new JSONObject(manifestString));
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
-        throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have created app.manifest and app.bundle files and added them to the `assets` folder. If you are using Expo CLI, make sure you have run `expo publish` or `expo export` at least once. More information at https://expo.fyi/embedded-assets");
+        throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.getMessage());
       }
     }
 
