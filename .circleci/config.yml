@@ -532,6 +532,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install rsync
       - update_submodules
+      - install_yarn
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
           working_directory: ~/project/tools/expotools
