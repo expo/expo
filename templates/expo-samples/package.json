@@ -1,6 +1,6 @@
 {
   "name": "@expo/samples",
-  "version": "38.0.0",
+  "version": "38.0.1",
   "description": "Sample components for new project templates",
   "main": "index.js",
   "author": "Expo",
