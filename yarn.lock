@@ -7545,6 +7545,11 @@ expo-asset-utils@^1.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-1.2.0.tgz#df52f8e8c836c343ad713a0044db79be69cfe64b"
   integrity sha512-06zVi5aXzyMq7SFiawxu2FUbpbVlxnE9W44cG4K5HyhLaqyRqss+o5MZMEGn8Ibd+008UiK7yCPy/bSpx2hVag==
 
+expo-progress@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/expo-progress/-/expo-progress-0.0.1.tgz#2622c69e0f1b2251218043e4acf43fb11fcd9432"
+  integrity sha512-vuVrgu516Ate++7lKQbMc7rkNfRrKKsot/0K0ms1ltowpyXg2h8OnWzxd95UYf4tCKpfrQ/HAevwypgIBijDzA==
+
 expo-pwa@0.0.17:
   version "0.0.17"
   resolved "https://registry.yarnpkg.com/expo-pwa/-/expo-pwa-0.0.17.tgz#23d3a093966456f4bad4ae9c22c608d2298ad507"

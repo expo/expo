@@ -64,6 +64,7 @@
     "expo-permissions": "~9.0.1",
     "expo-print": "~9.0.1",
     "expo-processing": "2.0.2",
+    "expo-progress": "^0.0.1",
     "expo-secure-store": "~9.0.1",
     "expo-sensors": "~9.0.1",
     "expo-sharing": "~8.2.1",
