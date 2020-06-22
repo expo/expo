@@ -1,5 +1,10 @@
 import * as ServiceConfig from './Discovery';
+import { Headers } from './Fetch';
 import { GrantType, RevokeTokenRequestConfig, TokenRequestConfig, TokenResponseConfig, TokenType, TokenTypeHint, RefreshTokenRequestConfig, AccessTokenRequestConfig } from './TokenRequest.types';
+/**
+ * Returns the current time in seconds.
+ */
+export declare function getCurrentTimeInSeconds(): number;
 /**
  * Token Response.
  *
@@ -12,7 +17,7 @@ export declare class TokenResponse implements TokenResponseConfig {
      * @param token
      * @param secondsMargin
      */
-    static isTokenFresh(token: Pick<TokenResponse, 'expiresIn' | 'issuedAt' | 'accessToken'>, 
+    static isTokenFresh(token: Pick<TokenResponse, 'expiresIn' | 'issuedAt'>, 
     /**
      * -10 minutes in seconds
      */
@@ -48,7 +53,7 @@ declare class TokenRequest<T extends TokenRequestConfig> extends Request<T, Toke
     readonly scopes?: string[];
     readonly extraParams?: Record<string, string>;
     constructor(request: any, grantType: GrantType);
-    private getHeaders;
+    getHeaders(): Headers;
     performAsync(discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
     getQueryBody(): Record<string, string>;
 }
@@ -62,6 +67,15 @@ export declare class AccessTokenRequest extends TokenRequest<AccessTokenRequestC
     readonly redirectUri: string;
     constructor(options: AccessTokenRequestConfig);
     getQueryBody(): Record<string, string>;
+    getRequestConfig(): {
+        clientId: string;
+        clientSecret: string | undefined;
+        grantType: GrantType;
+        code: string;
+        redirectUri: string;
+        extraParams: Record<string, string> | undefined;
+        scopes: string[] | undefined;
+    };
 }
 /**
  * Refresh request.
@@ -72,6 +86,14 @@ export declare class RefreshTokenRequest extends TokenRequest<RefreshTokenReques
     readonly refreshToken?: string;
     constructor(options: RefreshTokenRequestConfig);
     getQueryBody(): Record<string, string>;
+    getRequestConfig(): {
+        clientId: string;
+        clientSecret: string | undefined;
+        grantType: GrantType;
+        refreshToken: string | undefined;
+        extraParams: Record<string, string> | undefined;
+        scopes: string[] | undefined;
+    };
 }
 /**
  * Revocation request for a given token.
@@ -84,7 +106,7 @@ export declare class RevokeTokenRequest extends Request<RevokeTokenRequestConfig
     readonly token: string;
     readonly tokenTypeHint?: TokenTypeHint;
     constructor(request: RevokeTokenRequestConfig);
-    private getHeaders;
+    getHeaders(): Headers;
     /**
      * Perform a token revocation request.
      *

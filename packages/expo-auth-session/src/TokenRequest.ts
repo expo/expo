@@ -15,8 +15,12 @@ import {
   RefreshTokenRequestConfig,
   AccessTokenRequestConfig,
 } from './TokenRequest.types';
+import * as Base64 from './Base64';
 
-function getCurrentTime(): number {
+/**
+ * Returns the current time in seconds.
+ */
+export function getCurrentTimeInSeconds(): number {
   return Math.floor(Date.now() / 1000);
 }
 
@@ -33,7 +37,7 @@ export class TokenResponse implements TokenResponseConfig {
    * @param secondsMargin
    */
   static isTokenFresh(
-    token: Pick<TokenResponse, 'expiresIn' | 'issuedAt' | 'accessToken'>,
+    token: Pick<TokenResponse, 'expiresIn' | 'issuedAt'>,
     /**
      * -10 minutes in seconds
      */
@@ -43,7 +47,7 @@ export class TokenResponse implements TokenResponseConfig {
       return false;
     }
     if (token.expiresIn) {
-      const now = getCurrentTime();
+      const now = getCurrentTimeInSeconds();
       return now < token.issuedAt + token.expiresIn + secondsMargin;
     }
     // if there is no expiration time but we have an access token, it is assumed to never expire
@@ -67,7 +71,7 @@ export class TokenResponse implements TokenResponseConfig {
     this.scope = response.scope;
     this.state = response.state;
     this.idToken = response.idToken;
-    this.issuedAt = response.issuedAt ?? getCurrentTime();
+    this.issuedAt = response.issuedAt ?? getCurrentTimeInSeconds();
   }
 
   private applyResponseConfig(response: TokenResponseConfig) {
@@ -78,7 +82,7 @@ export class TokenResponse implements TokenResponseConfig {
     this.scope = response.scope ?? this.scope;
     this.state = response.state ?? this.state;
     this.idToken = response.idToken ?? this.idToken;
-    this.issuedAt = response.issuedAt ?? this.issuedAt ?? getCurrentTime();
+    this.issuedAt = response.issuedAt ?? this.issuedAt ?? getCurrentTimeInSeconds();
   }
 
   getRequestConfig(): TokenResponseConfig {
@@ -125,7 +129,6 @@ class Request<T, B> {
 
   getRequestConfig(): T {
     throw new Error('getRequestConfig must be extended');
-    // return this.request;
   }
 
   getQueryBody(): Record<string, string> {
@@ -150,7 +153,7 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
     this.scopes = request.scopes;
   }
 
-  private getHeaders(): Headers {
+  getHeaders(): Headers {
     const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
     if (typeof this.clientSecret !== 'undefined') {
       // If client secret exists, it should be converted to base64
@@ -158,7 +161,7 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
       const encodedClientId = encodeURIComponent(this.clientId);
       const encodedClientSecret = encodeURIComponent(this.clientSecret);
       const credentials = `${encodedClientId}:${encodedClientSecret}`;
-      const basicAuth = encodeBase64NoWrap(credentials);
+      const basicAuth = Base64.encodeNoWrap(credentials);
       headers.Authorization = `Basic ${basicAuth}`;
     }
 
@@ -264,6 +267,18 @@ export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
 
     return queryBody;
   }
+
+  getRequestConfig() {
+    return {
+      clientId: this.clientId,
+      clientSecret: this.clientSecret,
+      grantType: this.grantType,
+      code: this.code,
+      redirectUri: this.redirectUri,
+      extraParams: this.extraParams,
+      scopes: this.scopes,
+    };
+  }
 }
 
 /**
@@ -290,6 +305,17 @@ export class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig>
 
     return queryBody;
   }
+
+  getRequestConfig() {
+    return {
+      clientId: this.clientId,
+      clientSecret: this.clientSecret,
+      grantType: this.grantType,
+      refreshToken: this.refreshToken,
+      extraParams: this.extraParams,
+      scopes: this.scopes,
+    };
+  }
 }
 
 /**
@@ -313,7 +339,7 @@ export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolea
     this.tokenTypeHint = request.tokenTypeHint;
   }
 
-  private getHeaders(): Headers {
+  getHeaders(): Headers {
     const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
     if (typeof this.clientSecret !== 'undefined' && this.clientId) {
       // If client secret exists, it should be converted to base64
@@ -321,7 +347,7 @@ export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolea
       const encodedClientId = encodeURIComponent(this.clientId);
       const encodedClientSecret = encodeURIComponent(this.clientSecret);
       const credentials = `${encodedClientId}:${encodedClientSecret}`;
-      const basicAuth = encodeBase64NoWrap(credentials);
+      const basicAuth = Base64.encodeNoWrap(credentials);
       headers.Authorization = `Basic ${basicAuth}`;
     }
 
@@ -336,7 +362,7 @@ export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolea
   async performAsync(discovery: Pick<ServiceConfig.DiscoveryDocument, 'revocationEndpoint'>) {
     invariant(
       discovery.revocationEndpoint,
-      `Cannot revoke token without a valid revocation endpoint in the authorization service configuration.`
+      `Cannot invoke \`performAsync()\` without a valid revocationEndpoint`
     );
     await requestAsync<boolean>(discovery.revocationEndpoint, {
       method: 'POST',
@@ -440,37 +466,4 @@ export function requestUserInfoAsync(
     dataType: 'json',
     method: 'GET',
   });
-}
-
-const keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-function encodeBase64NoWrap(input: string): string {
-  let output = '';
-  let i = 0;
-
-  do {
-    const chr1 = input.charCodeAt(i++);
-    const chr2 = input.charCodeAt(i++);
-    const chr3 = input.charCodeAt(i++);
-
-    const enc1 = chr1 >> 2;
-    const enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-    let enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-    let enc4 = chr3 & 63;
-    if (isNaN(chr2)) {
-      enc3 = 64;
-      enc4 = 64;
-    } else if (isNaN(chr3)) {
-      enc4 = 64;
-    }
-
-    output =
-      output +
-      keyStr.charAt(enc1) +
-      keyStr.charAt(enc2) +
-      keyStr.charAt(enc3) +
-      keyStr.charAt(enc4);
-  } while (i < input.length);
-
-  return output;
 }
