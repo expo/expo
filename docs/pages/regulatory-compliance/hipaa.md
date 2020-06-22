@@ -1,5 +1,7 @@
 ---
 title: HIPAA Compliance and Expo
+sidebar_title: HIPAA Compliance
+
 ---
 
 ## Are Apps Built with Expo HIPAA Compliant?
