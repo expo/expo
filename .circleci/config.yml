@@ -446,6 +446,8 @@ jobs:
     executor: android
     steps:
       - setup
+      - run: sudo apt-get update
+      - run: sudo apt-get install rsync
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
       - install_yarn
       - yarn_restore_and_install:
@@ -524,16 +526,27 @@ jobs:
           slack_webhook: $SLACK_ANDROID_WEBHOOK
 
   client_android_apk_release:
-    executor: js
+    executor: android
     steps:
       - setup
+      - run: sudo apt-get update
+      - run: sudo apt-get install rsync
       - update_submodules
+      - install_yarn
+      - yarn_install:
+          working_directory: ~/project # need react-native-unimodules/gradle.groovy script
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
-          working_directory: ~/expo/tools/expotools
+          working_directory: ~/project/tools/expotools
       - attach_workspace:
           at: android/app/build/outputs/apk
-      - run: expotools client-build --platform android --release
+      - bundle_install
+      - run:
+          name: Decode release keystore
+          command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
+      - run: |
+          source secrets/expotools.env
+          expotools client-build --platform android --release
 
   client_android_release_google_play:
     executor: android
