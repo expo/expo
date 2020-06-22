@@ -59,6 +59,7 @@ export interface Address {
   country: string;
   postalCode: string;
   name: string;
+  isoCountryCode: string | null;
 }
 
 export { PermissionStatus };
@@ -386,6 +387,7 @@ async function _googleReverseGeocodeAsync(options: {
         address.region = component.long_name;
       } else if (component.types.includes('country')) {
         address.country = component.long_name;
+        address.isoCountryCode = component.short_name;
       } else if (component.types.includes('postal_code')) {
         address.postalCode = component.long_name;
       } else if (component.types.includes('point_of_interest')) {
