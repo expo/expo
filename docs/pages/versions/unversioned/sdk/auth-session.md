@@ -126,6 +126,8 @@ When the prompt method completes then the response will be fulfilled.
 
 > 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](/guides/authentication#identity-4) for more info.
 
+If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()` to get a `TokenResponse` instance which you can use to easily refresh the token.
+
 #### Arguments
 
 - **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#authrequestconfig) that specifies what provider to use.
@@ -199,6 +201,10 @@ Exchange an authorization code for an access token that can be used to get data 
 ### `AuthSession.refreshAsync()`
 
 Refresh an access token.
+
+- If the provider didn't return a `refresh_token` then the access token may not be refreshed.
+- If the provider didn't return a `expires_in` then it's assumed that the token does not expire.
+- Determine if a token needs refreshed via `TokenResponse.isTokenFresh()` or `shouldRefresh()` on an instance of `TokenResponse`.
 
 #### Arguments
 
