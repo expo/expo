@@ -4,6 +4,7 @@ import { DiscoveryDocument } from './Discovery';
 declare type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 /**
  * Implements an authorization request.
+ *
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
 export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
