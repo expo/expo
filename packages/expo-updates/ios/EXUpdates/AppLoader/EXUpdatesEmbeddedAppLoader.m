@@ -27,14 +27,14 @@ NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
       id manifest = [NSJSONSerialization JSONObjectWithData:manifestData options:kNilOptions error:&err];
       if (!manifest) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"The embedded manifest is invalid or could not be read. Make sure you have created app.manifest and app.bundle files and added them to your Xcode project. If you are using Expo CLI, make sure you have run `expo publish` or `expo export` at least once. More information at https://expo.fyi/embedded-assets"
+                                       reason:@"The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
                                      userInfo:@{}];
       } else {
         NSAssert([manifest isKindOfClass:[NSDictionary class]], @"embedded manifest should be a valid JSON file");
         embeddedManifest = [EXUpdatesUpdate updateWithEmbeddedManifest:(NSDictionary *)manifest];
         if (!embeddedManifest.updateId) {
           @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                         reason:@"The embedded manifest is invalid. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
+                                         reason:@"The embedded manifest is invalid. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
                                        userInfo:@{}];
         }
       }
