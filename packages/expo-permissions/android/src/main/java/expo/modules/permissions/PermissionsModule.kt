@@ -59,7 +59,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun getAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
-      wrapPermissionsServiceCall(requestedPermissionsTypes, mPermissions::getPermissions, promise)
+      delegateToPermissionsServiceIfNeeded(requestedPermissionsTypes, mPermissions::getPermissions, promise)
     } catch (e: IllegalStateException) {
       promise.reject(ERROR_TAG + "_UNKNOWN", "Failed to get permissions", e)
     }
@@ -68,7 +68,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun askAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
-      wrapPermissionsServiceCall(requestedPermissionsTypes, mPermissions::askForPermissions, promise)
+      delegateToPermissionsServiceIfNeeded(requestedPermissionsTypes, mPermissions::askForPermissions, promise)
     } catch (e: IllegalStateException) {
       promise.reject(ERROR_TAG + "_UNKNOWN", "Failed to get permissions", e)
     }
@@ -79,7 +79,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
       promise.resolve(parsePermissionsResponse(requestedPermissionsTypes, permissionsNativeStatus))
     }
 
-  private fun wrapPermissionsServiceCall(permissionTypes: ArrayList<String>, permissionsServiceDelegate: (PermissionsResponseListener, Array<out String>) -> Unit, promise: Promise) {
+  private fun delegateToPermissionsServiceIfNeeded(permissionTypes: ArrayList<String>, permissionsServiceDelegate: (PermissionsResponseListener, Array<out String>) -> Unit, promise: Promise) {
     val androidPermissions = getAndroidPermissionsFromList(permissionTypes)
     // Some permissions like `NOTIFICATIONS` or `USER_FACING_NOTIFICATIONS` aren't supported by the android.
     // So, if the user asks/gets those permissions, we can return status immediately.
