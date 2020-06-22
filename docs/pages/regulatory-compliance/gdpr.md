@@ -1,5 +1,6 @@
 ---
 title: GDPR Compliance and Expo
+sidebar_title: GDPR Compliance
 ---
 
 ## Are Apps Built with Expo GDPR Compliant?
