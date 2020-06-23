@@ -976,10 +976,16 @@ Configuration that is specific to the Android platform.
 
     /*
       Determines how the software keyboard will impact the layout of your application. This maps
-      to the "android:windowSoftInputMode" property. Defaults to "resize". Only Supported in SDK 38 and higher.
+      to the "android:windowSoftInputMode" property. Defaults to "resize". Only supported in SDK 38 and higher.
       Valid values: "resize", "pan".
     */
     "softwareKeyboardLayoutMode": STRING,
+
+    /*
+      Whether to allow the application to participate in the backup and restore infrastructure. If this attribute is set to false, no backup or restore of the application will ever be performed. Only supported in SDK 38 and higher.
+      Defaults to the Android default, which is true.
+    */
+    "allowBackup": BOOLEAN,
   }
 }
 ```
