@@ -156,19 +156,10 @@ async function getLocationAsync() {
 ## Permissions response
 
 An object with information about the permissions, including status, expiration, and scope (if applicable).
-The top-level `status`, `expires` and `canAskAgain` keys are a reduction of the values from each individual permission.
-If all single permissions have a `status` of `'denied'`, then that the top level `status` is `denied`; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. Otherwise, `status` is`undetermined`.
-If any single permission has a `status` different then `granted`, then top-level `granted` is `false`. Otherwise, it is `true`.
-Top-level `expires` has value of the earliest expirating permission.
-
-Examples `[...componentsValues] => topLevelStatus`:
-
-- `[granted, denied, granted] => denied`
-- `[granted, granted, granted] => granted`
 
 ```javascript
 {
-  status, // combined status of all component permissions being asked for, if any of has status !== 'granted' then that status is propagated here
+  status, // combined status of all component permissions being asked for
   expires, // combined expires of all permissions being asked for, same as status
   canAskAgain,
   granted,
@@ -184,6 +175,35 @@ Examples `[...componentsValues] => topLevelStatus`:
   },
 }
 ```
+
+The top-level `status`, `expires`, `granted` and `canAskAgain` keys depend on the values returned for each of the individual permission requests:
+
+### Status
+
+The status represents a combined status of all combined permissions, using the following rules:
+
+- If **one or more permissions** have a `status` of _undetermined_, the top level `status` is _undetermined_.
+- If **one or more permissions** have a `status` of _denied_ and none _undetermined_, then the top level `status` is _denied_.
+- If **all permissions** have a `status` of _granted_, then the top level `status` is _granted_.
+
+Examples for the `status` top level property:
+
+- `[granted, undetermined, undetermined] => undetermined`
+- `[granted, denied, undetermined] => undetermined`
+- `[granted, denied, granted] => denied`
+- `[granted, granted, granted] => granted`
+
+### `expires`
+
+The top-level `expires` field matches the value of the earliest expiring permission.
+
+### `granted`
+
+If every single permission has a `status` of _granted_, then the top level `granted` field is `true`. Otherwise, it is `false`.
+
+### `canAskAgain`
+
+If every single denied or undetermined permissions can be asked again, then the top level is `true`. Otherwise, it is `false`.
 
 ## Permissions types
 
