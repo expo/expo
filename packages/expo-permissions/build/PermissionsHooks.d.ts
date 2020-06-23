@@ -6,7 +6,14 @@ import { PermissionType, PermissionResponse } from './Permissions';
  * To ask the user permission, use the `askPermission` callback or `ask` option.
  *
  * @see https://docs.expo.io/versions/latest/sdk/permissions/
- * @example const [permission, askPermission, getPermission] = usePermissions(...);
+ * @example
+ * ```tsx
+ * const [permission, askPermission, getPermission] = usePermissions(Permissions.CAMERA);
+ *
+ * return permission?.granted
+ *   ? <Camera ... />
+ *   : <Button onPress={askPermission} />;
+ * ```
  */
 export declare function usePermissions(type: PermissionType | PermissionType[], options?: PermissionsOptions): [PermissionResponse | undefined, () => Promise<void>, () => Promise<void>];
 export interface PermissionsOptions {
