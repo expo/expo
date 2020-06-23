@@ -1023,6 +1023,22 @@ Configuration that is specific to the web platform.
 }
 ```
 
+### `"experiments"`
+
+Toggle features that aren't ready to be turned on by default for everyone.
+
+```javascript
+{
+  "experiments": {
+
+    /*
+      Use the unstable LogBox re-design available in React Native 0.62. This option is only available in SDK 38.
+    */
+    "redesignedLogBox": BOOLEAN
+  }
+}
+```
+
 ## ExpoKit
 
 > **Note that ExpoKit is deprecated and will no longer be supported after SDK 38. We recommend using the [bare workflow](../../introduction/managed-vs-bare/#bare-workflow) instead.**
