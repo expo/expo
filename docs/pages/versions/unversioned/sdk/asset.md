@@ -56,7 +56,7 @@ function App() {
 
   return (
     <View>
-      <Text>Loaded {assets.length} assets!<Text>
+      <Text>Loaded {assets.length} assets!</Text>
       <Image source={require('path/to/asset.jpg')} />
       <Image source={require('path/to/other.png')} />
     </View>
