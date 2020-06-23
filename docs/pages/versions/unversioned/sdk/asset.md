@@ -34,7 +34,7 @@ Download and store one or more assets locally. After the assets are loaded, with
 
 ### Arguments
 
-- **assets (_number|number[]_)** -- One or multiple asset modules to load.
+- **assets (_number|number[]_)** -- One or multiple assets to load.
 
 ### Returns
 
