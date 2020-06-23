@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 1.4.1 — 2020-06-23
+
+### 🎉 New features
+
 - Remove `assert` in favor of `invariant`. ([#8934](https://github.com/expo/expo/pull/8934) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
