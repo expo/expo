@@ -94,7 +94,7 @@ public class RNObject {
       return new RNObject(clazz).loadVersion(sdkVersion).rnClass().getDeclaredField(value).get(null);
     } catch (IllegalAccessException | NoSuchFieldException e) {
       EXL.e(TAG, e);
-      return null;
+      throw new IllegalStateException("Unable to create enum: " + clazz + "." + "value", e);
     }
   }
 
