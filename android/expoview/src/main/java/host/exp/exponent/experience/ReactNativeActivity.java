@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -73,7 +72,7 @@ import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 import static host.exp.exponent.utils.ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST;
 
-public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity  {
+public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   public static class ExperienceDoneLoadingEvent {
     private Activity mActivity;
@@ -304,7 +303,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       RNObject devSupportManager = getDevSupportManager();
       if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-            .didDoubleTapR(keyCode, getCurrentFocus());
+          .didDoubleTapR(keyCode, getCurrentFocus());
 
         // TODO: remove the path where we don't reload from manifest once SDK 35 is deprecated
         boolean shouldReloadFromManifest = Exponent.getInstance().shouldAlwaysReloadFromManifest(mSDKVersion);
@@ -397,17 +396,17 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     // TODO: remove once SDK 35 is deprecated
     if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
       new AlertDialog.Builder(this)
-          .setTitle("Please enable \"Permit drawing over other apps\"")
-          .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
-          .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-              Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                  Uri.parse("package:" + getPackageName()));
-              startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-            }
-          })
-          .setCancelable(false)
-          .show();
+        .setTitle("Please enable \"Permit drawing over other apps\"")
+        .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
+        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+              Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
+          }
+        })
+        .setCancelable(false)
+        .show();
 
       return;
     }
@@ -446,10 +445,10 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
     String linkingUri = getLinkingUri();
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
-        MANIFEST_URL_KEY, mManifestUrl,
-        LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri,
-        IS_HEADLESS_KEY, false
+      MANIFEST_URL_KEY, mManifestUrl,
+      LINKING_URI_KEY, linkingUri,
+      INTENT_URI_KEY, mIntentUri,
+      IS_HEADLESS_KEY, false
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
@@ -469,7 +468,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
 
     // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
-    builder.call("setInitialLifecycleState", LifecycleState.RESUMED);
+    builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "RESUMED"));
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -486,8 +485,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       devLoadingView.callRecursive("setDevLoadingEnabled", false);
 
       RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
-          .loadVersion(mSDKVersion)
-          .construct(progressListener);
+        .loadVersion(mSDKVersion)
+        .construct(progressListener);
       builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
     } else {
       checkForReactViews();
@@ -518,7 +517,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
         try {
           exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-              metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
+            metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
         } catch (JSONException e) {
           e.printStackTrace();
         }
@@ -563,9 +562,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
     mReactInstanceManager.onHostResume(this, this);
     mReactRootView.call("startReactApplication",
-        mReactInstanceManager.get(),
-        mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
-        initialProps(bundle));
+      mReactInstanceManager.get(),
+      mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
+      initialProps(bundle));
 
     return mReactInstanceManager;
   }
@@ -623,7 +622,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
       rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
       RNObject existingEmitter = mReactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass());
+        .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass());
 
       if (existingEmitter != null) {
         Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
@@ -706,7 +705,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       Uri uri = Uri.parse(mManifestUrl);
       String host = uri.getHost();
       if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
+        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
         List<String> pathSegments = uri.getPathSegments();
         Uri.Builder builder = uri.buildUpon();
         builder.path(null);
