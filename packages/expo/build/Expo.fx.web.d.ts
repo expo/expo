@@ -1,1 +1,1 @@
-import './environment/muteWarnings.fx';
+import './environment/react-native-logs.fx';
