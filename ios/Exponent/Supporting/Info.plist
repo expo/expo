@@ -108,6 +108,7 @@
 	<string>Allow Expo experiences to access your reminders</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
 		<string>location</string>
 	</array>
