@@ -140,7 +140,7 @@ Object of type `BarCodePoint` contains following keys:
 - **x (_number_)** -- The x value.
 - **y (_number_)** -- The y value.
 
-Those coordinates are represented in the coordinate space of the barcode source. For example, when you are using the bar code scanner view, those values will be adjusted to this space.
+Those coordinates are represented in the coordinate space of the barcode source (e.g. when you are using the barcode scanner view, these values are adjusted to the dimensions of the view).
 
 ### `BarCodeScanner.BarCodeSize`
 

@@ -10,7 +10,7 @@
 + (AVCaptureDevice *)deviceWithMediaType:(AVMediaType)mediaType
                       preferringPosition:(AVCaptureDevicePosition)position;
 
-+ (NSDictionary *)ciqeCodeFeatureToDicitionary:(CIQRCodeFeature *)barCodeScannerResult barCodeType:(NSString *)type;
++ (NSDictionary *)ciQRCodeFeatureToDicitionary:(CIQRCodeFeature *)barCodeScannerResult barCodeType:(NSString *)type;
 + (NSDictionary *)avMetadataCodeObjectToDicitionary:(AVMetadataMachineReadableCodeObject *)result;
 + (NSDictionary *)zxResultToDicitionary:(ZXResult *)result;
 

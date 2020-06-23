@@ -46,7 +46,7 @@
   return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:mediaType position:position];
 }
 
-+ (NSDictionary *)ciqeCodeFeatureToDicitionary:(CIQRCodeFeature *)barCodeScannerResult barCodeType:(NSString *)type
++ (NSDictionary *)ciQRCodeFeatureToDicitionary:(CIQRCodeFeature *)barCodeScannerResult barCodeType:(NSString *)type
 {
   NSMutableDictionary *result = [NSMutableDictionary new];
   result[@"type"] = type;
