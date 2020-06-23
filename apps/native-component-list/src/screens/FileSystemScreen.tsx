@@ -1,8 +1,9 @@
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
+import * as Progress from 'expo-progress';
 import React from 'react';
 import { Alert, AsyncStorage, ScrollView, StyleSheet } from 'react-native';
-import * as Progress from 'expo-progress';
+
 import ListButton from '../components/ListButton';
 
 interface State {
