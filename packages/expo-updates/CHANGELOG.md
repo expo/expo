@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fixed reading the `expo.modules.updates.ENABLED` setting from AndroidManifest.xml.
+- Improved the error message logged when an embedded manifest cannot be found.
+
 ## 0.2.9 — 2020-06-15
 
 ### 🐛 Bug fixes
