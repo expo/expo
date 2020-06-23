@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Asset } from './Asset';
 
 /**
- * Load one or many of asset modules to use in your app.
+ * Load one or many of assets to use in your app.
  * After (pre)loading these assets, you can use the module to load the downloaded asset in your app.
  * It returns a list of assets, when loaded.
  * If something went wrong when loading the assets, the error is returned.
