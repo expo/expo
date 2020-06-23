@@ -1,7 +1,5 @@
 package org.unimodules.interfaces.barcodescanner;
 
-import android.graphics.Point;
-
 import java.util.List;
 
 public class BarCodeScannerResult {
@@ -23,6 +21,7 @@ public class BarCodeScannerResult {
   public int getType() {
     return mType;
   }
+
   public String getValue() {
     return mValue;
   }
@@ -30,6 +29,7 @@ public class BarCodeScannerResult {
   public List<Integer> getCornerPoints() {
     return mCornerPoints;
   }
+
   public void setCornerPoints(List<Integer> points) {
     mCornerPoints = points;
   }
