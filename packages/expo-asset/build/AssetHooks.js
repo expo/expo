@@ -13,7 +13,7 @@ import { Asset } from './Asset';
  * ```tsx
  * const [assets, error] = useAssets(require('path/to/asset.jpg'));
  *
- * return !assets ? null : <Image source={require('path/to/asset.jpg')} />;
+ * return !assets ? null : <Image source={assets[0]} />;
  * ```
  */
 export function useAssets(moduleIds) {

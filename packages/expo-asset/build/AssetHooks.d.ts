@@ -12,7 +12,7 @@ import { Asset } from './Asset';
  * ```tsx
  * const [assets, error] = useAssets(require('path/to/asset.jpg'));
  *
- * return !assets ? null : <Image source={require('path/to/asset.jpg')} />;
+ * return !assets ? null : <Image source={assets[0]} />;
  * ```
  */
 export declare function useAssets(moduleIds: number | number[]): [Asset[]?, Error?];
