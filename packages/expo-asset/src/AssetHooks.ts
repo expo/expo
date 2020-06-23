@@ -28,9 +28,5 @@ export function useAssets(moduleIds: number | number[]): [Asset[]?, Error?] {
       .catch(setError);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // note: to avoid any ambiguity assets are only loaded once
-  // since every rerender is a new array, we have no way of
-  // detecting a new map and updating the loaded state based on that
-
   return [assets, error];
 }
