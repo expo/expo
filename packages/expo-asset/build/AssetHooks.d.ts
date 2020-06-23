@@ -1,9 +1,8 @@
 import { Asset } from './Asset';
 /**
- * Load one or many of asset modules to use in your app.
- * After (pre)loading these assets, you can use the module to load the downloaded asset in your app.
- * It returns a list of assets, when loaded.
- * If something went wrong when loading the assets, the error is returned.
+ * Download and store one or more assets locally.
+ * After the assets are loaded, this hook returns a list of asset instances.
+ * If something went wrong when loading the assets, an error is returned.
  *
  * Note, the assets are not "reloaded" when you dynamically change the asset list.
  *

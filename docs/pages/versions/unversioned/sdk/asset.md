@@ -28,7 +28,7 @@ import { Asset } from 'expo-asset';
 const [assets, error] = useAssets([...]);
 ```
 
-Loads one or many of assets to use in your app. After loading these assets, with [`Asset.loadAsync`](#assetloadasyncmodules), you can use these modules to use the downloaded asset.
+Download and store one or more assets locally. After the assets are loaded, with [`Asset.loadAsync`](#assetloadasyncmodules), this hook returns a list of asset instances.
 
 > Note, the assets are not "reloaded" when you dynamically change the asset list.
 
