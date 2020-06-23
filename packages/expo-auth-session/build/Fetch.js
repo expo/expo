@@ -1,7 +1,9 @@
 import { Platform } from '@unimodules/core';
 import qs from 'qs';
+// TODO(Bacon): pending react-native-adapter publish after sdk 38
+const isDOMAvailable = Platform.OS === 'web' && typeof window !== 'undefined' && !!window.document?.createElement;
 export async function requestAsync(requestUrl, fetchRequest) {
-    if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
+    if (Platform.OS === 'web' && !isDOMAvailable) {
         // @ts-ignore
         return;
     }

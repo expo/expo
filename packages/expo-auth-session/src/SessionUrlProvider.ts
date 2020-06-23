@@ -1,5 +1,5 @@
+import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 
 import { BareSessionUrlProvider } from './BareSessionUrlProvider';
 import { ManagedSessionUrlProvider } from './ManagedSessionUrlProvider';

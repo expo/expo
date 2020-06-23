@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform } from '@unimodules/core';
 export class BareSessionUrlProvider {
     getDefaultReturnUrl() {
         throw new Error("No default return URL could be found. If you're using the bare workflow, please provide `options.returnUrl`.");
