@@ -28,7 +28,7 @@ import { Asset } from 'expo-asset';
 const [assets, error] = useAssets([...]);
 ```
 
-Download and store one or more assets locally. After the assets are loaded, with [`Asset.loadAsync`](#assetloadasyncmodules), this hook returns a list of asset instances.
+Downloads and stores one or more assets locally. After the assets are loaded, with [`Asset.loadAsync`](#assetloadasyncmodules), this hook returns a list of asset instances.
 
 > Note, the assets are not "reloaded" when you dynamically change the asset list.
 
