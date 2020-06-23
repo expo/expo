@@ -178,7 +178,7 @@ An object with information about the permissions, including status, expiration, 
 
 The top-level `status`, `expires`, `granted` and `canAskAgain` keys depend on the values returned for each of the individual permission requests:
 
-### Status
+### `status`
 
 The status represents a combined status of all combined permissions, using the following rules:
 
@@ -203,7 +203,7 @@ If every single permission has a `status` of _granted_, then the top level `gran
 
 ### `canAskAgain`
 
-If every single denied or undetermined permissions can be asked again, then the top level is `true`. Otherwise, it is `false`.
+If every single permission can be asked again, then the top level is `true`. Otherwise, it is `false`.
 
 ## Permissions types
 
