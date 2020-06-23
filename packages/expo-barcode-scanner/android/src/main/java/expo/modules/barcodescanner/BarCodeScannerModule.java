@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -123,10 +124,7 @@ public class BarCodeScannerModule extends ExportedModule {
         List<Bundle> resultList = new ArrayList<>();
         for (BarCodeScannerResult result : results) {
           if (types.contains(result.getType())) {
-            Bundle bundle = new Bundle();
-            bundle.putString("data", result.getValue());
-            bundle.putInt("type", result.getType());
-            resultList.add(bundle);
+            resultList.add(BarCodeScannerResultSerializer.toBundle(result, 1.0f));
           }
         }
         promise.resolve(resultList);

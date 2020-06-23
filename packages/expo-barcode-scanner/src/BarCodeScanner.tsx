@@ -11,10 +11,30 @@ const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 
 const EVENT_THROTTLE_MS = 500;
 
-export type BarCodeEvent = {
+export type BarCodePoint = {
+  x: number;
+  y: number;
+};
+
+export type BarCodeSize = {
+  height: number;
+  width: number;
+};
+
+export type BarCodeBounds = {
+  origin: BarCodePoint;
+  size: BarCodeSize;
+};
+
+export type BarCodeScannerResult = {
   type: string;
   data: string;
-  [key: string]: any;
+  bounds?: BarCodeBounds;
+  cornerPoints?: BarCodePoint[];
+};
+
+export type BarCodeEvent = BarCodeScannerResult & {
+  target?: number;
 };
 
 export type BarCodeEventCallbackArguments = {
@@ -60,7 +80,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   static async scanFromURLAsync(
     url: string,
     barCodeTypes: string[] = Object.values(BarCodeType)
-  ): Promise<{ type: string; data: string }> {
+  ): Promise<BarCodeScannerResult[]> {
     if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
       throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
     }
@@ -92,8 +112,6 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     );
   }
 
-  // coordinates of cornerPoints and boundingBox are represented in DP (Display-Indepent Points) unit
-  // React Native is using the same unit
   onObjectDetected = (callback?: BarCodeScannedCallback) => ({
     nativeEvent,
   }: BarCodeEventCallbackArguments) => {

@@ -3,13 +3,28 @@ package expo.modules.barcodescanner.utils;
 import android.os.Bundle;
 import android.util.Pair;
 
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class BarCodeScannerEventHelper {
+public class BarCodeScannerResultSerializer {
 
-  public static Pair<List<Bundle>, Bundle> getCornerPointsAndBoundingBox(List<Integer> cornerPoints, float density) {
-    List<Bundle> convertedCornerPoints = new ArrayList<>();
+  public static Bundle toBundle(BarCodeScannerResult result, float density) {
+    Bundle resultBundle = new Bundle();
+    resultBundle.putString("data", result.getValue());
+    resultBundle.putInt("type", result.getType());
+    if (!result.getCornerPoints().isEmpty()) {
+      Pair<ArrayList<Bundle>, Bundle> cornerPointsAndBoundingBox = getCornerPointsAndBoundingBox(result.getCornerPoints(), density);
+      resultBundle.putParcelableArrayList("cornerPoints", cornerPointsAndBoundingBox.first);
+      resultBundle.putBundle("bounds", cornerPointsAndBoundingBox.second);
+    }
+
+    return resultBundle;
+  }
+
+  private static Pair<ArrayList<Bundle>, Bundle> getCornerPointsAndBoundingBox(List<Integer> cornerPoints, float density) {
+    ArrayList<Bundle> convertedCornerPoints = new ArrayList<>();
     Bundle boundingBox = new Bundle();
 
     float minX = Float.MAX_VALUE;
@@ -18,7 +33,6 @@ public class BarCodeScannerEventHelper {
     float maxY = Float.MIN_VALUE;
 
     for (int i = 0; i < cornerPoints.size(); i += 2) {
-      // converting pixels to DP unit
       float x = ((float) cornerPoints.get(i)) / density;
       float y = ((float) cornerPoints.get(i + 1)) / density;
 

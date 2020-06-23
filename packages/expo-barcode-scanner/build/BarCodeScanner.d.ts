@@ -1,10 +1,26 @@
 import * as React from 'react';
 import { ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-export declare type BarCodeEvent = {
+export declare type BarCodePoint = {
+    x: number;
+    y: number;
+};
+export declare type BarCodeSize = {
+    height: number;
+    width: number;
+};
+export declare type BarCodeBounds = {
+    origin: BarCodePoint;
+    size: BarCodeSize;
+};
+export declare type BarCodeScannerResult = {
     type: string;
     data: string;
-    [key: string]: any;
+    bounds?: BarCodeBounds;
+    cornerPoints?: BarCodePoint[];
+};
+export declare type BarCodeEvent = BarCodeScannerResult & {
+    target?: number;
 };
 export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
@@ -36,10 +52,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     };
     static getPermissionsAsync(): Promise<PermissionResponse>;
     static requestPermissionsAsync(): Promise<PermissionResponse>;
-    static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<{
-        type: string;
-        data: string;
-    }>;
+    static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
     render(): JSX.Element;
     onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
     convertNativeProps(props: BarCodeScannerProps): {

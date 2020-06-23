@@ -1,12 +1,12 @@
 'use strict';
 
+import { Asset } from 'expo-asset';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Asset } from 'expo-asset';
-import * as TestUtils from '../TestUtils';
 
+import * as TestUtils from '../TestUtils';
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'BarCodeScanner';
@@ -15,6 +15,27 @@ const style = { width: 200, height: 200 };
 export async function test(t, { setPortalChild, cleanupPortal }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
+
+  const testPoint = (value, expected, inaccuracy) => {
+    t.expect(value).toBeGreaterThanOrEqual(expected - inaccuracy);
+    t.expect(value).toBeLessThan(expected + inaccuracy);
+  };
+
+  const testBarCodeBounds = (bounds, expectedBounds, sizeInaccuracy, originInaccuracy) => {
+    t.expect(bounds).toBeDefined();
+    t.expect(typeof bounds.origin).toBe('object');
+    t.expect(typeof bounds.origin.x).toBe('number');
+    t.expect(typeof bounds.origin.y).toBe('number');
+    t.expect(typeof bounds.size).toBe('object');
+    t.expect(typeof bounds.size.width).toBe('number');
+    t.expect(typeof bounds.size.height).toBe('number');
+
+    testPoint(bounds.origin.x, expectedBounds.origin.x, originInaccuracy);
+    testPoint(bounds.origin.y, expectedBounds.origin.y, originInaccuracy);
+
+    testPoint(bounds.size.width, expectedBounds.size.width, sizeInaccuracy);
+    testPoint(bounds.size.height, expectedBounds.size.height, sizeInaccuracy);
+  };
 
   describeWithPermissions('BarCodeScanner', () => {
     const mountAndWaitFor = (child, propName = 'ref') =>
@@ -62,6 +83,23 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(result[0]).toBeDefined();
         t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
         t.expect(result[0].data).toEqual('https://expo.io/');
+        testBarCodeBounds(
+          result[0].bounds,
+          {
+            origin: {
+              x: 40,
+              y: 40,
+            },
+            size: {
+              width: 210,
+              height: 210,
+            },
+          },
+          1,
+          1
+        );
+        t.expect(result[0].cornerPoints).toBeDefined();
+        t.expect(result[0].cornerPoints.length).toEqual(4);
       });
 
       t.it('scans a QR code from photo asset', async () => {
@@ -74,6 +112,23 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(result[0]).toBeDefined();
         t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
         t.expect(result[0].data).toEqual('http://en.m.wikipedia.org');
+        testBarCodeBounds(
+          result[0].bounds,
+          {
+            origin: {
+              x: 94,
+              y: 94,
+            },
+            size: {
+              width: 294,
+              height: 296,
+            },
+          },
+          10,
+          10
+        );
+        t.expect(result[0].cornerPoints).toBeDefined();
+        t.expect(result[0].cornerPoints.length).toEqual(4);
       });
 
       t.it('scans a QR code from base64 URL', async () => {
@@ -101,6 +156,23 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           t.expect(result[0]).toBeDefined();
           t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.datamatrix);
           t.expect(result[0].data).toEqual('https://expo.io/');
+          testBarCodeBounds(
+            result[0].bounds,
+            {
+              origin: {
+                x: 7,
+                y: 7,
+              },
+              size: {
+                width: 141,
+                height: 141,
+              },
+            },
+            1,
+            1
+          );
+          t.expect(result[0].cornerPoints).toBeDefined();
+          t.expect(result[0].cornerPoints.length).toEqual(4);
         });
       }
 
