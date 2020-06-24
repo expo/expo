@@ -17,7 +17,7 @@ import { Asset } from './Asset';
  * return !assets ? null : <Image source={assets[0]} />;
  * ```
  */
-export function useAssets(moduleIds: number | number[]): [Asset[]?, Error?] {
+export function useAssets(moduleIds: number | number[]): [Asset[] | undefined, Error | undefined] {
   const [assets, setAssets] = useState<Asset[]>();
   const [error, setError] = useState<Error>();
 

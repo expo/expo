@@ -14,4 +14,4 @@ import { Asset } from './Asset';
  * return !assets ? null : <Image source={assets[0]} />;
  * ```
  */
-export declare function useAssets(moduleIds: number | number[]): [Asset[]?, Error?];
+export declare function useAssets(moduleIds: number | number[]): [Asset[] | undefined, Error | undefined];
