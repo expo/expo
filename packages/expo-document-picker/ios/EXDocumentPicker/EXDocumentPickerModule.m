@@ -162,7 +162,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _reject = nil;
 }
 
-+ (unsigned long long int)getFileSize:(NSString *)path error:(NSError **)error
++ (unsigned long long)getFileSize:(NSString *)path error:(NSError **)error
 {
   NSDictionary<NSFileAttributeKey, id> *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:error];
   if (*error) {
@@ -181,7 +181,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   
   NSEnumerator *contentsEnumurator = [contents objectEnumerator];
   NSString *file;
-  unsigned long long int folderSize = 0;
+  unsigned long long folderSize = 0;
   while (file = [contentsEnumurator nextObject]) {
     folderSize += [EXDocumentPickerModule getFileSize:[path stringByAppendingPathComponent:file] error:error];
     if (*error) {
