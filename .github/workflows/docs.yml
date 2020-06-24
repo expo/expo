@@ -69,5 +69,5 @@ jobs:
         with:
           channel: '#docs'
           status: ${{ job.status }}
-          fields: commit,author,action,message
+          fields: author,job,message
           author_name: docs build
