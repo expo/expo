@@ -5,7 +5,7 @@
   "@unimodules/core": "~5.3.0",
   "@unimodules/react-native-adapter": "~5.4.0",
   "expo-ads-admob": "~8.2.1",
-  "expo-ads-facebook": "~8.2.1",
+  "expo-ads-facebook": "~8.3.0",
   "expo-analytics-amplitude": "~8.2.1",
   "expo-analytics-segment": "~8.2.1",
   "expo-app-auth": "~9.1.1",
@@ -97,10 +97,10 @@
   "expo-image-loader": "~1.1.1",
   "expo-screen-orientation": "~1.1.1",
   "unimodules-app-loader": "~1.2.0",
-  "expo-notifications": "~0.3.2",
+  "expo-notifications": "~0.4.0",
   "expo-splash-screen": "~0.3.1",
   "firebase": "7.9.0",
   "@react-native-community/picker": "1.6.0",
   "@react-native-community/slider": "3.0.0",
-  "expo-status-bar": "^1.0.0"
+  "expo-status-bar": "~1.0.1"
 }

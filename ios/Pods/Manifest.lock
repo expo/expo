@@ -1520,7 +1520,7 @@ PODS:
   - EXAdsAdMob (8.2.1):
     - Google-Mobile-Ads-SDK (= 7.55.1)
     - UMCore
-  - EXAdsFacebook (8.2.1):
+  - EXAdsFacebook (8.3.0):
     - FBAudienceNetwork (= 5.7.1)
     - UMCore
   - EXAmplitude (8.2.1):
@@ -1658,7 +1658,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.2.1):
     - UMCore
-  - EXNotifications (0.3.2):
+  - EXNotifications (0.4.0):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (9.0.1):
@@ -3632,7 +3632,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAdsAdMob: b3d7cc9bfd445ecb145b5ce19b3973ab2a075292
-  EXAdsFacebook: 88a3e43d30a5b8ec7e3d0b2f3b7a1e5deb1ecbc3
+  EXAdsFacebook: 5d87debb8df7a2cf0c7613f8a41ecf75157b095a
   EXAmplitude: 9232a37c556ab739c42adcbd0b239b5c1ac61f10
   EXAppAuth: 98c853968adeec68008887a0cb475efb2656f196
   EXAppleAuthentication: 5b3da71bada29e2423d8ea27e5538ef0d75aba62
@@ -3674,7 +3674,7 @@ SPEC CHECKSUMS:
   EXMailComposer: a7e2a9f6ad73718dc1ec0bb786200dbc9376e2c2
   EXMediaLibrary: 267cf1daca04a4d71d20c5be0b82701fe6056a08
   EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
-  EXNotifications: cb377772a90e4f1d2038c54f6d3586f4db217eec
+  EXNotifications: f0f89e5ba8ef5ad7568b9f1e65031a6f40fbd313
   EXPermissions: 80ac3acbdb145930079810fe5b08c022b3428aa8
   EXPrint: ba38c9f67a2d046d6160f6d4308af18f584a5039
   EXRandom: a375fb6bed8a0919a795766b8d5218b1200538b7

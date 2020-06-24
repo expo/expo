@@ -7560,7 +7560,7 @@ CACHE_KEYS:
       EXAdsFacebook:
         :debug: 64173b3cb8e7fa2668fbaed42153e865
         :release: 64173b3cb8e7fa2668fbaed42153e865
-    CHECKSUM: 88a3e43d30a5b8ec7e3d0b2f3b7a1e5deb1ecbc3
+    CHECKSUM: 5d87debb8df7a2cf0c7613f8a41ecf75157b095a
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.m"
@@ -7582,7 +7582,7 @@ CACHE_KEYS:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXNativeMediaViewManager.m"
     PROJECT_NAME: EXAdsFacebook
     SPECS:
-      - EXAdsFacebook (8.2.1)
+      - EXAdsFacebook (8.3.0)
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude:
@@ -8271,7 +8271,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 0602110faf064575b2e4aa90ac145f65
         :release: 0602110faf064575b2e4aa90ac145f65
-    CHECKSUM: cb377772a90e4f1d2038c54f6d3586f4db217eec
+    CHECKSUM: f0f89e5ba8ef5ad7568b9f1e65031a6f40fbd313
     FILES:
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -8311,7 +8311,7 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.3.2)
+      - EXNotifications (0.4.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
