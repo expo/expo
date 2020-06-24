@@ -25,7 +25,7 @@
     "date-format": "^2.0.0",
     "expo": "~38.0.0",
     "expo-ads-admob": "~8.2.1",
-    "expo-ads-facebook": "~8.2.1",
+    "expo-ads-facebook": "~8.3.0",
     "expo-app-auth": "~9.1.1",
     "expo-apple-authentication": "~2.2.1",
     "expo-asset": "~8.1.7",
