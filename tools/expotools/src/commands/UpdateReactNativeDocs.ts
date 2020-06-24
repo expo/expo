@@ -70,8 +70,8 @@ async function action(input: Options) {
 async function getOptions(input: Options): Promise<Options> {
   const questions: inquirer.Question[] = [];
   const existingSdks = (await fs.promises.readdir(SDK_DOCS_DIR, { withFileTypes: true }))
-    .filter(entry => entry.isDirectory() && entry.name !== 'latest')
-    .map(entry => entry.name.replace(/v([0-9]+)/, '$1'));
+    .filter((entry) => entry.isDirectory() && entry.name !== 'latest')
+    .map((entry) => entry.name.replace(/v([0-9]+)/, '$1'));
 
   if (input.sdk && !existingSdks.includes(input.sdk)) {
     throw new Error(
@@ -102,7 +102,7 @@ async function getOptions(input: Options): Promise<Options> {
   const answers = questions.length > 0 ? await inquirer.prompt(questions) : {};
 
   return {
-    sdk: answers.sdk || input.sdk,
+    sdk: `v${answers.sdk || input.sdk}`,
     from: answers.from || input.from,
     to: input.to || 'master',
   };
