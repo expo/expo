@@ -3,7 +3,6 @@
 package host.exp.exponent.experience;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
-import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +35,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
@@ -305,15 +302,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
           .didDoubleTapR(keyCode, getCurrentFocus());
 
-        // TODO: remove the path where we don't reload from manifest once SDK 35 is deprecated
-        boolean shouldReloadFromManifest = Exponent.getInstance().shouldAlwaysReloadFromManifest(mSDKVersion);
-        if (didDoubleTapR && !shouldReloadFromManifest) {
-          // The loading screen is hidden by versioned code when reloading JS so we can't show it
-          // on older sdks.
-          showLoadingScreen(mManifest);
-          devSupportManager.call("handleReloadJS");
-          return true;
-        } else if (didDoubleTapR && shouldReloadFromManifest) {
+        if (didDoubleTapR) {
           devSupportManager.call("reloadExpoApp");
           return true;
         }
@@ -388,30 +377,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("destroy");
     }
-  }
-
-  protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
-    mJSBundlePath = jsBundlePath;
-
-    // TODO: remove once SDK 35 is deprecated
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
-      new AlertDialog.Builder(this)
-        .setTitle("Please enable \"Permit drawing over other apps\"")
-        .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
-        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int which) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-              Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-          }
-        })
-        .setCancelable(false)
-        .show();
-
-      return;
-    }
-
-    startReactInstance();
   }
 
   @Override
@@ -507,7 +472,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       exponentProps.put("manifest", mManifest);
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
-      exponentProps.put("errorRecovery", ErrorRecoveryManager.getInstance(mExperienceId).popRecoveryProps());
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }
@@ -665,20 +629,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
     if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
-      // TODO: remove once SDK 35 is deprecated
-      String sdkVersion = "0.0.0";
-      try {
-        sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-      if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
-        Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
-      } else {
-        if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
-          mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
-          mScopedPermissionsRequester = null;
-        }
+      if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
+        mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
+        mScopedPermissionsRequester = null;
       }
     } else {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults);

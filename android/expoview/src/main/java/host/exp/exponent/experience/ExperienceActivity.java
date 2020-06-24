@@ -514,7 +514,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
       if (isDebugModeEnabled()) {
         mNotification = finalNotificationObject;
-        waitForDrawOverOtherAppPermission("");
+        mJSBundlePath = "";
+        startReactInstance();
       } else {
         mTempNotification = finalNotificationObject;
         mIsReadyForBundle = true;
@@ -548,7 +549,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         public void execute() {
           mNotification = mTempNotification;
           mTempNotification = null;
-          waitForDrawOverOtherAppPermission(localBundlePath);
+          mJSBundlePath = localBundlePath;
+          startReactInstance();
           AsyncCondition.remove(READY_FOR_BUNDLE);
         }
       });
