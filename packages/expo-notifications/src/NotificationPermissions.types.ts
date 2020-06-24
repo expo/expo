@@ -17,6 +17,7 @@ export enum IosAuthorizationStatus {
   DENIED = 1,
   AUTHORIZED = 2,
   PROVISIONAL = 3,
+  EPHEMERAL = 4,
 }
 
 export interface NotificationPermissionsStatus extends PermissionResponse {

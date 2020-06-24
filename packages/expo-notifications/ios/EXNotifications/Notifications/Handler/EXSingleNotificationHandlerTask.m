@@ -107,6 +107,7 @@ static NSString * const EXNotificationHandlerErrorDomain = @"expo.notifications.
 {
   UNNotificationPresentationOptions options = UNNotificationPresentationOptionNone;
 
+  // TODO(iOS 14): use UNNotificationPresentationOptionList and UNNotificationPresentationOptionBanner
   if ([response[shouldShowAlertKey] boolValue]) {
     options |= UNNotificationPresentationOptionAlert;
   }

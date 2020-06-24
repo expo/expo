@@ -103,6 +103,7 @@ UM_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
   NSString *identifier = notification.request.identifier;
   if ([_presentedNotifications containsObject:identifier]) {
     [_presentedNotifications removeObject:identifier];
+    // TODO(iOS 14): use UNNotificationPresentationOptionList and UNNotificationPresentationOptionBanner
     presentationOptions = UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge;
   }
 

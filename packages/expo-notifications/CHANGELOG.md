@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `IosAuthorizationStatus.EPHEMERAL`, an option that maps to `UNAuthorizationStatusEphemeral` for compatibility with iOS 14. ([#8938](https://github.com/expo/expo/pull/8938) by [@ide](https://github.com/ide))
+
 ### 🐛 Bug fixes
 
 ## 0.3.3 — 2020-06-24

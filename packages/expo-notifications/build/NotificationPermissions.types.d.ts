@@ -13,7 +13,8 @@ export declare enum IosAuthorizationStatus {
     NOT_DETERMINED = 0,
     DENIED = 1,
     AUTHORIZED = 2,
-    PROVISIONAL = 3
+    PROVISIONAL = 3,
+    EPHEMERAL = 4
 }
 export interface NotificationPermissionsStatus extends PermissionResponse {
     android?: {

@@ -16,5 +16,6 @@ export var IosAuthorizationStatus;
     IosAuthorizationStatus[IosAuthorizationStatus["DENIED"] = 1] = "DENIED";
     IosAuthorizationStatus[IosAuthorizationStatus["AUTHORIZED"] = 2] = "AUTHORIZED";
     IosAuthorizationStatus[IosAuthorizationStatus["PROVISIONAL"] = 3] = "PROVISIONAL";
+    IosAuthorizationStatus[IosAuthorizationStatus["EPHEMERAL"] = 4] = "EPHEMERAL";
 })(IosAuthorizationStatus || (IosAuthorizationStatus = {}));
 //# sourceMappingURL=NotificationPermissions.types.js.map

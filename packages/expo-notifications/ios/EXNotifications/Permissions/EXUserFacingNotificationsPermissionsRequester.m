@@ -176,6 +176,10 @@
       return @(2);
     case UNAuthorizationStatusProvisional:
       return @(3);
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+    case UNAuthorizationStatusEphemeral:
+      return @(4);
+#endif
   }
 }
 
