@@ -66,7 +66,6 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExpoHttpCallback;
@@ -74,7 +73,6 @@ import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.PermissionsHelper;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
 
 public class Exponent {
@@ -224,34 +222,7 @@ public class Exponent {
     return mGCMSenderId;
   }
 
-  // TODO: remove once SDK 35 is deprecated
-  public interface PermissionsListener {
-    void permissionsGranted();
-
-    void permissionsDenied();
-  }
-
-  // TODO: Remove everything connected with permissions once SDK35 is phased out
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
-  private PermissionsHelper mPermissionsHelper;
-
-  public boolean getPermissions(String permissions, ExperienceId experienceId) {
-    return new PermissionsHelper(experienceId).getPermissions(permissions);
-  }
-
-  public boolean requestPermissions(PermissionsListener listener, String[] permissions,
-                                    ExperienceId experienceId, String experienceName) {
-    mPermissionsHelper = new PermissionsHelper(experienceId);
-    return mPermissionsHelper.requestPermissions(listener, permissions, experienceName);
-  }
-
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
-      mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-      mPermissionsHelper = null;
-    }
-  }
-
 
   public static class InstanceManagerBuilderProperties {
     public Application application;

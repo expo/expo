@@ -665,20 +665,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
     if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
-      // TODO: remove once SDK 35 is deprecated
-      String sdkVersion = "0.0.0";
-      try {
-        sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-      if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
-        Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
-      } else {
-        if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
-          mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
-          mScopedPermissionsRequester = null;
-        }
+      if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
+        mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
+        mScopedPermissionsRequester = null;
       }
     } else {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults);
