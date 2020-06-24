@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/EXCellular/ABI35_0_0EXCellular/ABI35_0_0EXCellularModule.h
