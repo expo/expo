@@ -49,8 +49,8 @@ function emitStateChange(isCharging, level) {
     // prevent sending the same state change twice.
     if (batteryState === lastReportedState)
         return;
-    emitter.emit('Expo.batteryStateDidChange', { batteryState });
     lastReportedState = batteryState;
+    emitter.emit('Expo.batteryStateDidChange', { batteryState });
 }
 function onChargingChange() {
     emitStateChange(this.charging, this.level);

@@ -72,7 +72,7 @@ export default {
 
 let lastReportedState: BatteryState = BatteryState.UNKNOWN;
 
-function getBatteryState(isCharging: boolean, level: number) {
+function getBatteryState(isCharging: boolean, level: number): BatteryState {
   return isCharging
     ? level >= 1.0
       ? BatteryState.FULL
@@ -84,8 +84,8 @@ function emitStateChange(isCharging: boolean, level: number) {
   const batteryState = getBatteryState(isCharging, level);
   // prevent sending the same state change twice.
   if (batteryState === lastReportedState) return;
-  emitter.emit('Expo.batteryStateDidChange', { batteryState });
   lastReportedState = batteryState;
+  emitter.emit('Expo.batteryStateDidChange', { batteryState });
 }
 
 function onChargingChange(this: BatteryManager): void {
