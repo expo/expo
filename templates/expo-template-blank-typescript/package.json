@@ -22,6 +22,6 @@
     "@babel/core": "^7.8.6",
     "@types/react": "~16.9.41",
     "@types/react-native": "~0.62.13",
-    "typescript": "~3.8.3"
+    "typescript": "~3.9.5"
   }
 }
