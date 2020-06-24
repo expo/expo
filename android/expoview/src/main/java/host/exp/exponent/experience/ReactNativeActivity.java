@@ -302,15 +302,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
           .didDoubleTapR(keyCode, getCurrentFocus());
 
-        // TODO: remove the path where we don't reload from manifest once SDK 35 is deprecated
-        boolean shouldReloadFromManifest = Exponent.getInstance().shouldAlwaysReloadFromManifest(mSDKVersion);
-        if (didDoubleTapR && !shouldReloadFromManifest) {
-          // The loading screen is hidden by versioned code when reloading JS so we can't show it
-          // on older sdks.
-          showLoadingScreen(mManifest);
-          devSupportManager.call("handleReloadJS");
-          return true;
-        } else if (didDoubleTapR && shouldReloadFromManifest) {
+        if (didDoubleTapR) {
           devSupportManager.call("reloadExpoApp");
           return true;
         }

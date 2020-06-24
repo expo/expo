@@ -7,12 +7,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.os.UserManager;
-import android.provider.Settings;
 
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -57,7 +55,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoHandler;
@@ -527,19 +524,8 @@ public class Exponent {
         emulatorField.setAccessible(true);
         emulatorField.set(null, debuggerHostHostname);
 
-        // TODO: remove when SDK 35 is phased out
-        if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
-          Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-          debugServerHostPortField.setAccessible(true);
-          debugServerHostPortField.set(null, debuggerHostPort);
-
-          Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-          inspectorProxyPortField.setAccessible(true);
-          inspectorProxyPortField.set(null, debuggerHostPort);
-        } else {
-          fieldObject.callStatic("setDevServerPort", debuggerHostPort);
-          fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort);
-        }
+        fieldObject.callStatic("setDevServerPort", debuggerHostPort);
+        fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort);
 
         builder.callRecursive("setUseDeveloperSupport", true);
         builder.callRecursive("setJSMainModulePath", mainModuleName);
