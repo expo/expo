@@ -472,7 +472,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       exponentProps.put("manifest", mManifest);
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
-      exponentProps.put("errorRecovery", ErrorRecoveryManager.getInstance(mExperienceId).popRecoveryProps());
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }
