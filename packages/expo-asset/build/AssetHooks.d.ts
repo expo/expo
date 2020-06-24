@@ -1,6 +1,6 @@
 import { Asset } from './Asset';
 /**
- * Download and store one or more assets locally.
+ * Downloads and stores one or more assets locally.
  * After the assets are loaded, this hook returns a list of asset instances.
  * If something went wrong when loading the assets, an error is returned.
  *
