@@ -3,7 +3,6 @@
 package host.exp.exponent.experience;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
-import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +35,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
@@ -388,30 +385,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("destroy");
     }
-  }
-
-  protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
-    mJSBundlePath = jsBundlePath;
-
-    // TODO: remove once SDK 35 is deprecated
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
-      new AlertDialog.Builder(this)
-        .setTitle("Please enable \"Permit drawing over other apps\"")
-        .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
-        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int which) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-              Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-          }
-        })
-        .setCancelable(false)
-        .show();
-
-      return;
-    }
-
-    startReactInstance();
   }
 
   @Override
