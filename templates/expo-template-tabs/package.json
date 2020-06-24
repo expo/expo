@@ -33,7 +33,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.0.tar.gz",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-safe-area-context": "3.0.2",
-    "react-native-screens": "~2.8.0",
+    "react-native-screens": "~2.9.0",
     "react-native-web": "~0.11.7"
   },
   "devDependencies": {
