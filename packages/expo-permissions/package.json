@@ -42,6 +42,7 @@
     "react-native": "*"
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^3.3.0",
     "expo-module-scripts": "~1.2.0"
   }
 }
