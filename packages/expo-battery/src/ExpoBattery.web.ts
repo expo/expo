@@ -100,7 +100,7 @@ function onLevelChange(this: BatteryManager): void {
 }
 
 async function getBatteryManagerAsync(): Promise<BatteryManager | null> {
-  if (!Platform.isDOMAvailable) return null;
+  if (Platform.isDOMAvailable === false) return null;
   if ('getBattery' in navigator) {
     // @ts-ignore
     return await navigator.getBattery();

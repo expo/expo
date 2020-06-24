@@ -62,7 +62,7 @@ function onLevelChange() {
     emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
 }
 async function getBatteryManagerAsync() {
-    if (!Platform.isDOMAvailable)
+    if (Platform.isDOMAvailable === false)
         return null;
     if ('getBattery' in navigator) {
         // @ts-ignore
