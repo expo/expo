@@ -29,7 +29,7 @@
     "@types/react-native": "~0.61.23",
     "babel-preset-expo": "~8.2.0",
     "jest-expo": "~38.0.0",
-    "typescript": "~3.8.3"
+    "typescript": "~3.9.5"
   },
   "jest": {
     "preset": "react-native"
