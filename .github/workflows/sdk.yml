@@ -20,9 +20,12 @@ jobs:
   check-packages:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout a ref for the event
+        uses: actions/checkout@v2
         with:
-          submodules: true
+          fetch-depth: 100
+      - name: Fetch commits from base branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }} --depth 100
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -33,7 +36,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - run: bin/expotools check-packages
+      - run: bin/expotools check-packages --since ${{ github.base_ref }}
       - uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
