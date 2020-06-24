@@ -4,9 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Added support for FULL state on web. ([#8937](https://github.com/expo/expo/pull/8937) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
-- Remove `fbjs` dependency
+- Remove `fbjs` dependency. ([#8822](https://github.com/expo/expo/pull/8822) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

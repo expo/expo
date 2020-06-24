@@ -19,7 +19,7 @@ export default {
         const batteryManager = await getBatteryManagerAsync();
         if (!batteryManager)
             return BatteryState.UNKNOWN;
-        return batteryManager.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
+        return getBatteryState(batteryManager.charging, batteryManager.level);
     },
     async startObserving() {
         const batteryManager = await getBatteryManagerAsync();
@@ -36,16 +36,33 @@ export default {
         batteryManager.removeEventListener('levelchange', onLevelChange);
     },
 };
-function onChargingChange() {
-    const batteryState = this.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
+let lastReportedState = BatteryState.UNKNOWN;
+function getBatteryState(isCharging, level) {
+    return isCharging
+        ? level >= 1.0
+            ? BatteryState.FULL
+            : BatteryState.CHARGING
+        : BatteryState.UNPLUGGED;
+}
+function emitStateChange(isCharging, level) {
+    const batteryState = getBatteryState(isCharging, level);
+    // prevent sending the same state change twice.
+    if (batteryState === lastReportedState)
+        return;
+    lastReportedState = batteryState;
     emitter.emit('Expo.batteryStateDidChange', { batteryState });
+}
+function onChargingChange() {
+    emitStateChange(this.charging, this.level);
 }
 function onLevelChange() {
     const batteryLevel = this.level;
+    // update the state as well in case the state changed to full.
+    emitStateChange(this.charging, this.level);
     emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
 }
 async function getBatteryManagerAsync() {
-    if (!Platform.isDOMAvailable)
+    if (Platform.isDOMAvailable === false)
         return null;
     if ('getBattery' in navigator) {
         // @ts-ignore
