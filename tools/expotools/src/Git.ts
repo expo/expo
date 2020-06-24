@@ -292,6 +292,14 @@ export class GitDirectory {
   async isAncestorAsync(commit: string): Promise<boolean> {
     return this.tryAsync(['merge-base', '--is-ancestor', commit, 'HEAD']);
   }
+
+  /**
+   * Finds the best common ancestor with given ref.
+   */
+  async mergeBaseAsync(ref: string): Promise<string> {
+    const { stdout } = await this.runAsync(['merge-base', 'HEAD', ref]);
+    return stdout.trim();
+  }
 }
 
 export default new GitDirectory(EXPO_DIR);
