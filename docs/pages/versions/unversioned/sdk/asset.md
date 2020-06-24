@@ -14,13 +14,59 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-asset" />
 
-## API
+# API
 
 ```js
 import { Asset } from 'expo-asset';
 ```
 
-This class represents an asset in your app. It gives metadata about the asset (such as its name and type) and provides facilities to load the asset data.
+## Hooks
+
+### `useAssets`
+
+```ts
+const [assets, error] = useAssets([...]);
+```
+
+Downloads and stores one or more assets locally. After the assets are loaded, with [`Asset.loadAsync`](#assetloadasyncmodules), this hook returns a list of asset instances.
+
+> Note, the assets are not "reloaded" when you dynamically change the asset list.
+
+### Arguments
+
+- **assets (_number|number[]_)** -- One or multiple assets to load.
+
+### Returns
+
+- **assets (_Asset[]|undefined_)** -- A list of all loaded assets. If they aren't loaded yet, this value is `undefined`.
+- **error (_Error|undefined_)** -- An error encountered when loading the assets.
+
+### Example: hook
+
+```tsx
+function App() {
+  const [assets] = useAssets([
+    require('path/to/asset.jpg'),
+    require('path/to/other.png'),
+  ]);
+
+  if (!assets) {
+    return <AppLoading />;
+  }
+
+  return (
+    <View>
+      <Text>Loaded {assets.length} assets!</Text>
+      <Image source={require('path/to/asset.jpg')} />
+      <Image source={require('path/to/other.png')} />
+    </View>
+  );
+}
+```
+
+## Asset
+
+The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its name and type) and provides facilities to load the asset data.
 
 - `name`
 

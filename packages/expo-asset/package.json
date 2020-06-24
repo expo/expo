@@ -54,6 +54,7 @@
     "url-parse": "^1.4.4"
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^3.3.0",
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "~1.2.0"
   }
