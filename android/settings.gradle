@@ -14,7 +14,6 @@ project(':unimodules-test-core').projectDir = new File(rootDir, '../packages/uni
     "abi38_0_0",
     "abi37_0_0",
     "abi36_0_0",
-    "abi35_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
