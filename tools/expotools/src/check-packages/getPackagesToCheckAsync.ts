@@ -8,6 +8,15 @@ import { ActionOptions } from './types';
 
 const { yellow } = chalk;
 
+async function safeGetMergeBaseAsync(ref: string): Promise<string | null> {
+  try {
+    return Git.mergeBaseAsync(ref);
+  } catch (e) {
+    logger.error(`🛑 Cannot get merge base for reference: ${yellow(ref)}\n`, e.stack);
+    return null;
+  }
+}
+
 /**
  * Resolves which packages should go through checks based on given options.
  */
@@ -29,7 +38,7 @@ export default async function getPackagesToCheckAsync(options: ActionOptions) {
   }
 
   const sinceRef = options.since ?? 'master';
-  const mergeBase = await Git.mergeBaseAsync(sinceRef);
+  const mergeBase = await safeGetMergeBaseAsync(sinceRef);
 
   if (!mergeBase) {
     logger.warn(
