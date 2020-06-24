@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '13.8.0'
+          node-version: '12'
       - uses: actions/checkout@v2
         with:
           submodules: true
