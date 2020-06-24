@@ -10,24 +10,22 @@ import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
 public class ScopedNotificationsEmitter extends NotificationsEmitter {
   private ExperienceId mExperienceId;
-  private ScopedNotificationsUtils mScopedNotificationsUtils;
 
   public ScopedNotificationsEmitter(Context context, ExperienceId experienceId) {
     super(context);
     mExperienceId = experienceId;
-    mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
   }
 
   @Override
   public void onNotificationReceived(Notification notification) {
-    if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
+    if (ScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
       super.onNotificationReceived(notification);
     }
   }
 
   @Override
   public void onNotificationResponseReceived(NotificationResponse response) {
-    if (mScopedNotificationsUtils.shouldHandleNotification(response.getNotification(), mExperienceId)) {
+    if (ScopedNotificationsUtils.shouldHandleNotification(response.getNotification(), mExperienceId)) {
       super.onNotificationResponseReceived(response);
     }
   }

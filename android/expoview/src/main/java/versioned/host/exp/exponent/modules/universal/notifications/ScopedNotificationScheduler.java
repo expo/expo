@@ -22,12 +22,10 @@ import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
   private final ExperienceId mExperienceId;
-  private final ScopedNotificationsUtils mScopedNotificationsUtils;
 
   public ScopedNotificationScheduler(Context context, ExperienceId experienceId) {
     super(context);
     mExperienceId = experienceId;
-    mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
   }
 
   @Override
@@ -39,7 +37,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
   protected Collection<Bundle> serializeScheduledNotificationRequests(Collection<NotificationRequest> requests) {
     Collection<Bundle> serializedRequests = new ArrayList<>(requests.size());
     for (NotificationRequest request : requests) {
-      if (mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
+      if (ScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
         serializedRequests.add(NotificationSerializer.toBundle(request));
       }
     }
@@ -54,7 +52,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
         super.onReceiveResult(resultCode, resultData);
         if (resultCode == ExpoNotificationSchedulerService.SUCCESS_CODE) {
           NotificationRequest request = resultData.getParcelable(ExpoNotificationSchedulerService.NOTIFICATION_REQUESTS_KEY);
-          if (request == null || !mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
+          if (request == null || !ScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
             promise.resolve(null);
           }
 
@@ -81,7 +79,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
           }
           List<String> toRemove = new ArrayList<>();
           for (NotificationRequest request : requests) {
-            if (mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
+            if (ScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
               toRemove.add(request.getIdentifier());
             }
           }
