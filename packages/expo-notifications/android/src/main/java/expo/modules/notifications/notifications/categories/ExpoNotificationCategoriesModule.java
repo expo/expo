@@ -23,6 +23,9 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationCategoriesModule";
   private static final String IDENTIFER = "identifier";
   private static final String BUTTON_TITLE = "buttonTitle";
+  private static final String OPTIONS = "options";
+  // use the same key as is used on iOS
+  private static final String DO_NOT_OPEN_TO_FOREGROUND = "doNotOpenInForeground";
 
   public ExpoNotificationCategoriesModule(Context context) {
     super(context);
@@ -54,7 +57,8 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   public void setNotificationCategoryAsync(final String identifier, List<HashMap<String, Object>> actionArguments, final Promise promise) {
     List <NotificationAction> actions = new ArrayList();
     for (HashMap<String, Object> actionMap : actionArguments) {
-      actions.add(new NotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), (Boolean)actionMap.getOrDefault("shouldOpenToForeground", true)));
+      HashMap<String, Object> actionOptions = getActionOptions(actionMap);
+      actions.add(new NotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), getOptionShouldOpenToForeground(actionOptions)));
     }
 
     if (actions.isEmpty()) {
@@ -93,12 +97,30 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     return null;
   }
 
+  private HashMap<String, Object> getActionOptions(HashMap<String, Object> map) {
+    Object value = map.get(OPTIONS);
+    if (value instanceof HashMap) {
+      return (HashMap) value;
+    }
+    return null;
+  }
+
+  private boolean getOptionShouldOpenToForeground(HashMap<String, Object> map) {
+    if (map != null) {
+      Object value = map.get(DO_NOT_OPEN_TO_FOREGROUND);
+      if (value instanceof Boolean) {
+        // Negate the boolean: should open == ! do NOT open
+        return !(boolean) value;
+      }
+    }
+    return true;
+  }
+
   protected ArrayList<Bundle> serializeCategories(Collection<NotificationCategory>  categories) {
     ArrayList<Bundle> serializedCategories = new ArrayList<>();
     for (NotificationCategory category : categories) {
       serializedCategories.add(NotificationSerializer.toBundle(category));
     }
-
     return serializedCategories;
   }
 

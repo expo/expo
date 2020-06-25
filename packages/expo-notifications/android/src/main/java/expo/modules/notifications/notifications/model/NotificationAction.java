@@ -17,7 +17,6 @@ public class NotificationAction implements Parcelable, Serializable {
   private final String mTitle;
   private final boolean mShouldOpenToForeground;
 
-  // todo(cruzan): this should take map of options
   public NotificationAction(String identifier, String title, boolean shouldOpenToForeground) {
     mIdentifier = identifier;
     mTitle = title;

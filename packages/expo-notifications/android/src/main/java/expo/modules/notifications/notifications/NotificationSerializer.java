@@ -183,7 +183,7 @@ public class NotificationSerializer {
     Bundle serializedAction = new Bundle();
     serializedAction.putString("identifier", action.getIdentifier());
     serializedAction.putString("buttonTitle", action.getTitle());
-    // add support for options
+    serializedAction.putBoolean("doNotOpenInForeground", !action.shouldOpenToForeground());
     return serializedAction;
   }
 }
