@@ -24,7 +24,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String BADGE_KEY = "badge";
   private static final String COLOR_KEY = "color";
   private static final String AUTO_DISMISS_KEY = "autoDismiss";
-  private static final String CATEGORY_IDENTIFIER_KEY = "categoryIdentifier";
+  private static final String CATEGORY_IDENTIFIER_KEY = "categoryId";
 
   private SoundResolver mSoundResolver;
 
