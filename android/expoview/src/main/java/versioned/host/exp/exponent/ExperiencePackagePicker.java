@@ -52,13 +52,14 @@ import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
-import expo.modules.screencapture.ScreenCapturePackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.random.RandomPackage;
+import expo.modules.screencapture.ScreenCapturePackage;
 import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
+import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
@@ -109,17 +110,18 @@ public class ExperiencePackagePicker {
       new NetworkPackage(),
       new NotificationsPackage(),
       new PermissionsPackage(),
-      new ScreenCapturePackage(),
       new PrintPackage(),
       new RandomPackage(),
       new SMSPackage(),
       new SQLitePackage(),
+      new ScreenCapturePackage(),
       new ScreenOrientationPackage(),
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
       new SharingPackage(),
       new SpeechPackage(),
+      new SplashScreenPackage(),
       new StripePackage(),
       new TaskManagerPackage(),
       new VideoThumbnailsPackage(),

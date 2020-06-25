@@ -652,24 +652,16 @@ public class Kernel extends KernelInterface {
       new AppLoader(manifestUrl, forceCache) {
         @Override
         public void onOptimisticManifest(final JSONObject optimisticManifest) {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              sendLoadingScreenManifestToExperienceActivity(optimisticManifest);
-            }
-          });
+          Exponent.getInstance().runOnUiThread(() -> sendOptimisticManifestToExperienceActivity(optimisticManifest));
         }
 
         @Override
         public void onManifestCompleted(final JSONObject manifest) {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              try {
-                openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
-              } catch (JSONException e) {
-                handleError(e);
-              }
+          Exponent.getInstance().runOnUiThread(() -> {
+            try {
+              openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
+            } catch (JSONException e) {
+              handleError(e);
             }
           });
         }
@@ -855,7 +847,7 @@ public class Kernel extends KernelInterface {
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY);
   }
 
-  public void sendLoadingScreenManifestToExperienceActivity(final JSONObject manifest) {
+  public void sendOptimisticManifestToExperienceActivity(final JSONObject optimisticManifest) {
     AsyncCondition.wait(KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
@@ -864,7 +856,7 @@ public class Kernel extends KernelInterface {
 
       @Override
       public void execute() {
-        mOptimisticActivity.setLoadingScreenManifest(manifest);
+        mOptimisticActivity.setOptimisticManifest(optimisticManifest);
       }
     });
   }
@@ -1004,12 +996,8 @@ public class Kernel extends KernelInterface {
           // Already loading. Don't need to do anything.
           return true;
         } else {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              weakActivity.legacy__showLoadingScreen(null);
-            }
-          });
+          // TODO (@bbarthec): inspect this code path
+          Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
           break;
         }
       }

@@ -56,12 +56,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     }
   }
 
-  public static class ExperienceContentLoaded extends ExperienceEvent {
-    public ExperienceContentLoaded(ExperienceId experienceId) {
-      super(experienceId);
-    }
-  }
-
   private static BaseExperienceActivity sVisibleActivity;
 
   @Inject
@@ -217,7 +211,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       }
 
       if (!isDebugModeEnabled()) {
-        removeViews();
+        removeAllViewsFromContainer();
         mReactInstanceManager.assign(null);
         mReactRootView.assign(null);
       }
@@ -232,8 +226,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       intent.putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage());
       intent.putExtra(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY, errorMessage.developerErrorMessage());
       startActivity(intent);
-
-      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
     });
   }
 

@@ -87,7 +87,7 @@ class DevMenuManager {
         orientationBeforeShowingDevMenu = activity.requestedOrientation
         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        activity.addView(devMenuView)
+        activity.addReactViewToContentContainer(devMenuView)
 
         // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
         // Otherwise, touches and other gestures may not work correctly.
@@ -136,7 +136,7 @@ class DevMenuManager {
    * Toggles dev menu visibility in given experience activity.
    */
   fun toggleInActivity(activity: ExperienceActivity) {
-    if (isDevMenuVisible() && activity.hasView(reactRootView)) {
+    if (isDevMenuVisible() && activity.hasReactView(reactRootView)) {
       requestToClose(activity)
     } else {
       showInActivity(activity)
@@ -223,7 +223,7 @@ class DevMenuManager {
    * Checks whether the dev menu is shown over given experience activity.
    */
   fun isShownInActivity(activity: ExperienceActivity): Boolean {
-    return reactRootView != null && activity.hasView(reactRootView)
+    return reactRootView != null && activity.hasReactView(reactRootView)
   }
 
   /**

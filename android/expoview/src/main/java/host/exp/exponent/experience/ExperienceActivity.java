@@ -9,10 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -47,6 +47,8 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
+import host.exp.exponent.experience.splashscreen.LoadingPopupController;
+import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.ExperienceId;
@@ -91,12 +93,14 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final String TAG = ExperienceActivity.class.getSimpleName();
 
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
-  private static final String NUX_REACT_MODULE_NAME = "ExperienceNuxApp";
   private static final int NOTIFICATION_ID = 10101;
   private static String READY_FOR_BUNDLE = "readyForBundle";
 
   private static ExperienceActivity sCurrentActivity;
 
+  /**
+   * TODO: This view is not created anywhere - I couldn't locate any reference in the whole project. Do wee need it?
+   */
   private ReactUnthemedRootView mNuxOverlayView;
   private ExponentNotification mNotification;
   private ExponentNotification mTempNotification;
@@ -108,12 +112,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private boolean mWillBeReloaded = false;
 
   private RemoteViews mNotificationRemoteViews;
-  private Handler mNotificationAnimationHandler;
-  private Runnable mNotificationAnimator;
-  private int mNotificationAnimationFrame;
   private NotificationCompat.Builder mNotificationBuilder;
   private boolean mIsLoadExperienceAllowedToRun = false;
-  private boolean mShouldShowLoadingScreenWithOptimisticManifest = false;
+  private boolean mShouldShowLoadingViewWithOptimisticManifest = false;
 
   @Inject
   ExponentManifest mExponentManifest;
@@ -121,36 +122,29 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   @Inject
   DevMenuManager mDevMenuManager;
 
+  LoadingPopupController mLoadingPopupController;
+
   private DevBundleDownloadProgressListener mDevBundleDownloadProgressListener = new DevBundleDownloadProgressListener() {
     @Override
     public void onProgress(final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          updateLoadingProgress(status, done, total);
-        }
-      });
+      UiThreadUtil.runOnUiThread(() -> mLoadingPopupController.updateProgress(status, done, total));
     }
 
     @Override
     public void onSuccess() {
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          checkForReactViews();
-        }
+      UiThreadUtil.runOnUiThread(() -> {
+        mLoadingPopupController.hide();
+        finishLoading();
       });
     }
 
     @Override
     public void onFailure(Exception error) {
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          stopLoading();
-        }
+      UiThreadUtil.runOnUiThread(() -> {
+        mLoadingPopupController.hide();
+        interruptLoading();
       });
-    }
+     }
   };
 
   /*
@@ -164,7 +158,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     super.onCreate(savedInstanceState);
 
     mIsLoadExperienceAllowedToRun = true;
-    mShouldShowLoadingScreenWithOptimisticManifest = true;
+    mShouldShowLoadingViewWithOptimisticManifest = true;
+    mLoadingPopupController = new LoadingPopupController(this);
 
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
@@ -205,26 +200,18 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       new AppLoader(mManifestUrl, forceCache) {
         @Override
         public void onOptimisticManifest(final JSONObject optimisticManifest) {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              setLoadingScreenManifest(optimisticManifest);
-            }
-          });
+          Exponent.getInstance().runOnUiThread(() -> setOptimisticManifest(optimisticManifest));
         }
 
         @Override
         public void onManifestCompleted(final JSONObject manifest) {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              try {
-                String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+          Exponent.getInstance().runOnUiThread(() -> {
+            try {
+              String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
 
-                setManifest(mManifestUrl, manifest, bundleUrl, null);
-              } catch (JSONException e) {
-                mKernel.handleError(e);
-              }
+              setManifest(mManifestUrl, manifest, bundleUrl, null);
+            } catch (JSONException e) {
+              mKernel.handleError(e);
             }
           });
         }
@@ -363,22 +350,20 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    *
    */
 
-  public void setLoadingScreenManifest(final JSONObject manifest) {
+  public void setOptimisticManifest(final JSONObject optimisticManifest) {
     runOnUiThread(() -> {
       if (!isInForeground()) {
         return;
       }
 
-      if (!mShouldShowLoadingScreenWithOptimisticManifest) {
+      if (!mShouldShowLoadingViewWithOptimisticManifest) {
         return;
       }
 
-      ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
-      ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
-
-      legacy__showLoadingScreen(manifest);
-
-      ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
+      ExperienceActivityUtils.configureStatusBar(optimisticManifest, ExperienceActivity.this);
+      ExperienceActivityUtils.setNavigationBar(optimisticManifest, ExperienceActivity.this);
+      ExperienceActivityUtils.setTaskDescription(mExponentManifest, optimisticManifest, ExperienceActivity.this);
+      configureSplashScreenFromManifest(optimisticManifest);
     });
   }
 
@@ -502,7 +487,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
       mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
       mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
-      setView((View) mReactRootView.get());
+      setReactRootView((View) mReactRootView.get());
 
       String id;
       try {
@@ -524,16 +509,15 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
       ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
-      legacy__showLoadingScreen(manifest);
-
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
+      configureSplashScreenFromManifest(manifest);
     });
   }
 
   public void setBundle(final String localBundlePath) {
     // by this point, setManifest should have also been called, so prevent
     // setLoadingScreenManifest from showing a rogue loading screen
-    mShouldShowLoadingScreenWithOptimisticManifest = false;
+    mShouldShowLoadingViewWithOptimisticManifest = false;
 
     // To prevents starting application twice, we start react instance only if we know that the current activity won't be restarted.
     // Restart of the activity could be triggered by dark mode change.
@@ -734,36 +718,35 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    */
   public void dismissNuxViewIfVisible(final boolean isFromNotification) {
     if (mNuxOverlayView != null) {
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          Animation fadeOut = new AlphaAnimation(1, 0);
-          fadeOut.setInterpolator(new AccelerateInterpolator());
-          fadeOut.setDuration(500);
+      runOnUiThread(() -> {
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setDuration(500);
 
-          fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            public void onAnimationEnd(Animation animation) {
-              removeViewFromParent(mNuxOverlayView);
-              mNuxOverlayView = null;
-
-              JSONObject eventProperties = new JSONObject();
-              try {
-                eventProperties.put("IS_FROM_NOTIFICATION", isFromNotification);
-              } catch (JSONException e) {
-                EXL.e(TAG, e.getMessage());
-              }
-              Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_DISMISSED", eventProperties);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+          public void onAnimationEnd(Animation animation) {
+            if (mNuxOverlayView.getParent() != null) {
+              ((ViewGroup) mNuxOverlayView.getParent()).removeView(mNuxOverlayView);
             }
+            mNuxOverlayView = null;
 
-            public void onAnimationRepeat(Animation animation) {
+            JSONObject eventProperties = new JSONObject();
+            try {
+              eventProperties.put("IS_FROM_NOTIFICATION", isFromNotification);
+            } catch (JSONException e) {
+              EXL.e(TAG, e.getMessage());
             }
+            Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_DISMISSED", eventProperties);
+          }
 
-            public void onAnimationStart(Animation animation) {
-            }
-          });
+          public void onAnimationRepeat(Animation animation) {
+          }
 
-          mNuxOverlayView.startAnimation(fadeOut);
-        }
+          public void onAnimationStart(Animation animation) {
+          }
+        });
+
+        mNuxOverlayView.startAnimation(fadeOut);
       });
     }
   }

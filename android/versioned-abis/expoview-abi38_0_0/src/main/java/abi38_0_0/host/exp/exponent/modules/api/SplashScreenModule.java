@@ -13,7 +13,7 @@ public class SplashScreenModule extends ExpoKernelServiceConsumerBaseModule {
 
   public SplashScreenModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
     super(reactContext, experienceId);
-    mSplashScreenKernelService = mKernelServiceRegistry.getSplashScreenKernelService();
+    mSplashScreenKernelService = mKernelServiceRegistry.getLegacySplashScreenKernelService();
   }
 
   @Override
@@ -23,11 +23,11 @@ public class SplashScreenModule extends ExpoKernelServiceConsumerBaseModule {
 
   @ReactMethod
   public void preventAutoHide() {
-    mSplashScreenKernelService.preventAutoHide();
+    mSplashScreenKernelService.preventAutoHide(getCurrentActivity());
   }
 
   @ReactMethod
   public void hide() {
-    mSplashScreenKernelService.onExperienceContentsLoaded(this.experienceId);
+    mSplashScreenKernelService.hide(getCurrentActivity());
   }
 }

@@ -70,15 +70,14 @@ public class HomeActivity extends BaseExperienceActivity {
 
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel(this);
-//    legacy__showLoadingScreen(null);
 
-    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView.class);
+    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView.class, true);
 
     tryInstallLeakCanary(true);
   }
 
   @Override
-  protected boolean legacy__shouldShowLoadingView() {
+  protected boolean shouldCreateLadingView() {
     return false;
   }
 
@@ -129,8 +128,8 @@ public class HomeActivity extends BaseExperienceActivity {
     mReactInstanceManager.assign(mKernel.getReactInstanceManager());
     mReactRootView.assign(mKernel.getReactRootView());
     mReactInstanceManager.onHostResume(this, this);
-    setView((View) mReactRootView.get());
-    checkForReactViews();
+    setReactRootView((View) mReactRootView.get());
+    finishLoading();
 
     if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
       Debug.stopMethodTracing();
