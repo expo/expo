@@ -7,7 +7,7 @@
     "inlineSources": true,
     "outDir": "./build",
     "rootDir": "./src",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "strict": true,
     "noImplicitAny": false,
     "noUnusedLocals": true,
@@ -19,6 +19,6 @@
     "allowJs": false,
     "declaration": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "dangerfile.ts"],
-  "exclude": ["dangerfile.ts", "node_modules", "build"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "build", "src/__tests__/*"]
 }
