@@ -212,10 +212,13 @@ async function run(schema) {
     const subCommandName = process.argv[2];
 
     if (subCommandName && !subCommandName.startsWith('-')) {
-      // If the command is known and defined in schema, load just this one command and run it.
-      if (schema[subCommandName]) {
-        const commandFilePath = path.join(BUILD_PATH, schema[subCommandName]);
-        loadCommand(program, commandFilePath);
+      if (!schema[subCommandName]) {
+        console.log(
+          chalk.red(`${chalk.cyan.italic(subCommandName)} is not an expotools command.`),
+          chalk.red(`Run ${chalk.cyan.italic('et --help')} to see a list of available commands.\n`)
+        );
+        process.exit(1);
+        return;
       }
 
       const subCommand =
@@ -225,15 +228,12 @@ async function run(schema) {
         });
 
       if (!subCommand) {
-        console.log(
-          chalk.red(`${chalk.cyan.italic(subCommandName)} is not an expotools command.`),
-          chalk.red(`Run ${chalk.cyan.italic('et --help')} to see a list of available commands.\n`)
-        );
-        process.exit(1);
-        return;
+        // If the command is known and defined in schema, load just this one command and run it.
+        const commandFilePath = path.join(BUILD_PATH, schema[subCommandName]);
+        loadCommand(program, commandFilePath);
       }
 
-      program.name(subCommand._name);
+      // Pass args to commander and run the command.
       program.parse(process.argv);
     } else {
       await loadAllCommandsAsync();
