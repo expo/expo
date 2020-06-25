@@ -268,7 +268,7 @@ class DevMenuManager {
    * the user opens an experience, or he hasn't finished onboarding yet.
    */
   private fun shouldShowOnboarding(): Boolean {
-    return !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished()
+    return !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished() && !Constants.DISABLE_NUX
   }
 
   /**
