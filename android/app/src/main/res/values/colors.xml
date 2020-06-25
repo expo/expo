@@ -9,7 +9,6 @@
   <color name="errorMessage">#FF0000</color>
   <color name="errorLogButton">#66FFFFFF</color>
   <color name="colorLight">#F6F6F7</color>
-  <color name="splashBackground">#FFFFFF</color>
   <color name="iconBackground">#FFFFFF</color>
   <color name="splashscreen_background">#FFFFFF</color>
 </resources>

@@ -1,7 +1,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:drawable="@color/splashscreen_background"/>
 
-  <item>
+  <item android:bottom="30dp">
     <bitmap
       android:gravity="center"
       android:src="@drawable/splashscreen_image"
