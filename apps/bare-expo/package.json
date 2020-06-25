@@ -81,7 +81,7 @@
     "@babel/runtime": "^7.5.5",
     "@react-native-community/segmented-control": "1.6.1",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~38.0.3",
+    "expo": "~38.0.4",
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.3.3",
     "expo-yarn-workspaces": "^1.2.1",
