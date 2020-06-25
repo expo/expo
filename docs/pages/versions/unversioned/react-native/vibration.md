@@ -3,40 +3,97 @@ id: vibration
 title: Vibration
 ---
 
-The Vibration API is exposed at `Vibration.vibrate()`. The vibration is synchronous so this method will return immediately.
+Vibrates the device.
 
-There will be no effect on devices that do not support Vibration, eg. the simulator.
-
-**Note for Android:** add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
-
-**The vibration duration in iOS is not configurable**, so there are some differences with Android. In Android, if `pattern` is a number, it specifies the vibration duration in ms. If `pattern` is an array, those odd indices are the vibration duration, while the even ones are the separation time.
-
-In iOS, invoking `vibrate(duration)` will ignore the duration and vibrate for a fixed time. While the `pattern` array is used to define the duration between each vibration. See below example for more.
-
-Repeatable vibration is also supported, the vibration will repeat with defined pattern until `cancel()` is called.
-
-Example:
+## Example
 
 ```js
-const DURATION = 10000;
-const PATTERN = [1000, 2000, 3000];
+import React from "react";
+import { Button, Platform, Text, Vibration, View, SafeAreaView, StyleSheet } from "react-native";
 
-Vibration.vibrate(DURATION);
-// Android: vibrate for 10s
-// iOS: duration is not configurable, vibrate for fixed time (about 500ms)
+const Separator = () => {
+  return <View style={Platform.OS === "android" ? styles.separator : null} />;
+}
 
-Vibration.vibrate(PATTERN);
-// Android: wait 1s -> vibrate 2s -> wait 3s
-// iOS: wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate
+export default function App() {
+  const ONE_SECOND_IN_MS = 1000;
 
-Vibration.vibrate(PATTERN, true);
-// Android: wait 1s -> vibrate 2s -> wait 3s -> wait 1s -> vibrate 2s -> wait 3s -> ...
-// iOS: wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate -> wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate -> ...
+  const PATTERN = [
+    1 * ONE_SECOND_IN_MS,
+    2 * ONE_SECOND_IN_MS,
+    3 * ONE_SECOND_IN_MS
+  ];
 
-Vibration.cancel();
-// Android: vibration stopped
-// iOS: vibration stopped
+  const PATTERN_DESC =
+    Platform.OS === "android"
+      ? "wait 1s, vibrate 2s, wait 3s"
+      : "wait 1s, vibrate, wait 2s, vibrate, wait 3s";
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={[styles.header, styles.paragraph]}>Vibration API</Text>
+      <View>
+        <Button title="Vibrate once" onPress={() => Vibration.vibrate()} />
+      </View>
+      <Separator />
+      {Platform.OS == "android"
+        ? [
+            <View>
+              <Button
+                title="Vibrate for 10 seconds"
+                onPress={() => Vibration.vibrate(10 * ONE_SECOND_IN_MS)}
+              />
+            </View>,
+            <Separator />
+          ]
+        : null}
+      <Text style={styles.paragraph}>Pattern: {PATTERN_DESC}</Text>
+      <Button
+        title="Vibrate with pattern"
+        onPress={() => Vibration.vibrate(PATTERN)}
+      />
+      <Separator />
+      <Button
+        title="Vibrate with pattern until cancelled"
+        onPress={() => Vibration.vibrate(PATTERN, true)}
+      />
+      <Separator />
+      <Button
+        title="Stop vibration pattern"
+        onPress={() => Vibration.cancel()}
+        color="#FF0000"
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingTop: 44,
+    padding: 8
+  },
+  header: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  paragraph: {
+    margin: 24,
+    textAlign: "center"
+  },
+  separator: {
+    marginVertical: 8,
+    borderBottomColor: "#737373",
+    borderBottomWidth: StyleSheet.hairlineWidth
+  }
+});
 ```
+
+> Android apps should request the `android.permission.VIBRATE` permission by adding `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`.
+
+> The Vibration API is implemented as a `AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)` call on iOS.
 
 ---
 
@@ -47,30 +104,31 @@ Vibration.cancel();
 ### `vibrate()`
 
 ```js
-
-Vibration.vibrate(pattern: number, Array<number>, repeat: boolean)
-
+Vibration.vibrate(?pattern: number | Array<number>, ?repeat: boolean)
 ```
 
-Trigger a vibration with specified `pattern`.
+Triggers a vibration with a fixed duration.
+
+**On Android,** the vibration duration defaults to 400 milliseconds, and an arbitrary vibration duration can be specified by passing a number as the value for the `pattern` argument. **On iOS,** the vibration duration is fixed at roughly 400 milliseconds.
+
+The `vibrate()` method can take a `pattern` argument with an array of numbers that represent time in milliseconds. You may set `repeat` to true to run through the vibration pattern in a loop until `cancel()` is called.
+
+**On Android,** the odd indices of the `pattern` array represent the vibration duration, while the even ones represent the separation time. **On iOS,** the numbers in the `pattern` array represent the separation time, as the vibration duration is fixed.
 
 **Parameters:**
 
-| Name    | Type                      | Required | Description                                                                  |
-| ------- | ------------------------- | -------- | ---------------------------------------------------------------------------- |
-| pattern | number or Array\<number\> | Yes      | Vibration pattern, accept a number or an array of numbers. Default to 400ms. |
-| repeat  | boolean                   | No       | Repeat vibration pattern until cancel(), default to false.                   |
+| Name    | Type             | Required | Description                                                | Platform     |
+| ------- | ---------------- | -------- | ---------------------------------------------------------- | ------------ |
+| pattern | number           | No       | Vibration duration in milliseconds. Defaults to 400 ms.    | Android      |
+| pattern | Array of numbers | No       | Vibration pattern as an array of numbers in milliseconds.  | Android, iOS |
+| repeat  | boolean          | No       | Repeat vibration pattern until cancel(), default to false. | Android, iOS |
 
 ---
 
 ### `cancel()`
 
-```js
+```jsx
 Vibration.cancel();
 ```
 
-Stop vibration.
-
-```js
-Vibration.cancel();
-```
+Call this to stop vibrating after having invoked `vibrate()` with repetition enabled.

@@ -10,32 +10,47 @@ title: Keyboard
 The Keyboard module allows you to listen for native events and react to them, as well as make changes to the keyboard, like dismissing it.
 
 ```js
-import React, { Component } from 'react';
-import { Keyboard, TextInput } from 'react-native';
+import React, { useEffect } from "react";
+import { Keyboard, TextInput, StyleSheet } from "react-native";
 
-class Example extends Component {
-  componentDidMount() {
-    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
-    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
-  }
+export default function App() {
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", _keyboardDidShow);
+    Keyboard.addListener("keyboardDidHide", _keyboardDidHide);
 
-  componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
-  }
+    // cleanup function
+    return () => {
+      Keyboard.removeListener("keyboardDidShow", _keyboardDidShow);
+      Keyboard.removeListener("keyboardDidHide", _keyboardDidHide);
+    };
+  }, []);
 
-  _keyboardDidShow() {
-    alert('Keyboard Shown');
-  }
+  const _keyboardDidShow = () => {
+    alert("Keyboard Shown");
+  };
 
-  _keyboardDidHide() {
-    alert('Keyboard Hidden');
-  }
+  const _keyboardDidHide = () => {
+    alert("Keyboard Hidden");
+  };
 
-  render() {
-    return <TextInput onSubmitEditing={Keyboard.dismiss} />;
-  }
+  return (
+    <TextInput
+      style={styles.input}
+      placeholder='Click here ...'
+      onSubmitEditing={Keyboard.dismiss}
+    />
+  );
 }
+
+const styles = StyleSheet.create({
+  input:{
+    margin:60,
+    padding: 10,
+    borderWidth: 0.5,
+    borderRadius: 4,
+    backgroundColor: "#fff"
+  }
+});
 ```
 
 ---
@@ -58,10 +73,10 @@ This function then returns the reference to the listener.
 
 **Parameters:**
 
-| Name      | Type     | Required | Description                                                                               |
-| --------- | -------- | -------- | ----------------------------------------------------------------------------------------- |
-| eventName | string   | Yes      | The `nativeEvent` is the string that identifies the event you're listening for. See below |
-| callback  | function | Yes      | The function to be called when the event fires                                            |
+| Name      | Type     | Required | Description                                                                    |
+| --------- | -------- | -------- | ------------------------------------------------------------------------------ |
+| eventName | string   | Yes      | The `nativeEvent` is the string that identifies the event you're listening for |
+| callback  | function | Yes      | The function to be called when the event fires                                 |
 
 **nativeEvent**
 
@@ -74,7 +89,7 @@ This can be any of the following
 - `keyboardWillChangeFrame`
 - `keyboardDidChangeFrame`
 
-Note that if you set `android:windowSoftInputMode` to `adjustResize`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. If you set `android:windowSoftInputMode` to `adjustNothing`, no events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
+Note that if you set `android:windowSoftInputMode` to `adjustResize` or `adjustPan`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. If you set `android:windowSoftInputMode` to `adjustNothing`, no events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
 
 ---
 
@@ -124,3 +139,13 @@ static dismiss()
 ```
 
 Dismisses the active keyboard and removes focus.
+
+---
+
+### `scheduleLayoutAnimation`
+
+```js
+static scheduleLayoutAnimation(event)
+```
+
+Useful for syncing TextInput (or other keyboard accessory view) size of position changes with keyboard movements.
