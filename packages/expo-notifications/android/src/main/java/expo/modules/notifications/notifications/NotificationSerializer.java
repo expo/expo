@@ -167,7 +167,6 @@ public class NotificationSerializer {
     Bundle serializedCategory = new Bundle();
     serializedCategory.putString("identifier", category.getIdentifier());
     serializedCategory.putParcelableArrayList("actions", toBundleList(category.getActions()));
-    // add support for options
     return serializedCategory;
   }
 
@@ -180,10 +179,15 @@ public class NotificationSerializer {
   }
 
   public static Bundle toBundle(NotificationAction action) {
+    // First we bundle up the options
+    Bundle serializedActionOptions = new Bundle();
+    serializedActionOptions.putBoolean("doNotOpenInForeground", !action.shouldOpenToForeground());
+
     Bundle serializedAction = new Bundle();
     serializedAction.putString("identifier", action.getIdentifier());
     serializedAction.putString("buttonTitle", action.getTitle());
-    serializedAction.putBoolean("doNotOpenInForeground", !action.shouldOpenToForeground());
+    serializedAction.putBundle("options", serializedActionOptions);
+
     return serializedAction;
   }
 }
