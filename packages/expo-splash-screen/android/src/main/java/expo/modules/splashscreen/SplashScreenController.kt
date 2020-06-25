@@ -11,9 +11,10 @@ import java.lang.ref.WeakReference
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
 class SplashScreenController(
-    activity: Activity,
-    resizeMode: SplashScreenImageResizeMode,
-    splashScreenResourcesProvider: SplashScreenResourcesProvider
+  activity: Activity,
+  resizeMode: SplashScreenImageResizeMode,
+  private val rootViewClass: Class<out ViewGroup>,
+  splashScreenResourcesProvider: SplashScreenResourcesProvider
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
@@ -41,12 +42,8 @@ class SplashScreenController(
       successCallback: (hasEffect: Boolean) -> Unit,
       failureCallback: (reason: String) -> Unit
   ) {
-    if (!autoHideEnabled) {
+    if (!autoHideEnabled || !splashScreenShown) {
       return successCallback(false)
-    }
-
-    if (!splashScreenShown) {
-      return failureCallback("Native splash screen is already hidden. Call this method before rendering any view.")
     }
 
     autoHideEnabled = false
@@ -91,7 +88,7 @@ class SplashScreenController(
   }
 
   private fun findRootView(view: View): ViewGroup? {
-    if (ReactRootView::class.isInstance(view)) {
+    if (rootViewClass.isInstance(view)) {
       return view as ViewGroup
     }
     if (view !is SplashScreenView && view is ViewGroup) {

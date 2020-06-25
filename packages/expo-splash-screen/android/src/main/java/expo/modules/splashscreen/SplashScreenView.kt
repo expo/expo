@@ -28,8 +28,9 @@ class SplashScreenView(
     setBackgroundColor(splashScreenResourcesProvider.getBackgroundColor(activity))
 
     addView(imageView)
-    imageView.setImageResource(splashScreenResourcesProvider.getImageResource(activity))
+    splashScreenResourcesProvider.configureImageView(activity, imageView, resizeMode)
     imageView.scaleType = resizeMode.scaleType
+    isClickable = true
 
     when (resizeMode) {
       SplashScreenImageResizeMode.NATIVE -> {}
@@ -38,6 +39,11 @@ class SplashScreenView(
     }
   }
 
+  /**
+   * TODO (@bbarthec): This solution is not nice - to be discussed
+   * It might be better to switch from 'android:windowBackground' to 'android:background' regarding background
+   * (but it's drawback is that every View will inherit the theme styling)
+   */
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     // obtain measuredHeight of top level view (DecorView) that draws the "android:windowBackground" drawable
     // if the ResizeMode.NATIVE is being used, then we need our custom SplashView have exactly the same height to prevent visual move of optional SplashScreen image

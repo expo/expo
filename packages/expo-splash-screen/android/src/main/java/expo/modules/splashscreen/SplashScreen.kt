@@ -2,10 +2,11 @@ package expo.modules.splashscreen
 
 import android.app.Activity
 import android.util.Log
+import android.view.ViewGroup
 import org.unimodules.core.interfaces.SingletonModule
 import java.util.*
 
-object SplashScreen: SingletonModule {
+object SplashScreen : SingletonModule {
   private const val TAG = "SplashScreen"
 
   override fun getName(): String {
@@ -27,12 +28,13 @@ object SplashScreen: SingletonModule {
   @JvmStatic
   @JvmOverloads
   fun show(
-      activity: Activity,
-      resizeMode: SplashScreenImageResizeMode,
-      statusBarTranslucent: Boolean,
-      splashScreenResourcesProvider: SplashScreenResourcesProvider = NativeResourcesBasedProvider(),
-      successCallback: () -> Unit = {},
-      failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
+    activity: Activity,
+    resizeMode: SplashScreenImageResizeMode,
+    rootViewClass: Class<out ViewGroup>,
+    statusBarTranslucent: Boolean,
+    splashScreenResourcesProvider: SplashScreenResourcesProvider = NativeResourcesBasedProvider(),
+    successCallback: () -> Unit = {},
+    failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
     // SplashScreen.show can only be called once per activity
     if (controllers.containsKey(activity)) {
@@ -41,7 +43,7 @@ object SplashScreen: SingletonModule {
 
     SplashScreenStatusBar.configureTranslucent(activity, statusBarTranslucent)
 
-    val controller = SplashScreenController(activity, resizeMode, splashScreenResourcesProvider)
+    val controller = SplashScreenController(activity, resizeMode, rootViewClass, splashScreenResourcesProvider)
     controllers[activity] = controller
     controller.showSplashScreen(successCallback)
   }
@@ -63,6 +65,11 @@ object SplashScreen: SingletonModule {
     controllers[activity]?.preventAutoHide(successCallback, failureCallback)
   }
 
+  @JvmStatic
+  fun preventAutoHide(activity: Activity) {
+    preventAutoHide(activity, {}, {})
+  }
+
   /**
    * Hides SplashScreen for given activity.
    * @param successCallback Callback to be called once SplashScreen is removed from view hierarchy.
@@ -78,5 +85,10 @@ object SplashScreen: SingletonModule {
     }
 
     controllers[activity]?.hideSplashScreen(successCallback, failureCallback)
+  }
+
+  @JvmStatic
+  fun hide(activity: Activity) {
+    hide(activity, {}, {})
   }
 }

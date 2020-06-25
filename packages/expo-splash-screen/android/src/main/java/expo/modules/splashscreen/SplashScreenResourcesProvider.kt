@@ -1,8 +1,8 @@
 package expo.modules.splashscreen
 
 import android.content.Context
+import android.widget.ImageView
 import androidx.annotation.ColorInt
-import androidx.annotation.DrawableRes
 
 /**
  * This interface is responsible for providing resources for proper SplashScreenView configuration.
@@ -16,8 +16,7 @@ interface SplashScreenResourcesProvider {
   fun getBackgroundColor(context: Context): Int
 
   /**
-   * Purpose of this method is to provide source for imageView. Additionally you can modify imageView behaviour.
+   * Purpose of this method is to configure splashScreen's imageView.
    */
-  @DrawableRes
-  fun getImageResource(context: Context): Int
+  fun configureImageView(context: Context, imageView: ImageView, resizeMode: SplashScreenImageResizeMode)
 }
