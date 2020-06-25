@@ -128,14 +128,14 @@ When the prompt method completes then the response will be fulfilled.
 
 #### Arguments
 
-- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#AuthRequestConfig) that specifies what provider to use.
-- **discovery (_DiscoveryDocument_)** -- A loaded [`DiscoveryDocument`](#DiscoveryDocument) with endpoints used for authenticating. Only `authorizationEndpoint` is required for requesting an authorization code.
+- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#authrequestconfig) that specifies what provider to use.
+- **discovery (_DiscoveryDocument_)** -- A loaded [`DiscoveryDocument`](#discoverydocument) with endpoints used for authenticating. Only `authorizationEndpoint` is required for requesting an authorization code.
 
 #### Returns
 
-- **request (_AuthRequest | null_)** -- An instance of [`AuthRequest`](AuthRequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
-- **response (_AuthResponse | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
-- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#AuthRequestPromptOptions) object with options about how the prompt will execute. You can use this to enable the Expo proxy service `auth.expo.io`.
+- **request (_AuthRequest | null_)** -- An instance of [`AuthRequest`](#authrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. You can use this to enable the Expo proxy service `auth.expo.io`.
 
 ### `useAutoDiscovery`
 
@@ -143,7 +143,7 @@ When the prompt method completes then the response will be fulfilled.
 const discovery = useAutoDiscovery('https://example.com/auth');
 ```
 
-Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDocument`](#DiscoveryDocument) (a collection of URLs) from the resource provider.
+Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDocument`](#discoverydocument) (a collection of URLs) from the resource provider.
 
 #### Arguments
 
@@ -151,7 +151,7 @@ Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDo
 
 #### Returns
 
-- **discovery (_DiscoveryDocument | null_)** -- Returns `null` until the [`DiscoveryDocument`](#DiscoveryDocument) has been fetched from the provided issuer URL.
+- **discovery (_DiscoveryDocument | null_)** -- Returns `null` until the [`DiscoveryDocument`](#discoverydocument) has been fetched from the provided issuer URL.
 
 ## Methods
 
@@ -237,8 +237,8 @@ Load an authorization request for a code.
 
 #### Arguments
 
-- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#AuthRequestConfig) that specifies what provider to use.
-- **discovery (_IssuerOrDiscovery_)** -- A loaded [`DiscoveryDocument`](#DiscoveryDocument) or issuer URL. (Only `authorizationEndpoint` is required for requesting an authorization code).
+- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#authrequestconfig) that specifies what provider to use.
+- **discovery (_IssuerOrDiscovery_)** -- A loaded [`DiscoveryDocument`](#discoverydocument) or issuer URL. (Only `authorizationEndpoint` is required for requesting an authorization code).
 
 #### Returns
 
@@ -278,6 +278,24 @@ Often times providers will fail to return the proper error message for a given e
 This error method will add the missing description for more context on what went wrong.
 
 ## Types
+
+### `AuthSessionResult`
+
+Object returned after an auth request has completed.
+
+| Name      | Type                     | Description                                                                | Default |
+| --------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
+| type      | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
+| url       | `string`                 | Auth URL that was opened                                                   |         |
+| error     | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
+| params    | `Record<string, string>` | Query params from the `url` as an object                                   |         |
+| errorCode | `string | null`          | Legacy error code query param, use `error` instead                         |         |
+
+- If the user cancelled the auth session by closing the browser or popup, the result is `{ type: 'cancel' }`.
+- If the auth is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
+- If the auth flow is successful, the result is `{type: 'success', params: Object, event: Object }`
+- If the auth flow is returns an error, the result is `{type: 'error', params: Object, errorCode: string, event: Object }`
+- If you call `promptAsync()` more than once before the first call has returned, the result is `{type: 'locked'}`, because only one `AuthSession` can be in progress at any time.
 
 ### `ResponseType`
 
@@ -433,6 +451,10 @@ const result = await AuthSession.startAsync({
 ### Filtering out AuthSession events in Linking handlers
 
 There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
+
+#### With React Navigation v5
+
+If you are using deep linking with React Navigation v5, filtering through `Linking.addEventListener` will not be sufficient, because deep linking is [handled differently](https://reactnavigation.org/docs/configuring-links/#advanced-cases). Instead, to filter these events you can add a custom `getStateFromPath` function to your linking configuration, and then filter by URL in the same way as described above.
 
 #
 
