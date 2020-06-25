@@ -7,10 +7,10 @@ title: PanResponder
 
 By default, `PanResponder` holds an `InteractionManager` handle to block long-running JS events from interrupting active gestures.
 
-It provides a predictable wrapper of the responder handlers provided by the [gesture responder system](../gesture-responder-system/). For each handler, it provides a new `gestureState` object alongside the native event object:
+It provides a predictable wrapper of the responder handlers provided by the [gesture responder system](https://reactnative.dev/docs/gesture-responder-system). For each handler, it provides a new `gestureState` object alongside the native event object:
 
 ```js
-onPanResponderMove: (event, gestureState) => {};
+onPanResponderMove: (event, gestureState) => {}
 ```
 
 A native event is a synthetic touch event with the following form:
@@ -39,13 +39,12 @@ A `gestureState` object has the following:
 - `vy` - current velocity of the gesture
 - `numberActiveTouches` - Number of touches currently on screen
 
-### Basic Usage
+## Usage Pattern
 
 ```js
-class ExampleComponent extends Component {
-  constructor(props) {
-    super(props);
-    this._panResponder = PanResponder.create({
+export default function ExampleComponent() {
+  const panResponder = React.useRef(
+    PanResponder.create({
       // Ask to be the responder:
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
@@ -75,19 +74,82 @@ class ExampleComponent extends Component {
         // Returns whether this component should block native components from becoming the JS
         // responder. Returns true by default. Is currently only supported on android.
         return true;
-      },
-    });
-  }
+      }
+    })
+  ).current;
 
-  render() {
-    return <View {...this._panResponder.panHandlers} />;
-  }
-}
+  return <View {...panResponder.panHandlers} />;
+};
 ```
 
-### Working Example
+## Example
 
-To see it in action, try the [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/master/RNTester/js/examples/PanResponder/PanResponderExample.js)
+`PanResponder` works with `Animated` API to help build complex gestures in the UI. The following example contains an animated `View` component which can be dragged freely across the screen.
+
+```js
+import React, { useRef } from "react";
+import { Animated, View, StyleSheet, PanResponder, Text } from "react-native";
+
+export default function App() {
+  const pan = useRef(new Animated.ValueXY()).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        pan.setOffset({
+          x: pan.x._value,
+          y: pan.y._value
+        });
+      },
+      onPanResponderMove: Animated.event(
+        [
+          null,
+          { dx: pan.x, dy: pan.y }
+        ]
+      ),
+      onPanResponderRelease: () => {
+        pan.flattenOffset();
+      }
+    })
+  ).current;
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.titleText}>Drag this box!</Text>
+      <Animated.View
+        style={{
+          transform: [{ translateX: pan.x }, { translateY: pan.y }]
+        }}
+        {...panResponder.panHandlers}
+      >
+        <View style={styles.box} />
+      </Animated.View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  titleText: {
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: "bold"
+  },
+  box: {
+    height: 150,
+    width: 150,
+    backgroundColor: "blue",
+    borderRadius: 5
+  }
+});
+```
+
+Try the [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/master/RNTester/js/examples/PanResponder/PanResponderExample.js).
 
 ---
 
@@ -98,9 +160,7 @@ To see it in action, try the [PanResponder example in RNTester](https://github.c
 ### `create()`
 
 ```js
-
 static create(config)
-
 ```
 
 **Parameters:**
