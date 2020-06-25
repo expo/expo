@@ -20,7 +20,15 @@ export function AuthResult({ result }: any) {
   );
 }
 
-export function AuthSection({ title, request, result, promptAsync, useProxy, disabled }: any) {
+export function AuthSection({
+  title,
+  request,
+  result,
+  tokenResponse,
+  promptAsync,
+  useProxy,
+  disabled,
+}: any) {
   return (
     <View style={{ paddingBottom: 8 }}>
       <AuthCard
@@ -37,6 +45,7 @@ export function AuthSection({ title, request, result, promptAsync, useProxy, dis
           v={request?.redirectUri || 'Loading...'}
         />
         <AuthResult result={result?.params} />
+        <AuthResult result={tokenResponse} />
       </View>
     </View>
   );

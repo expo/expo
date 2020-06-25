@@ -52,22 +52,6 @@ public class ErrorRecoveryManager {
     markErrored(false);
   }
 
-  // todo: Remove this once SDK35 is phased out
-  public void setRecoveryProps(JSONObject props) {
-    mRecoveryProps = props;
-  }
-
-  // todo: Remove this once SDK35 is phased out
-  public JSONObject popRecoveryProps() {
-    final JSONObject props = mErrored ? mRecoveryProps : null;
-    if (mErrored) {
-      sReloadBufferDepth++;
-    }
-    markErrored(false);
-    mRecoveryProps = null;
-    return props;
-  }
-
   public void markErrored() {
     markErrored(true);
   }

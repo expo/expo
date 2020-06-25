@@ -1,15 +1,8 @@
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
+import * as Progress from 'expo-progress';
 import React from 'react';
-import {
-  Alert,
-  AsyncStorage,
-  Platform,
-  ProgressBarAndroid,
-  ProgressViewIOS,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { Alert, AsyncStorage, ScrollView, StyleSheet } from 'react-native';
 
 import ListButton from '../components/ListButton';
 
@@ -181,19 +174,6 @@ export default class FileSystemScreen extends React.Component<object, State> {
   };
 
   render() {
-    let progress = null;
-    if (Platform.OS === 'ios') {
-      progress = <ProgressViewIOS style={styles.progress} progress={this.state.downloadProgress} />;
-    } else {
-      progress = (
-        <ProgressBarAndroid
-          style={styles.progress}
-          styleAttr="Horizontal"
-          indeterminate={false}
-          progress={this.state.downloadProgress}
-        />
-      );
-    }
     return (
       <ScrollView style={{ padding: 10 }}>
         <ListButton onPress={this._download} title="Download file (512KB)" />
@@ -201,7 +181,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._getInfo} title="Get Info" />
-        {progress}
+        <Progress.Bar style={styles.progress} isAnimated progress={this.state.downloadProgress} />
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />

@@ -64,9 +64,21 @@ def remove_background_location
   )
 end
 
+def remove_background_audio
+  update_info_plist(
+    xcodeproj: "ios/Exponent.xcodeproj",
+    plist_path: "Exponent/Supporting/Info.plist",
+    block: proc do |plist|
+      puts "Removing background audio background mode..."
+      plist["UIBackgroundModes"].delete("audio")
+    end
+  )
+end
+
 def configure_for_app_store
   puts "Configuring app for App Store submission..."
   remove_background_location
+  remove_background_audio
 end
 
 platform :ios do

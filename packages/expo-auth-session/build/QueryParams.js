@@ -1,4 +1,4 @@
-import assert from 'assert';
+import invariant from 'invariant';
 import qs from 'qs';
 export function buildQueryString(input) {
     return qs.stringify(input);
@@ -12,7 +12,7 @@ export function getQueryParams(url) {
     const parsedSearch = qs.parse(queryString, { parseArrays: false });
     // Pull errorCode off of params
     const errorCode = (parsedSearch.errorCode ?? null);
-    assert(typeof errorCode === 'string' || errorCode === null, `The "errorCode" parameter must be a string if specified`);
+    invariant(typeof errorCode === 'string' || errorCode === null, `The "errorCode" parameter must be a string if specified`);
     delete parsedSearch.errorCode;
     // Get hash (#abc=example)
     let parsedHash = {};

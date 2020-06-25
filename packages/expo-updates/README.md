@@ -227,15 +227,13 @@ If you have `expo-splash-screen` installed in your bare workflow project, you'll
 +#import <EXSplashScreen/EXSplashScreenService.h>
 +#import <UMCore/UMModuleRegistryProvider.h>
 
- - (RCTBridge *)initializeReactNativeApp
+ ...
+
+ - (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success
  {
-  ...
-   [self.window makeKeyAndVisible];
-
+   appController.bridge = [self initializeReactNativeApp];
 +  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-+  [splashScreenService showSplashScreenFor:rootViewController];
-
-   return bridge;
++  [splashScreenService showSplashScreenFor:self.window.rootViewController];
  }
 ```
 

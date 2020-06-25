@@ -118,10 +118,8 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
-  
-  NSNumber *fileSize = nil;
   NSError *fileSizeError = nil;
-  [url getResourceValue:&fileSize forKey:NSURLFileSizeKey error:&fileSizeError];
+  unsigned long long fileSize = [EXDocumentPickerModule getFileSize:[url path] error:&fileSizeError];
   if (fileSizeError) {
     _reject(@"E_INVALID_FILE", @"Unable to get file size", fileSizeError);
     _resolve = nil;
@@ -151,7 +149,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
              @"type": @"success",
              @"uri": [newUrl absoluteString],
              @"name": [url lastPathComponent],
-             @"size": fileSize,
+             @"size": @(fileSize),
              });
   _resolve = nil;
   _reject = nil;
@@ -162,6 +160,36 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _resolve(@{@"type": @"cancel"});
   _resolve = nil;
   _reject = nil;
+}
+
++ (unsigned long long)getFileSize:(NSString *)path error:(NSError **)error
+{
+  NSDictionary<NSFileAttributeKey, id> *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:error];
+  if (*error) {
+    return 0;
+  }
+  
+  if (fileAttributes.fileType != NSFileTypeDirectory) {
+    return fileAttributes.fileSize;
+  }
+  
+  // The path is pointing to the folder
+  NSArray *contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:error];
+  if (*error) {
+    return 0;
+  }
+  
+  NSEnumerator *contentsEnumurator = [contents objectEnumerator];
+  NSString *file;
+  unsigned long long folderSize = 0;
+  while (file = [contentsEnumurator nextObject]) {
+    folderSize += [EXDocumentPickerModule getFileSize:[path stringByAppendingPathComponent:file] error:error];
+    if (*error) {
+      return 0;
+    }
+  }
+  
+  return folderSize;
 }
 
 @end
