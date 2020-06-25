@@ -14,6 +14,7 @@ import java.io.Serializable;
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 
+import android.util.Log;
 /**
  * A POJO representing a notification content: title, message, body, etc. Instances
  * should be created using {@link NotificationContent.Builder}.
@@ -106,6 +107,7 @@ public class NotificationContent implements Parcelable, Serializable {
   }
 
   public String getCategoryId() {
+    Log.w("cruzan", "asked for category id");
     return mCategoryId;
   }
 
@@ -115,6 +117,7 @@ public class NotificationContent implements Parcelable, Serializable {
   }
 
   protected NotificationContent(Parcel in) {
+    Log.w("cruzan", "do we get here parcel in");
     mTitle = in.readString();
     mText = in.readString();
     mSubtitle = in.readString();
@@ -135,6 +138,7 @@ public class NotificationContent implements Parcelable, Serializable {
     mColor = (Number) in.readSerializable();
     mAutoDismiss = in.readByte() == 1;
     mCategoryId = in.readString();
+    Log.w("cruzan", "do we get here parcel in 2 "+ mCategoryId);
   }
 
   @Override
@@ -177,7 +181,7 @@ public class NotificationContent implements Parcelable, Serializable {
     out.writeObject(mPriority != null ? mPriority.getNativeValue() : null);
     out.writeObject(mColor);
     out.writeByte(mAutoDismiss ? 1 : 0);
-    out.writeObject(mCategoryId);
+    out.writeObject(mCategoryId != null ? mCategoryId.toString() : null);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -218,7 +222,12 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readObject();
     mAutoDismiss = in.readByte() == 1;
-    mCategoryId = (String) in.readObject();
+    String CategoryIdString = (String) in.readObject();
+    if (CategoryIdString == null) {
+      mCategoryId = null;
+    } else {
+      mCategoryId = new String(CategoryIdString);
+    }
   }
 
   private void readObjectNoData() throws ObjectStreamException {

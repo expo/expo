@@ -78,29 +78,37 @@ public class SharedPreferencesNotificationCategoriesStore {
    *
    * @param notificationCategory Notification category
    * @throws IOException Thrown if there is an error while serializing the category
+   * @return Return the category that was just created, or null if it couldn't be created.
    */
-  public void saveNotificationCategory(NotificationCategory notificationCategory) throws IOException {
-    mSharedPreferences.edit()
+  public NotificationCategory saveNotificationCategory(NotificationCategory notificationCategory) throws IOException {
+    boolean successful = mSharedPreferences.edit()
         .putString(preferencesNotificationCategoryKey(notificationCategory.getIdentifier()), serializeNotificationCategory(notificationCategory))
-        .apply();
+        .commit();
+    return successful ? notificationCategory : null;
   }
 
   /**
    * Removes notification category for the given identifier.
    *
    * @param identifier Category identifier
+   * @return Return true if category was deleted, false if not.
    */
-  public void removeNotificationCategory(String identifier) {
+  public boolean removeNotificationCategory(String identifier) {
+    boolean categoryExists = mSharedPreferences.getString(preferencesNotificationCategoryKey(identifier), null) != null;
+    if (!categoryExists) {
+      return false;
+    }
     SharedPreferences.Editor editor = mSharedPreferences.edit();
     removeNotificationCategory(editor, identifier);
-    editor.apply();
+    boolean successful = editor.commit();
+    return successful;
   }
 
   /**
    * Perform category removal on provided {@link SharedPreferences.Editor} instance. Can be reused
    * to batch deletion.
    *
-   * @param editor     Editor to apply changes onto
+   * @param editor     Editor to commit changes onto
    * @param identifier Category identifier
    * @return Returns a reference to the same Editor object, so you can
    * chain put calls together.
@@ -120,8 +128,8 @@ public class SharedPreferencesNotificationCategoriesStore {
       removeNotificationCategory(editor, identifier);
       deletedCategories.add(identifier);
     }
-    editor.apply();
-    return deletedCategories;
+    boolean successful = editor.commit();
+    return successful ? deletedCategories : null;
   }
 
   /**
@@ -143,12 +151,15 @@ public class SharedPreferencesNotificationCategoriesStore {
    * Deserializes the category from the string representation.
    *
    * @param category Base64-encoded, serialized category representation
-   * @return Deserialized category
+   * @return Deserialized category or null
    * @throws IOException            Thrown if there is an error while reading category from String
    * @throws ClassNotFoundException Thrown if the deserialization failes due to class not being found.
    * @throws InvalidClassException  Thrown if the category is of invalid class.
    */
   private NotificationCategory deserializeNotificationCategory(String category) throws IOException, ClassNotFoundException, InvalidClassException {
+    if (category == null) {
+      return null;
+    }
     byte[] data = Base64.decode(category, Base64.NO_WRAP);
     try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
          ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream)) {

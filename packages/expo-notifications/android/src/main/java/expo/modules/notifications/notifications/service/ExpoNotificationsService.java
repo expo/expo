@@ -12,6 +12,7 @@ import android.util.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 
 /**
@@ -100,9 +102,12 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     }
   };
 
+  private SharedPreferencesNotificationCategoriesStore mStore;
+
   @Override
   public void onCreate() {
     super.onCreate();
+    mStore = new SharedPreferencesNotificationCategoriesStore(this);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(mObserver);
   }
 
@@ -232,6 +237,27 @@ public class ExpoNotificationsService extends BaseNotificationsService {
       }
     }
     return notifications;
+  }
+
+  @Override
+  protected Collection<NotificationCategory> onGetCategories() {
+    return mStore.getAllNotificationCategories();
+  }
+
+  @Override
+  protected NotificationCategory onSetCategory(NotificationCategory category) {
+    try {
+      return mStore.saveNotificationCategory(category);
+    } catch (IOException e) {
+      Log.e("expo-notifications", String.format("Could not save category \"%s\": %s.", category.getIdentifier(), e.getMessage()));
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @Override
+  protected boolean onDeleteCategory(String identifier) {
+    return mStore.removeNotificationCategory(identifier);
   }
 
   @Nullable

@@ -16,6 +16,8 @@ import java.util.Set;
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationAction;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
@@ -159,5 +161,29 @@ public class NotificationSerializer {
       bundle.putString("type", "unknown");
     }
     return bundle;
+  }
+
+  public static Bundle toBundle(NotificationCategory category) {
+    Bundle serializedCategory = new Bundle();
+    serializedCategory.putString("identifier", category.getIdentifier());
+    serializedCategory.putParcelableArrayList("actions", toBundleList(category.getActions()));
+    // add support for options
+    return serializedCategory;
+  }
+
+  public static ArrayList<Bundle> toBundleList(List<NotificationAction> actions) {
+    ArrayList<Bundle> result = new ArrayList<Bundle>();
+    for (NotificationAction action : actions) {
+      result.add(toBundle(action));
+    }
+    return result;
+  }
+
+  public static Bundle toBundle(NotificationAction action) {
+    Bundle serializedAction = new Bundle();
+    serializedAction.putString("identifier", action.getIdentifier());
+    serializedAction.putString("buttonTitle", action.getTitle());
+    // add support for options
+    return serializedAction;
   }
 }

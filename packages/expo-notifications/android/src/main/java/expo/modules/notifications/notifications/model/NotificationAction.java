@@ -2,6 +2,7 @@ package expo.modules.notifications.notifications.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.io.Serializable;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
@@ -9,28 +10,29 @@ import org.unimodules.core.arguments.ReadableArguments;
 import androidx.annotation.Nullable;
 
 /**
- * 
+ * A class representing a single notification action button.
  */
 public class NotificationAction implements Parcelable, Serializable {
-  private final String mId;
+  private final String mIdentifier;
   private final String mTitle;
   private final boolean mShouldOpenToForeground;
 
-  public NotificationAction(String id, String title, boolean shouldOpenToForeground) {
-    mId = id;
+  // todo(cruzan): this should take map of options
+  public NotificationAction(String identifier, String title, boolean shouldOpenToForeground) {
+    mIdentifier = identifier;
     mTitle = title;
     mShouldOpenToForeground = shouldOpenToForeground;
   }
 
   private NotificationAction(Parcel in) {
-    mId = in.readString();
+    mIdentifier = in.readString();
     mTitle = in.readString();
     mShouldOpenToForeground = in.readByte() != 0;
   }
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
-    dest.writeString(mId);
+    dest.writeString(mIdentifier);
     dest.writeString(mTitle);
     dest.writeByte((byte) (mShouldOpenToForeground ? 1 : 0));
   }
@@ -53,7 +55,7 @@ public class NotificationAction implements Parcelable, Serializable {
   };
 
   public String getIdentifier() {
-    return mId;
+    return mIdentifier;
   }
 
   public String getTitle() {

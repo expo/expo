@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications.presentation.builders;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -13,15 +14,23 @@ import android.os.Parcel;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.io.IOException;
+import java.io.InvalidClassException;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
+import expo.modules.notifications.notifications.model.NotificationAction;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 
 import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
 import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
+import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
 
 /**
  * {@link NotificationBuilder} interpreting a JSON request object.
@@ -35,8 +44,11 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
   private static final long[] NO_VIBRATE_PATTERN = new long[]{0, 0};
 
+  private SharedPreferencesNotificationCategoriesStore mStore;
+
   public ExpoNotificationBuilder(Context context) {
     super(context);
+    mStore = new SharedPreferencesNotificationCategoriesStore(context);
   }
 
   protected NotificationCompat.Builder createBuilder() {
@@ -86,6 +98,24 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     long[] vibrationPatternOverride = content.getVibrationPattern();
     if (shouldVibrate() && vibrationPatternOverride != null) {
       builder.setVibrate(vibrationPatternOverride);
+    }
+
+    String categoryIdentifer = content.getCategoryId();
+    if (categoryIdentifer != null) {
+      List<NotificationAction> actions = new ArrayList();
+      try {
+        NotificationCategory category = mStore.getNotificationCategory(categoryIdentifer);
+        if (category != null) {
+          actions = category.getActions();
+        }
+      } catch (ClassNotFoundException | IOException e) {
+        Log.e("expo-notifications", String.format("Could not read category with identifer: %s. %s", categoryIdentifer, e.getMessage()));
+        e.printStackTrace();
+      }
+      for (NotificationAction action : actions) {
+        // TODO(cruzan): add customizable action icons. Passing the default icon for now
+        builder.addAction(getIcon(), action.getTitle(), getActionIntent(getContext(), action.getIdentifier(), getNotification()));
+      }
     }
 
     if (content.getBody() != null) {

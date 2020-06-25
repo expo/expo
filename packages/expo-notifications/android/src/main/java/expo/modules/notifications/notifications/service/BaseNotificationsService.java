@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 
 import androidx.annotation.NonNull;
@@ -18,6 +21,7 @@ import androidx.core.app.JobIntentService;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 
 /**
  * A notification service foundation handling incoming intents
@@ -25,12 +29,16 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
  */
 public abstract class BaseNotificationsService extends JobIntentService {
   public static final String NOTIFICATION_EVENT_ACTION = "expo.modules.notifications.NOTIFICATION_EVENT";
+  public static final String CATEGORY_EVENT_ACTION = "expo.modules.notifications.CATEGORY_EVENT";
 
+  private static final List<String> VALID_ACTIONS = Arrays.asList(NOTIFICATION_EVENT_ACTION, CATEGORY_EVENT_ACTION);
+  
   // Known result codes
   public static final int SUCCESS_CODE = 0;
   public static final int EXCEPTION_OCCURRED_CODE = -1;
   public static final String EXCEPTION_KEY = "exception";
   public static final String NOTIFICATIONS_KEY = "notifications";
+  public static final String CATEGORIES_KEY = "categories";
 
   // Intent extras keys
   private static final String NOTIFICATION_KEY = "notification";
@@ -39,6 +47,8 @@ public abstract class BaseNotificationsService extends JobIntentService {
   private static final String NOTIFICATION_RESPONSE_KEY = "response";
   private static final String EVENT_TYPE_KEY = "type";
   private static final String RECEIVER_KEY = "receiver";
+  private static final String CATEGORY_KEY = "category";
+  private static final String CATEGORY_IDENTIFIER_KEY = "identifier";
 
   private static final String GET_ALL_DISPLAYED = "getAllDisplayed";
   private static final String PRESENT_TYPE = "present";
@@ -48,6 +58,9 @@ public abstract class BaseNotificationsService extends JobIntentService {
   private static final String RECEIVE_TYPE = "receive";
   private static final String DROPPED_TYPE = "dropped";
   private static final String RESPONSE_TYPE = "response";
+  private static final String GET_CATEGORIES_TYPE = "getCategories";
+  private static final String SET_CATEGORY_TYPE = "setCategory";
+  private static final String DELETE_CATEGORY_TYPE = "deleteCategory";
 
   private static final int JOB_ID = BaseNotificationsService.class.getName().hashCode();
 
@@ -171,13 +184,53 @@ public abstract class BaseNotificationsService extends JobIntentService {
   }
 
   /**
+   * A helper function for dispatching a "get notification categories" command to the service.
+   *
+   * @param context Context where to start the service.
+   */
+  public static void enqueGetCategories(Context context,  @Nullable ResultReceiver receiver) {
+    Intent intent = new Intent(CATEGORY_EVENT_ACTION);
+    intent.putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE);
+    intent.putExtra(RECEIVER_KEY, receiver);
+    enqueueWork(context, intent);
+  }
+
+  /**
+   * A helper function for dispatching a "set notification category" command to the service.
+   *
+   * @param context  Context where to start the service.
+   * @param category Notification category to be set
+   */
+  public static void enqueSetCategory(Context context, NotificationCategory category) {
+    Intent intent = new Intent(CATEGORY_EVENT_ACTION);
+    intent.putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE);
+    intent.putExtra(CATEGORY_KEY, (Serializable)category);
+    enqueueWork(context, intent);
+  }  
+
+  /**
+   * A helper function for dispatching a "delete notification category" command to the service.
+   *
+   * @param context    Context where to start the service.
+   * @param identifier Category Identifier
+   */
+  public static void enqueDeleteCategory(Context context, String identifier,  @Nullable ResultReceiver receiver) {
+    Intent intent = new Intent(CATEGORY_EVENT_ACTION);
+    intent.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE);
+    intent.putExtra(CATEGORY_IDENTIFIER_KEY, identifier);
+    intent.putExtra(RECEIVER_KEY, receiver);
+    enqueueWork(context, intent);
+  }  
+
+  /**
    * Sends the intent to the best service to handle the {@link #NOTIFICATION_EVENT_ACTION} intent.
    *
    * @param context Context where to start the service
    * @param intent  Intent to dispatch
    */
   private static void enqueueWork(Context context, Intent intent) {
-    Intent searchIntent = new Intent(NOTIFICATION_EVENT_ACTION).setPackage(context.getPackageName());
+    String actionType = intent.getAction();
+    Intent searchIntent = new Intent(actionType).setPackage(context.getPackageName());
     ResolveInfo resolveInfo = context.getPackageManager().resolveService(searchIntent, 0);
     if (resolveInfo == null || resolveInfo.serviceInfo == null) {
       Log.e("expo-notifications", String.format("No service capable of handling notifications found (intent = %s). Ensure that you have configured your AndroidManifest.xml properly.", NOTIFICATION_EVENT_ACTION));
@@ -191,40 +244,63 @@ public abstract class BaseNotificationsService extends JobIntentService {
   protected void onHandleWork(@NonNull Intent intent) {
     ResultReceiver receiver = intent.getParcelableExtra(RECEIVER_KEY);
     try {
+      String actionType = intent.getAction();
       // Invalid action provided
-      if (!NOTIFICATION_EVENT_ACTION.equals(intent.getAction())) {
+      if (!VALID_ACTIONS.contains(actionType)) {
         throw new IllegalArgumentException(String.format("Received intent of unrecognized action: %s. Ignoring.", intent.getAction()));
       }
 
       Bundle resultData = null;
       // Let's go through known actions and trigger respective callbacks
+
       String eventType = intent.getStringExtra(EVENT_TYPE_KEY);
-      if (PRESENT_TYPE.equals(eventType)) {
-        onNotificationPresent(
-            intent.<Notification>getParcelableExtra(NOTIFICATION_KEY),
-            intent.<NotificationBehavior>getParcelableExtra(NOTIFICATION_BEHAVIOR_KEY)
-        );
-      } else if (RECEIVE_TYPE.equals(eventType)) {
-        onNotificationReceived(intent.<Notification>getParcelableExtra(NOTIFICATION_KEY));
-      } else if (DISMISS_TYPE.equals(eventType)) {
-        onNotificationDismiss(intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
-      } else if (DISMISS_SELECTED_TYPE.equals(eventType)) {
-        String[] identifiers = intent.getStringArrayExtra(NOTIFICATION_IDENTIFIER_KEY);
-        for (String identifier : identifiers) {
-          onNotificationDismiss(identifier);
-        }
-      } else if (DISMISS_ALL_TYPE.equals(eventType)) {
-        onDismissAllNotifications();
-      } else if (DROPPED_TYPE.equals(eventType)) {
-        onNotificationsDropped();
-      } else if (RESPONSE_TYPE.equals(eventType)) {
-        onNotificationResponseReceived(intent.<NotificationResponse>getParcelableExtra(NOTIFICATION_RESPONSE_KEY));
-      } else if (GET_ALL_DISPLAYED.equals(eventType)) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(NOTIFICATIONS_KEY, new ArrayList<>(getDisplayedNotifications()));
-        resultData = bundle;
-      } else {
-        throw new IllegalArgumentException(String.format("Received event of unrecognized type: %s. Ignoring.", intent.getAction()));
+
+      switch(actionType) {
+        case NOTIFICATION_EVENT_ACTION :
+          if (PRESENT_TYPE.equals(eventType)) {
+            onNotificationPresent(
+                intent.<Notification>getParcelableExtra(NOTIFICATION_KEY),
+                intent.<NotificationBehavior>getParcelableExtra(NOTIFICATION_BEHAVIOR_KEY)
+            );
+          } else if (RECEIVE_TYPE.equals(eventType)) {
+            onNotificationReceived(intent.<Notification>getParcelableExtra(NOTIFICATION_KEY));
+          } else if (DISMISS_TYPE.equals(eventType)) {
+            onNotificationDismiss(intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
+          } else if (DISMISS_SELECTED_TYPE.equals(eventType)) {
+            String[] identifiers = intent.getStringArrayExtra(NOTIFICATION_IDENTIFIER_KEY);
+            for (String identifier : identifiers) {
+              onNotificationDismiss(identifier);
+            }
+          } else if (DISMISS_ALL_TYPE.equals(eventType)) {
+            onDismissAllNotifications();
+          } else if (DROPPED_TYPE.equals(eventType)) {
+            onNotificationsDropped();
+          } else if (RESPONSE_TYPE.equals(eventType)) {
+            onNotificationResponseReceived(intent.<NotificationResponse>getParcelableExtra(NOTIFICATION_RESPONSE_KEY));
+          } else if (GET_ALL_DISPLAYED.equals(eventType)) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(NOTIFICATIONS_KEY, new ArrayList<>(getDisplayedNotifications()));
+            resultData = bundle;
+          } else {
+            throw new IllegalArgumentException(String.format("Received event of unrecognized type: %s. Ignoring.", intent.getAction()));
+          }
+          break;
+        case CATEGORY_EVENT_ACTION :
+          if (GET_CATEGORIES_TYPE.equals(eventType)) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(CATEGORIES_KEY, new ArrayList<>(onGetCategories()));
+            resultData = bundle;
+          } else if (SET_CATEGORY_TYPE.equals(eventType)) {
+            onSetCategory(intent.<NotificationCategory>getParcelableExtra(CATEGORY_KEY));
+          } else if (DELETE_CATEGORY_TYPE.equals(eventType)) {
+            boolean success = onDeleteCategory(intent.getStringExtra(CATEGORY_IDENTIFIER_KEY));
+            Bundle bundle = new Bundle();
+            bundle.putByte(CATEGORIES_KEY, (byte) (success ? 1 : 0));
+            resultData = bundle;
+          } else {
+            throw new IllegalArgumentException(String.format("Received event of unrecognized type: %s. Ignoring.", intent.getAction()));
+          }
+          break;
       }
 
       // If we ended up here, the callbacks must have completed successfully
@@ -296,6 +372,27 @@ public abstract class BaseNotificationsService extends JobIntentService {
    */
   protected Collection<Notification> getDisplayedNotifications() {
     return null;
+  }
+
+  /**
+   * Callback called when getting all notification categories.
+   */
+  protected Collection<NotificationCategory> onGetCategories() {
+    return null;
+  }
+
+  /**
+   * Callback called when setting a notification category.
+   */
+  protected NotificationCategory onSetCategory(NotificationCategory category) {
+    return null;
+  }
+
+  /**
+   * Callback called when deleting a notification category.
+   */
+  protected boolean onDeleteCategory(String identifier) {
+    return false;
   }
 
   protected static Uri.Builder getUriBuilder() {

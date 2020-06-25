@@ -2,35 +2,35 @@ package expo.modules.notifications.notifications.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.io.Serializable;
+import java.util.List;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 
 import androidx.annotation.Nullable;
 
-import expo.modules.notifications.notifications.model.notificationaction;
-
 /**
  * 
  */
 public class NotificationCategory implements Parcelable, Serializable {
-  private final String mId;
-  private final NotificationAction[] mActions;
+  private final String mIdentifier;
+  private final List<NotificationAction> mActions;
 
-  public NotificationCategory(String id, NotificationAction[] actions) {
-    mId = id;
+  public NotificationCategory(String identifier, List<NotificationAction> actions) {
+    mIdentifier = identifier;
     mActions = actions;
   }
 
   private NotificationCategory(Parcel in) {
-    mId = in.readString();
-    mActions = in.readParcelable(getClass().getClassLoader());
+    mIdentifier = in.readString();
+    mActions = in.readArrayList(NotificationAction.class.getClassLoader());
   }
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
-    dest.writeString(mId);
-    dest.writeParcelable(mActions, 0);
+    dest.writeString(mIdentifier);
+    dest.writeList(mActions);
   }
 
   @Override
@@ -51,10 +51,10 @@ public class NotificationCategory implements Parcelable, Serializable {
   };
 
   public String getIdentifier() {
-    return mId;
+    return mIdentifier;
   }
 
-  public NotificationAction[] getActions() {
+  public List<NotificationAction> getActions() {
     return mActions;
   }
 
