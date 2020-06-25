@@ -3,48 +3,81 @@ id: toastandroid
 title: ToastAndroid
 ---
 
-This exposes the native ToastAndroid module as a JS module. This has a function 'show' which takes the following parameters:
+React Native's ToastAndroid API exposes the Android platform's ToastAndroid module as a JS module. It provides the method `show(message, duration)` which takes the following parameters:
 
-1. String message: A string with the text to toast
-2. int duration: The duration of the toast. May be ToastAndroid.SHORT or ToastAndroid.LONG
+- _message_ A string with the text to toast
+- _duration_ The duration of the toast—either `ToastAndroid.SHORT` or `ToastAndroid.LONG`
 
-There is also a function `showWithGravity` to specify the layout gravity. May be ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER.
+You can alternatively use `showWithGravity(message, duration, gravity)` to specify where the toast appears in the screen's layout. May be `ToastAndroid.TOP`, `ToastAndroid.BOTTOM` or `ToastAndroid.CENTER`.
 
-The 'showWithGravityAndOffset' function adds on the ability to specify offset These offset values will translate to pixels.
-
-Basic usage:
+The 'showWithGravityAndOffset(message, duration, gravity, xOffset, yOffset)' method adds the ability to specify an offset with in pixels.
 
 ```js
-import { ToastAndroid } from 'react-native';
+import React from "react";
+import { View, StyleSheet, ToastAndroid, Button } from "react-native";
+import Constants from "expo-constants";
 
-ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
-ToastAndroid.showWithGravity(
-  'All Your Base Are Belong To Us',
-  ToastAndroid.SHORT,
-  ToastAndroid.CENTER
-);
-ToastAndroid.showWithGravityAndOffset(
-  'A wild toast appeared!',
-  ToastAndroid.LONG,
-  ToastAndroid.BOTTOM,
-  25,
-  50
-);
+export default function App() {
+  const showToast = () => {
+    ToastAndroid.show("A pikachu appeared nearby !", ToastAndroid.SHORT);
+  };
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "All Your Base Are Belong To Us",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
+
+  const showToastWithGravityAndOffset = () => {
+    ToastAndroid.showWithGravityAndOffset(
+      "A wild toast appeared!",
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <Button title="Toggle Toast" onPress={() => showToast()} />
+      <Button
+        title="Toggle Toast With Gravity"
+        onPress={() => showToastWithGravity()}
+      />
+      <Button
+        title="Toggle Toast With Gravity & Offset"
+        onPress={() => showToastWithGravityAndOffset()}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: "#888888",
+    padding: 8
+  }
+});
 ```
 
-### Advanced usage:
+### Imperative hack
 
-The ToastAndroid API is imperative and this might present itself as an issue, but there is actually a way(hack) to expose a declarative component from it. See an example below:
+The ToastAndroid API is imperative, but there is a way to expose a declarative component from it as in this example:
 
 ```js
-import React, { Component } from 'react';
-import { View, Button, ToastAndroid } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, ToastAndroid, Button } from "react-native";
+import Constants from "expo-constants";
 
-// a component that calls the imperative ToastAndroid API
-const Toast = props => {
-  if (props.visible) {
+const Toast = ({ visible, message }) => {
+  if (visible) {
     ToastAndroid.showWithGravityAndOffset(
-      props.message,
+      message,
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
       25,
@@ -55,40 +88,32 @@ const Toast = props => {
   return null;
 };
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      visible: false,
-    };
-  }
+export default function App() {
+  const [visibleToast, setvisibleToast] = useState(false);
 
-  handleButtonPress = () => {
-    this.setState(
-      {
-        visible: true,
-      },
-      () => {
-        this.hideToast();
-      }
-    );
+  useEffect(() => setvisibleToast(false), [visibleToast]);
+
+  const handleButtonPress = () => {
+    setvisibleToast(true);
   };
 
-  hideToast = () => {
-    this.setState({
-      visible: false,
-    });
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Toast visible={this.state.visible} message="Example" />
-        <Button title="Toggle Modal" onPress={this.handleButtonPress} />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Toast visible={visibleToast} message="Example" />
+      <Button title="Toggle Toast" onPress={() => handleButtonPress()} />
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: "#888888",
+    padding: 8
+  }
+});
 ```
 
 ---
@@ -100,9 +125,7 @@ class App extends Component {
 ### `show()`
 
 ```js
-
 static show(message, duration)
-
 ```
 
 ---
@@ -110,9 +133,7 @@ static show(message, duration)
 ### `showWithGravity()`
 
 ```js
-
 static showWithGravity(message, duration, gravity)
-
 ```
 
 ---
@@ -120,9 +141,7 @@ static showWithGravity(message, duration, gravity)
 ### `showWithGravityAndOffset()`
 
 ```js
-
 static showWithGravityAndOffset(message, duration, gravity, xOffset, yOffset)
-
 ```
 
 ## Properties
