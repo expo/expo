@@ -14,7 +14,11 @@ import { getPackageChangelogRelativePath } from '../Utils';
 
 const message = 'Dummy pull request.';
 
-function extendAndMockFunction(object, functionName, newFunction) {
+function extendAndMockFunction<T extends Record<string, Function>, K extends keyof T>(
+  object: T,
+  functionName: K,
+  newFunction: Function
+) {
   const baseFunction = object[functionName];
   const jestFunction = jest.fn(async (...args) => {
     await baseFunction(...args);
