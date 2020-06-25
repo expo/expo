@@ -37,10 +37,11 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.NotificationCategory;
+import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 
 /**
- * A notification service using {@link ExpoNotificationBuilder} to build notifications.
+ * A notification service using {@link CategoryAwareNotificationBuilder} to build notifications.
  * Capable of presenting the notifications to the user.
  */
 public class ExpoNotificationsService extends BaseNotificationsService {
@@ -320,7 +321,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
   }
 
   protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
-    return new ExpoNotificationBuilder(this)
+    return new CategoryAwareNotificationBuilder(this)
         .setNotification(notification)
         .setAllowedBehavior(behavior)
         .build();

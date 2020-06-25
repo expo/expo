@@ -30,7 +30,6 @@ import expo.modules.notifications.notifications.model.NotificationRequest;
 
 import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
 import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
 
 /**
  * {@link NotificationBuilder} interpreting a JSON request object.
@@ -44,11 +43,8 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
   private static final long[] NO_VIBRATE_PATTERN = new long[]{0, 0};
 
-  private SharedPreferencesNotificationCategoriesStore mStore;
-
   public ExpoNotificationBuilder(Context context) {
     super(context);
-    mStore = new SharedPreferencesNotificationCategoriesStore(context);
   }
 
   protected NotificationCompat.Builder createBuilder() {
@@ -98,24 +94,6 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     long[] vibrationPatternOverride = content.getVibrationPattern();
     if (shouldVibrate() && vibrationPatternOverride != null) {
       builder.setVibrate(vibrationPatternOverride);
-    }
-
-    String categoryIdentifer = content.getCategoryId();
-    if (categoryIdentifer != null) {
-      List<NotificationAction> actions = new ArrayList();
-      try {
-        NotificationCategory category = mStore.getNotificationCategory(categoryIdentifer);
-        if (category != null) {
-          actions = category.getActions();
-        }
-      } catch (ClassNotFoundException | IOException e) {
-        Log.e("expo-notifications", String.format("Could not read category with identifer: %s. %s", categoryIdentifer, e.getMessage()));
-        e.printStackTrace();
-      }
-      for (NotificationAction action : actions) {
-        // TODO(cruzan): add customizable action icons. Passing the default icon for now
-        builder.addAction(getIcon(), action.getTitle(), getActionIntent(getContext(), action.getIdentifier(), getNotification()));
-      }
     }
 
     if (content.getBody() != null) {
