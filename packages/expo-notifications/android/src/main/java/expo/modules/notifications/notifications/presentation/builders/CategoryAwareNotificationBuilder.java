@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications.presentation.builders;
 
 import androidx.core.app.NotificationCompat;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.util.Log;
 
@@ -43,7 +44,8 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
       }
       for (NotificationAction action : actions) {
         // TODO(cruzan): add customizable action icons. Passing the default icon for now
-        builder.addAction((new NotificationCompat.Action.Builder(super.getIcon(), action.getTitle(), getActionIntent(getContext(), action.getIdentifier(), getNotification()))).build());
+        PendingIntent pIntent = getActionIntent(getContext(), action, getNotification());
+        builder.addAction((new NotificationCompat.Action.Builder(super.getIcon(), action.getTitle(), pIntent)).build());
       }
     }
 

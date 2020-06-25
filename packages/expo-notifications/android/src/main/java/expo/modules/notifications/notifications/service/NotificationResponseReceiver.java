@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 
 /**
@@ -20,15 +21,17 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
 public class NotificationResponseReceiver extends BroadcastReceiver {
   public static final String NOTIFICATION_OPEN_APP_ACTION = "expo.modules.notifications.OPEN_APP_ACTION";
   public static final String NOTIFICATION_RESPONSE_KEY = "response";
+  public static final String ACTION_FOREGROUND_APP = "shouldOpenToForeground";
   //                                      EXRespRcv
   private static final int REQUEST_CODE = 397377728;
 
-  public static PendingIntent getActionIntent(Context context, String actionIdentifier, Notification notification) {
+  public static PendingIntent getActionIntent(Context context, NotificationAction action, Notification notification) {
     Intent intent = new Intent(context, NotificationResponseReceiver.class);
     // By setting different data we make sure that intents with different actions
     // are different to the system.
-    intent.setData(getUriBuilderForIdentifier(notification.getNotificationRequest().getIdentifier()).appendPath(actionIdentifier).build());
-    intent.putExtra(NOTIFICATION_RESPONSE_KEY, new NotificationResponse(actionIdentifier, notification));
+    intent.setData(getUriBuilderForIdentifier(notification.getNotificationRequest().getIdentifier()).appendPath(action.getIdentifier()).build());
+    intent.putExtra(NOTIFICATION_RESPONSE_KEY, new NotificationResponse(action.getIdentifier(), notification));
+    intent.putExtra(ACTION_FOREGROUND_APP, action.shouldOpenToForeground());
     return PendingIntent.getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
@@ -39,7 +42,9 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     NotificationResponse response = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY);
-    openAppToForeground(context, response);
+    if (intent.getBooleanExtra(ACTION_FOREGROUND_APP, true)) {
+      openAppToForeground(context, response);
+    }
     BaseNotificationsService.enqueueResponseReceived(context, response);
   }
 
