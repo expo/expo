@@ -391,8 +391,6 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
   - **totalBytesWritten (_number_)** -- The total bytes written by the download operation.
   - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation. A value of `-1` means that the server did not return the `Content-Length` header and the total size is unknown. Without this header, you won't be able to track the download progress.
 
-  > **Note**: When the app has been moved to the background, this callback won't be fired until it's moved to the foreground.
-
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download. This is set on the `DownloadResumable` object automatically when a download is paused. When initializing a new `DownloadResumable` this should be `null`.
 
 ### `FileSystem.DownloadResumable.downloadAsync()`

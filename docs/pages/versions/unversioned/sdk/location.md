@@ -275,7 +275,6 @@ Returns a promise resolving to an array (in most cases its size is 1) of address
 - **postalCode (_string_)** -- Postal code of the address.
 - **country (_string_)** -- Localized country name of the address.
 - **name (_string_)** -- Place name of the address, for example, "Tower Bridge".
-- **isoCountryCode (_string|null_)** -- Localized (iso) country code of the address, if available.
 
 ### `Location.setApiKey(apiKey)`
 
