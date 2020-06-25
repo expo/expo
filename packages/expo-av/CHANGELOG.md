@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow playing media files embedded as resources in an Android APK. ([#8936](https://github.com/expo/expo/pull/8936) by [@esamelson](https://github.com/esamelson))
+
 ## 8.2.1 — 2020-05-29
 
 _This version does not introduce any user-facing changes._

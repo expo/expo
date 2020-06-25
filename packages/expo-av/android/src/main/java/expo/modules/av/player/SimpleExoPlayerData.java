@@ -8,6 +8,7 @@ import android.os.Handler;
 import androidx.annotation.Nullable;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
@@ -40,6 +41,7 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
@@ -54,6 +56,7 @@ class SimpleExoPlayerData extends PlayerData
   implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
 
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
+  private static final String TAG = SimpleExoPlayerData.class.getSimpleName();
 
   private SimpleExoPlayer mSimpleExoPlayer = null;
   private String mOverridingExtension;
@@ -367,6 +370,17 @@ class SimpleExoPlayerData extends PlayerData
 
   // https://github.com/google/ExoPlayer/blob/2b20780482a9c6b07416bcbf4de829532859d10a/demos/main/src/main/java/com/google/android/exoplayer2/demo/PlayerActivity.java#L365-L393
   private MediaSource buildMediaSource(Uri uri, String overrideExtension, Handler mainHandler, DataSource.Factory factory) {
+    try {
+      if (uri.getScheme() == null) {
+        int resourceId = mReactContext.getResources().getIdentifier(uri.toString(), "raw", mReactContext.getPackageName());
+        DataSpec dataSpec = new DataSpec(RawResourceDataSource.buildRawResourceUri(resourceId));
+        final RawResourceDataSource rawResourceDataSource = new RawResourceDataSource(mReactContext);
+        rawResourceDataSource.open(dataSpec);
+        uri = rawResourceDataSource.getUri();
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Error reading raw resource from ExoPlayer", e);
+    }
     @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(String.valueOf(uri)) : Util.inferContentType("." + overrideExtension);
     switch (type) {
       case C.TYPE_SS:
