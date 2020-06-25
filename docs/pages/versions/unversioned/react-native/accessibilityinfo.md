@@ -5,50 +5,76 @@ title: AccessibilityInfo
 
 Sometimes it's useful to know whether or not the device has a screen reader that is currently active. The `AccessibilityInfo` API is designed for this purpose. You can use it to query the current state of the screen reader as well as to register to be notified when the state of the screen reader changes.
 
-Here's a small example illustrating how to use `AccessibilityInfo`:
+## Example
 
-```js
-class AccessibilityStatusExample extends React.Component {
-  state = {
-    reduceMotionEnabled: false,
-    screenReaderEnabled: false,
-  };
+```javascript
+import React, { useState, useEffect } from "react";
+import { AccessibilityInfo, View, Text, StyleSheet } from "react-native";
 
-  componentDidMount() {
-    AccessibilityInfo.addEventListener('reduceMotionChanged', this._handleReduceMotionToggled);
-    AccessibilityInfo.addEventListener('screenReaderChanged', this._handleScreenReaderToggled);
+export default function App() {
+  const [reduceMotionEnabled, setReduceMotionEnabled] = useState(false);
+  const [screenReaderEnabled, setScreenReaderEnabled] = useState(false);
 
-    AccessibilityInfo.isReduceMotionEnabled().then(reduceMotionEnabled => {
-      this.setState({ reduceMotionEnabled });
-    });
-    AccessibilityInfo.isScreenReaderEnabled().then(screenReaderEnabled => {
-      this.setState({ screenReaderEnabled });
-    });
-  }
-
-  componentWillUnmount() {
-    AccessibilityInfo.removeEventListener('reduceMotionChanged', this._handleReduceMotionToggled);
-
-    AccessibilityInfo.removeEventListener('screenReaderChanged', this._handleScreenReaderToggled);
-  }
-
-  _handleReduceMotionToggled = reduceMotionEnabled => {
-    this.setState({ reduceMotionEnabled });
-  };
-
-  _handleScreenReaderToggled = screenReaderEnabled => {
-    this.setState({ screenReaderEnabled });
-  };
-
-  render() {
-    return (
-      <View>
-        <Text>The reduce motion is {this.state.reduceMotionEnabled ? 'enabled' : 'disabled'}.</Text>
-        <Text>The screen reader is {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.</Text>
-      </View>
+  useEffect(() => {
+    AccessibilityInfo.addEventListener(
+      "reduceMotionChanged",
+      handleReduceMotionToggled
     );
-  }
+    AccessibilityInfo.addEventListener(
+      "screenReaderChanged",
+      handleScreenReaderToggled
+    );
+
+    AccessibilityInfo.fetch().then(reduceMotionEnabled => {
+      setReduceMotionEnabled(reduceMotionEnabled);
+    });
+    AccessibilityInfo.fetch().then(screenReaderEnabled => {
+      setScreenReaderEnabled(screenReaderEnabled);
+    });
+
+    return () => {
+      AccessibilityInfo.removeEventListener(
+        "reduceMotionChanged",
+        handleReduceMotionToggled
+      );
+
+      AccessibilityInfo.removeEventListener(
+        "screenReaderChanged",
+        handleScreenReaderToggled
+      );
+    };
+  }, []);
+
+  const handleReduceMotionToggled = reduceMotionEnabled => {
+    setReduceMotionEnabled(reduceMotionEnabled);
+  };
+
+  const handleScreenReaderToggled = screenReaderEnabled => {
+    setScreenReaderEnabled(screenReaderEnabled);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.status}>
+        The reduce motion is {reduceMotionEnabled ? "enabled" : "disabled"}.
+      </Text>
+      <Text style={styles.status}>
+        The screen reader is {screenReaderEnabled ? "enabled" : "disabled"}.
+      </Text>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  status: {
+    margin: 30
+  }
+});
 ```
 
 ---
@@ -149,7 +175,9 @@ static setAccessibilityFocus(reactTag)
 
 ```
 
-Set accessibility focus to a React component. On Android, this is equivalent to `UIManager.sendAccessibilityEvent(reactTag, UIManager.AccessibilityEventTypes.typeViewFocused);`.
+Set accessibility focus to a React component. On Android, this calls `UIManager.sendAccessibilityEvent(reactTag, UIManager.AccessibilityEventTypes.typeViewFocused);`.
+
+> **Note**: Make sure that any `View` you want to receive the accessibility focus has `accessible={true}`.
 
 ---
 

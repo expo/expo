@@ -3,21 +3,84 @@ id: animated
 title: Animated
 ---
 
-The `Animated` library is designed to make animations fluid, powerful, and painless to build and maintain. `Animated` focuses on declarative relationships between inputs and outputs, with configurable transforms in between, and `start`/`stop` methods to control time-based animation execution.
+The `Animated` library is designed to make animations fluid, powerful, and painless to build and maintain. `Animated` focuses on declarative relationships between inputs and outputs, configurable transforms in between, and `start`/`stop` methods to control time-based animation execution.
 
-The most basic workflow for creating an animation is to create an `Animated.Value`, hook it up to one or more style attributes of an animated component, and then drive updates via animations using `Animated.timing()`:
+The core workflow for creating an animation is to create an `Animated.Value`, hook it up to one or more style attributes of an animated component, and then drive updates via animations using `Animated.timing()`.
+
+## Example
+
+The following example contains a `View` which will fade in and fade out based on the animated value `fadeAnim`.
+
+> Don't modify the animated value directly. You can use the [`useRef` Hook](https://reactjs.org/docs/hooks-reference.html#useref) to return a mutable ref object. This ref object's `current` property is initialized as the given argument and persists throughout the component lifecycle.
 
 ```js
-Animated.timing(
-  // Animate value over time
-  this.state.fadeAnim, // The value to drive
-  {
-    toValue: 1, // Animate to final value of 1
+import React, { useRef } from "react";
+import { Animated, Text, View, StyleSheet, Button } from "react-native";
+
+export default function App() {
+  // fadeAnim will be used as the value for opacity. Initial Value: 0
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const fadeIn = () => {
+    // Will change fadeAnim value to 1 in 5 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 5000
+    }).start();
+  };
+
+  const fadeOut = () => {
+    // Will change fadeAnim value to 0 in 5 seconds
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 5000
+    }).start();
+  };
+
+  return (
+    <View style={styles.container}>
+      <Animated.View
+        style={[
+          styles.fadingContainer,
+          {
+            opacity: fadeAnim // Bind opacity to animated value
+          }
+        ]}
+      >
+        <Text style={styles.fadingText}>Fading View!</Text>
+      </Animated.View>
+      <View style={styles.buttonRow}>
+        <Button title="Fade In" onPress={fadeIn} />
+        <Button title="Fade Out" onPress={fadeOut} />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  fadingContainer: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "powderblue"
+  },
+  fadingText: {
+    fontSize: 28,
+    textAlign: "center",
+    margin: 10
+  },
+  buttonRow: {
+    flexDirection: "row",
+    marginVertical: 16
   }
-).start(); // Start the animation
+});
 ```
 
-Refer to the [Animations](../animations/#animated-api) guide to see additional examples of `Animated` in action.
+Refer to the [Animations](https://reactnative.dev/docs/animations#animated-api) guide to see additional examples of `Animated` in action.
 
 ## Overview
 
@@ -42,11 +105,17 @@ In most cases, you will be using `timing()`. By default, it uses a symmetric eas
 
 Animations are started by calling `start()` on your animation. `start()` takes a completion callback that will be called when the animation is done. If the animation finished running normally, the completion callback will be invoked with `{finished: true}`. If the animation is done because `stop()` was called on it before it could finish (e.g. because it was interrupted by a gesture or another animation), then it will receive `{finished: false}`.
 
+```js
+Animated.timing({}).start(({ finished }) => {
+  /* completion callback */
+});
+```
+
 ### Using the native driver
 
 By using the native driver, we send everything about the animation to native before starting the animation, allowing native code to perform the animation on the UI thread without having to go through the bridge on every frame. Once the animation has started, the JS thread can be blocked without affecting the animation.
 
-You can use the native driver by specifying `useNativeDriver: true` in your animation configuration. See the [Animations](../animations/#using-the-native-driver) guide to learn more.
+You can use the native driver by specifying `useNativeDriver: true` in your animation configuration. See the [Animations](https://reactnative.dev/docs/animations#using-the-native-driver) guide to learn more.
 
 ### Animatable components
 
@@ -72,7 +141,7 @@ Animations can also be combined in complex ways using composition functions:
 - [`Animated.sequence()`](../animated/#sequence) starts the animations in order, waiting for each to complete before starting the next.
 - [`Animated.stagger()`](../animated/#stagger) starts animations in order and in parallel, but with successive delays.
 
-Animations can also be chained together by setting the `toValue` of one animation to be another `Animated.Value`. See [Tracking dynamic values](../animations/#tracking-dynamic-values) in the Animations guide.
+Animations can also be chained together by setting the `toValue` of one animation to be another `Animated.Value`. See [Tracking dynamic values](https://reactnative.dev/docs/animations#tracking-dynamic-values) in the Animations guide.
 
 By default, if one animation is stopped or interrupted, then all other animations in the group are also stopped.
 
@@ -92,7 +161,7 @@ The `interpolate()` function allows input ranges to map to different output rang
 
 - [`interpolate()`](../animated/#interpolate)
 
-Read more about interpolation in the [Animation](../animations/#interpolation) guide.
+Read more about interpolation in the [Animation](https://reactnative.dev/docs/animations#interpolation) guide.
 
 ### Handling gestures and other events
 
@@ -392,17 +461,66 @@ static unforkEvent(event, listener)
 
 ```
 
+---
+
+### `start()`
+
+```js
+static start([callback]: ?(result?: {finished: boolean}) => void)
+```
+
+Animations are started by calling start() on your animation. start() takes a completion callback that will be called when the animation is done or when the animation is done because stop() was called on it before it could finish.
+
+**Parameters:**
+
+| Name     | Type                            | Required | Description                                                                                                                                                     |
+| -------- | ------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| callback | ?(result?: {finished: boolean}) | No       | Function that will be called after the animation finished running normally or when the animation is done because stop() was called on it before it could finish |
+
+Start example with callback:
+
+```js
+Animated.timing({}).start(({ finished }) => {
+  /* completion callback */
+});
+```
+
+---
+
+### `stop()`
+
+```js
+static stop()
+```
+
+Stops any running animation.
+
+---
+
+### `reset()`
+
+```js
+static reset()
+```
+
+Stops any running animation and resets the value to its original.
+
+
 ## Properties
 
 ### `Value`
 
 Standard value class for driving animations. Typically initialized with `new Animated.Value(0);`
 
+You can read more about `Animated.Value` API on the separate [page](../animatedvalue/).
+
 ---
 
 ### `ValueXY`
 
 2D value class for driving 2D animations, such as pan gestures.
+
++You can read more about `Animated.ValueXY` API on the separate [page](../animatedvaluexy/).
 
 ---
 
