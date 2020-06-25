@@ -13,7 +13,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
-## 38.0.0 — not officially out yet
+## 38.0.0
 
 ### 📚 3rd party library updates
 
