@@ -66,11 +66,11 @@ Example use case: you published a release to your `production` channel, only to 
 
 Continuing from the previous section, we rollback our `production` channel entry for all platforms with `expo publish:set`
 
-`expo publish:set --channel production --publish-id d6b61741-a8dc-11e9-852a-3b0715b88238`
-`expo publish:set --channel production --publish-id 43d89652-a8dc-11e9-b565-4586c71668b9`
+`expo publish:set --release-channel production --publish-id d6b61741-a8dc-11e9-852a-3b0715b88238`
+`expo publish:set --release-channel production --publish-id 43d89652-a8dc-11e9-b565-4586c71668b9`
 
 We could accomplish the same thing more succinctly with publish:rollback
-`expo publish:rollback --channel production --sdk-version 36.0.0`
+`expo publish:rollback --release-channel production --sdk-version 36.0.0`
 
 Now we can see that our releases are available on the production channel.
 
