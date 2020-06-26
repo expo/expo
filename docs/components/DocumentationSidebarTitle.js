@@ -99,19 +99,13 @@ export default class DocumentationSidebarTitle extends React.Component {
   //
   render() {
     if (!this.props.info.href) {
-      return (
-        <div className={STYLES_TITLE}>
-          {this.props.children}
-        </div>
-      );
+      return <div className={STYLES_TITLE}>{this.props.children}</div>;
     }
 
     return (
       <div className={`${STYLES_TITLE} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
         <NextLink href={this.props.info.href} as={this.props.info.as || this.props.info.href}>
-          <div>
-            {this.props.children}
-          </div>
+          <div>{this.props.children}</div>
         </NextLink>
       </div>
     );

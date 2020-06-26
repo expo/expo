@@ -1,12 +1,12 @@
-import React from "react";
-import { Pedometer } from "expo-sensors";
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { Pedometer } from 'expo-sensors';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default class App extends React.Component {
   state = {
-    isPedometerAvailable: "checking",
+    isPedometerAvailable: 'checking',
     pastStepCount: 0,
-    currentStepCount: 0
+    currentStepCount: 0,
   };
 
   componentDidMount() {
@@ -20,19 +20,19 @@ export default class App extends React.Component {
   _subscribe = () => {
     this._subscription = Pedometer.watchStepCount(result => {
       this.setState({
-        currentStepCount: result.steps
+        currentStepCount: result.steps,
       });
     });
 
     Pedometer.isAvailableAsync().then(
       result => {
         this.setState({
-          isPedometerAvailable: String(result)
+          isPedometerAvailable: String(result),
         });
       },
       error => {
         this.setState({
-          isPedometerAvailable: "Could not get isPedometerAvailable: " + error
+          isPedometerAvailable: 'Could not get isPedometerAvailable: ' + error,
         });
       }
     );
@@ -46,7 +46,7 @@ export default class App extends React.Component {
       },
       error => {
         this.setState({
-          pastStepCount: "Could not get stepCount: " + error
+          pastStepCount: 'Could not get stepCount: ' + error,
         });
       }
     );
@@ -60,12 +60,8 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>
-          Pedometer.isAvailableAsync(): {this.state.isPedometerAvailable}
-        </Text>
-        <Text>
-          Steps taken in the last 24 hours: {this.state.pastStepCount}
-        </Text>
+        <Text>Pedometer.isAvailableAsync(): {this.state.isPedometerAvailable}</Text>
+        <Text>Steps taken in the last 24 hours: {this.state.pastStepCount}</Text>
         <Text>Walk! And watch this go up: {this.state.currentStepCount}</Text>
       </View>
     );
@@ -76,7 +72,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 15,
-    alignItems: "center",
-    justifyContent: "center"
-  }
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

@@ -73,7 +73,6 @@ const orderVersions = versions => {
 
 export default class VersionSelector extends React.Component {
   render() {
-
     const latestLabel = 'latest (' + Utilities.getUserFacingVersionString(LATEST_VERSION) + ')';
     const labelText =
       this.props.version === 'latest'
