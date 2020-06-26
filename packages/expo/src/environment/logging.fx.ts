@@ -16,8 +16,10 @@ if (Constants.manifest && Constants.manifest.logUrl) {
 }
 
 /**
- * In web browsers the `atob` function is defined, as per https://stackoverflow.com/a/42839384/1123156.
+ * In all web browsers navigator.product is "Gecko" for compatibility reasons.
+ * See https://developer.mozilla.org/en-US/docs/Web/API/NavigatorID/product
+ * and the discussion at https://github.com/expo/expo/pull/8807#discussion_r441391148.
  */
 function isRunningInWebBrowser() {
-  return typeof atob !== 'undefined';
+  return navigator?.product === 'Gecko';
 }
