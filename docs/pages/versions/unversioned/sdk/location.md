@@ -57,7 +57,7 @@ export default function App() {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
     })();
-  });
+  }, []);
 
   let text = 'Waiting..';
   if (errorMsg) {
