@@ -13,7 +13,7 @@ public class SplashScreenModule extends ExpoKernelServiceConsumerBaseModule {
 
   public SplashScreenModule(ReactApplicationContext reactContext, ExperienceId experienceId) {
     super(reactContext, experienceId);
-    mSplashScreenKernelService = mKernelServiceRegistry.getLegacySplashScreenKernelService();
+    mSplashScreenKernelService = mKernelServiceRegistry.getSplashScreenKernelService();
   }
 
   @Override

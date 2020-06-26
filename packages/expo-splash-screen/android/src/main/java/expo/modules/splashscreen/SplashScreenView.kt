@@ -39,23 +39,23 @@ class SplashScreenView(
     }
   }
 
-  /**
-   * TODO (@bbarthec): This solution is not nice - to be discussed
-   * It might be better to switch from 'android:windowBackground' to 'android:background' regarding background
-   * (but it's drawback is that every View will inherit the theme styling)
-   */
-  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-    // obtain measuredHeight of top level view (DecorView) that draws the "android:windowBackground" drawable
-    // if the ResizeMode.NATIVE is being used, then we need our custom SplashView have exactly the same height to prevent visual move of optional SplashScreen image
-    // TODO (@bbarthec): check how it behaves when different visibility settings are applied to StatusBar and/or NavigationBar
-    // TODO (@bbarthec): check how it behaves when orientation = landscape
-    if (resizeMode === SplashScreenImageResizeMode.NATIVE) {
-      val decorViewMeasuredHeight = activity.get()?.window?.decorView?.measuredHeight
-      val newHeightMeasureSpec: Int = decorViewMeasuredHeight?.let { MeasureSpec.makeMeasureSpec(it, MeasureSpec.EXACTLY) }
-        ?: heightMeasureSpec
-      super.onMeasure(widthMeasureSpec, newHeightMeasureSpec)
-    } else {
-      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-  }
+//  /**
+//   * TODO (@bbarthec): This solution is not nice - to be discussed
+//   * It might be better to switch from 'android:windowBackground' to 'android:background' regarding background
+//   * (but it's drawback is that every View will inherit the theme styling)
+//   */
+//  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+//    // obtain measuredHeight of top level view (DecorView) that draws the "android:windowBackground" drawable
+//    // if the ResizeMode.NATIVE is being used, then we need our custom SplashView have exactly the same height to prevent visual move of optional SplashScreen image
+//    // TODO (@bbarthec): check how it behaves when different visibility settings are applied to StatusBar and/or NavigationBar
+//    // TODO (@bbarthec): check how it behaves when orientation = landscape
+//    if (resizeMode === SplashScreenImageResizeMode.NATIVE) {
+//      val decorViewMeasuredHeight = activity.get()?.window?.decorView?.measuredHeight
+//      val newHeightMeasureSpec: Int = decorViewMeasuredHeight?.let { MeasureSpec.makeMeasureSpec(it, MeasureSpec.EXACTLY) }
+//        ?: heightMeasureSpec
+//      super.onMeasure(widthMeasureSpec, newHeightMeasureSpec)
+//    } else {
+//      super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+//    }
+//  }
 }

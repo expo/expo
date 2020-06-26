@@ -27,6 +27,7 @@ public class ExpoKernelServiceRegistry {
   private LinearAccelerationSensorKernelService mLinearAccelerationSensorKernelService = null;
   private MagnetometerUncalibratedKernelService mMagnetometerUncalibratedKernelService = null;
   private PermissionsKernelService mPermissionsKernelService = null;
+  private SplashScreenKernelService mSplashScreenKernelService = null;
 
   public ExpoKernelServiceRegistry(Context context, ExponentSharedPreferences exponentSharedPreferences) {
     mLinkingKernelService = new LinkingKernelService();
@@ -39,6 +40,7 @@ public class ExpoKernelServiceRegistry {
     mLinearAccelerationSensorKernelService = new LinearAccelerationSensorKernelService(context);
     mMagnetometerUncalibratedKernelService = new MagnetometerUncalibratedKernelService(context);
     mPermissionsKernelService = new PermissionsKernelService(context, exponentSharedPreferences);
+    mSplashScreenKernelService = new SplashScreenKernelService(context);
   }
 
   public LinkingKernelService getLinkingKernelService() {
@@ -80,5 +82,12 @@ public class ExpoKernelServiceRegistry {
 
   public PermissionsKernelService getPermissionsKernelService() {
     return mPermissionsKernelService;
+  }
+
+  /**
+   * Remove once SDK38 is phased out.
+   */
+  public SplashScreenKernelService getSplashScreenKernelService() {
+    return mSplashScreenKernelService;
   }
 }

@@ -226,8 +226,7 @@ dependencies {
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-payments-stripe',
-        'expo-updates',
-        'expo-splash-screen'
+        'expo-updates'
       ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */

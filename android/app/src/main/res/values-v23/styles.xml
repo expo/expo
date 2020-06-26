@@ -20,7 +20,6 @@
 
   <style name="Theme.Exponent.HomeActivity" parent="Theme.Exponent.Light">
     <item name="android:windowLightStatusBar">true</item>
-    <item name="android:windowBackground">@color/splashscreen_background</item>
-    <item name="android:background">@drawable/splashscreen</item>
+    <item name="android:windowBackground">@drawable/splashscreen</item>
   </style>
 </resources>
