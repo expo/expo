@@ -26,7 +26,7 @@ If you don't have an Android device available to test with, we recommend using t
 
 ## Step 2: Set up a virtual device
 
-- From the Android Studio main screen, go to `Configure -> AVD Manager`.
+- From the Android Studio main screen, go to `Tools -> AVD Manager`.
 
 - Press the "+ Create Virtual Device" button.
 
