@@ -201,10 +201,11 @@ public abstract class BaseNotificationsService extends JobIntentService {
    * @param context  Context where to start the service.
    * @param category Notification category to be set
    */
-  public static void enqueSetCategory(Context context, NotificationCategory category) {
+  public static void enqueSetCategory(Context context, NotificationCategory category, @Nullable ResultReceiver receiver) {
     Intent intent = new Intent(CATEGORY_EVENT_ACTION);
     intent.putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE);
     intent.putExtra(CATEGORY_KEY, (Serializable)category);
+    intent.putExtra(RECEIVER_KEY, receiver);
     enqueueWork(context, intent);
   }  
 
@@ -291,7 +292,9 @@ public abstract class BaseNotificationsService extends JobIntentService {
             bundle.putParcelableArrayList(CATEGORIES_KEY, new ArrayList<>(onGetCategories()));
             resultData = bundle;
           } else if (SET_CATEGORY_TYPE.equals(eventType)) {
-            onSetCategory(intent.<NotificationCategory>getParcelableExtra(CATEGORY_KEY));
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(CATEGORIES_KEY, onSetCategory(intent.<NotificationCategory>getParcelableExtra(CATEGORY_KEY)));
+            resultData = bundle;
           } else if (DELETE_CATEGORY_TYPE.equals(eventType)) {
             boolean success = onDeleteCategory(intent.getStringExtra(CATEGORY_IDENTIFIER_KEY));
             Bundle bundle = new Bundle();

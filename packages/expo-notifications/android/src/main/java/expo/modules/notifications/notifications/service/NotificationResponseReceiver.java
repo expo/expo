@@ -22,8 +22,8 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
   public static final String NOTIFICATION_OPEN_APP_ACTION = "expo.modules.notifications.OPEN_APP_ACTION";
   public static final String NOTIFICATION_RESPONSE_KEY = "response";
   public static final String ACTION_FOREGROUNDS_APP = "opensAppToForeground";
-  //                                      EXRespRcv
-  private static final int REQUEST_CODE = 397377728;
+  //                                        EXRespRcv
+  protected static final int REQUEST_CODE = 397377728;
 
   public static PendingIntent getActionIntent(Context context, NotificationAction action, Notification notification) {
     Intent intent = new Intent(context, NotificationResponseReceiver.class);

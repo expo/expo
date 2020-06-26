@@ -23,7 +23,7 @@ public class NotificationAction implements Parcelable, Serializable {
     mOpensAppToForeground = opensAppToForeground;
   }
 
-  private NotificationAction(Parcel in) {
+  protected NotificationAction(Parcel in) {
     mIdentifier = in.readString();
     mTitle = in.readString();
     mOpensAppToForeground = in.readByte() != 0;

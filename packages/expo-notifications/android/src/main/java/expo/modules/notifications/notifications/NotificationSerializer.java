@@ -17,10 +17,12 @@ import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationAction;
+import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
@@ -29,6 +31,9 @@ import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {
     Bundle serializedResponse = new Bundle();
+    if (response instanceof TextInputNotificationResponse) {
+      serializedResponse.putString("userText", ((TextInputNotificationResponse)response).getUserText());
+    }
     serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
     serializedResponse.putBundle("notification", toBundle(response.getNotification()));
     return serializedResponse;
@@ -187,6 +192,13 @@ public class NotificationSerializer {
     serializedAction.putString("identifier", action.getIdentifier());
     serializedAction.putString("buttonTitle", action.getTitle());
     serializedAction.putBundle("options", serializedActionOptions);
+
+    if (action instanceof TextInputNotificationAction) {
+      Bundle serializedTextInputOptions = new Bundle();
+      serializedTextInputOptions.putString("submitButtonTitle", ((TextInputNotificationAction)action).getSubmitButtonTitle());
+      serializedTextInputOptions.putString("placeholder", ((TextInputNotificationAction)action).getPlaceholder());
+      serializedAction.putBundle("textInput", serializedTextInputOptions);
+    }
 
     return serializedAction;
   }

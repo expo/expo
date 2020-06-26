@@ -1,5 +1,6 @@
 package expo.modules.notifications.notifications.presentation.builders;
 
+import androidx.core.app.RemoteInput;
 import androidx.core.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,9 +13,11 @@ import java.io.IOException;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
-
+import expo.modules.notifications.notifications.model.TextInputNotificationAction;
+import expo.modules.notifications.notifications.service.TextInputNotificationResponseReceiver;
 import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
 import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
+import static expo.modules.notifications.notifications.service.TextInputNotificationResponseReceiver.getActionIntent;
 
 public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
   private SharedPreferencesNotificationCategoriesStore mStore;
@@ -45,11 +48,28 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
       for (NotificationAction action : actions) {
         // TODO(cruzan): add customizable action icons. Passing the default icon for now
         PendingIntent pIntent = getActionIntent(getContext(), action, getNotification());
-        builder.addAction((new NotificationCompat.Action.Builder(super.getIcon(), action.getTitle(), pIntent)).build());
+        NotificationCompat.Action finalizedAction;
+        if (action instanceof TextInputNotificationAction) {
+          finalizedAction = buildTextInputAction((TextInputNotificationAction)action, pIntent);
+        } else {
+          finalizedAction = buildButtonAction(action, pIntent);
+        }
+        builder.addAction(finalizedAction);
       }
     }
 
     return builder;
   }
 
+  private NotificationCompat.Action buildButtonAction(NotificationAction action, PendingIntent intent) {
+    return new NotificationCompat.Action.Builder(super.getIcon(), action.getTitle(), intent).build();
+  }
+
+  private NotificationCompat.Action buildTextInputAction(TextInputNotificationAction action, PendingIntent intent) {
+    RemoteInput remoteInput = new RemoteInput.Builder(TextInputNotificationResponseReceiver.USER_TEXT_RESPONSE)
+      .setLabel(action.getPlaceholder())
+      .build();
+
+    return new NotificationCompat.Action.Builder(super.getIcon(), action.getSubmitButtonTitle(), intent).addRemoteInput(remoteInput).build();
+  }
 }

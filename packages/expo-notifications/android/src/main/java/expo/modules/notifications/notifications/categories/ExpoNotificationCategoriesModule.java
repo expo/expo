@@ -18,6 +18,7 @@ import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.service.BaseNotificationsService;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationAction;
+import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 
 public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationCategoriesModule";
@@ -25,6 +26,9 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String BUTTON_TITLE = "buttonTitle";
   private static final String OPTIONS = "options";
   private static final String OPENS_APP_TO_FOREGROUND = "opensAppToForeground";
+  private static final String TEXT_INPUT_OPTIONS = "textInput";
+  private static final String SUBMIT_BUTTON_TITLE = "submitButtonTitle";
+  private static final String PLACEHOLDER = "placeholder";
 
   public ExpoNotificationCategoriesModule(Context context) {
     super(context);
@@ -57,15 +61,26 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     List <NotificationAction> actions = new ArrayList();
     for (HashMap<String, Object> actionMap : actionArguments) {
       HashMap<String, Object> actionOptions = getActionOptions(actionMap);
-      actions.add(new NotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), getOptionOpensAppToForeground(actionOptions)));
+      HashMap<String, Object> textInputOptions = getTextInputOptions(actionMap);
+      if (textInputOptions != null) {
+        actions.add(new TextInputNotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), 
+          getOptionOpensAppToForeground(actionOptions), getSubmitButtonTitle(textInputOptions), getPlaceholder(textInputOptions)));
+      } else {
+        actions.add(new NotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), getOptionOpensAppToForeground(actionOptions)));
+      }
     }
 
     if (actions.isEmpty()) {
       throw new InvalidArgumentException("Invalid arguments provided for notification category. Must provide at least one action.");
     }
-    NotificationCategory newCategory = new NotificationCategory(identifier, actions);
-    BaseNotificationsService.enqueSetCategory(getContext(), newCategory);
-    promise.resolve(newCategory.getIdentifier());
+    BaseNotificationsService.enqueSetCategory(getContext(), new NotificationCategory(identifier, actions), new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        super.onReceiveResult(resultCode, resultData);
+        NotificationCategory newCategory = resultData.getParcelable(BaseNotificationsService.CATEGORIES_KEY);
+        promise.resolve(NotificationSerializer.toBundle(newCategory));
+      }
+    });
   }
 
   @ExpoMethod
@@ -96,6 +111,14 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     return null;
   }
 
+  private HashMap<String, Object> getTextInputOptions(HashMap<String, Object> map) {
+    Object value = map.get(TEXT_INPUT_OPTIONS);
+    if (value instanceof HashMap) {
+      return (HashMap) value;
+    }
+    return null;
+  }
+
   private HashMap<String, Object> getActionOptions(HashMap<String, Object> map) {
     Object value = map.get(OPTIONS);
     if (value instanceof HashMap) {
@@ -122,5 +145,19 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     return serializedCategories;
   }
 
+  private String getSubmitButtonTitle(HashMap<String, Object> map) {
+    Object value = map.get(SUBMIT_BUTTON_TITLE);
+    if (value instanceof String) {
+      return (String) value;
+    }
+    return null;
+  }
 
+  private String getPlaceholder(HashMap<String, Object> map) {
+    Object value = map.get(PLACEHOLDER);
+    if (value instanceof String) {
+      return (String) value;
+    }
+    return null;
+  }
 }
