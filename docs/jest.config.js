@@ -5,7 +5,4 @@ module.exports = {
   setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
   clearMocks: true,
   coverageDirectory: '<rootDir>/coverage',
-  transform: {
-    '^.+\\.(j|t)sx?$': 'babel-jest',
-  },
 };

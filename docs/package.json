@@ -41,11 +41,9 @@
   "devDependencies": {
     "@testing-library/jest-dom": "5.11.0",
     "@testing-library/react": "10.4.3",
-    "babel-jest": "26.1.0",
     "danger": "^9.2.10",
     "http-server": "^0.11.1",
     "jest": "26.1.0",
-    "minimist": "^1.2.3",
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0"
   }
