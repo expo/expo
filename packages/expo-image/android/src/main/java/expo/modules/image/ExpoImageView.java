@@ -54,16 +54,16 @@ public class ExpoImageView extends AppCompatImageView {
     setScaleType(ImageResizeMode.COVER.getScaleType());
   }
 
-  /* package */ void setSource(@Nullable ReadableMap sourceMap) {
+  protected void setSource(@Nullable ReadableMap sourceMap) {
     mSourceMap = sourceMap;
   }
 
-  /* package */ void setResizeMode(ImageResizeMode resizeMode) {
+  protected void setResizeMode(ImageResizeMode resizeMode) {
     setScaleType(resizeMode.getScaleType());
     // TODO: repeat mode handling
   }
 
-  void setBorderRadius(int position, float borderRadius) {
+  protected void setBorderRadius(int position, float borderRadius) {
     boolean isInvalidated = mOutlineProvider.setBorderRadius(borderRadius, position);
     if (isInvalidated) {
       invalidateOutline();
@@ -84,19 +84,19 @@ public class ExpoImageView extends AppCompatImageView {
     }
   }
 
-  void setBorderWidth(int position, float width) {
+  protected void setBorderWidth(int position, float width) {
     getOrCreateBorderDrawable().setBorderWidth(position, width);
   }
 
-  void setBorderColor(int position, float rgb, float alpha) {
+  protected void setBorderColor(int position, float rgb, float alpha) {
     getOrCreateBorderDrawable().setBorderColor(position, rgb, alpha);
   }
 
-  void setBorderStyle(@Nullable String style) {
+  protected void setBorderStyle(@Nullable String style) {
     getOrCreateBorderDrawable().setBorderStyle(style);
   }
 
-  void setTintColor(@Nullable Integer color) {
+  protected void setTintColor(@Nullable Integer color) {
     if (color == null) {
       clearColorFilter();
     } else {
@@ -104,7 +104,7 @@ public class ExpoImageView extends AppCompatImageView {
     }
   }
 
-  /* package */ void onAfterUpdateTransaction() {
+  protected void onAfterUpdateTransaction() {
     GlideUrl sourceToLoad = createUrlFromSourceMap(mSourceMap);
 
     if (sourceToLoad == null) {
@@ -129,7 +129,7 @@ public class ExpoImageView extends AppCompatImageView {
     }
   }
 
-  /* package */ void onDrop() {
+  protected void onDrop() {
     mRequestManager.clear(this);
   }
 
