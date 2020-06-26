@@ -604,7 +604,7 @@ export async function test(t) {
         options: {
           isDestructive: true,
           isAuthenticationRequired: true,
-          doNotOpenInForeground: false,
+          opensAppToForeground: false,
         },
       };
       const textResponseButton = {
@@ -613,7 +613,7 @@ export async function test(t) {
         options: {
           isDestructive: true,
           isAuthenticationRequired: true,
-          doNotOpenInForeground: true,
+          opensAppToForeground: true,
         },
         textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
       };

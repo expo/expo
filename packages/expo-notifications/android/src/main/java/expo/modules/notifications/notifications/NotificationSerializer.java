@@ -181,7 +181,7 @@ public class NotificationSerializer {
   public static Bundle toBundle(NotificationAction action) {
     // First we bundle up the options
     Bundle serializedActionOptions = new Bundle();
-    serializedActionOptions.putBoolean("doNotOpenInForeground", !action.shouldOpenToForeground());
+    serializedActionOptions.putBoolean("opensAppToForeground", action.opensAppToForeground());
 
     Bundle serializedAction = new Bundle();
     serializedAction.putString("identifier", action.getIdentifier());

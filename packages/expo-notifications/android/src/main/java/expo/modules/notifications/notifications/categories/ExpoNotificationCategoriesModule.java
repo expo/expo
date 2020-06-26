@@ -24,8 +24,7 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String IDENTIFER = "identifier";
   private static final String BUTTON_TITLE = "buttonTitle";
   private static final String OPTIONS = "options";
-  // use the same key as is used on iOS
-  private static final String DO_NOT_OPEN_TO_FOREGROUND = "doNotOpenInForeground";
+  private static final String OPENS_APP_TO_FOREGROUND = "opensAppToForeground";
 
   public ExpoNotificationCategoriesModule(Context context) {
     super(context);
@@ -58,7 +57,7 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     List <NotificationAction> actions = new ArrayList();
     for (HashMap<String, Object> actionMap : actionArguments) {
       HashMap<String, Object> actionOptions = getActionOptions(actionMap);
-      actions.add(new NotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), getOptionShouldOpenToForeground(actionOptions)));
+      actions.add(new NotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), getOptionOpensAppToForeground(actionOptions)));
     }
 
     if (actions.isEmpty()) {
@@ -105,12 +104,11 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     return null;
   }
 
-  private boolean getOptionShouldOpenToForeground(HashMap<String, Object> map) {
+  private boolean getOptionOpensAppToForeground(HashMap<String, Object> map) {
     if (map != null) {
-      Object value = map.get(DO_NOT_OPEN_TO_FOREGROUND);
+      Object value = map.get(OPENS_APP_TO_FOREGROUND);
       if (value instanceof Boolean) {
-        // Negate the boolean: should open == ! do NOT open
-        return !(boolean) value;
+        return (boolean) value;
       }
     }
     return true;

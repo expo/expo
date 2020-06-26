@@ -15,25 +15,25 @@ import androidx.annotation.Nullable;
 public class NotificationAction implements Parcelable, Serializable {
   private final String mIdentifier;
   private final String mTitle;
-  private final boolean mShouldOpenToForeground;
+  private final boolean mOpensAppToForeground;
 
-  public NotificationAction(String identifier, String title, boolean shouldOpenToForeground) {
+  public NotificationAction(String identifier, String title, boolean opensAppToForeground) {
     mIdentifier = identifier;
     mTitle = title;
-    mShouldOpenToForeground = shouldOpenToForeground;
+    mOpensAppToForeground = opensAppToForeground;
   }
 
   private NotificationAction(Parcel in) {
     mIdentifier = in.readString();
     mTitle = in.readString();
-    mShouldOpenToForeground = in.readByte() != 0;
+    mOpensAppToForeground = in.readByte() != 0;
   }
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeString(mIdentifier);
     dest.writeString(mTitle);
-    dest.writeByte((byte) (mShouldOpenToForeground ? 1 : 0));
+    dest.writeByte((byte) (mOpensAppToForeground ? 1 : 0));
   }
 
   @Override
@@ -61,7 +61,7 @@ public class NotificationAction implements Parcelable, Serializable {
     return mTitle;
   }
 
-  public boolean shouldOpenToForeground() {
-    return mShouldOpenToForeground;
+  public boolean opensAppToForeground() {
+    return mOpensAppToForeground;
   }
 }

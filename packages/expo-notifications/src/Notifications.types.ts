@@ -257,7 +257,7 @@ export interface NotificationAction {
   options: {
     isDestructive?: boolean;
     isAuthenticationRequired?: boolean;
-    doNotOpenInForeground?: boolean;
+    opensAppToForeground?: boolean;
   };
 }
 

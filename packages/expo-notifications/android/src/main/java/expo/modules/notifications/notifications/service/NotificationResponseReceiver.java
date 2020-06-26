@@ -21,7 +21,7 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
 public class NotificationResponseReceiver extends BroadcastReceiver {
   public static final String NOTIFICATION_OPEN_APP_ACTION = "expo.modules.notifications.OPEN_APP_ACTION";
   public static final String NOTIFICATION_RESPONSE_KEY = "response";
-  public static final String ACTION_FOREGROUND_APP = "shouldOpenToForeground";
+  public static final String ACTION_FOREGROUNDS_APP = "opensAppToForeground";
   //                                      EXRespRcv
   private static final int REQUEST_CODE = 397377728;
 
@@ -31,7 +31,7 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
     // are different to the system.
     intent.setData(getUriBuilderForIdentifier(notification.getNotificationRequest().getIdentifier()).appendPath(action.getIdentifier()).build());
     intent.putExtra(NOTIFICATION_RESPONSE_KEY, new NotificationResponse(action.getIdentifier(), notification));
-    intent.putExtra(ACTION_FOREGROUND_APP, action.shouldOpenToForeground());
+    intent.putExtra(ACTION_FOREGROUNDS_APP, action.opensAppToForeground());
     return PendingIntent.getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
@@ -42,7 +42,7 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     NotificationResponse response = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY);
-    if (intent.getBooleanExtra(ACTION_FOREGROUND_APP, true)) {
+    if (intent.getBooleanExtra(ACTION_FOREGROUNDS_APP, true)) {
       openAppToForeground(context, response);
     }
     BaseNotificationsService.enqueueResponseReceived(context, response);

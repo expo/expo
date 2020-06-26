@@ -115,7 +115,8 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   NSString *identifier = [self internalIdForIdentifier:params[@"identifier"]];
   NSString *buttonTitle = params[@"buttonTitle"];
   UNNotificationActionOptions options = UNNotificationActionOptionNone;
-  if (![params[@"options"][@"doNotOpenInForeground"] boolValue]) {
+
+  if (params[@"options"][@"opensAppToForeground"] == nil || [params[@"options"][@"opensAppToForeground"] boolValue]) {
     options += UNNotificationActionOptionForeground;
   }
   if ([params[@"options"][@"isDestructive"] boolValue]) {
@@ -220,7 +221,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
 - (NSMutableDictionary *)parseActionOptions:(NSUInteger)options
 {
   NSMutableDictionary* parsedOptions = [NSMutableDictionary dictionary];
-  parsedOptions[@"doNotOpenInForeground"] =  [NSNumber numberWithBool:((options & UNNotificationActionOptionForeground) == 0)];
+  parsedOptions[@"opensAppToForeground"] =  [NSNumber numberWithBool:((options & UNNotificationActionOptionForeground) != 0)];
   parsedOptions[@"isDestructive"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionDestructive) != 0)];
   parsedOptions[@"isAuthenticationRequired"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionAuthenticationRequired) != 0)];
   return parsedOptions;
