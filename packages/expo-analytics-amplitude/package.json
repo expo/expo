@@ -37,7 +37,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "@types/amplitude-js": "^5.8.0",
+    "@types/amplitude-js": "^5.11.0",
     "expo-module-scripts": "~1.2.0"
   },
   "dependencies": {
