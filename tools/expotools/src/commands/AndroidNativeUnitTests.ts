@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
+import { filterAsync } from '../Utils';
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 
@@ -17,7 +18,7 @@ const excludedInTests = [
 ];
 
 export async function androidNativeUnitTests() {
-  const unimodules = await Packages.getListOfPackagesAsync();
+  const packages = await Packages.getListOfPackagesAsync();
 
   function consoleErrorOutput(
     output: string,
@@ -28,26 +29,25 @@ export async function androidNativeUnitTests() {
     console.error(lines.map((line) => `${chalk.gray(label)} ${colorifyLine(line)}`).join('\n'));
   }
 
-  let androidPackages = unimodules
-    .filter((unimodule) => {
-      const unimoduleName = unimodule?.unimoduleJson?.name;
-      return (
-        unimoduleName &&
-        unimodule.isSupportedOnPlatform('android') &&
-        !excludedInTests.includes(unimoduleName)
-      );
-    })
-    .map((unimodule) => unimodule?.unimoduleJson?.name);
+  const androidPackages = await filterAsync(packages, async (pkg) => {
+    const pkgSlug = pkg.packageSlug;
 
-  console.log(chalk.green('Unimodules to test: '));
-  androidPackages.forEach((unimoduleName) => {
-    console.log(chalk.yellow(unimoduleName));
+    return (
+      pkg.isSupportedOnPlatform('android') &&
+      (await pkg.hasNativeTestsAsync('android')) &&
+      !excludedInTests.includes(pkgSlug)
+    );
+  });
+
+  console.log(chalk.green('Packages to test: '));
+  androidPackages.forEach((pkg) => {
+    console.log(chalk.yellow(pkg.packageSlug));
   });
 
   try {
     await spawnAsync(
       './gradlew',
-      androidPackages.map((it) => `:${it}:test`),
+      androidPackages.map((pkg) => `:${pkg.packageSlug}:test`),
       {
         cwd: ANDROID_DIR,
         stdio: 'inherit',
@@ -67,6 +67,6 @@ export async function androidNativeUnitTests() {
 export default (program: any) => {
   program
     .command('android-native-unit-tests')
-    .description('Runs Android native unit tests for each unimodules that provides them.')
+    .description('Runs Android native unit tests for each package that provides them.')
     .asyncAction(androidNativeUnitTests);
 };
