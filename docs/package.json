@@ -9,7 +9,8 @@
     "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
-    "prettier": "prettier --write '**/*.{js,ts,tsx}'"
+    "prettier": "prettier --write '**/*.{js,ts,tsx}'",
+    "test": "jest"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.5.0",
@@ -38,8 +39,12 @@
     "react-visibility-sensor": "^5.1.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "5.11.0",
+    "@testing-library/react": "10.4.3",
+    "babel-jest": "26.1.0",
     "danger": "^9.2.10",
     "http-server": "^0.11.1",
+    "jest": "26.1.0",
     "minimist": "^1.2.3",
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0"
