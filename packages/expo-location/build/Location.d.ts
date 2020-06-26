@@ -46,6 +46,7 @@ export interface Address {
     country: string;
     postalCode: string;
     name: string;
+    isoCountryCode: string | null;
 }
 export { PermissionStatus };
 export declare type PermissionDetailsLocationIOS = {

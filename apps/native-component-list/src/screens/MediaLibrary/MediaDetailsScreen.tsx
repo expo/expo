@@ -1,11 +1,11 @@
-import React from 'react';
 import * as MediaLibrary from 'expo-media-library';
+import React from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 
 import Button from '../../components/Button';
-import MonoText from '../../components/MonoText';
 import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
 
 const EXPO_ALBUM_NAME = 'Expo';
 
@@ -45,7 +45,7 @@ export default class MediaDetailsScreen extends React.Component<
 
     await MediaLibrary.deleteAssetsAsync([asset]);
     this.goBack();
-  }
+  };
 
   addToAlbum = async () => {
     const { asset } = this.props.navigation.state.params!;
@@ -58,7 +58,7 @@ export default class MediaDetailsScreen extends React.Component<
     }
 
     alert('Successfully added asset to Expo album!');
-  }
+  };
 
   removeFromAlbum = async () => {
     const { asset, album } = this.props.navigation.state.params!;
@@ -67,7 +67,7 @@ export default class MediaDetailsScreen extends React.Component<
       await MediaLibrary.removeAssetsFromAlbumAsync(asset.id, album.id);
       this.goBack();
     }
-  }
+  };
 
   renderAsset(asset: MediaLibrary.Asset) {
     const aspectRatio = asset.height ? asset.width / asset.height : 1;

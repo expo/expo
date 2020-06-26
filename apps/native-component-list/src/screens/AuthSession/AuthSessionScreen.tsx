@@ -1,6 +1,6 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
-import { useAuthRequest } from 'expo-auth-session';
+import { useAuthRequest, TokenTypeHint } from 'expo-auth-session';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
@@ -107,6 +107,7 @@ function Google({ useProxy, prompt, usePKCE }: any) {
     useProxy,
     native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
   });
+
   const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
 
   const [request, result, promptAsync] = useAuthRequest(
@@ -122,10 +123,63 @@ function Google({ useProxy, prompt, usePKCE }: any) {
     discovery
   );
 
+  const [access, setAccess] = React.useState<null | AuthSession.TokenResponse>(null);
+  const clientSecret = '';
+  // Code exchange test
+  React.useEffect(() => {
+    if (!clientSecret || access || !request || !discovery || result?.type !== 'success') {
+      return;
+    }
+
+    if (result.params.code) {
+      AuthSession.exchangeCodeAsync(
+        {
+          clientId: request.clientId,
+          clientSecret: request.clientSecret ?? clientSecret,
+          redirectUri: request.redirectUri,
+          scopes: request.scopes,
+          code: result.params.code,
+          extraParams: {
+            // @ts-ignore: allow for instances where PKCE is disabled
+            code_verifier: request.codeVerifier,
+          },
+        },
+        discovery
+      ).then(token => {
+        setAccess(token);
+      });
+    } else if (result.params.access_token) {
+      setAccess(AuthSession.TokenResponse.fromQueryParams(result.params));
+    } else {
+      console.warn('unexpected response: ', result);
+    }
+  }, [access, result, discovery, request]);
+
+  // Revocation test
+  React.useEffect(() => {
+    if (!request || !access || !discovery) return;
+
+    console.log('Revoking: ', access);
+
+    AuthSession.revokeAsync(
+      {
+        token: access.accessToken,
+        // tokenTypeHint: TokenTypeHint.AccessToken,
+        // clientId: request?.clientId,
+        // clientSecret: request?.clientSecret,
+        // scopes: request.scopes,
+      },
+      discovery
+    ).then(result => {
+      console.log('Revoked', result);
+    });
+  }, [request, access, discovery]);
+
   return (
     <AuthSection
       disabled={!useProxy && isInClient}
       request={request}
+      tokenResponse={access}
       title="google"
       result={result}
       promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 515, height: 680 } })}

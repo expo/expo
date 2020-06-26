@@ -1,18 +1,11 @@
-import React from 'react';
-import {
-  Text,
-  Button,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-  Picker,
-} from 'react-native';
 import * as Speech from 'expo-speech';
+import React from 'react';
+import { Button, Picker, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Touchable from 'react-native-platform-touchable';
+import { TouchableProps } from 'react-native-svg';
+
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';
-import { TouchableProps } from 'react-native-svg';
 
 const EXAMPLES = [
   { language: 'en', text: 'Hello world' },
@@ -21,21 +14,17 @@ const EXAMPLES = [
   { language: 'en', text: 'Adam Perry ate a pear in pairs in Paris' },
 ];
 
-const AmountControlButton: React.FunctionComponent<
-  TouchableProps & { title: string }
-> = props => (
+const AmountControlButton: React.FunctionComponent<TouchableProps & { title: string }> = props => (
   <Touchable
     onPress={props.disabled ? undefined : props.onPress}
-    hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
-  >
+    hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
     <Text
       style={{
         color: props.disabled ? '#ccc' : Colors.tintColor,
         fontWeight: 'bold',
         paddingHorizontal: 5,
         fontSize: 18,
-      }}
-    >
+      }}>
       {props.title}
     </Text>
   </Touchable>
@@ -51,7 +40,7 @@ interface State {
   voice?: string;
 }
 
-export default class TextToSpeechScreen extends React.Component<{}, State> {
+export default class TextToSpeechScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Speech',
   };
@@ -75,24 +64,14 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
       <ScrollView style={styles.container}>
         <HeadingText>Select a phrase</HeadingText>
 
-        <View style={styles.examplesContainer}>
-          {EXAMPLES.map(this._renderExample)}
-        </View>
+        <View style={styles.examplesContainer}>{EXAMPLES.map(this._renderExample)}</View>
 
         <View style={styles.separator} />
 
         <View style={styles.controlRow}>
-          <Button
-            disabled={this.state.inProgress}
-            onPress={this._speak}
-            title="Speak"
-          />
+          <Button disabled={this.state.inProgress} onPress={this._speak} title="Speak" />
 
-          <Button
-            disabled={!this.state.inProgress}
-            onPress={this._stop}
-            title="Stop"
-          />
+          <Button disabled={!this.state.inProgress} onPress={this._stop} title="Stop" />
         </View>
 
         {Platform.OS === 'ios' && (
@@ -102,11 +81,7 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
               onPress={this._pause}
               title="Pause"
             />
-            <Button
-              disabled={!this.state.paused}
-              onPress={this._resume}
-              title="Resume"
-            />
+            <Button disabled={!this.state.paused} onPress={this._resume} title="Resume" />
           </View>
         )}
 
@@ -114,22 +89,15 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
           <View>
             <Picker
               selectedValue={this.state.voice}
-              onValueChange={voice => this.setState({ voice })}
-            >
+              onValueChange={voice => this.setState({ voice })}>
               {this.state.voiceList.map(voice => (
-                <Picker.Item
-                  key={voice.identifier}
-                  label={voice.name}
-                  value={voice.identifier}
-                />
+                <Picker.Item key={voice.identifier} label={voice.name} value={voice.identifier} />
               ))}
             </Picker>
           </View>
         )}
 
-        <Text style={styles.controlText}>
-          Pitch: {this.state.pitch.toFixed(2)}
-        </Text>
+        <Text style={styles.controlText}>Pitch: {this.state.pitch.toFixed(2)}</Text>
         <View style={styles.controlRow}>
           <AmountControlButton
             onPress={this._increasePitch}
@@ -146,9 +114,7 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
           />
         </View>
 
-        <Text style={styles.controlText}>
-          Rate: {this.state.rate.toFixed(2)}
-        </Text>
+        <Text style={styles.controlText}>Rate: {this.state.rate.toFixed(2)}</Text>
         <View style={styles.controlRow}>
           <AmountControlButton
             onPress={this._increaseRate}
@@ -172,8 +138,7 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
       this.setState({ inProgress: true });
     };
     const complete = () => {
-      this.state.inProgress &&
-        this.setState({ inProgress: false, paused: false });
+      this.state.inProgress && this.setState({ inProgress: false, paused: false });
     };
 
     Speech.speak(this.state.selectedExample.text, {
@@ -186,7 +151,7 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
       onStopped: complete,
       onError: complete,
     });
-  }
+  };
 
   _loadAllVoices = async () => {
     const availableVoices = await Speech.getAvailableVoicesAsync();
@@ -194,49 +159,49 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
       voiceList: availableVoices,
       voice: availableVoices[0].identifier,
     });
-  }
+  };
 
   _stop = () => {
     Speech.stop();
-  }
+  };
 
   _pause = async () => {
     await Speech.pause();
     this.setState({ paused: true });
-  }
+  };
 
   _resume = () => {
     Speech.resume();
     this.setState({ paused: false });
-  }
+  };
 
   _increasePitch = () => {
     this.setState(state => ({
       ...state,
       pitch: state.pitch + 0.1,
     }));
-  }
+  };
 
   _increaseRate = () => {
     this.setState(state => ({
       ...state,
       rate: state.rate + 0.1,
     }));
-  }
+  };
 
   _decreasePitch = () => {
     this.setState(state => ({
       ...state,
       pitch: state.pitch - 0.1,
     }));
-  }
+  };
 
   _decreaseRate = () => {
     this.setState(state => ({
       ...state,
       rate: state.rate - 0.1,
     }));
-  }
+  };
 
   _renderExample = (example: { language: string; text: string }, i: number) => {
     const { selectedExample } = this.state;
@@ -246,20 +211,17 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
       <Touchable
         key={i}
         hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
-        onPress={() => this._selectExample(example)}
-      >
-        <Text
-          style={[styles.exampleText, isSelected && styles.selectedExampleText]}
-        >
+        onPress={() => this._selectExample(example)}>
+        <Text style={[styles.exampleText, isSelected && styles.selectedExampleText]}>
           {example.text} ({example.language})
         </Text>
       </Touchable>
     );
-  }
+  };
 
   _selectExample = (example: { language: string; text: string }) => {
     this.setState({ selectedExample: example });
-  }
+  };
 }
 
 const styles = StyleSheet.create({

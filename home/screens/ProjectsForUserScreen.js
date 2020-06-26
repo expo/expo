@@ -1,6 +1,7 @@
 /* @flow */
 
 import React from 'react';
+
 import MyProjectsListContainer from '../containers/MyProjectsListContainer';
 import OtherUserProjectListContainer from '../containers/OtherUserProjectListContainer';
 
@@ -10,8 +11,8 @@ export default class ProjectsForUserScreen extends React.Component {
   };
 
   render() {
-    let username = this.props.navigation.getParam('username');
-    let belongsToCurrentUser = this.props.navigation.getParam('belongsToCurrentUser', false);
+    const username = this.props.navigation.getParam('username');
+    const belongsToCurrentUser = this.props.navigation.getParam('belongsToCurrentUser', false);
 
     if (belongsToCurrentUser) {
       return <MyProjectsListContainer belongsToCurrentUser />;

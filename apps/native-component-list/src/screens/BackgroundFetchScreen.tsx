@@ -1,9 +1,9 @@
-import React from 'react';
 import format from 'date-format';
-import { NavigationEvents } from 'react-navigation';
-import * as TaskManager from 'expo-task-manager';
 import * as BackgroundFetch from 'expo-background-fetch';
-import { AppState, AsyncStorage, StyleSheet, Text, View, AppStateStatus } from 'react-native';
+import * as TaskManager from 'expo-task-manager';
+import React from 'react';
+import { AppState, AppStateStatus, AsyncStorage, StyleSheet, Text, View } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 
 import Button from '../components/Button';
 
@@ -16,7 +16,7 @@ interface State {
   isRegistered: boolean;
 }
 
-export default class BackgroundFetchScreen extends React.Component<{}, State> {
+export default class BackgroundFetchScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Background Fetch',
   };
@@ -36,13 +36,13 @@ export default class BackgroundFetchScreen extends React.Component<{}, State> {
   didFocus = () => {
     this.refreshLastFetchDateAsync();
     this.checkStatusAsync();
-  }
+  };
 
   handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (nextAppState === 'active') {
       this.refreshLastFetchDateAsync();
     }
-  }
+  };
 
   async refreshLastFetchDateAsync() {
     const lastFetchDateStr = await AsyncStorage.getItem(LAST_FETCH_DATE_KEY);
@@ -70,7 +70,7 @@ export default class BackgroundFetchScreen extends React.Component<{}, State> {
       });
     }
     this.setState({ isRegistered: !this.state.isRegistered });
-  }
+  };
 
   renderText() {
     if (!this.state.fetchDate) {

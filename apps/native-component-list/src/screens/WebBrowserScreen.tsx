@@ -4,13 +4,13 @@ import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
   Alert,
-  ScrollView,
-  View,
-  StyleSheet,
-  Text,
-  Switch,
-  TextInput,
   Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 
 import Button from '../components/Button';
@@ -128,7 +128,8 @@ export default class WebBrowserScreen extends React.Component<object, State> {
     const args = {
       showTitle: this.state.showTitle,
       toolbarColor: this.state.toolbarColor && `#${this.state.toolbarColor}`,
-      secondaryToolbarColor: this.state.secondaryToolbarColor && `#${this.state.secondaryToolbarColor}`,
+      secondaryToolbarColor:
+        this.state.secondaryToolbarColor && `#${this.state.secondaryToolbarColor}`,
       controlsColor: this.state.controlsColorText && `#${this.state.controlsColorText}`,
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,

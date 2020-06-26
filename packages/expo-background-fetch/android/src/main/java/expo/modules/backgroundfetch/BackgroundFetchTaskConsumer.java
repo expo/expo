@@ -72,7 +72,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
       if (startOnBoot) {
         startAlarm();
       }
-    } else if(Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+    } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
       // App has just been reinstalled, so we need restore an alarm.
       startAlarm();
     } else {

@@ -8,14 +8,19 @@
 
 @interface EXFacebook (ExportedMethods)
 
-- (void)initializeWithAppId:(NSString *)appId
-                    appName:(NSString *)appName
-                   resolver:(UMPromiseResolveBlock)resolve
-                   rejecter:(UMPromiseRejectBlock)reject;
+- (void)initializeAsync:(NSDictionary *)options
+               resolver:(UMPromiseResolveBlock)resolve
+               rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)logInWithReadPermissionsWithConfig:(NSDictionary *)config
                                   resolver:(UMPromiseResolveBlock)resolve
                                   rejecter:(UMPromiseRejectBlock)reject;
+
+- (void)logOutAsync:(UMPromiseResolveBlock)resolve
+           rejecter:(UMPromiseRejectBlock)reject;
+
+- (void)getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve
+                   rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)setAutoInitEnabled:(BOOL)enabled
                   resolver:(UMPromiseResolveBlock)resolve
@@ -69,17 +74,22 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   return self;
 }
 
-- (void)initializeWithAppId:(NSString *)appId
-                    appName:(NSString *)appName
-                   resolver:(UMPromiseResolveBlock)resolve
-                   rejecter:(UMPromiseRejectBlock)reject
+- (void)initializeAsync:(NSDictionary *)options
+               resolver:(UMPromiseResolveBlock)resolve
+               rejecter:(UMPromiseRejectBlock)reject
 {
   _isInitialized = YES;
-  if (appId) {
+  if (options[@"appId"]) {
     UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
   }
+
   NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-  [super initializeWithAppId:scopedFacebookAppId appName:appName resolver:resolve rejecter:reject];
+  
+  NSMutableDictionary *nativeOptions = [NSMutableDictionary dictionaryWithDictionary:options];
+  // Overwrite the incoming app id with the Expo Facebook SDK app id.
+  nativeOptions[@"appId"] = scopedFacebookAppId;
+  
+  [super initializeAsync:nativeOptions resolver:resolve rejecter:reject];
 }
 
 - (void)setAutoInitEnabled:(BOOL)enabled resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
@@ -96,10 +106,30 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
-    reject(@"E_NO_INIT", @"Facebook SDK has not been initialized yet.", nil);
+    reject(@"ERR_FACEBOOK_UNINITIALIZED", @"Facebook SDK has not been initialized yet.", nil);
     return;
   }
   [super logInWithReadPermissionsWithConfig:config resolver:resolve rejecter:reject];
+}
+
+- (void)getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+{
+  // If the developer didn't initialize the SDK, let them know.
+  if (!_isInitialized) {
+    reject(@"ERR_FACEBOOK_UNINITIALIZED", @"Facebook SDK has not been initialized yet.", nil);
+    return;
+  }
+  [super getAuthenticationCredentialAsync:resolve rejecter:reject];
+}
+
+- (void)logOutAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+{
+  // If the developer didn't initialize the SDK, let them know.
+  if (!_isInitialized) {
+    reject(@"ERR_FACEBOOK_UNINITIALIZED", @"Facebook SDK has not been initialized yet.", nil);
+    return;
+  }
+  [super logOutAsync:resolve rejecter:reject];
 }
 
 # pragma mark - UMModuleRegistryConsumer

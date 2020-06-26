@@ -199,7 +199,7 @@ export function parse(url) {
  * Add a handler to Linking changes by listening to the `url` event type
  * and providing the handler
  *
- * See https://facebook.github.io/react-native/docs/linking.html#addeventlistener
+ * See https://reactnative.dev/docs/linking.html#addeventlistener
  */
 export function addEventListener(type, handler) {
     NativeLinking.addEventListener(type, handler);
@@ -207,7 +207,7 @@ export function addEventListener(type, handler) {
 /**
  * Remove a handler by passing the `url` event type and the handler.
  *
- * See https://facebook.github.io/react-native/docs/linking.html#removeeventlistener
+ * See https://reactnative.dev/docs/linking.html#removeeventlistener
  */
 export function removeEventListener(type, handler) {
     NativeLinking.removeEventListener(type, handler);

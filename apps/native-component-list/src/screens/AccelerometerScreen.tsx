@@ -1,15 +1,16 @@
-import { Accelerometer } from 'expo-sensors';
 import * as Permissions from 'expo-permissions';
+import { Accelerometer } from 'expo-sensors';
 import React from 'react';
 import {
+  ActivityIndicator,
   Animated,
   Button,
   Dimensions,
   StyleSheet,
   Text,
   View,
-  ActivityIndicator,
 } from 'react-native';
+
 import { Colors } from '../constants';
 
 const COUNT = 5;
@@ -54,13 +55,12 @@ export default function AccelerometerScreen({ numItems = COUNT, perspective = 20
 
       setSetup(true);
     })();
-    return () => Accelerometer.removeAllListeners();
   }, []);
 
   React.useEffect(() => {
     if (!isSetup) return;
 
-    Accelerometer.addListener(({ x, y }) => {
+    const sub = Accelerometer.addListener(({ x, y }) => {
       // console.log('event');
       items.forEach((_, index) => {
         // All that matters is that the values are the same on iOS, Android, Web, ect...
@@ -76,6 +76,7 @@ export default function AccelerometerScreen({ numItems = COUNT, perspective = 20
         }).start();
       });
     });
+    return () => sub.remove();
   }, [isSetup]);
 
   if (error) {

@@ -80,10 +80,7 @@ UM_EXPORT_METHOD_AS(scanFromURLAsync,
       
       NSMutableArray *result = [NSMutableArray arrayWithCapacity:1];
       for (CIQRCodeFeature *feature in features)  {
-        [result addObject:@{
-                            @"type" : AVMetadataObjectTypeQRCode,
-                            @"data" : feature.messageString
-                            }];
+        [result addObject:[EXBarCodeScannerUtils ciQRCodeFeatureToDicitionary:feature barCodeType:AVMetadataObjectTypeQRCode]];
       }
       
       resolve(result);

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `useAssets` hook to simplify assets handling. ([#8928](https://github.com/expo/expo/pull/8928) by [@bycedric](https://github.com/bycedric))
+
 ### 🐛 Bug fixes
 
 ## 8.1.7 — 2020-05-29

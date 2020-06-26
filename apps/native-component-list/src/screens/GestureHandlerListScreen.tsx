@@ -1,8 +1,9 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import FancyButton from './GestureHandler/FancyButton';
+
 import BouncyBox from './GestureHandler/BouncyBox';
+import FancyButton from './GestureHandler/FancyButton';
 
 export default class GestureHandlerListScreen extends React.Component {
   static navigationOptions = {
@@ -19,8 +20,7 @@ export default class GestureHandlerListScreen extends React.Component {
         <FancyButton
           onSingleTap={() => alert('Single tap')}
           onDoubleTap={() => alert('Double tap')}
-          onLongPress={() => alert('Long press')}
-        >
+          onLongPress={() => alert('Long press')}>
           <Text>Try this button out!</Text>
         </FancyButton>
 
@@ -29,8 +29,7 @@ export default class GestureHandlerListScreen extends React.Component {
         <FancyButton
           onSingleTap={() => alert('Single tap #2!')}
           onDoubleTap={() => alert('Double tap #2!')}
-          onLongPress={() => alert('Long press #2!')}
-        >
+          onLongPress={() => alert('Long press #2!')}>
           <Text>A second fancy button!</Text>
         </FancyButton>
 

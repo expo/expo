@@ -10,6 +10,7 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "test": "expo-module test",
     "expo-module": "expo-module"
   },
   "keywords": [
@@ -19,6 +20,9 @@
     "danger": "^9.2.10",
     "lodash": "^4.6.0",
     "@expo/spawn-async": "^1.5.0"
+  },
+  "jest": {
+    "preset": "jest-expo/node"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.2.0"

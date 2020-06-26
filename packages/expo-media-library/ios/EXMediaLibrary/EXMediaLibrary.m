@@ -24,6 +24,8 @@ NSString *const EXAssetMediaTypeAll = @"all";
 
 NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
+NSString *const EXMediaLibraryCachesDirectory = @"MediaLibrary";
+
 @interface EXMediaLibrary ()
 
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
@@ -422,9 +424,35 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
       [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                       options:options
                                                 resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-        AVURLAsset *urlAsset = (AVURLAsset *)asset;
-        result[@"localUri"] = [[urlAsset URL] absoluteString];
-        resolve(result);
+        // Slow motion videos are returned as an AVComposition instance
+        if ([asset isKindOfClass:[AVComposition class]]) {
+            NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:EXMediaLibraryCachesDirectory];
+            [self.fileSystem ensureDirExistsWithPath:directory];
+            NSString *videoOutputFileName = [NSString stringWithFormat:@"slowMoVideo-%d.mov",arc4random() % 1000];
+            NSString *videoFileOutputPath = [directory stringByAppendingPathComponent:videoOutputFileName];
+            NSURL *videoFileOutputURL = [NSURL fileURLWithPath:videoFileOutputPath];
+            
+            AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:asset presetName:AVAssetExportPresetHighestQuality];
+            exporter.outputURL = videoFileOutputURL;
+            exporter.outputFileType = AVFileTypeQuickTimeMovie;
+            exporter.shouldOptimizeForNetworkUse = YES;
+                                
+            [exporter exportAsynchronouslyWithCompletionHandler:^{
+                if (exporter.status == AVAssetExportSessionStatusCompleted) {
+                    result[@"localUri"] = videoFileOutputURL.absoluteString;
+                    resolve(result);
+                } else if (exporter.status == AVAssetExportSessionStatusFailed) {
+                    reject(@"E_EXPORT_FAILED", @"Could not export the requested video.", nil);
+                } else if (exporter.status == AVAssetExportSessionStatusCancelled) {
+                    reject(@"E_EXPORT_CANCELLED", @"The video export operation is cancelled", nil);
+                }
+            }];
+            
+        } else {
+            AVURLAsset *urlAsset = (AVURLAsset *)asset;
+            result[@"localUri"] = [[urlAsset URL] absoluteString];
+            resolve(result);
+        }
       }];
     }
   } else {

@@ -53,3 +53,9 @@ export declare class AuthError extends ResponseError {
     state?: string;
     constructor(response: AuthErrorConfig);
 }
+/**
+ * [Section 4.1.2.1](https://tools.ietf.org/html/rfc6749#section-4.1.2.1)
+ */
+export declare class TokenError extends ResponseError {
+    constructor(response: ResponseErrorConfig);
+}

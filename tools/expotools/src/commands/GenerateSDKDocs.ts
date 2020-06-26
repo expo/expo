@@ -47,7 +47,7 @@ async function action(options) {
 
     await fs.remove(path.join(SDK_DOCS_DIR, 'unversioned', 'react-native'));
 
-    await spawnAsync('yarn', ['run', 'import-react-native-docs'], {
+    await spawnAsync('et', ['update-react-native-docs', '--sdk', 'unversioned'], {
       stdio: 'inherit',
       cwd: DOCS_DIR,
     });

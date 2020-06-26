@@ -29,6 +29,10 @@ export var ResponseType;
      * For requesting an access token (implicit grant) as described by [Section 4.2.1](https://tools.ietf.org/html/rfc6749#section-4.2.1).
      */
     ResponseType["Token"] = "token";
+    /**
+     * A custom registered type for getting an `id_token` from Google OAuth.
+     */
+    ResponseType["IdToken"] = "id_token";
 })(ResponseType || (ResponseType = {}));
 /**
  * Should the user be prompted to login or consent again.

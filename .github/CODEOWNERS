@@ -63,6 +63,7 @@
 /packages/expo-print                            @tsapeta @lukmccall
 /packages/expo-processing                       @EvanBacon
 /packages/expo-random                           @EvanBacon
+/packages/expo-screen-capture                   @cruzach
 /packages/expo-screen-orientation               @lukmccall
 /packages/expo-secure-store                     @sjchmiela @mczernek
 /packages/expo-sensors                          @sjchmiela @mczernek

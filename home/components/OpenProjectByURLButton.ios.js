@@ -4,7 +4,6 @@ import React from 'react';
 import { Alert, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/Colors';
-import * as Kernel from '../kernel/Kernel';
 import UrlUtils from '../utils/UrlUtils';
 
 export default class OpenProjectByURLButton extends React.Component {
@@ -23,7 +22,7 @@ export default class OpenProjectByURLButton extends React.Component {
         text: 'Open',
         onPress: text => {
           if (text) {
-            let url = UrlUtils.normalizeUrl(text);
+            const url = UrlUtils.normalizeUrl(text);
             Linking.canOpenURL(url) && Linking.openURL(url);
           }
         },

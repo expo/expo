@@ -6,7 +6,12 @@ const prevaledNavigationData = require('./navigation-data');
 // - The groups of sections are expressed only below, there is no representation of them in the filesystem
 const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
-  'Managed Workflow': ['Fundamentals', 'Distributing Your App', 'Assorted Guides'],
+  'Managed Workflow': [
+    'Fundamentals',
+    'Distributing Your App',
+    'Assorted Guides',
+    'Regulatory Compliance',
+  ],
   Deprecated: ['ExpoKit'],
   'Bare Workflow': ['Essentials'],
   'Expo SDK': ['Expo SDK'],
@@ -48,6 +53,10 @@ const sections = [
     reference: ['Using the documentation', 'Join the community', 'Additional resources'],
   },
   {
+    name: 'Regulatory Compliance',
+    reference: ['Data Privacy & Protection', 'Privacy Shield', 'HIPAA', 'GDPR'],
+  },
+  {
     name: 'Assorted Guides',
     reference: [
       'Assets',
@@ -57,7 +66,7 @@ const sections = [
       'Authentication',
       'App Icons',
       'Create a Splash Screen',
-      'Configuring StatusBar',
+      'Configuring the Status Bar',
       'Configuring OTA Updates',
       'Preloading & Caching Assets',
       'Offline Support',
@@ -96,6 +105,7 @@ const sections = [
       'Uploading Apps to the Apple App Store and Google Play',
       'App Transfers',
       'Security',
+      'Data and Privacy Protection',
     ],
   },
   {
@@ -263,6 +273,7 @@ const ROOT = [
   'Conceptual Overview',
   'Fundamentals',
   'Distributing Your App',
+  'Regulatory Compliance',
   'Assorted Guides',
   'Essentials',
   'Expo SDK',
@@ -280,10 +291,7 @@ const sortAccordingToReference = (arr, reference) => {
   });
 
   const arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
-  return subSort(
-    arrSortedByWeight,
-    arrSortedByWeight.findIndex(o => o.weight === 1)
-  );
+  return subSort(arrSortedByWeight, arrSortedByWeight.findIndex(o => o.weight === 1));
 };
 
 const sortNav = nav => {

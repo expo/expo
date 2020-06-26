@@ -39,7 +39,7 @@ const MyAppsQuery = gql`
 
 export default graphql(MyAppsQuery, {
   props: props => {
-    let { data } = props;
+    const { data } = props;
 
     let apps;
     let appCount;
@@ -65,7 +65,7 @@ export default graphql(MyAppsQuery, {
               return previousData;
             }
 
-            let combinedData = {
+            const combinedData = {
               me: {
                 ...previousData.me,
                 ...fetchMoreResult.me,

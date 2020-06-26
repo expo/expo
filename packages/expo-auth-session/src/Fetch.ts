@@ -1,6 +1,5 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 import qs from 'qs';
-import { Platform } from 'react-native';
 
 export type Headers = Record<string, string> & {
   'Content-Type': string;
@@ -15,8 +14,12 @@ export type FetchRequest = {
   method?: string;
 };
 
+// TODO(Bacon): pending react-native-adapter publish after sdk 38
+const isDOMAvailable =
+  Platform.OS === 'web' && typeof window !== 'undefined' && !!window.document?.createElement;
+
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
-  if (Platform.OS === 'web' && !canUseDOM) {
+  if (Platform.OS === 'web' && !isDOMAvailable) {
     // @ts-ignore
     return;
   }

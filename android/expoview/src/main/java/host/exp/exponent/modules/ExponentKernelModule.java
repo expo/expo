@@ -102,9 +102,13 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       sKernelEventCallbacks.put(eventId, event.callback);
     }
 
-    getReactApplicationContext()
+    try {
+      getReactApplicationContext()
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(event.name, event.data);
+    } catch (Exception e) {
+      onEventFailure(eventId, e.getMessage());
+    }
 
     consumeEventQueue();
   }

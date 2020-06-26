@@ -15,9 +15,9 @@ Pod::Spec.new do |s|
   s.source = { :git => "http://github.com/expo/expo.git" }
 
   s.subspec "Core" do |ss|
-    ss.source_files = "ios/Exponent/**/*.{h,m}", "template-files/keys.json"
-    ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
-    ss.exclude_files = "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**/*.{h,m}"
+    ss.source_files = "Exponent/**/*.{h,m}", "../template-files/keys.json"
+    ss.preserve_paths = "Exponent/**/*.{h,m}"
+    ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m}"
 
 ${IOS_EXPOKIT_DEPS}
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
@@ -35,7 +35,7 @@ ${IOS_EXPOKIT_DEPS}
   s.subspec "Payments" do |ss|
     ss.dependency "ExpoKit/Core"
     ss.dependency 'Stripe', '~> 10.1.0'
-    ss.source_files = 'ios/Exponent/Versioned/Optional/Payments/*.{h,m}'
+    ss.source_files = 'Exponent/Versioned/Optional/Payments/*.{h,m}'
   end
 
   s.subspec "FaceDetector" do |ss|

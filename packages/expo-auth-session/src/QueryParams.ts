@@ -1,4 +1,4 @@
-import assert from 'assert';
+import invariant from 'invariant';
 import qs from 'qs';
 
 export function buildQueryString(input: Record<string, string>): string {
@@ -18,7 +18,7 @@ export function getQueryParams(
 
   // Pull errorCode off of params
   const errorCode = (parsedSearch.errorCode ?? null) as string | null;
-  assert(
+  invariant(
     typeof errorCode === 'string' || errorCode === null,
     `The "errorCode" parameter must be a string if specified`
   );

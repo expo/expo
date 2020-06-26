@@ -87,7 +87,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 
 - [`AppleAuthentication.AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton)
 
-**[Prop Types](#prop-types)**
+**[Prop Types](#appleauthenticationappleauthenticationbuttonprops)**
 
 - [`AppleAuthentication.AppleAuthenticationButtonProps`](#appleauthenticationappleauthenticationbuttonprops)
 

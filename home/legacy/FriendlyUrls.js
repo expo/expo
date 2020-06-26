@@ -2,13 +2,13 @@
 
 import url from 'url';
 
-let FriendlyUrls = {
+const FriendlyUrls = {
   toFriendlyString(rawUrl: string, removeHomeHost: boolean = true) {
     if (!rawUrl) {
       return '';
     }
 
-    let components = url.parse(rawUrl, false, true);
+    const components = url.parse(rawUrl, false, true);
     if (components.hostname === 'exp.host') {
       components.slashes = false;
       components.protocol = '';
@@ -23,8 +23,8 @@ let FriendlyUrls = {
       }
     }
 
-    let protocol = components.protocol ? components.protocol : '';
-    let commonProtocols = ['exp:', 'exps:', 'http:', 'https:'];
+    const protocol = components.protocol ? components.protocol : '';
+    const commonProtocols = ['exp:', 'exps:', 'http:', 'https:'];
     if (commonProtocols.indexOf(components.protocol) !== -1) {
       // Remove the scheme and slashes
       return url.format(components).substr(protocol.length + 2);

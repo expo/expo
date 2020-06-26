@@ -418,6 +418,10 @@ ReactCommon:
   LABEL: ReactCommon
   PROJECT_PATH: ReactCommon.xcodeproj
   UUID: 2610D146B211EB79FECF83D4FA5AB36D
+RNCMaskedView:
+  LABEL: RNCMaskedView
+  PROJECT_PATH: RNCMaskedView.xcodeproj
+  UUID: 3A3AC6D68A9DF5A1C1346B6F2C044396
 RNGestureHandler:
   LABEL: RNGestureHandler
   PROJECT_PATH: RNGestureHandler.xcodeproj

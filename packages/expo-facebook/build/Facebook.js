@@ -1,13 +1,32 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExponentFacebook from './ExponentFacebook';
-export async function logInWithReadPermissionsAsync(options) {
+export async function logInWithReadPermissionsAsync(options = {}) {
     if (!ExponentFacebook.logInWithReadPermissionsAsync) {
         throw new UnavailabilityError('Facebook', 'logInWithReadPermissionsAsync');
     }
-    if (!options || typeof options !== 'object') {
-        options = {};
+    const nativeLoginResult = await ExponentFacebook.logInWithReadPermissionsAsync(options);
+    return transformNativeFacebookLoginResult(nativeLoginResult);
+}
+/**
+ * Returns the `FacebookAuthenticationCredential` object if a user is authenticated, and `null` if no valid authentication exists.
+ *
+ * You can use this method to check if the user should sign in or not.
+ */
+export async function getAuthenticationCredentialAsync() {
+    if (!ExponentFacebook.getAuthenticationCredentialAsync) {
+        throw new UnavailabilityError('Facebook', 'getAuthenticationCredentialAsync');
     }
-    return ExponentFacebook.logInWithReadPermissionsAsync(options);
+    const nativeAccessTokenResult = await ExponentFacebook.getAuthenticationCredentialAsync();
+    return transformNativeFacebookAuthenticationCredential(nativeAccessTokenResult);
+}
+/**
+ * Logs out of the currently authenticated session.
+ */
+export async function logOutAsync() {
+    if (!ExponentFacebook.logOutAsync) {
+        throw new UnavailabilityError('Facebook', 'logOutAsync');
+    }
+    await ExponentFacebook.logOutAsync();
 }
 /**
  * Sets whether Facebook SDK should log app events. App events involve eg. app installs,
@@ -26,7 +45,7 @@ export async function setAutoLogAppEventsEnabledAsync(enabled) {
     if (!ExponentFacebook.setAutoLogAppEventsEnabledAsync) {
         throw new UnavailabilityError('Facebook', 'setAutoLogAppEventsEnabledAsync');
     }
-    return await ExponentFacebook.setAutoLogAppEventsEnabledAsync(enabled);
+    await ExponentFacebook.setAutoLogAppEventsEnabledAsync(enabled);
 }
 /**
  * Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg.
@@ -47,26 +66,35 @@ export async function setAutoInitEnabledAsync(enabled) {
     if (!ExponentFacebook.setAutoInitEnabledAsync) {
         throw new UnavailabilityError('Facebook', 'setAutoInitEnabledAsync');
     }
-    return await ExponentFacebook.setAutoInitEnabledAsync(enabled);
+    await ExponentFacebook.setAutoInitEnabledAsync(enabled);
 }
 /**
  * Calling this method ensures that the SDK is initialized.
- * You have to call this method before calling `logInWithReadPermissionsAsync`
- * to ensure that Facebook support is initialized properly.
+ * You have to call this method before calling any method that uses
+ * the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that
+ * Facebook support is initialized properly.
  *
- * You may or may not provide an optional `appId: string` argument.
- * - If you don't provide it, Facebook SDK will try to use `appId` from native app resources,
- *   If it fails to find one, the promise will be rejected.
+ * - On Android and iOS you can optionally provide an `appId` argument.
+ *   - If you don't provide `appId`, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in app store development clients are unavailable, and in bare apps you configure yourself according to [Facebook's setup documentation for iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If the Facebook SDK fails to find an `appId` value, the returned promise will be rejected.
+ *   - The same resolution mechanism works for `appName`.
  * - If you provide an explicit `appId`, it will override any other source.
- * The same resolution mechanism is applied to `appName`.
- * @param appId An optional Facebook App ID argument
- * @param appName An optional Facebook App Name argument
+ *
+ * @param options The options used to configure how Facebook is initialized
  */
-export async function initializeAsync(appId, appName) {
+export async function initializeAsync(optionsOrAppId, appName) {
     if (!ExponentFacebook.initializeAsync) {
         throw new UnavailabilityError('Facebook', 'initializeAsync');
     }
-    return await ExponentFacebook.initializeAsync(appId, appName);
+    let options = {};
+    if (typeof optionsOrAppId === 'string') {
+        options.appId = optionsOrAppId;
+        options.appName = appName;
+        console.warn('The parameters of `initializeAsync(appId, appName)` have changed to support future platforms, you must now provide an object instead: initializeAsync({ appId, appName }).');
+    }
+    else {
+        options = optionsOrAppId;
+    }
+    await ExponentFacebook.initializeAsync(options);
 }
 /**
  * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA
@@ -85,6 +113,26 @@ export async function setAdvertiserIDCollectionEnabledAsync(enabled) {
     if (!ExponentFacebook.setAdvertiserIDCollectionEnabledAsync) {
         throw new UnavailabilityError('Facebook', 'setAdvertiserIDCollectionEnabledAsync');
     }
-    return await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
+    await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
+}
+function transformNativeFacebookLoginResult(input) {
+    if (input.type === 'cancel')
+        return input;
+    return {
+        ...input,
+        refreshDate: typeof input.refreshDate === 'number' ? new Date(input.refreshDate) : input.refreshDate,
+        dataAccessExpirationDate: new Date(input.dataAccessExpirationDate),
+        expirationDate: new Date(input.expirationDate),
+    };
+}
+function transformNativeFacebookAuthenticationCredential(input) {
+    if (!input)
+        return input;
+    return {
+        ...input,
+        refreshDate: typeof input.refreshDate === 'number' ? new Date(input.refreshDate) : input.refreshDate,
+        dataAccessExpirationDate: new Date(input.dataAccessExpirationDate),
+        expirationDate: new Date(input.expirationDate),
+    };
 }
 //# sourceMappingURL=Facebook.js.map

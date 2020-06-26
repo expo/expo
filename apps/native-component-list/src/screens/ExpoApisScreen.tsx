@@ -1,3 +1,4 @@
+import { Platform } from '@unimodules/core';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
 import { Alert } from 'react-native';
@@ -15,13 +16,14 @@ try {
   // Branch is not available, do nothing
 }
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+if (Platform.OS !== 'web')
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
 
 export default class ExpoApisScreen extends React.Component {
   static path = '';

@@ -1,9 +1,10 @@
-import { EventEmitter, Subscription, NativeModulesProxy } from '@unimodules/core';
+import { EventEmitter, Subscription } from '@unimodules/core';
 
 import { Notification, NotificationResponse } from './Notifications.types';
+import NotificationsEmitterModule from './NotificationsEmitterModule';
 
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NativeModulesProxy.ExpoNotificationsEmitter);
+const emitter = new EventEmitter(NotificationsEmitterModule);
 
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';

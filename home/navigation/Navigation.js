@@ -1,30 +1,28 @@
 /* @flow */
 
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { createAppContainer, useTheme } from 'react-navigation';
-import { BottomTabBar, createBottomTabNavigator } from 'react-navigation-tabs';
-import { createStackNavigator } from 'react-navigation-stack';
-
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { Entypo, Ionicons } from '@expo/vector-icons';
-
-import ProjectsScreen from '../screens/ProjectsScreen';
-import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
-import GeofencingScreen from '../screens/GeofencingScreen';
-import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
-import ExploreScreen from '../screens/ExploreScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import SignInScreen from '../screens/SignInScreen';
-import SignUpScreen from '../screens/SignUpScreen';
-import QRCodeScreen from '../screens/QRCodeScreen';
-import UserSettingsScreen from '../screens/UserSettingsScreen';
-import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
-import SnacksForUserScreen from '../screens/SnacksForUserScreen';
-import Environment from '../utils/Environment';
+import { createStackNavigator } from 'react-navigation-stack';
+import { BottomTabBar, createBottomTabNavigator } from 'react-navigation-tabs';
 
 import Colors from '../constants/Colors';
+import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
+import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import ExploreScreen from '../screens/ExploreScreen';
+import GeofencingScreen from '../screens/GeofencingScreen';
+import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
+import ProjectsScreen from '../screens/ProjectsScreen';
+import QRCodeScreen from '../screens/QRCodeScreen';
+import SignInScreen from '../screens/SignInScreen';
+import SignUpScreen from '../screens/SignUpScreen';
+import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import UserSettingsScreen from '../screens/UserSettingsScreen';
+import Environment from '../utils/Environment';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 const ProjectsStack = createStackNavigator(
@@ -133,7 +131,7 @@ if (Platform.OS === 'android') {
 }
 
 const ThemedTabBarComponent = props => {
-  let theme = useTheme();
+  const theme = useTheme();
 
   return (
     <BottomTabBar
@@ -202,7 +200,7 @@ function renderIcon(
   isSelected: boolean,
   theme: 'light' | 'dark'
 ) {
-  let color = isSelected ? Colors[theme].tabIconSelected : Colors[theme].tabIconDefault;
+  const color = isSelected ? Colors[theme].tabIconSelected : Colors[theme].tabIconDefault;
 
   return <IconComponent name={iconName} size={iconSize} color={color} style={styles.icon} />;
 }

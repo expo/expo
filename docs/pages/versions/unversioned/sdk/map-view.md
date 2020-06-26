@@ -81,8 +81,6 @@ If you have already integrated Google Sign In into your standalone app, this is 
 
 Since your app is most likely using App Signing by Google Play, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
 
-**Note:** The API key can be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.android.config.googleMaps.apiKey`) if you'd prefer not to have it in your code directly.
-
 ### Deploying Google Maps to a standalone app on iOS
 
 Apple Maps will work with no extra configuration. For Google Maps:

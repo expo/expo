@@ -1,6 +1,6 @@
 import * as MailComposer from 'expo-mail-composer';
 import React from 'react';
-import { Alert, View, StyleSheet } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';

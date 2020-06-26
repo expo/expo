@@ -1,3 +1,2 @@
-import BlurView from './BlurView';
-export { BlurView };
+export { default as BlurView } from './BlurView';
 export { BlurTint, BlurProps } from './BlurView.types';

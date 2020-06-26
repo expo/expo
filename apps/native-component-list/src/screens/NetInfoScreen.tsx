@@ -1,10 +1,10 @@
+import NetInfo, { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import NetInfo, { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
 
-import Colors from '../constants/Colors';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
+import Colors from '../constants/Colors';
 
 interface ConnectionEvent {
   time: Date;

@@ -8,3 +8,7 @@ export declare function buildCodeAsync(size?: number): Promise<{
     codeChallenge: string;
     codeVerifier: string;
 }>;
+/**
+ * Digest a random string with hex encoding, useful for creating `nonce`s.
+ */
+export declare function generateHexStringAsync(size: number): Promise<string>;

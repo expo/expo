@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createElement } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 import ExponentAV from './ExponentAV';
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;

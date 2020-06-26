@@ -1,18 +1,18 @@
 /* @flow */
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
 
-import Colors from '../constants/Colors';
 import OptionsButton from '../components/OptionsButton';
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
+import Colors from '../constants/Colors';
 import MyProfileContainer from '../containers/MyProfileContainer';
 import OtherProfileContainer from '../containers/OtherProfileContainer';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
-import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
+import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
@@ -25,7 +25,7 @@ export default class ProfileScreen extends React.Component {
   };
 
   static getDataProps(data, props) {
-    let isAuthenticated = isUserAuthenticated(data.session);
+    const isAuthenticated = isUserAuthenticated(data.session);
 
     return {
       isAuthenticated,
@@ -49,6 +49,8 @@ export default class ProfileScreen extends React.Component {
     }
 
     if (!this.props.isAuthenticated) {
+      // NOTE: this logic likely can be moved to the constructor or should be in a hook that runs
+      // whenever the prop is updated
       this.setState({ isOwnProfile: false });
     } else {
       getViewerUsernameAsync().then(

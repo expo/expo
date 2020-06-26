@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
-import { StyleSheet, createElement } from 'react-native';
+import { StyleSheet } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 export const Table = forwardRef((props, ref) => {
     return createElement('table', { ...props, style: [styles.reset, props.style], ref });
 });

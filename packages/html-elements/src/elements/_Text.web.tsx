@@ -1,5 +1,6 @@
 import { ComponentType, forwardRef } from 'react';
-import { createElement, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 import { TextProps } from '../primitives/Text';
 import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';

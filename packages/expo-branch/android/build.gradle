@@ -60,4 +60,5 @@ dependencies {
   unimodule 'unimodules-core'
   implementation 'com.facebook.react:react-native:+'
   api 'io.branch.sdk.android:library:4.1.0'
+  implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.0.0"
 }

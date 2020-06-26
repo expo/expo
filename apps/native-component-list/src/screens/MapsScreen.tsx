@@ -1,8 +1,9 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
-import Layout from '../constants/Layout';
+
 import ListButton from '../components/ListButton';
+import Layout from '../constants/Layout';
 
 const REGION = {
   latitude: 37.78825,
@@ -19,7 +20,7 @@ interface State {
   isGoogleMap: boolean;
 }
 
-export default class MapsScreen extends React.Component<{}, State> {
+export default class MapsScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: '<MapView />',
   };
@@ -31,9 +32,7 @@ export default class MapsScreen extends React.Component<{}, State> {
   _mapView?: MapView | null;
 
   render() {
-    const provider: 'google' | undefined = this.state.isGoogleMap
-      ? 'google'
-      : undefined;
+    const provider: 'google' | undefined = this.state.isGoogleMap ? 'google' : undefined;
     return (
       <ScrollView style={StyleSheet.absoluteFill}>
         <MapView
@@ -60,8 +59,7 @@ export default class MapsScreen extends React.Component<{}, State> {
           justifyContent: 'center',
           marginVertical: 10,
           paddingRight: 30,
-        }}
-      >
+        }}>
         <Switch
           style={{ marginHorizontal: 10 }}
           onValueChange={isGoogleMap => {
@@ -72,22 +70,19 @@ export default class MapsScreen extends React.Component<{}, State> {
         <Text style={{ fontSize: 18 }}>Use Google maps</Text>
       </View>
     );
-  }
+  };
 
   _renderJumpToCoordButton = () => {
     return (
       <View style={{ paddingHorizontal: 10 }}>
-        <ListButton
-          onPress={this._animateToRandomCoord}
-          title="Animate to random SF Coord"
-        />
+        <ListButton onPress={this._animateToRandomCoord} title="Animate to random SF Coord" />
         <ListButton
           onPress={this._animateToRandomViewingAngle}
           title="Animate to random Viewing Angle"
         />
       </View>
     );
-  }
+  };
 
   _animateToRandomViewingAngle = () => {
     if (this._mapView) {
@@ -95,20 +90,16 @@ export default class MapsScreen extends React.Component<{}, State> {
         pitch: getRandomFloat(0, 90),
       });
     }
-  }
+  };
 
   _animateToRandomCoord = () => {
     if (this._mapView) {
       this._mapView.animateCamera({
         center: {
-          latitude:
-            REGION.latitude +
-            (Math.random() - 0.5) * (REGION.latitudeDelta / 2),
-          longitude:
-            REGION.longitude +
-            (Math.random() - 0.5) * (REGION.longitudeDelta / 2),
+          latitude: REGION.latitude + (Math.random() - 0.5) * (REGION.latitudeDelta / 2),
+          longitude: REGION.longitude + (Math.random() - 0.5) * (REGION.longitudeDelta / 2),
         },
       });
     }
-  }
+  };
 }

@@ -227,15 +227,13 @@ If you have `expo-splash-screen` installed in your bare workflow project, you'll
 +#import <EXSplashScreen/EXSplashScreenService.h>
 +#import <UMCore/UMModuleRegistryProvider.h>
 
- - (RCTBridge *)initializeReactNativeApp
+ ...
+
+ - (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success
  {
-  ...
-   [self.window makeKeyAndVisible];
-
+   appController.bridge = [self initializeReactNativeApp];
 +  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-+  [splashScreenService showSplashScreenFor:rootViewController];
-
-   return bridge;
++  [splashScreenService showSplashScreenFor:self.window.rootViewController];
  }
 ```
 
@@ -532,3 +530,12 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 -    }
    }
  }
+ ```
+
+#### Remove Pods Target EXUpdates (Optional)
+
+If, after following above steps, your `npm run ios` or `yarn ios` fails and you see `EXUpdates` in logs, follow the steps below:
+
+- Open the iOS directory in Xcode
+- Go to Pods module on right side
+- In the targets, find `EXUpdates`, right click and delete

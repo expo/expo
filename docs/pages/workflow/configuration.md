@@ -446,6 +446,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ### `"ios"`
 
+Configuration that is specific to the iOS platform.
+
 ```javascript
 {
   "ios": {
@@ -673,7 +675,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ### `"android"`
 
-**Standalone Apps Only**. Android standalone app specific configuration
+Configuration that is specific to the Android platform.
 
 ```javascript
 {
@@ -971,11 +973,27 @@ Configuration for how and when the app should request OTA JavaScript updates
         ]
       }
     ]
+
+    /*
+      Determines how the software keyboard will impact the layout of your application. This maps
+      to the "android:windowSoftInputMode" property. Defaults to "resize". Only supported in SDK 38 and higher.
+      Valid values: "resize", "pan".
+    */
+    "softwareKeyboardLayoutMode": STRING,
+
+    /*
+      Allows your user's app data to be automatically backed up to their Google Drive. If this is set to false, 
+      no backup or restore of the application will ever be performed (this is useful if your app deals with sensitive information). 
+      Defaults to the Android default, which is true.
+    */
+    "allowBackup": BOOLEAN,
   }
 }
 ```
 
 ### `"web"`
+
+Configuration that is specific to the web platform.
 
 ```javascript
 {
@@ -1002,6 +1020,22 @@ Configuration for how and when the app should request OTA JavaScript updates
         "measurementId": STRING
       }
     }
+  }
+}
+```
+
+### `"experiments"`
+
+Toggle features that aren't ready to be turned on by default for everyone.
+
+```javascript
+{
+  "experiments": {
+
+    /*
+      Use the unstable LogBox re-design available in React Native 0.62. This option is only available in SDK 38.
+    */
+    "redesignedLogBox": BOOLEAN
   }
 }
 ```
