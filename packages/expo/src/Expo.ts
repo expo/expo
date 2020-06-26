@@ -1,22 +1,20 @@
 import './Expo.fx';
 
-import * as AR from './AR';
-import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
 import * as Logs from './logs/Logs';
 
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as Linking } from './Linking/Linking';
 export { default as Notifications } from './Notifications/Notifications';
 
 // The following should all be extracted from this package
-export { AR };
 export { SplashScreen };
-export { Updates };
 export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
+
+// @ts-ignore
+export { Updates, Linking } from './deprecated';
 
 // @ts-ignore
 export {
@@ -34,6 +32,8 @@ export {
   Amplitude,
   // @ts-ignore
   AppAuth,
+  // @ts-ignore
+  AR,
   // @ts-ignore
   Asset,
   // @ts-ignore

@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { Notifications } from 'expo';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -6,7 +7,6 @@ import React from 'react';
 import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 import { NavigationEvents } from 'react-navigation';
-import { MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';
 
@@ -29,7 +29,7 @@ export default class GeofencingScreen extends React.Component {
   };
 
   didFocus = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {
       AppState.addEventListener('change', this.handleAppStateChange);

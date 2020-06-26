@@ -19,8 +19,10 @@ import expo.modules.firebase.core.FirebaseCoreOptions;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import java.io.UnsupportedEncodingException;
 
@@ -66,10 +68,14 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
 
     // Cleanup any deleted apps from the protected-names map
     synchronized (mProtectedAppNames) {
+      Set<String> forRemoval = new HashSet<>();
       for (Map.Entry<String, Boolean> entry : mProtectedAppNames.entrySet()) {
         if (entry.getValue()) { // isDeleted
-          mProtectedAppNames.remove(entry.getKey());
+          forRemoval.add(entry.getKey());
         }
+      }
+      for (String app : forRemoval) {
+        mProtectedAppNames.remove(app);
       }
     }
 

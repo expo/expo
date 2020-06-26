@@ -1,7 +1,9 @@
 import { Asset } from 'expo-asset';
-import { Platform } from 'react-native';
-import * as Permissions from 'expo-permissions';
 import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
+import { Platform } from 'react-native';
+
+import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 
@@ -94,18 +96,46 @@ export async function test(t) {
     let album;
     let files;
 
-    t.beforeAll(async () => {
+    async function initializeAsync() {
       await Permissions.askAsync(Permissions.CAMERA_ROLL);
       files = await getFiles();
       testAssets = await getAssets(files);
       album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
-      if (album == null) album = await createAlbum(testAssets, ALBUM_NAME);
-      else await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, true);
+      if (album == null) {
+        album = await createAlbum(testAssets, ALBUM_NAME);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, true);
+      }
+    }
+
+    async function cleanupAsync() {
+      await MediaLibrary.deleteAssetsAsync(testAssets);
+      await MediaLibrary.deleteAlbumsAsync(album);
+    }
+
+    t.beforeAll(async () => {
+      // NOTE(2020-06-03): The `initializeAsync` function is flaky on Android; often the
+      // `addAssetsToAlbumAsync` method call inside of `createAlbum` will fail with the error
+      // "Could not get all of the requested assets". Usually retrying a few times works, so we do
+      // that programmatically here.
+      let error;
+      for (let i = 0; i < 3; i++) {
+        try {
+          await initializeAsync();
+          break;
+        } catch (e) {
+          error = e;
+          console.log('Error initializing MediaLibrary tests, trying again', e.message);
+          await cleanupAsync();
+          await waitFor(1000);
+        }
+        // if we get here, just throw
+        throw error;
+      }
     });
 
     t.afterAll(async () => {
-      await MediaLibrary.deleteAssetsAsync(testAssets);
-      await MediaLibrary.deleteAlbumsAsync(album);
+      cleanupAsync();
     });
 
     t.describe('Every return value has proper shape', async () => {

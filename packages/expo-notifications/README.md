@@ -13,7 +13,8 @@ Provides an API to fetch push notification tokens and to present, schedule, rece
 - 👆 listen to interactions with notifications (tapping or dismissing),
 - 🎛 handle notifications when the app is in foreground,
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
-- 🗂 create, update, delete Android notification channels.
+- 🗂 create, update, delete Android notification channels,
+- 🎨 set custom icon and color for notifications on Android.
 
 # Installation in managed Expo projects
 
@@ -31,7 +32,7 @@ expo install expo-notifications
 
 ### Configure for iOS
 
-Run `pod install` in the `ios` directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 In order to be able to receive push notifications on the device:
 
@@ -42,13 +43,72 @@ In order to be able to receive push notifications on the device:
 
 ### Configure for Android
 
-In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/versions/latest/guides/native-firebase/#bare-workflow-setup).
+In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
+
+The notification icon and the default color can be customized.
+- **To customize the icon**:
+  1. You will need to ensure that the icon is properly set up and added the project. To read more on how to create a notification icon and add it to the project check out the [“Create notification icon” section](https://developer.android.com/studio/write/image-asset-studio#create-notification) at the official Android guide. Remember the name you use for the icon asset, you will need it later!
+  2. Then head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_icon"` inside the `<application>` node referencing the custom icon with `@drawable/<notification_icon_name_you_used_in_step_1>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L44-L46).
+  3. In the end your `AndroidManifest.xml` should look more or less like this:
+  ```xml
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
+    ...
+    <application ...>
+      ...
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_icon"
+        android:resource="@drawable/ic_stat_notifications" /> <!-- @drawable/<insert_notification_icon_name> -->
+      ...
+    </application>
+  </manifest>
+  ```
+- **To customize the default color of the notification**:
+  1. you will need a color resource added to the native project's resources. Some information on how to do this can be found in [the official Android guide](https://developer.android.com/guide/topics/resources/more-resources#Color). The most simple and fail-safe instructions would be to:
+      1. ensure that there is a file under `android/app/src/main/res/values/colors.xml` (if there is none, create it)
+      2. ensure that it's a valid resources XML file (it should start with a `<?xml version="1.0" encoding="utf-8"?>` declaration and have a root node of `<resources>`)
+      3. inside the `<resources>` node add a `<color>` node with an arbitrary name (like `notification_icon_color`) containing the color in HEX format inside, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/res/values/colors.xml#L3).
+      4. in the end your `colors.xml` should look more or less like this:
+          ```java
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+            <color name="notification_icon_color">#4630EB</color>
+          </resources>
+          ```
+  2. now, when the color is added to the project, we need to configure `expo-notifications` to use it when it displays a notification — head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_color"` inside the `<application>` node referencing the custom icon with `@color/<notification_icon_color_name>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L47-L49).
+  3. In the end your `AndroidManifest.xml` should look more or less like this:
+  ```xml
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
+    ...
+    <application ...>
+      ...
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_color"
+        android:resource="@color/notification_icon_color" /> <!-- @color/<insert_notification_icon_color_name> -->
+      ...
+    </application>
+  </manifest>
+  ```
+- An `AndroidManifest.xml` with both color (of name `notification_icon_color`) and an icon (of name `ic_stat_notifications`) name would look like this:
+  ```xml
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
+    <application ...>
+      ...
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_icon"
+        android:resource="@drawable/ic_stat_notifications" />
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_color"
+        android:resource="@color/notification_icon_color" />
+      ...
+    </application>
+  </manifest>
+  ```
 
 ### Add your project's credentials to Expo server (optional)
 
 If you would like to send notifications with Expo servers, the servers will need to have a way to authenticate with APNS/FCM that they are authorized to send notifications on your behalf. To do this:
 
-- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/versions/latest/guides/using-fcm/#uploading-server-credentials)_,
+- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/guides/using-fcm/#uploading-server-credentials)_,
 - for APNS:
   - run `expo credentials:manager` in the root of your application,
   - if you've already uploaded a Push Notifications Key in another project and would like to reuse it in the current project, select _Use existing Push Notifications Key in current project_ (you may need to set `slug` and `ios.bundleIdentifier` fields in `app.json` so that the server knows to which `experienceId` and `bundleIdentifier` the key should be attributed),
@@ -69,43 +129,44 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 The following methods are exported by the `expo-notifications` module:
 
 - **fetching token for sending push notifications**
-  - [`getExpoPushTokenAsync`](#getexpopushtokenasync) -- resolves with an Expo push token
-  - [`getDevicePushTokenAsync`](#getdevicepushtokenasync) -- resolves with a device push token
-  - [`addPushTokenListener`](#addpushtokenlistener) -- adds a listener called when a new push token is issued
-  - [`removePushTokenSubscription`](#removepushtokensubscription) -- removes the listener registered with `addPushTokenListener`
-  - [`removeAllPushTokenListeners`](#removeallpushtokenlisteners) -- removes all listeners registered with `addPushTokenListener`
+  - [`getExpoPushTokenAsync`](#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken) -- resolves with an Expo push token
+  - [`getDevicePushTokenAsync`](#getdevicepushtokenasync-devicepushtoken) -- resolves with a device push token
+  - [`addPushTokenListener`](#addpushtokenlistenerlistener-pushtokenlistener-subscription) -- adds a listener called when a new push token is issued
+  - [`removePushTokenSubscription`](#removepushtokensubscriptionsubscription-subscription-void) -- removes the listener registered with `addPushTokenListener`
+  - [`removeAllPushTokenListeners`](#removeallpushtokenlisteners-void) -- removes all listeners registered with `addPushTokenListener`
 - **listening to notification events**
-  - [`addNotificationReceivedListener`](#addnotificationreceivedlistener) -- adds a listener called whenever a new notification is received
-  - [`addNotificationsDroppedListener`](#addnotificationsdroppedlistener) -- adds a listener called whenever some notifications have been dropped
-  - [`addNotificationResponseReceivedListener`](#addnotificationresponsereceivedlistener) -- adds a listener called whenever user interacts with a notification
-  - [`removeNotificationSubscription`](#removenotificationsubscription) -- removes the listener registered with `addNotification*Listener()`
-  - [`removeAllNotificationListeners`](#removeAllNotificationListeners) -- removes all listeners registered with `addNotification*Listener()`
+  - [`addNotificationReceivedListener`](#addnotificationreceivedlistenerlistener-event-notification--void-void) -- adds a listener called whenever a new notification is received
+  - [`addNotificationsDroppedListener`](#addnotificationsdroppedlistenerlistener---void-void) -- adds a listener called whenever some notifications have been dropped
+  - [`addNotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void) -- adds a listener called whenever user interacts with a notification
+  - [`removeNotificationSubscription`](#removenotificationsubscriptionsubscription-subscription-void) -- removes the listener registered with `addNotification*Listener()`
+  - [`removeAllNotificationListeners`](#removeallnotificationlisteners-void) -- removes all listeners registered with `addNotification*Listener()`
 - **handling incoming notifications when the app is in foreground**
-  - [`setNotificationHandler`](#setnotificationhandler) -- sets the handler function responsible for deciding what to do with a notification that is received when the app is in foreground
+  - [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) -- sets the handler function responsible for deciding what to do with a notification that is received when the app is in foreground
 - **fetching permissions information**
-  - [`getPermissionsAsync`](#getpermissionsasync) -- fetches current permission settings related to notifications
-  - [`requestPermissionsAsync`](#requestpermissionsasync) -- requests permissions related to notifications
+  - [`getPermissionsAsync`](#getpermissionsasync-promisenotificationpermissionsstatus) -- fetches current permission settings related to notifications
+  - [`requestPermissionsAsync`](#requestpermissionsasyncrequest-notificationpermissionsrequest-promisenotificationpermissionsstatus) -- requests permissions related to notifications
 - **managing application badge icon**
-  - [`getBadgeCountAsync`](#getbadgecountasync) -- fetches the application badge number value
-  - [`setBadgeCountAsync`](#setbadgecountasync) -- sets the application badge number value
+  - [`getBadgeCountAsync`](#getbadgecountasync-promisenumber) -- fetches the application badge number value
+  - [`setBadgeCountAsync`](#setbadgecountasyncbadgecount-number-options-setbadgecountoptions-promiseboolean) -- sets the application badge number value
 - **scheduling notifications**
-  - [`getAllScheduledNotificationsAsync`](#getallschedulednotificationsasync) -- fetches information about all scheduled notifications
-  - [`presentNotificationAsync`](#presentnotificationasync) -- schedules a notification for immediate trigger
-  - [`scheduleNotificationAsync`](#schedulenotificationasync) -- schedules a notification to be triggered in the future
-  - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasync) -- removes a specific scheduled notification
-  - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync) -- removes all scheduled notifications
+  - [`getAllScheduledNotificationsAsync`](#getallschedulednotificationsasync-promisenotification) -- fetches information about all scheduled notifications
+  - [`presentNotificationAsync`](#presentnotificationasynccontent-notificationcontentinput-identifier-string-promisestring) -- schedules a notification for immediate trigger
+  - [`scheduleNotificationAsync`](#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) -- schedules a notification to be triggered in the future
+  - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
+  - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
 - **dismissing notifications**
-  - [`dismissNotificationAsync`](#dismissnotificationasync) -- removes a specific notification from the notification tray
-  - [`dismissAllNotificationsAsync`](#dismissallnotificationsasync) -- removes all notifications from the notification tray
+  - [`getPresentedNotificationsAsync`](#getpresentednotificationsasync-promisenotification) -- fetches information about all notifications present in the notification tray (Notification Center)
+  - [`dismissNotificationAsync`](#dismissnotificationasyncidentifier-string-promisevoid) -- removes a specific notification from the notification tray
+  - [`dismissAllNotificationsAsync`](#dismissallnotificationsasync-promisevoid) -- removes all notifications from the notification tray
 - **managing notification channels (Android-specific)**
-  - [`getNotificationChannelsAsync`](#getnotificationchannelsasync) -- fetches information about all known notification channels
-  - [`getNotificationChannelAsync`](#getnotificationchannelasync) -- fetches information about a specific notification channel
-  - [`setNotificationChannelAsync`](#setnotificationchannelasync) -- saves a notification channel configuration
-  - [`deleteNotificationChannelAsync`](#deletenotificationchannelasync) -- deletes a notification channel
-  - [`getNotificationChannelGroupsAsync`](#getnotificationchannelgroupsasync) -- fetches information about all known notification channel groups
-  - [`getNotificationChannelGroupAsync`](#getnotificationchannelgroupasync) -- fetches information about a specific notification channel group
-  - [`setNotificationChannelGroupAsync`](#setnotificationchannelgroupasync) -- saves a notification channel group configuration
-  - [`deleteNotificationChannelGroupAsync`](#deletenotificationchannelgroupasync) -- deletes a notification channel group
+  - [`getNotificationChannelsAsync`](#getnotificationchannelsasync-promisenotificationchannel) -- fetches information about all known notification channels
+  - [`getNotificationChannelAsync`](#getnotificationchannelasyncidentifier-string-promisenotificationchannel--null) -- fetches information about a specific notification channel
+  - [`setNotificationChannelAsync`](#setnotificationchannelasyncidentifier-string-channel-notificationchannelinput-promisenotificationchannel--null) -- saves a notification channel configuration
+  - [`deleteNotificationChannelAsync`](#deletenotificationchannelasyncidentifier-string-promisevoid) -- deletes a notification channel
+  - [`getNotificationChannelGroupsAsync`](#getnotificationchannelgroupsasync-promisenotificationchannelgroup) -- fetches information about all known notification channel groups
+  - [`getNotificationChannelGroupAsync`](#getnotificationchannelgroupasyncidentifier-string-promisenotificationchannelgroup--null) -- fetches information about a specific notification channel group
+  - [`setNotificationChannelGroupAsync`](#setnotificationchannelgroupasyncidentifier-string-channel-notificationchannelgroupinput-promisenotificationchannelgroup--null) -- saves a notification channel group configuration
+  - [`deleteNotificationChannelGroupAsync`](#deletenotificationchannelgroupasyncidentifier-string-promisevoid) -- deletes a notification channel group
 
 ## Android push notification payload specification
 
@@ -127,7 +188,7 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/versions/latest/guides/push-notifications/).
+Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/guides/push-notifications/).
 
 > **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://expo.fyi/upload-notifications-credentials). TODO
 
@@ -136,7 +197,7 @@ Returns an Expo token that can be used to send a push notification to this devic
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
 - **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. You may need to define it in bare workflow, where `expo-constants` doesn't expose the manifest.
-- **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync).
+- **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
 - **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.io/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
 - **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.io/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
 
@@ -390,7 +451,7 @@ Check if the app is allowed to send any type of notifications (interrupting and 
 ```ts
 import * as Notifications from 'expo-notifications';
 
-export function allowsNotificationsAsync() {
+export async function allowsNotificationsAsync() {
   const settings = await Notifications.getPermissionsAsync();
   return (
     settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
@@ -516,7 +577,7 @@ import * as Notifications from 'expo-notifications';
 
 Notifications.presentNotificationAsync({
   title: 'Look at that notification',
-  message: "I'm so proud of myself!",
+  body: "I'm so proud of myself!",
 });
 ```
 
@@ -541,7 +602,7 @@ Notifications.setNotificationHandler({
 Notifications.scheduleNotificationAsync({
   content: {
     title: 'Look at that notification',
-    message: "I'm so proud of myself!",
+    body: "I'm so proud of myself!",
   },
   trigger: null,
 });
@@ -551,7 +612,7 @@ Notifications.scheduleNotificationAsync({
 
 Schedules a notification to be triggered in the future.
 
-> **Note:** Please note that this does not mean that the notification will be presented when it is triggereed. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandler) that will return an appropriate notification behavior. For more information see the example below.
+> **Note:** Please note that this does not mean that the notification will be presented when it is triggereed. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) that will return an appropriate notification behavior. For more information see the example below.
 
 #### Arguments
 
@@ -571,7 +632,7 @@ import * as Notifications from 'expo-notifications';
 Notifications.scheduleNotificationAsync({
   content: {
     title: "Time's up!",
-    message: 'Change sides!',
+    body: 'Change sides!',
   },
   trigger: {
     seconds: 60,
@@ -651,6 +712,16 @@ Cancels all scheduled notifications.
 A `Promise` resolving once all the scheduled notifications are successfully cancelled or if there are no scheduled notifications.
 
 ## Dismissing notifications
+
+### `getPresentedNotificationsAsync(): Promise<Notification[]>`
+
+Fetches information about all notifications present in the notification tray (Notification Center).
+
+> **Note:** This method is not supported on Android below 6.0 (API level 23) – on these devices it will resolve to an empty array.
+
+#### Returns
+
+A `Promise` resolving with a list of notifications ([`Notification`](#notification)) currently present in the notification tray (Notification Center).
 
 ### `dismissNotificationAsync(identifier: string): Promise<void>`
 
@@ -865,12 +936,12 @@ export type NotificationContent = {
   data: { [key: string]: unknown };
   // Application badge number associated with the notification
   badge: number | null;
+  sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (
   | {
       // iOS-specific additions
       // See https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc
       // for more information on specific fields.
-      sound: 'default' | 'defaultCritical' | 'custom' | null;
       launchImageName: string | null;
       attachments: {
         identifier: string | null;
@@ -887,9 +958,10 @@ export type NotificationContent = {
       // Android-specific additions
       // See https://developer.android.com/reference/android/app/Notification.html#fields
       // for more information on specific fields.
-      sound?: 'default' | string | null;
       priority?: AndroidNotificationPriority;
       vibrationPattern?: number[];
+      // Format: '#AARRGGBB'
+      color?: string;
     }
 );
 ```
@@ -912,6 +984,17 @@ export interface NotificationContentInput {
   // for more information on specific fields.
   vibrate?: boolean | number[];
   priority?: AndroidNotificationPriority;
+  // Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
+  // see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
+  color?: string;
+  // If set to false, the notification will not be automatically dismissed when clicked.
+  // The setting used when the value is not provided or is invalid is true (the notification
+  // will be dismissed automatically). Corresponds directly to Android's `setAutoCancel`
+  // behavior. In Firebase terms this property of a notification is called `sticky`.
+  // See:
+  // - https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean),
+  // - https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification.FIELDS.sticky
+  autoDismiss?: boolean;
   // iOS-specific fields
   // See https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent?language=objc
   // for more information on specific fields.
@@ -964,6 +1047,7 @@ export type NotificationTrigger =
   | CalendarNotificationTrigger
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
+  | DailyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1036,6 +1120,18 @@ export interface TimeIntervalNotificationTrigger {
   type: 'timeInterval';
   repeats: boolean;
   seconds: number;
+}
+```
+
+### `DailyNotificationTrigger`
+
+A trigger related to a daily notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface DailyNotificationTrigger {
+  type: 'daily';
+  hour: number;
+  minute: number;
 }
 ```
 
@@ -1129,6 +1225,7 @@ export type NotificationTriggerInput =
   | null
   | DateTriggerInput
   | TimeIntervalTriggerInput
+  | DailyTriggerInput
   | CalendarTriggerInput;
 ```
 
@@ -1148,6 +1245,18 @@ A trigger that will cause the notification to be delivered once or many times (d
 export interface TimeIntervalTriggerInput {
   repeats?: boolean;
   seconds: number;
+}
+```
+
+### `DailyTriggerInput`
+
+A trigger that will cause the notification to be delivered once per day.
+
+```ts
+export interface DailyTriggerInput {
+  hour: number;
+  minute: number;
+  repeats: true;
 }
 ```
 
@@ -1180,7 +1289,7 @@ export interface CalendarTriggerInput {
 
 An object representing user's interaction with the notification.
 
-> Note: If the user taps on a notification `actionIdentifier` will be equal to `Notifications.DEFAULT_ACTION_IDENTIFIER`.
+> **Note:** If the user taps on a notification `actionIdentifier` will be equal to `Notifications.DEFAULT_ACTION_IDENTIFIER`.
 
 ```ts
 export interface NotificationResponse {
@@ -1229,7 +1338,7 @@ export enum AndroidImportance {
   NONE,
   MIN,
   LOW,
-  DEEFAULT,
+  DEFAULT,
   HIGH,
   MAX,
 }
@@ -1271,7 +1380,7 @@ export interface NotificationChannel {
   lightColor: string;
   lockscreenVisibility: AndroidNotificationVisibility;
   showBadge: boolean;
-  soundUri: string | null;
+  sound: 'default' | 'custom' | null;
   audioAttributes: AudioAttributes;
   vibrationPattern: number[] | null;
   enableLights: boolean;
@@ -1294,7 +1403,7 @@ export interface NotificationChannelInput {
   lightColor?: string;
   lockscreenVisibility?: AndroidNotificationVisibility;
   showBadge?: boolean;
-  soundUri?: string | null;
+  sound?: string | null;
   audioAttributes?: Partial<AudioAttributes>;
   vibrationPattern?: number[] | null;
   enableLights?: boolean;

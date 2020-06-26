@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import { DEFAULT_APP_OPTIONS } from 'expo-firebase-core';
 function getFirebaseModule() {
     try {
@@ -68,6 +69,12 @@ export default {
      */
     setUnavailabilityLogging(isEnabled) {
         // nop
+    },
+    /**
+     * Not supported on web
+     */
+    async setDebugModeEnabled(isEnabled) {
+        throw new CodedError('ERR_FIREBASE_NOTCONFIGURED', `setDebugModeEnabled is not available on the web. See "https://firebase.google.com/docs/analytics/debugview" on how to enable debug mode.`);
     },
 };
 //# sourceMappingURL=ExpoFirebaseAnalytics.web.js.map

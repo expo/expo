@@ -2,7 +2,6 @@ package versioned.host.exp.exponent.modules.api.screens;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
@@ -124,7 +123,12 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     return mScreenFragments.get(index).getScreen();
   }
 
-  private FragmentManager findFragmentManager() {
+  private void setFragmentManager(FragmentManager fm) {
+    mFragmentManager = fm;
+    updateIfNeeded();
+  }
+
+  private void setupFragmentManager() {
     ViewParent parent = this;
     // We traverse view hierarchy up until we find screen parent or a root view
     while (!(parent instanceof ReactRootView || parent instanceof Screen) && parent.getParent() != null) {
@@ -133,7 +137,9 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     // If parent is of type Screen it means we are inside a nested fragment structure.
     // Otherwise we expect to connect directly with root view and get root fragment manager
     if (parent instanceof Screen) {
-      return ((Screen) parent).getFragment().getChildFragmentManager();
+      Fragment screenFragment = ((Screen) parent).getFragment();
+      setFragmentManager(screenFragment.getChildFragmentManager());
+      return;
     }
 
     // we expect top level view to be of type ReactRootView, this isn't really necessary but in order
@@ -154,7 +160,7 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
       throw new IllegalStateException(
               "In order to use RNScreens components your app's activity need to extend ReactFragmentActivity or ReactCompatActivity");
     }
-    return ((FragmentActivity) context).getSupportFragmentManager();
+    setFragmentManager(((FragmentActivity) context).getSupportFragmentManager());
   }
 
   protected FragmentTransaction getOrCreateTransaction() {
@@ -212,20 +218,50 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     super.onAttachedToWindow();
     mIsAttached = true;
     mNeedUpdate = true;
-    mFragmentManager = findFragmentManager();
-    updateIfNeeded();
+    setupFragmentManager();
+  }
+
+  /**
+   * Removes fragments from fragment manager that are attached to this container
+   */
+  private void removeMyFragments() {
+    FragmentTransaction transaction = mFragmentManager.beginTransaction();
+    boolean hasFragments = false;
+
+    for (Fragment fragment : mFragmentManager.getFragments()) {
+      if (fragment instanceof ScreenFragment && ((ScreenFragment) fragment).mScreenView.getContainer() == this) {
+        transaction.remove(fragment);
+        hasFragments = true;
+      }
+    }
+    if (hasFragments) {
+      transaction.commitNowAllowingStateLoss();
+    }
   }
 
   @Override
   protected void onDetachedFromWindow() {
     // if there are pending transactions and this view is about to get detached we need to perform
     // them here as otherwise fragment manager will crash because it won't be able to find container
-    // view.
+    // view. We also need to make sure all the fragments attached to the given container are removed
+    // from fragment manager as in some cases fragment manager may be reused and in such case it'd
+    // attempt to reattach previously registered fragments that are not removed
     if (mFragmentManager != null && !mFragmentManager.isDestroyed()) {
+      removeMyFragments();
       mFragmentManager.executePendingTransactions();
     }
     super.onDetachedFromWindow();
     mIsAttached = false;
+    // When fragment container view is detached we force all its children to be removed.
+    // It is because children screens are controlled by their fragments, which can often have a
+    // delayed lifecycle (due to transitions). As a result due to ongoing transitions the fragment
+    // may choose not to remove the view despite the parent container being completely detached
+    // from the view hierarchy until the transition is over. In such a case when the container gets
+    // re-attached while tre transition is ongoing, the child view would still be there and we'd
+    // attept to re-attach it to with a misconfigured fragment. This would result in a crash. To
+    // avoid it we clear all the children here as we attach all the child fragments when the container
+    // is reattached anyways.
+    removeAllViews();
   }
 
   @Override
@@ -237,7 +273,7 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
   }
 
   private void updateIfNeeded() {
-    if (!mNeedUpdate || !mIsAttached) {
+    if (!mNeedUpdate || !mIsAttached || mFragmentManager == null) {
       return;
     }
     mNeedUpdate = false;
@@ -245,17 +281,16 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
   }
 
   private final void onUpdate() {
-    if (mFragmentManager != null) {
-      // We double check if fragment manager have any pending transactions to run.
-      // In performUpdate we often check whether some fragments are added to
-      // manager to avoid adding them for the second time (which result in crash).
-      // By design performUpdate should be called at most once per frame, so this
-      // should never happen, but in case there are some pending transaction we
-      // need to flush them here such that Fragment#isAdded checks reflect the
-      // reality and that we don't have enqueued fragment add commands that will
-      // execute shortly and cause "Fragment already added" crash.
-      mFragmentManager.executePendingTransactions();
-    }
+    // We double check if fragment manager have any pending transactions to run.
+    // In performUpdate we often check whether some fragments are added to
+    // manager to avoid adding them for the second time (which result in crash).
+    // By design performUpdate should be called at most once per frame, so this
+    // should never happen, but in case there are some pending transaction we
+    // need to flush them here such that Fragment#isAdded checks reflect the
+    // reality and that we don't have enqueued fragment add commands that will
+    // execute shortly and cause "Fragment already added" crash.
+    mFragmentManager.executePendingTransactions();
+
     performUpdate();
   }
 
@@ -274,7 +309,9 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
       Object[] orphanedAry = orphaned.toArray();
       for (int i = 0; i < orphanedAry.length; i++) {
         if (orphanedAry[i] instanceof ScreenFragment) {
-          detachScreen((ScreenFragment) orphanedAry[i]);
+          if (((ScreenFragment) orphanedAry[i]).getScreen().getContainer() == null) {
+            detachScreen((ScreenFragment) orphanedAry[i]);
+          }
         }
       }
     }

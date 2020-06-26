@@ -22,6 +22,7 @@ import java.util.Objects;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
+import expo.modules.notifications.notifications.SoundResolver;
 import expo.modules.notifications.notifications.enums.AudioContentType;
 import expo.modules.notifications.notifications.enums.AudioUsage;
 import expo.modules.notifications.notifications.enums.NotificationImportance;
@@ -43,7 +44,7 @@ import static expo.modules.notifications.notifications.channels.NotificationChan
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.NAME_KEY;
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SHOW_BADGE_KEY;
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SOUND_AUDIO_ATTRIBUTES_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SOUND_URI_KEY;
+import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SOUND_KEY;
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.VIBRATION_PATTERN_KEY;
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.toBundle;
 
@@ -54,9 +55,11 @@ public class NotificationChannelManagerModule extends ExportedModule {
   private final static String EXPORTED_NAME = "ExpoNotificationChannelManager";
 
   private final NotificationManagerCompat mNotificationManager;
+  private SoundResolver mSoundResolver;
 
   public NotificationChannelManagerModule(Context context) {
     super(context);
+    mSoundResolver = new SoundResolver(context);
     mNotificationManager = NotificationManagerCompat.from(context);
   }
 
@@ -163,7 +166,7 @@ public class NotificationChannelManagerModule extends ExportedModule {
     if (args.containsKey(SHOW_BADGE_KEY)) {
       channel.setShowBadge(args.getBoolean(SHOW_BADGE_KEY));
     }
-    if (args.containsKey(SOUND_URI_KEY) || args.containsKey(SOUND_AUDIO_ATTRIBUTES_KEY)) {
+    if (args.containsKey(SOUND_KEY) || args.containsKey(SOUND_AUDIO_ATTRIBUTES_KEY)) {
       Uri soundUri = createSoundUriFromArguments(args);
       AudioAttributes soundAttributes = createAttributesFromArguments(args.getArguments(SOUND_AUDIO_ATTRIBUTES_KEY));
       channel.setSound(soundUri, soundAttributes);
@@ -209,16 +212,16 @@ public class NotificationChannelManagerModule extends ExportedModule {
   @Nullable
   protected Uri createSoundUriFromArguments(ReadableArguments args) {
     // The default is... the default sound.
-    if (!args.containsKey(SOUND_URI_KEY)) {
+    if (!args.containsKey(SOUND_KEY)) {
       return Settings.System.DEFAULT_NOTIFICATION_URI;
     }
     // "null" means "no sound"
-    String uriString = args.getString(SOUND_URI_KEY);
-    if (uriString == null) {
+    String filename = args.getString(SOUND_KEY);
+    if (filename == null) {
       return null;
     }
-    // Otherwise it should be a sound URI
-    return Uri.parse(uriString);
+    // Otherwise it should be a sound filename
+    return mSoundResolver.resolve(filename);
   }
 
   @Nullable

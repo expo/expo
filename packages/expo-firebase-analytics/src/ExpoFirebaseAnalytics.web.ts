@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import { DEFAULT_APP_OPTIONS } from 'expo-firebase-core';
 
 function getFirebaseModule() {
@@ -69,5 +70,14 @@ export default {
    */
   setUnavailabilityLogging(isEnabled: boolean): void {
     // nop
+  },
+  /**
+   * Not supported on web
+   */
+  async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
+    throw new CodedError(
+      'ERR_FIREBASE_NOTCONFIGURED',
+      `setDebugModeEnabled is not available on the web. See "https://firebase.google.com/docs/analytics/debugview" on how to enable debug mode.`
+    );
   },
 };

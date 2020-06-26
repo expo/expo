@@ -62,6 +62,11 @@ export interface TimeIntervalNotificationTrigger {
     repeats: boolean;
     seconds: number;
 }
+export interface DailyNotificationTrigger {
+    type: 'daily';
+    hour: number;
+    minute: number;
+}
 export interface FirebaseRemoteMessage {
     collapseKey: string | null;
     data: {
@@ -107,7 +112,7 @@ export interface FirebaseRemoteMessage {
 export interface UnknownNotificationTrigger {
     type: 'unknown';
 }
-export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | UnknownNotificationTrigger;
+export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | UnknownNotificationTrigger;
 export declare type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
     repeats?: boolean;
 };
@@ -115,8 +120,13 @@ export interface TimeIntervalTriggerInput {
     repeats?: boolean;
     seconds: number;
 }
+export interface DailyTriggerInput {
+    hour: number;
+    minute: number;
+    repeats: true;
+}
 export declare type DateTriggerInput = Date | number;
-export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | CalendarTriggerInput;
+export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
     LOW = "low",
@@ -131,9 +141,9 @@ export declare type NotificationContent = {
     data: {
         [key: string]: unknown;
     };
+    sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & ({
     launchImageName: string | null;
-    sound: 'default' | 'defaultCritical' | 'unknown' | null;
     badge: number | null;
     attachments: {
         identifier: string | null;
@@ -147,7 +157,10 @@ export declare type NotificationContent = {
     targetContentIdentifier?: string;
 } | {
     badge?: number;
-    sound?: 'default' | string;
+    /**
+     * Format: '#AARRGGBB'
+     */
+    color?: string;
     priority?: AndroidNotificationPriority;
     vibrationPattern?: number[];
 });
@@ -168,6 +181,12 @@ export interface NotificationContentInput {
     launchImageName?: string;
     vibrate?: number[];
     priority?: string;
+    /**
+     * Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
+     * see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
+     */
+    color?: string;
+    autoDismiss?: boolean;
     attachments?: {
         url: string;
         identifier?: string;

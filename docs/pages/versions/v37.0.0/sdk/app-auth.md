@@ -1,12 +1,14 @@
 ---
 title: AppAuth
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-app-auth'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+> ⚠️ For web support and more authentication methods, use the new [**AuthSession**](../auth-session) API
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
@@ -48,7 +50,7 @@ const prefix = Linking.makeUrl('/');
 // Standalone: `myapp://`
 ```
 
-For more info on [Linking in Expo](https://docs.expo.io/versions/latest/workflow/linking).
+For more info on [Linking in Expo](../../workflow/linking).
 
 ## Bare Workflow
 

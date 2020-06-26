@@ -14,14 +14,14 @@ import {
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
-import UrlUtils from '../utils/UrlUtils';
-import { StyledButton } from '../components/Views';
 import { StyledText } from '../components/Text';
+import { StyledButton } from '../components/Views';
+import UrlUtils from '../utils/UrlUtils';
 
 @withNavigation
 export default class ProjectCard extends React.PureComponent {
   render() {
-    let { description, projectName, username } = this.props;
+    const { description, projectName, username } = this.props;
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>
@@ -64,7 +64,7 @@ export default class ProjectCard extends React.PureComponent {
   }
 
   _maybeRenderIcon = () => {
-    let { iconUrl } = this.props;
+    const { iconUrl } = this.props;
 
     if (iconUrl) {
       return (
@@ -80,7 +80,7 @@ export default class ProjectCard extends React.PureComponent {
   };
 
   _handleLongPressProject = () => {
-    let url = UrlUtils.normalizeUrl(this.props.projectUrl);
+    const url = UrlUtils.normalizeUrl(this.props.projectUrl);
     Share.share({
       title: this.props.projectName,
       message: url,
@@ -92,7 +92,7 @@ export default class ProjectCard extends React.PureComponent {
     // note(brentvatne): navigation should do this automatically
     Keyboard.dismiss();
 
-    let url = UrlUtils.normalizeUrl(this.props.projectUrl);
+    const url = UrlUtils.normalizeUrl(this.props.projectUrl);
     Linking.openURL(url);
   };
 

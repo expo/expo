@@ -11,6 +11,8 @@
 #import <ABI37_0_0React/ABI37_0_0RCTDefines.h>
 #import "ABI37_0_0RNCWebView.h"
 
+#import "ABI37_0_0EXScopedModuleRegistry.h"
+
 @interface ABI37_0_0RNCWebViewManager () <ABI37_0_0RNCWebViewDelegate>
 @end
 
@@ -18,9 +20,20 @@
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
+  NSString *_experienceId;
 }
 
-ABI37_0_0RCT_EXPORT_MODULE()
+ABI37_0_0EX_EXPORT_SCOPED_MODULE(ABI37_0_0RNCWebViewManager, ABI37_0_0EXKernelServiceNone)
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId
+               kernelServiceDelegate:(id)kernelServiceInstance
+                              params:(NSDictionary *)params
+{
+  if (self = [super init]) {
+    _experienceId = experienceId;
+  }
+  return self;
+}
 
 #if !TARGET_OS_OSX
 - (UIView *)view
@@ -29,6 +42,7 @@ ABI37_0_0RCT_EXPORT_MODULE()
 #endif // !TARGET_OS_OSX
 {
   ABI37_0_0RNCWebView *webView = [ABI37_0_0RNCWebView new];
+  webView.experienceId = _experienceId;
   webView.delegate = self;
   return webView;
 }

@@ -1,0 +1,79 @@
+name: iOS Client
+
+on:
+  repository_dispatch:
+    types: [ release-simulator ]
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/client-ios.yml
+      - ios/**
+      - tools/expotools/**
+      - secrets/**
+      - fastlane/**
+      - Gemfile.lock
+      - .ruby-version
+  push:
+    branches: [ master, sdk-* ]
+    paths:
+      - .github/workflows/client-ios.yml
+      - ios/**
+      - tools/expotools/**
+      - secrets/**
+      - fastlane/**
+      - Gemfile.lock
+      - .ruby-version
+
+jobs:
+  build:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+          lfs: true
+      - run: brew install git-crypt
+      - name: decrypt secrets if possible
+        env:
+          GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
+        run: |
+          if [[ ${GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then
+            echo 'git-crypt key not present in environment'
+          else
+            git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
+          fi
+      - run: bin/expotools ios-generate-dynamic-macros
+      - uses: ruby/setup-ruby@v1
+      - name: bundler cache
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
+      - run: echo "::add-path::$BUNDLE_BIN"
+      - name: install fastlane
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+      - run: fastlane ios create_simulator_build
+        timeout-minutes: 60
+      - name: Save test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: fastlane-logs
+          path: ~/Library/Logs/fastlane
+      - run: expotools client-build --platform ios --release
+        if: ${{ github.event.action == 'release-simulator' }}
+      - uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
+        with:
+          channel: '#platform-ios'
+          status: ${{ job.status }}
+          fields: commit,author,action,message
+          author_name: client ios build

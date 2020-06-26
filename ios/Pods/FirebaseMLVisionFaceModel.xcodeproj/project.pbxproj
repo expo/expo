@@ -21,18 +21,18 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		0D751E21AE625FA5CF1AB8A5D918F7D5 /* contours.tfl in Resources */ = {isa = PBXBuildFile; fileRef = 0E8F998980C8B5AE98326F67E7426DAF /* contours.tfl */; };
-		21A2D131D30105144EEBBC3B4A332024 /* LMprec_600.emd in Resources */ = {isa = PBXBuildFile; fileRef = A856E68B71257FF8574A1A4B09ED6ABF /* LMprec_600.emd */; };
-		2DE516DDC57B62905CD6D1D0A05CFB43 /* MFT_fssd_fastgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = 88D361727C81667063D15A28F3468B2F /* MFT_fssd_fastgray.pb */; };
-		5255BDC8017DF471E846F1BE5D3D15A2 /* BCLlefteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = 8010DD351B887E4AF9816224F1C98326 /* BCLlefteyeclosed_200.emd */; };
-		63E9128627103B3E8269FD274357CFA8 /* fssd_100_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = B40327532CC3991872AD3EC2942DC01E /* fssd_100_8bit_v1.tflite */; };
-		8B5B0FAE7D2D46F42B212C19310A561F /* blazeface.tfl in Resources */ = {isa = PBXBuildFile; fileRef = 249E78103694B955B0BD1B803E6E75A8 /* blazeface.tfl */; };
-		8E3C15A18FE15E59DEE74E6E7B04A162 /* fssd_100_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = E469C77597478548274DDA5543096C59 /* fssd_100_8bit_gray_v1.tflite */; };
-		A37613BBBE7AA3C396D9838469207064 /* fssd_25_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 0B838C95A6C7F272AD0F57B9035AEB59 /* fssd_25_8bit_gray_v1.tflite */; };
-		AB889CBCFD4287F6E4B868EF23B213C8 /* BCLjoy_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = A27D265B6F053DB6602C1A3A01E6102D /* BCLjoy_200.emd */; };
-		BA69C583E35FEE603391764B43AFA1C4 /* MFT_fssd_accgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = 84EBA1F7C1E66618C313BC96CE73E95F /* MFT_fssd_accgray.pb */; };
-		CFA86CB35FFB22385D67CC12D3B491EC /* fssd_25_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = DD89C849E222B62C62E6DFC390F27243 /* fssd_25_8bit_v1.tflite */; };
-		F79C5947F934E40FD1B266BAF5B9A828 /* BCLrighteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = E596A6ED17A2BE10212EC637A36E404B /* BCLrighteyeclosed_200.emd */; };
+		0D751E21AE625FA5CF1AB8A5D918F7D5 /* contours.tfl in Resources */ = {isa = PBXBuildFile; fileRef = 8C1575BDA08AE8245C0DD9E23FF5E394 /* contours.tfl */; };
+		21A2D131D30105144EEBBC3B4A332024 /* LMprec_600.emd in Resources */ = {isa = PBXBuildFile; fileRef = EBF680B21B1EACE28DC478D46B242469 /* LMprec_600.emd */; };
+		2DE516DDC57B62905CD6D1D0A05CFB43 /* MFT_fssd_fastgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = C1AAE208F623DF3ED4A307DC83D17D83 /* MFT_fssd_fastgray.pb */; };
+		5255BDC8017DF471E846F1BE5D3D15A2 /* BCLlefteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = 1EB476FC697927EAA181DBDE2793AEEF /* BCLlefteyeclosed_200.emd */; };
+		63E9128627103B3E8269FD274357CFA8 /* fssd_100_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = B13652C6AAD11FD974BB05DEE8232D6B /* fssd_100_8bit_v1.tflite */; };
+		8B5B0FAE7D2D46F42B212C19310A561F /* blazeface.tfl in Resources */ = {isa = PBXBuildFile; fileRef = C1EC3F49C3E21D1704DC070823195D76 /* blazeface.tfl */; };
+		8E3C15A18FE15E59DEE74E6E7B04A162 /* fssd_100_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 7E0BA937C80291F5B2589D036256F5DF /* fssd_100_8bit_gray_v1.tflite */; };
+		A37613BBBE7AA3C396D9838469207064 /* fssd_25_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 46480F6ADDCD288AB6E956A73C0F92BB /* fssd_25_8bit_gray_v1.tflite */; };
+		AB889CBCFD4287F6E4B868EF23B213C8 /* BCLjoy_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = DE9F159E6BFD946C3BBE843AC1CF306D /* BCLjoy_200.emd */; };
+		BA69C583E35FEE603391764B43AFA1C4 /* MFT_fssd_accgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = B37BB0FD74860522932A1BBCFE900DFF /* MFT_fssd_accgray.pb */; };
+		CFA86CB35FFB22385D67CC12D3B491EC /* fssd_25_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 4F468DFD8223E0239F93F3ACCFD81E47 /* fssd_25_8bit_v1.tflite */; };
+		F79C5947F934E40FD1B266BAF5B9A828 /* BCLrighteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = 829C67A413C12C8A7E213E853677414B /* BCLrighteyeclosed_200.emd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,23 +53,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0B838C95A6C7F272AD0F57B9035AEB59 /* fssd_25_8bit_gray_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_25_8bit_gray_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_25_8bit_gray_v1.tflite; sourceTree = "<group>"; };
-		0E8F998980C8B5AE98326F67E7426DAF /* contours.tfl */ = {isa = PBXFileReference; includeInIndex = 1; name = contours.tfl; path = Resources/GoogleMVFaceDetectorResources/contours.tfl; sourceTree = "<group>"; };
-		249E78103694B955B0BD1B803E6E75A8 /* blazeface.tfl */ = {isa = PBXFileReference; includeInIndex = 1; name = blazeface.tfl; path = Resources/GoogleMVFaceDetectorResources/blazeface.tfl; sourceTree = "<group>"; };
-		43735C2A4339CFB370D6AD446C29D90B /* ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist"; sourceTree = "<group>"; };
+		0B84C2EC49B9B619070D085893B21E3B /* ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist"; sourceTree = "<group>"; };
+		1A83332FA04810FA42D1C7FDC7E2B25C /* FirebaseMLVisionFaceModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLVisionFaceModel.framework; path = Frameworks/FirebaseMLVisionFaceModel.framework; sourceTree = "<group>"; };
+		1EB476FC697927EAA181DBDE2793AEEF /* BCLlefteyeclosed_200.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = BCLlefteyeclosed_200.emd; path = Resources/GoogleMVFaceDetectorResources/BCLlefteyeclosed_200.emd; sourceTree = "<group>"; };
+		21D6D2329AC743EE8DE79483D96051CB /* FirebaseMLVisionFaceModel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLVisionFaceModel.debug.xcconfig; sourceTree = "<group>"; };
+		46480F6ADDCD288AB6E956A73C0F92BB /* fssd_25_8bit_gray_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_25_8bit_gray_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_25_8bit_gray_v1.tflite; sourceTree = "<group>"; };
 		4DFD91FAA1D13D985D6AB3D9C0640DC3 /* FirebaseMLVision */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLVision; path = FirebaseMLVision.xcodeproj; sourceTree = "<group>"; };
-		8010DD351B887E4AF9816224F1C98326 /* BCLlefteyeclosed_200.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = BCLlefteyeclosed_200.emd; path = Resources/GoogleMVFaceDetectorResources/BCLlefteyeclosed_200.emd; sourceTree = "<group>"; };
-		84EBA1F7C1E66618C313BC96CE73E95F /* MFT_fssd_accgray.pb */ = {isa = PBXFileReference; includeInIndex = 1; name = MFT_fssd_accgray.pb; path = Resources/GoogleMVFaceDetectorResources/MFT_fssd_accgray.pb; sourceTree = "<group>"; };
-		88D361727C81667063D15A28F3468B2F /* MFT_fssd_fastgray.pb */ = {isa = PBXFileReference; includeInIndex = 1; name = MFT_fssd_fastgray.pb; path = Resources/GoogleMVFaceDetectorResources/MFT_fssd_fastgray.pb; sourceTree = "<group>"; };
-		A27D265B6F053DB6602C1A3A01E6102D /* BCLjoy_200.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = BCLjoy_200.emd; path = Resources/GoogleMVFaceDetectorResources/BCLjoy_200.emd; sourceTree = "<group>"; };
-		A856E68B71257FF8574A1A4B09ED6ABF /* LMprec_600.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = LMprec_600.emd; path = Resources/GoogleMVFaceDetectorResources/LMprec_600.emd; sourceTree = "<group>"; };
-		B40327532CC3991872AD3EC2942DC01E /* fssd_100_8bit_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_100_8bit_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_100_8bit_v1.tflite; sourceTree = "<group>"; };
+		4F468DFD8223E0239F93F3ACCFD81E47 /* fssd_25_8bit_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_25_8bit_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_25_8bit_v1.tflite; sourceTree = "<group>"; };
+		7E0BA937C80291F5B2589D036256F5DF /* fssd_100_8bit_gray_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_100_8bit_gray_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_100_8bit_gray_v1.tflite; sourceTree = "<group>"; };
+		829C67A413C12C8A7E213E853677414B /* BCLrighteyeclosed_200.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = BCLrighteyeclosed_200.emd; path = Resources/GoogleMVFaceDetectorResources/BCLrighteyeclosed_200.emd; sourceTree = "<group>"; };
+		8C1575BDA08AE8245C0DD9E23FF5E394 /* contours.tfl */ = {isa = PBXFileReference; includeInIndex = 1; name = contours.tfl; path = Resources/GoogleMVFaceDetectorResources/contours.tfl; sourceTree = "<group>"; };
+		B13652C6AAD11FD974BB05DEE8232D6B /* fssd_100_8bit_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_100_8bit_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_100_8bit_v1.tflite; sourceTree = "<group>"; };
+		B37BB0FD74860522932A1BBCFE900DFF /* MFT_fssd_accgray.pb */ = {isa = PBXFileReference; includeInIndex = 1; name = MFT_fssd_accgray.pb; path = Resources/GoogleMVFaceDetectorResources/MFT_fssd_accgray.pb; sourceTree = "<group>"; };
+		C1AAE208F623DF3ED4A307DC83D17D83 /* MFT_fssd_fastgray.pb */ = {isa = PBXFileReference; includeInIndex = 1; name = MFT_fssd_fastgray.pb; path = Resources/GoogleMVFaceDetectorResources/MFT_fssd_fastgray.pb; sourceTree = "<group>"; };
+		C1EC3F49C3E21D1704DC070823195D76 /* blazeface.tfl */ = {isa = PBXFileReference; includeInIndex = 1; name = blazeface.tfl; path = Resources/GoogleMVFaceDetectorResources/blazeface.tfl; sourceTree = "<group>"; };
 		C2E949A1FE6956ED9A7B277E2FCB73BF /* GoogleMVFaceDetectorResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoogleMVFaceDetectorResources.bundle; path = "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DD89C849E222B62C62E6DFC390F27243 /* fssd_25_8bit_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_25_8bit_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_25_8bit_v1.tflite; sourceTree = "<group>"; };
-		E469C77597478548274DDA5543096C59 /* fssd_100_8bit_gray_v1.tflite */ = {isa = PBXFileReference; includeInIndex = 1; name = fssd_100_8bit_gray_v1.tflite; path = Resources/GoogleMVFaceDetectorResources/fssd_100_8bit_gray_v1.tflite; sourceTree = "<group>"; };
-		E596A6ED17A2BE10212EC637A36E404B /* BCLrighteyeclosed_200.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = BCLrighteyeclosed_200.emd; path = Resources/GoogleMVFaceDetectorResources/BCLrighteyeclosed_200.emd; sourceTree = "<group>"; };
-		F71FEFBEFCCAE70D68FC16A7514469F2 /* FirebaseMLVisionFaceModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLVisionFaceModel.framework; path = Frameworks/FirebaseMLVisionFaceModel.framework; sourceTree = "<group>"; };
-		F801E49E7A619CC36E00979D86780987 /* FirebaseMLVisionFaceModel.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLVisionFaceModel.xcconfig; sourceTree = "<group>"; };
+		CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLVisionFaceModel.release.xcconfig; sourceTree = "<group>"; };
+		DE9F159E6BFD946C3BBE843AC1CF306D /* BCLjoy_200.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = BCLjoy_200.emd; path = Resources/GoogleMVFaceDetectorResources/BCLjoy_200.emd; sourceTree = "<group>"; };
+		EBF680B21B1EACE28DC478D46B242469 /* LMprec_600.emd */ = {isa = PBXFileReference; includeInIndex = 1; name = LMprec_600.emd; path = Resources/GoogleMVFaceDetectorResources/LMprec_600.emd; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,15 +84,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2BD00759AA9503CC6F781148759B9595 /* FirebaseMLVisionFaceModel */ = {
+		2AE5EA00CA81F8A709DFD450BE3BAD0F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				82294E9E33DDE381E77071019E69A489 /* Frameworks */,
-				D55D00B91668A006FCB4E3C4C4822B82 /* Resources */,
-				C3DADFF07CF48BB6A2B8E5316AA290F1 /* Support Files */,
+				DE9F159E6BFD946C3BBE843AC1CF306D /* BCLjoy_200.emd */,
+				1EB476FC697927EAA181DBDE2793AEEF /* BCLlefteyeclosed_200.emd */,
+				829C67A413C12C8A7E213E853677414B /* BCLrighteyeclosed_200.emd */,
+				C1EC3F49C3E21D1704DC070823195D76 /* blazeface.tfl */,
+				8C1575BDA08AE8245C0DD9E23FF5E394 /* contours.tfl */,
+				7E0BA937C80291F5B2589D036256F5DF /* fssd_100_8bit_gray_v1.tflite */,
+				B13652C6AAD11FD974BB05DEE8232D6B /* fssd_100_8bit_v1.tflite */,
+				46480F6ADDCD288AB6E956A73C0F92BB /* fssd_25_8bit_gray_v1.tflite */,
+				4F468DFD8223E0239F93F3ACCFD81E47 /* fssd_25_8bit_v1.tflite */,
+				EBF680B21B1EACE28DC478D46B242469 /* LMprec_600.emd */,
+				B37BB0FD74860522932A1BBCFE900DFF /* MFT_fssd_accgray.pb */,
+				C1AAE208F623DF3ED4A307DC83D17D83 /* MFT_fssd_fastgray.pb */,
 			);
-			name = FirebaseMLVisionFaceModel;
-			path = FirebaseMLVisionFaceModel;
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		2D05978F2283A34EB9E18EA9ED0F72B1 /* Dependencies */ = {
@@ -102,10 +111,21 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		82294E9E33DDE381E77071019E69A489 /* Frameworks */ = {
+		4EE6CA0660AFAD2715B66A39AFE66C0A /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				F71FEFBEFCCAE70D68FC16A7514469F2 /* FirebaseMLVisionFaceModel.framework */,
+				21D6D2329AC743EE8DE79483D96051CB /* FirebaseMLVisionFaceModel.debug.xcconfig */,
+				CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */,
+				0B84C2EC49B9B619070D085893B21E3B /* ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/FirebaseMLVisionFaceModel";
+			sourceTree = "<group>";
+		};
+		836EFD83254352E056B37C6E5C3F894F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1A83332FA04810FA42D1C7FDC7E2B25C /* FirebaseMLVisionFaceModel.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -118,40 +138,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C3DADFF07CF48BB6A2B8E5316AA290F1 /* Support Files */ = {
+		C65975BE3BF908C39C2D08263C3939F3 /* FirebaseMLVisionFaceModel */ = {
 			isa = PBXGroup;
 			children = (
-				F801E49E7A619CC36E00979D86780987 /* FirebaseMLVisionFaceModel.xcconfig */,
-				43735C2A4339CFB370D6AD446C29D90B /* ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist */,
+				836EFD83254352E056B37C6E5C3F894F /* Frameworks */,
+				2AE5EA00CA81F8A709DFD450BE3BAD0F /* Resources */,
+				4EE6CA0660AFAD2715B66A39AFE66C0A /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/FirebaseMLVisionFaceModel";
-			sourceTree = "<group>";
-		};
-		D55D00B91668A006FCB4E3C4C4822B82 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				A27D265B6F053DB6602C1A3A01E6102D /* BCLjoy_200.emd */,
-				8010DD351B887E4AF9816224F1C98326 /* BCLlefteyeclosed_200.emd */,
-				E596A6ED17A2BE10212EC637A36E404B /* BCLrighteyeclosed_200.emd */,
-				249E78103694B955B0BD1B803E6E75A8 /* blazeface.tfl */,
-				0E8F998980C8B5AE98326F67E7426DAF /* contours.tfl */,
-				E469C77597478548274DDA5543096C59 /* fssd_100_8bit_gray_v1.tflite */,
-				B40327532CC3991872AD3EC2942DC01E /* fssd_100_8bit_v1.tflite */,
-				0B838C95A6C7F272AD0F57B9035AEB59 /* fssd_25_8bit_gray_v1.tflite */,
-				DD89C849E222B62C62E6DFC390F27243 /* fssd_25_8bit_v1.tflite */,
-				A856E68B71257FF8574A1A4B09ED6ABF /* LMprec_600.emd */,
-				84EBA1F7C1E66618C313BC96CE73E95F /* MFT_fssd_accgray.pb */,
-				88D361727C81667063D15A28F3468B2F /* MFT_fssd_fastgray.pb */,
-			);
-			name = Resources;
+			name = FirebaseMLVisionFaceModel;
+			path = FirebaseMLVisionFaceModel;
 			sourceTree = "<group>";
 		};
 		E0383C32FA63DD4FD208BC86FA4B76AD = {
 			isa = PBXGroup;
 			children = (
 				2D05978F2283A34EB9E18EA9ED0F72B1 /* Dependencies */,
-				2BD00759AA9503CC6F781148759B9595 /* FirebaseMLVisionFaceModel */,
+				C65975BE3BF908C39C2D08263C3939F3 /* FirebaseMLVisionFaceModel */,
 				EF3F5FC61AE73345B906CA6D2318D8D5 /* Frameworks */,
 				A8B5E07DF2267DE14A1E89AF48F1F54E /* Products */,
 			);
@@ -264,9 +266,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		089429BF6A0BC3C7BA5068A4AEC2FD8F /* Debug */ = {
+		0CE0F428206134949893609E0FEF5902 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F801E49E7A619CC36E00979D86780987 /* FirebaseMLVisionFaceModel.xcconfig */;
+			baseConfigurationReference = 21D6D2329AC743EE8DE79483D96051CB /* FirebaseMLVisionFaceModel.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -277,9 +279,9 @@
 			};
 			name = Debug;
 		};
-		08DD4AF339330F68ABBED6A338C47160 /* Release */ = {
+		3C3CA39A9F6191F74DD1CA0B1023A995 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F801E49E7A619CC36E00979D86780987 /* FirebaseMLVisionFaceModel.xcconfig */;
+			baseConfigurationReference = 21D6D2329AC743EE8DE79483D96051CB /* FirebaseMLVisionFaceModel.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/FirebaseMLVisionFaceModel";
@@ -292,19 +294,22 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
-			name = Release;
+			name = Debug;
 		};
-		0AC18F38D644D04CB1F40ACB59A1BE73 /* Release */ = {
+		5171AD94D403006F4FC8F5537A8CA92A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F801E49E7A619CC36E00979D86780987 /* FirebaseMLVisionFaceModel.xcconfig */;
+			baseConfigurationReference = CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/FirebaseMLVisionFaceModel";
+				IBSC_MODULE = FirebaseMLVisionFaceModel;
+				INFOPLIST_FILE = "Target Support Files/FirebaseMLVisionFaceModel/ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = GoogleMVFaceDetectorResources;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
 		};
@@ -372,6 +377,20 @@
 			};
 			name = Debug;
 		};
+		6DA63B5C20C630F3D580D52D8F691247 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		B3827D811056CCD4225455D0898E1FF8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -432,31 +451,14 @@
 			};
 			name = Release;
 		};
-		F27E702E701BE2701D6EDC93BBB6CFB7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F801E49E7A619CC36E00979D86780987 /* FirebaseMLVisionFaceModel.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/FirebaseMLVisionFaceModel";
-				IBSC_MODULE = FirebaseMLVisionFaceModel;
-				INFOPLIST_FILE = "Target Support Files/FirebaseMLVisionFaceModel/ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				PRODUCT_NAME = GoogleMVFaceDetectorResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		05FD932D43BFB55887D9DD35BA4F7417 /* Build configuration list for PBXAggregateTarget "FirebaseMLVisionFaceModel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				089429BF6A0BC3C7BA5068A4AEC2FD8F /* Debug */,
-				0AC18F38D644D04CB1F40ACB59A1BE73 /* Release */,
+				0CE0F428206134949893609E0FEF5902 /* Debug */,
+				6DA63B5C20C630F3D580D52D8F691247 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -473,8 +475,8 @@
 		972759B433526A503672B7289B60786E /* Build configuration list for PBXNativeTarget "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F27E702E701BE2701D6EDC93BBB6CFB7 /* Debug */,
-				08DD4AF339330F68ABBED6A338C47160 /* Release */,
+				3C3CA39A9F6191F74DD1CA0B1023A995 /* Debug */,
+				5171AD94D403006F4FC8F5537A8CA92A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -36,6 +36,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 @property (nonatomic, assign) BOOL hasLaunched;
 @property (nonatomic, strong) dispatch_queue_t controllerQueue;
 
+@property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
 
 @end
@@ -64,6 +65,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     _isReadyToLaunch = NO;
     _isTimerFinished = NO;
     _hasLaunched = NO;
+    _isStarted = NO;
   }
   return self;
 }
@@ -95,6 +97,8 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
                                    reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
+
+  _isStarted = YES;
 
   NSError *fsError;
   _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
@@ -154,22 +158,24 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
 - (void)startAndShowLaunchScreen:(UIWindow *)window
 {
+  NSBundle *mainBundle = [NSBundle mainBundle];
   UIViewController *rootViewController = [UIViewController new];
-  NSArray *views;
-  @try {
-    NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-    views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
-  } @catch (NSException *_) {
-    NSLog(@"LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
-  }
-  if (views) {
+  NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+  
+  if ([mainBundle pathForResource:launchScreen ofType:@"nib"] != nil) {
+    NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     rootViewController.view = views.firstObject;
     rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil) {
+    UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
+    rootViewController = [launchScreenStoryboard instantiateInitialViewController];
   } else {
+    NSLog(@"Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.");
     UIView *view = [UIView new];
-    view.backgroundColor = [UIColor whiteColor];;
+    view.backgroundColor = [UIColor whiteColor];
     rootViewController.view = view;
   }
+  
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
 
@@ -211,6 +217,14 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 - (nullable NSDictionary *)assetFilesMap
 {
   return _launcher.assetFilesMap ?: nil;
+}
+
+- (BOOL)isUsingEmbeddedAssets
+{
+  if (!_launcher) {
+    return YES;
+  }
+  return _launcher.isUsingEmbeddedAssets;
 }
 
 # pragma mark - internal

@@ -7,9 +7,8 @@ import React from 'react';
 import { AppState, Clipboard, View } from 'react-native';
 
 import Environment from '../utils/Environment';
-
-import QRCodeButton from './QRCodeButton';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
+import QRCodeButton from './QRCodeButton';
 
 const CLIPBOARD_POLL_INTERVAL = 2000;
 
@@ -65,25 +64,24 @@ export default class ProjectTools extends React.Component {
   }
 
   render() {
-    let { clipboardContents, displayOpenClipboardButton } = this.state;
+    const { clipboardContents, displayOpenClipboardButton } = this.state;
     const shouldDisplayQRCodeButton = Constants.isDevice && !Environment.IsIOSRestrictedBuild;
-
+    const shouldDisplayClipboardButton = !Constants.isDevice;
     return (
-      <View style={{ marginBottom: 15 }}>
-        {shouldDisplayQRCodeButton ? (
-          <QRCodeButton fullWidthBorder={!displayOpenClipboardButton} />
-        ) : null}
-        <OpenFromClipboardButton
-          clipboardContents={clipboardContents}
-          isValid={displayOpenClipboardButton}
-          fullWidthBorder
-        />
+      <View>
+        {shouldDisplayQRCodeButton && <QRCodeButton last={!shouldDisplayClipboardButton} />}
+        {shouldDisplayClipboardButton && (
+          <OpenFromClipboardButton
+            clipboardContents={clipboardContents}
+            isValid={displayOpenClipboardButton}
+          />
+        )}
       </View>
     );
   }
 
   _fetchClipboardContentsAsync = async (): Promise<void> => {
-    let clipboardContents = await Clipboard.getString();
+    const clipboardContents = await Clipboard.getString();
 
     if (clipboardContents !== this.state.clipboardContents) {
       requestAnimationFrame(() => {

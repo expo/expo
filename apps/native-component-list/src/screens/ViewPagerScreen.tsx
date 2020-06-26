@@ -1,6 +1,6 @@
-import React from 'react';
-import { Platform, StyleSheet, View, Text } from 'react-native';
 import ViewPager from '@react-native-community/viewpager';
+import React from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 export default function ViewPagerScreen() {
   return (

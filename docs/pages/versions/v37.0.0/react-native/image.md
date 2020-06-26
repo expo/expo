@@ -23,7 +23,7 @@ export default class DisplayAnImage extends Component {
         />
         <Image
           style={{ width: 50, height: 50 }}
-          source={{ uri: 'https://facebook.github.io/react-native/img/tiny_logo.png' }}
+          source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
         />
         <Image
           style={{ width: 66, height: 58 }}
@@ -72,7 +72,7 @@ When building your own native code, GIF and WebP are not supported by default on
 
 You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
 
-```gradle
+```groovy
 
 dependencies {
   // If your app supports Android versions before Ice Cream Sandwich (API level 14)

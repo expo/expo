@@ -1,12 +1,17 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 export default {
     get name() {
         return 'ExponentUpdates';
     },
     async reload() {
-        location.reload(true);
+        if (!canUseDOM)
+            return;
+        window.location.reload(true);
     },
     async reloadFromCache() {
-        location.reload(false);
+        if (!canUseDOM)
+            return;
+        window.location.reload(false);
     },
 };
 //# sourceMappingURL=ExponentUpdates.web.js.map

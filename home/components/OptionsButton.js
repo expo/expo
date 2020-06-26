@@ -1,8 +1,8 @@
 /* @flow */
 import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 class OptionsButton extends React.Component {
   render() {
@@ -18,8 +18,8 @@ class OptionsButton extends React.Component {
   }
 
   _handlePress = () => {
-    let options = ['Report this user', 'Cancel'];
-    let cancelButtonIndex = 1;
+    const options = ['Report this user', 'Cancel'];
+    const cancelButtonIndex = 1;
     this.props.showActionSheetWithOptions(
       {
         options,

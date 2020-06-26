@@ -1,18 +1,17 @@
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   ActivityIndicator,
-  Text,
   Button,
   Platform,
   ScrollView,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
 import Touchable from 'react-native-platform-touchable';
-
-import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
+import { NavigationEvents } from 'react-navigation';
 
 import MonoText from '../components/MonoText';
 
@@ -35,7 +34,7 @@ interface State {
   error?: any;
 }
 
-export default class GeocodingScreen extends React.Component<{}, State> {
+export default class GeocodingScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Geocoding',
   };

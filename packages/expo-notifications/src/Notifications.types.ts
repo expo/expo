@@ -70,6 +70,12 @@ export interface TimeIntervalNotificationTrigger {
   seconds: number;
 }
 
+export interface DailyNotificationTrigger {
+  type: 'daily';
+  hour: number;
+  minute: number;
+}
+
 export interface FirebaseRemoteMessage {
   collapseKey: string | null;
   data: { [key: string]: string };
@@ -120,6 +126,7 @@ export type NotificationTrigger =
   | CalendarNotificationTrigger
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
+  | DailyNotificationTrigger
   | UnknownNotificationTrigger;
 
 export type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
@@ -129,12 +136,18 @@ export interface TimeIntervalTriggerInput {
   repeats?: boolean;
   seconds: number;
 }
+export interface DailyTriggerInput {
+  hour: number;
+  minute: number;
+  repeats: true;
+}
 export type DateTriggerInput = Date | number;
 
 export type NotificationTriggerInput =
   | null
   | DateTriggerInput
   | TimeIntervalTriggerInput
+  | DailyTriggerInput
   | CalendarTriggerInput;
 
 export enum AndroidNotificationPriority {
@@ -150,10 +163,10 @@ export type NotificationContent = {
   subtitle: string | null;
   body: string | null;
   data: { [key: string]: unknown };
+  sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (
   | {
       launchImageName: string | null;
-      sound: 'default' | 'defaultCritical' | 'unknown' | null;
       badge: number | null;
       attachments: {
         identifier: string | null;
@@ -168,7 +181,10 @@ export type NotificationContent = {
     }
   | {
       badge?: number;
-      sound?: 'default' | string;
+      /**
+       * Format: '#AARRGGBB'
+       */
+      color?: string;
       priority?: AndroidNotificationPriority;
       vibrationPattern?: number[];
     }
@@ -190,6 +206,12 @@ export interface NotificationContentInput {
   launchImageName?: string;
   vibrate?: number[];
   priority?: string;
+  /**
+   * Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
+   * see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
+   */
+  color?: string;
+  autoDismiss?: boolean;
   attachments?: {
     url: string;
     identifier?: string;

@@ -5,10 +5,10 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
-import { StyledView } from './Views';
-import { StyledText } from './Text';
 import SharedStyles from '../constants/SharedStyles';
 import PrimaryButton from './PrimaryButton';
+import { StyledText } from './Text';
+import { StyledView } from './Views';
 
 export default class EmptyProfileSnacksNotice extends React.Component {
   render() {

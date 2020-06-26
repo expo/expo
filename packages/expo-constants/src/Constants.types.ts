@@ -35,7 +35,9 @@ export interface AppManifest {
   sdkVersion?: string;
   version?: string;
   /** Published Apps Only */
+  releaseId?: string;
   revisionId?: string;
+  releaseChannel?: string;
   orientation?: string;
   primaryColor?: string;
   icon?: string;
@@ -88,14 +90,17 @@ export interface PlatformManifest {
 
 export interface NativeConstants {
   name: 'ExponentConstants';
-  appOwnership: AppOwnership;
+  appOwnership: AppOwnership | null;
   debugMode: boolean;
   deviceName?: string;
   deviceYearClass: number | null;
   experienceUrl: string;
   // only nullable on web
   expoRuntimeVersion: string | null;
-  // only nullable on web
+  /**
+   * The version string of the Expo client currently running.
+   * Returns `null` on and bare workflow and web.
+   */
   expoVersion: string | null;
   isDetached?: boolean;
   intentUri?: string;
@@ -114,4 +119,9 @@ export interface NativeConstants {
   [key: string]: any;
 
   getWebViewUserAgentAsync: () => Promise<string | null>;
+}
+
+export interface Constants extends NativeConstants {
+  deviceId?: string;
+  linkingUrl?: string;
 }

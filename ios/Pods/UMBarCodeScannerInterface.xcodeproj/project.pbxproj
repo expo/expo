@@ -19,40 +19,32 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		945EE9CA63065CF6A54C42E971DC83CD /* UMBarCodeScannerInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMBarCodeScannerInterface.xcconfig; sourceTree = "<group>"; };
-		CF2F7554952C8AF5AEF11C6CCD3BB43C /* UMBarCodeScannerProviderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMBarCodeScannerProviderInterface.h; path = UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h; sourceTree = "<group>"; };
-		EB634D48FB004D5C69F882C3CDC30EF6 /* UMBarCodeScannerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMBarCodeScannerInterface.h; path = UMBarCodeScannerInterface/UMBarCodeScannerInterface.h; sourceTree = "<group>"; };
-		EBBD89461AEF362C2DEA9E50FAC949E0 /* UMBarCodeScannerInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMBarCodeScannerInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		6FCFADC92F9DE814D6CA6D7BF5EC40CC /* UMBarCodeScannerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMBarCodeScannerInterface.h; path = UMBarCodeScannerInterface/UMBarCodeScannerInterface.h; sourceTree = "<group>"; };
+		A1FB36D0E0E5F0D22954993B4EC2F7B2 /* UMBarCodeScannerProviderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMBarCodeScannerProviderInterface.h; path = UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h; sourceTree = "<group>"; };
+		CE5407EC197491BB8F834574E81498FB /* UMBarCodeScannerInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMBarCodeScannerInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E4DA3E63937ED34122F9C6C2177F016D /* UMBarCodeScannerInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMBarCodeScannerInterface.debug.xcconfig; sourceTree = "<group>"; };
+		FFD96E9F2A5A53774BD9A67E9CB0BE8F /* UMBarCodeScannerInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMBarCodeScannerInterface.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		175F1301E7BDB2068F0EB7BD9588438B /* Pod */ = {
+		05C21D8EC3F20BC555CC0F8DE51AA2C0 /* UMBarCodeScannerInterface */ = {
 			isa = PBXGroup;
 			children = (
-				EBBD89461AEF362C2DEA9E50FAC949E0 /* UMBarCodeScannerInterface.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		1D462A8EB9631059CEE5D7307ECD5971 /* UMBarCodeScannerInterface */ = {
-			isa = PBXGroup;
-			children = (
-				EB634D48FB004D5C69F882C3CDC30EF6 /* UMBarCodeScannerInterface.h */,
-				CF2F7554952C8AF5AEF11C6CCD3BB43C /* UMBarCodeScannerProviderInterface.h */,
-				175F1301E7BDB2068F0EB7BD9588438B /* Pod */,
-				5695245C38CD7F5EE0FF918BC8C93977 /* Support Files */,
+				6FCFADC92F9DE814D6CA6D7BF5EC40CC /* UMBarCodeScannerInterface.h */,
+				A1FB36D0E0E5F0D22954993B4EC2F7B2 /* UMBarCodeScannerProviderInterface.h */,
+				279A9A6B51777BE22E602BCF5A1B24F1 /* Pod */,
+				C4A38DEA4F96EECC7702C3D518483AE2 /* Support Files */,
 			);
 			name = UMBarCodeScannerInterface;
 			path = "../../packages/unimodules-barcode-scanner-interface/ios";
 			sourceTree = "<group>";
 		};
-		5695245C38CD7F5EE0FF918BC8C93977 /* Support Files */ = {
+		279A9A6B51777BE22E602BCF5A1B24F1 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				945EE9CA63065CF6A54C42E971DC83CD /* UMBarCodeScannerInterface.xcconfig */,
+				CE5407EC197491BB8F834574E81498FB /* UMBarCodeScannerInterface.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/UMBarCodeScannerInterface";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		5E2465FD55AD16E0C1392E41936C88AA /* Frameworks */ = {
@@ -67,7 +59,7 @@
 			children = (
 				5E2465FD55AD16E0C1392E41936C88AA /* Frameworks */,
 				C38048ED365C20450209F925BE0C8F4D /* Products */,
-				1D462A8EB9631059CEE5D7307ECD5971 /* UMBarCodeScannerInterface */,
+				05C21D8EC3F20BC555CC0F8DE51AA2C0 /* UMBarCodeScannerInterface */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,6 +68,16 @@
 			children = (
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C4A38DEA4F96EECC7702C3D518483AE2 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				E4DA3E63937ED34122F9C6C2177F016D /* UMBarCodeScannerInterface.debug.xcconfig */,
+				FFD96E9F2A5A53774BD9A67E9CB0BE8F /* UMBarCodeScannerInterface.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/UMBarCodeScannerInterface";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -106,21 +108,6 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		1336B7ACC1D6CEF5CAE069259B555A59 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 945EE9CA63065CF6A54C42E971DC83CD /* UMBarCodeScannerInterface.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		25C543BBBE85C980F922C22624806454 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -181,9 +168,24 @@
 			};
 			name = Release;
 		};
-		B80CCD435A0D35ED4DA2F4EC3B2F4FFD /* Debug */ = {
+		2927BDCD08DD54B889BA80646FFC3A51 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 945EE9CA63065CF6A54C42E971DC83CD /* UMBarCodeScannerInterface.xcconfig */;
+			baseConfigurationReference = FFD96E9F2A5A53774BD9A67E9CB0BE8F /* UMBarCodeScannerInterface.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		32C3E4BA29AE6F641BB4B8814845C0BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4DA3E63937ED34122F9C6C2177F016D /* UMBarCodeScannerInterface.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -265,8 +267,8 @@
 		7C205E32A98105EE3C993844C5BC9040 /* Build configuration list for PBXAggregateTarget "UMBarCodeScannerInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B80CCD435A0D35ED4DA2F4EC3B2F4FFD /* Debug */,
-				1336B7ACC1D6CEF5CAE069259B555A59 /* Release */,
+				32C3E4BA29AE6F641BB4B8814845C0BC /* Debug */,
+				2927BDCD08DD54B889BA80646FFC3A51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,6 +1,6 @@
 ---
 title: Battery
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-battery'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-battery'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -21,7 +21,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 <SnackInline label='Basic Battery Usage' templateId='battery' dependencies={['expo-battery']}>
 
 ```js
-import React from 'react';
+import * as React from 'react';
 import * as Battery from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -30,9 +30,7 @@ export default class App extends React.Component {
     batteryLevel: null,
   };
 
-  componentDidMount() {
-    let batteryLevel = await Battery.getBatteryLevelAsync();
-    this.setState({ batteryLevel });
+  componentDidMount() {  
     this._subscribe();
   }
 
@@ -40,17 +38,19 @@ export default class App extends React.Component {
     this._unsubscribe();
   }
 
-  _subscribe = () => {
+  async _subscribe() {
+    const batteryLevel = await Battery.getBatteryLevelAsync();
+    this.setState({ batteryLevel });
     this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
       this.setState({ batteryLevel });
       console.log('batteryLevel changed!', batteryLevel);
     });
-  };
+  }
 
-  _unsubscribe = () => {
+  _unsubscribe() {
     this._subscription && this._subscription.remove();
     this._subscription = null;
-  };
+  }
 
   render() {
     return (

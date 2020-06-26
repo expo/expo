@@ -1,7 +1,31 @@
-import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
-import qs from 'qs';
+import { Platform } from '@unimodules/core';
+import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
+import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 
-import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
+import { AuthRequest } from './AuthRequest';
+import {
+  AuthRequestConfig,
+  AuthRequestPromptOptions,
+  CodeChallengeMethod,
+  Prompt,
+  ResponseType,
+} from './AuthRequest.types';
+import {
+  AuthSessionOptions,
+  AuthSessionRedirectUriOptions,
+  AuthSessionResult,
+} from './AuthSession.types';
+import {
+  DiscoveryDocument,
+  fetchDiscoveryAsync,
+  Issuer,
+  IssuerOrDiscovery,
+  ProviderMetadata,
+  resolveDiscoveryAsync,
+} from './Discovery';
+import { generateHexStringAsync } from './PKCE';
+import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 
 let _authLock = false;
@@ -55,7 +79,7 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
     }
   }
 
-  const { params, errorCode } = parseUrl(result.url);
+  const { params, errorCode } = getQueryParams(result.url);
 
   return {
     type: errorCode ? 'error' : 'success',
@@ -73,8 +97,82 @@ export function getDefaultReturnUrl(): string {
   return sessionUrlProvider.getDefaultReturnUrl();
 }
 
-export function getRedirectUrl(): string {
-  return sessionUrlProvider.getRedirectUrl();
+/**
+ * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ *
+ * @param path
+ */
+export function getRedirectUrl(path?: string): string {
+  return sessionUrlProvider.getRedirectUrl(path);
+}
+
+/**
+ * Create a redirect url for the current platform.
+ * - **Web:** Generates a path based on the current \`window.location\`. For production web apps you should hard code the URL.
+ * - **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+ *   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
+ * - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
+ *
+ * @param options Additional options for configuring the path.
+ */
+export function makeRedirectUri({
+  native,
+  path,
+  preferLocalhost,
+  useProxy,
+}: AuthSessionRedirectUriOptions = {}): string {
+  if (Platform.OS !== 'web') {
+    // Bare workflow
+    if (!Constants.manifest) {
+      if (!native) {
+        // TODO(Bacon): Link to docs or fyi
+        console.warn(
+          "makeRedirectUri requires you define a `native` scheme for bare workflow, and standalone native apps, you'll need to manually define it based on your app's URI schemes."
+        );
+      }
+      // Returning an empty string makes types easier to work with.
+      // Server will throw an error about the invalid URI scheme.
+      return native || '';
+    }
+    // Should use the user-defined native scheme in standalone builds
+    if (Constants.appOwnership === 'standalone' && native) {
+      return native;
+    }
+  }
+  if (!useProxy || Platform.OS === 'web') {
+    const url = Linking.makeUrl(path);
+
+    if (preferLocalhost) {
+      const ipAddress = url.match(
+        /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
+      );
+      // Only replace if an IP address exists
+      if (ipAddress?.length) {
+        const [protocol, path] = url.split(ipAddress[0]);
+        return `${protocol}localhost${path}`;
+      }
+    }
+
+    return url;
+  }
+  // Attempt to use the proxy
+  return sessionUrlProvider.getRedirectUrl(path);
+}
+
+/**
+ * Build an `AuthRequest` and load it before returning.
+ *
+ * @param config
+ * @param issuerOrDiscovery
+ */
+export async function loadAsync(
+  config: AuthRequestConfig,
+  issuerOrDiscovery: IssuerOrDiscovery
+): Promise<AuthRequest> {
+  const request = new AuthRequest(config);
+  const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
+  await request.makeAuthUrlAsync(discovery);
+  return request;
 }
 
 async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInRecents: boolean) {
@@ -87,33 +185,40 @@ async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInR
   return result;
 }
 
-function parseUrl(url: string): { errorCode: string | null; params: { [key: string]: string } } {
-  const parts = url.split('#');
-  const hash = parts[1];
-  const partsWithoutHash = parts[0].split('?');
-  const queryString = partsWithoutHash[partsWithoutHash.length - 1];
+export * from './AuthRequestHooks';
+export { AuthError, TokenError } from './Errors';
 
-  // Get query string (?hello=world)
-  const parsedSearch = qs.parse(queryString);
+export {
+  AuthSessionOptions,
+  AuthSessionRedirectUriOptions,
+  AuthSessionResult,
+  AuthRequest,
+  AuthRequestConfig,
+  AuthRequestPromptOptions,
+  CodeChallengeMethod,
+  DiscoveryDocument,
+  Issuer,
+  IssuerOrDiscovery,
+  Prompt,
+  ProviderMetadata,
+  ResponseType,
+  resolveDiscoveryAsync,
+  fetchDiscoveryAsync,
+  generateHexStringAsync,
+};
 
-  // Pull errorCode off of params
-  const { errorCode } = parsedSearch;
-  delete parsedSearch.errorCode;
+export {
+  // Token classes
+  TokenResponse,
+  AccessTokenRequest,
+  RefreshTokenRequest,
+  RevokeTokenRequest,
+  // Token methods
+  revokeAsync,
+  refreshAsync,
+  exchangeCodeAsync,
+  fetchUserInfoAsync,
+} from './TokenRequest';
 
-  // Get hash (#abc=example)
-  let parsedHash = {};
-  if (parts[1]) {
-    parsedHash = qs.parse(hash);
-  }
-
-  // Merge search and hash
-  const params = {
-    ...parsedSearch,
-    ...parsedHash,
-  };
-
-  return {
-    errorCode,
-    params,
-  };
-}
+// Token types
+export * from './TokenRequest.types';

@@ -1,6 +1,6 @@
 ---
 title: Updates
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Updates'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo/src/Updates'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -9,13 +9,26 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
 <InstallSection packageName="expo-updates" />
 
 Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
+
+### Legacy API
+
+In previous Expo SDK versions, the Updates module was imported from the `expo` package. It has now moved to its own separate package, `expo-updates`. The new module has a similar but slightly different JS API from the Updates module included with the `expo` package. You can still import the old Updates module from the `expo` package with the old API, which is identical to the [SDK 36 Updates API](../../../v36.0.0/sdk/updates/), though it will log a deprecation warning when imported in development. The Updates module export will be removed from the `expo` package in SDK 38, and we recommend you switch to the new `expo-updates` module soon.
+
+The changes in the new API are as follows:
+
+- `Updates.fetchUpdateAsync` no longer accepts any arguments. (It still resolves when an update is finished downloading.)
+- The listener in `Updates.addListener` will only receive events about automatically downloaded updates, not downloads triggered manually by `Updates.fetchUpdateAsync`.
+- Event names have changed: `DOWNLOAD_FINISHED` has become `UPDATE_AVAILABLE`, and `DOWNLOAD_START` events are no longer emitted.
+- `Updates.reloadFromCache` has been renamed to `Updates.reloadAsync`, and `Updates.reload` has been removed.
+
+> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo client, run `expo publish` and then open the published version of your app with the Expo client. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
 
 ## API
 
@@ -39,13 +52,17 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) The [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+
+In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 
 ## Methods
 
 ### `Updates.reloadAsync()`
 
 Instructs the app to reload using the most recently downloaded version. This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+
+It is not recommended to place any meaningful logic after a call to `await Updates.reloadAsync()`. This is because the `Promise` is resolved after verifying that the app can be reloaded, and immediately before posting an asynchronous task to the main thread to actually reload the app. It is unsafe to make any assumptions about whether any more JS code will be executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and the state of the native module and main threads.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 

@@ -16,8 +16,10 @@
 	<string>$(EX_BUNDLE_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleVersion</key>
+	<string>2.16.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.15.3</string>
+	<string>2.16.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -31,6 +33,7 @@
 			<array>
 				<string>exp</string>
 				<string>exps</string>
+				<string>fb1696089354000816</string>
 			</array>
 		</dict>
 		<dict>
@@ -52,28 +55,16 @@
 			</array>
 		</dict>
 	</array>
-	<key>CFBundleVersion</key>
-	<string>2.15.3</string>
-	<key>Fabric</key>
-	<dict>
-		<key>APIKey</key>
-		<string>a25fafe9f9edee11a9882b32e0cd7a26df6e2c42</string>
-		<key>Kits</key>
-		<array>
-			<dict>
-				<key>KitInfo</key>
-				<dict/>
-				<key>KitName</key>
-				<string>Crashlytics</string>
-			</dict>
-		</array>
-	</dict>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
+	<key>FacebookAppID</key>
+	<string>1696089354000816</string>
 	<key>FacebookAutoInitEnabled</key>
 	<false/>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<false/>
+	<key>FacebookDisplayName</key>
+	<string>Expo Client</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>GADDelayAppMeasurementInit</key>
@@ -117,6 +108,7 @@
 	<string>Allow Expo experiences to access your reminders</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
 		<string>location</string>
 	</array>

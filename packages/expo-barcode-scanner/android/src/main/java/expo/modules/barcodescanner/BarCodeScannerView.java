@@ -74,7 +74,7 @@ public class BarCodeScannerView extends ViewGroup {
     emitter.emit(this.getId(), event);
   }
 
-  public float getDisplayDensity() {
+  private float getDisplayDensity() {
     return this.getResources().getDisplayMetrics().density;
   }
 

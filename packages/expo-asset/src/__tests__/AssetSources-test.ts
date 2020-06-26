@@ -184,7 +184,7 @@ describe('resolveUri', () => {
 
 function _mockConstants(constants: { [key: string]: any }): void {
   jest.doMock('expo-constants', () => {
-    const Constants = require.requireActual('expo-constants');
+    const Constants = jest.requireActual('expo-constants');
     return {
       ...Constants,
       ...constants,

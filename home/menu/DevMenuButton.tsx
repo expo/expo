@@ -1,7 +1,7 @@
-import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
+import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity as TouchableOpacityRN, View } from 'react-native';
+import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
 
 import { StyledText } from '../components/Text';
 

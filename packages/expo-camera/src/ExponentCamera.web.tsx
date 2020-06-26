@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
-import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
+import { findNodeHandle, StyleSheet, View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 import {
   CameraCapturedPicture,
@@ -65,11 +66,6 @@ export default class ExponentCamera extends React.Component<CameraNativeProps> {
       // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
       onPictureSaved: this.props.onPictureSaved,
     });
-  };
-
-  getAvailableCameraTypesAsync = async (): Promise<string[]> => {
-    const camera = this.getCamera();
-    return await camera.getAvailableCameraTypesAsync();
   };
 
   resumePreview = async (): Promise<void> => {

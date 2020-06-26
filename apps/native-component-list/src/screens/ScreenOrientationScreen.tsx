@@ -1,7 +1,8 @@
+import { Platform, Subscription } from '@unimodules/core';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { ScrollView, Text } from 'react-native';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import { Platform, Subscription } from '@unimodules/core';
+
 import ListButton from '../components/ListButton';
 
 interface State {
@@ -9,7 +10,7 @@ interface State {
   orientationLock?: ScreenOrientation.OrientationLock;
 }
 
-export default class ScreenOrientationScreen extends React.Component<{}, State> {
+export default class ScreenOrientationScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'ScreenOrientation',
   };

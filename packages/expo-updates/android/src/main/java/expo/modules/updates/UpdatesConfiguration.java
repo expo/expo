@@ -74,11 +74,13 @@ public class UpdatesConfiguration {
       String urlString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATE_URL");
       mUpdateUrl = urlString == null ? null : Uri.parse(urlString);
 
-      mIsEnabled = ai.metaData.getBoolean("expo.modules.updates.EXPO_UPDATES_ENABLED", true);
-      mRuntimeVersion = ai.metaData.getString("expo.modules.updates.EXPO_RUNTIME_VERSION");
+      mIsEnabled = ai.metaData.getBoolean("expo.modules.updates.ENABLED", true);
       mSdkVersion = ai.metaData.getString("expo.modules.updates.EXPO_SDK_VERSION");
       mReleaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default");
       mLaunchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0);
+
+      Object runtimeVersion = ai.metaData.get("expo.modules.updates.EXPO_RUNTIME_VERSION");
+      mRuntimeVersion = runtimeVersion == null ? null : String.valueOf(runtimeVersion);
 
       String checkOnLaunchString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH", "ALWAYS");
       try {

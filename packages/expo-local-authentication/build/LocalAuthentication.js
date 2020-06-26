@@ -1,6 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
-import { Platform } from 'react-native';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
 import { AuthenticationType, } from './LocalAuthentication.types';
 export { AuthenticationType };
@@ -31,20 +30,15 @@ export async function authenticateAsync(options = {}) {
         console.warn('String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with `promptMessage` key instead.');
         options = { promptMessage: options };
     }
-    if (Platform.OS === 'ios') {
-        if (options.hasOwnProperty('promptMessage')) {
-            invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.');
-        }
-        const promptMessage = options.promptMessage || 'Authenticate';
-        const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
-        if (result.warning) {
-            console.warn(result.warning);
-        }
-        return result;
+    if (options.hasOwnProperty('promptMessage')) {
+        invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.');
     }
-    else {
-        return await ExpoLocalAuthentication.authenticateAsync();
+    const promptMessage = options.promptMessage || 'Authenticate';
+    const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+    if (result.warning) {
+        console.warn(result.warning);
     }
+    return result;
 }
 export async function cancelAuthenticate() {
     if (!ExpoLocalAuthentication.cancelAuthenticate) {

@@ -1,6 +1,6 @@
 ---
 title: Crypto
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-crypto'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

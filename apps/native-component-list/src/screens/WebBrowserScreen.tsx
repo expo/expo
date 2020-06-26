@@ -1,20 +1,20 @@
+import { Picker } from '@react-native-community/picker';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
   Alert,
-  ScrollView,
-  View,
-  StyleSheet,
-  Text,
-  Switch,
-  TextInput,
-  Picker,
   Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import Constants from 'expo-constants';
 
-import Colors from '../constants/Colors';
 import Button from '../components/Button';
+import Colors from '../constants/Colors';
 
 const url = 'https://expo.io';
 interface Package {
@@ -25,6 +25,7 @@ interface Package {
 interface State {
   showTitle: boolean;
   toolbarColor?: string;
+  secondaryToolbarColor?: string;
   authResult?: Record<string, string> | null;
   controlsColorText?: string;
   shouldPrompt: boolean;
@@ -37,7 +38,7 @@ interface State {
   enableDefaultShare: boolean;
 }
 
-export default class WebBrowserScreen extends React.Component<{}, State> {
+export default class WebBrowserScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'WebBrowser',
   };
@@ -50,6 +51,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     showInRecents: false,
     toolbarColor: Colors.tintColor.replace(/^#/, ''),
     controlsColorText: Colors.headerTitle.replace(/^#/, ''),
+    readerMode: false,
+    enableDefaultShare: false,
   };
 
   componentDidMount() {
@@ -88,8 +91,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   };
 
   startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
-    const url = Platform.select({ web: window.location.origin, default: Constants.linkingUrl });
-    const redirectUrl = `${url}/redirect`;
+    const redirectUrl = Linking.makeUrl('redirect');
     const result = await WebBrowser.openAuthSessionAsync(
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
         redirectUrl
@@ -126,6 +128,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     const args = {
       showTitle: this.state.showTitle,
       toolbarColor: this.state.toolbarColor && `#${this.state.toolbarColor}`,
+      secondaryToolbarColor:
+        this.state.secondaryToolbarColor && `#${this.state.secondaryToolbarColor}`,
       controlsColor: this.state.controlsColorText && `#${this.state.controlsColorText}`,
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
@@ -139,11 +143,16 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
 
   handleToolbarColorInputChanged = (toolbarColor: string) => this.setState({ toolbarColor });
 
+  handleSecondaryToolbarColorInputChanged = (secondaryToolbarColor: string) =>
+    this.setState({ secondaryToolbarColor });
+
   handleControlsColorInputChanged = (controlsColorText: string) =>
     this.setState({ controlsColorText });
 
-  packageSelected = (value: string) => {
-    this.setState({ selectedPackage: value });
+  packageSelected = (value: string | number) => {
+    if (typeof value === 'string') {
+      this.setState({ selectedPackage: value });
+    }
   };
 
   handleShowTitleChanged = (showTitle: boolean) => this.setState({ showTitle });
@@ -176,6 +185,15 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   renderAndroidChoices = () =>
     Platform.OS === 'android' && (
       <>
+        <View style={styles.label}>
+          <Text>Secondary toolbar color (#rrggbb):</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="RRGGBB"
+            onChangeText={this.handleSecondaryToolbarColorInputChanged}
+            value={this.state.secondaryToolbarColor}
+          />
+        </View>
         <View style={styles.label}>
           <Text>Show Title</Text>
           <Switch
@@ -286,7 +304,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
   },
   label: {
     paddingBottom: 5,

@@ -7,7 +7,7 @@ import { useTheme, withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import ProjectCard from './ProjectCard';
-import SmallProjectCard from './SmallProjectCard';
+import ProjectListItem from './ProjectListItem';
 
 @withNavigation
 class ProjectList extends React.PureComponent {
@@ -53,7 +53,7 @@ class ProjectList extends React.PureComponent {
   };
 
   _renderContent = () => {
-    let { theme } = this.props;
+    const { theme } = this.props;
 
     return (
       <FlatList
@@ -112,14 +112,13 @@ class ProjectList extends React.PureComponent {
   _renderItem = ({ item: app, index }) => {
     if (this.props.belongsToCurrentUser) {
       return (
-        <SmallProjectCard
+        <ProjectListItem
           key={index.toString()}
-          hideUsername
-          iconUrl={app.iconUrl}
-          projectName={app.name}
-          slug={app.packageName}
-          projectUrl={app.fullName}
-          fullWidthBorder
+          url={app.fullName}
+          image={app.iconUrl}
+          title={app.name}
+          subtitle={app.packageName || app.fullName}
+          last={index === this.props.data.apps.length - 1}
         />
       );
     } else {
@@ -145,7 +144,7 @@ class ProjectList extends React.PureComponent {
 }
 
 export default props => {
-  let theme = useTheme();
+  const theme = useTheme();
 
   return <ProjectList {...props} theme={theme} />;
 };

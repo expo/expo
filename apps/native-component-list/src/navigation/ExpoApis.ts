@@ -14,7 +14,7 @@ const AppAuth = optionalRequire(() => require('../screens/AppAuthScreen'));
 const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const Audio = optionalRequire(() => require('../screens/AV/AudioScreen'));
-const AuthSession = optionalRequire(() => require('../screens/AuthSessionScreen'));
+const AuthSession = optionalRequire(() => require('../screens/AuthSession/AuthSessionScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
 const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
 const Branch = optionalRequire(() => require('../screens/BranchScreen'));
@@ -29,6 +29,7 @@ const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
 const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
 const FileSystem = optionalRequire(() => require('../screens/FileSystemScreen'));
+const FirebaseRecaptcha = optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
 const Font = optionalRequire(() => require('../screens/FontScreen'));
 const Geocoding = optionalRequire(() => require('../screens/GeocodingScreen'));
 const Google = optionalRequire(() => require('../screens/GoogleScreen'));
@@ -87,6 +88,7 @@ const optionalScreens: {
   FacebookLogin,
   FaceDetector,
   FileSystem,
+  FirebaseRecaptcha,
   Font,
   Google,
   GoogleSignIn,

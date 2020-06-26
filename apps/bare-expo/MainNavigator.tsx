@@ -9,8 +9,6 @@ import {
 } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import TestSuite from 'test-suite/AppNavigator';
-
-import Redirect from './Redirect';
 import Colors from './src/constants/Colors';
 
 type RoutesConfig = {
@@ -50,6 +48,9 @@ const routes: RoutesConfig = {
 const NativeComponentList: NativeComponentListExportsType = optionalRequire(() =>
   require('native-component-list/src/navigation/MainNavigators')
 ) as any;
+const Redirect = optionalRequire(() =>
+  require('native-component-list/src/screens/RedirectScreen')
+) as any;
 
 if (NativeComponentList) {
   routes.ExpoApis = NativeComponentList.ExpoApis;
@@ -73,10 +74,15 @@ const MainNavigator = createBottomTabNavigator(routes, {
   },
 });
 
-const SwitchRedirectNavigator = createSwitchNavigator({
-  main: MainNavigator,
-  Redirect,
-});
+const switchRoutes: Record<string, any> = {
+  main: { screen: MainNavigator, path: '' },
+};
+
+if (Redirect) {
+  switchRoutes.redirect = Redirect;
+}
+
+const SwitchRedirectNavigator = createSwitchNavigator(switchRoutes);
 
 const createApp = Platform.select({
   web: input => createBrowserApp(input),

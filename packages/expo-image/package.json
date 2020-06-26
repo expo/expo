@@ -33,7 +33,7 @@
   "devDependencies": {
     "@types/react-native": "*",
     "expo-module-scripts": "~1.2.0",
-    "react": "16.9.0",
+    "react": "16.11.0",
     "react-native": "*"
   }
 }

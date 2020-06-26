@@ -34,7 +34,7 @@ export default class InAppPurchases extends React.Component<any, any> {
 
   async componentDidMount() {
     // This method must be called first to initialize listeners and billing client
-    const history = await connectAsync();
+    await connectAsync();
 
     /*
       These item entries are created in App Store Connect and Google Play Console respectively.
@@ -53,7 +53,7 @@ export default class InAppPurchases extends React.Component<any, any> {
     // Get product details
     const { responseCode, results } = await getProductsAsync(items);
     if (responseCode === IAPResponseCode.OK) {
-      this.setState({ items: results, history: history.results });
+      this.setState({ items: results });
     }
 
     // Set purchase listener

@@ -1,7 +1,8 @@
 import React from 'react';
-import ComponentListScreen from './ComponentListScreen';
+
 import { Layout } from '../constants';
 import { Screens } from '../navigation/ExpoComponents';
+import ComponentListScreen from './ComponentListScreen';
 
 export default class ExpoComponentsScreen extends React.Component {
   static path = '';
@@ -36,6 +37,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'MaskedView',
       'ReanimatedImagePreview',
       'ReanimatedProgress',
+      'SegmentedControl',
       'Screens',
       'SharedElement',
       'SVG',

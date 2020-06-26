@@ -1,7 +1,7 @@
 /* @flow */
 
-import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import ExploreTab from '../components/ExploreTab';
 
@@ -24,7 +24,7 @@ const PublicAppsQuery = gql`
 
 export default graphql(PublicAppsQuery, {
   props: props => {
-    let { data } = props;
+    const { data } = props;
 
     return {
       ...props,

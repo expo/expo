@@ -1,10 +1,8 @@
 package expo.modules.notifications.notifications;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.core.arguments.MapArguments;
 
@@ -13,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
@@ -21,6 +20,7 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
+import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 
@@ -52,6 +52,9 @@ public class NotificationSerializer {
     serializedContent.putString("title", content.getTitle());
     serializedContent.putString("subtitle", content.getSubtitle());
     serializedContent.putString("body", content.getText());
+    if (content.getColor() != null) {
+      serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
+    }
     serializedContent.putBundle("data", toBundle(content.getBody()));
     if (content.getBadgeCount() != null) {
       serializedContent.putInt("badge", content.getBadgeCount().intValue());
@@ -61,7 +64,7 @@ public class NotificationSerializer {
     if (content.shouldPlayDefaultSound()) {
       serializedContent.putString("sound", "default");
     } else if (content.getSound() != null) {
-      serializedContent.putString("sound", content.getSound().toString());
+      serializedContent.putString("sound", "custom");
     } else {
       serializedContent.putString("sound", null);
     }
@@ -75,6 +78,7 @@ public class NotificationSerializer {
       }
       serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
     }
+    serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
     return serializedContent;
   }
 
@@ -86,20 +90,33 @@ public class NotificationSerializer {
     Iterator<String> keyIterator = notification.keys();
     while (keyIterator.hasNext()) {
       String key = keyIterator.next();
-      try {
-        Object value = notification.get(key);
-        if (value instanceof JSONObject) {
-          notificationMap.put(key, toBundle((JSONObject) value));
-        } else if (value instanceof JSONArray) {
-          notificationMap.put(key, toList((JSONArray) value));
-        } else if (value != null) {
-          notificationMap.put(key, value);
-        }
-      } catch (JSONException e) {
-        Log.e("expo-notifications", "Could not serialize whole notification - dropped value for key " + key + ": " + notification.opt(key));
+      Object value = notification.opt(key);
+      if (value instanceof JSONObject) {
+        notificationMap.put(key, toBundle((JSONObject) value));
+      } else if (value instanceof JSONArray) {
+        notificationMap.put(key, toList((JSONArray) value));
+      } else if (JSONObject.NULL.equals(value)) {
+        notificationMap.put(key, null);
+      } else {
+        notificationMap.put(key, value);
       }
     }
-    return new MapArguments(notificationMap).toBundle();
+    try {
+      return new MapArguments(notificationMap).toBundle();
+    } catch (NullPointerException e) {
+      // If a NullPointerException was thrown it most probably means
+      // that @unimodules/core is at < 5.1.1 where we introduced
+      // support for null values in MapArguments' map). Let's go through
+      // the map and remove the null values to be backwards compatible.
+
+      Set<String> keySet = notificationMap.keySet();
+      for (String key : keySet) {
+        if (notificationMap.get(key) == null) {
+          notificationMap.remove(key);
+        }
+      }
+      return new MapArguments(notificationMap).toBundle();
+    }
   }
 
   private static List toList(JSONArray array) {
@@ -134,10 +151,13 @@ public class NotificationSerializer {
       bundle.putString("type", "date");
       bundle.putBoolean("repeats", false);
       bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
+    } else if (trigger instanceof DailyTrigger) {
+      bundle.putString("type", "daily");
+      bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((DailyTrigger) trigger).getMinute());
     } else {
       bundle.putString("type", "unknown");
     }
     return bundle;
   }
-
 }

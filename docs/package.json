@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "37.0.0",
+  "version": "38.0.0",
   "private": true,
   "scripts": {
     "dev": "node server.js",
@@ -8,12 +8,13 @@
     "export": "yarn run build && next export",
     "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
-    "test-links": "./scripts/test-links"
+    "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.5.0",
     "@mdx-js/loader": "^0.16.8",
     "@mdx-js/mdx": "^0.16.8",
+    "@reach/tabs": "^0.10.3",
     "@sentry/browser": "^5.6.1",
     "babel-plugin-module-resolver": "3.1.1",
     "babel-plugin-preval": "^3.0.1",
@@ -27,7 +28,7 @@
     "hotshot": "^1.0.5",
     "next": "^8.0.0",
     "nprogress": "0.2.0",
-    "prismjs": "^1.11.0",
+    "prism-react-renderer": "1.0.2",
     "prop-types": "15.6.2",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
@@ -37,9 +38,11 @@
   },
   "devDependencies": {
     "broken-link-checker": "^0.7.8",
+    "cowsay": "^1.4.0",
     "danger": "^9.2.10",
     "http-server": "^0.11.1",
-    "minimist": "^1.2.2",
-    "prettier": "^1.18.2"
+    "minimist": "^1.2.3",
+    "prettier": "^1.18.2",
+    "puppeteer": "^3.3.0"
   }
 }

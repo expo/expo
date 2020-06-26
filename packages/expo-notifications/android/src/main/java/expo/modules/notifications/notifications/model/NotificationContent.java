@@ -29,6 +29,8 @@ public class NotificationContent implements Parcelable, Serializable {
   private long[] mVibrationPattern;
   private JSONObject mBody;
   private NotificationPriority mPriority;
+  private Number mColor;
+  private boolean mAutoDismiss;
 
   protected NotificationContent() {
   }
@@ -93,6 +95,15 @@ public class NotificationContent implements Parcelable, Serializable {
     return mPriority;
   }
 
+  @Nullable
+  public Number getColor() {
+    return mColor;
+  }
+
+  public boolean isAutoDismiss() {
+    return mAutoDismiss;
+  }
+
   @Override
   public int describeContents() {
     return 0;
@@ -116,6 +127,8 @@ public class NotificationContent implements Parcelable, Serializable {
     if (priorityNumber != null) {
       mPriority = NotificationPriority.fromNativeValue(priorityNumber.intValue());
     }
+    mColor = (Number) in.readSerializable();
+    mAutoDismiss = in.readByte() == 1;
   }
 
   @Override
@@ -130,10 +143,12 @@ public class NotificationContent implements Parcelable, Serializable {
     dest.writeLongArray(mVibrationPattern);
     dest.writeString(mBody != null ? mBody.toString() : null);
     dest.writeSerializable(mPriority != null ? mPriority.getNativeValue() : null);
+    dest.writeSerializable(mColor);
+    dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
   }
 
-  //                                           EXPONOTIFCONTENT01
-  private static final long serialVersionUID = 397666843266836801L;
+  //                                           EXPONOTIFCONTENT02
+  private static final long serialVersionUID = 397666843266836802L;
 
   private void writeObject(java.io.ObjectOutputStream out) throws IOException {
     out.writeObject(mTitle);
@@ -153,6 +168,8 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     out.writeObject(mBody != null ? mBody.toString() : null);
     out.writeObject(mPriority != null ? mPriority.getNativeValue() : null);
+    out.writeObject(mColor);
+    out.writeByte(mAutoDismiss ? 1 : 0);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -191,6 +208,8 @@ public class NotificationContent implements Parcelable, Serializable {
     if (priorityNumber != null) {
       mPriority = NotificationPriority.fromNativeValue(priorityNumber.intValue());
     }
+    mColor = (Number) in.readObject();
+    mAutoDismiss = in.readByte() == 1;
   }
 
   private void readObjectNoData() throws ObjectStreamException {
@@ -207,6 +226,8 @@ public class NotificationContent implements Parcelable, Serializable {
     private long[] mVibrationPattern;
     private JSONObject mBody;
     private NotificationPriority mPriority;
+    private Number mColor;
+    private boolean mAutoDismiss;
 
     public Builder() {
       useDefaultSound();
@@ -267,6 +288,16 @@ public class NotificationContent implements Parcelable, Serializable {
       return this;
     }
 
+    public Builder setColor(Number color) {
+      mColor = color;
+      return this;
+    }
+
+    public Builder setAutoDismiss(boolean autoDismiss) {
+      mAutoDismiss = autoDismiss;
+      return this;
+    }
+
     public NotificationContent build() {
       NotificationContent content = new NotificationContent();
       content.mTitle = mTitle;
@@ -279,6 +310,8 @@ public class NotificationContent implements Parcelable, Serializable {
       content.mSound = mSound;
       content.mBody = mBody;
       content.mPriority = mPriority;
+      content.mColor = mColor;
+      content.mAutoDismiss = mAutoDismiss;
       return content;
     }
   }

@@ -11,6 +11,8 @@
 #import <React/RCTDefines.h>
 #import "RNCWebView.h"
 
+#import "EXScopedModuleRegistry.h"
+
 @interface RNCWebViewManager () <RNCWebViewDelegate>
 @end
 
@@ -18,9 +20,20 @@
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
+  NSString *_experienceId;
 }
 
-RCT_EXPORT_MODULE()
+EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId
+               kernelServiceDelegate:(id)kernelServiceInstance
+                              params:(NSDictionary *)params
+{
+  if (self = [super init]) {
+    _experienceId = experienceId;
+  }
+  return self;
+}
 
 #if !TARGET_OS_OSX
 - (UIView *)view
@@ -29,11 +42,13 @@ RCT_EXPORT_MODULE()
 #endif // !TARGET_OS_OSX
 {
   RNCWebView *webView = [RNCWebView new];
+  webView.experienceId = _experienceId;
   webView.delegate = self;
   return webView;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
+RCT_EXPORT_VIEW_PROPERTY(onFileDownload, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
@@ -43,6 +58,8 @@ RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onContentProcessDidTerminate, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScriptBeforeContentLoaded, NSString)
+RCT_EXPORT_VIEW_PROPERTY(injectedJavaScriptForMainFrameOnly, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(injectedJavaScriptBeforeContentLoadedForMainFrameOnly, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(javaScriptEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowFileAccessFromFileURLs, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsInlineMediaPlayback, BOOL)

@@ -1,4 +1,5 @@
 import { PermissionResponse, PermissionType, PermissionMap, PermissionStatus, PermissionExpiration, PermissionInfo } from './Permissions.types';
+export { usePermissions } from './PermissionsHooks';
 export { PermissionStatus, PermissionResponse, PermissionExpiration, PermissionMap, PermissionInfo, PermissionType, };
 export declare const CAMERA = "camera";
 export declare const CAMERA_ROLL = "cameraRoll";
@@ -10,5 +11,6 @@ export declare const CONTACTS = "contacts";
 export declare const CALENDAR = "calendar";
 export declare const REMINDERS = "reminders";
 export declare const SYSTEM_BRIGHTNESS = "systemBrightness";
+export declare const MOTION = "motion";
 export declare function getAsync(...types: PermissionType[]): Promise<PermissionResponse>;
 export declare function askAsync(...types: PermissionType[]): Promise<PermissionResponse>;

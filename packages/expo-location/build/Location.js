@@ -228,6 +228,7 @@ async function _googleReverseGeocodeAsync(options) {
             }
             else if (component.types.includes('country')) {
                 address.country = component.long_name;
+                address.isoCountryCode = component.short_name;
             }
             else if (component.types.includes('postal_code')) {
                 address.postalCode = component.long_name;

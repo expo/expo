@@ -17,7 +17,7 @@ async function runAsync() {
       .sync('commands/*.js', {
         cwd: __dirname,
       })
-      .forEach(file => {
+      .forEach((file) => {
         const commandModule = require(`./${file}`);
         if (typeof commandModule === 'function') {
           commandModule(program);
@@ -52,7 +52,7 @@ async function runAsync() {
 }
 
 export function run() {
-  runAsync().catch(e => {
+  runAsync().catch((e) => {
     console.error(
       chalk.red('Uncaught error:'),
       chalk.red(process.env.EXPO_ET_VERBOSE ? e.stack : e.message)

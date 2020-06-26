@@ -1,6 +1,6 @@
 ---
 title: VideoThumbnails
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-video-thumbnails'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-video-thumbnails'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

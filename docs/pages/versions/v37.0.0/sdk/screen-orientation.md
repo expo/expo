@@ -14,6 +14,8 @@ Screen Orientation is defined as the orientation in which graphics are painted o
 
 On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
+> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](../../guides/customizing-webpack/#resizeobserver).
+
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
@@ -147,7 +149,7 @@ Gets the current screen orientation.
 
 #### Returns
 
-Returns a promise that resolves to an [`ScreenOrientationInfo`](#screenorientationscreenorientationinfo) object value that reflects the current screen orientation.
+Returns a promise that resolves to an [`Orientation`](#screenorientationorientation) value that reflects the current screen orientation.
 
 #### Error Codes
 
@@ -259,6 +261,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 - **`LANDSCAPE_SECONDARY`**
 - **`LANDSCAPE`**
 - **`ANY`**
+- **`NATURAL`**
 - **`UNKNOWN`**
 
 ## Object Types
@@ -267,7 +270,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 
 - **screenOrientationConstantAndroid (_integer_)**: A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (**Android only**)
 - **screenOrientationArrayIOS (Array[Orientation])**: An array of orientations to allow on the iOS platform (**iOS only**)
-- **screenOrientationLockWebOrientation (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
+- **screenOrientationLockWeb (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
 
 ### `ScreenOrientation.ScreenOrientationInfo`
 

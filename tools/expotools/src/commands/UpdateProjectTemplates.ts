@@ -1,9 +1,9 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
-import JsonFile from '@expo/json-file';
 import { Command } from '@expo/commander';
+import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { PACKAGES_DIR } from '../Constants';
 import { Template, getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
@@ -102,7 +102,7 @@ async function yarnTemplateAsync(templatePath: string): Promise<void> {
 
   const yarnLockPath = path.join(templatePath, 'yarn.lock');
 
-  if (await fs.exists(yarnLockPath)) {
+  if (await fs.pathExists(yarnLockPath)) {
     // We do want to always install the newest possible versions that match bundledNativeModules versions,
     // so let's remove yarn.lock before updating re-yarning dependencies.
     await fs.remove(yarnLockPath);
@@ -112,24 +112,6 @@ async function yarnTemplateAsync(templatePath: string): Promise<void> {
     cwd: templatePath,
     env: process.env,
   });
-}
-
-/**
- * Updates `sdkVersion` in template's `app.json` file.
- *
- * @param templatePath Root path of the template.
- * @param sdkVersion SDK version string to which to upgrade.
- */
-async function updateTemplateSdkVersionAsync(
-  templatePath: string,
-  sdkVersion: string
-): Promise<void> {
-  const appJsonPath = path.join(templatePath, 'app.json');
-
-  if (await fs.exists(appJsonPath)) {
-    console.log(chalk.yellow('>'), `Setting SDK version to ${chalk.cyan(sdkVersion)}...`);
-    await JsonFile.setAsync(appJsonPath, 'expo.sdkVersion', sdkVersion);
-  }
 }
 
 async function action(options: ActionOptions) {
@@ -153,7 +135,6 @@ async function action(options: ActionOptions) {
 
   for (const template of templates) {
     await updateTemplateAsync(template, modulesToUpdate, sdkVersion);
-    await updateTemplateSdkVersionAsync(template.path, sdkVersion);
     await yarnTemplateAsync(template.path);
     console.log(chalk.yellow('>'), chalk.green('Success!'), '\n');
   }

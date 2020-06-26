@@ -7,15 +7,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.os.UserManager;
-import android.provider.Settings;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
@@ -39,15 +35,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
-import java.security.Provider;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -63,7 +55,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoHandler;
@@ -72,7 +63,6 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExpoHttpCallback;
@@ -80,7 +70,6 @@ import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.PermissionsHelper;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
 
 public class Exponent {
@@ -230,34 +219,7 @@ public class Exponent {
     return mGCMSenderId;
   }
 
-  // TODO: remove once SDK 35 is deprecated
-  public interface PermissionsListener {
-    void permissionsGranted();
-
-    void permissionsDenied();
-  }
-
-  // TODO: Remove everything connected with permissions once SDK35 is phased out
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
-  private PermissionsHelper mPermissionsHelper;
-
-  public boolean getPermissions(String permissions, ExperienceId experienceId) {
-    return new PermissionsHelper(experienceId).getPermissions(permissions);
-  }
-
-  public boolean requestPermissions(PermissionsListener listener, String[] permissions,
-                                    ExperienceId experienceId, String experienceName) {
-    mPermissionsHelper = new PermissionsHelper(experienceId);
-    return mPermissionsHelper.requestPermissions(listener, permissions, experienceName);
-  }
-
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
-      mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-      mPermissionsHelper = null;
-    }
-  }
-
 
   public static class InstanceManagerBuilderProperties {
     public Application application;
@@ -287,16 +249,6 @@ public class Exponent {
 
   public Application getApplication() {
     return mApplication;
-  }
-
-  public static void logException(Throwable throwable) {
-    if (!ExpoViewBuildConfig.DEBUG) {
-      try {
-        Crashlytics.logException(throwable);
-      } catch (Throwable e) {
-        Log.e(TAG, e.toString());
-      }
-    }
   }
 
   public String encodeExperienceId(final String manifestId) throws UnsupportedEncodingException {
@@ -480,8 +432,8 @@ public class Exponent {
     return sourceFile.exists();
   }
 
-  // As OTAs piles up, the JS bundles will consume quite an amount of storage space
-  // App developers, if find needed, can purge all the existing cache
+  // This method does nothing (`directory.delete` must be called on an empty directory)
+  // But it is relied on in previous SDKs. 
   public boolean clearAllJSBundleCache(final String abiVersion) throws IOException {
     final File filesDir = mContext.getFilesDir();
     final File directory = new File(filesDir, abiVersion);
@@ -572,19 +524,8 @@ public class Exponent {
         emulatorField.setAccessible(true);
         emulatorField.set(null, debuggerHostHostname);
 
-        // TODO: remove when SDK 35 is phased out
-        if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
-          Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-          debugServerHostPortField.setAccessible(true);
-          debugServerHostPortField.set(null, debuggerHostPort);
-
-          Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-          inspectorProxyPortField.setAccessible(true);
-          inspectorProxyPortField.set(null, debuggerHostPort);
-        } else {
-          fieldObject.callStatic("setDevServerPort", debuggerHostPort);
-          fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort);
-        }
+        fieldObject.callStatic("setDevServerPort", debuggerHostPort);
+        fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort);
 
         builder.callRecursive("setUseDeveloperSupport", true);
         builder.callRecursive("setJSMainModulePath", mainModuleName);
@@ -647,24 +588,6 @@ public class Exponent {
     ExponentPackageDelegate getExponentPackageDelegate();
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
-
-  // TODO: remove once SDK 35 is deprecated
-  public boolean shouldRequestDrawOverOtherAppsPermission(String sdkVersion) {
-    if (sdkVersion != null && ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
-      return false;
-    }
-    return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
-  }
-
-  // TODO: remove once SDK 35 is deprecated
-  public boolean shouldAlwaysReloadFromManifest(String sdkVersion) {
-    if (sdkVersion == null || ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
-      return true;
-    }
-
-    return false;
-  }
-
 
   public void preloadManifestAndBundle(final String manifestUrl) {
     try {

@@ -1,5 +1,6 @@
 import { ComponentType, forwardRef } from 'react';
-import { createElement, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 import { TextProps } from '../primitives/Text';
 import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
@@ -61,7 +62,7 @@ export const Time = forwardRef(({ style, ...props }: TimeProps, ref) => {
 }) as ComponentType<TimeProps>;
 
 export const Pre = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return createElement('pre', { ...props, style: [styles.resetStyle, style], ref });
+  return createElement('pre', { ...props, style: [styles.reset, style], ref });
 }) as ComponentType<TextProps>;
 
 const styles = StyleSheet.create({

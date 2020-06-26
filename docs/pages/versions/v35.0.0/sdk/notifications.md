@@ -3,17 +3,20 @@ title: Notifications
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-35/packages/expo/src/Notifications'
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
-#### Push notifications platform compatibility
+<PlatformsSection title="Push notifications Platform Compatibility" android ios web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ❌               | ✅         | ❌            | ✅  |
+<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
+
+> ⚠️ **Important Android limitation:** Local notifications are cleared when an Android device is restarted. ([See the feature request](https://expo.canny.io/feature-requests/p/keep-scheduled-notifications-after-reboot)).
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, although there are some comparable libraries that you may use instead.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
 ## API
 
@@ -21,7 +24,83 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Notifications } from 'expo';
 ```
 
-Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications?platform=ios) to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators. For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for notifications to work.
+Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
+
+<SnackInline label='Push Notifications' templateId='pushnotifications' dependencies={['expo-constants', 'expo-permissions']}>
+
+```js
+import React from 'react';
+import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+
+export default class AppContainer extends React.Component {
+  state = {
+    expoPushToken: '',
+    notification: {},
+  };
+
+  registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+      this.setState({ expoPushToken: token });
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  };
+
+  componentDidMount() {
+    this.registerForPushNotificationsAsync();
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+  }
+
+  _handleNotification = notification => {
+    Vibration.vibrate();
+    console.log(notification);
+    this.setState({ notification: notification });
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
+        </View>
+        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+      </View>
+    );
+  }
+}
+```
+
+</SnackInline>
 
 ## Subscribing to Notifications
 
@@ -70,6 +149,10 @@ The `origin` will vary based on the app's state at the time the notification was
 Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../../guides/push-notifications/#push-notifications).
 
 The Promise will be rejected if the app does not have permission to send notifications. Be sure to check the result of `Permissions.askAsync(Permissions.NOTIFICATIONS)` before attempting to get an Expo push token.
+
+#### Error Codes
+
+- `E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED` - the device was unable to register for remote notifications with Expo.
 
 ### `Notifications.presentLocalNotificationAsync(localNotification)`
 
@@ -133,7 +216,37 @@ Cancel all scheduled notifications.
 
 A notification category defines a set of actions with which a user may interact with and respond to the incoming notification. You can read more about categories [here (for iOS)](https://developer.apple.com/documentation/usernotifications/unnotificationcategory) and [here (for Android)](https://developer.android.com/guide/topics/ui/notifiers/notifications#Actions).
 
-Check out how to implement interactive Notifications in your app by taking a look at the code behind [this Snack](https://snack.expo.io/@documentation/interactivenotificationexample)
+Here's an example of creating a category with different types of interactions:
+
+```jsx
+Notifications.createCategoryAsync('myCategoryName', [
+  {
+    actionId: 'vanillaButton',
+    buttonTitle: 'Plain Option',
+    isDestructive: false,
+    isAuthenticationRequired: false,
+  },
+  {
+    actionId: 'highlightedButton',
+    buttonTitle: 'Destructive!!!',
+    isDestructive: true,
+    isAuthenticationRequired: false,
+  },
+  {
+    actionId: 'requiredAuthenticationButton',
+    buttonTitle: 'Click to Authenticate',
+    isDestructive: false,
+    isAuthenticationRequired: true,
+  },
+  {
+    actionId: 'textResponseButton',
+    buttonTitle: 'Click to Respond with Text',
+    textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
+    isDestructive: false,
+    isAuthenticationRequired: false,
+  },
+]);
+```
 
 ### `Notifications.createCategoryAsync(name: string, actions: ActionType[])`
 
@@ -241,3 +354,9 @@ An object used to describe an Android notification channel that you would like t
 - **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
 - **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
 - **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.
+
+## Error Codes
+
+| Code                                      | Description                                                           |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED | The device was unable to register for remote notifications with Expo. |  |

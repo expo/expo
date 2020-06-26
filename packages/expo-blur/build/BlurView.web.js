@@ -1,22 +1,13 @@
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View, ViewPropTypes } from 'react-native';
+import { View } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
-export default class BlurView extends React.Component {
+class BlurView extends React.Component {
     render() {
-        const { tint, intensity, style = {}, ...props } = this.props;
+        const { tint = 'default', intensity = 50, style, ...props } = this.props;
         const blurStyle = getBlurStyle({ tint, intensity });
-        return <View {...props} style={[style, blurStyle]}/>;
+        return React.createElement(View, Object.assign({}, props, { style: [style, blurStyle] }));
     }
 }
-BlurView.propTypes = {
-    tint: PropTypes.oneOf(['light', 'default', 'dark']),
-    ...ViewPropTypes,
-};
-BlurView.defaultProps = {
-    tint: 'default',
-    intensity: 50,
-};
 function isBlurSupported() {
     // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
     // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
@@ -33,4 +24,5 @@ function getBlurStyle({ intensity, tint }) {
     }
     return style;
 }
+export default BlurView;
 //# sourceMappingURL=BlurView.web.js.map

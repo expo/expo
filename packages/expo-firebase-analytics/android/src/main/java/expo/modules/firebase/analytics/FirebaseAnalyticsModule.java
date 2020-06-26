@@ -81,7 +81,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
       FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
       if (analytics == null)
         return;
-      analytics.logEvent(name, new MapArguments(params).toBundle());
+      analytics.logEvent(name, params == null ? null : new MapArguments(params).toBundle());
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);

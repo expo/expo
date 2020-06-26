@@ -104,6 +104,11 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
     config.setHideBackButton(hideBackButton);
   }
 
+  @ReactProp(name = "topInsetEnabled")
+  public void setTopInsetEnabled(ScreenStackHeaderConfig config, boolean topInsetEnabled) {
+    config.setTopInsetEnabled(topInsetEnabled);
+  }
+
   @ReactProp(name = "color", customType = "Color")
   public void setColor(ScreenStackHeaderConfig config, int color) {
     config.setTintColor(color);
@@ -112,6 +117,11 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
   @ReactProp(name = "hidden")
   public void setHidden(ScreenStackHeaderConfig config, boolean hidden) {
     config.setHidden(hidden);
+  }
+
+  @ReactProp(name = "backButtonInCustomView")
+  public void setBackButtonInCustomView(ScreenStackHeaderConfig config, boolean backButtonInCustomView) {
+    config.setBackButtonInCustomView(backButtonInCustomView);
   }
 
 

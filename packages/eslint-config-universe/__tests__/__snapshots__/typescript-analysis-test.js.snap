@@ -5,8 +5,33 @@ Object {
   "errorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
-  "output": "type T = {
+  "messages": Array [
+    Object {
+      "column": 10,
+      "endColumn": 46,
+      "endLine": 11,
+      "line": 11,
+      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+      "messageId": "preferOptionalChain",
+      "nodeType": "LogicalExpression",
+      "ruleId": "@typescript-eslint/prefer-optional-chain",
+      "severity": 1,
+      "suggestions": Array [
+        Object {
+          "desc": "Change to an optional chain.",
+          "fix": Object {
+            "range": Array [
+              138,
+              174,
+            ],
+            "text": "foo?.a?.b?.c",
+          },
+          "messageId": "optionalChainSuggest",
+        },
+      ],
+    },
+  ],
+  "source": "type T = {
   a?: {
     b?: {
       c: string;
@@ -16,9 +41,9 @@ Object {
 };
 
 export function myFunc(foo: T | null) {
-  return foo?.a?.b?.c;
+  return foo && foo.a && foo.a.b && foo.a.b.c;
 }",
-  "warningCount": 0,
+  "warningCount": 1,
 }
 `;
 
@@ -56,13 +81,39 @@ Object {
   "errorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
-  "output": "export function getBlah(): string | null {
+  "messages": Array [
+    Object {
+      "column": 12,
+      "endColumn": 14,
+      "endLine": 4,
+      "line": 4,
+      "message": "Prefer using nullish coalescing operator (\`??\`) instead of a logical or (\`||\`), as it is a safer operator.",
+      "messageId": "preferNullish",
+      "nodeType": "Punctuator",
+      "ruleId": "@typescript-eslint/prefer-nullish-coalescing",
+      "severity": 1,
+      "suggestions": Array [
+        Object {
+          "desc": "Fix to nullish coalescing operator (\`??\`).",
+          "fix": Object {
+            "range": Array [
+              162,
+              164,
+            ],
+            "text": "??",
+          },
+          "messageId": "suggestNullish",
+        },
+      ],
+    },
+  ],
+  "source": "export function getBlah(): string | null {
   const a: string | null = Math.random() ? '' : null;
   const b: string | null = Math.random() ? '' : null;
-  return a ?? b;
-}",
-  "warningCount": 0,
+  return a || b;
+}
+",
+  "warningCount": 1,
 }
 `;
 

@@ -16,14 +16,17 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "assets",
-        indices = {@Index(value = {"url"}, unique = true)})
+        indices = {@Index(value = {"key"}, unique = true)})
 public class AssetEntity {
   @PrimaryKey(autoGenerate = true)
   // 0 is treated as unset while inserting the entity into the db
   public long id = 0;
 
+  public Uri url = null;
+
+  @ColumnInfo(name = "key")
   @NonNull
-  public Uri url;
+  public String key;
 
   public JSONObject headers = null;
 
@@ -54,8 +57,20 @@ public class AssetEntity {
   @Ignore
   public String embeddedAssetFilename = null;
 
-  public AssetEntity(Uri url, String type) {
-    this.url = url;
+  @Ignore
+  public String resourcesFilename = null;
+
+  @Ignore
+  public String resourcesFolder = null;
+
+  @Ignore
+  public Float scale = null;
+
+  @Ignore
+  public Float[] scales = null;
+
+  public AssetEntity(String key, String type) {
+    this.key = key;
     this.type = type;
   }
 }

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/EXSharing/ABI38_0_0EXSharing/ABI38_0_0EXSharingModule.h

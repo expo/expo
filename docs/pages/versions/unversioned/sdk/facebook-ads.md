@@ -24,6 +24,9 @@ You need to create a placement ID to display ads. Follow steps 1 and 3 from the 
 
 In your project's [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
+- In the Expo Client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in the Expo Client.
+- To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../distribution/building-standalone-apps/).
+
 ### Development vs Production
 
 When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
@@ -167,6 +170,27 @@ class MyApp extends React.Component {
     return (
       <View>
         <AdComponent adsManager={adsManager} />
+      </View>
+    );
+  }
+}
+```
+
+If you want, you can optionally pass two other callback properties — `onAdLoaded` and `onError`.
+
+- `onAdLoaded` will be called once an ad is fetched and provided to your component (the `nativeAd` property introduced in step 2.) The one and only argument with which the function will be called will be the native ad object.
+- `onError` will be called if the Audience framework encounters an error while fetching the ad. The one and only argument with which the function will be called will be an instance of `Error`.
+
+```js
+class MyApp extends React.Component {
+  render() {
+    return (
+      <View>
+        <AdComponent
+          adsManager={adsManager}
+          onAdLoaded={ad => console.log(ad)}
+          onError={error => console.warn(error)}
+        />
       </View>
     );
   }

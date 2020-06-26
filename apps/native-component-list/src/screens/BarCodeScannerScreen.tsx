@@ -1,36 +1,29 @@
-import React from 'react';
-import { NavigationEvents } from 'react-navigation';
-import { Button, Platform, StyleSheet, Text, View } from 'react-native';
-
-import * as ScreenOrientation from 'expo-screen-orientation';
-
-import * as Svg from 'react-native-svg';
+import { BarCodeScanner, BarCodePoint, BarCodeEvent, BarCodeBounds } from 'expo-barcode-scanner';
 import * as Permissions from 'expo-permissions';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import React from 'react';
+import { Button, Platform, StyleSheet, Text, View } from 'react-native';
+import * as Svg from 'react-native-svg';
+import { NavigationEvents } from 'react-navigation';
 
 const BUTTON_COLOR = Platform.OS === 'ios' ? '#fff' : '#666';
 
 interface State {
   isPermissionsGranted: boolean;
   type: any;
-  cornerPoints?: any[];
+  cornerPoints?: BarCodePoint[];
   alerting: boolean;
   haveDimensions: boolean;
   canvasHeight?: number;
   canvasWidth?: number;
-  boundingBox?: {
-    origin: {
-      x: number;
-      y: number;
-    };
-    size: {
-      width: number;
-      height: number;
-    };
-  };
+  boundingBox?: BarCodeBounds;
+  cornerPointsString?: string;
+  showBoundingBox: boolean;
+  showText: boolean;
+  data: string;
 }
 
-export default class BarcodeScannerExample extends React.Component<{}, State> {
+export default class BarcodeScannerExample extends React.Component<object, State> {
   static navigationOptions = {
     title: '<BarCodeScanner />',
   };
@@ -42,16 +35,21 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
     type: BarCodeScanner.Constants.Type.back,
     alerting: false,
     haveDimensions: false,
+    showBoundingBox: false,
+    data: '',
+    showText: false,
   };
 
   componentDidFocus = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ isPermissionsGranted: status === 'granted' });
-  }
+  };
 
   toggleAlertingAboutResult = () => {
-    this.setState({ alerting: !this.state.alerting });
-  }
+    this.setState(({ alerting }) => ({
+      alerting: !alerting,
+    }));
+  };
 
   toggleScreenOrientationState = () => {
     if (this.canChangeOrientation) {
@@ -60,7 +58,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
     }
     this.canChangeOrientation = !this.canChangeOrientation;
-  }
+  };
 
   setCanvasDimensions = (e: any) => {
     this.setState({
@@ -68,7 +66,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
       canvasHeight: e.nativeEvent.layout.height,
       haveDimensions: true,
     });
-  }
+  };
 
   render() {
     if (!this.state.isPermissionsGranted) {
@@ -88,10 +86,10 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
           <Svg.Circle
             cx={point.x}
             cy={point.y}
-            r={2}
-            strokeWidth={0.1}
-            stroke="gray"
-            fill="green"
+            r={3}
+            strokeWidth={0.5}
+            stroke="#CF4048"
+            fill="#CF4048"
           />
         );
       }
@@ -113,7 +111,10 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
         />
 
         {this.state.haveDimensions && (
-          <Svg.Svg height={this.state.canvasHeight} width={this.state.canvasWidth} style={styles.svg}>
+          <Svg.Svg
+            height={this.state.canvasHeight}
+            width={this.state.canvasWidth}
+            style={styles.svg}>
             <Svg.Circle
               cx={this.state.canvasWidth! / 2}
               cy={this.state.canvasHeight! / 2}
@@ -122,17 +123,25 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
               stroke="#e74c3c"
               fill="#f1c40f"
             />
-            {this.state.boundingBox && (
-              <Svg.Rect
-                x={this.state.boundingBox.origin.x}
-                y={this.state.boundingBox.origin.y}
-                width={this.state.boundingBox.size.width}
-                height={this.state.boundingBox.size.height}
+            {this.state.showBoundingBox && this.state.cornerPointsString && (
+              <Svg.Polygon
+                points={this.state.cornerPointsString}
                 strokeWidth={2}
-                stroke="#9b59b6"
+                stroke="#582E6E"
                 fill="none"
               />
             )}
+            {this.state.showText && this.state.boundingBox && (
+              <Svg.Text
+                fill="#CF4048"
+                stroke="#CF4048"
+                fontSize="14"
+                x={this.state.boundingBox.origin.x}
+                y={this.state.boundingBox.origin.y - 8}>
+                {this.state.data}
+              </Svg.Text>
+            )}
+
             {circles}
           </Svg.Svg>
         )}
@@ -144,6 +153,8 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
             title="Orientation"
             onPress={this.toggleScreenOrientationState}
           />
+          <Button color={BUTTON_COLOR} title="Bounding box" onPress={this.toggleBoundingBox} />
+          <Button color={BUTTON_COLOR} title="Text" onPress={this.toggleText} />
           <Button color={BUTTON_COLOR} title="Alerting" onPress={this.toggleAlertingAboutResult} />
         </View>
       </View>
@@ -151,21 +162,43 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
   }
 
   toggleType = () =>
-    this.setState({
+    this.setState(({ type }) => ({
       type:
-        this.state.type === BarCodeScanner.Constants.Type.back
+        type === BarCodeScanner.Constants.Type.back
           ? BarCodeScanner.Constants.Type.front
           : BarCodeScanner.Constants.Type.back,
-    })
+    }));
 
-  handleBarCodeScanned = (data: any) => {
+  toggleText = () =>
+    this.setState(({ showText }) => ({
+      showText: !showText,
+    }));
+
+  toggleBoundingBox = () =>
+    this.setState(({ showBoundingBox }) => ({
+      showBoundingBox: !showBoundingBox,
+    }));
+
+  getPointsString = (barCodePoints?: BarCodePoint[]): string | undefined => {
+    if (!barCodePoints) {
+      return;
+    }
+    return barCodePoints.map(({ x, y }) => `${Math.round(x)},${Math.round(y)}`).join(' ');
+  };
+
+  handleBarCodeScanned = (barCodeEvent: BarCodeEvent) => {
     if (this.state.alerting) {
       requestAnimationFrame(() => {
-        alert(JSON.stringify(data));
+        alert(JSON.stringify(barCodeEvent));
       });
     }
-    this.setState({ cornerPoints: data.cornerPoints, boundingBox: data.bounds });
-  }
+    this.setState({
+      data: barCodeEvent.data,
+      cornerPoints: barCodeEvent.cornerPoints,
+      boundingBox: barCodeEvent.bounds,
+      cornerPointsString: this.getPointsString(barCodeEvent.cornerPoints),
+    });
+  };
 }
 
 const styles = StyleSheet.create({

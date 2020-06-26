@@ -22,6 +22,7 @@ import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
 import expo.modules.errorrecovery.ErrorRecoveryPackage;
+import expo.modules.notifications.NotificationsPackage;
 import expo.modules.screenorientation.ScreenOrientationPackage;
 import expo.modules.imageloader.ImageLoaderPackage;
 import expo.modules.sharing.SharingPackage;
@@ -51,6 +52,7 @@ import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
+import expo.modules.screencapture.ScreenCapturePackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.random.RandomPackage;
 import expo.modules.securestore.SecureStorePackage;
@@ -105,7 +107,9 @@ public class ExperiencePackagePicker {
       new MailComposerPackage(),
       new MediaLibraryPackage(),
       new NetworkPackage(),
+      new NotificationsPackage(),
       new PermissionsPackage(),
+      new ScreenCapturePackage(),
       new PrintPackage(),
       new RandomPackage(),
       new SMSPackage(),

@@ -7,6 +7,7 @@ import { expectResults } from './utils/report';
 const TESTS = [
   'Basic',
   'Asset',
+  'AuthSession',
   'Constants',
   'FileSystem',
   'Font',

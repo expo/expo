@@ -1,12 +1,12 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, TouchableHighlight } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { createSwitchNavigator, NavigationScreenProps } from 'react-navigation';
-import createStackNavigator from '../../navigation/createStackNavigator';
 
+import createStackNavigator from '../../navigation/createStackNavigator';
 import Container from './container';
-import Navigation from './navigation';
 import NativeStack from './nativeStack';
+import Navigation from './navigation';
 
 const SCREENS: Record<string, { screen: any; title: string }> = {
   Container: { screen: Container, title: 'ScreenContainer example' },

@@ -1,6 +1,6 @@
 ---
 title: Contacts
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-contacts'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -166,7 +166,7 @@ Contacts.addContactAsync(contact: Contact, containerId: string): Promise<string>
 
 Creates a new contact and adds it to the system.
 
-> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) and add permission through there.
+> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](../../distribution/building-standalone-apps/) and add permission through there.
 
 **Parameters**
 

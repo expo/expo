@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createElement } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 import ExponentAV from './ExponentAV';
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
@@ -99,7 +99,7 @@ export default class ExponentVideo extends React.Component {
             objectFit,
             overflow: 'hidden',
         };
-        return (<Video ref={this.onRef} onLoadStart={this.onLoadStart} onLoadedData={this.onLoadedData} onError={this.onError} onTimeUpdate={this.onProgress} onSeeking={this.onSeeking} onEnded={this.onEnded} onLoadedMetadata={this.onLoadedMetadata} onCanPlay={this.onCanPlay} onStalled={this.onStalled} src={(source || { uri: undefined }).uri} muted={status.isMuted} loop={status.isLooping} autoPlay={status.shouldPlay} controls={useNativeControls} style={[style, customStyle]}/>);
+        return (React.createElement(Video, { ref: this.onRef, onLoadStart: this.onLoadStart, onLoadedData: this.onLoadedData, onError: this.onError, onTimeUpdate: this.onProgress, onSeeking: this.onSeeking, onEnded: this.onEnded, onLoadedMetadata: this.onLoadedMetadata, onCanPlay: this.onCanPlay, onStalled: this.onStalled, src: (source || { uri: undefined }).uri, muted: status.isMuted, loop: status.isLooping, autoPlay: status.shouldPlay, controls: useNativeControls, style: [style, customStyle] }));
     }
 }
 //# sourceMappingURL=ExponentVideo.web.js.map

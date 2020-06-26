@@ -1,20 +1,20 @@
 ---
-title: Firebase
+title: FirebaseCore
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-firebase-core'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-This module provides access to the Firebase configuration and performs initialisation
+**`expo-firebase-core`** provides access to the Firebase configuration and performs initialisation
 of the native Firebase App.
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-firebase-core`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-firebase-core).
-
+<InstallSection packageName="expo-firebase-core" />
 
 ## Configuration
 

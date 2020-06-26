@@ -55,7 +55,7 @@ export async function test(t) {
         t.expect(result.uri.endsWith('.png')).toBe(true);
       });
 
-      t.it('provides Base64', async () => {
+      t.it('provides Base64 with no newline terminator', async () => {
         const result = await ImageManipulator.manipulateAsync(
           image.localUri,
           [{ resize: { width: 100, height: 100 } }],
@@ -65,6 +65,8 @@ export async function test(t) {
         );
 
         t.expect(typeof result.base64).toBe('string');
+        t.expect(result.base64).not.toContain('\n');
+        t.expect(result.base64).not.toContain('\r');
       });
 
       t.it('performs compression', async () => {

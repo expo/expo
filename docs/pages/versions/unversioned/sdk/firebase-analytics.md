@@ -1,8 +1,10 @@
 ---
-title: Firebase Analytics
+title: FirebaseAnalytics
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-firebase-analytics'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
@@ -10,41 +12,34 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 **`expo-firebase-analytics`** enables the use of native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
 Learn more in the official [Firebase Docs](https://firebase.google.com/docs/analytics/).
 
-
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅              | ✅                | ✅          | ✅             | ✅   |
-
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-firebase-core expo-firebase-analytics`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-firebase-analytics).
+<InstallSection packageName="expo-firebase-analytics" />
 
 When using the web-platform, you'll also need to run `expo install firebase`, which install the Firebase JS SDK.
-
 
 ## Configuration
 
 To use this package, the native Firebase configurations needs to be added to your app.
 [Please follow this guide on how to set up Native Firebase.](../../guides/setup-native-firebase)
 
-
 ## Expo Client: Limitations & configuration
 
 The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since the standard Expo Client loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
 
-Instead, the standard Expo client relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native lifecyle events are not recorded in the standard client, but you can still use `logEvent` to record events.
+Instead, the standard Expo client relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use `logEvent` to record events.
 
 You may want to use Firebase Analytics in Expo client to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To do set this up, ensure that the Firebase web configuration is set in `app.json` and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
 
 **app.json**
+
 ```json
 {
   "expo": {
     "web": {
-      "config" {
+      "config": {
         "firebase": {
           "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
           ...
@@ -57,7 +52,6 @@ You may want to use Firebase Analytics in Expo client to verify that you are log
 ```
 
 > This limitation only applies to the Expo Client in the App/Play store, standalone builds, custom clients & bare apps support the full native Firebase Analytics experience.
-
 
 ## Optional: Enable AdSupport in Bare Workflow
 
@@ -73,7 +67,6 @@ To enable the AdSupport framework:
 
 [Learn more in the Firebase Docs](https://firebase.google.com/support/guides/analytics-adsupport)
 
-
 ## API
 
 ```js
@@ -86,15 +79,16 @@ To use web analytics, you'll also need to install the peer dependency **firebase
 
 ### logEvent
 
-```tsx
+```ts
 logEvent(name: string, properties?: { [key: string]: any }): Promise<void>
 ```
 
 Logs an app event. The event can have up to 25 parameters. Events with the same name must have
 the same parameters. Up to 500 event names are supported. Using predefined events and/or
 parameters is recommended for optimal reporting.
- 
+
 The following event names are reserved and cannot be used:
+
 - `ad_activeview`
 - `ad_click`
 - `ad_exposure`
@@ -120,8 +114,8 @@ The following event names are reserved and cannot be used:
 
 | Name       | Type   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| name       | string | The name of the event. Should contain 1 to 40 alphanumeric characters or underscores. The name must start with an alphabetic character. Some event names are reserved. The "firebase_", "google_", and "ga_" prefixes are reserved and should not be used. Note that event names are case-sensitive and that logging two events whose names differ only in case will result in two distinct events.                                                                                                                                              |
-| properties | Object | The dictionary of event parameters. Passing `undefined` indicates that the event has no parameters. Parameter names can be up to 40 characters long and must start with an alphabetic character and contain only alphanumeric characters and underscores. Only `String` and `Number` (signed 64-bit integer and 64-bit floating-point number) parameter types are supported. `String` parameter values can be up to 100 characters long. The "firebase_", "google_", and "ga_" prefixes are reserved and should not be used for parameter names. |
+| name       | string | The name of the event. Should contain 1 to 40 alphanumeric characters or underscores. The name must start with an alphabetic character. Some event names are reserved. The `firebase_`, `google_`, and `ga_` prefixes are reserved and should not be used. Note that event names are case-sensitive and that logging two events whose names differ only in case will result in two distinct events.                                                                                                                                              |
+| properties | Object | The dictionary of event parameters. Passing `undefined` indicates that the event has no parameters. Parameter names can be up to 40 characters long and must start with an alphabetic character and contain only alphanumeric characters and underscores. Only `String` and `Number` (signed 64-bit integer and 64-bit floating-point number) parameter types are supported. `String` parameter values can be up to 100 characters long. The `firebase_`, `google_`, and `ga_` prefixes are reserved and should not be used for parameter names. |
 
 #### Example
 
@@ -135,7 +129,7 @@ await Analytics.logEvent('ButtonTapped', {
 
 ### setAnalyticsCollectionEnabled
 
-```tsx
+```ts
 setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void>
 ```
 
@@ -149,13 +143,13 @@ Sets whether analytics collection is enabled for this app on this device. This s
 
 #### Example
 
-```tsx
+```ts
 await Analytics.setAnalyticsCollectionEnabled(false);
 ```
 
 ### setCurrentScreen
 
-```tsx
+```ts
 setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>
 ```
 
@@ -177,7 +171,7 @@ await Analytics.setCurrentScreen('GiveGithubStarsScreen');
 
 ### setSessionTimeoutDuration
 
-```tsx
+```ts
 setSessionTimeoutDuration(milliseconds: number): Promise<void>
 ```
 
@@ -191,14 +185,14 @@ Sets the interval of inactivity in seconds that terminates the current session. 
 
 #### Example
 
-```tsx
+```ts
 // 15 mins
 await Analytics.setSessionTimeoutDuration(900000);
 ```
 
 ### setUserId
 
-```tsx
+```ts
 setUserId(userId: string | null): Promise<void>
 ```
 
@@ -212,13 +206,13 @@ Sets the user ID property. This feature must be used in accordance with [Google'
 
 #### Example
 
-```tsx
+```ts
 await Analytics.setUserId('my_user_uid');
 ```
 
 ### setUserProperty
 
-```tsx
+```ts
 setUserProperty(name: string, value: string | null): Promise<void>
 ```
 
@@ -226,6 +220,7 @@ Sets a user property to a given value. Up to 25 user property names are supporte
 user property values persist throughout the app life-cycle and across sessions.
 
 The following user property names are reserved and cannot be used:
+
 - `first_open_time`
 - `last_deep_link_referrer`
 - `user_id`
@@ -234,18 +229,18 @@ The following user property names are reserved and cannot be used:
 
 | Name  | Type            | Description                                                                                                                                                                                                                                                  |
 | ----- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| name  | `string`        | The name of the user property to set. Should contain 1 to 24 alphanumeric characters or underscores and must start with an alphabetic character. The "firebase_", "google_", and "ga_" prefixes are reserved and should not be used for user property names. |
+| name  | `string`        | The name of the user property to set. Should contain 1 to 24 alphanumeric characters or underscores and must start with an alphabetic character. The `firebase_`, `google_`, and `ga_` prefixes are reserved and should not be used for user property names. |
 | value | `string | null` | The value of the user property. Values can be up to 36 characters long. Setting the value to null removes the user property.                                                                                                                                 |
 
 #### Example
 
-```tsx
+```ts
 await Analytics.setUserProperty('favorite_batmobile', '1989 Burton-mobile');
 ```
 
 ### resetAnalyticsData
 
-```tsx
+```ts
 resetAnalyticsData(): Promise<void>
 ```
 
@@ -253,13 +248,13 @@ Clears all analytics data for this instance from the device and resets the app i
 
 #### Example
 
-```tsx
+```ts
 await Analytics.resetAnalyticsData();
 ```
 
 ### setUserProperties
 
-```tsx
+```ts
 setUserProperties(properties: { [key: string]: string }): Promise<void>
 ```
 
@@ -273,16 +268,15 @@ Sets multiple user properties to the supplied values.
 
 #### Example
 
-```tsx
+```ts
 await Analytics.setUserProperties({
   loves_expo: 'a lot',
 });
 ```
 
-
 ### setUnavailabilityLogging
 
-```tsx
+```ts
 setUnavailabilityLogging(isEnabled: boolean): void
 ```
 
@@ -301,11 +295,20 @@ on the Expo client.
 
 #### Example
 
-```tsx
+```ts
 // Disable the warning & log messages on the Expo client
 Analytics.setUnavailabilityLogging(false);
 ```
 
+### setDebugModeEnabled
+
+```tsx
+setDebugModeEnabled(isEnabled: boolean): Promise<void>
+```
+
+Enables debug mode *(Expo client only)* so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+
+This option is **only available on the standard Expo client**. When using a standalone build, the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
 
 # Examples
 
@@ -313,7 +316,7 @@ Analytics.setUnavailabilityLogging(false);
 
 You can gain deeper insight into what works and what doesn't by using the `logEvent` property. Also it's just a lot of fun to see that people actually use the features you work hard on! 😍
 
-```tsx
+```ts
 /*
  * Say we are in a tinder clone, and a user presses the card to view more
  * information on a user. We should track this event so we can see if people
@@ -323,7 +326,7 @@ You can gain deeper insight into what works and what doesn't by using the `logEv
  * to dismiss again, then we should consider making it possible to look
  * through photos without having to enter the profile.
  */
-onPressProfileButton = (uid) => {
+onPressProfileButton = uid => {
   Analytics.logEvent('ExpandProfile', {
     /*
      * We want to know if the user came from from the swipe card as
@@ -340,7 +343,7 @@ onPressProfileButton = (uid) => {
     screen: 'profile',
     purpose: 'Viewing more info on a user',
   });
-}
+};
 ```
 
 ## React Navigation

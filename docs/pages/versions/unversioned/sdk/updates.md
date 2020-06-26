@@ -9,7 +9,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -17,13 +17,15 @@ The `Updates` API from **`expo`** allows you to programatically control and resp
 
 Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
 
+> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo client, run `expo publish` and then open the published version of your app with the Expo client. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
+
 ## API
 
 ```js
 import * as Updates from 'expo-updates';
 ```
 
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest']} />
+<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel', 'Updates.updateId']} />
 
 <TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
 
@@ -39,13 +41,25 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) The [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+
+In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
+
+### `Updates.releaseChannel`
+
+(_string_) The name of the release channel currently configured in this standalone or bare app.
+
+### `Updates.updateId`
+
+(_string | null_) If `expo-updates` is enabled, the UUID that uniquely identifies the currently running update. The UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and will always use lowercase letters. In development mode, or any other environment in which `expo-updates` is disabled, this value is null.
 
 ## Methods
 
 ### `Updates.reloadAsync()`
 
 Instructs the app to reload using the most recently downloaded version. This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+
+It is not recommended to place any meaningful logic after a call to `await Updates.reloadAsync()`. This is because the `Promise` is resolved after verifying that the app can be reloaded, and immediately before posting an asynchronous task to the main thread to actually reload the app. It is unsafe to make any assumptions about whether any more JS code will be executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and the state of the native module and main threads.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 

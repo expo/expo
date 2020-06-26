@@ -1,11 +1,12 @@
 ---
 title: ImagePicker
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-picker'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-image-picker'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '../../../../components/plugins/Video'
+import Video from '~/components/plugins/Video';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
@@ -17,9 +18,66 @@ import Video from '../../../../components/plugins/Video'
 
 <InstallSection packageName="expo-image-picker" />
 
-## Usage
+## Example Usage
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+<SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+
+```js
+import React, { useState, useEffect } from 'react';
+import { Button, Image, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+
+export default function ImagePickerExample() {
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      if (Constants.platform.ios) {
+        const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button title="Pick an image from camera roll" onPress={pickImage} />
+      {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+    </View>
+  );
+}
+```
+
+</SnackInline>
+
+When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:
+
+```javascript
+{
+  "cancelled":false,
+  "height":1611,
+  "width":2148,
+  "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
+}
+```
 
 ## API
 
@@ -29,7 +87,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 ### `ImagePicker.requestCameraPermissionsAsync()`
 
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
+Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`. This does nothing on web because the browser camera is not used.
 
 #### Returns
 
@@ -37,7 +95,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ### `ImagePicker.requestCameraRollPermissionsAsync()`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
+Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`. This does nothing on web.
 
 #### Returns
 
@@ -61,7 +119,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
-Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only.
+Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
 #### Arguments
 
@@ -95,7 +153,7 @@ Otherwise, returns `{ cancelled: false, uri, width, height, type }` where `uri` 
 
 ### `ImagePicker.launchCameraAsync(options)`
 
-Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`. On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required.
+Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`. On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
 #### Arguments
 
@@ -126,19 +184,6 @@ The `uri` property is a URI to the local image or video file (usable as the sour
 The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data; prepared it with `data:image/jpeg;base64,` to create a data URI, which you can use as the source of an `Image` element, for example.
 The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
 
-<SnackEmbed snackId="@charliecruzan/imagepickerfromcameraroll34" />
-
-When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:
-
-```javascript
-{
-  "cancelled":false,
-  "height":1611,
-  "width":2148,
-  "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
-}
-```
-
 ## Enums
 
 ### `ImagePicker.MediaTypeOptions`
@@ -162,5 +207,5 @@ When you run this example and pick an image, you will see the image that you pic
 | `VideoExportPreset.H264_1280x720`  | 6     | 1280 x 720            | H.264                       | AAC                         |
 | `VideoExportPreset.H264_1920x1080` | 7     | 1920 x 1080           | H.264                       | AAC                         |
 | `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
-| `VideoExportPreset.HEVC1920x1080`  | 9     | 1920 x 1080           | HEVC                        | AAC                         |
-| `VideoExportPreset.HEVC3840x2160`  | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+| `VideoExportPreset.HEVC_1920x1080` | 9     | 1920 x 1080           | HEVC                        | AAC                         |
+| `VideoExportPreset.HEVC_3840x2160` | 10    | 3840 x 2160           | HEVC                        | AAC                         |

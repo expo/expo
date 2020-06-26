@@ -50,7 +50,7 @@ For bare React Native apps, you need to add those keys manually. You can do it b
 
 Make sure that in your `AppDelegate.h`, `AppDelegate` subclasses the `UMAppDelegateWrapper` class from `@unimodules/core`, like so:
 
-```objective-c
+```objc
 #import <UMCore/UMAppDelegateWrapper.h>
 
 @interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>

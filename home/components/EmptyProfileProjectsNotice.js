@@ -5,10 +5,10 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
-import { StyledView } from './Views';
-import { StyledText } from './Text';
 import SharedStyles from '../constants/SharedStyles';
 import PrimaryButton from './PrimaryButton';
+import { StyledText } from './Text';
+import { StyledView } from './Views';
 
 export default class EmptyProfileProjectsNotice extends React.Component {
   render() {
@@ -41,7 +41,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
   }
 
   _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/publishing/');
+    WebBrowser.openBrowserAsync('https://docs.expo.io/workflow/publishing/');
   };
 }
 

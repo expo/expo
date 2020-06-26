@@ -1,30 +1,32 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { AppState, Linking, Platform, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Linking, Platform } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
   RedirectEvent,
-  WebBrowserOpenOptions,
   WebBrowserAuthSessionResult,
-  WebBrowserCustomTabsResults,
-  WebBrowserResult,
-  WebBrowserRedirectResult,
-  WebBrowserMayInitWithUrlResult,
-  WebBrowserWarmUpResult,
   WebBrowserCoolDownResult,
+  WebBrowserCustomTabsResults,
+  WebBrowserMayInitWithUrlResult,
+  WebBrowserOpenOptions,
+  WebBrowserRedirectResult,
+  WebBrowserResult,
   WebBrowserResultType,
+  WebBrowserWarmUpResult,
+  WebBrowserWindowFeatures,
 } from './WebBrowser.types';
 
 export {
-  WebBrowserOpenOptions,
   WebBrowserAuthSessionResult,
-  WebBrowserCustomTabsResults,
-  WebBrowserResult,
-  WebBrowserRedirectResult,
-  WebBrowserMayInitWithUrlResult,
-  WebBrowserWarmUpResult,
   WebBrowserCoolDownResult,
+  WebBrowserCustomTabsResults,
+  WebBrowserMayInitWithUrlResult,
+  WebBrowserOpenOptions,
+  WebBrowserRedirectResult,
+  WebBrowserResult,
   WebBrowserResultType,
+  WebBrowserWarmUpResult,
+  WebBrowserWindowFeatures,
 };
 
 const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {
@@ -107,6 +109,9 @@ export async function openAuthSessionAsync(
     if (!ExponentWebBrowser.openAuthSessionAsync) {
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
     }
+    if (Platform.OS === 'web') {
+      return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, browserParams);
+    }
     return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
   } else {
     return _openAuthSessionPolyfillAsync(url, redirectUrl, browserParams);
@@ -165,7 +170,17 @@ let _redirectHandler: ((event: RedirectEvent) => void) | null = null;
 // returns to active
 let _onWebBrowserCloseAndroid: null | (() => void) = null;
 
+// If the initial AppState.currentState is null, we assume that the first call to
+// AppState#change event is not actually triggered by a real change,
+// is triggered instead by the bridge capturing the current state
+// (https://reactnative.dev/docs/appstate#basic-usage)
+let _isAppStateAvailable: boolean = AppState.currentState !== null;
 function _onAppStateChangeAndroid(state: AppStateStatus) {
+  if (!_isAppStateAvailable) {
+    _isAppStateAvailable = true;
+    return;
+  }
+
   if (state === 'active' && _onWebBrowserCloseAndroid) {
     _onWebBrowserCloseAndroid();
   }

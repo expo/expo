@@ -1,6 +1,6 @@
+import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { Animated, Easing, Image, View } from 'react-native';
-import MaskedView from '@react-native-community/masked-view';
 
 const AnimatedMaskView = Animated.createAnimatedComponent(MaskedView);
 
@@ -8,7 +8,7 @@ interface State {
   text: string;
 }
 
-export default class BasicMaskScreen extends React.Component<{}, State> {
+export default class BasicMaskScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Basic Mask Example',
   };
@@ -25,6 +25,7 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
   componentDidMount() {
     Animated.loop(
       Animated.timing(this._animatedTextValue, {
+        useNativeDriver: false,
         toValue: 360,
         duration: 100,
         easing: Easing.linear,
@@ -81,8 +82,7 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'transparent',
-              }}
-            >
+              }}>
               <Image
                 style={{ width }}
                 resizeMode="contain"
@@ -102,13 +102,11 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
                       }),
                     },
                   ],
-                }}
-              >
+                }}>
                 {this.state.text}
               </Animated.Text>
             </View>
-          }
-        >
+          }>
           <Image style={{ width, height }} source={require('../../assets/images/example3.jpg')} />
         </AnimatedMaskView>
       </View>

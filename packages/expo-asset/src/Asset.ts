@@ -69,7 +69,7 @@ export class Asset {
     }
   }
 
-  static loadAsync(moduleId: number | number[]): Promise<void[]> {
+  static loadAsync(moduleId: number | number[]): Promise<Asset[]> {
     const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
     return Promise.all(moduleIds.map(moduleId => Asset.fromModule(moduleId).downloadAsync()));
   }
@@ -160,15 +160,15 @@ export class Asset {
     return asset;
   }
 
-  async downloadAsync(): Promise<void> {
+  async downloadAsync(): Promise<this> {
     if (this.downloaded) {
-      return;
+      return this;
     }
     if (this.downloading) {
       await new Promise((resolve, reject) => {
         this._downloadCallbacks.push({ resolve, reject });
       });
-      return;
+      return this;
     }
     this.downloading = true;
 
@@ -194,5 +194,6 @@ export class Asset {
       this.downloading = false;
       this._downloadCallbacks = [];
     }
+    return this;
   }
 }

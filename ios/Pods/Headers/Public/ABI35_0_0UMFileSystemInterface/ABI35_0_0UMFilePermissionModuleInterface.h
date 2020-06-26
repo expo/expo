@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/UMFileSystemInterface/ABI35_0_0UMFileSystemInterface/ABI35_0_0UMFilePermissionModuleInterface.h

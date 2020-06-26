@@ -1,6 +1,6 @@
 ---
 title: TaskManager
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-task-manager'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-task-manager'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -50,7 +50,7 @@ For bare React Native apps, you need to add those keys manually. You can do it b
 
 Make sure that in your `AppDelegate.h`, `AppDelegate` subclasses the `UMAppDelegateWrapper` class from `@unimodules/core`, like so:
 
-```objective-c
+```objc
 #import <UMCore/UMAppDelegateWrapper.h>
 
 @interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>

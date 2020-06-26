@@ -31,8 +31,14 @@ class RNSharedElementDrawable extends Drawable {
     GENERIC("generic");
 
     private final String value;
-    ViewType(final String newValue) { value = newValue;}
-    public String getValue() { return value; }
+
+    ViewType(final String newValue) {
+      value = newValue;
+    }
+
+    public String getValue() {
+      return value;
+    }
   }
 
   static private String LOG_TAG = "RNSharedElementDrawable";
@@ -58,10 +64,10 @@ class RNSharedElementDrawable extends Drawable {
   }
 
   ViewType update(
-    RNSharedElementContent content,
-    RNSharedElementStyle style,
-    float position
-    ) {
+          RNSharedElementContent content,
+          RNSharedElementStyle style,
+          float position
+  ) {
     boolean invalidated = false;
 
     // Update content
@@ -83,9 +89,9 @@ class RNSharedElementDrawable extends Drawable {
         case REACTIMAGEVIEW:
         case IMAGEVIEW:
           if ((mStyle.compare(style) &
-            (RNSharedElementStyle.PROP_BORDER
-              | RNSharedElementStyle.PROP_BACKGROUND_COLOR
-              | RNSharedElementStyle.PROP_SCALETYPE)) != 0) {
+                  (RNSharedElementStyle.PROP_BORDER
+                          | RNSharedElementStyle.PROP_BACKGROUND_COLOR
+                          | RNSharedElementStyle.PROP_SCALETYPE)) != 0) {
             //Log.d(LOG_TAG, "drawableChanged, viewType: " + viewType + ", changes: " + mStyle.compare(style));
             invalidated = true;
           } else {
@@ -94,8 +100,8 @@ class RNSharedElementDrawable extends Drawable {
           break;
         case PLAIN:
           if ((mStyle.compare(style) &
-            (RNSharedElementStyle.PROP_BORDER
-              | RNSharedElementStyle.PROP_BACKGROUND_COLOR)) != 0) {
+                  (RNSharedElementStyle.PROP_BORDER
+                          | RNSharedElementStyle.PROP_BACKGROUND_COLOR)) != 0) {
             //Log.d(LOG_TAG, "drawableChanged, viewType: " + viewType + ", changes: " + mStyle.compare(style));
             invalidated = true;
           } else {
@@ -156,9 +162,9 @@ class RNSharedElementDrawable extends Drawable {
       return;
     }
     if ((mStyle.borderTopLeftRadius == 0) &&
-      (mStyle.borderTopRightRadius == 0) &&
-      (mStyle.borderBottomLeftRadius == 0) &&
-      (mStyle.borderBottomRightRadius == 0)) {
+            (mStyle.borderTopRightRadius == 0) &&
+            (mStyle.borderBottomLeftRadius == 0) &&
+            (mStyle.borderBottomRightRadius == 0)) {
       outline.setRect(getBounds());
       return;
     }
@@ -170,18 +176,18 @@ class RNSharedElementDrawable extends Drawable {
     }
     float extraRadiusForOutline = mStyle.borderWidth / 2f;
     mPathForBorderRadiusOutline.addRoundRect(
-      new RectF(getBounds()),
-      new float[]{
-        mStyle.borderTopLeftRadius + extraRadiusForOutline,
-        mStyle.borderTopLeftRadius + extraRadiusForOutline,
-        mStyle.borderTopRightRadius + extraRadiusForOutline,
-        mStyle.borderTopRightRadius + extraRadiusForOutline,
-        mStyle.borderBottomRightRadius + extraRadiusForOutline,
-        mStyle.borderBottomRightRadius + extraRadiusForOutline,
-        mStyle.borderBottomLeftRadius + extraRadiusForOutline,
-        mStyle.borderBottomLeftRadius + extraRadiusForOutline
-      },
-      Path.Direction.CW
+            new RectF(getBounds()),
+            new float[]{
+                    mStyle.borderTopLeftRadius + extraRadiusForOutline,
+                    mStyle.borderTopLeftRadius + extraRadiusForOutline,
+                    mStyle.borderTopRightRadius + extraRadiusForOutline,
+                    mStyle.borderTopRightRadius + extraRadiusForOutline,
+                    mStyle.borderBottomRightRadius + extraRadiusForOutline,
+                    mStyle.borderBottomRightRadius + extraRadiusForOutline,
+                    mStyle.borderBottomLeftRadius + extraRadiusForOutline,
+                    mStyle.borderBottomLeftRadius + extraRadiusForOutline
+            },
+            Path.Direction.CW
     );
     outline.setConvexPath(mPathForBorderRadiusOutline);
   }
@@ -249,10 +255,10 @@ class RNSharedElementDrawable extends Drawable {
     roundingParams.setBorderWidth(style.borderWidth);
     roundingParams.setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
     roundingParams.setCornersRadii(
-      style.borderTopLeftRadius,
-      style.borderTopRightRadius,
-      style.borderBottomRightRadius,
-      style.borderBottomLeftRadius
+            style.borderTopLeftRadius,
+            style.borderTopRightRadius,
+            style.borderBottomRightRadius,
+            style.borderBottomLeftRadius
     );
     hierarchy.setRoundingParams(roundingParams);
     hierarchy.setBackgroundImage(null);

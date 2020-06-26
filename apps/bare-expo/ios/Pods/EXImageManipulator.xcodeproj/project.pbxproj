@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		899CF8E043C063CBD826287A8699760F /* EXImageManipulatorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 322709F867ACA6C636E8C6241B0B0BD9 /* EXImageManipulatorModule.m */; };
-		B8887956EC7B1C1FF170B37F14E65932 /* EXImageManipulatorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = E381BD4A6EF21A1C1C7E766136114CBF /* EXImageManipulatorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D64405A24E00BCE8A96A3C279927E699 /* EXImageManipulator-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B1B5F638F469E6409894EEB2A0FC369 /* EXImageManipulator-dummy.m */; };
+		899CF8E043C063CBD826287A8699760F /* EXImageManipulatorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA110F6A37A1413967F3821743383B /* EXImageManipulatorModule.m */; };
+		B8887956EC7B1C1FF170B37F14E65932 /* EXImageManipulatorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A3EF6ED545EE88CBFD1EE5840025DD04 /* EXImageManipulatorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D64405A24E00BCE8A96A3C279927E699 /* EXImageManipulator-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E16B55E5521C0043C8DEC3C2FC64DAB /* EXImageManipulator-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,16 +37,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1731831C7B37D21B5E9A06CE82286947 /* EXImageManipulator.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXImageManipulator.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		1B1B5F638F469E6409894EEB2A0FC369 /* EXImageManipulator-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXImageManipulator-dummy.m"; sourceTree = "<group>"; };
-		322709F867ACA6C636E8C6241B0B0BD9 /* EXImageManipulatorModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageManipulatorModule.m; path = EXImageManipulator/EXImageManipulatorModule.m; sourceTree = "<group>"; };
-		3D2609D112AD4A9F29E4D6983334068F /* EXImageManipulator.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImageManipulator.xcconfig; sourceTree = "<group>"; };
+		123A65CB7345BADED809AF5C9D15A8DB /* EXImageManipulator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImageManipulator.debug.xcconfig; sourceTree = "<group>"; };
+		4E16B55E5521C0043C8DEC3C2FC64DAB /* EXImageManipulator-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXImageManipulator-dummy.m"; sourceTree = "<group>"; };
 		5B09610C5822DD6613C7BA916843583A /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		5F8F800A67BAF534D1BC1C45B1310CC6 /* EXImageManipulator-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXImageManipulator-prefix.pch"; sourceTree = "<group>"; };
+		60AA110F6A37A1413967F3821743383B /* EXImageManipulatorModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageManipulatorModule.m; path = EXImageManipulator/EXImageManipulatorModule.m; sourceTree = "<group>"; };
+		65621EBE673B1025F52DA90597A7AB3B /* EXImageManipulator.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXImageManipulator.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		77A6FAFEE0AAEAED78EE1E0ECA3DE9FB /* EXImageManipulator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXImageManipulator.release.xcconfig; sourceTree = "<group>"; };
+		A2EFC64667C609ABC8D056AB9C14E391 /* EXImageManipulator-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXImageManipulator-prefix.pch"; sourceTree = "<group>"; };
+		A3EF6ED545EE88CBFD1EE5840025DD04 /* EXImageManipulatorModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageManipulatorModule.h; path = EXImageManipulator/EXImageManipulatorModule.h; sourceTree = "<group>"; };
 		A4B23D3DBA08004FB36B07E39B931295 /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
 		C238B94BC0298FFA5E8542B0DA5E66E6 /* libEXImageManipulator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXImageManipulator.a; path = libEXImageManipulator.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D68E48115F7A10E5EEB7521064DE026D /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		E381BD4A6EF21A1C1C7E766136114CBF /* EXImageManipulatorModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageManipulatorModule.h; path = EXImageManipulator/EXImageManipulatorModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,21 +61,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		41E04242D20C889876AFC1F6D9050C8C /* Pod */ = {
+		0986CACEE67523686D24EE79F879516C /* EXImageManipulator */ = {
 			isa = PBXGroup;
 			children = (
-				1731831C7B37D21B5E9A06CE82286947 /* EXImageManipulator.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		43E5CDE6DBB3C7027D3490163FC7E028 /* EXImageManipulator */ = {
-			isa = PBXGroup;
-			children = (
-				E381BD4A6EF21A1C1C7E766136114CBF /* EXImageManipulatorModule.h */,
-				322709F867ACA6C636E8C6241B0B0BD9 /* EXImageManipulatorModule.m */,
-				41E04242D20C889876AFC1F6D9050C8C /* Pod */,
-				86C90763BEEEF26AB52F15A18B3C61C2 /* Support Files */,
+				A3EF6ED545EE88CBFD1EE5840025DD04 /* EXImageManipulatorModule.h */,
+				60AA110F6A37A1413967F3821743383B /* EXImageManipulatorModule.m */,
+				6BA86C264BA5A523854A19F386D84661 /* Pod */,
+				6E02336F981C9C7B896721A3B66FFE51 /* Support Files */,
 			);
 			name = EXImageManipulator;
 			path = "../../../../packages/expo-image-manipulator/ios";
@@ -90,12 +83,21 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		86C90763BEEEF26AB52F15A18B3C61C2 /* Support Files */ = {
+		6BA86C264BA5A523854A19F386D84661 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				3D2609D112AD4A9F29E4D6983334068F /* EXImageManipulator.xcconfig */,
-				1B1B5F638F469E6409894EEB2A0FC369 /* EXImageManipulator-dummy.m */,
-				5F8F800A67BAF534D1BC1C45B1310CC6 /* EXImageManipulator-prefix.pch */,
+				65621EBE673B1025F52DA90597A7AB3B /* EXImageManipulator.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		6E02336F981C9C7B896721A3B66FFE51 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				4E16B55E5521C0043C8DEC3C2FC64DAB /* EXImageManipulator-dummy.m */,
+				A2EFC64667C609ABC8D056AB9C14E391 /* EXImageManipulator-prefix.pch */,
+				123A65CB7345BADED809AF5C9D15A8DB /* EXImageManipulator.debug.xcconfig */,
+				77A6FAFEE0AAEAED78EE1E0ECA3DE9FB /* EXImageManipulator.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXImageManipulator";
@@ -113,7 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				6639CDF7DEE797E6934652A793F4495C /* Dependencies */,
-				43E5CDE6DBB3C7027D3490163FC7E028 /* EXImageManipulator */,
+				0986CACEE67523686D24EE79F879516C /* EXImageManipulator */,
 				95B6F30068AB89FAA986C1B55E292D61 /* Frameworks */,
 				8BC25204830990B7A24B9FA35287DB44 /* Products */,
 			);
@@ -293,9 +295,9 @@
 			};
 			name = Debug;
 		};
-		588F9ED9CACE3B82F6C3488F70F79847 /* Release */ = {
+		4F09DB7ACC24A411EF27CA8B3E8CC894 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D2609D112AD4A9F29E4D6983334068F /* EXImageManipulator.xcconfig */;
+			baseConfigurationReference = 77A6FAFEE0AAEAED78EE1E0ECA3DE9FB /* EXImageManipulator.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -313,14 +315,15 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		94342C0474E55ADE7EEDEBF81E3BCBBD /* Debug */ = {
+		ABB9CC35361E0E2E7EBBDB75CFF1DA6A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D2609D112AD4A9F29E4D6983334068F /* EXImageManipulator.xcconfig */;
+			baseConfigurationReference = 123A65CB7345BADED809AF5C9D15A8DB /* EXImageManipulator.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -338,6 +341,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -408,8 +412,8 @@
 		2F4CBBF731762860365A1831451A1CE6 /* Build configuration list for PBXNativeTarget "EXImageManipulator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				94342C0474E55ADE7EEDEBF81E3BCBBD /* Debug */,
-				588F9ED9CACE3B82F6C3488F70F79847 /* Release */,
+				ABB9CC35361E0E2E7EBBDB75CFF1DA6A /* Debug */,
+				4F09DB7ACC24A411EF27CA8B3E8CC894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

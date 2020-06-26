@@ -28,6 +28,8 @@ class FirebaseAnalyticsJS {
   private options: FirebaseAnalyticsJSOptions;
   private flushEventsPromise: Promise<void> = Promise.resolve();
   private flushEventsTimer: any;
+  private lastTime: number = -1;
+  private sequenceNr: number = 1;
 
   constructor(config: FirebaseAnalyticsJSConfig, options: FirebaseAnalyticsJSOptions) {
     // Verify the measurement- & client Ids
@@ -65,39 +67,57 @@ class FirebaseAnalyticsJS {
       ...options.customArgs,
       v: 2,
       tid: config.measurementId,
-      cid: this.options.clientId,
+      cid: options.clientId,
+      sid: options.sessionId,
+      _s: this.sequenceNr++,
+      seg: 1,
     };
+    if (options.sessionNumber) queryArgs.sct = options.sessionNumber;
     if (options.userLanguage) queryArgs.ul = options.userLanguage;
     if (options.appName) queryArgs.an = options.appName;
     if (options.appVersion) queryArgs.av = options.appVersion;
     if (options.docTitle) queryArgs.dt = options.docTitle;
     if (options.docLocation) queryArgs.dl = options.docLocation;
     if (options.screenRes) queryArgs.sr = options.screenRes;
+    if (options.debug) queryArgs._dbg = 1;
+    if (this.sequenceNr === 2) queryArgs._ss = 1; // Session start
     let body;
 
+    const lastTime = this.lastTime;
     if (events.size > 1) {
       body = '';
       events.forEach(event => {
-        body += encodeQueryArgs(event) + '\n';
+        body += encodeQueryArgs(event, this.lastTime) + '\n';
+        this.lastTime = event._et;
       });
     } else if (events.size === 1) {
       const event = events.values().next().value;
+      this.lastTime = event._et;
       queryArgs = {
         ...event,
         ...queryArgs,
       };
     }
-    const args = encodeQueryArgs(queryArgs);
-    if (body) console.log(`FirebaseAnalyticsJS body: ${body}...`);
-    await fetch(`${this.url}?${args}`, {
+    const args = encodeQueryArgs(queryArgs, lastTime);
+    const url = `${this.url}?${args}`;
+    await fetch(url, {
       method: 'POST',
+      mode: 'no-cors',
       cache: 'no-cache',
+      headers: {
+        'Content-Type': 'text/plain;charset=UTF-8',
+      },
+      ...(options.headers
+        ? {
+            headers: options.headers,
+          }
+        : {}),
       body,
     });
   }
 
   private async addEvent(event: FirebaseAnalyticsJSCodedEvent) {
-    const { userId, userProperties, screenName } = this;
+    const { userId, userProperties, screenName, options } = this;
 
     // Extend the event with the currently set User-id
     if (userId) event.uid = userId;
@@ -119,15 +139,18 @@ class FirebaseAnalyticsJS {
 
     // Start debounce timer
     if (!this.flushEventsTimer) {
-      this.flushEventsTimer = setTimeout(async () => {
-        this.flushEventsTimer = undefined;
-        try {
-          await this.flushEventsPromise;
-        } catch (err) {
-          // nop
-        }
-        this.flushEventsPromise = this.flushEvents();
-      }, this.options.maxCacheTime);
+      this.flushEventsTimer = setTimeout(
+        async () => {
+          this.flushEventsTimer = undefined;
+          try {
+            await this.flushEventsPromise;
+          } catch (err) {
+            // nop
+          }
+          this.flushEventsPromise = this.flushEvents();
+        },
+        options.debug ? 10 : options.maxCacheTime
+      );
     }
   }
 
@@ -149,6 +172,18 @@ class FirebaseAnalyticsJS {
     }
   }
 
+  private static isValidName(name: string, maxLength: number): boolean {
+    return !!(
+      name &&
+      name.length &&
+      name.length <= maxLength &&
+      name.match(/^[A-Za-z][A-Za-z_\d]*$/) &&
+      !name.startsWith('firebase_') &&
+      !name.startsWith('google_') &&
+      !name.startsWith('ga_')
+    );
+  }
+
   /**
    * Parses an event (as passed to logEvent) and throws an error when the
    * event-name or parameters are invalid.
@@ -161,18 +196,9 @@ class FirebaseAnalyticsJS {
     eventName: string,
     eventParams?: { [key: string]: any }
   ): FirebaseAnalyticsJSCodedEvent {
-    if (
-      !eventName ||
-      !eventName.length ||
-      eventName.length > 40 ||
-      eventName[0] === '_' ||
-      !eventName.match(/^[A-Za-z_]+$/) ||
-      eventName.startsWith('firebase_') ||
-      eventName.startsWith('google_') ||
-      eventName.startsWith('ga_')
-    ) {
+    if (!FirebaseAnalyticsJS.isValidName(eventName, 40)) {
       throw new Error(
-        'Invalid event-name specified. Should contain 1 to 40 alphanumeric characters or underscores. The name must start with an alphabetic character.'
+        `Invalid event-name (${eventName}) specified. Should contain 1 to 40 alphanumeric characters or underscores. The name must start with an alphabetic character.`
       );
     }
     const params: FirebaseAnalyticsJSCodedEvent = {
@@ -203,18 +229,9 @@ class FirebaseAnalyticsJS {
     userPropertyName: string,
     userPropertyValue: any
   ): string {
-    if (
-      !userPropertyName.length ||
-      userPropertyName.length > 24 ||
-      userPropertyName[0] === '_' ||
-      !userPropertyName.match(/^[A-Za-z_]+$/) ||
-      userPropertyName === 'user_id' ||
-      userPropertyName.startsWith('firebase_') ||
-      userPropertyName.startsWith('google_') ||
-      userPropertyName.startsWith('ga_')
-    ) {
+    if (!FirebaseAnalyticsJS.isValidName(userPropertyName, 24) || userPropertyName === 'user_id') {
       throw new Error(
-        'Invalid user-property name specified. Should contain 1 to 24 alphanumeric characters or underscores. The name must start with an alphabetic character.'
+        `Invalid user-property name (${userPropertyName}) specified. Should contain 1 to 24 alphanumeric characters or underscores. The name must start with an alphabetic character.`
       );
     }
     if (
@@ -238,6 +255,15 @@ class FirebaseAnalyticsJS {
   async logEvent(eventName: string, eventParams?: { [key: string]: any }): Promise<void> {
     const event = FirebaseAnalyticsJS.parseEvent(this.options, eventName, eventParams);
     if (!this.enabled) return;
+    if (this.options.debug) {
+      console.log(
+        `FirebaseAnalytics event: "${eventName}", params: ${JSON.stringify(
+          eventParams,
+          undefined,
+          2
+        )}`
+      );
+    }
     return this.addEvent(event);
   }
 
@@ -306,14 +332,24 @@ class FirebaseAnalyticsJS {
     this.userId = undefined;
     this.userProperties = undefined;
   }
+
+  /**
+   * Enables or disabled debug mode.
+   */
+  async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
+    this.options.debug = isEnabled;
+  }
 }
 
-function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent): string {
-  const now = Date.now();
-  return Object.keys(queryArgs)
+function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent, lastTime: number): string {
+  let keys = Object.keys(queryArgs);
+  if (lastTime < 0) {
+    keys = keys.filter(key => key !== '_et');
+  }
+  return keys
     .map(key => {
       return `${key}=${encodeURIComponent(
-        key === '_et' ? Math.max(now - queryArgs[key], 0) : queryArgs[key]
+        key === '_et' ? Math.max(queryArgs[key] - lastTime, 0) : queryArgs[key]
       )}`;
     })
     .join('&');

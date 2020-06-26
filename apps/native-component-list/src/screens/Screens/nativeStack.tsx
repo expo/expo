@@ -67,9 +67,9 @@ class App extends Component {
   renderScreen = (key: string) => {
     const index = COLORS.indexOf(key);
     const color = key;
-    const pop = index > 0 ? () => this.stackRef.current.pop() : null;
-    const push = index < 2 ? () => this.stackRef.current.push(COLORS[index + 1]) : null;
-    const remove = index > 1 ? () => this.stackRef.current.remove(1) : null;
+    const pop = index > 0 ? () => this.stackRef.current?.pop() : null;
+    const push = index < 2 ? () => this.stackRef.current?.push(COLORS[index + 1]) : null;
+    const remove = index > 1 ? () => this.stackRef.current?.remove(1) : null;
 
     return (
       <View

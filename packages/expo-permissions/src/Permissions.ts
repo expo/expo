@@ -16,6 +16,8 @@ import {
   PermissionInfo,
 } from './Permissions.types';
 
+export { usePermissions } from './PermissionsHooks';
+
 export {
   PermissionStatus,
   PermissionResponse,
@@ -35,6 +37,22 @@ export const CONTACTS = 'contacts';
 export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
+export const MOTION = 'motion';
+
+// Map corresponding permission to correct package
+const PERMISSION_MODULE_MAPPING = {
+  [CAMERA]: 'expo-camera',
+  [CAMERA_ROLL]: 'expo-media-library',
+  [AUDIO_RECORDING]: 'expo-av',
+  [LOCATION]: 'expo-location',
+  [USER_FACING_NOTIFICATIONS]: 'expo-notifications',
+  [NOTIFICATIONS]: 'expo-notifications',
+  [CONTACTS]: 'expo-contacts',
+  [CALENDAR]: 'expo-calendar',
+  [REMINDERS]: 'expo-calendar',
+  [SYSTEM_BRIGHTNESS]: 'expo-brightness',
+  [MOTION]: 'expo-sensors',
+};
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
   if (Platform.OS === 'ios') {
@@ -54,7 +72,24 @@ async function _handleSinglePermissionRequestIOSAsync(
   type: PermissionType,
   handlePermission: (type: PermissionType) => Promise<PermissionInfo>
 ): Promise<PermissionInfo> {
-  return await handlePermission(type);
+  if (Platform.OS !== 'web' && type === 'motion') {
+    return {
+      status: PermissionStatus.GRANTED,
+      expires: 'never',
+      granted: true,
+      canAskAgain: true,
+    };
+  }
+  try {
+    return await handlePermission(type);
+  } catch (error) {
+    // We recognize the permission's library, so we inform the user to link that library to request the permission.
+    if (error.code === 'E_PERMISSIONS_UNKNOWN' && PERMISSION_MODULE_MAPPING[type]) {
+      const library = PERMISSION_MODULE_MAPPING[type];
+      error.message = `${error.message}, please install and link the package ${PERMISSION_MODULE_MAPPING[type]}, see more at https://github.com/expo/expo/tree/master/packages/${library}`;
+    }
+    throw error;
+  }
 }
 
 async function _handleMultiPermissionsRequestIOSAsync(
@@ -85,6 +120,20 @@ async function _handlePermissionsRequestAsync(
 ): Promise<PermissionResponse> {
   if (!types.length) {
     throw new Error('At least one permission type must be specified');
+  }
+
+  if (Platform.OS !== 'web' && types.length === 1 && types[0] === 'motion') {
+    const approvedPermission = {
+      status: PermissionStatus.GRANTED,
+      expires: 'never',
+      granted: true,
+      canAskAgain: true,
+    };
+    return {
+      ...approvedPermission,
+      // @ts-ignore
+      permissions: { motion: approvedPermission },
+    };
   }
 
   const permissions = await handlePermissions(types);

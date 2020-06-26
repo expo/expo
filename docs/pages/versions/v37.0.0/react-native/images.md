@@ -164,7 +164,7 @@ In some cases you might only want to display an image if it is already in the lo
 
 ## Local Filesystem Images
 
-See [CameraRoll](https://github.com/react-native-community/react-native-cameraroll) for an example of using local resources that are outside of `Images.xcassets`.
+See [MediaLibrary](../../versions/latest/sdk/media-library) for an example of using local resources that are outside of `Images.xcassets`.
 
 ### Best Camera Roll Image
 

@@ -1,7 +1,8 @@
+import * as Calendar from 'expo-calendar';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
-import * as Calendar from 'expo-calendar';
+
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
@@ -14,14 +15,7 @@ const EventRow: React.FunctionComponent<{
   updateEvent: (event: Calendar.Event) => void;
   deleteEvent: (event: Calendar.Event) => void;
   openEventInCalendar: (event: Calendar.Event) => void;
-}> = ({
-  event,
-  getEvent,
-  getAttendees,
-  updateEvent,
-  deleteEvent,
-  openEventInCalendar,
-}) => (
+}> = ({ event, getEvent, getAttendees, updateEvent, deleteEvent, openEventInCalendar }) => (
   <View style={styles.eventRow}>
     <HeadingText>{event.title}</HeadingText>
     <MonoText>{JSON.stringify(event, null, 2)}</MonoText>
@@ -30,10 +24,7 @@ const EventRow: React.FunctionComponent<{
     <ListButton onPress={() => updateEvent(event)} title="Update Event" />
     <ListButton onPress={() => deleteEvent(event)} title="Delete Event" />
     {Platform.OS === 'android' && (
-      <ListButton
-        onPress={() => openEventInCalendar(event)}
-        title="Open in Calendar App"
-      />
+      <ListButton onPress={() => openEventInCalendar(event)} title="Open in Calendar App" />
     )}
   </View>
 );
@@ -68,7 +59,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
     nextYear.setFullYear(nextYear.getFullYear() + 1);
     const events = await Calendar.getEventsAsync([id], yesterday, nextYear);
     this.setState({ events });
-  }
+  };
 
   _addEvent = async (recurring: boolean) => {
     const { calendar } = this.props.navigation.state.params!;
@@ -79,22 +70,22 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
     const timeInOneHour = new Date();
     timeInOneHour.setHours(timeInOneHour.getHours() + 1);
     const newEvent: {
-      title: string,
-      location: string,
-      startDate: Date,
-      endDate: Date,
-      notes: string,
-      timeZone: string,
+      title: string;
+      location: string;
+      startDate: Date;
+      endDate: Date;
+      notes: string;
+      timeZone: string;
       recurrenceRule?: {
         occurrence: number;
         frequency: string;
-      }
+      };
     } = {
       title: 'Celebrate Expo',
       location: '420 Florence St',
       startDate: new Date(),
       endDate: timeInOneHour,
-      notes: 'It\'s cool',
+      notes: "It's cool",
       timeZone: 'America/Los_Angeles',
     };
     if (recurring) {
@@ -110,7 +101,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
     } catch (e) {
       Alert.alert('Event not saved successfully', e.message);
     }
-  }
+  };
 
   _getEvent = async (event: Calendar.Event) => {
     try {
@@ -122,7 +113,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
     } catch (e) {
       Alert.alert('Error finding event', e.message);
     }
-  }
+  };
 
   _getAttendees = async (event: Calendar.Event) => {
     try {
@@ -134,7 +125,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
     } catch (e) {
       Alert.alert('Error finding attendees', e.message);
     }
-  }
+  };
 
   _updateEvent = async (event: Calendar.Event) => {
     const { calendar } = this.props.navigation.state.params!;
@@ -155,7 +146,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
     } catch (e) {
       Alert.alert('Event not saved successfully', e.message);
     }
-  }
+  };
 
   _deleteEvent = async (event: Calendar.Event) => {
     try {
@@ -169,11 +160,11 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
     } catch (e) {
       Alert.alert('Event not deleted successfully', e.message);
     }
-  }
+  };
 
   _openEventInCalendar = (event: Calendar.Event) => {
     Calendar.openEventInCalendar(event.id!);
-  }
+  };
 
   _renderActionButtons = () => {
     return (
@@ -186,7 +177,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
         <Button onPress={() => this._addEvent(true)} title="Add New Recurring Event" />
       </View>
     );
-  }
+  };
 
   render() {
     const events = this.state.events.length ? (

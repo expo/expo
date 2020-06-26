@@ -60,11 +60,7 @@ UM_EXPORT_METHOD_AS(getPresentedNotificationsAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-    NSMutableArray *serializedNotifications = [NSMutableArray new];
-    for (UNNotification *notification in notifications) {
-      [serializedNotifications addObject:[EXNotificationSerializer serializedNotification:notification]];
-    }
-    resolve(serializedNotifications);
+    resolve([self serializeNotifications:notifications]);
   }];
 }
 
@@ -107,11 +103,22 @@ UM_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
   NSString *identifier = notification.request.identifier;
   if ([_presentedNotifications containsObject:identifier]) {
     [_presentedNotifications removeObject:identifier];
+    // TODO(iOS 14): use UNNotificationPresentationOptionList and UNNotificationPresentationOptionBanner
     presentationOptions = UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge;
   }
 
   completionHandler(presentationOptions);
 }
 
+# pragma mark - Helpers
+
+- (NSArray * _Nonnull)serializeNotifications:(NSArray<UNNotification *> * _Nonnull)notifications
+{
+  NSMutableArray *serializedNotifications = [NSMutableArray new];
+  for (UNNotification *notification in notifications) {
+    [serializedNotifications addObject:[EXNotificationSerializer serializedNotification:notification]];
+  }
+  return serializedNotifications;
+}
 
 @end

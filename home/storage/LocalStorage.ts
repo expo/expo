@@ -16,7 +16,7 @@ const Keys = mapValues(
 );
 
 async function getSettingsAsync(): Promise<Settings> {
-  let json = await AsyncStorage.getItem(Keys.Settings);
+  const json = await AsyncStorage.getItem(Keys.Settings);
   if (!json) {
     return {};
   }
@@ -29,8 +29,8 @@ async function getSettingsAsync(): Promise<Settings> {
 }
 
 async function updateSettingsAsync(updatedSettings: Partial<Settings>): Promise<void> {
-  let currentSettings = await getSettingsAsync();
-  let newSettings = {
+  const currentSettings = await getSettingsAsync();
+  const newSettings = {
     ...currentSettings,
     ...updatedSettings,
   };
@@ -45,7 +45,7 @@ async function getSessionAsync() {
     // using the Kernel module instead of AsyncStorage, but we need to
     // continue to check the old location for a little while
     // until all clients in use have migrated over
-    let json = await AsyncStorage.getItem(Keys.Session);
+    const json = await AsyncStorage.getItem(Keys.Session);
     if (json) {
       try {
         results = JSON.parse(json);
@@ -65,7 +65,7 @@ async function saveSessionAsync(session): Promise<void> {
 }
 
 async function getHistoryAsync() {
-  let jsonHistory = await AsyncStorage.getItem(Keys.History);
+  const jsonHistory = await AsyncStorage.getItem(Keys.History);
   if (jsonHistory) {
     try {
       return JSON.parse(jsonHistory);
@@ -97,11 +97,11 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
     // date descending -- we want to pick the most recent experience with this id,
     // in case there are multiple (e.g. somebody was developing against various URLs of the
     // same app)
-    let item2time = item2.time ? item2.time : 0;
-    let item1time = item1.time ? item1.time : 0;
+    const item2time = item2.time ? item2.time : 0;
+    const item1time = item1.time ? item1.time : 0;
     return item2time - item1time;
   });
-  let historyItem = history.find(item => item.manifest && item.manifest.id === experienceId);
+  const historyItem = history.find(item => item.manifest && item.manifest.id === experienceId);
   if (historyItem) {
     return { url: historyItem.url };
   }

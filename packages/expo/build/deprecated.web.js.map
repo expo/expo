@@ -1,0 +1,1 @@
+{"version":3,"file":"deprecated.web.js","sourceRoot":"","sources":["../src/deprecated.web.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,OAAO,MAAM,cAAc,CAAC;AAExC,OAAO,KAAK,OAAO,MAAM,mBAAmB,CAAC;AAE7C,OAAO,EAAE,OAAO,EAAE,OAAO,EAAE,CAAC","sourcesContent":["import * as Linking from 'expo-linking';\n\nimport * as Updates from './Updates/Updates';\n\nexport { Updates, Linking };\n"]}

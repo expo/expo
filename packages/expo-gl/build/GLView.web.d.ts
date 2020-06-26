@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { BaseGLViewProps, ComponentOrHandle, GLSnapshot, SnapshotOptions } from './GLView.types';
 export interface GLViewProps extends BaseGLViewProps {
     onContextCreate: (gl: WebGLRenderingContext) => void;
@@ -16,20 +15,6 @@ export interface GLViewProps extends BaseGLViewProps {
     nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | HTMLCanvasElement | null): any;
 }
 export declare class GLView extends React.Component<GLViewProps> {
-    static propTypes: {
-        onContextCreate: PropTypes.Validator<(...args: any[]) => any>;
-        onContextRestored: PropTypes.Requireable<(...args: any[]) => any>;
-        onContextLost: PropTypes.Requireable<(...args: any[]) => any>;
-        webglContextAttributes: PropTypes.Requireable<object>;
-        /**
-         * [iOS only] Number of samples for Apple's built-in multisampling.
-         */
-        msaaSamples: PropTypes.Requireable<number>;
-        /**
-         * A ref callback for the native GLView
-         */
-        nativeRef_EXPERIMENTAL: PropTypes.Requireable<(...args: any[]) => any>;
-    };
     canvas?: HTMLCanvasElement;
     gl?: WebGLRenderingContext;
     static createContextAsync(): Promise<WebGLRenderingContext | null>;
