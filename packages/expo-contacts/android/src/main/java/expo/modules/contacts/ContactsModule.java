@@ -170,8 +170,14 @@ public class ContactsModule extends ExportedModule {
       ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
 
       if (result.length > 0) {
-        String rawId = String.valueOf(ContentUris.parseId(result[0].uri));
-        promise.resolve(rawId);
+        try (Cursor cursor = getResolver().query(result[0].uri, new String[]{ContactsContract.RawContacts.CONTACT_ID}, null, null, null)) {
+          if (cursor == null) {
+            promise.reject("E_ADD_CONTACT_FAILED", "Couldn't get the contact id.");
+            return;
+          }
+          cursor.moveToNext();
+          promise.resolve(String.valueOf(cursor.getLong(0)));
+        }
       } else {
         promise.reject("E_ADD_CONTACT_FAILED", "Given contact couldn't be added.");
       }
