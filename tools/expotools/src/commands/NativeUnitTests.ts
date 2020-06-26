@@ -44,7 +44,7 @@ export default (program: any) => {
   program
     .command('native-unit-tests')
     .option(
-      '-p --platform <string>',
+      '-p, --platform <string>',
       'Determine for which platform we should run native tests: android, ios or both'
     )
     .description('Runs native unit tests for each unimodules that provides them.')
