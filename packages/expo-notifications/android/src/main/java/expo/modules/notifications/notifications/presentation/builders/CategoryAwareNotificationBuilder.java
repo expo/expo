@@ -46,26 +46,24 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
         e.printStackTrace();
       }
       for (NotificationAction action : actions) {
-        NotificationCompat.Action finalizedAction;
         if (action instanceof TextInputNotificationAction) {
-          PendingIntent intent = getActionIntent(getContext(), (TextInputNotificationAction)action, getNotification());
-          finalizedAction = buildTextInputAction((TextInputNotificationAction)action, intent);
+          builder.addAction(buildTextInputAction((TextInputNotificationAction)action));
         } else {
-          PendingIntent intent = getActionIntent(getContext(), action, getNotification());
-          finalizedAction = buildButtonAction(action, intent);
+          builder.addAction(buildButtonAction(action));
         }
-        builder.addAction(finalizedAction);
       }
     }
 
     return builder;
   }
 
-  private NotificationCompat.Action buildButtonAction(NotificationAction action, PendingIntent intent) {
+  private NotificationCompat.Action buildButtonAction(NotificationAction action) {
+    PendingIntent intent = getActionIntent(getContext(), action, getNotification());
     return new NotificationCompat.Action.Builder(super.getIcon(), action.getTitle(), intent).build();
   }
 
-  private NotificationCompat.Action buildTextInputAction(TextInputNotificationAction action, PendingIntent intent) {
+  private NotificationCompat.Action buildTextInputAction(TextInputNotificationAction action) {
+    PendingIntent intent = getActionIntent(getContext(), action, getNotification());
     RemoteInput remoteInput = new RemoteInput.Builder(TextInputNotificationResponseReceiver.USER_TEXT_RESPONSE)
       .setLabel(action.getPlaceholder())
       .build();
