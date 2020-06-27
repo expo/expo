@@ -28,8 +28,8 @@ export default () => (
       <Tab.Screen
         name={name}
         key={name}
-        component={Screens[name]}
-        options={Screens[name].navigationOptions}
+        component={Screens[name].navigator}
+        options={Screens[name].navigator.navigationOptions}
       />
     ))}
   </Tab.Navigator>

@@ -4,6 +4,7 @@ import * as Linking from 'expo-linking';
 import * as React from 'react';
 
 import RedirectScreen from '../screens/RedirectScreen';
+import MainNavigators from './MainNavigators';
 import MainTabNavigator from './MainTabNavigator';
 
 const Switch = createStackNavigator();
@@ -11,29 +12,13 @@ const Switch = createStackNavigator();
 export const linking = {
   prefixes: [Linking.makeUrl('/')],
   config: {
-    main: {
-      path: '',
-      initialRouteName: 'ExpoApis',
-      screens: {
-        apis: {
-          initialRouteName: 'ExpoApis',
-          screens: {
-            ExpoApis: '',
-          },
-        },
-        components: {
-          initialRouteName: 'ExpoComponents',
-          screens: {
-            ExpoComponents: '',
-            GL: '/gl',
-            SVG: '/svg',
-            SVGExample: '/svg/example',
-          },
-        },
-        'react-native': {
-          screens: {
-            ReactNativeCore: '',
-          },
+    screens: {
+      main: {
+        initialRouteName: 'apis',
+        screens: {
+          apis: MainNavigators.apis.linking,
+          components: MainNavigators.components.linking,
+          'react-native': MainNavigators['react-native'].linking,
         },
       },
     },

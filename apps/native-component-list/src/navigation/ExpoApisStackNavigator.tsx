@@ -5,7 +5,6 @@ import * as React from 'react';
 import TabIcon from '../components/TabIcon';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { Screens } from './ExpoApis';
-import LoadAssetsNavigationWrapper from './LoadAssetsNavigationWrapper';
 import StackConfig from './StackConfig';
 
 const Stack = createStackNavigator();
@@ -14,6 +13,7 @@ function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any
   return (
     <Stack.Navigator {...props} {...StackConfig}>
       <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
+
       {Object.keys(Screens).map(name => (
         <Stack.Screen
           name={name}
@@ -33,4 +33,4 @@ ExpoApisStackNavigator.navigationOptions = {
   },
 };
 
-export default LoadAssetsNavigationWrapper(ExpoApisStackNavigator);
+export default ExpoApisStackNavigator;

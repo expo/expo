@@ -6,7 +6,6 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { Screens } from './ExpoComponents';
-import LoadAssetsNavigationWrapper from './LoadAssetsNavigationWrapper';
 import StackConfig from './StackConfig';
 
 const Stack = createStackNavigator();
@@ -37,4 +36,4 @@ ExpoComponentsStackNavigator.navigationOptions = {
     return <TabIcon name="cards-playing-outline" focused={focused} />;
   },
 };
-export default LoadAssetsNavigationWrapper(ExpoComponentsStackNavigator);
+export default ExpoComponentsStackNavigator;

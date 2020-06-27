@@ -17,7 +17,10 @@ type RoutesConfig = {
 };
 
 type NativeComponentListExportsType = null | {
-  [routeName: string]: NavigationRouteConfigMap;
+  [routeName: string]: {
+    linking: any;
+    navigator: NavigationRouteConfigMap;
+  };
 };
 
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
@@ -43,42 +46,29 @@ const Redirect = optionalRequire(() =>
 ) as any;
 
 if (NativeComponentList) {
-  routes.apis = NativeComponentList.apis;
-  routes.components = NativeComponentList.components;
+  routes.apis = NativeComponentList.apis.navigator;
+  routes.components = NativeComponentList.components.navigator;
 }
 
 const Tab = createBottomTabNavigator();
-
 const Switch = createStackNavigator();
 
 const linking = {
   prefixes: [Platform.select({ web: Linking.makeUrl('/'), default: 'bareexpo://' })],
   config: {
-    main: {
-      path: '',
-      initialRouteName: 'test-suite',
-      screens: {
-        'test-suite': {
-          path: 'test-suite',
-          screens: {
-            select: '',
-            run: '/run',
+    screens: {
+      main: {
+        initialRouteName: 'test-suite',
+        screens: {
+          'test-suite': {
+            path: 'test-suite',
+            screens: {
+              select: '',
+              run: '/run',
+            },
           },
-        },
-        apis: {
-          initialRouteName: 'ExpoApis',
-          screens: {
-            ExpoApis: '',
-          },
-        },
-        components: {
-          initialRouteName: 'ExpoComponents',
-          screens: {
-            ExpoComponents: '',
-            GL: '/gl',
-            SVG: '/svg',
-            SVGExample: '/svg/example',
-          },
+          apis: NativeComponentList.apis.linking,
+          components: NativeComponentList.components.linking,
         },
       },
     },
