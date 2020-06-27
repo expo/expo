@@ -294,7 +294,7 @@ export class GitDirectory {
   }
 
   /**
-   * Finds the best common ancestor with given ref.
+   * Finds the best common ancestor between the current ref and the given ref.
    */
   async mergeBaseAsync(ref: string): Promise<string> {
     const { stdout } = await this.runAsync(['merge-base', 'HEAD', ref]);

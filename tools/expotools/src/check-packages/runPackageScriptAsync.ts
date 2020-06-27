@@ -7,7 +7,7 @@ import logger from '../Logger';
 const { cyan, gray, red, reset } = chalk;
 
 /**
- * Executes specified script name on given package.
+ * Executes the specified script (defined in package.json under "scripts") on the given package.
  */
 export default async function runPackageScriptAsync(
   pkg: Package,

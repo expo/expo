@@ -14,7 +14,7 @@ export default (program: Command) => {
     .alias('check', 'cp')
     .option(
       '--since, -s <commit>',
-      'Reference to the commit since which you want to run incremental checks. Defaults to master branch.',
+      'Reference to the commit since which you want to run incremental checks. Defaults to HEAD of the master branch.
       'master'
     )
     .option('--all, -a', 'Whether to check all packages and ignore `--since` option.', false)
@@ -55,7 +55,8 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
       `${magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed:`)}`,
       failedPackages.map((failedPackage) => yellow(failedPackage)).join(', ')
     );
-    return process.exit(1);
+    process.exit(1);
+    return;
   }
   logger.success('🏁 All packages passed.');
 }

@@ -44,7 +44,8 @@ export default async function checkPackageAsync(
     }
     logger.log(`✨ ${green.bold(pkg.packageName)} checks passed`);
     return true;
-  } catch (e) {
+  } catch {
+    // runPackageScriptAsync is intentionally written to handle errors and make it safe to suppress errors in the caller
     return false;
   }
 }

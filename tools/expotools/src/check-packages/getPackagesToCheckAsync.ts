@@ -33,7 +33,7 @@ export default async function getPackagesToCheckAsync(options: ActionOptions) {
   }
   if (packageNames.length > 0) {
     return allPackages.filter((pkg) => {
-      return packageNames.length === 0 || packageNames.includes(pkg.packageName);
+      return packageNames.includes(pkg.packageName);
     });
   }
 

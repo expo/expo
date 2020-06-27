@@ -1,5 +1,5 @@
 /**
- * Type representing options for `check-packages` command.
+ * Type representing options for the `check-packages` command.
  */
 export type ActionOptions = {
   since: string;
