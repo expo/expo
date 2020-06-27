@@ -31,11 +31,11 @@ import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {
     Bundle serializedResponse = new Bundle();
+    serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
+    serializedResponse.putBundle("notification", toBundle(response.getNotification()));
     if (response instanceof TextInputNotificationResponse) {
       serializedResponse.putString("userText", ((TextInputNotificationResponse)response).getUserText());
     }
-    serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
-    serializedResponse.putBundle("notification", toBundle(response.getNotification()));
     return serializedResponse;
   }
 

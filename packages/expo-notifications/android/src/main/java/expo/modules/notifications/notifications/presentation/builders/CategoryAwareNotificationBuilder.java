@@ -46,13 +46,13 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
         e.printStackTrace();
       }
       for (NotificationAction action : actions) {
-        // TODO(cruzan): add customizable action icons. Passing the default icon for now
-        PendingIntent pIntent = getActionIntent(getContext(), action, getNotification());
         NotificationCompat.Action finalizedAction;
         if (action instanceof TextInputNotificationAction) {
-          finalizedAction = buildTextInputAction((TextInputNotificationAction)action, pIntent);
+          PendingIntent intent = getActionIntent(getContext(), (TextInputNotificationAction)action, getNotification());
+          finalizedAction = buildTextInputAction((TextInputNotificationAction)action, intent);
         } else {
-          finalizedAction = buildButtonAction(action, pIntent);
+          PendingIntent intent = getActionIntent(getContext(), action, getNotification());
+          finalizedAction = buildButtonAction(action, intent);
         }
         builder.addAction(finalizedAction);
       }

@@ -3,7 +3,6 @@ package expo.modules.notifications.notifications.service;
 import androidx.core.app.RemoteInput;
 import android.os.Bundle;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,23 +19,22 @@ import expo.modules.notifications.notifications.model.TextInputNotificationRespo
  * A broadcast receiver responsible for redirecting responses to text input notifications
  * to {@link BaseNotificationsService}.
  */
-public class TextInputNotificationResponseReceiver extends NotificationResponseReceiver{
-  public static final String TEXT_INPUT_NOTIFICATION_RESPONSE_KEY = "textInputResponse";
+public class TextInputNotificationResponseReceiver extends NotificationResponseReceiver {
   public static final String USER_TEXT_RESPONSE = "userTextResponse";
 
   public static PendingIntent getActionIntent(Context context, TextInputNotificationAction action, Notification notification) {
-    Intent intent = new Intent(context, TextInputNotificationResponse.class);
+    Intent intent = new Intent(context, TextInputNotificationResponseReceiver.class);
     // By setting different data we make sure that intents with different actions
     // are different to the system.
     intent.setData(getUriBuilderForIdentifier(notification.getNotificationRequest().getIdentifier()).appendPath(action.getIdentifier()).build());
-    intent.putExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY, new TextInputNotificationResponse(action.getIdentifier(), notification, null));
+    intent.putExtra(NOTIFICATION_RESPONSE_KEY, new TextInputNotificationResponse(action.getIdentifier(), notification, null));
     intent.putExtra(ACTION_FOREGROUNDS_APP, action.opensAppToForeground());
     return PendingIntent.getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    TextInputNotificationResponse response = intent.getParcelableExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY);
+    TextInputNotificationResponse response = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY);
     response.setUserText(getMessageText(intent));
     if (intent.getBooleanExtra(ACTION_FOREGROUNDS_APP, true)) {
       openAppToForeground(context, response);
@@ -60,7 +58,7 @@ public class TextInputNotificationResponseReceiver extends NotificationResponseR
    */
   @Nullable
   public static TextInputNotificationResponse getTextInputNotificationResponse(@NonNull Intent intent) {
-    return TextInputNotificationResponseReceiver.unmarshallTextInputNotificationResponse(intent.getByteArrayExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY));
+    return TextInputNotificationResponseReceiver.unmarshallTextInputNotificationResponse(intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY));
   }
 
   /**

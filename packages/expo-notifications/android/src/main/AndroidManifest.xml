@@ -43,5 +43,9 @@
             android:name=".notifications.service.NotificationResponseReceiver"
             android:enabled="true"
             android:exported="false" />
+        <receiver
+            android:name=".notifications.service.TextInputNotificationResponseReceiver"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 </manifest>
