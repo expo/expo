@@ -14,7 +14,7 @@ export default (program: Command) => {
     .alias('check', 'cp')
     .option(
       '--since, -s <commit>',
-      'Reference to the commit since which you want to run incremental checks. Defaults to HEAD of the master branch.
+      'Reference to the commit since which you want to run incremental checks. Defaults to HEAD of the master branch.',
       'master'
     )
     .option('--all, -a', 'Whether to check all packages and ignore `--since` option.', false)
