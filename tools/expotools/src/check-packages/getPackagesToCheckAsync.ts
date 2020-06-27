@@ -10,7 +10,7 @@ const { yellow } = chalk;
 
 async function safeGetMergeBaseAsync(ref: string): Promise<string | null> {
   try {
-    return Git.mergeBaseAsync(ref);
+    return await Git.mergeBaseAsync(ref);
   } catch (e) {
     logger.error(`🛑 Cannot get merge base for reference: ${yellow(ref)}\n`, e.stack);
     return null;

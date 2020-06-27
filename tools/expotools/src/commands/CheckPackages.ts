@@ -13,11 +13,11 @@ export default (program: Command) => {
     .command('check-packages [packageNames...]')
     .alias('check', 'cp')
     .option(
-      '--since, -s <commit>',
+      '-s, --since <commit>',
       'Reference to the commit since which you want to run incremental checks. Defaults to HEAD of the master branch.',
       'master'
     )
-    .option('--all, -a', 'Whether to check all packages and ignore `--since` option.', false)
+    .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
     .option('--no-build', 'Whether to skip `yarn build` check.', false)
     .option('--no-test', 'Whether to skip `yarn test` check.', false)
     .option('--no-lint', 'Whether to skip `yarn lint` check.', false)
