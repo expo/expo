@@ -28,6 +28,7 @@ jobs:
           fetch-depth: 100
       - name: Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }} --depth 100
+        if: github.event_name == 'pull_request'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -40,6 +41,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - name: Check packages
         run: |
+          echo "Checking packages according to the event name: ${{ github.event_name }}"
           if [[ ${{ github.event_name }} == "schedule" ]]; then
             # Check all packages on scheduled events
             bin/expotools check-packages --all
