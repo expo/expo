@@ -21,7 +21,7 @@
   <string name="cvc">CVC</string>
   <string name="android_pay_unavaliable">Android Pay unavailable on your device.</string>
   <string name="user_cancel_dialog">User cancel dialog. No card added!</string>
-  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to use it also?</string>
+  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to also use it?</string>
   <string name="allow_experience_permissions">Allow</string>
   <string name="deny_experience_permissions">Deny</string>
   <string name="perm_audio_recording">audio recording</string>
