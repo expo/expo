@@ -49,7 +49,7 @@ jobs:
         with:
           channel: '#platform-web'
           status: ${{ job.status }}
-          fields: commit,author,action,message
+          fields: author,job,message,ref
           author_name: test suite web
 
   ios:
@@ -95,5 +95,5 @@ jobs:
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: commit,author,action,message
+          fields: author,job,message,ref
           author_name: test suite ios
