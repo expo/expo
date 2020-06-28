@@ -130,7 +130,7 @@
                     withDenyAction:(UIAlertAction *)deny
 {
   NSString *experienceName = self.experienceId; // TODO: we might want to use name from the manifest?
-  NSString *messageTemplate = @"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to use it also?";
+  NSString *messageTemplate = @"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to also use it?";
   NSString *permissionString = [[self class] textForPermissionType:permissionType];
 
   NSString *message = [NSString stringWithFormat:messageTemplate, experienceName, permissionString];
