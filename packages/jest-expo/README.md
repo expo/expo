@@ -5,6 +5,8 @@ A [Jest](https://facebook.github.io/jest/) preset to painlessly test your Expo a
 If you have problems with the code in this repository, please file issues & bug reports
 at https://github.com/expo/expo. Thanks!
 
+**Note:** If you get errors on .mjs files when using the `jest-expo/universal` preset or the `projects` Jest field, see the following issue and comment for a workaround: https://github.com/expo/expo/issues/8809#issuecomment-644825996. This was fixed in https://github.com/expo/expo/pull/8839.
+
 ### Installation
 
 - `yarn add jest-expo --dev` or `npm i jest-expo --save-dev`
