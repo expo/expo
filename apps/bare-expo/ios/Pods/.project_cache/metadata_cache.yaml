@@ -418,6 +418,10 @@ ReactCommon:
   LABEL: ReactCommon
   PROJECT_PATH: ReactCommon.xcodeproj
   UUID: 2610D146B211EB79FECF83D4FA5AB36D
+RNCAsyncStorage:
+  LABEL: RNCAsyncStorage
+  PROJECT_PATH: RNCAsyncStorage.xcodeproj
+  UUID: 67B87A0A71A334A77129363BDFF7DC94
 RNCMaskedView:
   LABEL: RNCMaskedView
   PROJECT_PATH: RNCMaskedView.xcodeproj
