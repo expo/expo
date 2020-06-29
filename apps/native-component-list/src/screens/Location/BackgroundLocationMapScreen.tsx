@@ -1,4 +1,5 @@
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-community/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { usePermissions } from '@use-expo/permissions';
@@ -7,7 +8,7 @@ import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
-import { AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 
 import Button from '../../components/Button';
