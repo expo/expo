@@ -272,6 +272,6 @@ export interface NotificationCategory {
     allowInCarPlay?: boolean;
     showTitle?: boolean;
     showSubtitle?: boolean;
-    allowAnnouncment?: boolean;
+    allowAnnouncement?: boolean;
   };
 }
