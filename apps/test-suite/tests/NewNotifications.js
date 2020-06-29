@@ -18,7 +18,7 @@ export async function test(t) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   t.describe('expo-notifications', () => {
-    /*    t.describe('getDevicePushTokenAsync', () => {
+    t.describe('getDevicePushTokenAsync', () => {
       let subscription = null;
       let tokenFromEvent = null;
       let tokenFromMethodCall = null;
@@ -596,27 +596,34 @@ export async function test(t) {
         }
       });
     });
-*/
+
     t.describe('Notification Categories', () => {
       const vanillaButton = {
         identifier: 'vanillaButton',
         buttonTitle: 'Plain Option',
-        options: {
-          isDestructive: true,
-          isAuthenticationRequired: true,
-          opensAppToForeground: false,
-        },
+        options:
+          Platform.OS === 'ios'
+            ? {
+                isDestructive: true,
+                isAuthenticationRequired: true,
+                opensAppToForeground: false,
+              }
+            : { opensAppToForeground: false },
       };
       const textResponseButton = {
         identifier: 'textResponseButton',
         buttonTitle: 'Click to Respond with Text',
-        options: {
-          isDestructive: true,
-          isAuthenticationRequired: true,
-          opensAppToForeground: true,
-        },
+        options:
+          Platform.OS === 'ios'
+            ? {
+                isDestructive: true,
+                isAuthenticationRequired: true,
+                opensAppToForeground: true,
+              }
+            : { opensAppToForeground: true },
         textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
       };
+
       const testCategory1 = {
         identifier: 'testNotificationCategory1',
         actions: [vanillaButton],
@@ -702,7 +709,7 @@ export async function test(t) {
             }
           );
 
-          t.expect(resultCategory).toEqual(testCategory1);
+          t.expect(testCategory1).toEqual(t.jasmine.objectContaining(resultCategory));
         });
 
         t.it('creates a category with two actions successfully', async () => {
@@ -718,7 +725,7 @@ export async function test(t) {
             }
           );
 
-          t.expect(resultCategory).toEqual(t.jasmine.objectContaining(testCategory2));
+          t.expect(testCategory2).toEqual(t.jasmine.objectContaining(resultCategory));
         });
       });
 
@@ -788,7 +795,6 @@ export async function test(t) {
       });
     });
 
-    /*
     t.describe('getBadgeCountAsync', () => {
       t.it('resolves with an integer', async () => {
         const badgeCount = await Notifications.getBadgeCountAsync();
@@ -1547,7 +1553,6 @@ export async function test(t) {
         );
       }
     );
-    */
   });
 }
 
