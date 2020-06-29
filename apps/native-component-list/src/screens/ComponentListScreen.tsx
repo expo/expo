@@ -1,4 +1,5 @@
 import { EvilIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
@@ -10,32 +11,33 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import { NavigationScreenProps, withNavigation } from 'react-navigation';
-
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 interface ListElement {
   name: string;
+  route?: string;
   isAvailable?: boolean;
 }
 
 interface Props {
   apis: ListElement[];
+  renderItemRight?: (props: ListElement) => React.ReactNode;
 }
 
-class ComponentListScreen extends React.Component<NavigationScreenProps & Props> {
-  _listView?: FlatList<ListElement>;
+function ComponentListScreen(props: Props) {
+  const navigation = useNavigation();
+  React.useEffect(() => {
+    StatusBar.setHidden(false);
+  }, []);
 
-  _renderExampleSection: ListRenderItem<ListElement> = ({
-    item: { name: exampleName, isAvailable },
-  }) => {
+  const _renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
+    const { route, name: exampleName, isAvailable } = item;
     return (
       <TouchableHighlight
         underlayColor="#dddddd"
         style={styles.rowTouchable}
-        onPress={isAvailable ? () => this.props.navigation.navigate(exampleName) : undefined}>
+        onPress={isAvailable ? () => navigation.navigate(route ?? exampleName) : undefined}>
         <View style={[styles.row, !isAvailable && styles.disabledRow]}>
-          <ExpoAPIIcon name={exampleName} style={styles.rowIcon} />
+          {props.renderItemRight && props.renderItemRight(item)}
           <Text style={styles.rowLabel}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
             <EvilIcons name="chevron-right" size={24} color="#595959" />
@@ -45,33 +47,20 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
     );
   };
 
-  _keyExtractor = (item: ListElement) => item.name;
+  const _keyExtractor = React.useCallback((item: ListElement) => item.name, []);
 
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <FlatList<ListElement>
-          ref={view => {
-            this._listView = view!;
-          }}
-          initialNumToRender={25}
-          removeClippedSubviews={false}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
-          contentContainerStyle={{ backgroundColor: '#fff' }}
-          data={this.props.apis}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderExampleSection}
-        />
-        <StatusBar hidden={false} />
-      </View>
-    );
-  }
-
-  _scrollToTop = () => {
-    // @ts-ignore
-    this._listView!.scrollTo({ x: 0, y: 0 });
-  };
+  return (
+    <FlatList<ListElement>
+      initialNumToRender={25}
+      removeClippedSubviews={false}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+      contentContainerStyle={{ backgroundColor: '#fff' }}
+      data={props.apis}
+      keyExtractor={_keyExtractor}
+      renderItem={_renderExampleSection}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
@@ -107,4 +96,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(ComponentListScreen);
+export default ComponentListScreen;

@@ -57,7 +57,17 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   Camera,
   DateTimePicker,
   GL,
-  ...GLScreens,
+  ...Object.keys(GLScreens ?? {}).reduce((prev, screenName) => {
+    const entry = GLScreens[screenName];
+    const screen = entry.screen ?? entry;
+    screen.navigationOptions = {
+      title: screen.title,
+    };
+    return {
+      ...prev,
+      [screenName]: screen,
+    };
+  }, {}),
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,
@@ -84,6 +94,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
 interface ScreensObjectType {
   [key: string]: React.ComponentType;
 }
+type RoutesObjectType = Record<string, string>;
 
 export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>(
   (acc, [key, screen]) => {
@@ -94,3 +105,8 @@ export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>
   },
   {}
 );
+
+export const Routes = Object.entries(Screens).reduce<RoutesObjectType>((acc, [key, screen]) => {
+  acc[key] = key.toLowerCase();
+  return acc;
+}, {});

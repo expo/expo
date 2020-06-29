@@ -59,10 +59,6 @@ export default function BatteryScreen() {
   );
 }
 
-BatteryScreen.navigationOptions = {
-  title: 'Battery',
-};
-
 function getBatteryStateString(batteryState: Battery.BatteryState): string {
   switch (batteryState) {
     case Battery.BatteryState.UNPLUGGED:

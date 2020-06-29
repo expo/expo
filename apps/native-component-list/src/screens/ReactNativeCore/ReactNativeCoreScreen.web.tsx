@@ -6,31 +6,24 @@ import {
   Image,
   Picker,
   RefreshControl,
-  Switch,
-  StatusBar,
-  SectionList,
   ScrollView,
+  SectionList,
+  StatusBar,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableHighlight,
+  TouchableOpacity,
   TouchableOpacityProps,
   View,
 } from 'react-native';
 import WebView from 'react-native-webview';
-import { NavigationScreenProps } from 'react-navigation';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
 
-export default class ReactNativeCoreScreen extends React.Component<NavigationScreenProps> {
-  static path = '';
-
-  static navigationOptions = {
-    title: 'React Native Core',
-  };
-
+export default class ReactNativeCoreScreen extends React.Component {
   state = {
     isRefreshing: false,
   };

@@ -65,9 +65,9 @@ interface State {
   authState?: any;
 }
 
-export default class AuthSessionScreen extends React.Component<object, State> {
+export default class AppAuthScreen extends React.Component<object, State> {
   static navigationOptions = {
-    title: 'AuthSession',
+    title: 'App Auth',
   };
 
   readonly state: State = {};

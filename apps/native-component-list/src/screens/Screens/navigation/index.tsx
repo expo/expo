@@ -1,8 +1,6 @@
-import React from 'react';
+import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
+import * as React from 'react';
 import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
-import { NavigationScreenConfig, NavigationScreenProps } from 'react-navigation';
-
-import createStackNavigator from '../../../navigation/createStackNavigator';
 
 export { default as LifecycleAwareView } from './LifecycleAwareView';
 
@@ -26,12 +24,11 @@ const Background: React.FunctionComponent<{ index: number }> = ({ index }) => (
   />
 );
 
-class DetailsScreen extends React.Component<NavigationScreenProps> {
-  static navigationOptions: NavigationScreenConfig<{}> = ({ navigation }) => {
-    return {
-      title: 'Details screen #' + navigation.getParam('index', '0'),
-    };
-  };
+type Links = { Details: { index?: number } };
+
+type Props = StackScreenProps<Links, 'Details'>;
+
+class DetailsScreen extends React.Component<Props> {
   animvalue = new Animated.Value(0);
   rotation = this.animvalue.interpolate({
     inputRange: [0, 1],
@@ -49,7 +46,7 @@ class DetailsScreen extends React.Component<NavigationScreenProps> {
     setInterval(() => this.setState({ count: this.state.count + 1 }), 500);
   }
   render() {
-    const index = this.props.navigation.getParam('index', 0);
+    const index = this.props.route.params.index ?? 0;
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Background index={index} />
@@ -86,13 +83,20 @@ class DetailsScreen extends React.Component<NavigationScreenProps> {
   }
 }
 
-const App = createStackNavigator(
-  {
-    Details: DetailsScreen,
-  },
-  {
-    initialRouteName: 'Details',
-  }
+const Stack = createStackNavigator();
+
+const App = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Details"
+      component={DetailsScreen}
+      options={({ route }) => {
+        return {
+          title: 'Details screen #' + (route.params as any)?.index ?? '0',
+        };
+      }}
+    />
+  </Stack.Navigator>
 );
 
 const styles = StyleSheet.create({

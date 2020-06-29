@@ -1,3 +1,4 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
 import {
@@ -10,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
 
 import MonoText from '../../components/MonoText';
 
@@ -19,7 +19,11 @@ interface State {
   albums: MediaLibrary.Album[];
 }
 
-export default class MediaAlbumsScreen extends React.Component<NavigationScreenProps, State> {
+type Props = {
+  navigation: StackNavigationProp<{ MediaLibrary: { album: MediaLibrary.Album } }>;
+};
+
+export default class MediaAlbumsScreen extends React.Component<Props, State> {
   static navigationOptions = {
     title: 'MediaLibrary Albums',
   };
@@ -33,7 +37,7 @@ export default class MediaAlbumsScreen extends React.Component<NavigationScreenP
     this.fetchAlbums();
   }
 
-  componentDidUpdate(_: {}, lastState: State) {
+  componentDidUpdate(_: object, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
       this.fetchAlbums();
     }

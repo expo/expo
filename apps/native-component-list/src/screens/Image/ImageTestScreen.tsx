@@ -1,179 +1,139 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, View, Animated } from 'react-native';
-import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
-import HeaderButtons from 'react-navigation-header-buttons';
+import { Animated, StyleSheet, View } from 'react-native';
 
+import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import AnimationBar from './AnimationBar';
 import CompareBar from './CompareBar';
 import {
+  getCompareComponents,
   getImageComponent,
   getSelectedCompareComponent,
-  getCompareComponents,
   setSelectedCompareComponent,
 } from './ImageComponents';
 import ImageEventsView from './ImageEventsView';
 import ImageStylesView from './ImageStylesView';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageTest } from './types';
+import { ImageTest, Links } from './types';
 
 const AnimatedImage = Animated.Image;
 AnimatedImage.displayName = 'Image';
 
-type StateType = {
-  animValue?: Animated.Value;
-  viewKey: string;
-  events: string[];
-};
-
 let compareEnabled: boolean = false;
 
-export default class ImageTestScreen extends React.Component<NavigationScreenProps, StateType> {
-  static navigationOptions: NavigationScreenConfig<object> = ({ navigation }) => {
-    const test: ImageTest = navigation.getParam('test');
+type Props = StackScreenProps<Links, 'ImageTest'>;
+
+function useForceUpdate() {
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+  return forceUpdate;
+}
+
+export default function ImageTestScreen({ navigation, route }: Props) {
+  const forceUpdate = useForceUpdate();
+  const [animValue, setAnimValue] = React.useState<Animated.Value | undefined>();
+  const [viewKey, setViewKey] = React.useState<string>('initial');
+  const [events, setEvents] = React.useState<string[]>([]);
+
+  React.useLayoutEffect(() => {
+    const { test } = route.params;
     const sepIdx = test.name.indexOf(':');
     const title =
       sepIdx >= 0 && test.name.length > 12 ? test.name.substring(sepIdx + 1) : test.name;
-    return {
+
+    navigation.setOptions({
       title,
-      headerRight: (
-        <HeaderButtons IconComponent={MaterialIcons} iconSize={25}>
-          <HeaderButtons.Item
-            title="refresh"
-            iconName="refresh"
-            onPress={navigation.getParam('onRefresh')}
+      headerRight: () => (
+        <HeaderContainerRight>
+          <HeaderIconButton name="md-refresh" onPress={() => setViewKey('' + Date.now())} />
+          <HeaderIconButton
+            name="md-arrow-back"
+            onPress={() => {
+              const {
+                params: { test, tests },
+              } = route;
+
+              const idx = tests ? tests.indexOf(test) : -1;
+              const newIdx = idx <= 0 ? tests.length - 1 : idx - 1;
+              navigation.setParams({
+                test: tests[newIdx],
+              });
+            }}
           />
-          <HeaderButtons.Item
-            title="previous"
-            iconName="arrow-back"
-            onPress={navigation.getParam('onPrevious')}
+          <HeaderIconButton
+            name="md-arrow-forward"
+            onPress={() => {
+              const {
+                params: { test, tests },
+              } = route;
+              const idx = tests ? tests.indexOf(test) : -1;
+              const newIdx = idx >= tests.length - 1 ? 0 : idx + 1;
+              navigation.setParams({
+                test: tests[newIdx],
+              });
+            }}
           />
-          <HeaderButtons.Item
-            title="next"
-            iconName="arrow-forward"
-            onPress={navigation.getParam('onNext')}
-          />
-        </HeaderButtons>
+        </HeaderContainerRight>
       ),
-    };
-  };
-
-  state = {
-    animValue: undefined,
-    viewKey: 'initial',
-    events: [],
-  };
-
-  componentDidMount() {
-    const { navigation } = this.props;
-    navigation.setParams({
-      onRefresh: this.onRefresh,
-      onPrevious: this.onPrevious,
-      onNext: this.onNext,
     });
-  }
+  }, [navigation, route, setViewKey]);
 
-  onRefresh = () => {
-    this.setState({
-      viewKey: '' + Date.now(),
-    });
+  const onEventMessage = (message: string) => {
+    setEvents([...events, message]);
   };
 
-  onPrevious = () => {
-    const { navigation } = this.props;
-    const test: ImageTest = navigation.getParam('test');
-    const tests: ImageTest[] = navigation.getParam('tests');
-    const idx = tests ? tests.indexOf(test) : -1;
-    const newIdx = idx <= 0 ? tests.length - 1 : idx - 1;
-    navigation.setParams({
-      test: tests[newIdx],
-    });
+  const onAnimationValue = (animValue?: Animated.Value) => {
+    setAnimValue(animValue);
   };
 
-  onNext = () => {
-    const { navigation } = this.props;
-    const test: ImageTest = navigation.getParam('test');
-    const tests: ImageTest[] = navigation.getParam('tests');
-    const idx = tests ? tests.indexOf(test) : -1;
-    const newIdx = idx >= tests.length - 1 ? 0 : idx + 1;
-    navigation.setParams({
-      test: tests[newIdx],
-    });
-  };
-
-  onEventMessage = (message: string) => {
-    const { events } = this.state;
-    this.setState({
-      events: [...events, message],
-    });
-  };
-
-  render() {
-    const { navigation } = this.props;
-    const { animValue, viewKey, events } = this.state;
-    const test: ImageTest = navigation.getParam('test');
-    const isAnimatable = typeof test.props === 'function';
-    const hasEvents = isAnimatable && test.name.startsWith('on');
-
-    const imageProps = resolveProps(test.props, animValue, false, this.onEventMessage);
-
-    return (
-      <View style={styles.container} key={viewKey}>
-        {isAnimatable ? <AnimationBar onAnimationValue={this.onAnimationValue} /> : undefined}
-        <View style={styles.content}>
-          <ImageTestView imageProps={imageProps} ImageComponent={getImageComponent()} />
-          {!compareEnabled ? (
-            <View style={styles.stylesContainer}>
-              <ImageStylesView test={test} animValue={animValue} />
-            </View>
-          ) : (
-            undefined
-          )}
-        </View>
-        <CompareBar
-          collapsed={!compareEnabled}
-          ImageComponent={getSelectedCompareComponent()}
-          onPress={this.onPressCompare}
-          onPressComponent={this.onPressCompareComponent}
-        />
-        {compareEnabled ? (
-          <View style={styles.content}>
-            <ImageTestView imageProps={imageProps} ImageComponent={getSelectedCompareComponent()} />
-          </View>
-        ) : (
-          undefined
-        )}
-        {hasEvents ? <ImageEventsView onClear={this.onClearEvents} events={events} /> : undefined}
-      </View>
-    );
-  }
-
-  onAnimationValue = (animValue?: Animated.Value) => {
-    this.setState({
-      animValue,
-    });
-  };
-
-  onPressCompare = (collapsed: boolean) => {
+  const onPressCompare = (collapsed: boolean) => {
     compareEnabled = !collapsed;
     //LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    this.forceUpdate();
+    forceUpdate();
   };
 
-  onPressCompareComponent = (Component: React.ComponentType<any>) => {
+  const onPressCompareComponent = (Component: React.ComponentType<any>) => {
     const compareComponents = getCompareComponents();
     let idx = compareComponents.indexOf(Component) + 1;
     idx = idx >= compareComponents.length ? 0 : idx;
     setSelectedCompareComponent(compareComponents[idx]);
-    this.forceUpdate();
+    forceUpdate();
   };
 
-  onClearEvents = () => {
-    this.setState({
-      events: [],
-    });
-  };
+  const onClearEvents = () => setEvents([]);
+
+  const test = route.params.test as ImageTest;
+  const isAnimatable = typeof test.props === 'function';
+  const hasEvents = isAnimatable && test.name.startsWith('on');
+
+  const imageProps = resolveProps(test.props, animValue, false, onEventMessage);
+
+  return (
+    <View style={styles.container} key={viewKey}>
+      {isAnimatable && <AnimationBar onAnimationValue={onAnimationValue} />}
+      <View style={styles.content}>
+        <ImageTestView imageProps={imageProps} ImageComponent={getImageComponent()} />
+        {!compareEnabled && (
+          <View style={styles.stylesContainer}>
+            <ImageStylesView test={test} animValue={animValue} />
+          </View>
+        )}
+      </View>
+      <CompareBar
+        collapsed={!compareEnabled}
+        ImageComponent={getSelectedCompareComponent()}
+        onPress={onPressCompare}
+        onPressComponent={onPressCompareComponent}
+      />
+      {compareEnabled && (
+        <View style={styles.content}>
+          <ImageTestView imageProps={imageProps} ImageComponent={getSelectedCompareComponent()} />
+        </View>
+      )}
+      {hasEvents && <ImageEventsView onClear={onClearEvents} events={events} />}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

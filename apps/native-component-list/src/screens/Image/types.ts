@@ -26,3 +26,14 @@ export interface ImageTestGroup {
   tests: (ImageTest | ImageTestGroup)[];
   description?: string;
 }
+
+export type Links = {
+  ImageTest: {
+    onRefresh?: () => void;
+    onNext?: () => void;
+    onPrevious?: () => void;
+    test: ImageTest | ImageTestGroup;
+    tests: (ImageTest | ImageTestGroup)[];
+  };
+  ImageTests: { tests: ImageTestGroup };
+};

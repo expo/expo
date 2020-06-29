@@ -1,7 +1,7 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
@@ -33,7 +33,13 @@ interface State {
   events: Calendar.Event[];
 }
 
-export default class EventsScreen extends React.Component<NavigationScreenProps, State> {
+type Links = {
+  Events: { calendar: Calendar.Calendar };
+};
+
+type Props = StackScreenProps<Links, 'Events'>;
+
+export default class EventsScreen extends React.Component<Props, State> {
   static navigationOptions = {
     title: 'Events',
   };
@@ -43,7 +49,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
   };
 
   componentDidMount() {
-    const { params } = this.props.navigation.state;
+    const { params } = this.props.route;
     if (params) {
       const { id } = params.calendar;
       if (id) {
@@ -62,7 +68,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
   };
 
   _addEvent = async (recurring: boolean) => {
-    const { calendar } = this.props.navigation.state.params!;
+    const { calendar } = this.props.route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -128,7 +134,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
   };
 
   _updateEvent = async (event: Calendar.Event) => {
-    const { calendar } = this.props.navigation.state.params!;
+    const { calendar } = this.props.route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -150,7 +156,7 @@ export default class EventsScreen extends React.Component<NavigationScreenProps,
 
   _deleteEvent = async (event: Calendar.Event) => {
     try {
-      const { calendar } = this.props.navigation.state.params!;
+      const { calendar } = this.props.route.params!;
       await Calendar.deleteEventAsync(event.id!, {
         futureEvents: false,
         instanceStartDate: event.recurrenceRule ? event.startDate : undefined,

@@ -55,7 +55,7 @@ describe('test-suite', () => {
         /// Pause the timeout
         // await jestPuppeteer.debug();
 
-        await page.goto(`${config.url}/test-suite/select/${testName}`, {
+        await page.goto(`${config.url}/test-suite/run?tests=${testName}`, {
           timeout: MIN_TIME,
         });
 

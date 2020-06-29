@@ -1,10 +1,22 @@
-import React from 'react';
+import { StackNavigationProp } from '@react-navigation/stack';
+import * as React from 'react';
 import { Button, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaConsumer, SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
 
 import HeadingText from '../components/HeadingText';
 
-export default function SafeAreaContextScreen({ navigation }: { navigation: any }) {
+export default function SafeAreaContextScreen({
+  navigation,
+}: {
+  navigation: StackNavigationProp<any>;
+}) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Safe Area Context',
+      header: () => null,
+    });
+  }, [navigation]);
+
   const [focused, setFocused] = React.useState<'hook' | 'view'>('hook');
   const insets = useSafeArea();
 
@@ -48,8 +60,3 @@ export default function SafeAreaContextScreen({ navigation }: { navigation: any 
     );
   }
 }
-
-SafeAreaContextScreen.navigationOptions = {
-  title: 'Safe Area Context',
-  header: null,
-};

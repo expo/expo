@@ -1,41 +1,29 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
-import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import ListButton from '../../components/ListButton';
 import Colors from '../../constants/Colors';
 import imageTests from './tests';
 import { ImageTest, ImageTestGroup } from './types';
 
-export default class ImageTestsScreen extends React.Component<NavigationScreenProps> {
-  static navigationOptions: NavigationScreenConfig<object> = ({ navigation }) => {
-    const tests: ImageTestGroup = navigation.getParam('tests') || imageTests;
-    return {
+type Link = {
+  ImageTests: { tests: ImageTestGroup };
+  ImageTest: { test: ImageTest | ImageTestGroup; tests: (ImageTest | ImageTestGroup)[] };
+};
+
+type Props = StackScreenProps<Link, 'ImageTests'>
+
+export default function ImageTestsScreen({ navigation, route }: Props) {
+  React.useLayoutEffect(() => {
+    const tests: ImageTestGroup = route.params.tests ?? imageTests;
+    navigation.setOptions({
       title: tests.name,
-    };
-  };
+    });
+  }, [navigation, route.params.tests]);
 
-  render() {
-    const { navigation } = this.props;
-    const tests: ImageTestGroup = navigation.getParam('tests') || imageTests;
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.content}>
-          {tests.tests.map((test, index) => (
-            <ListButton
-              key={`item${index}`}
-              title={test.name}
-              onPress={() => this.onPressItem(test)}
-            />
-          ))}
-        </ScrollView>
-      </View>
-    );
-  }
-
-  onPressItem = (test: ImageTest | ImageTestGroup) => {
-    const { navigation } = this.props;
-    const tests: ImageTestGroup = navigation.getParam('tests') || imageTests;
+  const onPressItem = (test: ImageTest | ImageTestGroup) => {
+    const tests: ImageTestGroup = route.params.tests ?? imageTests;
     // @ts-ignore
     if (test.tests) {
       navigation.push('ImageTests', {
@@ -49,6 +37,17 @@ export default class ImageTestsScreen extends React.Component<NavigationScreenPr
       });
     }
   };
+
+  const tests: ImageTestGroup = route.params.tests ?? imageTests;
+  return (
+    <View style={styles.container}>
+      <ScrollView style={styles.content}>
+        {tests.tests.map((test, index) => (
+          <ListButton key={`item${index}`} title={test.name} onPress={() => onPressItem(test)} />
+        ))}
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
