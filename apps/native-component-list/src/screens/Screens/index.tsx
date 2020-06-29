@@ -1,27 +1,30 @@
 // tslint:disable max-classes-per-file
+import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { createSwitchNavigator, NavigationScreenProps } from 'react-navigation';
 
-import createStackNavigator from '../../navigation/createStackNavigator';
 import Container from './container';
 import NativeStack from './nativeStack';
 import Navigation from './navigation';
 
-const SCREENS: Record<string, { screen: any; title: string }> = {
-  Container: { screen: Container, title: 'ScreenContainer example' },
-  NativeStack: { screen: NativeStack, title: 'ScreenStack example' },
-  Navigation: { screen: Navigation, title: 'React Navigation example' },
+const SCREENS: Record<string, { component: any; options: { title: string } }> = {
+  Container: { component: Container, options: { title: 'ScreenContainer example' } },
+  NativeStack: { component: NativeStack, options: { title: 'ScreenStack example' } },
+  Navigation: { component: Navigation, options: { title: 'React Navigation example' } },
 };
 
-class MainScreen extends React.Component<NavigationScreenProps> {
+type Links = { Container: undefined; NativeStack: undefined; Navigation: undefined };
+
+type Props = { navigation: StackNavigationProp<Links> };
+
+class MainScreen extends React.Component<Props> {
   static navigationOptions = {
     title: '📱 React Native Screens Examples',
   };
   render() {
-    const data = Object.keys(SCREENS);
+    const data = Object.keys(SCREENS) as Array<keyof Links>;
     return (
-      <FlatList<string>
+      <FlatList
         style={styles.list}
         data={data}
         ItemSeparatorComponent={ItemSeparator}
@@ -49,30 +52,30 @@ class MainScreenItem extends React.Component<{
     return (
       <TouchableHighlight onPress={this._onPress}>
         <View style={styles.button}>
-          <Text style={styles.buttonText}>{SCREENS[item].title || item}</Text>
+          <Text style={styles.buttonText}>{SCREENS[item].options.title ?? item}</Text>
         </View>
       </TouchableHighlight>
     );
   }
 }
 
-const MainScreenNav = createStackNavigator({
-  MainScreen: { screen: MainScreen },
-});
+const Stack = createStackNavigator();
+const SwitchStack = createStackNavigator();
 
-const ExampleApp = createSwitchNavigator(
-  {
-    Main: { screen: MainScreenNav },
-    ...SCREENS,
-  },
-  {
-    initialRouteName: 'Main',
-  }
+const ExampleApp = () => (
+  <SwitchStack.Navigator initialRouteName="Main" headerMode="none">
+    <SwitchStack.Screen name="Main">
+      {() => (
+        <Stack.Navigator>
+          <Stack.Screen name="MainScreen" component={MainScreen} />
+        </Stack.Navigator>
+      )}
+    </SwitchStack.Screen>
+    {Object.keys(SCREENS).map(key => (
+      <SwitchStack.Screen key={key} name={key} {...SCREENS[key]} />
+    ))}
+  </SwitchStack.Navigator>
 );
-
-ExampleApp.navigationOptions = {
-  header: null,
-};
 
 const styles = StyleSheet.create({
   list: {

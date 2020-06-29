@@ -81,7 +81,6 @@
     "@babel/runtime": "^7.5.5",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/segmented-control": "1.6.1",
-    "@react-navigation/web": "2.0.0-alpha.0",
     "expo": "~38.0.0",
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.4.0",
@@ -97,8 +96,6 @@
     "react-native-screens": "~2.8.0",
     "react-native-unimodules": "~0.10.1",
     "react-native-web": "^0.11.4",
-    "react-navigation": "4.1.0-alpha.0",
-    "react-navigation-tabs": "^2.7.0",
     "test-suite": "*"
   },
   "devDependencies": {

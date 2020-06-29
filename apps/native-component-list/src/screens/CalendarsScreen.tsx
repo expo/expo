@@ -1,8 +1,8 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { NavigationScreenComponent, NavigationScreenProps } from 'react-navigation';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
@@ -10,15 +10,17 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
-const CalendarRow: NavigationScreenComponent<
-  object,
-  object,
-  {
-    calendar: any;
-    updateCalendar: (calendarId: string) => void;
-    deleteCalendar: (calendar: any) => void;
-  }
-> = props => {
+type StackNavigation = StackNavigationProp<{
+  Reminders: { calendar: any };
+  Events: { calendar: any };
+}>;
+
+const CalendarRow = (props: {
+  navigation: StackNavigation;
+  calendar: any;
+  updateCalendar: (calendarId: string) => void;
+  deleteCalendar: (calendar: any) => void;
+}) => {
   const { calendar } = props;
   const calendarTypeName =
     calendar.entityType === Calendar.EntityTypes.REMINDER ? 'Reminders' : 'Events';
@@ -57,7 +59,10 @@ interface State {
   editingEvent?: any;
 }
 
-export default class CalendarsScreen extends React.Component<NavigationScreenProps, State> {
+export default class CalendarsScreen extends React.Component<
+  { navigation: StackNavigation },
+  State
+> {
   static navigationOptions = {
     title: 'Calendars',
   };

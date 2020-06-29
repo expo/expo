@@ -1,29 +1,36 @@
+import * as React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { Colors } from '../constants';
 import Screens from './MainNavigators';
 import createTabNavigator from './createTabNavigator';
 
-const MainTabNavigator = createTabNavigator(Screens, {
-  // @ts-ignore
-  resetOnBlur: false,
-  /* Below applies to material bottom tab navigator */
-  activeTintColor: Colors.tabIconSelected,
-  inactiveTintColor: Colors.tabIconDefault,
-  shifting: true,
-  barStyle: {
-    backgroundColor: Colors.tabBar,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.tabIconDefault,
-  },
-  /* Below applies to bottom tab navigator */
-  tabBarOptions: {
-    style: {
-      backgroundColor: Colors.tabBar,
-    },
-    activeTintColor: Colors.tabIconSelected,
-    inactiveTintColor: Colors.tabIconDefault,
-  },
-});
+const Tab = createTabNavigator();
 
-export default MainTabNavigator;
+export default () => (
+  <Tab.Navigator
+    shifting
+    activeTintColor={Colors.tabIconSelected}
+    inactiveTintColor={Colors.tabIconDefault}
+    barStyle={{
+      backgroundColor: Colors.tabBar,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: Colors.tabIconDefault,
+    }}
+    tabBarOptions={{
+      style: {
+        backgroundColor: Colors.tabBar,
+      },
+      activeTintColor: Colors.tabIconSelected,
+      inactiveTintColor: Colors.tabIconDefault,
+    }}>
+    {Object.keys(Screens).map(name => (
+      <Tab.Screen
+        name={name}
+        key={name}
+        component={Screens[name].navigator}
+        options={Screens[name].navigator.navigationOptions}
+      />
+    ))}
+  </Tab.Navigator>
+);

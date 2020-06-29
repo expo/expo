@@ -1,3 +1,4 @@
+import { usePermissions } from '@use-expo/permissions';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
@@ -11,7 +12,6 @@ import {
   View,
 } from 'react-native';
 import Touchable from 'react-native-platform-touchable';
-import { NavigationEvents } from 'react-navigation';
 
 import MonoText from '../components/MonoText';
 
@@ -27,119 +27,72 @@ const EXAMPLES = [
 type ArrayElementType<ArrayType> = ArrayType extends Array<infer ElementType> ? ElementType : never;
 type ExampleType = ArrayElementType<typeof EXAMPLES>;
 
-interface State {
-  selectedExample: ExampleType;
-  result?: Location.Address[] | Location.GeocodedLocation[];
-  inProgress: boolean;
-  error?: any;
-}
+export default function GeocodingScreen() {
+  const [selectedExample, setSelectedExample] = React.useState<ExampleType>(EXAMPLES[0]);
+  const [inProgress, setInProgress] = React.useState<boolean>(false);
+  const [result, setResult] = React.useState<
+    Location.Address[] | Location.GeocodedLocation[] | null
+  >(null);
+  const [error, setError] = React.useState<any>(null);
 
-export default class GeocodingScreen extends React.Component<object, State> {
-  static navigationOptions = {
-    title: 'Geocoding',
-  };
-
-  readonly state: State = {
-    selectedExample: EXAMPLES[0],
-    inProgress: false,
-  };
-
-  componentDidFocus() {
-    Permissions.askAsync(Permissions.LOCATION);
-  }
-
-  render() {
-    const { selectedExample } = this.state;
-
-    return (
-      <ScrollView style={styles.container}>
-        <NavigationEvents onDidFocus={this.componentDidFocus} />
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Select a location</Text>
-        </View>
-
-        <View style={styles.examplesContainer}>{EXAMPLES.map(this._renderExample)}</View>
-
-        <View style={styles.separator} />
-
-        <View style={styles.actionContainer}>
-          <Button
-            onPress={this._attemptGeocodeAsync}
-            title="Geocode"
-            disabled={typeof selectedExample !== 'string'}
-          />
-          <Button
-            onPress={this._attemptReverseGeocodeAsync}
-            title="Reverse Geocode"
-            disabled={typeof selectedExample !== 'object'}
-          />
-        </View>
-
-        <View style={styles.separator} />
-
-        {this._maybeRenderResult()}
-      </ScrollView>
-    );
-  }
-
-  _attemptReverseGeocodeAsync = async () => {
-    this.setState({ inProgress: true });
+  const _attemptReverseGeocodeAsync = async () => {
+    setInProgress(true);
+    setError(null);
     try {
       const result = await Location.reverseGeocodeAsync(
-        this.state.selectedExample as {
+        selectedExample as {
           latitude: number;
           longitude: number;
         }
       );
-      this.setState({ result });
+      setResult(result);
     } catch (e) {
-      this.setState({ error: e });
+      setError(e.message);
     } finally {
-      this.setState({ inProgress: false });
+      setInProgress(false);
     }
   };
 
-  _attemptGeocodeAsync = async () => {
-    this.setState({ inProgress: true, error: null });
+  const _attemptGeocodeAsync = async () => {
+    setInProgress(true);
+    setError(null);
     try {
-      const result = await Location.geocodeAsync(this.state.selectedExample as string);
-      this.setState({ result });
+      const result = await Location.geocodeAsync(selectedExample as string);
+      setResult(result);
     } catch (e) {
-      this.setState({ error: e.message });
+      setError(e.message);
     } finally {
-      this.setState({ inProgress: false });
+      setInProgress(false);
     }
   };
 
-  _maybeRenderResult = () => {
-    const { selectedExample } = this.state;
+  const _maybeRenderResult = () => {
     if (!selectedExample) {
       return null;
     }
     const text =
       typeof selectedExample === 'string' ? selectedExample : JSON.stringify(selectedExample);
 
-    if (this.state.inProgress) {
+    if (inProgress) {
       return <ActivityIndicator style={{ marginTop: 10 }} />;
-    } else if (this.state.result) {
+    } else if (result) {
       return (
         <View style={{ padding: 10 }}>
           <Text style={styles.resultText}>{text} resolves to</Text>
-          <MonoText>{JSON.stringify(this.state.result, null, 2)}</MonoText>
+          <MonoText>{JSON.stringify(result, null, 2)}</MonoText>
         </View>
       );
-    } else if (this.state.error) {
+    } else if (error) {
       return (
         <Text style={styles.errorResultText}>
-          {text} cannot resolve: {JSON.stringify(this.state.error)}
+          {text} cannot resolve: {JSON.stringify(error)}
         </Text>
       );
     }
     return null;
   };
 
-  _renderExample = (example: ExampleType, i: number) => {
-    const { selectedExample } = this.state;
+  const _renderExample = (example: ExampleType, i: number) => {
     const isSelected = selectedExample === example;
     const text = typeof example === 'string' ? example : JSON.stringify(example);
 
@@ -147,19 +100,56 @@ export default class GeocodingScreen extends React.Component<object, State> {
       <Touchable
         key={i}
         hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
-        onPress={() => this._selectExample(example)}>
+        onPress={() => _selectExample(example)}>
         <Text style={[styles.exampleText, isSelected && styles.selectedExampleText]}>{text}</Text>
       </Touchable>
     );
   };
 
-  _selectExample = (example: ExampleType) => {
-    if (this.state.inProgress) {
+  const _selectExample = (example: ExampleType) => {
+    if (inProgress) {
       return;
     }
 
-    this.setState({ selectedExample: example, result: undefined, error: undefined });
+    setSelectedExample(example);
+    setResult(null);
+    setError(null);
   };
+
+  const [permission] = usePermissions(Permissions.LOCATION, { ask: true });
+
+  if (!permission) {
+    return null;
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>Select a location</Text>
+      </View>
+
+      <View style={styles.examplesContainer}>{EXAMPLES.map(_renderExample)}</View>
+
+      <View style={styles.separator} />
+
+      <View style={styles.actionContainer}>
+        <Button
+          onPress={_attemptGeocodeAsync}
+          title="Geocode"
+          disabled={typeof selectedExample !== 'string'}
+        />
+        <Button
+          onPress={_attemptReverseGeocodeAsync}
+          title="Reverse Geocode"
+          disabled={typeof selectedExample !== 'object'}
+        />
+      </View>
+
+      <View style={styles.separator} />
+
+      {_maybeRenderResult()}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({

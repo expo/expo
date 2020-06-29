@@ -39,21 +39,26 @@ export default function ContactDetailScreen(props: any) {
   return <ContactDetailView navigation={props.navigation} route={props.route} />;
 }
 
-ContactDetailScreen.navigationOptions = ({ navigation }: any) => ({
+ContactDetailScreen.navigationOptions = ({
+  navigation,
+  route: {
+    params: { id },
+  },
+}: any) => ({
   title: 'Contacts',
-  headerRight: (
+  headerRight: () => (
     <HeaderContainerRight>
       <HeaderIconButton
         name="md-share"
         onPress={async () => {
-          Contacts.shareContactAsync(navigation.getParam('id'), 'Call me :]');
+          Contacts.shareContactAsync(id, 'Call me :]');
         }}
       />
       {isIos && (
         <HeaderIconButton
           name="md-copy"
           onPress={async () => {
-            await ContactUtils.cloneAsync(navigation.getParam('id'));
+            await ContactUtils.cloneAsync(id);
             navigation.goBack();
           }}
         />
@@ -62,8 +67,12 @@ ContactDetailScreen.navigationOptions = ({ navigation }: any) => ({
   ),
 });
 
-function ContactDetailView({ navigation }: any) {
-  const id = navigation.getParam('id');
+function ContactDetailView({
+  navigation,
+  route: {
+    params: { id },
+  },
+}: any) {
   const [contact, setContact] = React.useState<Contacts.Contact | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
 

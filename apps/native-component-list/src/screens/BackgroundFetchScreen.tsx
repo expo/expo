@@ -1,66 +1,51 @@
+import { useFocusEffect } from '@react-navigation/native';
 import format from 'date-format';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { AppState, AppStateStatus, AsyncStorage, StyleSheet, Text, View } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
+import { AsyncStorage, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
+import useAppState from '../utilities/useAppState';
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
 const LAST_FETCH_DATE_KEY = 'background-fetch-date';
 
-interface State {
-  fetchDate?: Date;
-  status?: BackgroundFetch.Status | null;
-  isRegistered: boolean;
-}
+export default function BackgroundFetchScreen() {
+  const [isRegistered, setIsRegistered] = React.useState<boolean>(false);
+  const [fetchDate, setFetchDate] = React.useState<Date | null>(null);
+  const [status, setStatus] = React.useState<BackgroundFetch.Status | null>(null);
+  const appState = useAppState(null);
 
-export default class BackgroundFetchScreen extends React.Component<object, State> {
-  static navigationOptions = {
-    title: 'Background Fetch',
-  };
-
-  readonly state: State = {
-    isRegistered: false,
-  };
-
-  componentDidMount() {
-    AppState.addEventListener('change', this.handleAppStateChange);
-  }
-
-  componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange);
-  }
-
-  didFocus = () => {
-    this.refreshLastFetchDateAsync();
-    this.checkStatusAsync();
-  };
-
-  handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (nextAppState === 'active') {
-      this.refreshLastFetchDateAsync();
+  React.useEffect(() => {
+    if (appState === 'active') {
+      refreshLastFetchDateAsync();
     }
-  };
+  }, [appState]);
 
-  async refreshLastFetchDateAsync() {
+  const onFocus = React.useCallback(() => {
+    refreshLastFetchDateAsync();
+    checkStatusAsync();
+  }, []);
+  useFocusEffect(onFocus);
+
+  const refreshLastFetchDateAsync = async () => {
     const lastFetchDateStr = await AsyncStorage.getItem(LAST_FETCH_DATE_KEY);
 
     if (lastFetchDateStr) {
-      this.setState({ fetchDate: new Date(+lastFetchDateStr) });
+      setFetchDate(new Date(+lastFetchDateStr));
     }
-  }
+  };
 
-  async checkStatusAsync() {
+  const checkStatusAsync = async () => {
     const status = await BackgroundFetch.getStatusAsync();
     const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_FETCH_TASK);
+    setStatus(status);
+    setIsRegistered(isRegistered);
+  };
 
-    this.setState({ status, isRegistered });
-  }
-
-  toggle = async () => {
-    if (this.state.isRegistered) {
+  const toggle = async () => {
+    if (isRegistered) {
       await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
     } else {
       await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
@@ -69,49 +54,42 @@ export default class BackgroundFetchScreen extends React.Component<object, State
         startOnBoot: true,
       });
     }
-    this.setState({ isRegistered: !this.state.isRegistered });
+    setIsRegistered(!isRegistered);
   };
 
-  renderText() {
-    if (!this.state.fetchDate) {
+  const renderText = () => {
+    if (!fetchDate) {
       return <Text>There was no BackgroundFetch call yet.</Text>;
     }
     return (
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
         <Text>Last background fetch was invoked at:</Text>
-        <Text style={styles.boldText}>
-          {format('yyyy-MM-dd hh:mm:ss:SSS', this.state.fetchDate)}
+        <Text style={styles.boldText}>{format('yyyy-MM-dd hh:mm:ss:SSS', fetchDate)}</Text>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.screen}>
+      <View style={styles.textContainer}>
+        <Text>
+          Background fetch status:{' '}
+          <Text style={styles.boldText}>{status ? BackgroundFetch.Status[status] : null}</Text>
         </Text>
       </View>
-    );
-  }
-
-  render() {
-    return (
-      <View style={styles.screen}>
-        <NavigationEvents onDidFocus={this.didFocus} />
-        <View style={styles.textContainer}>
-          <Text>
-            Background fetch status:{' '}
-            <Text style={styles.boldText}>
-              {this.state.status ? BackgroundFetch.Status[this.state.status] : null}
-            </Text>
-          </Text>
-        </View>
-        <View style={styles.textContainer}>{this.renderText()}</View>
-        <Button
-          buttonStyle={styles.button}
-          title={
-            this.state.isRegistered
-              ? 'Unregister BackgroundFetch task'
-              : 'Register BackgroundFetch task'
-          }
-          onPress={this.toggle}
-        />
-      </View>
-    );
-  }
+      <View style={styles.textContainer}>{renderText()}</View>
+      <Button
+        buttonStyle={styles.button}
+        title={isRegistered ? 'Unregister BackgroundFetch task' : 'Register BackgroundFetch task'}
+        onPress={toggle}
+      />
+    </View>
+  );
 }
+
+BackgroundFetchScreen.navigationOptions = {
+  title: 'Background Fetch',
+};
 
 TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   const now = Date.now();

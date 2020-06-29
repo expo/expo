@@ -1,3 +1,5 @@
+import { useFocusEffect } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Platform } from '@unimodules/core';
 import { usePermissions } from '@use-expo/permissions';
 import * as Contacts from 'expo-contacts';
@@ -9,9 +11,17 @@ import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderI
 import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
 
+type StackParams = {
+  ContactDetail: { id: string };
+};
+
+type Props = {
+  navigation: StackNavigationProp<StackParams>;
+};
+
 const CONTACT_PAGE_SIZE = 500;
 
-export default function ContactsScreen({ navigation }: { navigation: any }) {
+export default function ContactsScreen({ navigation }: Props) {
   const [permission] = usePermissions(Permissions.CONTACTS, { ask: true });
 
   if (!permission) {
@@ -25,7 +35,7 @@ export default function ContactsScreen({ navigation }: { navigation: any }) {
   return <ContactsView navigation={navigation} />;
 }
 
-function ContactsView({ navigation }: { navigation: any }) {
+function ContactsView({ navigation }: Props) {
   let rawContacts: Record<string, Contacts.Contact> = {};
 
   const [contacts, setContacts] = React.useState<Contacts.Contact[]>([]);
@@ -70,9 +80,11 @@ function ContactsView({ navigation }: { navigation: any }) {
     setRefreshing(false);
   };
 
-  React.useEffect(() => {
+  const onFocus = React.useCallback(() => {
     loadAsync();
   }, []);
+
+  useFocusEffect(onFocus);
 
   return (
     <ContactsList
@@ -104,7 +116,7 @@ const styles = StyleSheet.create({
 ContactsScreen.navigationOptions = () => {
   return {
     title: 'Contacts',
-    headerRight: (
+    headerRight: () => (
       <HeaderContainerRight>
         <HeaderIconButton
           disabled={Platform.select({ web: true, default: false })}

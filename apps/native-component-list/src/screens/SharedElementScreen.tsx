@@ -1,112 +1,102 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { TransitionSpec } from '@react-navigation/stack/lib/typescript/src/types';
 import * as React from 'react';
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { createAppContainer, NavigationScreenProp, NavigationState } from 'react-navigation';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { createSharedElementStackNavigator, SharedElement } from 'react-navigation-shared-element';
-import { createStackNavigator } from 'react-navigation-stack';
 
 import { Colors } from '../constants';
 
-export const DetailScreen = () => (
-  <View style={styles.detailContainer}>
-    {/* `style` isn't properly typed on SharedElement
+const Stack = createSharedElementStackNavigator();
+
+export function DetailScreen() {
+  return (
+    <View style={styles.detailContainer}>
+      {/* `style` isn't properly typed on SharedElement
     // @ts-ignore */}
-    <SharedElement id="image" style={StyleSheet.absoluteFill}>
-      <Image
-        style={styles.detailImage}
-        resizeMode="cover"
-        source={require('../../assets/images/large-example.jpg')}
-      />
-    </SharedElement>
-    <SharedElement id="text">
-      <Text style={styles.detailText}>Kelingking</Text>
-    </SharedElement>
-  </View>
-);
-
-DetailScreen.navigationOptions = {
-  title: 'Photo by Kilarov Zaneit',
-};
-
-DetailScreen.sharedElements = () => [{ id: 'image' }, { id: 'text', animation: 'fade' }];
+      <SharedElement id="image" style={StyleSheet.absoluteFill}>
+        <Image
+          style={styles.detailImage}
+          resizeMode="cover"
+          source={require('../../assets/images/large-example.jpg')}
+        />
+      </SharedElement>
+      <SharedElement id="text">
+        <Text style={styles.detailText}>Kelingking</Text>
+      </SharedElement>
+    </View>
+  );
+}
 
 interface Props {
-  navigation: NavigationScreenProp<NavigationState & any>;
+  navigation: StackNavigationProp<{ Detail: undefined }>;
 }
 
-class MainScreen extends React.Component<Props> {
-  static navigationOptions = {
-    title: 'react-native-shared-element',
-  };
-
-  render() {
-    return (
-      <TouchableOpacity style={styles.flex} onPress={this.onPress} activeOpacity={0.5}>
-        <View style={styles.container}>
-          <SharedElement id="image">
-            <Image style={styles.image} source={require('../../assets/images/large-example.jpg')} />
-          </SharedElement>
-          <SharedElement id="text">
-            <Text style={styles.text}>Kelingking</Text>
-          </SharedElement>
-          <Text style={styles.caption}>tap to enlarge</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  onPress = () => {
-    this.props.navigation.navigate('Detail');
-  };
+function MainScreen({ navigation }: Props) {
+  return (
+    <TouchableOpacity
+      style={styles.flex}
+      onPress={() => navigation.navigate('Detail')}
+      activeOpacity={0.5}>
+      <View style={styles.container}>
+        <SharedElement id="image">
+          <Image style={styles.image} source={require('../../assets/images/large-example.jpg')} />
+        </SharedElement>
+        <SharedElement id="text">
+          <Text style={styles.text}>Kelingking</Text>
+        </SharedElement>
+        <Text style={styles.caption}>tap to enlarge</Text>
+      </View>
+    </TouchableOpacity>
+  );
 }
 
-function springyFadeIn() {
-  const transitionSpec = {
-    timing: Animated.spring,
+const spec: TransitionSpec = {
+  animation: 'spring',
+  config: {
     tension: 10,
-    useNativeDriver: true,
-  };
-
-  return {
-    transitionSpec,
-    screenInterpolator: ({ position, scene }: any) => {
-      const { index } = scene;
-
-      const opacity = position.interpolate({
-        inputRange: [index - 1, index],
-        outputRange: [0, 1],
-      });
-
-      return { opacity };
-    },
-  };
-}
-
-const StackNavigator: any = createSharedElementStackNavigator(
-  createStackNavigator,
-  {
-    Main: MainScreen,
-    Detail: DetailScreen,
   },
-  {
-    transitionConfig: () => springyFadeIn(),
-    defaultNavigationOptions: {
-      headerTintColor: Colors.tabIconSelected,
-      headerTitleStyle: {
-        color: '#000',
-      },
-    },
-  }
-);
+};
 
-const Navigator = createAppContainer(StackNavigator);
-export default class SharedElementScreen extends React.Component<Props> {
-  static navigationOptions = {
-    header: null,
-  };
+export default function SharedElementScreen() {
+  return (
+    <NavigationContainer independent>
+      <Stack.Navigator
+        headerMode="none"
+        screenOptions={{
+          headerTintColor: Colors.tabIconSelected,
+          headerTitleStyle: { color: '#000' },
+          transitionSpec: {
+            open: spec,
+            close: spec,
+          },
+          cardStyleInterpolator: ({ index, current }) => {
+            const opacity = current.progress.interpolate({
+              inputRange: [index - 1, index],
+              outputRange: [0, 1],
+            });
 
-  render() {
-    return <Navigator screenProps={{ dismiss: () => this.props.navigation.goBack() }} detached />;
-  }
+            return { cardStyle: { opacity } };
+          },
+        }}>
+        <Stack.Screen
+          options={{
+            title: 'react-native-shared-element',
+          }}
+          name="Main"
+          component={MainScreen}
+        />
+        <Stack.Screen
+          name="Detail"
+          options={{
+            title: 'Photo by Kilarov Zaneit',
+          }}
+          component={DetailScreen}
+          sharedElements={() => [{ id: 'image' }, { id: 'text', animation: 'fade' }]}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({

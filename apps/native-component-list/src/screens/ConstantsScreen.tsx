@@ -58,10 +58,6 @@ class ExpoConstant extends React.Component<{ value?: any; name: string }, State>
 }
 
 export default class ConstantsScreen extends React.PureComponent {
-  static navigationOptions = {
-    title: 'Constants',
-  };
-
   render() {
     return (
       <ScrollView style={{ padding: 10, flex: 1, backgroundColor: Colors.greyBackground }}>

@@ -1,52 +1,49 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Colors } from '../../constants';
 import { getImageComponent, getSelectedCompareComponent } from './ImageComponents';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageTest } from './types';
+import { ImageTest, Links } from './types';
 
-type PropsType = NavigationScreenProps & {
+type PropsType = {
+  navigation: StackNavigationProp<Links>;
   test: ImageTest;
   tests: ImageTest[];
   animValue?: Animated.Value;
 };
 
-export default class ImageTestListItem extends React.Component<PropsType> {
-  onPress = () => {
-    const { test, tests, navigation } = this.props;
+export default function ImageTestListItem({ test, animValue, tests, navigation }: PropsType) {
+  const onPress = () => {
     navigation.push('ImageTest', {
       test,
       tests,
     });
   };
 
-  render() {
-    const { test, animValue } = this.props;
-    const imageProps = resolveProps(test.props, animValue);
-    return (
-      <TouchableOpacity style={styles.container} activeOpacity={0.5} onPress={this.onPress}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{test.name}</Text>
-        </View>
-        <View style={styles.content}>
-          <ImageTestView
-            style={styles.image}
-            imageProps={imageProps}
-            ImageComponent={getImageComponent()}
-          />
-          <View style={styles.spacer} />
-          <ImageTestView
-            style={styles.image}
-            imageProps={imageProps}
-            ImageComponent={getSelectedCompareComponent()}
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  }
+  const imageProps = resolveProps(test.props, animValue);
+  return (
+    <TouchableOpacity style={styles.container} activeOpacity={0.5} onPress={onPress}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{test.name}</Text>
+      </View>
+      <View style={styles.content}>
+        <ImageTestView
+          style={styles.image}
+          imageProps={imageProps}
+          ImageComponent={getImageComponent()}
+        />
+        <View style={styles.spacer} />
+        <ImageTestView
+          style={styles.image}
+          imageProps={imageProps}
+          ImageComponent={getSelectedCompareComponent()}
+        />
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
