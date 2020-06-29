@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.2.11 — 2020-06-29
+
+### 🐛 Bug fixes
+
 - Fixed an issue where the publish workflow was broken on Android. Note that the publish workflow will not be supported in a future version of expo-updates, so we recommend [switching to the no-publish workflow](https://blog.expo.io/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
 
 ## 0.2.10 — 2020-06-23
