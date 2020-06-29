@@ -124,7 +124,7 @@ and run `npx pod-install`.
 
    - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
    {
-       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
        // If you'd like to export some custom RCTBridgeModules that are not universal modules, add them here!
        return extraModules;
    }
