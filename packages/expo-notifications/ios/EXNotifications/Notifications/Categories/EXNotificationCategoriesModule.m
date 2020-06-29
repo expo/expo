@@ -49,23 +49,23 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
   UNNotificationCategoryOptions categoryOptions = [self parseNotificationCategoryOptionsFromParams: options];
   UNNotificationCategory *newCategory;
   if (@available(iOS 12, *)) {
-    newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
-                                                                               actions:actionsArray
-                                                                     intentIdentifiers:intentIdentifiers
-                                                                     hiddenPreviewsBodyPlaceholder:previewPlaceholder
-                                                                             categorySummaryFormat:categorySummaryFormat
-                                                                               options:categoryOptions];
+    newCategory = [UNNotificationCategory categoryWithIdentifier:categoryId
+                                                         actions:actionsArray
+                                               intentIdentifiers:intentIdentifiers
+                                   hiddenPreviewsBodyPlaceholder:previewPlaceholder
+                                           categorySummaryFormat:categorySummaryFormat
+                                                         options:categoryOptions];
   } else if (@available(iOS 11, *)) {
-    newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
-                                                                                  actions:actionsArray
-                                                                        intentIdentifiers:intentIdentifiers
-                                                                        hiddenPreviewsBodyPlaceholder:previewPlaceholder
-                                                                                  options:categoryOptions];
+    newCategory = [UNNotificationCategory categoryWithIdentifier:categoryId
+                                                         actions:actionsArray
+                                               intentIdentifiers:intentIdentifiers
+                                   hiddenPreviewsBodyPlaceholder:previewPlaceholder
+                                                         options:categoryOptions];
   } else {
-    newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
-                                                                  actions:actionsArray
-                                                                  intentIdentifiers:intentIdentifiers
-                                                                  options:categoryOptions];
+    newCategory = [UNNotificationCategory categoryWithIdentifier:categoryId
+                                                         actions:actionsArray
+                                               intentIdentifiers:intentIdentifiers
+                                                         options:categoryOptions];
   }
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
@@ -85,12 +85,11 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
                  deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
                  resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
-  NSString *internalCategoryId = [self internalIdForIdentifier:categoryId];
   __block NSNumber *didDelete = [NSNumber numberWithBool:NO];
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     for (UNNotificationCategory *category in newCategories) {
-      if ([category.identifier isEqualToString:internalCategoryId]) {
+      if ([category.identifier isEqualToString:categoryId]) {
         [newCategories removeObject:category];
         didDelete = [NSNumber numberWithBool:YES];
         break;
@@ -103,16 +102,9 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
 
 # pragma mark- Internal
 
-- (NSString *)internalIdForIdentifier:(NSString *)identifier
-{
-  // if NOT bare, return [NSString stringWithFormat:@"%@%@%@", experienceId, scopedIdentifierSeparator, identifier];
-  // else
-  return identifier;
-}
-
 - (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
 {
-  NSString *identifier = [self internalIdForIdentifier:params[@"identifier"]];
+  NSString *identifier = params[@"identifier"];
   NSString *buttonTitle = params[@"buttonTitle"];
   UNNotificationActionOptions options = UNNotificationActionOptionNone;
 
@@ -168,11 +160,11 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   NSMutableDictionary* parsedCategory = [NSMutableDictionary dictionary];
   parsedCategory[@"identifier"] = category.identifier;
   parsedCategory[@"actions"] = [self parseActions: category.actions];
-  parsedCategory[@"options"] = [self parseCategoryForOptions: category];
+  parsedCategory[@"options"] = [self parseCategoryOptions: category];
   return parsedCategory;
 }
 
-- (NSMutableDictionary *)parseCategoryForOptions:(UNNotificationCategory *)category
+- (NSMutableDictionary *)parseCategoryOptions:(UNNotificationCategory *)category
 {
   NSMutableDictionary* parsedOptions = [NSMutableDictionary dictionary];
   parsedOptions[@"intentIdentifiers"] = category.intentIdentifiers;
