@@ -45,9 +45,12 @@ const Redirect = optionalRequire(() =>
   require('native-component-list/src/screens/RedirectScreen')
 ) as any;
 
+let nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
   routes.apis = NativeComponentList.apis.navigator;
   routes.components = NativeComponentList.components.navigator;
+  nclLinking.apis = NativeComponentList.apis.linking;
+  nclLinking.components = NativeComponentList.components.linking;
 }
 
 const Tab = createBottomTabNavigator();
@@ -67,8 +70,8 @@ const linking = {
               run: '/run',
             },
           },
-          apis: NativeComponentList?.apis?.linking,
-          components: NativeComponentList?.components?.linking,
+
+          ...nclLinking,
         },
       },
     },
