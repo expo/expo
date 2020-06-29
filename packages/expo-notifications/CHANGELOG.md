@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Export `NotificationPermissions.types` to make `Notifications.IosAuthorizationStatus` available. ([#8747](https://github.com/expo/expo/pull/8747) by [@brentvatne](https://github.com/brentvatne))
+
 ## 0.4.0 — 2020-06-24
 
 ### 🎉 New features

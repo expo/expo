@@ -447,12 +447,11 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 **How:**
 
 - Make sure you have the release branch checked out and have cherry-picked all appropriate docs changes from master that landed after the release branch was cut.
-- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page.
+- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, check with @byCedric.)
 - Update the `sourceCodeUrl` frontmatter in the SDK docs to point to the new SDK version (find and replace in editor).
 - Commit and push changes to release branch.
 - Cherry pick this commit to `master` and push.
 - Open this commit on our CI. Go to the `docs` workflow and approve `docs_approve_deploy` job that starts `docs_deploy` job - keep an eye on it and make sure it gets deployed successfully.
-- The Algolia config needs to be updated in order for the new docs to be searchable. TODO: add instructions for that here. For now ping @cruzach or @byCedric about this.
 
 ## 6.4. Add related packages to versions endpoint
 

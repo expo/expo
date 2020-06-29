@@ -1,7 +1,7 @@
 import './environment/validate.fx';
 import './environment/logging.fx';
+import './environment/LogBox.fx'; // This must be imported exactly here
 import './environment/react-native-logs.fx';
-import './environment/LogBox.fx';
 
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
