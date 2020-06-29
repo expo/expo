@@ -1,7 +1,8 @@
 import { CodedError } from '@unimodules/core';
 import { DEFAULT_WEB_APP_OPTIONS, IFirebaseOptions } from 'expo-firebase-core';
 import * as React from 'react';
-import { WebView } from 'react-native-webview';
+
+import { WebView } from './WebView';
 
 interface Props extends React.ComponentProps<typeof WebView> {
   firebaseConfig?: IFirebaseOptions;
