@@ -1,12 +1,12 @@
-import os from 'os';
-import ip from 'ip';
-import path from 'path';
-import chalk from 'chalk';
-import uuidv4 from 'uuid/v4';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
-import request from 'request-promise-native';
 import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
+import chalk from 'chalk';
+import ip from 'ip';
+import os from 'os';
+import path from 'path';
+import request from 'request-promise-native';
+import uuidv4 from 'uuid/v4';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getHomeSDKVersionAsync } from '../ProjectVersions';
@@ -26,21 +26,20 @@ async function getManifestAsync(
   platform: string,
   sdkVersion: string | null
 ): Promise<Manifest> {
-  return await ExponentTools.getManifestAsync(
-    url,
-    {
-      'Exponent-Platform': platform,
-      'Exponent-SDK-Version': sdkVersion || undefined,
-      Accept: 'application/expo+json,application/json',
+  const headers = {
+    'Exponent-Platform': platform,
+    Accept: 'application/expo+json,application/json',
+  };
+  if (sdkVersion) {
+    headers['Exponent-SDK-Version'] = sdkVersion;
+  }
+  return await ExponentTools.getManifestAsync(url, headers, {
+    logger: {
+      log: () => {},
+      error: () => {},
+      info: () => {},
     },
-    {
-      logger: {
-        log: () => {},
-        error: () => {},
-        info: () => {},
-      },
-    }
-  );
+  });
 }
 
 async function getSavedDevHomeUrlAsync(): Promise<string> {
