@@ -1,4 +1,4 @@
-import { RouteProp } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -37,7 +37,7 @@ type Links = {
   Events: { calendar: Calendar.Calendar };
 };
 
-type Props = { route: RouteProp<Links, 'Events'> };
+type Props = StackScreenProps<Links, 'Events'>;
 
 export default class EventsScreen extends React.Component<Props, State> {
   static navigationOptions = {

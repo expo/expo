@@ -1,5 +1,4 @@
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
@@ -14,7 +13,7 @@ type Links = {
   MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
 };
 
-type Props = { navigation: StackNavigationProp<Links>; route: RouteProp<Links, 'MediaDetails'> };
+type Props = StackScreenProps<Links, 'MediaDetails'>
 
 export default class MediaDetailsScreen extends React.Component<Props> {
   static navigationOptions = {

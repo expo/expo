@@ -1,5 +1,4 @@
-import { RouteProp } from '@react-navigation/native';
-import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
 
@@ -27,9 +26,7 @@ const Background: React.FunctionComponent<{ index: number }> = ({ index }) => (
 
 type Links = { Details: { index?: number } };
 
-type Routes = RouteProp<Links, 'Details'>;
-
-type Props = { navigation: StackNavigationProp<Links>; route: Routes };
+type Props = StackScreenProps<Links, 'Details'>;
 
 class DetailsScreen extends React.Component<Props> {
   animvalue = new Animated.Value(0);

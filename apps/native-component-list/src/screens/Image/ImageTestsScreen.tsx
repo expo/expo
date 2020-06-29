@@ -1,5 +1,4 @@
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
@@ -13,10 +12,7 @@ type Link = {
   ImageTest: { test: ImageTest | ImageTestGroup; tests: (ImageTest | ImageTestGroup)[] };
 };
 
-type Props = {
-  route: RouteProp<Link, 'ImageTests'>;
-  navigation: StackNavigationProp<Link>;
-};
+type Props = StackScreenProps<Link, 'ImageTests'>
 
 export default function ImageTestsScreen({ navigation, route }: Props) {
   React.useLayoutEffect(() => {

@@ -1,5 +1,4 @@
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
@@ -23,10 +22,7 @@ AnimatedImage.displayName = 'Image';
 
 let compareEnabled: boolean = false;
 
-type Props = {
-  navigation: StackNavigationProp<Links>;
-  route: RouteProp<Links, 'ImageTest'>;
-};
+type Props = StackScreenProps<Links, 'ImageTest'>;
 
 function useForceUpdate() {
   const [, updateState] = React.useState();

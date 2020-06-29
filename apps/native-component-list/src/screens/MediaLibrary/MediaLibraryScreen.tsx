@@ -1,5 +1,5 @@
-import { RouteProp, useFocusEffect } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useFocusEffect } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import { usePermissions } from '@use-expo/permissions';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
@@ -48,7 +48,7 @@ type Links = {
   MediaAlbums: undefined;
 };
 
-type Props = { navigation: StackNavigationProp<Links>; route: RouteProp<Links, 'MediaLibrary'> };
+type Props = StackScreenProps<Links, 'MediaLibrary'>
 
 type FetchState = {
   refreshing: boolean;
@@ -87,7 +87,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
   // Set the navigation options
   React.useLayoutEffect(() => {
     const goToAlbums = () => navigation.navigate('MediaAlbums');
-    const clearAlbumSelection = () => navigation.setParams({ album: null });
+    const clearAlbumSelection = () => navigation.setParams({ album: undefined });
 
     navigation.setOptions({
       title: 'Media Library',

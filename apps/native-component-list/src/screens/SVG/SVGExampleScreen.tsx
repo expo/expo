@@ -1,12 +1,12 @@
-import { RouteProp } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import examples from './examples';
 
-type Route = RouteProp<{ SVGExample: { title?: string; key: string } }, 'SVGExample'>;
+type Links = { SVGExample: { title?: string; key: string } };
 
-type Props = { route: Route };
+type Props = StackScreenProps<Links, 'SVGExample'>;
 
 export default class SVGExampleScreen extends React.Component<Props> {
   static navigationOptions = ({ route }: Props) => {

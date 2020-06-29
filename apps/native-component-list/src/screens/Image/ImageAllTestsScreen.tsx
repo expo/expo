@@ -1,4 +1,4 @@
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
 
@@ -8,15 +8,11 @@ import { addSelectedComponentChangeListener } from './ImageComponents';
 import ImageTestListItem from './ImageTestListItem';
 import imageTests from './tests';
 import { ImageTest, Links } from './types';
-import { RouteProp } from '@react-navigation/native';
 
 // @ts-ignore
 const flattenedTests = imageTests.tests.map(test => (test.tests ? test.tests : [test])).flat();
 
-type Props = {
-  navigation: StackNavigationProp<Links>;
-  route: RouteProp<Links, 'ImageTest'>;
-};
+type Props = StackScreenProps<Links, 'ImageTest'>;
 
 export default function ImageAllTestsScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
