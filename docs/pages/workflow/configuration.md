@@ -372,7 +372,7 @@ Configuration for remote (push) notifications.
     /*
       Whether or not to display notifications when the app is in the foreground on iOS.
       `_displayInForeground` option in the individual push notification message overrides this option.
-      Learn more: https://docs.expo.io/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
+      Learn more: https://docs.expo.io/push-notifications/overview#3-handle-receiving-andor-selecting-the-notification
       Defaults to `false`.
     */
     "iosDisplayInForeground": BOOLEAN,
@@ -982,8 +982,8 @@ Configuration that is specific to the Android platform.
     "softwareKeyboardLayoutMode": STRING,
 
     /*
-      Allows your user's app data to be automatically backed up to their Google Drive. If this is set to false, 
-      no backup or restore of the application will ever be performed (this is useful if your app deals with sensitive information). 
+      Allows your user's app data to be automatically backed up to their Google Drive. If this is set to false,
+      no backup or restore of the application will ever be performed (this is useful if your app deals with sensitive information).
       Defaults to the Android default, which is true.
     */
     "allowBackup": BOOLEAN,

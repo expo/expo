@@ -4,7 +4,7 @@ title: Receiving Notifications
 
 You can now successfully send a notification to your app! If all you wanted was purely informational notifications, then you can stop here. But Expo provides the capabilities to do so much more: maybe you want to update the UI based on the notification, or maybe navigate to a particular screen if a notification was selected.
 
-Like most things with Expo, handling notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](/versions/latest/sdk/notifications).
+Like most things with Expo, handling notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](../../versions/latest/sdk/notifications/).
 
 ```javascript
 import React from 'react';
@@ -71,7 +71,7 @@ export default class App extends React.Component {
 
 ## Foreground Notification Behavior
 
-**Important Note**: To set the behavior for when notifications are received while your app is **foregrounded**, use [`Notifications.setNotificationHandler`](../../sdk/notifications/#setnotificationhandlerhandler-notificationhandler--null-void). You can use the callback to set options like:
+**Important Note**: To set the behavior for when notifications are received while your app is **foregrounded**, use [`Notifications.setNotificationHandler`](../../versions/latest/sdk/notifications/#setnotificationhandlerhandler-notificationhandler--null-void). You can use the callback to set options like:
 
 - `shouldShowAlert`
 - `shouldPlaySound`
@@ -79,6 +79,6 @@ export default class App extends React.Component {
 
 ## Notification Event Listeners
 
-Event listeners added using `addNotificationReceivedListener` and `addNotificationResponseReceivedListener` will receive an object when a notification is received or interacted with, respectively. See the [documentation](../../sdk/notifications/#notification) for information on these objects.
+Event listeners added using `addNotificationReceivedListener` and `addNotificationResponseReceivedListener` will receive an object when a notification is received or interacted with, respectively. See the [documentation](../../versions/latest/sdk/notifications/#notification) for information on these objects.
 
 There are two different subscriptions for this so that you can easily address cases where a notification comes in while your app is open and foregrounded, **and** cases where a notification comes in while your app is backgrounded or closed, and the user taps on the notification.

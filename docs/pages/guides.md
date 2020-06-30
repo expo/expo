@@ -19,7 +19,7 @@ In the managed workflow section we discuss topics as they apply specifically to 
 - [Distributing your App on the App Store and Play Store](../distribution/introduction/)
 - [Configuring Over-the-Air Updates](../guides/configuring-ota-updates/)
 - [Release Channels](../distribution/release-channels/)
-- [Push Notifications](../guides/push-notifications/)
+- [Push Notifications](../push-notifications/overview/)
 - ....and more. Scroll through the sidebar or press `/` on your keyboard to search the documentation if a particular topic interests you.
 
 ## Bare workflow

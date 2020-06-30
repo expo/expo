@@ -1,12 +1,10 @@
 ---
-title: Sending Notifications
+title: Sending Notifications with Expo's Push API
 ---
-
-# Expo's Push API
 
 > If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
 
-Along with the [`expo-notifications`] module, which provides all the client-side functionality for push notifications, Expo also handles sending these notifications off to APNS and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
+Along with the [`expo-notifications`](../../versions/latest/sdk/notifications/) module, which provides all the client-side functionality for push notifications, Expo also handles sending these notifications off to APNS and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
 
 ![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
 
@@ -27,7 +25,7 @@ Check out the source if you would like to implement it in another language.
 
 > **Note:**
 >
-> For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key, and upload the key to Expo.
+> If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](../push-notifications-setup/#credentials) before proceeding! If you haven't, push notifications will not work.
 
 ## Don't want to use one of the above libraries?
 
