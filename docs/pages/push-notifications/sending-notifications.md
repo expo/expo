@@ -1,5 +1,6 @@
 ---
 title: Sending Notifications with Expo's Push API
+sidebar_title: Sending Notifications
 ---
 
 > If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.

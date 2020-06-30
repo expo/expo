@@ -60,10 +60,11 @@ const sections = [
   {
     name: 'Push Notifications',
     reference: [
-      'Overview',
+      'Push Notifications Overview',
       'Push Notifications Setup',
-      'Sending Notifications',
+      "Sending Notifications with Expo's Push API",
       'Receiving Notifications',
+      'Using FCM for Push Notifications',
     ],
   },
   {
@@ -83,7 +84,6 @@ const sections = [
       'Progressive Web Apps',
       'Customizing Metro',
       'Customizing Webpack',
-      'Using FCM for Push Notifications',
       'Notification Channels',
       'Error Handling',
       'Testing with Jest',
