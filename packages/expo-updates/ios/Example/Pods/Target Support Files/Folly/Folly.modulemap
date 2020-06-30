@@ -1,0 +1,6 @@
+framework module folly {
+  umbrella header "Folly-umbrella.h"
+
+  export *
+  module * { export * }
+}

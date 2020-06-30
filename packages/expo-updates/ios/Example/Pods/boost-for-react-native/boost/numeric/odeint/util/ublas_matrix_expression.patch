@@ -1,0 +1,6 @@
+3390,3392c3390
+<     typename enable_if< is_convertible<typename E1::value_type , T2>,
+<                         typename matrix_binary_scalar2_traits<E1, const T2, scalar_divides<typename E1::value_type, T2> >::result_type 
+<                         > ::result_type
+---
+>     typename matrix_binary_scalar2_traits<E1, const T2, scalar_divides<typename E1::value_type, T2> >::result_type

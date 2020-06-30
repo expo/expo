@@ -1,0 +1,27 @@
+//  (C) Copyright John Maddock 2005.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+//  This file exists to prevent std lib headers from accidentally
+//  including a TR1 extention header; we must suppress this otherwise
+//  we can end up with cyclic dependencies with some std lib implementations.
+//
+#ifndef BOOST_TR1_map_INCLUDED
+#  define BOOST_TR1_map_INCLUDED
+#  ifndef BOOST_TR1_NO_RECURSION
+#     define BOOST_TR1_NO_RECURSION
+#     define BOOST_TR1_NO_map_RECURSION
+#  endif
+#  include <boost/tr1/detail/config_all.hpp>
+#  if defined(BOOST_HAS_INCLUDE_NEXT) && !defined(BOOST_TR1_DISABLE_INCLUDE_NEXT)
+#     include_next <map>
+#  else
+#     include BOOST_TR1_STD_HEADER(map)
+#  endif
+#  ifdef BOOST_TR1_NO_map_RECURSION
+#     undef BOOST_TR1_NO_map_RECURSION
+#     undef BOOST_TR1_NO_RECURSION
+#  endif
+#endif
+

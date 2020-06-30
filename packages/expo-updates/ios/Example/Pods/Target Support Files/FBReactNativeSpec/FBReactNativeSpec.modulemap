@@ -1,0 +1,6 @@
+framework module FBReactNativeSpec {
+  umbrella header "FBReactNativeSpec-umbrella.h"
+
+  export *
+  module * { export * }
+}

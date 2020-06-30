@@ -1,0 +1,46 @@
+{
+  "name": "React-RCTAnimation",
+  "version": "0.62.2",
+  "summary": "A native driver for the Animated API.",
+  "homepage": "http://facebook.github.io/react-native/",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness",
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.62.2"
+  },
+  "source_files": "{Drivers/*,Nodes/*,*}.{m,mm}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "RCTAnimation",
+  "pod_target_xcconfig": {
+    "USE_HEADERMAP": "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++14",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Folly\""
+  },
+  "dependencies": {
+    "Folly": [
+      "2018.10.22.00"
+    ],
+    "RCTTypeSafety": [
+      "0.62.2"
+    ],
+    "ReactCommon/turbomodule/core": [
+      "0.62.2"
+    ],
+    "FBReactNativeSpec": [
+      "0.62.2"
+    ],
+    "React-Core/RCTAnimationHeaders": [
+      "0.62.2"
+    ]
+  }
+}

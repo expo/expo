@@ -1,0 +1,6 @@
+framework module jsinspector {
+  umbrella header "React-jsinspector-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+framework module RCTText {
+  umbrella header "React-RCTText-umbrella.h"
+
+  export *
+  module * { export * }
+}

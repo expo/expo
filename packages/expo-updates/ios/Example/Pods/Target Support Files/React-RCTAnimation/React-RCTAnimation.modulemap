@@ -1,0 +1,6 @@
+framework module RCTAnimation {
+  umbrella header "React-RCTAnimation-umbrella.h"
+
+  export *
+  module * { export * }
+}
