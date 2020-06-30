@@ -21,6 +21,7 @@ const DIR_MAPPING = {
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
   'regulatory-compliance': 'Regulatory Compliance',
+  'push-notifications': 'Push Notifications',
 };
 
 const processUrl = path => {

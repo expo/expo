@@ -8,6 +8,7 @@ const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
     'Fundamentals',
+    'Push Notifications',
     'Distributing Your App',
     'Assorted Guides',
     'Regulatory Compliance',
@@ -57,6 +58,15 @@ const sections = [
     reference: ['Data Privacy & Protection', 'Privacy Shield', 'HIPAA', 'GDPR'],
   },
   {
+    name: 'Push Notifications',
+    reference: [
+      'Overview',
+      'Push Notifications Setup',
+      'Sending Notifications',
+      'Receiving Notifications',
+    ],
+  },
+  {
     name: 'Assorted Guides',
     reference: [
       'Assets',
@@ -73,7 +83,6 @@ const sections = [
       'Progressive Web Apps',
       'Customizing Metro',
       'Customizing Webpack',
-      'Push Notifications',
       'Using FCM for Push Notifications',
       'Notification Channels',
       'Error Handling',
@@ -272,6 +281,7 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
+  'Push Notifications',
   'Distributing Your App',
   'Regulatory Compliance',
   'Assorted Guides',
