@@ -2,7 +2,6 @@
 
 @import UIKit;
 
-#import "EXAppDelegate.h"
 #import "EXAppViewController.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
