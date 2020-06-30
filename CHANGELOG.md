@@ -13,6 +13,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- When debugging JS remotely console logs are now displayed only in the browser console (instead of both in the browser and CLI console). ([#8807](https://github.com/expo/expo/pull/8807) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 38.0.0
 
 ### 📚 3rd party library updates

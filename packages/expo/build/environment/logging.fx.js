@@ -3,8 +3,8 @@ import * as Logs from '../logs/Logs';
 import RemoteLogging from '../logs/RemoteLogging';
 if (Constants.manifest && Constants.manifest.logUrl) {
     // Enable logging to the Expo dev tools only if this JS is not running in a web browser (ex: the
-    // remote debugger)
-    if (!navigator.hasOwnProperty('userAgent')) {
+    // remote debugger). In Expo Web we don't show console logs in the CLI, so there's no special case needed.
+    if (!isRunningInWebBrowser()) {
         Logs.enableExpoCliLogging();
     }
     else {
@@ -12,5 +12,13 @@ if (Constants.manifest && Constants.manifest.logUrl) {
             'You are now debugging remotely; check your browser console for your application logs.',
         ]);
     }
+}
+/**
+ * In all web browsers navigator.product is "Gecko" for compatibility reasons.
+ * See https://developer.mozilla.org/en-US/docs/Web/API/NavigatorID/product
+ * and the discussion at https://github.com/expo/expo/pull/8807#discussion_r441391148.
+ */
+function isRunningInWebBrowser() {
+    return navigator?.product === 'Gecko';
 }
 //# sourceMappingURL=logging.fx.js.map
