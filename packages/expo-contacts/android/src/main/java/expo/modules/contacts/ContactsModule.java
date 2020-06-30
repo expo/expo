@@ -384,12 +384,18 @@ public class ContactsModule extends ExportedModule {
       contact.note = (String) data.get("note");
 
     if (data.containsKey("image")) {
-      Map<String, Object> photo = (Map<String, Object>) data.get("image");
-
-      if (photo.containsKey("uri")) {
-        contact.photoUri = (String) photo.get("uri");
+      if (data.get("image") instanceof String) {
+        contact.photoUri = (String) data.get("image");
         contact.hasPhoto = true;
+      } else if (data.get("image") instanceof Map) {
+        Map<String, Object> photo = (Map<String, Object>) data.get("image");
+
+        if (photo.containsKey("uri")) {
+          contact.photoUri = (String) photo.get("uri");
+          contact.hasPhoto = true;
+        }
       }
+
     }
 
     ArrayList results;
