@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `addContactAsync` returning incorrect id on Android. ([#8980](https://github.com/expo/expo/pull/8980) by [@lukmccall](https://github.com/lukmccall))
+
 ## 8.2.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
