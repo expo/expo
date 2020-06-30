@@ -17,7 +17,10 @@ const process = require('process');
 // If you need to run Jest with the JS debugger enabled, run Jest directly. It is usually under
 // node_modules/jest/bin/jest.js.
 const jestPackagePath = path.dirname(require.resolve('jest/package.json'));
-const jestProgramPath = path.resolve(jestPackagePath, jestPackageJson.bin);
+const jestProgramPath = path.resolve(
+  jestPackagePath,
+  jestPackageJson.bin.jest || jestPackageJson.bin
+);
 const jestProgramArgs = process.argv.slice(2);
 const jestWithArgs = [jestProgramPath].concat(jestProgramArgs);
 const result = childProcess.spawnSync('node', jestWithArgs, { stdio: 'inherit' });
