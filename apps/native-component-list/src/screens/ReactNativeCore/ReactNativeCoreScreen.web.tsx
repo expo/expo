@@ -18,7 +18,6 @@ import {
   TouchableOpacityProps,
   View,
 } from 'react-native';
-import WebView from 'react-native-webview';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
@@ -54,7 +53,6 @@ export default class ReactNativeCoreScreen extends React.Component {
           { title: 'Text', data: [this._renderText] },
           { title: 'TextInput', data: [this._renderTextInput] },
           { title: 'Touchables', data: [this._renderTouchables] },
-          { title: 'WebView', data: [this._renderWebView] },
         ]}
         renderItem={this._renderItem}
         renderSectionHeader={this._renderSectionHeader}
@@ -251,27 +249,6 @@ export default class ReactNativeCoreScreen extends React.Component {
           <Text style={buttonText}>Opacity!</Text>
         </TouchableOpacity>
       </View>
-    );
-  };
-
-  _renderWebView = () => {
-    return (
-      <WebView
-        style={{ width: Layout.window.width, height: 250 }}
-        source={{
-          html: `
-          <h2>You can always use a WebView if you need to!</h2>
-          <p>
-            <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
-            <input type="text" placeholder="Disagree? why?"></input>
-            <input type="submit">
-          </p>
-          <p>
-            <a href="https://expo.io">expo.io</a>
-          </p>
-        `,
-        }}
-      />
     );
   };
 
