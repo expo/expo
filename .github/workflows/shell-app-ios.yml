@@ -89,3 +89,13 @@ jobs:
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
+      - uses: 8398a7/action-slack@v3
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+        with:
+          channel: '#platform-ios'
+          status: ${{ job.status }}
+          fields: job,ref
+          author_name: iOS Shell App
