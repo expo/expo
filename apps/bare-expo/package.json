@@ -96,7 +96,6 @@
     "react-native-safe-area-context": "3.0.2",
     "react-native-screens": "~2.8.0",
     "react-native-unimodules": "~0.10.1",
-    "react-native-web": "^0.11.4",
     "test-suite": "*"
   },
   "devDependencies": {
