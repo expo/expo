@@ -107,6 +107,7 @@ export default class SnackInline extends React.Component {
             />
             <input type="hidden" name="name" value={this.props.label || 'Example'} />
             <input type="hidden" name="dependencies" value={this._getDependencies()} />
+            <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
             <input type="hidden" name="code" value={this._getCode()} />
 
             <button className="snack-inline-example-button">
