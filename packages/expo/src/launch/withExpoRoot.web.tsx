@@ -1,7 +1,6 @@
 import * as ErrorRecovery from 'expo-error-recovery';
 import * as React from 'react';
 import { AppearanceProvider } from 'react-native-appearance';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { InitialProps } from './withExpoRoot.types';
 
@@ -17,9 +16,7 @@ export default function withExpoRoot<P extends InitialProps>(
 
       return (
         <AppearanceProvider>
-          <SafeAreaProvider>
-            <AppRootComponent {...props} />;
-          </SafeAreaProvider>
+          <AppRootComponent {...props} />
         </AppearanceProvider>
       );
     }
