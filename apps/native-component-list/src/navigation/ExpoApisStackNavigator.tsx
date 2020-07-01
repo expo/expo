@@ -25,12 +25,14 @@ function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any
     </Stack.Navigator>
   );
 }
+const icon = ({ focused }: { focused: boolean }) => {
+  return <TabIcon name="exponent-box" focused={focused} />;
+};
 ExpoApisStackNavigator.navigationOptions = {
   title: 'Expo APIs',
   tabBarLabel: 'APIs',
-  tabBarIcon: ({ focused }: { focused: boolean }) => {
-    return <TabIcon name="exponent-box" focused={focused} />;
-  },
+  tabBarIcon: icon,
+  drawerIcon: icon,
 };
 
 export default ExpoApisStackNavigator;

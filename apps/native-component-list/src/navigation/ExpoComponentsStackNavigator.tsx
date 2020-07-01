@@ -29,11 +29,14 @@ function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationPr
     </Stack.Navigator>
   );
 }
+
+const icon = ({ focused }: { focused: boolean }) => {
+  return <TabIcon name="cards-playing-outline" focused={focused} />;
+};
 ExpoComponentsStackNavigator.navigationOptions = {
   title: 'Expo Components',
   tabBarLabel: 'Components',
-  tabBarIcon: ({ focused }: { focused: boolean }) => {
-    return <TabIcon name="cards-playing-outline" focused={focused} />;
-  },
+  tabBarIcon: icon,
+  drawerIcon: icon,
 };
 export default ExpoComponentsStackNavigator;
