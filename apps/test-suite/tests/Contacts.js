@@ -40,6 +40,36 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? xdescribe : describe;
 
+  function compareArrays(array, expected) {
+    return expected.reduce(
+      (result, expectedItem) =>
+        result && array.filter(item => compareObjects(item, expectedItem)).length,
+      true
+    );
+  }
+
+  function compareObjects(object, expected) {
+    for (const prop in expected) {
+      if (prop === Contacts.Fields.Image || prop === 'lookupKey' || prop === 'id') {
+        continue;
+      }
+      if (Array.isArray(object[prop])) {
+        if (!compareArrays(object[prop], expected[prop])) {
+          return false;
+        }
+      } else if (typeof object[prop] === 'object') {
+        if (!compareObjects(object[prop], expected[prop])) {
+          return false;
+        }
+      } else if (object[prop] !== expected[prop]) {
+        expect(object[prop]).toEqual(expected[prop]);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   describeWithPermissions('Contacts', () => {
     const isAndroid = Platform.OS !== 'ios';
 
@@ -191,46 +221,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
           });
         });
 
-        it('checks shape of the inserted contacts', async () => {
-          function compareArrays(array, expected) {
-            return expected.reduce(
-              (result, expectedItem) =>
-                result && array.filter(item => compareObjects(item, expectedItem)).length,
-              true
-            );
-          }
-
-          function compareObjects(object, expected) {
-            for (const prop in expected) {
-              if (prop === Contacts.Fields.Image) {
-                continue;
-              }
-              if (Array.isArray(object[prop])) {
-                if (!compareArrays(object[prop], expected[prop])) {
-                  return false;
-                }
-              } else if (typeof object[prop] === 'object') {
-                if (!compareObjects(object[prop], expected[prop])) {
-                  return false;
-                }
-              } else if (object[prop] !== expected[prop]) {
-                expect(object[prop]).toEqual(expected[prop]);
-                return false;
-              }
-            }
-
-            return true;
-          }
-          await Promise.all(
-            createdContactIds.map(async ({ id, contact: expectedContact }) => {
-              const contact = await Contacts.getContactByIdAsync(id);
-              console.log({ contact, expectedContact });
-              expect(contact).toBeDefined();
-              expect(compareObjects(contact, expectedContact)).toBe(true);
-            })
-          );
-        });
-
         it('returns correct shape', async () => {
           const {
             data,
@@ -360,6 +350,49 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
           );
           expect(contact.imageAvailable).toBeDefined();
           expect(Array.isArray(emails) || typeof emails === 'undefined').toBe(true);
+        });
+
+        it('checks shape of the inserted contacts', async () => {
+          await Promise.all(
+            createdContactIds.map(async ({ id, contact: expectedContact }) => {
+              const contact = await Contacts.getContactByIdAsync(id);
+              expect(contact).toBeDefined();
+              expect(compareObjects(contact, expectedContact)).toBe(true);
+            })
+          );
+        });
+      });
+
+      describe('Contacts.updateContactAsync()', () => {
+        let contactToUpdate;
+        beforeAll(async () => {
+          if (createdContactIds.length) {
+            contactToUpdate = await Contacts.getContactByIdAsync(createdContactIds[0].id);
+            console.log({ contactToUpdate });
+          }
+        });
+
+        it('updates contact', async () => {
+          if (!contactToUpdate) {
+            return;
+          }
+
+          contactToUpdate.firstName = 'UpdatedName';
+          const id = await Contacts.updateContactAsync(contactToUpdate);
+
+          expect(id).toBeDefined();
+          expect(id).toEqual(contactToUpdate.id);
+        });
+
+        it('checks shape of updated contact', async () => {
+          if (!contactToUpdate) {
+            return;
+          }
+
+          const contact = await Contacts.getContactByIdAsync(contactToUpdate.id);
+
+          expect(contact).toBeDefined();
+          compareObjects(contact.firstName, 'UpdatedName');
         });
       });
 
