@@ -27,7 +27,6 @@ Notifications.setNotificationHandler({
 export default class App extends React.Component {
   state = {
     notification: {},
-    response: {},
   };
 
   componentDidMount() {
@@ -54,15 +53,19 @@ export default class App extends React.Component {
 
   _handleNotificationResponse = response => {
     /* @info Want to know what the format of the object this listener receives is? Find the specifics in the expo-notifications documentation */
-    this.setState({ response: response });
+    console.log(response);
     /* @end */
   };
 
   render() {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Origin: {this.state.notification.origin}</Text>
-        <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
+        <Text>Your expo push token: {this.state.expoPushToken}</Text>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Title: {this.state.notification.request.content.title}</Text>
+          <Text>Body: {this.state.notification.request.content.body}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.request.content.data)}</Text>
+        </View>
       </View>
     );
   }
