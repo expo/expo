@@ -7,13 +7,13 @@ Your success will be limited if you don't know the limitations of your tools. A 
 
 ## Limitations of the managed workflow
 
-As explained on the [workflows overview page](../managed-vs-bare/), the managed workflow is kind of like "[Rails](https://rubyonrails.org/)" and "[Create React App](https://github.com/facebook/create-react-app)" for React Native. If you use the tools we provide in the managed workflow to build your app, we try to handle as much of the complexity of building apps for you as we can. The tradeoff here is that this workflow won't be suitable for *every possible app*.
+As explained on the [workflows overview page](../managed-vs-bare/), the managed workflow is kind of like "[Rails](https://rubyonrails.org/)" and "[Create React App](https://github.com/facebook/create-react-app)" for React Native. If you use the tools we provide in the managed workflow to build your app, we try to handle as much of the complexity of building apps for you as we can. The tradeoff here is that this workflow won't be suitable for _every possible app_.
 
 There are plenty of cases where its current constraints may not be appropriate for your project. The following is a list of limitations that we are aware of that may influence your decision on whether the managed workflow is a good fit for your project.
 
 <details><summary><h4>Not all iOS and Android APIs are available</h4></summary> <p>
 
- Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](../managed-vs-bare/#bare-workflow) or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
+Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](../managed-vs-bare/#bare-workflow) or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
 
 </p>
 </details>
@@ -25,7 +25,6 @@ Background execution is the ability to run code when the app is not foregrounded
 
 </p>
 </details>
-
 
 <details><summary><h4>If you need to keep your app size extremely lean, the managed workflow may not be the best choice</h4></summary>
 <p>
@@ -46,7 +45,7 @@ Related to the previous point, we typically avoid adding native modules to the S
 <details><summary><h4>The only supported push notification service is the Expo notification service</h4></summary>
 <p>
 
-If you want to use another push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../../guides/push-notifications/), you will need to use the bare workflow.
+If you want to use another push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../../push-notifications/overview/), you will need to use the bare workflow.
 
 </p>
 </details>
@@ -84,7 +83,6 @@ To build your app binaries for distribution on the Apple App Store and Google Pl
 
 </p>
 </details>
-
 
 <details><summary><h4>Configuration must be done on each native project rather than once with app.json</h4></summary>
 <p>
