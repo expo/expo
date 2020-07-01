@@ -40,7 +40,10 @@ Now you need to configure the library for iOS and/or Android.
        # ...
      end
     ```
-
+  If your `node_modules` path is not `../node_modules`, use `use_unimodules!` like this:
+  ```
+  use_unimodules!({modules_paths: ['your node_modules path']})
+  ```
   in the end your `Podfile` should look more or less like [this](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/ios/Podfile).
 - Run `npx pod-install` again
 - Setup `@unimodules/react-native-adapter` following instructions at [README.md](../%40unimodules/react-native-adapter#ios).
