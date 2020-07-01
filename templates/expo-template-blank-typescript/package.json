@@ -16,7 +16,7 @@
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.0.tar.gz",
-    "react-native-web": "~0.11.7"
+    "react-native-web": "~0.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

@@ -48,7 +48,7 @@
     "@babel/plugin-proposal-decorators": "^7.6.0",
     "@babel/preset-env": "^7.6.3",
     "babel-plugin-module-resolver": "^3.2.0",
-    "babel-plugin-react-native-web": "^0.11.7",
+    "babel-plugin-react-native-web": "~0.12.0",
     "metro-react-native-babel-preset": "^0.58.0"
   },
   "devDependencies": {
