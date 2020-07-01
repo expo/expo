@@ -9,7 +9,7 @@ Whether you're developing your app locally, sending it out to select beta tester
 - Errors you hit in development
 - Error you hit in production (or more likely, errors reported by your users)
 
-Let's go through some of our best practices when it comes to each of these situations.
+Let's go through some of our best practices when it comes to each of these situations, and at the end of this guide, we'll recommend some great debugging tools that can make your life a lot easier.
 
 ## Development errors
 
