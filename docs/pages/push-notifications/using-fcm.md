@@ -1,5 +1,6 @@
 ---
 title: Using FCM for Push Notifications
+sidebar_title: Using FCM
 ---
 
 Firebase Cloud Messaging is required for all standalone Android apps made with Expo. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
@@ -47,4 +48,4 @@ In order for Expo to send notifications from our servers using your credentials,
 
 4. Run `expo push:android:upload --api-key <your-token-here>`, replacing `<your-token-here>` with the string you just copied. We'll store your token securely on our servers, where it will only be accessed when you send a push notification.
 
-That's it -- users who run this new version of the app will now receive notifications through FCM using your project's credentials. You just send the push notifications as you normally would (see [guide](../../guides/push-notifications#2-call-expos-push-api-with-the)). We'll take care of choosing the correct service to send the notification.
+That's it -- users who run this new version of the app will now receive notifications through FCM using your project's credentials. You just send the push notifications as you normally would (see [guide](../sending-notifications/)). We'll take care of choosing the correct service to send the notification.

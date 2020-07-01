@@ -1,140 +1,15 @@
 ---
-title: Push Notifications
+title: Sending Notifications with Expo's Push API
+sidebar_title: Sending Notifications
 ---
-
-import SnackInline from '~/components/plugins/SnackInline';
-
-Push Notifications are an important feature, no matter what kind of app you're building. Not only is it nice to let users know about something that may interest them, be it a new album being released, a sale or other limited-time-only deal, or that one of their friends sent them a message, but push notifications are proven to help boost user interaction and create a better overall user experience.
-
-Whether you just want to be able to let users know when a relevant event happens, or you're trying to optimize customer engagement and retention, Expo makes implementing push notifications almost too easy. All the hassle with native device information and communicating with APNS (Apple Push Notification Service) or FCM (Firebase Cloud Messaging) is taken care of behind the scenes, so that you can treat iOS and Android notifications the same, saving you time on the front-end, and back-end!
-
-There are three main steps to setting up push notifications:
-
-- getting a user's Expo Push Token
-- calling Expo's Push API with the token when you want to send a notification
-- responding to receiving the notification in your app (maybe upon opening, you want to jump to a particular screen that the notification refers to)
-
-## Example Usage
-
-The Snack below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
-
-<SnackInline label='Push Notifications' templateId='pushnotifications' dependencies={['expo-constants', 'expo-permissions']}>
-
-```js
-import React from 'react';
-import { Text, View, Button, Vibration, Platform } from 'react-native';
-import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
-import Constants from 'expo-constants';
-
-export default class AppContainer extends React.Component {
-  state = {
-    expoPushToken: '',
-    notification: {},
-  };
-
-  registerForPushNotificationsAsync = async () => {
-    if (Constants.isDevice) {
-      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
-        return;
-      }
-      const token = await Notifications.getExpoPushTokenAsync();
-      console.log(token);
-      this.setState({ expoPushToken: token });
-    } else {
-      alert('Must use physical device for Push Notifications');
-    }
-
-    if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('default', {
-        name: 'default',
-        sound: true,
-        priority: 'max',
-        vibrate: [0, 250, 250, 250],
-      });
-    }
-  };
-
-  componentDidMount() {
-    this.registerForPushNotificationsAsync();
-
-    // Handle notifications that are received or selected while the app
-    // is open. If the app was closed and then opened by tapping the
-    // notification (rather than just tapping the app icon to open it),
-    // this function will fire on the next tick after the app starts
-    // with the notification data.
-    this._notificationSubscription = Notifications.addListener(this._handleNotification);
-  }
-
-  _handleNotification = notification => {
-    Vibration.vibrate();
-    console.log(notification);
-    this.setState({ notification: notification });
-  };
-
-  // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
-  sendPushNotification = async () => {
-    const message = {
-      to: this.state.expoPushToken,
-      sound: 'default',
-      title: 'Original Title',
-      body: 'And here is the body!',
-      data: { data: 'goes here' },
-      _displayInForeground: true,
-    };
-    const response = await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Accept-encoding': 'gzip, deflate',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(message),
-    });
-  };
-
-  render() {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'space-around',
-        }}>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Text>Origin: {this.state.notification.origin}</Text>
-          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
-        </View>
-        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
-      </View>
-    );
-  }
-}
-
-/*  TO GET PUSH RECEIPTS, RUN THE FOLLOWING COMMAND IN TERMINAL, WITH THE RECEIPTID SHOWN IN THE CONSOLE LOGS
-
-    curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
-      "ids": ["YOUR RECEIPTID STRING HERE"]
-      }'
-*/
-```
-
-</SnackInline>
-
-### 2. Call Expo's Push API with the user's token to send the Notification
 
 > If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
 
-Push notifications have to come from somewhere, and that somewhere is probably your server (you could write a command line tool to send them if you wanted, or send them straight from your app, it's all the same). When you're ready to send a push notification, take the Expo push token from your user record and send it to the Expo API using a plain old HTTPS POST request. We've taken care of wrapping that for you in a few languages:
+Along with the [`expo-notifications`](../../versions/latest/sdk/notifications/) module, which provides all the client-side functionality for push notifications, Expo also handles sending these notifications off to APNS and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
 
 ![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
+
+When you're ready to send a push notification, take the Expo push token from your user record and send it to the Expo API using a plain old HTTPS POST request. You'll probably do this from your server (you could write a command line tool to send them if you wanted, or send them straight from your app, it's all the same), and the Expo team and community have taken care of wrapping that for you in a few languages:
 
 - [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node) for Node.js. Maintained by the Expo team.
 - [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python) for Python. Maintained by community developers.
@@ -151,78 +26,11 @@ Check out the source if you would like to implement it in another language.
 
 > **Note:**
 >
-> For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key, and upload the key to Expo.
+> If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](../push-notifications-setup/#credentials) before proceeding! If you haven't, push notifications will not work.
 
-### 3. Handle receiving the notification in your app
+## Don't want to use one of the above libraries?
 
-You can now successfully send a notification to your app! If all you wanted was purely informational notifications, then you can stop here. But Expo provides the capabilities to do much more: maybe you want to update the UI based on the notification, or maybe navigate to a particular screen if a notification was selected.
-
-Like most things with Expo, handling received notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](/versions/latest/sdk/notifications).
-
-```javascript
-import React from 'react';
-import { Notifications } from 'expo';
-import { Text, View } from 'react-native';
-
-// This refers to the function defined earlier in this guide
-import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
-
-export default class AppContainer extends React.Component {
-  state = {
-    notification: {},
-  };
-
-  componentDidMount() {
-    registerForPushNotificationsAsync();
-
-    // Handle notifications that are received or selected while the app
-    // is open. If the app was closed and then opened by tapping the
-    // notification (rather than just tapping the app icon to open it),
-    // this function will fire on the next tick after the app starts
-    // with the notification data.
-    this._notificationSubscription = Notifications.addListener(this._handleNotification);
-  }
-
-  _handleNotification = notification => {
-    // do whatever you want to do with the notification
-    this.setState({ notification: notification });
-  };
-
-  render() {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Origin: {this.state.notification.origin}</Text>
-        <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
-      </View>
-    );
-  }
-}
-```
-
-> **Important Note**: On iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, otherwise the user will never see them. You can handle this specific case in your listener by checking if the `origin` of the notification is `received`. Notifications that arrive while the app is foregrounded on iOS do not show up in the system notification list.
-
-Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](/versions/latest/sdk/notifications/#notification)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
-
-| Push was received when...                                            |          `origin` will be...          |
-| -------------------------------------------------------------------- | :-----------------------------------: |
-| App is open and foregrounded                                         |             `'received'`              |
-| App is open and backgrounded, then notification is not selected      | no notification is passed to listener |
-| App is open and backgrounded, then notification is selected          |             `'selected'`              |
-| App was not open, and then opened by selecting the push notification |             `'selected'`              |
-| App was not open, and then opened by tapping the home screen icon    | no notification is passed to listener |
-
-<!-- Maybe example of custom UI for handling a notification?
-Want to see an example of navigating to a screen with a Notification? Check this out! [][][][][][][][][][][][][] -->
-
-## Testing
-
-iOS and Android simulators cannot receive push notifications, so you will need to test using a physical device. Additionally, when calling `Permissions.askAsync` on the simulator, it will resolve immediately with `undetermined` as the status, regardless of whether you choose to allow or not.
-
-The [Expo push notification tool](https://expo.io/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device, without having to use your CLI or write out a test server.
-
-## Sending notifications from your server
-
-Although there are server-side SDKs in several languages to help you send push notifications, you may want to directly send requests to our HTTP/2 API (this API currently does not require any authentication). All you need to do is send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
+You may want to send requests directly to our HTTP/2 API (this API currently does not require any authentication), and that's easy to do! All you need to do is send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
 
 ```
 host: exp.host
@@ -339,19 +147,19 @@ The [response body](#push-receipt-response-format) for push receipts is very sim
 
 If the entire request failed, the HTTP status code will be 4xx or 5xx and the `errors` field will be an array of error objects (usually just one). Otherwise, the HTTP status code will be 200 and your messages will be on their way to your users' devices!
 
-## Errors
+# Errors
 
 Expo provides details regarding any errors that occur during this entire process. We'll cover some of the most common errors below so that you can implement logic to handle them automatically on your server. If, for whatever reason, Expo couldn't deliver the message to the Android or iOS push notification service, the push receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.
 
-### Individual errors
+## Individual errors
 
 Inside both push tickets and push receipts, look for a `details` object with an `error` field. If present, it may be one of the following values, and you should handle these errors like so:
 
-#### Push ticket errors
+### Push ticket errors
 
 - `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
 
-#### Push receipt errors
+### Push receipt errors
 
 - `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
 
@@ -359,9 +167,12 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 - `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
 
-- `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS.
+- `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens.
+  - Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisiong profile.
 
-### Request errors
+> Note: For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](../../distribution/app-signing/#ios)
+
+## Request errors
 
 If there's an error with the entire request for either push tickets or push receipts, the `errors` object may be one of the following values, and you should handle these errors like so:
 
@@ -371,21 +182,9 @@ If there's an error with the entire request for either push tickets or push rece
 
 - `PUSH_TOO_MANY_RECEIPTS`: you are trying to get more than 1000 push receipts in one request. Make sure you are only sending an array of 1000 (or less) ticket ID strings to get your push receipts.
 
-## FAQ
+# Formats
 
-- **Does Expo store the contents of push notifications?** Expo does not store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple, Google, etc... Push notifications are stored only in memory and in message queues and **not** stored in databases.
-
-- **Does Expo read or share the contents of push notifications?** Expo does not read or share the contents of push notifications and our services keep push notifications only as long as needed to deliver them to push notification services run by Apple and Google. If the Expo team is actively debugging the push notifications service, we may see notification contents (ex: at a breakpoint) but Expo cannot see push notification contents otherwise.
-
-- **How does Expo encrypt connections to push notification services, like Apple's and Google's?** Expo's connections to Apple and Google are encrypted and use HTTPS.
-
-- **What browsers does Expo for Web's push notifications support?** It works on all browsers that support Push API such as Chrome and Firefox. Check the full list here: https://caniuse.com/#feat=push-api.
-
-- **How do I handle expired push notification credentials?** When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
-
-## Formats
-
-### Message request format
+## Message request format
 
 Each message must be a JSON object with the given fields (only the `to` field is required):
 
@@ -409,7 +208,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 
 **Note on `channelId`**: If left null, a "Default" channel will be used, and Expo will create the channel on the device if it does not yet exist. However, use caution, as the "Default" channel is user-facing and you may not be able to fully delete it.
 
-### Push ticket format
+## Push ticket format
 
 ```javascript
 {
@@ -431,7 +230,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 }
 ```
 
-### Push receipt request format
+## Push receipt request format
 
 ```javascript
 {
@@ -439,7 +238,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 }
 ```
 
-### Push receipt response format
+## Push receipt response format
 
 ```javascript
 {

@@ -6,7 +6,7 @@ title: Using the documentation
 
 **"Managed Workflow"**: once you are done with "The Basics", we recommend moving on to the **"Fundamentals"** subsection of the "Managed Workflow". It will set you up with the skills you need for your day-to-day development, such as [Viewing Logs](../../workflow/logging/) and [Debugging](../../workflow/debugging/).
 
-The "Managed Workflow" section also contains many how-to guides that show you how you can accomplish specific goals that you will likely come across while building an app, such as [Using Custom Fonts](../../guides/using-custom-fonts/) and sending [Push Notifications](../../guides/push-notifications/). It also goes in detail on the finer points of [distributing your apps to the stores](../../distribution/introduction/).
+The "Managed Workflow" section also contains many how-to guides that show you how you can accomplish specific goals that you will likely come across while building an app, such as [Using Custom Fonts](../../guides/using-custom-fonts/) and sending [Push Notifications](../../push-notifications/overview/). It also goes in detail on the finer points of [distributing your apps to the stores](../../distribution/introduction/).
 
 **"Bare Workflow"**: this section helps you to up and running with the bare workflow (we only cover the managed workflow in "The Basics"), lists the [supported APIs from the Expo SDK](../../bare/unimodules-full-list/), and includes other how-to guides for integrating Expo tools into bare React Native apps.
 
