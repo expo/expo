@@ -188,7 +188,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
    *
    * @param context Context where to start the service.
    */
-  public static void enqueGetCategories(Context context,  @Nullable ResultReceiver receiver) {
+  public static void enqueueGetCategories(Context context,  @Nullable ResultReceiver receiver) {
     Intent intent = new Intent(CATEGORY_EVENT_ACTION);
     intent.putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE);
     intent.putExtra(RECEIVER_KEY, receiver);
@@ -201,7 +201,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
    * @param context  Context where to start the service.
    * @param category Notification category to be set
    */
-  public static void enqueSetCategory(Context context, NotificationCategory category, @Nullable ResultReceiver receiver) {
+  public static void enqueueSetCategory(Context context, NotificationCategory category, @Nullable ResultReceiver receiver) {
     Intent intent = new Intent(CATEGORY_EVENT_ACTION);
     intent.putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE);
     intent.putExtra(CATEGORY_KEY, (Serializable)category);
@@ -215,7 +215,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
    * @param context    Context where to start the service.
    * @param identifier Category Identifier
    */
-  public static void enqueDeleteCategory(Context context, String identifier,  @Nullable ResultReceiver receiver) {
+  public static void enqueueDeleteCategory(Context context, String identifier,  @Nullable ResultReceiver receiver) {
     Intent intent = new Intent(CATEGORY_EVENT_ACTION);
     intent.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE);
     intent.putExtra(CATEGORY_IDENTIFIER_KEY, identifier);
