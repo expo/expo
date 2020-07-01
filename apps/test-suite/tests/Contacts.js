@@ -2,7 +2,6 @@
 
 import { Asset } from 'expo-asset';
 import * as Contacts from 'expo-contacts';
-import * as Permissions from 'expo-permissions';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
@@ -74,17 +73,14 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
     const isAndroid = Platform.OS !== 'ios';
 
     it('Contacts.requestPermissionsAsync', async () => {
-      await TestUtils.acceptPermissionsAndRunCommandAsync(async () => {
-        const results = await Contacts.requestPermissionsAsync();
+      const results = await Contacts.requestPermissionsAsync();
 
-        expect(results.granted).toBe(true);
-        expect(results.status).toBe('granted');
-      });
+      expect(results.granted).toBe(true);
+      expect(results.status).toBe('granted');
     });
 
     it('Contacts.getPermissionsAsync', async () => {
       const results = await Contacts.getPermissionsAsync();
-
       expect(results.granted).toBe(true);
       expect(results.status).toBe('granted');
     });
@@ -117,12 +113,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
               [Contacts.Fields.Emails]: [
                 {
                   email: 'carmant@southpark.com',
-                  label: 'unknown',
-                },
-              ],
-              [Contacts.Fields.Addresses]: [
-                {
-                  city: 'South Park',
                   label: 'unknown',
                 },
               ],
@@ -357,6 +347,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
             createdContactIds.map(async ({ id, contact: expectedContact }) => {
               const contact = await Contacts.getContactByIdAsync(id);
               expect(contact).toBeDefined();
+              console.log({ contact, expectedContact });
               expect(compareObjects(contact, expectedContact)).toBe(true);
             })
           );
@@ -368,7 +359,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
         beforeAll(async () => {
           if (createdContactIds.length) {
             contactToUpdate = await Contacts.getContactByIdAsync(createdContactIds[0].id);
-            console.log({ contactToUpdate });
           }
         });
 
@@ -390,7 +380,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
           }
 
           const contact = await Contacts.getContactByIdAsync(contactToUpdate.id);
-
           expect(contact).toBeDefined();
           compareObjects(contact.firstName, 'UpdatedName');
         });
