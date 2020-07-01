@@ -22,7 +22,7 @@ class AppDelegate: UMAppDelegateWrapper {
     super.applicationWillEnterForeground(application)
   }
 
-  func setUpUserInterfaceForApplication(_ application: UIApplication, withLaunchOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) {
+  private func setUpUserInterfaceForApplication(_ application: UIApplication, withLaunchOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) {
     if (self.window != nil) {
       return
     }
@@ -35,6 +35,6 @@ class AppDelegate: UMAppDelegateWrapper {
     rootViewController = (ExpoKit.sharedInstance().rootViewController() as! EXRootViewController)
     window!.rootViewController = rootViewController
 
-    window?.makeKeyAndVisible()
+    window!.makeKeyAndVisible()
   }
 }
