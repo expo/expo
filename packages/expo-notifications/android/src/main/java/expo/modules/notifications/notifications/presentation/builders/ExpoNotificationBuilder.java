@@ -14,13 +14,9 @@ import android.os.Parcel;
 import android.provider.Settings;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.io.IOException;
-import java.io.InvalidClassException;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationAction;

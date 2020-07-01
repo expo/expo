@@ -12,6 +12,7 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 import androidx.annotation.Nullable;
+
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 
 /**
@@ -218,11 +219,11 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readObject();
     mAutoDismiss = in.readByte() == 1;
-    String CategoryIdString = (String) in.readObject();
-    if (CategoryIdString == null) {
+    String categoryIdString = (String) in.readObject();
+    if (categoryIdString == null) {
       mCategoryId = null;
     } else {
-      mCategoryId = new String(CategoryIdString);
+      mCategoryId = new String(categoryIdString);
     }
   }
 

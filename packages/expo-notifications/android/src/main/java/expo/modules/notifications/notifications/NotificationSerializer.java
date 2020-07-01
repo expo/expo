@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.Nullable;
+
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationAction;
@@ -34,7 +35,7 @@ public class NotificationSerializer {
     serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
     serializedResponse.putBundle("notification", toBundle(response.getNotification()));
     if (response instanceof TextInputNotificationResponse) {
-      serializedResponse.putString("userText", ((TextInputNotificationResponse)response).getUserText());
+      serializedResponse.putString("userText", ((TextInputNotificationResponse) response).getUserText());
     }
     return serializedResponse;
   }
@@ -195,8 +196,8 @@ public class NotificationSerializer {
 
     if (action instanceof TextInputNotificationAction) {
       Bundle serializedTextInputOptions = new Bundle();
-      serializedTextInputOptions.putString("submitButtonTitle", ((TextInputNotificationAction)action).getSubmitButtonTitle());
-      serializedTextInputOptions.putString("placeholder", ((TextInputNotificationAction)action).getPlaceholder());
+      serializedTextInputOptions.putString("submitButtonTitle", ((TextInputNotificationAction) action).getSubmitButtonTitle());
+      serializedTextInputOptions.putString("placeholder", ((TextInputNotificationAction) action).getPlaceholder());
       serializedAction.putBundle("textInput", serializedTextInputOptions);
     }
 

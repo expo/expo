@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications.service;
 
 import androidx.core.app.RemoteInput;
+
 import android.os.Bundle;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
@@ -45,7 +47,7 @@ public class TextInputNotificationResponseReceiver extends NotificationResponseR
   private String getMessageText(Intent intent) {
     Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
     if (remoteInput != null) {
-        return remoteInput.getCharSequence(USER_TEXT_RESPONSE).toString();
+      return remoteInput.getCharSequence(USER_TEXT_RESPONSE).toString();
     }
     return null;
   }

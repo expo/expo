@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
 
 import androidx.annotation.Nullable;
 
