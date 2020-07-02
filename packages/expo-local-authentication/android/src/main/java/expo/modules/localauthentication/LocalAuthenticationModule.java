@@ -88,6 +88,9 @@ public class LocalAuthenticationModule extends ExportedModule {
       return;
     }
 
+    // note(cedric): replace hardcoded system feature strings with constants from
+    // PackageManager when dropping support for Android SDK 28
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (mPackageManager.hasSystemFeature("android.hardware.fingerprint")) {
         results.add(AUTHENTICATION_TYPE_FINGERPRINT);
