@@ -4,20 +4,20 @@ title: Debugging
 
 import Video from '~/components/plugins/Video'
 
-Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors out into two camps:
+Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors out into two categories:
 
-- Errors you hit in development
-- Error you hit in production (or more likely, errors reported by your users)
+1. Errors you encounter in development
+2. Errors you (or your users) encounter in production
 
-Let's go through some of our best practices when it comes to each of these situations, and at the end of this guide, we'll recommend some great debugging tools that can make your life a lot easier.
+Let's go through some of our recommended practices when it comes to each of these situations, and at the end of this guide, we'll recommend tools that can make debugging easier.
 
 ## Development errors
 
 These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with `expo-cli` is pretty easy, thanks to [all the tools available in the Expo client app](#developer-menu).
 
-Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
+Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](../../tutorial/errors/#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
 
-- Search for the error message in Google and [Stack Overflow](), it's likely you're not the first person to ever run into this
+- Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
   - Revert back to a working version of your code (this may even be a completely blank `expo init` project)
   - Apply your recent changes piece by piece, until it breaks
@@ -47,7 +47,7 @@ With that information, you should be able to identify where the error is coming 
 
 ### My app crashes on certain (older) devices
 
-This indicates a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React Devtools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
+This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React Devtools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
 
 ## Stuck?
 
