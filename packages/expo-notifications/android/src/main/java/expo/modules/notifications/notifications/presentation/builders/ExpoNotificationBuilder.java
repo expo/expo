@@ -109,6 +109,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     // so we go around it by marshalling and unmarshalling the object ourselves.
     requestExtras.putByteArray(EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY, marshallNotificationRequest(getNotification().getNotificationRequest()));
     builder.addExtras(requestExtras);
+    
     NotificationAction defaultAction = new NotificationAction(DEFAULT_ACTION_IDENTIFIER, null, true);
     builder.setContentIntent(getActionIntent(getContext(), defaultAction, getNotification()));
 

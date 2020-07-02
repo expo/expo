@@ -173,6 +173,8 @@ public class NotificationSerializer {
     Bundle serializedCategory = new Bundle();
     serializedCategory.putString("identifier", category.getIdentifier());
     serializedCategory.putParcelableArrayList("actions", toBundleList(category.getActions()));
+    // Android doesn't support any category options
+    serializedCategory.putBundle("options", new Bundle());
     return serializedCategory;
   }
 

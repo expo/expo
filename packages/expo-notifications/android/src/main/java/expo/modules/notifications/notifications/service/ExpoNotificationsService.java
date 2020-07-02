@@ -321,7 +321,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
   }
 
   protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
-    return new CategoryAwareNotificationBuilder(this)
+    return new CategoryAwareNotificationBuilder(this, new SharedPreferencesNotificationCategoriesStore(this))
         .setNotification(notification)
         .setAllowedBehavior(behavior)
         .build();

@@ -55,9 +55,6 @@ public class TextInputNotificationAction extends NotificationAction {
   }
 
   public String getPlaceholder() {
-    if (mPlaceholder != null) {
-      return mPlaceholder;
-    }
-    return "Type something";
+    return mPlaceholder;
   }
 }

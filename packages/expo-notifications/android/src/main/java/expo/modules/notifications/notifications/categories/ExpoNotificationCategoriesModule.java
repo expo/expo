@@ -8,6 +8,7 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.errors.InvalidArgumentException;
+import org.unimodules.core.arguments.MapArguments;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,16 +58,17 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void setNotificationCategoryAsync(final String identifier, List<HashMap<String, Object>> actionArguments, final Promise promise) {
+  public void setNotificationCategoryAsync(final String identifier, List<HashMap<String, Object>> actionArguments, HashMap<String, Object> categoryOptions, final Promise promise) {
     List<NotificationAction> actions = new ArrayList();
     for (HashMap<String, Object> actionMap : actionArguments) {
-      HashMap<String, Object> actionOptions = getActionOptions(actionMap);
-      HashMap<String, Object> textInputOptions = getTextInputOptions(actionMap);
+      MapArguments actionParams = new MapArguments(actionMap);
+      MapArguments actionOptions = new MapArguments(actionParams.getMap(OPTIONS_KEY));
+      MapArguments textInputOptions = actionParams.containsKey(TEXT_INPUT_OPTIONS_KEY) ? new MapArguments(actionParams.getMap(TEXT_INPUT_OPTIONS_KEY)) : null;
       if (textInputOptions != null) {
-        actions.add(new TextInputNotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap),
-                getOptionOpensAppToForeground(actionOptions), getSubmitButtonTitle(textInputOptions), getPlaceholder(textInputOptions)));
+        actions.add(new TextInputNotificationAction(actionParams.getString(IDENTIFER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null),
+                actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true), textInputOptions.getString(SUBMIT_BUTTON_TITLE_KEY, null), textInputOptions.getString(PLACEHOLDER_KEY, null)));
       } else {
-        actions.add(new NotificationAction(getActionIdentifier(actionMap), getActionButtonTitle(actionMap), getOptionOpensAppToForeground(actionOptions)));
+        actions.add(new NotificationAction(actionParams.getString(IDENTIFER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null), actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true)));
       }
     }
 
@@ -78,7 +80,11 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
         NotificationCategory newCategory = resultData.getParcelable(BaseNotificationsService.CATEGORIES_KEY);
-        promise.resolve(NotificationSerializer.toBundle(newCategory));
+        if (newCategory != null) {
+          promise.resolve(NotificationSerializer.toBundle(newCategory));
+        } else {
+          promise.reject("ERR_CATEGORY_SET_FAILED", "The provided category could not be set.");
+        }
       }
     });
   }
@@ -95,48 +101,6 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     });
   }
 
-  private String getActionIdentifier(HashMap<String, Object> map) {
-    Object value = map.get(IDENTIFER_KEY);
-    if (value instanceof String) {
-      return (String) value;
-    }
-    return null;
-  }
-
-  private String getActionButtonTitle(HashMap<String, Object> map) {
-    Object value = map.get(BUTTON_TITLE_KEY);
-    if (value instanceof String) {
-      return (String) value;
-    }
-    return null;
-  }
-
-  private HashMap<String, Object> getTextInputOptions(HashMap<String, Object> map) {
-    Object value = map.get(TEXT_INPUT_OPTIONS_KEY);
-    if (value instanceof HashMap) {
-      return (HashMap) value;
-    }
-    return null;
-  }
-
-  private HashMap<String, Object> getActionOptions(HashMap<String, Object> map) {
-    Object value = map.get(OPTIONS_KEY);
-    if (value instanceof HashMap) {
-      return (HashMap) value;
-    }
-    return null;
-  }
-
-  private boolean getOptionOpensAppToForeground(HashMap<String, Object> map) {
-    if (map != null) {
-      Object value = map.get(OPENS_APP_TO_FOREGROUND_KEY);
-      if (value instanceof Boolean) {
-        return (boolean) value;
-      }
-    }
-    return true;
-  }
-
   protected ArrayList<Bundle> serializeCategories(Collection<NotificationCategory> categories) {
     ArrayList<Bundle> serializedCategories = new ArrayList<>();
     for (NotificationCategory category : categories) {
@@ -145,19 +109,4 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     return serializedCategories;
   }
 
-  private String getSubmitButtonTitle(HashMap<String, Object> map) {
-    Object value = map.get(SUBMIT_BUTTON_TITLE_KEY);
-    if (value instanceof String) {
-      return (String) value;
-    }
-    return null;
-  }
-
-  private String getPlaceholder(HashMap<String, Object> map) {
-    Object value = map.get(PLACEHOLDER_KEY);
-    if (value instanceof String) {
-      return (String) value;
-    }
-    return null;
-  }
 }

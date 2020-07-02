@@ -6,9 +6,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
+import java.util.Collections;
 
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
@@ -22,9 +22,9 @@ import static expo.modules.notifications.notifications.service.TextInputNotifica
 public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
   private SharedPreferencesNotificationCategoriesStore mStore;
 
-  public CategoryAwareNotificationBuilder(Context context) {
+  public CategoryAwareNotificationBuilder(Context context, SharedPreferencesNotificationCategoriesStore store) {
     super(context);
-    mStore = new SharedPreferencesNotificationCategoriesStore(context);
+    mStore = store;
   }
 
   @Override
@@ -35,7 +35,7 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
     
     String categoryIdentifer = content.getCategoryId();
     if (categoryIdentifer != null) {
-      List<NotificationAction> actions = new ArrayList();
+      List<NotificationAction> actions = Collections.emptyList();
       try {
         NotificationCategory category = mStore.getNotificationCategory(categoryIdentifer);
         if (category != null) {
