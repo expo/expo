@@ -870,7 +870,7 @@ Calling one of the following methods is a no-op on Web.
   - `buttonTitle`: The title of the button triggering this action.
   - `textInput`: **Optional** object which, if provided, will result in a button that prompts the user for a text response.
     - `submitButtonTitle`: A string which will be used as the title for the button used for submitting the text response.
-    - `placeholder`: A string that serves as a placeholder until the user begins typing.
+    - `placeholder`: A string that serves as a placeholder until the user begins typing. Defaults to no placeholder string.
   - `options`: **Optional** object of additional configuration options.
     - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app.
     - `isAuthenticationRequired`: (**iOS only**) Boolean indicating whether triggering the action will require authentication from the user.
@@ -887,7 +887,7 @@ Calling one of the following methods is a no-op on Web.
 
 #### Returns
 
-A `Promise` resolving to the category you just created, or `null` if the category could not be created.
+A `Promise` resolving to the category you just created.
 
 ### `getNotificationCategoriesAsync(): Promise<NotificationCategory[]>`
 
