@@ -92,6 +92,7 @@ export default class AppJsonPropsTable extends React.Component {
                 <tr key={index}>
                   <td>
                     <div
+                      data-testid={property.name.match(/[a-zA-Z]+/g)}
                       style={{
                         marginLeft: `${12 + property.level * 32}px`,
                         display: property.level ? 'list-item' : 'block',
