@@ -224,7 +224,7 @@ public class FileSystemModule extends ExportedModule {
           if (options.containsKey("md5") && (Boolean) options.get("md5")) {
             result.putString("md5", md5(file));
           }
-          result.putDouble("size", file.length());
+          result.putDouble("size", getFileSize(file));
           result.putDouble("modificationTime", 0.001 * file.lastModified());
           promise.resolve(result);
         } else {
@@ -1080,5 +1080,23 @@ public class FileSystemModule extends ExportedModule {
     } else if (!file.delete()) {
       throw new IOException("Unable to delete file: " + file);
     }
+  }
+
+  private long getFileSize(File file) {
+    if (!file.isDirectory()) {
+      return file.length();
+    }
+
+    File[] content = file.listFiles();
+    if (content == null) {
+      return 0;
+    }
+
+    long size = 0;
+    for (File item : content) {
+      size += getFileSize(item);
+    }
+
+    return size;
   }
 }
