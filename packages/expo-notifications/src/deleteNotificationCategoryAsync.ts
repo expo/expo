@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import NotificationCategoriesModule from './NotificationCategoriesModule';
+import NotificationCategoriesModule from './NotificationCategoriesModule.native';
 
 export default async function deleteNotificationCategoryAsync(
   identifier: string

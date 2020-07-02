@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import NotificationCategoriesModule from './NotificationCategoriesModule';
+import NotificationCategoriesModule from './NotificationCategoriesModule.native';
 import { NotificationCategory } from './Notifications.types';
 
 export default async function getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {

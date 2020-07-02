@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import NotificationCategoriesModule from './NotificationCategoriesModule';
+import NotificationCategoriesModule from './NotificationCategoriesModule.native';
 export default async function getNotificationCategoriesAsync() {
     if (!NotificationCategoriesModule.getNotificationCategoriesAsync) {
         throw new UnavailabilityError('Notifications', 'getNotificationCategoriesAsync');

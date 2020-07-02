@@ -1,7 +1,7 @@
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 
-import NotificationCategoriesModule from './NotificationCategoriesModule';
-import { NotificationCategory } from './Notifications.types';
+import NotificationCategoriesModule from './NotificationCategoriesModule.native';
+import { NotificationCategory, NotificationAction } from './Notifications.types';
 
 export default async function setNotificationCategoryAsync(
   identifier: string,
@@ -21,7 +21,9 @@ export default async function setNotificationCategoryAsync(
     throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
   }
 
-  return Platform.OS === 'ios'
-    ? await NotificationCategoriesModule.setNotificationCategoryAsync(identifier, actions, options)
-    : await NotificationCategoriesModule.setNotificationCategoryAsync(identifier, actions);
+  return await NotificationCategoriesModule.setNotificationCategoryAsync(
+    identifier,
+    actions,
+    options
+  );
 }

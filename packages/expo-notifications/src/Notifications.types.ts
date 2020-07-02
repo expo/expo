@@ -212,6 +212,7 @@ export interface NotificationContentInput {
    */
   color?: string;
   autoDismiss?: boolean;
+  categoryIdentifier?: string;
   attachments?: {
     url: string;
     identifier?: string;
@@ -254,7 +255,7 @@ export interface NotificationAction {
     submitButtonTitle: string;
     placeholder: string;
   };
-  options: {
+  options?: {
     isDestructive?: boolean;
     isAuthenticationRequired?: boolean;
     opensAppToForeground?: boolean;

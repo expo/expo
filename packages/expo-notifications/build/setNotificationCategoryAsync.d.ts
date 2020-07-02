@@ -1,4 +1,4 @@
-import { NotificationCategory } from './Notifications.types';
+import { NotificationCategory, NotificationAction } from './Notifications.types';
 export default function setNotificationCategoryAsync(identifier: string, actions: NotificationAction[], options?: {
     previewPlaceholder?: string;
     intentIdentifiers?: string[];
