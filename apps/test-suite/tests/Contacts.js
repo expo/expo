@@ -341,7 +341,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
             createdContactIds.map(async ({ id, contact: expectedContact }) => {
               const contact = await Contacts.getContactByIdAsync(id);
               expect(contact).toBeDefined();
-              console.log({ contact, expectedContact });
               expect(compareObjects(contact, expectedContact)).toBe(true);
             })
           );
