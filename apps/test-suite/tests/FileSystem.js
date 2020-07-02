@@ -300,7 +300,6 @@ export async function test({ describe, expect, it, ...t }) {
       });
       await FS.writeAsStringAsync(path, 'Expo is awesome 🚀🚀🚀');
       const info = await FS.getInfoAsync(dir);
-      console.log({ info });
 
       expect(info).toBeDefined();
       expect(info.exists).toBe(true);
