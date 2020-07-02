@@ -310,6 +310,8 @@ await Device.isSideLoadingEnabled();
 // true or false
 ```
 
+> This method requires the [`REQUEST_INSTALL_PACKAGES`](https://developer.android.com/reference/android/Manifest.permission#REQUEST_INSTALL_PACKAGES) permission to detect if sideloading is possible on the user's device.
+
 ### `Device.getPlatformFeaturesAsync()`
 
 **Android only.** Gets a list of features that are available on the system. The feature names are platform-specific. See [here](<https://developer.android.com/reference/android/content/pm/PackageManager#getSystemAvailableFeatures()>) to view Android official docs about this implementation.
