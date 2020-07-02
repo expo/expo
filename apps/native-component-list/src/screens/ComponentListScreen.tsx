@@ -11,6 +11,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 interface ListElement {
   name: string;
@@ -29,12 +30,15 @@ function ComponentListScreen(props: Props) {
     StatusBar.setHidden(false);
   }, []);
 
+  // adjust the right padding for safe area -- we don't need the left because that's where the drawer is.
+  const { bottom, right } = useSafeArea();
+
   const _renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
     return (
       <TouchableHighlight
         underlayColor="#dddddd"
-        style={styles.rowTouchable}
+        style={[styles.rowTouchable, { paddingRight: 10 + right }]}
         onPress={isAvailable ? () => navigation.navigate(route ?? exampleName) : undefined}>
         <View style={[styles.row, !isAvailable && styles.disabledRow]}>
           {props.renderItemRight && props.renderItemRight(item)}
@@ -55,7 +59,7 @@ function ComponentListScreen(props: Props) {
       removeClippedSubviews={false}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
-      contentContainerStyle={{ backgroundColor: '#fff' }}
+      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: bottom }}
       data={props.apis}
       keyExtractor={_keyExtractor}
       renderItem={_renderExampleSection}
