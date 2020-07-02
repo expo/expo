@@ -31,26 +31,37 @@ const externalLinks = [
     for (const link of externalLinks) {
       let response = await page.goto(`${url}${link}`);
       if (response.status() == 404) {
-        await page.waitFor(() => {
-          return (document.querySelector('#redirect-link') || document.querySelector('#__not_found'))
-        }, { timeout: 500 });
+        await page.waitFor(
+          () => {
+            return (
+              document.querySelector('#redirect-link') || document.querySelector('#__not_found')
+            );
+          },
+          { timeout: 500 }
+        );
         if (await page.$('#redirect-link')) {
           const [response] = await Promise.all([
             page.waitForNavigation(),
-            page.click('#redirect-link')
+            page.click('#redirect-link'),
           ]);
           console.info(`Redirected from ${link} to ${await page.url()}`);
           try {
-            await page.waitFor(() => {
-              return (document.querySelector('#__redirect_failed') || document.querySelector('#__not_found'))
-            }, { timeout: 500 });
+            await page.waitFor(
+              () => {
+                return (
+                  document.querySelector('#__redirect_failed') ||
+                  document.querySelector('#__not_found')
+                );
+              },
+              { timeout: 500 }
+            );
             console.debug(`Redirect failed`);
             redirectsFailed.push(link);
           } catch {
             console.debug(`Redirect successful`);
           }
         } else {
-          console.debug(`Couldn't find ${link}`)
+          console.debug(`Couldn't find ${link}`);
           notFound.push(link);
         }
       }

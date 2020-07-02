@@ -30,9 +30,7 @@ export default function App() {
 
 async function getDefaultCalendarSource() {
   const calendars = await Calendar.getCalendarsAsync();
-  const defaultCalendars = calendars.filter(
-    each => each.source.name === 'Default'
-  );
+  const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
   return defaultCalendars[0].source;
 }
 

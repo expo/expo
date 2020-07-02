@@ -13,7 +13,11 @@ export default meta =>
       render() {
         const { router } = this.props;
         return (
-          <DocumentationPage title={meta.title} url={router} asPath={router.asPath} sourceCodeUrl={meta.sourceCodeUrl}>
+          <DocumentationPage
+            title={meta.title}
+            url={router}
+            asPath={router.asPath}
+            sourceCodeUrl={meta.sourceCodeUrl}>
             <SluggerContext.Provider value={new GithubSlugger()}>
               <MDXProvider components={components}>{this.props.children}</MDXProvider>
             </SluggerContext.Provider>

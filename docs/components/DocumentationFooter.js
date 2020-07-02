@@ -89,12 +89,9 @@ export default class DocumentationFooter extends React.PureComponent {
     }
 
     return (
-      <a
-        className={STYLES_FOOTER_LINK}
-        target="_blank"
-        href={`${this.props.sourceCodeUrl}`}>
+      <a className={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
         View source code for {this.props.title}
       </a>
     );
-  }
+  };
 }
