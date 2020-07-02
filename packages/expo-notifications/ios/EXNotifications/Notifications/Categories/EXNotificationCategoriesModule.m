@@ -3,20 +3,9 @@
 #import <EXNotifications/EXNotificationCategoriesModule.h>
 #import <EXNotifications/EXNotificationCenterDelegate.h>
 
-@interface EXNotificationCategoriesModule ()
-
-@property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
-
-@end
-
 @implementation EXNotificationCategoriesModule
 
 UM_EXPORT_MODULE(ExpoNotificationCategoriesModule);
-
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  _notificationCenterDelegate = [moduleRegistry getModuleImplementingProtocol:@protocol(EXNotificationCenterDelegate)];
-}
 
 # pragma mark - Exported methods
 
@@ -26,7 +15,7 @@ UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
     for (UNNotificationCategory *category in categories) {
-      [existingCategories addObject:[self parseCategoryToJson:category]];
+      [existingCategories addObject:[self serializeCategory:category]];
     }
     resolve(existingCategories);
   }];
@@ -77,7 +66,7 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
     }
     [newCategories addObject:newCategory];
     [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
-    resolve([self parseCategoryToJson:newCategory]);
+    resolve([self serializeCategory:newCategory]);
   }];
 }
 
@@ -85,18 +74,18 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
                  deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
                  resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
-  __block NSNumber *didDelete = [NSNumber numberWithBool:NO];
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    BOOL didDelete = NO;
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     for (UNNotificationCategory *category in newCategories) {
       if ([category.identifier isEqualToString:categoryId]) {
         [newCategories removeObject:category];
-        didDelete = [NSNumber numberWithBool:YES];
+        didDelete = YES;
         break;
       }
     }
     [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
-    resolve(didDelete);
+    resolve(@(didDelete));
   }];
 }
 
@@ -155,68 +144,63 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return options;
 }
 
-- (NSMutableDictionary *)parseCategoryToJson:(UNNotificationCategory *)category
+- (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
-  NSMutableDictionary* parsedCategory = [NSMutableDictionary dictionary];
-  parsedCategory[@"identifier"] = category.identifier;
-  parsedCategory[@"actions"] = [self parseActions: category.actions];
-  parsedCategory[@"options"] = [self parseCategoryOptions: category];
-  return parsedCategory;
+  NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
+  serializedCategory[@"identifier"] = category.identifier;
+  serializedCategory[@"actions"] = [self serializeActions: category.actions];
+  serializedCategory[@"options"] = [self serializeCategoryOptions: category];
+  return serializedCategory;
 }
 
-- (NSMutableDictionary *)parseCategoryOptions:(UNNotificationCategory *)category
+- (NSMutableDictionary *)serializeCategoryOptions:(UNNotificationCategory *)category
 {
-  NSMutableDictionary* parsedOptions = [NSMutableDictionary dictionary];
-  parsedOptions[@"intentIdentifiers"] = category.intentIdentifiers;
-  parsedOptions[@"customDismissAction"] =  [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionCustomDismissAction) != 0)];
-  parsedOptions[@"allowInCarPlay"] = [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionAllowInCarPlay) != 0)];
+  NSMutableDictionary* serializedOptions = [NSMutableDictionary dictionary];
+  serializedOptions[@"intentIdentifiers"] = category.intentIdentifiers;
+  serializedOptions[@"customDismissAction"] =  [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionCustomDismissAction) != 0)];
+  serializedOptions[@"allowInCarPlay"] = [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionAllowInCarPlay) != 0)];
   if (@available(iOS 11, *)) {
-    parsedOptions[@"previewPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
-    parsedOptions[@"showTitle"] =  [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowTitle) != 0)];
-    parsedOptions[@"showSubtitle"] = [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowSubtitle) != 0)];
+    serializedOptions[@"previewPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
+    serializedOptions[@"showTitle"] =  [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowTitle) != 0)];
+    serializedOptions[@"showSubtitle"] = [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowSubtitle) != 0)];
   }
   if (@available(iOS 12, *)) {
-    parsedOptions[@"categorySummaryFormat"] = category.categorySummaryFormat;
+    serializedOptions[@"categorySummaryFormat"] = category.categorySummaryFormat;
   }
   if (@available(iOS 13, *)) {
-    parsedOptions[@"allowAnnouncement"] = [NSNumber numberWithBool:((category.options & UNNotificationActionOptionAuthenticationRequired) != 0)];
+    serializedOptions[@"allowAnnouncement"] = [NSNumber numberWithBool:((category.options & UNNotificationActionOptionAuthenticationRequired) != 0)];
   }
-  return parsedOptions;
+  return serializedOptions;
 }
 
-- (NSMutableArray *)parseActions:(NSArray *)actions
+- (NSMutableArray *)serializeActions:(NSArray<UNNotificationAction *>*)actions
 {
-  NSMutableArray* parsedActions = [NSMutableArray new];
+  NSMutableArray* serializedActions = [NSMutableArray new];
   for (NSUInteger i = 0; i < [actions count]; i++)
   {
     NSMutableDictionary *actionDictionary = [NSMutableDictionary dictionary];
+    actionDictionary[@"buttonTitle"] = actions[i].title;
+    actionDictionary[@"identifier"] = actions[i].identifier;
+    actionDictionary[@"options"] = [self serializeActionOptions:actions[i].options];
     if ([actions[i] isKindOfClass:[UNTextInputNotificationAction class]]) {
-      UNTextInputNotificationAction *action = actions[i];
+      UNTextInputNotificationAction *textInputAction = (UNTextInputNotificationAction *)actions[i];
       NSMutableDictionary *textInputOptions = [NSMutableDictionary dictionary];
-      textInputOptions[@"placeholder"] = action.textInputPlaceholder;
-      textInputOptions[@"submitButtonTitle"] = action.textInputButtonTitle;
+      textInputOptions[@"placeholder"] = textInputAction.textInputPlaceholder;
+      textInputOptions[@"submitButtonTitle"] = textInputAction.textInputButtonTitle;
       actionDictionary[@"textInput"] = textInputOptions;
-      actionDictionary[@"buttonTitle"] = action.title;
-      actionDictionary[@"identifier"] = action.identifier;
-      actionDictionary[@"options"] = [self parseActionOptions:action.options];
-    } else {
-      UNNotificationAction *action = actions[i];
-      actionDictionary[@"buttonTitle"] = action.title;
-      actionDictionary[@"identifier"] = action.identifier;
-      actionDictionary[@"options"] = [self parseActionOptions:action.options];
     }
-    [parsedActions addObject:actionDictionary];
+    [serializedActions addObject:actionDictionary];
   }
-  return parsedActions;
+  return serializedActions;
 }
 
-- (NSMutableDictionary *)parseActionOptions:(NSUInteger)options
+- (NSMutableDictionary *)serializeActionOptions:(NSUInteger)options
 {
-  NSMutableDictionary* parsedOptions = [NSMutableDictionary dictionary];
-  parsedOptions[@"opensAppToForeground"] =  [NSNumber numberWithBool:((options & UNNotificationActionOptionForeground) != 0)];
-  parsedOptions[@"isDestructive"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionDestructive) != 0)];
-  parsedOptions[@"isAuthenticationRequired"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionAuthenticationRequired) != 0)];
-  return parsedOptions;
+  NSMutableDictionary* serializedOptions = [NSMutableDictionary dictionary];
+  serializedOptions[@"opensAppToForeground"] =  [NSNumber numberWithBool:((options & UNNotificationActionOptionForeground) != 0)];
+  serializedOptions[@"isDestructive"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionDestructive) != 0)];
+  serializedOptions[@"isAuthenticationRequired"] = [NSNumber numberWithBool:((options & UNNotificationActionOptionAuthenticationRequired) != 0)];
+  return serializedOptions;
 }
 
 @end
