@@ -287,6 +287,14 @@ export class GitDirectory {
   }
 
   /**
+   * Returns a list of files with staged changes.
+   */
+  async getStagedFilesAsync(): Promise<string[]> {
+    const { stdout } = await this.runAsync(['diff', '--name-only', '--cached']);
+    return stdout.trim().split(/\n+/g).filter(Boolean);
+  }
+
+  /**
    * Checks whether given commit is an ancestor of head commit.
    */
   async isAncestorAsync(commit: string): Promise<boolean> {

@@ -17,6 +17,16 @@ export const commitStagedChanges = new Task<TaskArgs>(
     dependsOn: [resolveReleaseTypeAndVersion],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
+    const stagedFiles = await Git.getStagedFilesAsync();
+
+    if (stagedFiles.length === 0) {
+      // This may happen if versions have already been updated — manually or by previous publish
+      // that failed after committing and pushing to remote. It's safe to just skip this step
+      // and use the current head commit as the publish commit.
+      logger.info(`\n📼 Nothing to commit — using previous commit as the publish commit`);
+      return;
+    }
+
     const commitMessage = commitMessageForOptions(options);
     const commitDescription = parcels
       .map(({ pkg, state }) => `${pkg.packageName}@${state.releaseVersion}`)
