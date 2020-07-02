@@ -46,6 +46,7 @@ const sections = [
       'Sharing the image',
       'Handling platform differences',
       'Configuring a splash screen and app icon',
+      'Errors and Debugging',
       'Learning more',
     ],
   },
