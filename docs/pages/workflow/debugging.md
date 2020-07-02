@@ -4,34 +4,64 @@ title: Debugging
 
 import Video from '~/components/plugins/Video'
 
-Contrary to popular belief, there are sometimes better ways to debug than putting `console.log` all over your code. There are plenty of tools and libraries that can improve the debugging experience. This document will explain how to use some of the most commonly useful tools.
+Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors out into two camps:
 
-## Prerequisites
+- Errors you hit in development
+- Error you hit in production (or more likely, errors reported by your users)
 
-- You should have Expo CLI and Expo client installed as described on the ["Installation" page](../../get-started/installation).
-- It's usually easier to test and debug using a simulator, so we recommend setting up the [iOS Simulator](../../workflow/ios-simulator/) and/or the [Android Emulator](../../workflow/android-studio-emulator/) before continuing.
+Let's go through some of our best practices when it comes to each of these situations, and at the end of this guide, we'll recommend some great debugging tools that can make your life a lot easier.
 
-## Errors and warnings
+## Development errors
 
-In development it won't be long before you encounter a "Redbox" error or "Yellowbox" warning.
+These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with `expo-cli` is pretty easy, thanks to [all the tools available in the Expo client app](#developer-menu).
 
-Redbox errors will show when a fatal error has occurred that prevents your app from running. Warnings will show to let you know of a _possible_ issue that you should probably look into before shipping your app.
+Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
 
-You can also create warnings and errors on your own with `console.warn("Warning message")` and `console.error("Error message")`. Another way to trigger the redbox is to throw an error and not catch it: `throw Error("Error message")`.
+- Search for the error message in Google and [Stack Overflow](), it's likely you're not the first person to ever run into this
+- **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
+  - Revert back to a working version of your code (this may even be a completely blank `expo init` project)
+  - Apply your recent changes piece by piece, until it breaks
+    - If the code you're adding in each "piece" is complex, you may want to simplify what you're doing. For example, if you use a state management library like Redux, you can try removing that from the equation completely to see if the issue lies in your state management (which is really common in React apps)
+  - This should narrow down the possible sources of the error, and provide you with more information to search the internet for others who have had the same problem
+- Use breakpoints (or `console.log`s) to check and make sure a certain piece of code is being run, or that a variable has a certain value. Using `console.log` for debugging isn't considered the best practice, but it's fast, easy, and oftentimes provides some illuminating information
 
-### Redbox errors and stack traces
+If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to it's own blank `expo init` project, and go from there.
 
-When you encounter an error during development, you will be shown the error message, as well as the "stacktrace," which is a report of the recent calls your application made or was making when it crashed. This stacktrace is shown both in your terminal and in the Expo client app.
+## Production errors
 
-This stacktrace is **extremely valuable** since it gives you the location the error comes from. For example, in the following clip we know that the error came from the file `LinksScreen.js` on line 10 and column (character) 15.
+Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (i.e. where, how, and why did the error occur?). **The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
 
-<Video file="debugging/stacktrace.mp4" />
+> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production Javascript bundles.
+
+Using an automated error logging system like [Sentry](../../guides/using-sentry/) is a huge help in identifying, tracking, and resolving Javascript errors in your production app. This will give you a good sense of how many people are running into an error, how often, when, **and it even provides sourcemaps so you will have stacktraces of your errors!** Sentry is one of those tools that if you wait until you need it to install it, then you waited too long. Also- Sentry is free up to 5000 events/month.
+
+### My production app is crashing
+
+This can be a really frustrating scenario, since it gives you very little information to go off of on first glance. But, in reality, crashes can be one of the easiest-to-solve errors once you:
+
+- [Access the native device logs](../logging/#optional-manually-access-device-logs)
+- Reproduce the crash (either using your production app, or the Expo client app)
+- Search the logs for a "fatal exception" (there could be a few) to see exactly what is causing your app to crash
+
+With that information, you should be able to identify where the error is coming from, or at least search the internet for possible causes & solutions.
+
+### My app crashes on certain (older) devices
+
+This indicates a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React Devtools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
+
+## Stuck?
+
+The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.io/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
+
+## Useful tools for debugging
+
+Below are a few tools we recommend, and use ourselves, when it comes to debugging your Expo app:
 
 ## Developer menu
 
-This menu gives you access to several functions which are useful for debugging. The way you open it is a bit different depending on where you're running the Expo client:
+This menu gives you access to several functions which are useful for debugging, and is built into the Expo client app. The way you open it is a bit different depending on where you're running the Expo client:
 
-- iOS Device: Shake the device a little bit.
+- iOS Device: Shake the device a little bit, or touch 3 fingers to the screen.
 - iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
 - Android Device: Shake the device vertically a little bit, or run `adb shell input keyevent 82` in your terminal window if your device is connected via USB.
 - Android Emulator: Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
@@ -72,6 +102,7 @@ brew cask install react-native-debugger
 ```
 
 ### Startup
+
 After firing up React Native Debugger, you'll need to specify the port (shortcuts: `Command+T` on macOS, `Ctrl+T` on Linux/Windows) to `19001`. After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
 In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
@@ -135,16 +166,8 @@ When you start a project with Expo CLI and when you press `Run on Android device
 
 Source maps and async functions aren't 100% reliable. React Native doesn't play well with Chrome's source mapping in every case, so if you want to make sure you're breakpointing in the correct place, you should use the `debugger` call directly from your code.
 
-## Other debugging tips
-
-Dotan Nahum outlined in his ["Debugging React Native Applications" Medium post](https://medium.com/reactnativeacademy/debugging-react-native-applications-6bff3f28c375) other useful tools such as spying on bridge messages and JSEventLoopWatchdog.
-
 ## Debugging production apps with Sentry
 
 In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's usually a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
 
 Expo provides a wrapper called [sentry-expo](../../guides/using-sentry/) which allows you to get as much information as possible from crashes and other events. Plus, when running in the managed workflow, you can configure sourcemaps so that the stracktraces you see in Sentry will look much more like the code in your editor.
-
-## Stuck?
-
-The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.io/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
