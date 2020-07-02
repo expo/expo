@@ -87,15 +87,26 @@ public class LocalAuthenticationModule extends ExportedModule {
       promise.resolve(results);
       return;
     }
-    if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-      results.add(AUTHENTICATION_TYPE_FINGERPRINT);
+
+    // note(cedric): replace hardcoded system feature strings with constants from
+    // PackageManager when dropping support for Android SDK 28
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (mPackageManager.hasSystemFeature("android.hardware.fingerprint")) {
+        results.add(AUTHENTICATION_TYPE_FINGERPRINT);
+      }
     }
-    if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
-      results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION);
+
+    if (Build.VERSION.SDK_INT >= 29) {
+      if (mPackageManager.hasSystemFeature("android.hardware.biometrics.face")) {
+        results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION);
+      }
+
+      if (mPackageManager.hasSystemFeature("android.hardware.biometrics.iris")) {
+        results.add(AUTHENTICATION_TYPE_IRIS);
+      }
     }
-    if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
-      results.add(AUTHENTICATION_TYPE_IRIS);
-    }
+
     promise.resolve(results);
   }
 
