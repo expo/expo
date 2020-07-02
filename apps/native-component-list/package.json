@@ -60,7 +60,7 @@
     "expo-keep-awake": "~8.2.1",
     "expo-linear-gradient": "~8.2.1",
     "expo-linking": "~1.0.3",
-    "expo-local-authentication": "~9.1.1",
+    "expo-local-authentication": "~9.2.0",
     "expo-localization": "~8.2.1",
     "expo-location": "~8.2.1",
     "expo-mail-composer": "~8.2.1",
