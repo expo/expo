@@ -8185,13 +8185,13 @@ CACHE_KEYS:
       EXLocalAuthentication:
         :debug: 96fac91a3b24706197a1e3e3eada681c
         :release: 96fac91a3b24706197a1e3e3eada681c
-    CHECKSUM: 9a91ae13eec74d90404a9845a1f5486a48af2a94
+    CHECKSUM: 985c65e08a6eb84f8f98b51f7435df138b18b9e8
     FILES:
       - "../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h"
       - "../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.m"
     PROJECT_NAME: EXLocalAuthentication
     SPECS:
-      - EXLocalAuthentication (9.1.1)
+      - EXLocalAuthentication (9.2.0)
   EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalization:
