@@ -24,6 +24,7 @@
     "@react-navigation/material-bottom-tabs": "~5.2.12",
     "@react-navigation/native": "~5.6.1",
     "@react-navigation/stack": "~5.6.1",
+    "@react-navigation/drawer": "~5.8.4",
     "@use-expo/permissions": "^2.0.0",
     "date-format": "^2.0.0",
     "expo": "~38.0.0",

@@ -6,7 +6,7 @@
     "sdkVersion": "UNVERSIONED",
     "version": "UNVERSIONED",
     "githubUrl": "https://github.com/expo/native-component-list",
-    "orientation": "portrait",
+    "orientation": "default",
     "primaryColor": "#cccccc",
     "privacy": "public",
     "icon": "./assets/icons/icon.png",

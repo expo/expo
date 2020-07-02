@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
+import { Text } from 'react-native';
 
 import RedirectScreen from '../screens/RedirectScreen';
 import MainNavigators from './MainNavigators';
@@ -25,11 +26,13 @@ export const linking = {
   },
 };
 
-export default () => (
-  <NavigationContainer linking={linking}>
-    <Switch.Navigator headerMode="none">
-      <Switch.Screen name="main" component={MainTabNavigator} />
-      <Switch.Screen name="redirect" component={RedirectScreen} />
-    </Switch.Navigator>
-  </NavigationContainer>
-);
+export default function RootNavigation() {
+  return (
+    <NavigationContainer linking={linking} fallback={<Text>Loading…</Text>}>
+      <Switch.Navigator headerMode="none">
+        <Switch.Screen name="main" component={MainTabNavigator} />
+        <Switch.Screen name="redirect" component={RedirectScreen} />
+      </Switch.Navigator>
+    </NavigationContainer>
+  );
+}
