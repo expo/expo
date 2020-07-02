@@ -33,15 +33,11 @@ export default class App extends React.Component {
     registerForPushNotificationsAsync();
 
     /* @info This listener is fired whenever a notification is received while the app is foregrounded. */
-    this._notificationListener = Notifications.addNotificationReceivedListener(
-      this._handleNotification
-    );
+    Notifications.addNotificationReceivedListener(this._handleNotification);
     /* @end */
 
     /* @info This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed). This listener is especially useful for routing users to a particular screen after they tap on a particular notification. */
-    this._notificationResponseListener = Notifications.addNotificationResponseReceivedListener(
-      this._handleNotificationResponse
-    );
+    Notifications.addNotificationResponseReceivedListener(this._handleNotificationResponse);
     /* @end */
   }
 
