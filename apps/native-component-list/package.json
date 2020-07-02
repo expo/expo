@@ -64,7 +64,7 @@
     "expo-localization": "~8.2.1",
     "expo-location": "~8.2.1",
     "expo-mail-composer": "~8.2.1",
-    "expo-media-library": "~8.2.1",
+    "expo-media-library": "~8.3.0",
     "expo-permissions": "~9.0.1",
     "expo-print": "~9.0.1",
     "expo-processing": "2.0.2",
