@@ -48,7 +48,6 @@
     "danger": "^9.2.10",
     "jest": "26.1.0",
     "http-server": "^0.12.3",
-    "minimist": "^1.2.3",
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0"
   }
