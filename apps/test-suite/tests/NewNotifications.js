@@ -601,26 +601,20 @@ export async function test(t) {
       const vanillaButton = {
         identifier: 'vanillaButton',
         buttonTitle: 'Plain Option',
-        options:
-          Platform.OS === 'ios'
-            ? {
-                isDestructive: true,
-                isAuthenticationRequired: true,
-                opensAppToForeground: false,
-              }
-            : { opensAppToForeground: false },
+        options: {
+          isDestructive: true,
+          isAuthenticationRequired: true,
+          opensAppToForeground: false,
+        },
       };
       const textResponseButton = {
         identifier: 'textResponseButton',
         buttonTitle: 'Click to Respond with Text',
-        options:
-          Platform.OS === 'ios'
-            ? {
-                isDestructive: true,
-                isAuthenticationRequired: true,
-                opensAppToForeground: true,
-              }
-            : { opensAppToForeground: true },
+        options: {
+          isDestructive: true,
+          isAuthenticationRequired: true,
+          opensAppToForeground: true,
+        },
         textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
       };
 
@@ -662,28 +656,14 @@ export async function test(t) {
 
         t.it('returns an array with the just-created categories', async () => {
           await Notifications.setNotificationCategoryAsync(
-            'testNotificationCategory1',
-            [vanillaButton],
-            {
-              previewPlaceholder: 'preview goes here',
-              customDismissAction: false,
-              allowInCarPlay: false,
-              showTitle: false,
-              showSubtitle: false,
-              allowAnnouncment: false,
-            }
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
           );
           await Notifications.setNotificationCategoryAsync(
-            'testNotificationCategory2',
-            [vanillaButton, textResponseButton],
-            {
-              intentIdentifiers: ['testIdentifier'],
-              customDismissAction: true,
-              allowInCarPlay: false,
-              showTitle: true,
-              showSubtitle: false,
-              allowAnnouncment: false,
-            }
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
           );
           t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(2);
         });
@@ -697,35 +677,42 @@ export async function test(t) {
         });
         t.it('creates a category with one action successfully', async () => {
           const resultCategory = await Notifications.setNotificationCategoryAsync(
-            'testNotificationCategory1',
-            [vanillaButton],
-            {
-              previewPlaceholder: 'preview goes here',
-              customDismissAction: false,
-              allowInCarPlay: false,
-              showTitle: false,
-              showSubtitle: false,
-              allowAnnouncment: false,
-            }
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
           );
 
-          t.expect(testCategory1).toEqual(t.jasmine.objectContaining(resultCategory));
+          t.expect(testCategory1.identifier).toEqual(resultCategory.identifier);
+          testCategory1.actions.forEach((action, i) => {
+            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
+            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
+            t.expect(action.options).toEqual(
+              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            );
+          });
+          t.expect(testCategory1.options).toEqual(
+            t.jasmine.objectContaining(resultCategory.options)
+          );
         });
 
         t.it('creates a category with two actions successfully', async () => {
           const resultCategory = await Notifications.setNotificationCategoryAsync(
-            'testNotificationCategory2',
-            [vanillaButton, textResponseButton],
-            {
-              customDismissAction: false,
-              allowInCarPlay: false,
-              showTitle: true,
-              showSubtitle: true,
-              allowAnnouncment: false,
-            }
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
           );
 
-          t.expect(testCategory2).toEqual(t.jasmine.objectContaining(resultCategory));
+          t.expect(testCategory2.identifier).toEqual(resultCategory.identifier);
+          testCategory2.actions.forEach((action, i) => {
+            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
+            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
+            t.expect(action.options).toEqual(
+              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            );
+          });
+          t.expect(testCategory2.options).toEqual(
+            t.jasmine.objectContaining(resultCategory.options)
+          );
         });
       });
 
@@ -746,16 +733,9 @@ export async function test(t) {
 
         t.it('deleting a category that does exist returns true', async () => {
           await Notifications.setNotificationCategoryAsync(
-            'testNotificationCategory2',
-            [vanillaButton, textResponseButton],
-            {
-              intentIdentifiers: ['testIdentifier'],
-              customDismissAction: true,
-              allowInCarPlay: false,
-              showTitle: true,
-              showSubtitle: false,
-              allowAnnouncment: false,
-            }
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
           );
           t.expect(
             await Notifications.deleteNotificationCategoryAsync('testNotificationCategory2')
@@ -764,28 +744,14 @@ export async function test(t) {
 
         t.it('returns an array of length 1 after creating 2 categories & deleting 1', async () => {
           await Notifications.setNotificationCategoryAsync(
-            'testNotificationCategory1',
-            [vanillaButton],
-            {
-              previewPlaceholder: 'preview goes here',
-              customDismissAction: false,
-              allowInCarPlay: false,
-              showTitle: false,
-              showSubtitle: false,
-              allowAnnouncment: false,
-            }
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
           );
           await Notifications.setNotificationCategoryAsync(
-            'testNotificationCategory2',
-            [vanillaButton, textResponseButton],
-            {
-              intentIdentifiers: ['testIdentifier'],
-              customDismissAction: true,
-              allowInCarPlay: false,
-              showTitle: true,
-              showSubtitle: false,
-              allowAnnouncment: false,
-            }
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
           );
           const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
           await Notifications.deleteNotificationCategoryAsync('testNotificationCategory1');
