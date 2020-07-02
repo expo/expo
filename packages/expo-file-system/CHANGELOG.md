@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix background URL session completion handler not being called. ([#8599](https://github.com/expo/expo/pull/8599) by [@lukmccall](https://github.com/lukmccall))
+- Fix compilation error on macOS Catalyst ([#9055](https://github.com/expo/expo/pull/9055) by [@andymatuschak](https://github.com/andymatuschak))
 
 ## 9.0.1 — 2020-05-29
 

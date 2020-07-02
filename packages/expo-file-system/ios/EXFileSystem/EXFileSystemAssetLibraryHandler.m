@@ -90,9 +90,18 @@
     NSString *const localIdentifier = [url.absoluteString substringFromIndex:@"ph://".length];
     return [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
   } else if ([url.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
+#if TARGET_OS_MACCATALYST
+    static BOOL hasWarned = NO;
+    if (!hasWarned) {
+      NSLog(@"assets-library:// URLs have been deprecated and cannot be accessed in macOS Catalyst. Returning nil (future warnings will be suppressed).");
+      hasWarned = YES;
+    }
+    return nil;
+#else
     // This is the older, deprecated way of fetching assets from assets-library
     // using the "assets-library://" protocol
     return [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+#endif
   }
 
   NSString *description = [NSString stringWithFormat:@"Invalid URL provided, expected scheme to be either 'ph' or 'assets-library', was '%@'.", url.scheme];
