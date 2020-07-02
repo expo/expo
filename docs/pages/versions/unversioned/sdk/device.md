@@ -306,7 +306,7 @@ Returns a promise that resolves to a `boolean` that represents whether the calli
 **Examples**
 
 ```js
-await Device.isSideLoadingEnabled();
+await Device.isSideLoadingEnabledAsync();
 // true or false
 ```
 
