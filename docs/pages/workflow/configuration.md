@@ -135,7 +135,7 @@ The primary user to use for publishing and creating builds. If not provided, def
 
 ### `"privacy"`
 
-If not provided, defaults to `unlisted`. `unlisted` hides the project from search results. `private` restricts access to only the owner and other users that have been granted access. Valid values: `public`, `unlisted`, `private`.
+If not provided, defaults to `unlisted`. `unlisted` hides the project from search results. `hidden` restricts access to the project page to only the owner and other users that have been granted access. Valid values: `public`, `unlisted`, `hidden`.
 
 ### `"sdkVersion"`
 
