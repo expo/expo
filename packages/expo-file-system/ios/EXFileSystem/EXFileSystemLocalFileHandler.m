@@ -19,12 +19,32 @@
     if (options[@"md5"]) {
       result[@"md5"] = [[NSData dataWithContentsOfFile:path] md5String];
     }
-    result[@"size"] = attributes[NSFileSize];
+    result[@"size"] = @([EXFileSystemLocalFileHandler getFileSize:path attributes:attributes]);
     result[@"modificationTime"] = @(attributes.fileModificationDate.timeIntervalSince1970);
     resolve(result);
   } else {
     resolve(@{@"exists": @(NO), @"isDirectory": @(NO)});
   }
+}
+
++ (unsigned long long)getFileSize:(NSString *)path attributes:(NSDictionary<NSFileAttributeKey, id> *)attributes
+{
+  if (attributes.fileType != NSFileTypeDirectory) {
+    return attributes.fileSize;
+  }
+  
+  // The path is pointing to the folder
+  NSArray *contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil];
+  NSEnumerator *contentsEnumurator = [contents objectEnumerator];
+  NSString *file;
+  unsigned long long folderSize = 0;
+  while (file = [contentsEnumurator nextObject]) {
+    NSString *filePath = [path stringByAppendingPathComponent:file];
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+    folderSize += [EXFileSystemLocalFileHandler getFileSize:filePath attributes:fileAttributes];
+  }
+  
+  return folderSize;
 }
 
 + (void)copyFrom:(NSURL *)from
