@@ -215,6 +215,8 @@ async function registerForPushNotificationsAsync() {
 
 </SnackInline>
 
+> **Note** this demo might not fully work when you run it from the snack, because `app.json` needs to contain `useNextNotificationsApi` flag. Unfortunately, the snack doesn't support custom `app.json`.
+
 ## Android push notification payload specification
 
 When sending a push notification, put an object conforming to the following type as `data` of the notification:
