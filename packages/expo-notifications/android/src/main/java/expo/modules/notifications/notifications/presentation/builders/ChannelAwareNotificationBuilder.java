@@ -5,9 +5,13 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.R;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
 /**
  * A notification builder foundation capable of fetching and/or creating
@@ -37,6 +41,16 @@ public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBu
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       // Returning null on incompatible platforms won't be an error.
       return null;
+    }
+
+    NotificationTrigger trigger = getTrigger();
+    if (!(trigger instanceof FirebaseNotificationTrigger)) {
+      return getFallbackNotificationChannel().getId();
+    }
+
+    FirebaseNotificationTrigger firebaseNotificationTrigger = (FirebaseNotificationTrigger) trigger;
+    if (firebaseNotificationTrigger.getRemoteMessage().getData().containsKey("channelId")) {
+      return firebaseNotificationTrigger.getRemoteMessage().getData().get("channelId");
     }
 
     return getFallbackNotificationChannel().getId();
@@ -90,5 +104,15 @@ public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBu
 
   private NotificationManager getNotificationManager() {
     return (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+  }
+
+  @Nullable
+  private NotificationTrigger getTrigger() {
+    NotificationRequest request = getNotification().getNotificationRequest();
+    if (request == null) {
+      return null;
+    }
+
+    return request.getTrigger();
   }
 }
