@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `askAsync` rejecting with `permission cannot be null or empty` in the bare workflow. ([#8910](https://github.com/expo/expo/pull/8910) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `getPermissionsAsync` returning incorrect status in the Expo Client app on iOS. ([#9060](https://github.com/expo/expo/pull/9060) by [@lukmccall](https://github.com/lukmccall))
 
 ## 9.0.1 — 2020-05-29
 
