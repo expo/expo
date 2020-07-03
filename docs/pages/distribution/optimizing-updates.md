@@ -4,20 +4,42 @@ title: Optimizing Updates
 
 ## Table of contents
 
+- [What's in an Update?](#whats-in-an-update)
+  - [Estimating the Size of an Update](#estimating-the-size-of-an-update)
 - [Limits on Expo's Updates Service](#limits-on-expos-updates-service)
   - [Optimize Images](#optimize-images)
   - [Reduce Large Dependencies](#reduce-large-dependencies)
+  - [Download Files when Needed](#download-files-when-needed)
   - [Building Your App on Your Own Computer](#building-your-app-on-your-own-computer)
+  - [Self-hosting Your Updates](#self-hosting-your-updates)
 - [A Glimpse at the Future](#a-glimpse-at-the-future)
 
-## Limits on Expo's Updates Service
+## What's in an Update?
+
+An update for an Expo app comprises the JavaScript, manifest, images, and other assets that a compatible Expo client app can download and run.
+
+On Android and iOS, the standalone apps you submit to the app stores are examples of client apps that run your updates. On the web, the web browser is the client app that runs updates. In fact, on the web, Expo updates are just web applications!
+
+Updates are embedded in standalone apps and delivered over the internet. Because downloading an update over the internet uses bandwidth and takes time, one of the most effective ways to optimize an update is to make it smaller. This guide covers some ways to reduce the sizes of your updates.
+
+### Estimating the Size of an Update
+
+One way to estimate the size of an update is to run `expo export`, which exports an update for each platform, which can be self-hosted. The update includes a JSON manifest, a JavaScript bundle, and several assets like images and custom fonts.
+
+Exported updates contain uncompressed files, unless those file formats are intrinsically compressed, like JPEG and PNG. The size of an update embedded in a standalone app is typically the sum of the sizes of the update's files.
+
+When updates are served through the updates service, they are compressed with gzip. To estimate the size of a manifest or JavaScript bundle when served through the updates service, run `gzip <file>`. Other files like JPEG images and MP3 audio files are already compressed by virtue of their file formats, and the CDN does not need to compress them further.
+
+## Limits on the Updates Service
 
 The way to think about publishing an update to your Expo app is like publishing a new version of your website. In fact, when you publish an update to your Expo web app, you're publishing a new version of your site. Regardless of the underlying platform, Expo updates are downloaded by users running your app on Android, iOS, and the web and the smaller your update, the faster and more reliably your users will be able to download them and use up less of their data plans on cell connections.
 
 Expo's current updates service is designed to accomodate updates, which comprise JS code and assets, around 50 MiB. Many well-engineered production apps use far less than this, which contributes to better user experiences.
+
 Below are a couple of general techniques that help reduce the size of updates. Many of them are also techniques to optimize websites since both Expo updates and websites are served over the web.
 
 ### Optimize Images
+
 Many images can be reduced by more than 30% in size if they haven't been previously optimized. One simple way to optimize images is to resize them to the dimensions your app actually uses; if your image dimensions are 4032x3024 but your app only needs to display a 400x300 image, downsizing your image with a good interpolation algorithm like bicubic sharpening will greatly reduce your image's size.
 
 Another way to optimize images is to re-encode them using an optimizer like [expo-optimize](https://github.com/expo/expo-cli/tree/master/packages/expo-optimize#-welcome-to-expo-optimize), which optimizes all compatible images in you Expo project:
@@ -34,13 +56,21 @@ Other image optimizers are lossy, which means the optimized image is different t
 
 ### Reduce Large Dependencies
 
-Large npm dependencies can contribute greatly to the size of your code in an update. While dependencies like `expo`, `react`, and several more packages are necessary and very useful, sometimes a dependency can be surprisingly large even if you use only one method from it, or you might have multiple versions of the same dependency in your JS bundle.
+Large npm dependencies can contribute greatly to the size of your code in an update. While dependencies like `expo`, `react`, and several more packages are necessary and very useful, sometimes a dependency can be surprisingly large even if you use only one method from it, or you might have multiple versions of the same dependency in your JS bundle. [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer) works for Expo apps as well as bare React Native apps and shows a detailed view of the files in your JS bundle.
+
+### Download Files when Needed
+
+Sometimes apps include files that they don't need right away when the app launches In these scenarios, you can upload these extra files to your own servers and reference the URLs from your application code via `fetch(url)` or `<Image source={{ uri: url }}>`, for example. By downloading these files on demand, you can move them out of the update and reduce its size.
 
 ## Building Your App on Your Own Computer
 
 If you need to build an app with large assets, such as large embedded videos, a simple and practical solution is to use the bare workflow and compile the app using Android Studio and Xcode. You can either use your own computer or provision Linux and macOS VMs with a cloud provider on which to run the standard build toolchains for Android and iOS.
 
 With `expo-updates` you can also host updates on your own servers, which may support arbitrarily large files.
+
+## Self-hosting your Updates
+
+In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](https://docs.expo.io/distribution/hosting-your-app/).
 
 ## A Glimpse at the Future
 
