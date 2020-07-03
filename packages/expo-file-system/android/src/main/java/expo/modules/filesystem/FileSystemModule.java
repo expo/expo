@@ -88,13 +88,10 @@ public class FileSystemModule extends ExportedModule {
       this.value = value;
     }
 
-    public static UploadType fromInteger(@Nullable Integer value) {
-      if (value == null) {
-        return INVALID;
-      }
+    public static UploadType fromInt(int value) {
 
       for (UploadType method : values()) {
-        if (value.equals(method.value)) {
+        if (value == method.value) {
           return method;
         }
       }
@@ -526,7 +523,7 @@ public class FileSystemModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void uploadAsync(final String fileUriString, final String url, final Map<String, Object> options, final Promise promise) {
+  public void uploadAsync(final String url, final String fileUriString, final Map<String, Object> options, final Promise promise) {
     try {
       final Uri fileUri = Uri.parse(fileUriString);
       ensurePermission(fileUri, Permission.READ);
@@ -542,7 +539,7 @@ public class FileSystemModule extends ExportedModule {
         promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null);
         return;
       }
-      UploadType uploadType = UploadType.fromInteger((Integer) options.get("uploadType"));
+      UploadType uploadType = UploadType.fromInt(((Double) options.get("uploadType")).intValue());
 
       Request.Builder requestBuilder = new Request.Builder().url(url);
       if (options.containsKey(HEADER_KEY)) {
