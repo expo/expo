@@ -327,7 +327,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 - React Native no longer supports nesting components inside of `<Image>` — some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component, like this:
 
-````jsx
+```jsx
   <View style={styles.container}>
     <ImageBackground
       source={require('./path/to/image.png')}
