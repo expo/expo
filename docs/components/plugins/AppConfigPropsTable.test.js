@@ -36,6 +36,46 @@ var testSchema = {
       },
     },
   },
+  intentFilters: {
+    description: 'Configuration for setting an array of custom intent filters in Android manifest.',
+    example: [
+      {
+        autoVerify: true,
+        data: {
+          host: '*.expo.io',
+        },
+      },
+    ],
+    exampleString: '\n [{ \n "autoVerify": true, \n "data": {"host": "*.expo.io" \n } \n }]',
+    type: 'array',
+    uniqueItems: true,
+    items: {
+      type: 'object',
+      properties: {
+        autoVerify: {
+          description:
+            'You may also use an intent filter to set your app as the default handler for links',
+          type: 'boolean',
+        },
+        data: {
+          type: ['array', 'object'],
+          items: {
+            type: 'object',
+            properties: {
+              host: { description: 'the host, e.g. `myapp.io`', type: 'string' },
+            },
+            additionalProperties: false,
+          },
+          properties: {
+            host: { type: 'string' },
+          },
+          additionalProperties: false,
+        },
+      },
+      additionalProperties: false,
+      required: ['action'],
+    },
+  },
 };
 
 test('correct property and subproperty indent styling', () => {
@@ -83,6 +123,18 @@ test('correct property and subproperty indent styling', () => {
 
   //level-1 subproperty
   expect(getByTestId('backgroundColor')).toHaveStyle(level_1_style);
+
+  //level-0 property
+  expect(getByTestId('intentFilters')).toHaveStyle(level_0_style);
+
+  //level-1 subproperty
+  expect(getByTestId('autoVerify')).toHaveStyle(level_1_style);
+
+  //level-1 subproperty
+  expect(getByTestId('data')).toHaveStyle(level_1_style);
+
+  //level-2 subproperty
+  expect(getByTestId('host')).toHaveStyle(level_2_style);
 });
 
 test('correct description add-ons (bareWorkflow, regexHuman, etc.)', () => {
@@ -98,8 +150,12 @@ test('correct description add-ons (bareWorkflow, regexHuman, etc.)', () => {
   const backgroundColor_description =
     "Specifies the background color of the navigation bar. 6 character long hex color string, eg: '#000000'";
 
+  const intentFilters_description =
+    'Configuration for setting an array of custom intent filters in Android manifest. [{ "autoVerify": true, "data": {"host": "*.expo.io" } }]';
+
   expect(container).toHaveTextContent(name_description);
   expect(container).toHaveTextContent(backgroundColor_description);
+  expect(container).toHaveTextContent(intentFilters_description);
 });
 
 test('correct enum type value', () => {

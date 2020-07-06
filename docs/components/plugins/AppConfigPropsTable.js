@@ -37,9 +37,13 @@ function appendProp(formattedSchema, property, _level) {
   //increase nesting level for sub-properties
   level++;
 
-  //recursively apply appending logic for each sub-property (if any)
+  //recursively apply appending logic for each sub-property (if any) -> Note: sub-props are sometimes nested within "items"
   if (propertyValue.properties) {
     Object.entries(propertyValue.properties).forEach(subproperty => {
+      appendProp(formattedSchema, subproperty, level);
+    });
+  } else if (propertyValue.items && propertyValue.items.properties) {
+    Object.entries(propertyValue.items.properties).forEach(subproperty => {
       appendProp(formattedSchema, subproperty, level);
     });
   }
@@ -104,7 +108,7 @@ export default class AppConfigPropsTable extends React.Component {
                     </div>
                   </td>
                   <td>
-                    <InlineCode>{property.type}</InlineCode>
+                    <InlineCode>{property.type.toString()}</InlineCode>
                   </td>
                   <td className={STYLES_DESCRIPTION_CELL}>
                     <MDX components={components}>{property.description}</MDX>
