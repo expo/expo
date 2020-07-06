@@ -51,7 +51,7 @@ function smartlyCreateDescription(property) {
 
   var propertyDescription = propertyValue.description;
   if (propertyValue.exampleString) {
-    propertyDescription += `\n\n` + propertyValue.exampleString;
+    propertyDescription += `\n\n >` + propertyValue.exampleString;
   }
   if (propertyValue.meta && propertyValue.meta.regexHuman) {
     propertyDescription += `\n\n` + propertyValue.meta.regexHuman;
