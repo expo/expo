@@ -1,9 +1,10 @@
 'use strict';
 
-import * as Permissions from 'expo-permissions';
-import * as Contacts from 'expo-contacts';
-import { Platform } from 'react-native';
 import { Asset } from 'expo-asset';
+import * as Contacts from 'expo-contacts';
+import * as Permissions from 'expo-permissions';
+import { Platform } from 'react-native';
+
 import * as TestUtils from '../TestUtils';
 export const name = 'Contacts';
 
@@ -117,7 +118,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
         await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
           return Permissions.askAsync(Permissions.CONTACTS);
         });
-        let contacts = await Contacts.getContactsAsync({
+        const contacts = await Contacts.getContactsAsync({
           fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Emails],
           pageSize: 1,
         });
@@ -171,24 +172,25 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
         expect(data[0].imageAvailable).toBeDefined();
       });
 
-      it('skips phone number if not asked', async () => {
-        // This may need to be tweaked because you cannot add test contacts on android
-        const testIndex = 1;
-        const initialContact = await getContactAtIndex(testIndex, [Contacts.Fields.PhoneNumbers]);
-        expect(initialContact.phoneNumbers).toBeDefined();
-        expect(initialContact.phoneNumbers.length).toBeGreaterThan(0);
-        expect(initialContact.phoneNumbers[0]).toEqual(
-          jasmine.objectContaining({
-            id: jasmine.any(String),
-            label: jasmine.any(String),
-            number: jasmine.any(String),
-          })
-        );
+      if (Platform === 'ios') {
+        it('skips phone number if not asked', async () => {
+          // This may need to be tweaked because you cannot add test contacts on android
+          const testIndex = 1;
+          const initialContact = await getContactAtIndex(testIndex, [Contacts.Fields.PhoneNumbers]);
+          expect(initialContact.phoneNumbers).toBeDefined();
+          expect(initialContact.phoneNumbers.length).toBeGreaterThan(0);
+          expect(initialContact.phoneNumbers[0]).toEqual(
+            jasmine.objectContaining({
+              id: jasmine.any(String),
+              label: jasmine.any(String),
+              number: jasmine.any(String),
+            })
+          );
 
-        const initialContactWithoutNumbers = await getContactAtIndex(testIndex, []);
-        expect(initialContactWithoutNumbers.phoneNumbers).toBeUndefined();
-      });
-
+          const initialContactWithoutNumbers = await getContactAtIndex(testIndex, []);
+          expect(initialContactWithoutNumbers.phoneNumbers).toBeUndefined();
+        });
+      }
       it('respects the page size', async () => {
         const contacts = await Contacts.getContactsAsync({
           fields: [],
@@ -230,37 +232,45 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
     });
 
     describe('Contacts.getContactByIdAsync()', () => {
-      it('gets a result of right shape', async () => {
-        if (firstContact) {
-          const contact = await Contacts.getContactByIdAsync(firstContact.id, [
-            Contacts.Fields.PhoneNumbers,
-            Contacts.Fields.Emails,
-          ]);
-          const { phoneNumbers, emails } = contact;
+      it("returns undefined when contact doesn't exist", async () => {
+        const contact = await Contacts.getContactByIdAsync('-1');
 
-          expect(contact.note).toBeUndefined();
-          expect(contact.relationships).toBeUndefined();
-          expect(contact.addresses).toBeUndefined();
-
-          expect(phoneNumbers[0]).toEqual(
-            jasmine.objectContaining({
-              id: jasmine.any(String),
-              label: jasmine.any(String),
-              number: jasmine.any(String),
-            })
-          );
-
-          expect(contact).toEqual(
-            jasmine.objectContaining({
-              contactType: jasmine.any(String),
-              name: jasmine.any(String),
-              id: jasmine.any(String),
-            })
-          );
-          expect(contact.imageAvailable).toBeDefined();
-          expect(Array.isArray(emails) || typeof emails === 'undefined').toBe(true);
-        }
+        expect(contact).toBeUndefined();
       });
+
+      if (Platform === 'ios') {
+        it('gets a result of right shape', async () => {
+          if (firstContact) {
+            const contact = await Contacts.getContactByIdAsync(firstContact.id, [
+              Contacts.Fields.PhoneNumbers,
+              Contacts.Fields.Emails,
+            ]);
+            const { phoneNumbers, emails } = contact;
+
+            expect(contact.note).toBeUndefined();
+            expect(contact.relationships).toBeUndefined();
+            expect(contact.addresses).toBeUndefined();
+
+            expect(phoneNumbers[0]).toEqual(
+              jasmine.objectContaining({
+                id: jasmine.any(String),
+                label: jasmine.any(String),
+                number: jasmine.any(String),
+              })
+            );
+
+            expect(contact).toEqual(
+              jasmine.objectContaining({
+                contactType: jasmine.any(String),
+                name: jasmine.any(String),
+                id: jasmine.any(String),
+              })
+            );
+            expect(contact.imageAvailable).toBeDefined();
+            expect(Array.isArray(emails) || typeof emails === 'undefined').toBe(true);
+          }
+        });
+      }
     });
 
     describe('Contacts.createGroupAsync()', () => {
@@ -377,7 +387,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
             );
           }
         } else {
-          for (let group of testGroups) {
+          for (const group of testGroups) {
             let errorMessage;
             try {
               await Contacts.removeGroupAsync(group.id);
