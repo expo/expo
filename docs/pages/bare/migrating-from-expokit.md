@@ -2,11 +2,9 @@
 title: Migrating from ExpoKit
 ---
 
-Historically when you have run `expo eject`, you'd end up with an [ExpoKit](../../expokit/overview) project. ExpoKit is a large library that includes the entire Expo SDK, and it leaves you in this place where you're not quite writing a vanilla React Native project and you're not quite using the Expo managed workflow. At Expo we decided to move away from the ExpoKit architecture towards the "bare workflow" model, where your project is a "bare" or "vanilla" React Native project with only the pieces of the Expo SDK that you need for your project, no more. We will continue to support ExpoKit until the bare workflow has no limitations relative to ExpoKit, but we aren't quite there yet.
+Historically when you have run `expo eject`, you'd end up with an [ExpoKit](../../expokit/overview) project. ExpoKit is a large library that includes the entire Expo SDK, and it leaves you in this place where you're not quite writing a vanilla React Native project and you're not quite using the Expo managed workflow. At Expo we decided to move away from the ExpoKit architecture towards the "bare workflow" model, where your project is a "bare" or "vanilla" React Native project with only the pieces of the Expo SDK that you need for your project, no more.
 
-## Current limitations
-
-The primary limitation that you will face when migrating from ExpoKit to the bare workflow is that the ["Over the Air Updates" APIs](../../guides/configuring-ota-updates/) are not yet supported on bare projects. This is a work in progress, and we plan to make these APIs available soon. If this isn't a limiting factor for you to migrate away from ExpoKit to the bare workflow, then continue on. Otherwise, keep an eye on the [Expo blog](https://blog.expo.io/) for updates.
+Now that the bare worfklow has reached (or exceeded) feature parity with ExpoKit, we have deprecated ExpoKit with SDK 38. After SDK 38, your ExpoKit apps in the App Store and Play Store will continue to run indefinitely, but you'll need to migrate to the bare or managed workflows in order to get bugfixes and new features in Expo modules.
 
 ## Migrating your project to a bare workflow project
 
