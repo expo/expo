@@ -44,7 +44,7 @@ jobs:
           channel: '#api'
           status: ${{ job.status }}
           author_name: home/build
-          fields: commit,author,action,message
+          fields: author,job,message,ref
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}

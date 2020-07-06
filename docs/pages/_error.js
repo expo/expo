@@ -229,7 +229,9 @@ function replaceVersionWithLatest(path) {
 }
 
 function pathRequiresVersioning(path) {
-  return path.match(new RegExp(SDK_PATH_PATTERN)) || path.match(new RegExp(REACT_NATIVE_PATH_PATTERN));
+  return (
+    path.match(new RegExp(SDK_PATH_PATTERN)) || path.match(new RegExp(REACT_NATIVE_PATH_PATTERN))
+  );
 }
 
 function removeVersionFromPath(path) {

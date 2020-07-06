@@ -28,11 +28,10 @@ export default class TestScreen extends React.Component {
   _scrollViewRef = null;
 
   componentDidMount() {
-    const { navigation } = this.props;
-    const selectedTestNames = navigation.getParam('selected');
+    const selectedTestNames = this.props.route.params?.tests ?? [];
 
     // We get test modules here to make sure that React Native will reload this component when tests were changed.
-    const selectedModules = getTestModules().filter(m => selectedTestNames.has(m.name));
+    const selectedModules = getTestModules().filter(m => selectedTestNames.includes(m.name));
 
     if (!selectedModules.length) {
       console.log('[TEST_SUITE]', 'No selected modules', selectedTestNames);
@@ -45,10 +44,6 @@ export default class TestScreen extends React.Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  static navigationOptions = {
-    title: 'Test Runner',
-  };
 
   setPortalChild = testPortal => {
     if (this._isMounted) return this.setState({ testPortal });

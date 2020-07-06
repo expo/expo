@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "react-native": "*",
-    "react-native-web": "~0.11"
+    "react-native-web": "~0.12.0"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",

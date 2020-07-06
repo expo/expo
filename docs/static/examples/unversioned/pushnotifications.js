@@ -1,13 +1,21 @@
-import React from 'react';
-import { Text, View, Button, Vibration, Platform } from 'react-native';
-import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import { Text, View, Button, Platform } from 'react-native';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default class AppContainer extends React.Component {
   state = {
     expoPushToken: '',
-    notification: {},
+    notification: { request: { content: { body: '', title: '', data: {} } } },
   };
 
   registerForPushNotificationsAsync = async () => {
@@ -22,7 +30,7 @@ export default class AppContainer extends React.Component {
         alert('Failed to get push token for push notification!');
         return;
       }
-      token = await Notifications.getExpoPushTokenAsync();
+      const { data: token } = await Notifications.getExpoPushTokenAsync();
       console.log(token);
       this.setState({ expoPushToken: token });
     } else {
@@ -30,11 +38,11 @@ export default class AppContainer extends React.Component {
     }
 
     if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('default', {
+      Notifications.setNotificationChannelAsync('default', {
         name: 'default',
-        sound: true,
-        priority: 'max',
-        vibrate: [0, 250, 250, 250],
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
       });
     }
   };
@@ -42,18 +50,26 @@ export default class AppContainer extends React.Component {
   componentDidMount() {
     this.registerForPushNotificationsAsync();
 
-    // Handle notifications that are received or selected while the app
-    // is open. If the app was closed and then opened by tapping the
-    // notification (rather than just tapping the app icon to open it),
-    // this function will fire on the next tick after the app starts
-    // with the notification data.
-    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+    this.onReceivedListener = Notifications.addNotificationReceivedListener(this.onReceived);
+    this.onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
+      this.onResponseReceived
+    );
   }
 
-  _handleNotification = notification => {
-    Vibration.vibrate();
+  componentWillUnmount() {
+    this.onReceivedListener.remove();
+    this.onResponseReceivedListener.remove();
+  }
+
+  // Called when a notification comes in while the app is foregrounded
+  onReceived = notification => {
     console.log(notification);
-    this.setState({ notification: notification });
+    this.setState({ notification });
+  };
+
+  // Called when a user taps on or interacts with a notification, whether the app is foregrounded, backgrounded, or closed.
+  onResponseReceived = response => {
+    console.log(response);
   };
 
   // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
@@ -64,9 +80,9 @@ export default class AppContainer extends React.Component {
       title: 'Original Title',
       body: 'And here is the body!',
       data: { data: 'goes here' },
-      _displayInForeground: true,
     };
-    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+
+    await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -85,19 +101,14 @@ export default class AppContainer extends React.Component {
           alignItems: 'center',
           justifyContent: 'space-around',
         }}>
+        <Text>Your expo push token: {this.state.expoPushToken}</Text>
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Text>Origin: {this.state.notification.origin}</Text>
-          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
+          <Text>Title: {this.state.notification.request.content.title}</Text>
+          <Text>Body: {this.state.notification.request.content.body}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.request.content.data)}</Text>
         </View>
-        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+        <Button title="Press to Send Notification" onPress={() => this.sendPushNotification()} />
       </View>
     );
   }
 }
-
-/*  TO GET PUSH RECEIPTS, RUN THE FOLLOWING COMMAND IN TERMINAL, WITH THE RECEIPTID SHOWN IN THE CONSOLE LOGS
-
-    curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
-      "ids": ["YOUR RECEIPTID STRING HERE"]
-      }'
-*/

@@ -1,8 +1,8 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
 
 import ListButton from '../../components/ListButton';
 
@@ -25,7 +25,10 @@ interface State {
   checkingProviderStatus: boolean;
 }
 
-export default class LocationScreen extends React.Component<NavigationScreenProps, State> {
+export default class LocationScreen extends React.Component<
+  { navigation: StackNavigationProp<{ BackgroundLocationMap: undefined; Geofencing: undefined }> },
+  State
+> {
   static navigationOptions = {
     title: 'Location',
   };

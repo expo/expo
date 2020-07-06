@@ -35,6 +35,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
+      - run: yarn test
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,5 +70,5 @@ jobs:
         with:
           channel: '#docs'
           status: ${{ job.status }}
-          fields: commit,author,action,message
+          fields: author,job,message
           author_name: docs build

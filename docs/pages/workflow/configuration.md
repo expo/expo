@@ -135,8 +135,7 @@ The primary user to use for publishing and creating builds. If not provided, def
 
 ### `"privacy"`
 
-Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
-Valid values: `public`, `unlisted`
+If not provided, defaults to `unlisted`. `unlisted` hides the project from search results. `hidden` restricts access to the project page to only the owner and other users that have been granted access. Valid values: `public`, `unlisted`, `hidden`.
 
 ### `"sdkVersion"`
 
@@ -372,7 +371,7 @@ Configuration for remote (push) notifications.
     /*
       Whether or not to display notifications when the app is in the foreground on iOS.
       `_displayInForeground` option in the individual push notification message overrides this option.
-      Learn more: https://docs.expo.io/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
+      Learn more: https://docs.expo.io/push-notifications/overview#3-handle-receiving-andor-selecting-the-notification
       Defaults to `false`.
     */
     "iosDisplayInForeground": BOOLEAN,
@@ -982,8 +981,8 @@ Configuration that is specific to the Android platform.
     "softwareKeyboardLayoutMode": STRING,
 
     /*
-      Allows your user's app data to be automatically backed up to their Google Drive. If this is set to false, 
-      no backup or restore of the application will ever be performed (this is useful if your app deals with sensitive information). 
+      Allows your user's app data to be automatically backed up to their Google Drive. If this is set to false,
+      no backup or restore of the application will ever be performed (this is useful if your app deals with sensitive information).
       Defaults to the Android default, which is true.
     */
     "allowBackup": BOOLEAN,

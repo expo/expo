@@ -1,50 +1,40 @@
-import React from 'react';
+import * as React from 'react';
 
-import { Layout } from '../constants';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import { Screens } from '../navigation/ExpoComponents';
 import ComponentListScreen from './ComponentListScreen';
 
-export default class ExpoComponentsScreen extends React.Component {
-  static path = '';
+const screens = [
+  'AdMob',
+  'BarCodeScanner',
+  'BlurView',
+  'Camera',
+  'DateTimePicker',
+  'FacebookAds',
+  'GestureHandlerList',
+  'GestureHandlerPinch',
+  'GestureHandlerSwipeable',
+  'Gif',
+  'GL',
+  'HTML',
+  'Image',
+  'LinearGradient',
+  'Lottie',
+  'Maps',
+  'MaskedView',
+  'ReanimatedImagePreview',
+  'ReanimatedProgress',
+  'SegmentedControl',
+  'Screens',
+  'SharedElement',
+  'SVG',
+  'ViewPager',
+  'Video',
+  'WebView',
+];
 
-  static navigationOptions = {
-    title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK',
-  };
-
-  render() {
-    // @ts-ignore
-    return <ComponentListScreen apis={this._getApis()} tabName="ExpoComponents" />;
-  }
-
-  _getApis = () => {
-    const screens = [
-      'AdMob',
-      'BarCodeScanner',
-      'BlurView',
-      'Camera',
-      'DateTimePicker',
-      'FacebookAds',
-      'GestureHandlerList',
-      'GestureHandlerPinch',
-      'GestureHandlerSwipeable',
-      'Gif',
-      'GL',
-      'HTML',
-      'Image',
-      'LinearGradient',
-      'Lottie',
-      'Maps',
-      'MaskedView',
-      'ReanimatedImagePreview',
-      'ReanimatedProgress',
-      'SegmentedControl',
-      'Screens',
-      'SharedElement',
-      'SVG',
-      'ViewPager',
-      'Video',
-      'WebView',
-    ];
+export default function ExpoComponentsScreen() {
+  const apis = React.useMemo(() => {
     return screens
       .map(name => ({ name, isAvailable: !!Screens[name] }))
       .sort((a, b) => {
@@ -56,5 +46,12 @@ export default class ExpoComponentsScreen extends React.Component {
         }
         return 0;
       });
-  };
+  }, []);
+
+  const renderItemRight = React.useCallback(
+    ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
+    []
+  );
+
+  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} />;
 }

@@ -202,7 +202,7 @@ export class GitDirectory {
    */
   async logFilesAsync(options: GitLogOptions = {}): Promise<GitFileLog[]> {
     const fromCommit = options.fromCommit ?? '';
-    const toCommit = options.toCommit ?? 'head';
+    const toCommit = options.toCommit ?? 'HEAD';
 
     // This diff command returns a list of relative paths of files that have changed preceded by their status.
     // Status is just a letter, which is also a key of `GitFileStatus` enum.
@@ -287,10 +287,26 @@ export class GitDirectory {
   }
 
   /**
+   * Returns a list of files with staged changes.
+   */
+  async getStagedFilesAsync(): Promise<string[]> {
+    const { stdout } = await this.runAsync(['diff', '--name-only', '--cached']);
+    return stdout.trim().split(/\n+/g).filter(Boolean);
+  }
+
+  /**
    * Checks whether given commit is an ancestor of head commit.
    */
   async isAncestorAsync(commit: string): Promise<boolean> {
     return this.tryAsync(['merge-base', '--is-ancestor', commit, 'HEAD']);
+  }
+
+  /**
+   * Finds the best common ancestor between the current ref and the given ref.
+   */
+  async mergeBaseAsync(ref: string): Promise<string> {
+    const { stdout } = await this.runAsync(['merge-base', 'HEAD', ref]);
+    return stdout.trim();
   }
 }
 

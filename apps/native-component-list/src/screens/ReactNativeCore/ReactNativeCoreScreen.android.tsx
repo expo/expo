@@ -25,7 +25,7 @@ import {
 import WebView from 'react-native-webview';
 // @ts-ignore
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
-import { ScrollView as NavigationScrollView } from 'react-navigation';
+import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler';
 
 import { Colors, Layout } from '../../constants';
 import ModalExample from '../ModalExample';
@@ -36,10 +36,6 @@ interface State {
 }
 
 export default class ReactNativeCoreScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'React Native Core',
-  };
-
   state: State = {
     isRefreshing: false,
   };

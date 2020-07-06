@@ -6,31 +6,23 @@ import {
   Image,
   Picker,
   RefreshControl,
-  Switch,
-  StatusBar,
-  SectionList,
   ScrollView,
+  SectionList,
+  StatusBar,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableHighlight,
+  TouchableOpacity,
   TouchableOpacityProps,
   View,
 } from 'react-native';
-import WebView from 'react-native-webview';
-import { NavigationScreenProps } from 'react-navigation';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
 
-export default class ReactNativeCoreScreen extends React.Component<NavigationScreenProps> {
-  static path = '';
-
-  static navigationOptions = {
-    title: 'React Native Core',
-  };
-
+export default class ReactNativeCoreScreen extends React.Component {
   state = {
     isRefreshing: false,
   };
@@ -61,7 +53,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
           { title: 'Text', data: [this._renderText] },
           { title: 'TextInput', data: [this._renderTextInput] },
           { title: 'Touchables', data: [this._renderTouchables] },
-          { title: 'WebView', data: [this._renderWebView] },
         ]}
         renderItem={this._renderItem}
         renderSectionHeader={this._renderSectionHeader}
@@ -258,27 +249,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
           <Text style={buttonText}>Opacity!</Text>
         </TouchableOpacity>
       </View>
-    );
-  };
-
-  _renderWebView = () => {
-    return (
-      <WebView
-        style={{ width: Layout.window.width, height: 250 }}
-        source={{
-          html: `
-          <h2>You can always use a WebView if you need to!</h2>
-          <p>
-            <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
-            <input type="text" placeholder="Disagree? why?"></input>
-            <input type="submit">
-          </p>
-          <p>
-            <a href="https://expo.io">expo.io</a>
-          </p>
-        `,
-        }}
-      />
     );
   };
 

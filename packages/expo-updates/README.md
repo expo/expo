@@ -310,6 +310,8 @@ If the diff doesn't apply cleanly, the important parts here are (1) overriding `
 +    if (!BuildConfig.DEBUG) {
 +      UpdatesController.initialize(this);
 +    }
++
+     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
    }
  }
 ```
@@ -528,6 +530,8 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 -    if (!BuildConfig.DEBUG) {
 -      UpdatesController.initialize(this);
 -    }
+-
+     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
    }
  }
  ```

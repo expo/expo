@@ -11,107 +11,170 @@ const child_process = require('child_process');
 
 const ROOT_PATH = path.dirname(__dirname);
 const BUILD_PATH = path.join(ROOT_PATH, 'build');
-const CHECKSUM_PATH = path.join(BUILD_PATH, '.checksum');
+const STATE_PATH = path.join(ROOT_PATH, 'cache', '.state.json');
 
-maybeRebuildAndRun().catch(error => {
+maybeRebuildAndRun().catch((error) => {
   console.error(require('chalk').red(error.stack));
 });
 
 async function maybeRebuildAndRun() {
-  const { projectHash, isRebuildingRequired } = await checkForUpdates();
+  const state = readState();
+  const dependenciesChecksum = await calculateDependenciesChecksumAsync();
+  const sourceChecksum = await calculateSourceChecksumAsync();
 
-  if (isRebuildingRequired) {
-    console.log(' 🧶  Yarning...');
-
-    // Install expotools dependencies.
+  // If `yarn.lock` checksum changed, reinstall expotools dependencies.
+  if (!state.dependenciesChecksum || state.dependenciesChecksum !== dependenciesChecksum) {
+    console.log(' 🧶 Yarning...');
     await spawnAsync('yarn', ['install']);
+  }
 
+  // If checksum of source files changed, rebuild TypeScript files.
+  if (!state.sourceChecksum || state.sourceChecksum !== sourceChecksum || !buildFolderExists()) {
     const chalk = require('chalk');
 
-    console.log(
-      ` 🛠  ${chalk.bold.cyan('expotools')} ${chalk.italic(`are not up to date - rebuilding...`)}`
-    );
-
-    // Clean up build folder. Use fs-extra as it can remove a directory with contents.
-    await require('fs-extra').remove(BUILD_PATH);
+    console.log(` 🛠  Rebuilding ${chalk.cyan('expotools')}`);
 
     try {
       // Compile TypeScript files into build folder.
-      await spawnAsync('yarn', ['run', 'build']);
-
-      // TypeScript compiler might fail due to compilation errors but the code might have been generated anyway (code = 2).
-      // Unfortunately, when running it in Xcode, it always returns code = 1 (why?). Let's just check whether build folder isn't empty.
-      if (!fs.existsSync(BUILD_PATH) || fs.readdirSync(BUILD_PATH).length === 0) {
-        throw new Error(
-          `There are some TypeScript compilation errors that make it impossible to generate JavaScript files.
-    Run \`yarn run build\` in expotools to see more details.`
-        );
-      }
+      await spawnAsync('yarn', ['run', 'tsc']);
+      state.schema = await getCommandsSchemaAsync();
     } catch (error) {
-      console.error(
-        chalk.red(` 💥 Rebuilding failed: ${error.message}`)
-      );
+      console.error(chalk.red(` 💥 Rebuilding failed: ${error.stack}`));
       process.exit(1);
       return;
     }
-
-    console.log(
-      ` ✨ Successfully built ${chalk.bold.cyan('expotools')}\n`
-    );
+    console.log(` ✨ Successfully built ${chalk.cyan('expotools')}\n`);
   }
 
-  // Write checksum to the file. Recalculate project's hash if it wasn't present.
-  fs.writeFileSync(CHECKSUM_PATH, projectHash || await calculateProjectHash());
+  state.sourceChecksum = sourceChecksum || (await calculateSourceChecksumAsync());
+  state.dependenciesChecksum = dependenciesChecksum || (await calculateDependenciesChecksumAsync());
 
-  run();
+  saveState(state);
+  run(state.schema);
 }
 
-async function checkForUpdates() {
-  const projectHash = await calculateProjectHash();
-  const currentHash = readCurrentHash();
-
-  return {
-    projectHash,
-    isRebuildingRequired: !projectHash || projectHash !== currentHash,
-  };
-}
-
-function readCurrentHash() {
-  if (!fs.existsSync(CHECKSUM_PATH)) {
-    return '';
+function buildFolderExists() {
+  try {
+    fs.accessSync(BUILD_PATH, fs.constants.R_OK);
+    return true;
+  } catch (e) {
+    return false;
   }
-  return fs.readFileSync(CHECKSUM_PATH, 'utf8');
 }
 
-async function calculateProjectHash() {
+async function calculateChecksumAsync(options) {
   if (canRequire('folder-hash')) {
     const { hashElement } = require('folder-hash');
-    const { hash } = await hashElement(ROOT_PATH, {
-      folders: {
-        exclude: ['build', 'node_modules'],
-      },
-      files: {
-        include: ['*.ts', 'expotools.js', 'yarn.lock', 'tsconfig.js'],
-      },
-    });
+    const { hash } = await hashElement(ROOT_PATH, options);
     return hash;
   }
   return null;
 }
 
+async function calculateDependenciesChecksumAsync() {
+  return calculateChecksumAsync({
+    folders: {
+      exclude: ['*'],
+    },
+    files: {
+      include: ['yarn.lock', 'package.json'],
+    },
+  });
+}
+
+async function calculateSourceChecksumAsync() {
+  return calculateChecksumAsync({
+    folders: {
+      exclude: ['build', 'cache', 'node_modules'],
+    },
+    files: {
+      include: ['*.ts', 'expotools.js', 'tsconfig.json'],
+    },
+  });
+}
+
+function loadCommand(program, commandFile) {
+  const commandModule = require(commandFile);
+
+  if (typeof commandModule.default !== 'function') {
+    console.error(
+      `Command file "${commandFile}" is not valid. Make sure to export command function as a default.`
+    );
+    return;
+  }
+  commandModule.default(program);
+}
+
+async function loadAllCommandsAsync(callback) {
+  const program = require('@expo/commander');
+  const glob = require('glob-promise');
+
+  const commandFiles = await glob('build/commands/*.js', {
+    cwd: ROOT_PATH,
+    absolute: true,
+  });
+
+  for (const commandFile of commandFiles) {
+    loadCommand(program, commandFile);
+
+    if (callback) {
+      callback(commandFile, program);
+    }
+  }
+}
+
+async function getCommandsSchemaAsync() {
+  const schema = {};
+
+  await loadAllCommandsAsync((commandFile, program) => {
+    for (const command of program.commands) {
+      const names = [command._name];
+
+      if (command._aliases) {
+        names.push(...command._aliases);
+      }
+      for (const name of names) {
+        if (!schema[name]) {
+          schema[name] = path.relative(BUILD_PATH, commandFile);
+        }
+      }
+    }
+  });
+  return schema;
+}
+
+function readState() {
+  if (canRequire(STATE_PATH)) {
+    return require(STATE_PATH);
+  }
+  return {
+    sourceChecksum: null,
+    dependenciesChecksum: null,
+    schema: null,
+  };
+}
+
+function saveState(state) {
+  fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
+}
+
 function spawnAsync(command, args, options) {
   return new Promise((resolve, reject) => {
-    const child = child_process.spawn(command, args, options || {
-      stdio: ['pipe', 'ignore', 'pipe'],
-      ignoreStdio: true,
-      cwd: ROOT_PATH,
-    });
+    const child = child_process.spawn(
+      command,
+      args,
+      options || {
+        stdio: ['pipe', 'ignore', 'pipe'],
+        ignoreStdio: true,
+        cwd: ROOT_PATH,
+      }
+    );
 
-    child.on('exit', code => {
+    child.on('exit', (code) => {
       child.removeAllListeners();
       resolve({ code });
     });
-    child.on('error', error => {
+    child.on('error', (error) => {
       child.removeAllListeners();
       reject(error);
     });
@@ -127,20 +190,57 @@ function canRequire(packageName) {
   }
 }
 
-function run() {
+async function run(schema) {
   const chalk = require('chalk');
   const semver = require('semver');
+  const program = require('@expo/commander');
   const nodeVersion = process.versions.node.split('-')[0]; // explode and truncate tag from version
 
   // Validate that used Node version is supported
-  if (semver.satisfies(nodeVersion, '>=8.9.0')) {
-    require('../build/expotools-cli.js').run();
-  } else {
+  if (semver.satisfies(nodeVersion, '<8.9.0')) {
     console.log(
       chalk.red(
-        `Node version ${chalk.cyan(nodeVersion)} is not supported. Please use Node.js ${chalk.cyan('8.9.0')} or higher.`
-      ),
+        `Node version ${chalk.cyan(nodeVersion)} is not supported. Please use Node.js ${chalk.cyan(
+          '8.9.0'
+        )} or higher.`
+      )
     );
     process.exit(1);
+  }
+
+  try {
+    const subCommandName = process.argv[2];
+
+    if (subCommandName && !subCommandName.startsWith('-')) {
+      if (!schema[subCommandName]) {
+        console.log(
+          chalk.red(`${chalk.cyan.italic(subCommandName)} is not an expotools command.`),
+          chalk.red(`Run ${chalk.cyan.italic('et --help')} to see a list of available commands.\n`)
+        );
+        process.exit(1);
+        return;
+      }
+
+      const subCommand =
+        subCommandName &&
+        program.commands.find(({ _name, _aliases }) => {
+          return _name === subCommandName || (_aliases && _aliases.includes(subCommandName));
+        });
+
+      if (!subCommand) {
+        // If the command is known and defined in schema, load just this one command and run it.
+        const commandFilePath = path.join(BUILD_PATH, schema[subCommandName]);
+        loadCommand(program, commandFilePath);
+      }
+
+      // Pass args to commander and run the command.
+      program.parse(process.argv);
+    } else {
+      await loadAllCommandsAsync();
+      program.help();
+    }
+  } catch (e) {
+    console.error(chalk.red(e));
+    throw e;
   }
 }

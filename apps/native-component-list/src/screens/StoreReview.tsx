@@ -1,4 +1,4 @@
-// import { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as StoreReview from 'expo-store-review';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import Colors from '../constants/Colors';
 
 type Props = {
-  navigation: any; // StackNavigationProp<any>;
+  navigation: StackNavigationProp<any>;
 };
 
 function getStoreUrlInfo(): string {
@@ -19,11 +19,11 @@ function getStoreUrlInfo(): string {
 }
 
 function StoreReviewScreen({ navigation }: Props) {
-  // React.useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     title: 'Store Review',
-  //   });
-  // }, [navigation]);
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Store Review',
+    });
+  }, [navigation]);
 
   const [isAvailable, setAvailable] = React.useState<boolean>(false);
 

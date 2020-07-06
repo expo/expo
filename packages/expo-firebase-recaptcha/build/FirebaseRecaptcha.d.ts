@@ -1,6 +1,6 @@
 import { IFirebaseOptions } from 'expo-firebase-core';
 import * as React from 'react';
-import { WebView } from 'react-native-webview';
+import { WebView } from './WebView';
 interface Props extends React.ComponentProps<typeof WebView> {
     firebaseConfig?: IFirebaseOptions;
     firebaseVersion?: string;

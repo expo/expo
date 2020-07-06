@@ -79,11 +79,12 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 
     if (!BuildConfig.DEBUG) {
       UpdatesController.initialize(this);
     }
+
+    initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 
   /**

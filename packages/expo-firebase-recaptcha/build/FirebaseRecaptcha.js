@@ -1,7 +1,7 @@
 import { CodedError } from '@unimodules/core';
 import { DEFAULT_WEB_APP_OPTIONS } from 'expo-firebase-core';
 import * as React from 'react';
-import { WebView } from 'react-native-webview';
+import { WebView } from './WebView';
 function getWebviewSource(firebaseConfig, firebaseVersion) {
     firebaseVersion = firebaseVersion || '7.12.0';
     return {

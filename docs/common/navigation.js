@@ -8,6 +8,7 @@ const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
     'Fundamentals',
+    'Push Notifications',
     'Distributing Your App',
     'Assorted Guides',
     'Regulatory Compliance',
@@ -45,6 +46,7 @@ const sections = [
       'Sharing the image',
       'Handling platform differences',
       'Configuring a splash screen and app icon',
+      'Errors and Debugging',
       'Learning more',
     ],
   },
@@ -55,6 +57,16 @@ const sections = [
   {
     name: 'Regulatory Compliance',
     reference: ['Data Privacy & Protection', 'Privacy Shield', 'HIPAA', 'GDPR'],
+  },
+  {
+    name: 'Push Notifications',
+    reference: [
+      'Push Notifications Overview',
+      'Push Notifications Setup',
+      "Sending Notifications with Expo's Push API",
+      'Receiving Notifications',
+      'Using FCM for Push Notifications',
+    ],
   },
   {
     name: 'Assorted Guides',
@@ -73,8 +85,6 @@ const sections = [
       'Progressive Web Apps',
       'Customizing Metro',
       'Customizing Webpack',
-      'Push Notifications',
-      'Using FCM for Push Notifications',
       'Notification Channels',
       'Error Handling',
       'Testing with Jest',
@@ -272,6 +282,7 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
+  'Push Notifications',
   'Distributing Your App',
   'Regulatory Compliance',
   'Assorted Guides',

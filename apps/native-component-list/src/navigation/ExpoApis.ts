@@ -129,9 +129,8 @@ const optionalScreens: {
   ViewShot,
 };
 
-interface ScreensObjectType {
-  [key: string]: React.ComponentType;
-}
+type ScreensObjectType = Record<string, React.ComponentType>;
+type RoutesObjectType = Record<string, string>;
 
 export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>(
   (acc, [key, screen]) => {
@@ -142,3 +141,8 @@ export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>
   },
   {}
 );
+
+export const Routes = Object.entries(Screens).reduce<RoutesObjectType>((acc, [key, screen]) => {
+  acc[key] = key.toLowerCase();
+  return acc;
+}, {});

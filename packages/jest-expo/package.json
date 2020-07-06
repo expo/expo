@@ -32,7 +32,7 @@
   "peerDependencies": {
     "react": "~16.11.0",
     "react-native": "*",
-    "react-native-web": "*"
+    "react-native-web": "~0.12.0"
   },
   "dependencies": {
     "@expo/config": "^3.2.3",

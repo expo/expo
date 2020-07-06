@@ -1,37 +1,27 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, SectionList, View, Text } from 'react-native';
-import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
-import HeaderButtons from 'react-navigation-header-buttons';
+import { SectionList, StyleSheet, Text, View } from 'react-native';
 
+import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import { addSelectedComponentChangeListener } from './ImageComponents';
 import ImageTestListItem from './ImageTestListItem';
 import imageTests from './tests';
-import { ImageTest } from './types';
+import { ImageTest, Links } from './types';
 
 // @ts-ignore
 const flattenedTests = imageTests.tests.map(test => (test.tests ? test.tests : [test])).flat();
 
-type StateType = {
-  reloadCount: number;
-};
+type Props = StackScreenProps<Links, 'ImageTest'>;
 
-export default class ImageAllTestsScreen extends React.Component<NavigationScreenProps, StateType> {
-  listener: any;
-
-  state: StateType = {
-    reloadCount: 0,
-  };
-
-  static navigationOptions: NavigationScreenConfig<object> = ({ navigation }) => {
-    return {
+export default function ImageAllTestsScreen({ navigation }: Props) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
       title: imageTests.name,
-      headerRight: (
-        <HeaderButtons IconComponent={MaterialIcons} iconSize={25}>
-          <HeaderButtons.Item
-            title="list"
-            iconName="list"
+      headerRight: () => (
+        <HeaderContainerRight>
+          <HeaderIconButton
+            name="md-list"
             onPress={() =>
               navigation.push('ImageTests', {
                 // @ts-ignore
@@ -39,33 +29,28 @@ export default class ImageAllTestsScreen extends React.Component<NavigationScree
               })
             }
           />
-        </HeaderButtons>
+        </HeaderContainerRight>
       ),
-    };
-  };
-
-  componentDidMount() {
-    const { reloadCount } = this.state;
-    this.listener = addSelectedComponentChangeListener(() => {
-      this.setState({
-        reloadCount: reloadCount + 1,
-      });
     });
-  }
+  }, [navigation]);
 
-  componentWillUnmount() {
-    this.listener();
-    this.listener = undefined;
-  }
+  let listener: any;
 
-  renderItem = ({ item }: any) => {
+  const [reloadCount, setReloadCount] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    listener = addSelectedComponentChangeListener(() => setReloadCount(reloadCount + 1));
+    return () => {
+      listener();
+    };
+  }, []);
+
+  const renderItem = ({ item }: any) => {
     const test: ImageTest = item;
-    return (
-      <ImageTestListItem navigation={this.props.navigation} test={test} tests={flattenedTests} />
-    );
+    return <ImageTestListItem navigation={navigation} test={test} tests={flattenedTests} />;
   };
 
-  renderSectionHeader = ({ section }: any) => {
+  const renderSectionHeader = ({ section }: any) => {
     return (
       <View style={styles.header}>
         <Text style={styles.title}>{section.title}</Text>
@@ -73,29 +58,27 @@ export default class ImageAllTestsScreen extends React.Component<NavigationScree
     );
   };
 
-  keyExtractor = (item: any, index: number) => {
+  const keyExtractor = (item: any, index: number) => {
     return item + index;
   };
 
-  render() {
-    const sections = imageTests.tests.map(test => ({
-      title: test.name,
-      // @ts-ignore
-      data: test.tests,
-    }));
+  const sections = imageTests.tests.map(test => ({
+    title: test.name,
+    // @ts-ignore
+    data: test.tests,
+  }));
 
-    return (
-      <View key={`key${this.state.reloadCount}`} style={styles.container}>
-        <SectionList
-          style={styles.content}
-          sections={sections}
-          renderItem={this.renderItem}
-          renderSectionHeader={this.renderSectionHeader}
-          keyExtractor={this.keyExtractor}
-        />
-      </View>
-    );
-  }
+  return (
+    <View key={`key${reloadCount}`} style={styles.container}>
+      <SectionList
+        style={styles.content}
+        sections={sections}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        keyExtractor={keyExtractor}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

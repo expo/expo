@@ -1,6 +1,7 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import * as AppAuth from 'expo-app-auth';
 import React from 'react';
-import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 import { getGUID } from '../api/guid';
 
@@ -65,9 +66,9 @@ interface State {
   authState?: any;
 }
 
-export default class AuthSessionScreen extends React.Component<object, State> {
+export default class AppAuthScreen extends React.Component<object, State> {
   static navigationOptions = {
-    title: 'AuthSession',
+    title: 'App Auth',
   };
 
   readonly state: State = {};

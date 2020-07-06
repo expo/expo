@@ -14,11 +14,7 @@ module.exports = {
   webpack: (config, options) => {
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
-      use: [
-        options.defaultLoaders.babel,
-        '@mdx-js/loader',
-        join(__dirname, './common/md-loader'),
-      ],
+      use: [options.defaultLoaders.babel, '@mdx-js/loader', join(__dirname, './common/md-loader')],
     });
     return config;
   },

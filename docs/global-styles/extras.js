@@ -89,4 +89,3 @@ export const globalExtras = `
       transform: scale(0.99);
   }
 `;
-

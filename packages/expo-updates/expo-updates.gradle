@@ -10,6 +10,8 @@ void runBefore(String dependentTaskName, Task task) {
   }
 }
 
+def config = project.hasProperty("react") ? project.react : [];
+
 afterEvaluate {
   def projectRoot = file("../../")
   def inputExcludes = ["android/**", "ios/**"]

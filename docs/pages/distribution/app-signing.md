@@ -95,14 +95,14 @@ If you want to create the upload certificate yourself, replace steps 2 and 3 fro
 
 1. Generate a new keystore
 
-2. Extract the upload certificate with
+2. Extract the upload certificate with the following command (replace values where needed)
 
-   ```
-   bash keytool -export -rfc
-    -keystore your-upload-keystore.jks
-    -alias upload-alias
-    -file output_upload_certificate.pem
-   ```
+```bash
+keytool -export -rfc
+  -keystore YOUR_UPLOAD_KEYSTORE.jks
+  -alias UPLOAD_KEY_ALIAS
+  -file OUTPUT_UPLOAD_CERTIFICATE.pem
+```
 
 > If you lose your upload keystore (or it's compromised), you must ask the Google Support Team to reset your upload key.
 

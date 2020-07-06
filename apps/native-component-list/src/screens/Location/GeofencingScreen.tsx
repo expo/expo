@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
@@ -5,7 +6,6 @@ import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
-import { NavigationEvents } from 'react-navigation';
 
 import Button from '../../components/Button';
 
@@ -16,17 +16,6 @@ interface GeofencingRegion {
   latitude: number;
   longitude: number;
   radius: number;
-}
-
-interface State {
-  isGeofencing: boolean;
-  geofencingRegions: GeofencingRegion[];
-  initialRegion?: {
-    latitude: number;
-    longitude: number;
-    latitudeDelta: number;
-    longitudeDelta: number;
-  };
 }
 
 export interface MapEvent<T = object>
@@ -43,50 +32,94 @@ export interface MapEvent<T = object>
     }
   > {}
 
-export default class GeofencingScreen extends React.Component<object, State> {
-  static navigationOptions = {
-    title: 'Geofencing Map',
-  };
+type Region = {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+};
 
-  mapViewRef = React.createRef<MapView>();
+type State = {
+  isGeofencing: boolean;
+  geofencingRegions: GeofencingRegion[];
+  initialRegion: Region | null;
+};
 
-  readonly state: State = {
-    isGeofencing: false,
-    geofencingRegions: [],
-  };
+const initialState: State = { isGeofencing: false, geofencingRegions: [], initialRegion: null };
 
-  didFocus = async () => {
-    await Location.requestPermissionsAsync();
+function reducer(
+  state: State,
+  action:
+    | { type: 'toggle' }
+    | { type: 'clearRegions' }
+    | ({ type: 'update' } & State)
+    | ({ type: 'updateRegions' } & Pick<State, 'geofencingRegions'>)
+): State {
+  switch (action.type) {
+    case 'update':
+      return {
+        isGeofencing: action.isGeofencing,
+        geofencingRegions: action.geofencingRegions,
+        initialRegion: action.initialRegion,
+      };
+    case 'updateRegions':
+      return {
+        ...state,
+        geofencingRegions: action.geofencingRegions,
+      };
+    case 'clearRegions':
+      return { ...state, geofencingRegions: [] };
+    case 'toggle':
+      return { ...state, isGeofencing: !state.isGeofencing };
+  }
+}
 
-    const { coords } = await Location.getCurrentPositionAsync();
-    const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
-    const geofencingRegions = await getSavedRegions();
+export default function GeofencingScreen() {
+  const mapViewRef = React.useRef<MapView>(null);
+  const [state, dispatch] = React.useReducer(reducer, initialState);
 
-    this.setState({
-      isGeofencing,
-      geofencingRegions,
-      initialRegion: {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        latitudeDelta: 0.004,
-        longitudeDelta: 0.002,
-      },
-    });
-  };
+  const onFocus = React.useCallback(() => {
+    let isActive = true;
 
-  toggleGeofencing = async () => {
-    if (this.state.isGeofencing) {
+    (async () => {
+      await Location.requestPermissionsAsync();
+
+      const { coords } = await Location.getCurrentPositionAsync();
+      const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
+      const geofencingRegions = await getSavedRegions();
+
+      if (isActive) {
+        dispatch({
+          type: 'update',
+          isGeofencing,
+          geofencingRegions,
+          initialRegion: {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            latitudeDelta: 0.004,
+            longitudeDelta: 0.002,
+          },
+        });
+      }
+    })();
+    return () => (isActive = false);
+  }, []);
+
+  useFocusEffect(onFocus);
+
+  const toggleGeofencing = React.useCallback(async () => {
+    if (state.isGeofencing) {
       await Location.stopGeofencingAsync(GEOFENCING_TASK);
-      this.setState({ geofencingRegions: [] });
+      dispatch({ type: 'clearRegions' });
     } else {
-      await Location.startGeofencingAsync(GEOFENCING_TASK, this.state.geofencingRegions);
+      await Location.startGeofencingAsync(GEOFENCING_TASK, state.geofencingRegions);
     }
-    this.setState({ isGeofencing: !this.state.isGeofencing });
-  };
+    dispatch({ type: 'toggle' });
+  }, [state.isGeofencing, state.geofencingRegions]);
 
-  centerMap = async () => {
+  const centerMap = React.useCallback(async () => {
     const { coords } = await Location.getCurrentPositionAsync();
-    const mapView = this.mapViewRef.current;
+    const mapView = mapViewRef.current;
 
     if (mapView) {
       mapView.animateToRegion({
@@ -96,29 +129,26 @@ export default class GeofencingScreen extends React.Component<object, State> {
         longitudeDelta: 0.002,
       });
     }
-  };
+  }, []);
 
-  onMapPress = async ({ nativeEvent: { coordinate } }: MapEvent) => {
-    const geofencingRegions = [...this.state.geofencingRegions];
-
-    geofencingRegions.push({
+  const onMapPress = async ({ nativeEvent: { coordinate } }: MapEvent) => {
+    const next = [...state.geofencingRegions];
+    next.push({
       identifier: `${coordinate.latitude},${coordinate.longitude}`,
       latitude: coordinate.latitude,
       longitude: coordinate.longitude,
       radius: 50,
     });
-    this.setState({ geofencingRegions });
+    dispatch({ type: 'updateRegions', geofencingRegions: next });
 
     if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
       // update existing geofencing task
-      await Location.startGeofencingAsync(GEOFENCING_TASK, geofencingRegions);
+      await Location.startGeofencingAsync(GEOFENCING_TASK, next);
     }
   };
 
-  renderRegions() {
-    const { geofencingRegions } = this.state;
-
-    return geofencingRegions.map(region => {
+  const renderRegions = React.useCallback(() => {
+    return state.geofencingRegions.map(region => {
       return (
         // @ts-ignore
         <MapView.Circle
@@ -130,49 +160,51 @@ export default class GeofencingScreen extends React.Component<object, State> {
         />
       );
     });
+  }, [state.geofencingRegions]);
+
+  if (!state.initialRegion) {
+    return null;
   }
 
-  render() {
-    if (!this.state.initialRegion) {
-      return <NavigationEvents onDidFocus={this.didFocus} />;
-    }
-
-    return (
-      <View style={styles.screen}>
-        <View style={styles.heading}>
-          <BlurView tint="light" intensity={70} style={styles.blurView}>
-            <Text style={styles.headingText}>
-              {this.state.isGeofencing
-                ? 'You will be receiving notifications when the device enters or exits from selected regions.'
-                : // tslint:disable-next-line: max-line-length
-                  'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'}
-            </Text>
-          </BlurView>
-        </View>
-
-        <MapView
-          ref={this.mapViewRef}
-          style={styles.mapView}
-          initialRegion={this.state.initialRegion}
-          onPress={this.onMapPress}
-          showsUserLocation>
-          {this.renderRegions()}
-        </MapView>
-        <View style={styles.buttons}>
-          <View style={styles.leftButtons}>
-            <Button
-              disabled={!this.state.isGeofencing && this.state.geofencingRegions.length === 0}
-              buttonStyle={styles.button}
-              title={this.state.isGeofencing ? 'Stop geofencing' : 'Start geofencing'}
-              onPress={this.toggleGeofencing}
-            />
-          </View>
-          <Button buttonStyle={styles.button} title="Center" onPress={this.centerMap} />
-        </View>
+  return (
+    <View style={styles.screen}>
+      <View style={styles.heading}>
+        <BlurView tint="light" intensity={70} style={styles.blurView}>
+          <Text style={styles.headingText}>
+            {state.isGeofencing
+              ? 'You will be receiving notifications when the device enters or exits from selected regions.'
+              : // tslint:disable-next-line: max-line-length
+                'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'}
+          </Text>
+        </BlurView>
       </View>
-    );
-  }
+
+      <MapView
+        ref={mapViewRef}
+        style={styles.mapView}
+        initialRegion={state.initialRegion}
+        onPress={onMapPress}
+        showsUserLocation>
+        {renderRegions()}
+      </MapView>
+      <View style={styles.buttons}>
+        <View style={styles.leftButtons}>
+          <Button
+            disabled={!state.isGeofencing && state.geofencingRegions.length === 0}
+            buttonStyle={styles.button}
+            title={state.isGeofencing ? 'Stop geofencing' : 'Start geofencing'}
+            onPress={toggleGeofencing}
+          />
+        </View>
+        <Button buttonStyle={styles.button} title="Center" onPress={centerMap} />
+      </View>
+    </View>
+  );
 }
+
+GeofencingScreen.navigationOptions = {
+  title: 'Geofencing Map',
+};
 
 async function getSavedRegions(): Promise<GeofencingRegion[]> {
   const tasks = await TaskManager.getRegisteredTasksAsync();
