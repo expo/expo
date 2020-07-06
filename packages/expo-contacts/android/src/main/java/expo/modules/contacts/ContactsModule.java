@@ -16,10 +16,25 @@ import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 
-import org.unimodules.core.*;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.permissions.Permissions;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import expo.modules.contacts.models.DateModel;
 import expo.modules.contacts.models.EmailModel;
@@ -29,8 +44,6 @@ import expo.modules.contacts.models.PhoneNumberModel;
 import expo.modules.contacts.models.PostalAddressModel;
 import expo.modules.contacts.models.RelationshipModel;
 import expo.modules.contacts.models.UrlAddressModel;
-
-import java.util.*;
 
 import static expo.modules.contacts.models.BaseModel.decodeList;
 
@@ -56,6 +69,7 @@ public class ContactsModule extends ExportedModule {
   // TODO: Evan: default API is confusing. Duplicate data being requested.
   private static final List<String> DEFAULT_PROJECTION = new ArrayList<String>() {
     {
+      add(ContactsContract.Data.RAW_CONTACT_ID);
       add(ContactsContract.Data.CONTACT_ID);
       add(ContactsContract.Data.LOOKUP_KEY);
       add(ContactsContract.Contacts.Data.MIMETYPE);
@@ -167,7 +181,7 @@ public class ContactsModule extends ExportedModule {
     if (isMissingReadPermission(promise) || isMissingWritePermission(promise)) return;
     Contact contact = mutateContact(null, data);
 
-    ArrayList<ContentProviderOperation> ops = contact.toOperationList();
+    ArrayList<ContentProviderOperation> ops = contact.toInsertOperationList();
 
     try {
       ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
@@ -199,7 +213,7 @@ public class ContactsModule extends ExportedModule {
     Contact targetContact = getContactById(id, keysToFetch, promise);
     if (targetContact != null) {
       targetContact = mutateContact(targetContact, contact);
-      ArrayList<ContentProviderOperation> ops = targetContact.toOperationList();
+      ArrayList<ContentProviderOperation> ops = targetContact.toUpdateOperationList();
       try {
         ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
         if (result.length > 0) {
@@ -373,12 +387,18 @@ public class ContactsModule extends ExportedModule {
       contact.note = (String) data.get("note");
 
     if (data.containsKey("image")) {
-      Map<String, Object> photo = (Map<String, Object>) data.get("image");
-
-      if (photo.containsKey("uri")) {
-        contact.photoUri = (String) photo.get("uri");
+      if (data.get("image") instanceof String) {
+        contact.photoUri = (String) data.get("image");
         contact.hasPhoto = true;
+      } else if (data.get("image") instanceof Map) {
+        Map<String, Object> photo = (Map<String, Object>) data.get("image");
+
+        if (photo.containsKey("uri")) {
+          contact.photoUri = (String) photo.get("uri");
+          contact.hasPhoto = true;
+        }
       }
+
     }
 
     ArrayList results;
