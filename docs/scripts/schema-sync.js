@@ -1,13 +1,38 @@
 const axios = require('axios');
 let fsExtra = require('fs-extra');
 
-axios
-  .get('http://exp.host/--/api/v2/project/configuration/schema/38.0.0')
-  .then(async ({ data }) => {
-    await fsExtra.writeFile('scripts/app-json-schema.js', 'export default ', 'utf8');
-    await fsExtra.appendFile(
-      'scripts/app-json-schema.js',
-      JSON.stringify(data.data.schema.properties),
-      'utf8'
-    );
-  });
+let version = process.argv[2];
+
+if (version === 'unversioned') {
+  let latest = '38';
+
+  axios
+    .get(`http://exp.host/--/api/v2/project/configuration/schema/${latest}.0.0`)
+    .then(async ({ data }) => {
+      await fsExtra.writeFile(
+        `./pages/versions/unversioned/app-config-schema.js`,
+        'export default ',
+        'utf8'
+      );
+      await fsExtra.appendFile(
+        `./pages/versions/unversioned/app-config-schema.js`,
+        JSON.stringify(data.data.schema.properties),
+        'utf8'
+      );
+    });
+} else {
+  axios
+    .get(`http://exp.host/--/api/v2/project/configuration/schema/${version}.0.0`)
+    .then(async ({ data }) => {
+      await fsExtra.writeFile(
+        `./pages/versions/v${version}.0.0/app-config-schema.js`,
+        'export default ',
+        'utf8'
+      );
+      await fsExtra.appendFile(
+        `./pages/versions/v${version}.0.0/app-config-schema.js`,
+        JSON.stringify(data.data.schema.properties),
+        'utf8'
+      );
+    });
+}
