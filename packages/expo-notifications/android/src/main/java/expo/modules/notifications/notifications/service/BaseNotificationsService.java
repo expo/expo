@@ -9,19 +9,20 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.NotificationCategory;
+import expo.modules.notifications.notifications.model.NotificationResponse;
 
 /**
  * A notification service foundation handling incoming intents

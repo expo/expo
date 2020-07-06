@@ -6,11 +6,6 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.List;
 
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-
-import androidx.annotation.Nullable;
-
 /**
  * A class representing a collection of notification actions.
  */

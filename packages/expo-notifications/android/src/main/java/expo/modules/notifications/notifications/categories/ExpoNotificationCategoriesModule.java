@@ -6,9 +6,9 @@ import android.os.ResultReceiver;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.arguments.MapArguments;
+import org.unimodules.core.errors.InvalidArgumentException;
+import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import expo.modules.notifications.notifications.NotificationSerializer;
-import expo.modules.notifications.notifications.service.BaseNotificationsService;
-import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationAction;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
+import expo.modules.notifications.notifications.service.BaseNotificationsService;
 
 public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationCategoriesModule";

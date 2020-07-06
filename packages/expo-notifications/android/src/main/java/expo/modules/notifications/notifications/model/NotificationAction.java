@@ -2,11 +2,8 @@ package expo.modules.notifications.notifications.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import java.io.Serializable;
-
-import org.unimodules.core.Promise;
-
-import androidx.annotation.Nullable;
 
 /**
  * A class representing a single notification action button.

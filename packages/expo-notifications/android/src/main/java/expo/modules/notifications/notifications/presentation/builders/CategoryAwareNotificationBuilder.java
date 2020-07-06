@@ -1,22 +1,23 @@
 package expo.modules.notifications.notifications.presentation.builders;
 
-import androidx.core.app.RemoteInput;
-import androidx.core.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.List;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
+
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
-import expo.modules.notifications.notifications.service.TextInputNotificationResponseReceiver;
 import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
-import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
+import expo.modules.notifications.notifications.service.TextInputNotificationResponseReceiver;
+
 import static expo.modules.notifications.notifications.service.TextInputNotificationResponseReceiver.getActionIntent;
 
 public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {

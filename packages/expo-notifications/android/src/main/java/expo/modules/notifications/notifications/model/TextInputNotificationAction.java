@@ -1,13 +1,6 @@
 package expo.modules.notifications.notifications.model;
 
-import android.content.Context;
 import android.os.Parcel;
-import android.os.Parcelable;
-
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-
-import androidx.annotation.Nullable;
 
 /**
  * A class representing a single direct reply notification action.

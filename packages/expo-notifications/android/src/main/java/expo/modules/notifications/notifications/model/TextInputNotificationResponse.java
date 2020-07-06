@@ -1,13 +1,6 @@
 package expo.modules.notifications.notifications.model;
 
-import android.content.Context;
 import android.os.Parcel;
-import android.os.Parcelable;
-
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-
-import androidx.annotation.Nullable;
 
 /**
  * A POJO representing user's response to a text input notification action
