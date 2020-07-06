@@ -45,9 +45,10 @@
   "devDependencies": {
     "@testing-library/jest-dom": "5.11.0",
     "@testing-library/react": "10.4.3",
+    "axios": "^0.19.2",
     "danger": "^9.2.10",
-    "jest": "26.1.0",
     "http-server": "^0.12.3",
+    "jest": "26.1.0",
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0"
   }
