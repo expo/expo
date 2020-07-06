@@ -2,7 +2,7 @@
 title: App Configuration
 ---
 
-import AppJsonPropsTable from '~/components/plugins/AppJsonPropsTable';
+import AppConfigPropsTable from '~/components/plugins/AppConfigPropsTable';
 import schema from '../app-json-schema.js';
 
 The following is a list of properties that are available for you under the `"expo"` key in `app.json` or `app.config.json`. These properties can be passed to the top level object of `app.config.js` or `app.config.ts`.
@@ -11,4 +11,4 @@ For more general information on App Configuration, check out our introductory [g
 
 ## Properties
 
-<AppJsonPropsTable schema={schema}/>
+<AppConfigPropsTable schema={schema}/>

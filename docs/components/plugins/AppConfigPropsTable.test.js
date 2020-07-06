@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import AppJsonPropsTable from './AppJsonPropsTable';
+import AppConfigPropsTable from './AppConfigPropsTable';
 import { SluggerContext } from '~/components/page-higher-order/withSlugger';
 import GithubSlugger from 'github-slugger';
 
@@ -41,7 +41,7 @@ var testSchema = {
 test('correct property and subproperty indent styling', () => {
   const { getByTestId } = render(
     <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppJsonPropsTable schema={testSchema} />
+      <AppConfigPropsTable schema={testSchema} />
     </SluggerContext.Provider>
   );
 
@@ -88,7 +88,7 @@ test('correct property and subproperty indent styling', () => {
 test('correct description add-ons (bareWorkflow, regexHuman, etc.)', () => {
   const { container } = render(
     <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppJsonPropsTable schema={testSchema} />
+      <AppConfigPropsTable schema={testSchema} />
     </SluggerContext.Provider>
   );
 
@@ -105,7 +105,7 @@ test('correct description add-ons (bareWorkflow, regexHuman, etc.)', () => {
 test('correct enum type value', () => {
   const { container } = render(
     <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppJsonPropsTable schema={testSchema} />
+      <AppConfigPropsTable schema={testSchema} />
     </SluggerContext.Provider>
   );
 

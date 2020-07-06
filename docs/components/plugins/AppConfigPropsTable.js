@@ -66,7 +66,7 @@ function smartlyCreateDescription(property) {
   return propertyDescription;
 }
 
-export default class AppJsonPropsTable extends React.Component {
+export default class AppConfigPropsTable extends React.Component {
   render() {
     var rawSchema = Object.entries(this.props.schema);
     var formattedSchema = [];
