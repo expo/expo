@@ -11,18 +11,11 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
 import expo.modules.notifications.notifications.model.Notification;
-import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
-import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener;
 
@@ -33,34 +26,6 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   // Unfortunately we cannot save state between instances of a service other way
   // than by static properties. Fortunately, using weak references we can
   // be somehow sure instances of PushTokenListeners won't be leaked by this component.
-
-  protected static final int ANDROID_NOTIFICATION_ID = 0;
-
-  private boolean mIsAppInForeground = false;
-
-  private LifecycleObserver mObserver = new DefaultLifecycleObserver() {
-    @Override
-    public void onResume(@NonNull LifecycleOwner owner) {
-      mIsAppInForeground = true;
-    }
-
-    @Override
-    public void onPause(@NonNull LifecycleOwner owner) {
-      mIsAppInForeground = false;
-    }
-  };
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    ProcessLifecycleOwner.get().getLifecycle().addObserver(mObserver);
-  }
-
-  @Override
-  public void onDestroy() {
-    ProcessLifecycleOwner.get().getLifecycle().removeObserver(mObserver);
-    super.onDestroy();
-  }
 
   /**
    * We store this value to be able to inform new listeners of last known token.
@@ -117,22 +82,7 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   @Override
   public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
     super.onMessageReceived(remoteMessage);
-    Notification notification = createNotification(remoteMessage);
-    if (mIsAppInForeground) {
-//      for (NotificationManager listener : getListeners()) {
-//        listener.onNotificationReceived(notification);
-//      }
-    } else {
-      String tag = notification.getNotificationRequest().getIdentifier();
-      NotificationManagerCompat.from(this).notify(tag, ANDROID_NOTIFICATION_ID, getNotification(notification, null));
-    }
-  }
-
-  protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
-    return new ExpoNotificationBuilder(this)
-      .setNotification(notification)
-      .setAllowedBehavior(behavior)
-      .build();
+    BaseNotificationsHelper.enqueueReceive(this, createNotification(remoteMessage));
   }
 
   protected Notification createNotification(RemoteMessage remoteMessage) {

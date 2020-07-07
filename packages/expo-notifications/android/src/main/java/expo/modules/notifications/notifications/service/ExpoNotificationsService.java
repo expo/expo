@@ -147,7 +147,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
    * by {@link ExpoNotificationsService#parseNotificationIdentifier(String)}.
    *
    * @param notification Notification to be identified
-   * @return String identifie
+   * @return String identifier
    */
   protected static String getInternalIdentifierKey(StatusBarNotification notification) {
     Uri.Builder builder = Uri.parse(INTERNAL_IDENTIFIER_SCHEME + "://" + INTERNAL_IDENTIFIER_AUTHORITY).buildUpon();

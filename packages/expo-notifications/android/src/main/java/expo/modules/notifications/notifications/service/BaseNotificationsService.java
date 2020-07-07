@@ -59,7 +59,7 @@ public class BaseNotificationsService extends Service {
             intent.getParcelableExtra(NOTIFICATION_BEHAVIOR_KEY)
           );
         } else if (RECEIVE_TYPE.equals(eventType)) {
-          onNotificationReceived(intent.<Notification>getParcelableExtra(NOTIFICATION_KEY));
+          onNotificationReceived(intent.getParcelableExtra(NOTIFICATION_KEY));
         } else if (DISMISS_TYPE.equals(eventType)) {
           onNotificationDismiss(intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
         } else if (DISMISS_SELECTED_TYPE.equals(eventType)) {
