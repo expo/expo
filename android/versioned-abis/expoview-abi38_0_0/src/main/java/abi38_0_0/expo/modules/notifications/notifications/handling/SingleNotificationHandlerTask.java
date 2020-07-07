@@ -6,14 +6,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 
+import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
 import abi38_0_0.org.unimodules.core.ModuleRegistry;
 import abi38_0_0.org.unimodules.core.Promise;
 import abi38_0_0.org.unimodules.core.interfaces.services.EventEmitter;
-
-import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.service.BaseNotificationsService;
+import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
 
 /**
  * A "task" responsible for managing response to a single notification.
@@ -98,14 +97,14 @@ import expo.modules.notifications.notifications.service.BaseNotificationsService
     HANDLER.post(new Runnable() {
       @Override
       public void run() {
-        BaseNotificationsService.enqueuePresent(mContext, mNotification, mBehavior, new ResultReceiver(HANDLER) {
+        BaseNotificationsHelper.enqueuePresent(mContext, mNotification, mBehavior, new ResultReceiver(HANDLER) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
-            if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
+            if (resultCode == BaseNotificationsHelper.SUCCESS_CODE) {
               promise.resolve(null);
             } else {
-              Exception e = (Exception) resultData.getSerializable(BaseNotificationsService.EXCEPTION_KEY);
+              Exception e = (Exception) resultData.getSerializable(BaseNotificationsHelper.EXCEPTION_KEY);
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
             }
           }

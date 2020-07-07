@@ -119,7 +119,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
         listener.onNotificationReceived(notification);
       }
     } else {
-      BaseNotificationsService.enqueuePresent(this, notification, null, null);
+      BaseNotificationsHelper.enqueuePresent(this, notification, null, null);
     }
   }
 
@@ -147,7 +147,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
    * by {@link ExpoNotificationsService#parseNotificationIdentifier(String)}.
    *
    * @param notification Notification to be identified
-   * @return String identifier
+   * @return String identifie
    */
   protected static String getInternalIdentifierKey(StatusBarNotification notification) {
     Uri.Builder builder = Uri.parse(INTERNAL_IDENTIFIER_SCHEME + "://" + INTERNAL_IDENTIFIER_AUTHORITY).buildUpon();
@@ -295,9 +295,9 @@ public class ExpoNotificationsService extends BaseNotificationsService {
 
   protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
     return new ExpoNotificationBuilder(this)
-        .setNotification(notification)
-        .setAllowedBehavior(behavior)
-        .build();
+      .setNotification(notification)
+      .setAllowedBehavior(behavior)
+      .build();
   }
 
   private Collection<NotificationManager> getListeners() {

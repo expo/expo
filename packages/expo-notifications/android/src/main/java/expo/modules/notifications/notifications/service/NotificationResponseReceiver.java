@@ -15,7 +15,7 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
 
 /**
  * A broadcast receiver responsible for redirecting responses to notifications
- * to {@link BaseNotificationsService}.
+ * to {@link BaseNotificationsHelper}.
  */
 public class NotificationResponseReceiver extends BroadcastReceiver {
   public static final String NOTIFICATION_OPEN_APP_ACTION = "expo.modules.notifications.OPEN_APP_ACTION";
@@ -40,7 +40,7 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
     NotificationResponse response = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY);
     openAppToForeground(context, response);
-    BaseNotificationsService.enqueueResponseReceived(context, response);
+    BaseNotificationsHelper.enqueueResponseReceived(context, response);
   }
 
   protected void openAppToForeground(Context context, NotificationResponse notificationResponse) {
