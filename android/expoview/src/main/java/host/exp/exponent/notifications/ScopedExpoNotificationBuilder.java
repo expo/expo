@@ -1,6 +1,5 @@
 package host.exp.exponent.notifications;
 
-import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -71,5 +70,20 @@ public class ScopedExpoNotificationBuilder extends ExpoNotificationBuilder {
     }
 
     return mExponentManifest.loadIconBitmapSync(iconUrl);
+  }
+
+  @Nullable
+  @Override
+  protected Number getColor() {
+    // Try to use color defined in notification content
+    if (getNotificationContent().getColor() != null) {
+      return getNotificationContent().getColor();
+    }
+
+    if (manifest == null) {
+      return super.getColor();
+    }
+
+    return NotificationHelper.getColor(null, manifest, mExponentManifest);
   }
 }
