@@ -1,5 +1,6 @@
 package host.exp.exponent.notifications;
 
+import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -9,6 +10,8 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 import host.exp.exponent.Constants;
@@ -22,9 +25,32 @@ public class ScopedExpoNotificationBuilder extends ExpoNotificationBuilder {
   @Inject
   ExponentManifest mExponentManifest;
 
+  @Nullable
+  JSONObject manifest;
+
   public ScopedExpoNotificationBuilder(Context context) {
     super(context);
     NativeModuleDepsProvider.getInstance().inject(ScopedExpoNotificationBuilder.class, this);
+  }
+
+  @Override
+  public NotificationBuilder setNotification(expo.modules.notifications.notifications.model.Notification notification) {
+    super.setNotification(notification);
+
+    // We parse manifest here to have easy access to it from other methods.
+    NotificationRequest requester = getNotification().getNotificationRequest();
+    if (requester instanceof ScopedNotificationRequest) {
+      String experienceIdString = ((ScopedNotificationRequest) requester).getExperienceIdString();
+      ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(experienceIdString);
+      try {
+        manifest = new JSONObject(experience.manifest);
+      } catch (JSONException e) {
+        Log.e("notifications", "Couldn't parse manifest.", e);
+        e.printStackTrace();
+      }
+    }
+
+    return this;
   }
 
   @Override
@@ -34,27 +60,16 @@ public class ScopedExpoNotificationBuilder extends ExpoNotificationBuilder {
 
   @Override
   protected Bitmap getLargeIcon() {
-    NotificationRequest requester = getNotification().getNotificationRequest();
-    if (!(requester instanceof ScopedNotificationRequest)) {
+    if (manifest == null) {
       return super.getLargeIcon();
     }
 
-    String experienceIdString = ((ScopedNotificationRequest) requester).getExperienceIdString();
-    ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(experienceIdString);
-    try {
-      JSONObject manifest = new JSONObject(experience.manifest);
-      JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
-      String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-      if (notificationPreferences != null) {
-        iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY);
-      }
-
-      return mExponentManifest.loadIconBitmapSync(iconUrl);
-    } catch (JSONException e) {
-      Log.e("notifications", "Couldn't parse manifest.", e);
-      e.printStackTrace();
+    JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
+    String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+    if (notificationPreferences != null) {
+      iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY);
     }
 
-    return super.getLargeIcon();
+    return mExponentManifest.loadIconBitmapSync(iconUrl);
   }
 }
