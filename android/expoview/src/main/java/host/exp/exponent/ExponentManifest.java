@@ -12,6 +12,7 @@ import android.os.Debug;
 import android.util.Log;
 import android.util.LruCache;
 
+import androidx.annotation.Nullable;
 import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -597,57 +598,75 @@ public class ExponentManifest {
     return manifest;
   }
 
+
+  public Bitmap loadIconBitmapSync(final String iconUrl) {
+    Bitmap icon = getIconFromCache(iconUrl);
+    if (icon != null) {
+      return icon;
+    }
+
+    return loadIconTask(iconUrl);
+  }
+
   public void loadIconBitmap(final String iconUrl, final BitmapListener listener) {
-    if (iconUrl != null && !iconUrl.isEmpty()) {
-      Bitmap cachedBitmap = mMemoryCache.get(iconUrl);
-      if (cachedBitmap != null) {
-        listener.onLoadBitmap(cachedBitmap);
-        return;
+    Bitmap icon = getIconFromCache(iconUrl);
+    if (icon != null) {
+      listener.onLoadBitmap(icon);
+      return;
+    }
+
+    new AsyncTask<Void, Void, Bitmap>() {
+      @Override
+      protected Bitmap doInBackground(Void... params) {
+        return loadIconTask(iconUrl);
       }
 
-      new AsyncTask<Void, Void, Bitmap>() {
+      @Override
+      protected void onPostExecute(Bitmap result) {
+        listener.onLoadBitmap(result);
+      }
+    }.execute();
+  }
 
-        @Override
-        protected Bitmap doInBackground(Void... params) {
-          try {
-            // TODO: inject shared OkHttp client
-            URL url = new URL(iconUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
+  @Nullable
+  private Bitmap getIconFromCache(final String iconUrl) {
+    if (iconUrl != null && !iconUrl.isEmpty()) {
+      return mMemoryCache.get(iconUrl);
+    }
 
-            Bitmap bitmap = BitmapFactory.decodeStream(input);
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-            if (width <= MAX_BITMAP_SIZE && height <= MAX_BITMAP_SIZE) {
-              mMemoryCache.put(iconUrl, bitmap);
-              return bitmap;
-            }
+    return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+  }
 
-            int maxDimension = Math.max(width, height);
-            float scaledWidth = (((float) width) * MAX_BITMAP_SIZE) / maxDimension;
-            float scaledHeight = (((float) height) * MAX_BITMAP_SIZE) / maxDimension;
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) scaledWidth, (int) scaledHeight, true);
-            mMemoryCache.put(iconUrl, scaledBitmap);
-            return scaledBitmap;
-          } catch (IOException e) {
-            EXL.e(TAG, e);
-            return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-          } catch (Throwable e) {
-            EXL.e(TAG, e);
-            return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-          }
-        }
 
-        @Override
-        protected void onPostExecute(Bitmap result) {
-          listener.onLoadBitmap(result);
-        }
-      }.execute();
-    } else {
-      Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-      listener.onLoadBitmap(bitmap);
+  private Bitmap loadIconTask(final String iconUrl) {
+    try {
+      // TODO: inject shared OkHttp client
+      URL url = new URL(iconUrl);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setDoInput(true);
+      connection.connect();
+      InputStream input = connection.getInputStream();
+
+      Bitmap bitmap = BitmapFactory.decodeStream(input);
+      int width = bitmap.getWidth();
+      int height = bitmap.getHeight();
+      if (width <= MAX_BITMAP_SIZE && height <= MAX_BITMAP_SIZE) {
+        mMemoryCache.put(iconUrl, bitmap);
+        return bitmap;
+      }
+
+      int maxDimension = Math.max(width, height);
+      float scaledWidth = (((float) width) * MAX_BITMAP_SIZE) / maxDimension;
+      float scaledHeight = (((float) height) * MAX_BITMAP_SIZE) / maxDimension;
+      Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) scaledWidth, (int) scaledHeight, true);
+      mMemoryCache.put(iconUrl, scaledBitmap);
+      return scaledBitmap;
+    } catch (IOException e) {
+      EXL.e(TAG, e);
+      return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
+      return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
     }
   }
 
