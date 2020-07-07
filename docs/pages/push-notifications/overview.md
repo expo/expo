@@ -56,7 +56,7 @@ export default function App() {
     return () => {
       Notifications.removeAllNotificationListeners();
     };
-  });
+  }, []);
 
   return (
     <View
