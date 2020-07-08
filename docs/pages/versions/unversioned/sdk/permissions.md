@@ -6,15 +6,41 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-permissio
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-When it comes to adding functionality that can access potentially sensitive information on a user's device, such as their location, or possibly send them possibly unwanted push notifications, you will need to ask the user for their permission first. Unless you've already asked their permission, then no need. And so we have the **`expo-permissions`** module.
+When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. After they granted the permission(s), you can access the data. The `expo-permissions` module makes that possible.
 
-If you are deploying your app to the Apple iTunes Store, you must add additional metadata to your app in order to customize the system permissions dialog, and more importantly, explain why your app requires permissions. **Without this explanation, your app may be rejected from the App Store.** See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
+Please read the [permissions on iOS](#permissions-on-ios) and [permissions on Android](#permissions-on-android) before deploying your app to the stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
 <InstallSection packageName="expo-permissions" />
+
+### Permissions on iOS
+
+To request and use permissions on iOS, you have to describe why the permissions are required. You can do that by defining `ios.infoPlist` property in your [`app.json` manifest](../../workflow/configuration/#ios) in the managed workflow. When using the bare workflow, you have to edit the `infoPlist` file directly.
+
+See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property you need to define for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documented the basic guidelines about the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+
+> **Note:** apps using permissions without descriptions _may be rejected from the App Store_. (see the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios))
+
+### Permissions on Android
+
+To use permissions on Android, they have to be defined in your `AndroidManifest.xml` first. Some Expo and React Native modules imply these permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your `AndroidManifest.xml` when building a standalone app.
+
+You can limit these permissions by defining `android.permissions` property in your [`app.json` manifest](../workflow/configuration/#android) in the managed workflow. Only the minimum required permissions for Expo and the permissions listed in the `android.permissions` array are added. When using the bare workflow, you have to [blacklist permissions in your `AndroidManifest.xml`](#excluding-android-permissions-in-bare-workflow) manually.
+
+See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
+
+> **Note:** apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+
+> **Note:** by default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml`. To exclude permissions, you have to define the `android.permissions` manifest property or [blacklist them in the bare workflow](#excluding-android-permissions-in-bare-workflow).
+
+## Usage
+
+### Manually testing permissions
+
+Often you want to be able to test what happens when you reject a permission to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions, you may need to uninstall and reinstall the Expo app. In the simulator this is as easy as deleting the app and expo-cli will automatically install it again next time you launch the project from it.
 
 ### Usage in bare workflow
 
@@ -36,11 +62,20 @@ The following table shows you which permissions correspond to which packages.
 | `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
 | `MOTION`                    | `expo-sensors`                            |
 
-## Usage
+### Excluding Android permissions in bare workflow
 
-### Manually testing permissions
+When adding Expo and React Native modules to your project, certail Android permissions might be implied. The modules should only add the relevant permissions required to use the module. Sometimes you want to remove some of these permissions. Unfortunately, the `android.permission` manifest property doesn't work in the bare workflow.
 
-Often you want to be able to test what happens when you reject a permission to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions, you may need to uninstall and reinstall the Expo app. In the simulator this is as easy as deleting the app and expo-cli will automatically install it again next time you launch the project from it.
+When you want to exclude specific permissions from the build, you have to "blacklist" them in your `AndroidManifest.xml`. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+
+```xml
+<manifest xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission tools:node="remove" android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>
+```
+
+> **Note:** you have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
+
 
 # API
 
@@ -137,7 +172,7 @@ Prompt the user for types of permissions. If they have already granted access, r
 
 #### Returns
 
-A `Promise` with a [`PermissionResponse`](#permissions-response) object.
+A `Promise` resolving to a [`PermissionResponse`](#permissionresponse) -- an object describing the new state of the permissions, after asking the user.
 
 #### Example
 
@@ -153,59 +188,79 @@ async function getLocationAsync() {
 }
 ```
 
-## Permissions response
+## Types
 
-An object with information about the permissions, including status, expiration, and scope (if applicable).
+### `PermissionResponse`
 
-```javascript
-{
-  status, // combined status of all component permissions being asked for
-  expires, // combined expires of all permissions being asked for, same as status
-  canAskAgain,
-  granted,
+The permission response is an object describing the current state of the requested permission(s). This response contains the top-level `status`, `granted`, `expires` and `canAskAgain` properties representing the outcome for all individual permissions.
+
+```ts
+interface PermissionResponse {
+  status: 'granted' | 'undetermined' | 'denied';
+  granted: boolean;
+  expires: 'never' | number;
+  canAskAgain: boolean;
   permissions: { // an object with an entry for each permission requested
-    [Permissions.TYPE]: {
-      status,
-      expires,
-      canAskAgain,
-      granted,
-      ... // any additional permission-specific fields
-    },
-    ...
-  },
+    [permissionType: string /* PermissionType */]: PermissionInfo;
+  };
 }
 ```
 
-The top-level `status`, `expires`, `granted` and `canAskAgain` keys depend on the values returned for each of the individual permission requests:
+#### PermissionResponse.status
 
-### `status`
+This property is either `granted`, `undetermined` or `denied`, based on the requested permissions. It's reducted using the following rules.
 
-The status represents a combined status of all combined permissions, using the following rules:
+- When one or more permissions are `undetermined`, the status is `undetermined`
+- When one or more permissions are `denied`, but none of them are `undetermined`, the status is `denied`
+- When all permissions are `granted`, the status is `granted`.
 
-- If **one or more permissions** have a `status` of _undetermined_, the top level `status` is _undetermined_.
-- If **one or more permissions** have a `status` of _denied_ and none _undetermined_, then the top level `status` is _denied_.
-- If **all permissions** have a `status` of _granted_, then the top level `status` is _granted_.
+Here are some examples of permission statuses and the top-level status.
 
-Examples for the `status` top level property:
+```
+[granted, granted, granted] => granted
+[granted, granted, denied] => denied
+[denied, denied, denied] => denied
+[granted, granted, undetermined] => undetermined
+[granted, denied, undetermined] => undetermined
+```
 
-- `[granted, undetermined, undetermined] => undetermined`
-- `[granted, denied, undetermined] => undetermined`
-- `[granted, denied, granted] => denied`
-- `[granted, granted, granted] => granted`
+#### PermissionResponse.granted
 
-### `expires`
+This property is set to `true` when all requested permission are granted. If one or more are `denied` or `undetermined`, this is set to `false`.
 
-The top-level `expires` field matches the value of the earliest expiring permission.
+#### PermissionResponse.expires
 
-### `granted`
+This property is set to the permission that expires the earliest. When none of the requested permissions expires, it's set to `never`.
 
-If every single permission has a `status` of _granted_, then the top level `granted` field is `true`. Otherwise, it is `false`.
+#### PermissionResponse.canAskAgain
 
-### `canAskAgain`
+This property is set to `true` when the app can request the user to grant all requested permissions.
 
-If every single permission can be asked again, then the top level is `true`. Otherwise, it is `false`.
+#### PermissionResponse.permissions
 
-## Permissions types
+This object contains information, per requested permission, using the [`PermissionInfo`](#permissioninfo) type.
+
+
+### `PermissionInfo`
+
+This object contains information about a single requested permission, it's retuned within the `PermissionResponse` using the `permissions` property. It also may include additional platform-specific info, like the scope of the permission.
+
+```ts
+interface PermissionInfo {
+  status: 'granted' | 'undetermined' | 'denied';
+  granted: boolean;
+  expires: 'never' | number;
+  canAskAgain: boolean;
+  ios?: {
+    scope: 'whenInUse' | 'always';
+  };
+  android?: {
+    scope: 'fine' | 'coarse' | 'none';
+  };
+}
+```
+
+## Permission types
 
 ### `Permissions.NOTIFICATIONS`
 
@@ -287,32 +342,3 @@ The permissions type for changing brightness of the screen
 ### `Permissions.MOTION`
 
 The permission for accessing `DeviceMotion` and `DeviceOrientation` in the web browser. This can only be requested from a website using HTTPS (`expo web --https`). This permission cannot be silently retrieved, you can only request it. This permission can only be requested with a user interaction i.e. a button press.
-
-## Android: permissions equivalents inside `app.json`
-
-In order to request permissions in a standalone Android app (Managed Workflow only), you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Permissions` values and native permission types is as follows:
-
-| Expo            | Android                                       |
-| --------------- | --------------------------------------------- |
-| LOCATION        | ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION  |
-| CAMERA          | CAMERA                                        |
-| AUDIO_RECORDING | RECORD_AUDIO                                  |
-| CONTACTS        | READ_CONTACTS                                 |
-| CAMERA_ROLL     | READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE |
-| CALENDAR        | READ_CALENDAR, WRITE_CALENDAR                 |
-
-For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in `app.json`.
-
-> **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require all of the permissions listed above.
-
-## Types
-
-### `PermissionResponse`
-
-| Field name  | Type                       | Description                                                                                                                                                                                    |
-| ----------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| status      | _string_                   | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
-| granted     | _boolean_                  | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
-| canAskAgain | _boolean_                  | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
-| ios         | depends on permission type | Additional detail on iOS (**optional**)                                                                                                                                                        |
-| android     | depends on permission type | Additional detail on Android (**optional**)                                                                                                                                                    |
