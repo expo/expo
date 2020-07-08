@@ -9,6 +9,8 @@ The following is a list of properties that are available for you under the `"exp
 
 For more general information on App Configuration, check out our introductory [guide](/workflow/configuration/).
 
+> 👉 **ExpoKit Update:** Note that ExpoKit is deprecated and will no longer be supported after SDK 38.
+
 ## Properties
 
 <AppConfigSchemaPropertiesTable schema={schema}/>
