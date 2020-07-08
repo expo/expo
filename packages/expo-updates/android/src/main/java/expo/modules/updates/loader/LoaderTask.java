@@ -30,7 +30,7 @@ public class LoaderTask {
   private static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
   private static final String UPDATE_ERROR_EVENT = "error";
 
-  interface LoaderTaskCallback {
+  public interface LoaderTaskCallback {
     void onFailure(Exception e);
     void onManifestLoaded(Manifest manifest);
     void onSuccess(Launcher launcher);
@@ -101,7 +101,7 @@ public class LoaderTask {
         // What to do in this case depends on whether or not we're trying to load a remote update.
         // If we are, then we should wait for the task to finish. If not, we need to fail here.
         if (!shouldCheckForUpdate) {
-          finish();
+          finish(e);
         }
         Log.e(TAG, "Failed to launch embedded or launchable update", e);
       }
@@ -119,12 +119,12 @@ public class LoaderTask {
       launchRemoteUpdateInBackground(context, new Callback() {
         @Override
         public void onFailure(Exception e) {
-          finish();
+          finish(e);
         }
 
         @Override
         public void onSuccess() {
-          finish();
+          finish(null);
         }
       });
     }
@@ -135,14 +135,14 @@ public class LoaderTask {
    * successfully loaded an update to launch, the timer will stop and the appropriate callback
    * function will be fired.
    */
-  private synchronized void finish() {
+  private synchronized void finish(@Nullable Exception e) {
     if (mHasLaunched) {
       // we've already fired once, don't do it again
     }
     mHasLaunched = true;
 
     if (!mIsReadyToLaunch || mLauncher == null) {
-      mCallback.onFailure(new Exception("LoaderTask encountered an unexpected error and could not launch an update."));
+      mCallback.onFailure(e != null ? e : new Exception("LoaderTask encountered an unexpected error and could not launch an update."));
     } else {
       mCallback.onSuccess(mLauncher);
     }
@@ -162,7 +162,7 @@ public class LoaderTask {
       // too early, bail out
       return;
     }
-    finish();
+    finish(null);
   }
 
   private synchronized void stopTimer() {
