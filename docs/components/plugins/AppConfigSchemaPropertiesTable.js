@@ -4,9 +4,15 @@ import { InlineCode } from '~/components/base/code';
 import MDX from '@mdx-js/runtime';
 import * as components from '~/common/translate-markdown';
 
+import { expoColors } from '~/common/constants';
+
 const STYLES_TABLE = css`
   font-size: 1rem;
   margin-top: 24px;
+`;
+
+const STYLES_HEAD = css`
+  background-color: ${expoColors.gray[100]};
 `;
 
 const STYLES_DESCRIPTION_CELL = css`
@@ -14,8 +20,19 @@ const STYLES_DESCRIPTION_CELL = css`
   white-space: break-spaces;
 `;
 
+function formatSchema(rawSchema) {
+  var formattedSchema = [];
+
+  //appends each schema property (each index will become a tablerow)
+  rawSchema.map(property => {
+    appendProperty(formattedSchema, property, 0);
+  });
+
+  return formattedSchema;
+}
+
 //appends a property and recursivley calls itself to append sub-properties, accounting for nested "level"
-function appendProp(formattedSchema, property, _level) {
+function appendProperty(formattedSchema, property, _level) {
   let level = _level;
   const propertyKey = property[0];
   const propertyValue = property[1];
@@ -27,10 +44,10 @@ function appendProp(formattedSchema, property, _level) {
 
   //append passed-in property
   formattedSchema.push({
-    //The ` quotes are for markdown highlighting, and #### is to apply anchor linking only on top-level properties
+    //The ` backticks are for markdown highlighting, and #### is to apply anchor linking only on top-level properties
     name: level ? `\`${propertyKey}\`` : `#### \`${propertyKey}\``,
     type: propertyValue.enum ? 'enum' : propertyValue.type,
-    description: smartlyCreateDescription(property),
+    description: createDescription(property),
     level: level,
   });
 
@@ -40,17 +57,17 @@ function appendProp(formattedSchema, property, _level) {
   //recursively apply appending logic for each sub-property (if any) -> Note: sub-props are sometimes nested within "items"
   if (propertyValue.properties) {
     Object.entries(propertyValue.properties).forEach(subproperty => {
-      appendProp(formattedSchema, subproperty, level);
+      appendProperty(formattedSchema, subproperty, level);
     });
   } else if (propertyValue.items && propertyValue.items.properties) {
     Object.entries(propertyValue.items.properties).forEach(subproperty => {
-      appendProp(formattedSchema, subproperty, level);
+      appendProperty(formattedSchema, subproperty, level);
     });
   }
 }
 
 //setting up a property's formatted description value, with all the possible extra values
-function smartlyCreateDescription(property) {
+function createDescription(property) {
   const propertyValue = property[1];
 
   var propertyDescription = propertyValue.description;
@@ -64,26 +81,24 @@ function smartlyCreateDescription(property) {
     propertyDescription += `\n` + `>**ExpoKit**: ` + propertyValue.meta.expoKit;
   }
   if (propertyValue.meta && propertyValue.meta.bareWorkflow) {
+    if (propertyValue.meta.expoKit || propertyValue.exampleString) {
+      propertyDescription += `\n`;
+    }
     propertyDescription += `\n` + `>**Bare workflow**: ` + propertyValue.meta.bareWorkflow;
   }
 
   return propertyDescription;
 }
 
-export default class AppConfigPropsTable extends React.Component {
+export default class AppConfigSchemaPropertiesTable extends React.Component {
   render() {
     var rawSchema = Object.entries(this.props.schema);
-    var formattedSchema = [];
-
-    //appends each schema property (each index will become a tablerow)
-    rawSchema.map(property => {
-      appendProp(formattedSchema, property, 0);
-    });
+    var formattedSchema = formatSchema(rawSchema);
 
     return (
       <div>
         <table className={STYLES_TABLE}>
-          <thead>
+          <thead className={STYLES_HEAD}>
             <tr>
               <td>Property</td>
               <td>Type</td>
@@ -96,7 +111,7 @@ export default class AppConfigPropsTable extends React.Component {
                 <tr key={index}>
                   <td>
                     <div
-                      data-testid={property.name.match(/[a-zA-Z]+/g)}
+                      data-testid={property.name}
                       style={{
                         marginLeft: `${12 + property.level * 32}px`,
                         display: property.level ? 'list-item' : 'block',
@@ -108,7 +123,7 @@ export default class AppConfigPropsTable extends React.Component {
                     </div>
                   </td>
                   <td>
-                    <InlineCode>{property.type.toString()}</InlineCode>
+                    <InlineCode>{property.type && property.type.toString()}</InlineCode>
                   </td>
                   <td className={STYLES_DESCRIPTION_CELL}>
                     <MDX components={components}>{property.description}</MDX>

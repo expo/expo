@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import AppConfigPropsTable from './AppConfigPropsTable';
+import AppConfigSchemaPropertiesTable from './AppConfigSchemaPropertiesTable';
 import { SluggerContext } from '~/components/page-higher-order/withSlugger';
 import GithubSlugger from 'github-slugger';
 
@@ -81,7 +81,7 @@ var testSchema = {
 test('correct property and subproperty indent styling', () => {
   const { getByTestId } = render(
     <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppConfigPropsTable schema={testSchema} />
+      <AppConfigSchemaPropertiesTable schema={testSchema} />
     </SluggerContext.Provider>
   );
 
@@ -110,37 +110,38 @@ test('correct property and subproperty indent styling', () => {
   `;
 
   //level-0 property
-  expect(getByTestId('name')).toHaveStyle(level_0_style);
+  //the #### is added to link this property name by markdown and included in the data-testid
+  expect(getByTestId('#### `name`')).toHaveStyle(level_0_style);
 
   //level-0 property
-  expect(getByTestId('androidNavigationBar')).toHaveStyle(level_0_style);
+  expect(getByTestId('#### `androidNavigationBar`')).toHaveStyle(level_0_style);
 
   //level-1 subproperty
-  expect(getByTestId('visible')).toHaveStyle(level_1_style);
+  expect(getByTestId('`visible`')).toHaveStyle(level_1_style);
 
   //level-2 subproperty
-  expect(getByTestId('always')).toHaveStyle(level_2_style);
+  expect(getByTestId('`always`')).toHaveStyle(level_2_style);
 
   //level-1 subproperty
-  expect(getByTestId('backgroundColor')).toHaveStyle(level_1_style);
+  expect(getByTestId('`backgroundColor`')).toHaveStyle(level_1_style);
 
   //level-0 property
-  expect(getByTestId('intentFilters')).toHaveStyle(level_0_style);
+  expect(getByTestId('#### `intentFilters`')).toHaveStyle(level_0_style);
 
   //level-1 subproperty
-  expect(getByTestId('autoVerify')).toHaveStyle(level_1_style);
+  expect(getByTestId('`autoVerify`')).toHaveStyle(level_1_style);
 
   //level-1 subproperty
-  expect(getByTestId('data')).toHaveStyle(level_1_style);
+  expect(getByTestId('`data`')).toHaveStyle(level_1_style);
 
   //level-2 subproperty
-  expect(getByTestId('host')).toHaveStyle(level_2_style);
+  expect(getByTestId('`host`')).toHaveStyle(level_2_style);
 });
 
 test('correct description add-ons (bareWorkflow, regexHuman, etc.)', () => {
   const { container } = render(
     <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppConfigPropsTable schema={testSchema} />
+      <AppConfigSchemaPropertiesTable schema={testSchema} />
     </SluggerContext.Provider>
   );
 
@@ -161,7 +162,7 @@ test('correct description add-ons (bareWorkflow, regexHuman, etc.)', () => {
 test('correct enum type value', () => {
   const { container } = render(
     <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppConfigPropsTable schema={testSchema} />
+      <AppConfigSchemaPropertiesTable schema={testSchema} />
     </SluggerContext.Provider>
   );
 
