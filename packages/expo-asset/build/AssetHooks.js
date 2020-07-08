@@ -22,7 +22,7 @@ export function useAssets(moduleIds) {
         Asset.loadAsync(moduleIds)
             .then(setAssets)
             .catch(setError);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
     return [assets, error];
 }
 //# sourceMappingURL=AssetHooks.js.map
