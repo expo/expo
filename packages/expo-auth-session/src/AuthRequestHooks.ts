@@ -50,31 +50,26 @@ export function useAuthRequest(
       setResult(result);
       return result;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [request?.url, discovery?.authorizationEndpoint]
   );
 
-  useEffect(
-    () => {
-      if (discovery) {
-        const request = new AuthRequest(config);
-        request.makeAuthUrlAsync(discovery).then(() => setRequest(request));
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      discovery?.authorizationEndpoint,
-      config.clientId,
-      config.redirectUri,
-      config.prompt,
-      config.scopes.join(','), // eslint-disable-line react-hooks/exhaustive-deps
-      config.clientSecret,
-      config.codeChallenge,
-      config.state,
-      JSON.stringify(config.extraParams || {}), // eslint-disable-line react-hooks/exhaustive-deps
-      config.usePKCE,
-    ]
-  );
+  useEffect(() => {
+    if (discovery) {
+      const request = new AuthRequest(config);
+      request.makeAuthUrlAsync(discovery).then(() => setRequest(request));
+    }
+  }, [
+    discovery?.authorizationEndpoint,
+    config.clientId,
+    config.redirectUri,
+    config.prompt,
+    config.scopes.join(','),
+    config.clientSecret,
+    config.codeChallenge,
+    config.state,
+    JSON.stringify(config.extraParams || {}),
+    config.usePKCE,
+  ]);
 
   return [request, result, promptAsync];
 }

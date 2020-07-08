@@ -23,7 +23,7 @@ export function useFonts(
     loadAsync(map)
       .then(() => setLoaded(true))
       .catch(setError);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return [loaded, error];
 }
