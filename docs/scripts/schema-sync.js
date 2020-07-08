@@ -4,10 +4,8 @@ let fsExtra = require('fs-extra');
 let version = process.argv[2];
 
 if (version === 'unversioned') {
-  let latest = '38';
-
   axios
-    .get(`http://exp.host/--/api/v2/project/configuration/schema/${latest}.0.0`)
+    .get(`http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`)
     .then(async ({ data }) => {
       await fsExtra.writeFile(
         `./pages/versions/unversioned/app-config-schema.js`,
