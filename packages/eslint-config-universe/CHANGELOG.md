@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 4.0.0 — 2020-07-08
+
+### 🐛 Bug fixes
+
 # 4.0.0 - 2020-07-08
 
 ### 🛠 Breaking changes
@@ -20,8 +24,6 @@
 - Added `react-hooks/rules-of-hooks` (`react-hooks/exhaustive-deps` is turned off; enable it in your own project if desired).
 - Disable `react/style-prop-object` lint rule.
 - Support ESLint v7.
-
-### 🐛 Bug fixes
 
 ## 3.0.2 — 2020-05-27
 
