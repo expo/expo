@@ -1,8 +1,8 @@
 ---
-title: Configuration with app.json
+title: Configuration with app.json (or app.config.js/app.config.ts)
 ---
 
-`app.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`. It looks something like this:
+`app.json` (or app.config.js/app.config.ts) is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`. It looks something like this:
 
 ```javascript
 {
