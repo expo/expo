@@ -2,10 +2,10 @@ package expo.modules.notifications.notifications.channels;
 
 import android.app.NotificationChannelGroup;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 
 import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
@@ -13,10 +13,8 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationManagerCompat;
+import expo.modules.notifications.notifications.channels.managers.NotificationsChannelGroupManager;
 
-import static expo.modules.notifications.notifications.channels.NotificationChannelGroupSerializer.DESCRIPTION_KEY;
 import static expo.modules.notifications.notifications.channels.NotificationChannelGroupSerializer.NAME_KEY;
 import static expo.modules.notifications.notifications.channels.NotificationChannelGroupSerializer.toBundle;
 
@@ -26,11 +24,15 @@ import static expo.modules.notifications.notifications.channels.NotificationChan
 public class NotificationChannelGroupManagerModule extends ExportedModule {
   private final static String EXPORTED_NAME = "ExpoNotificationChannelGroupManager";
 
-  private final NotificationManagerCompat mNotificationManager;
+  private NotificationsChannelGroupManager mNotificationManager;
 
   public NotificationChannelGroupManagerModule(Context context) {
     super(context);
-    mNotificationManager = NotificationManagerCompat.from(context);
+  }
+
+  @Override
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    mNotificationManager = moduleRegistry.getModule(NotificationsChannelGroupManager.class);
   }
 
   @Override
@@ -71,10 +73,7 @@ public class NotificationChannelGroupManagerModule extends ExportedModule {
       return;
     }
 
-    NotificationChannelGroup group = new NotificationChannelGroup(groupId, getNameFromOptions(groupOptions));
-    configureGroupWithOptions(group, groupOptions);
-
-    mNotificationManager.createNotificationChannelGroup(group);
+    NotificationChannelGroup group = mNotificationManager.createNotificationChannelGroup(groupId, getNameFromOptions(groupOptions), groupOptions);
     promise.resolve(toBundle(group));
   }
 
@@ -89,22 +88,8 @@ public class NotificationChannelGroupManagerModule extends ExportedModule {
     promise.resolve(null);
   }
 
-  // Processing options
 
   protected CharSequence getNameFromOptions(ReadableArguments groupOptions) {
     return groupOptions.getString(NAME_KEY);
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.O)
-  protected void configureGroupWithOptions(Object maybeGroup, ReadableArguments groupOptions) {
-    if (!(maybeGroup instanceof NotificationChannelGroup)) {
-      return;
-    }
-    NotificationChannelGroup group = (NotificationChannelGroup) maybeGroup;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      if (groupOptions.containsKey(DESCRIPTION_KEY)) {
-        group.setDescription(groupOptions.getString(DESCRIPTION_KEY));
-      }
-    }
   }
 }

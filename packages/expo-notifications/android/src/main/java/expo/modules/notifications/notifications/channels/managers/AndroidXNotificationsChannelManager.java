@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.channels.manager;
+package expo.modules.notifications.notifications.channels.managers;
 
 import android.app.NotificationChannel;
 import android.content.Context;
@@ -9,7 +9,9 @@ import android.os.Build;
 import android.provider.Settings;
 
 import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.InternalModule;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -39,15 +41,20 @@ import static expo.modules.notifications.notifications.channels.NotificationChan
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SOUND_KEY;
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.VIBRATION_PATTERN_KEY;
 
-public class AndroidXNotificationsChannelManager implements NotificationsChannelManager {
-
+public class AndroidXNotificationsChannelManager implements NotificationsChannelManager, InternalModule {
   private final NotificationManagerCompat mNotificationManager;
   private final SoundResolver mSoundResolver;
 
-  public AndroidXNotificationsChannelManager(Context context, SoundResolver soundResolver) {
+  public AndroidXNotificationsChannelManager(Context context) {
     mNotificationManager = NotificationManagerCompat.from(context);
-    mSoundResolver = soundResolver;
+    mSoundResolver = new SoundResolver(context);
   }
+
+  @Override
+  public List<? extends Class> getExportedInterfaces() {
+    return Collections.singletonList(NotificationsChannelManager.class);
+  }
+
 
   @Nullable
   @Override

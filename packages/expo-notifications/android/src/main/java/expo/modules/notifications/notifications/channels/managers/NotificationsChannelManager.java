@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.channels.manager;
+package expo.modules.notifications.notifications.channels.managers;
 
 import android.app.NotificationChannel;
 import android.os.Build;

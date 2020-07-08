@@ -4,9 +4,11 @@ import android.content.Context;
 
 import org.unimodules.core.BasePackage;
 import org.unimodules.core.ExportedModule;
+import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import expo.modules.notifications.badge.BadgeModule;
@@ -16,7 +18,8 @@ import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.SoundResolver;
 import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule;
 import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule;
-import expo.modules.notifications.notifications.channels.manager.AndroidXNotificationsChannelManager;
+import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
+import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
@@ -36,7 +39,7 @@ public class NotificationsPackage extends BasePackage {
         new NotificationScheduler(context),
         new InstallationIdProvider(context),
         new NotificationPermissionsModule(context),
-        new NotificationChannelManagerModule(context, new AndroidXNotificationsChannelManager(context, new SoundResolver(context))),
+        new NotificationChannelManagerModule(context),
         new ExpoNotificationPresentationModule(context),
         new NotificationChannelGroupManagerModule(context)
     );
@@ -48,6 +51,14 @@ public class NotificationsPackage extends BasePackage {
         new PushTokenManager(),
         new NotificationManager(),
         new ExpoBadgeManager(context)
+    );
+  }
+
+  @Override
+  public List<InternalModule> createInternalModules(Context context) {
+    return Arrays.asList(
+      new AndroidXNotificationsChannelManager(context),
+      new AndroidXNotificationsChannelGroupManager(context)
     );
   }
 }

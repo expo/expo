@@ -15,8 +15,10 @@ import java.util.Map;
 
 import expo.modules.notifications.notifications.SoundResolver;
 import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule;
+import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsChannelManager;
+import host.exp.exponent.notifications.ScopedNotificationsGroupManager;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule;
@@ -78,7 +80,11 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new NotificationChannelManagerModule(scopedContext, new ScopedNotificationsChannelManager(scopedContext, new SoundResolver(scopedContext), experienceId)));
+    if (!Constants.isStandaloneApp()) {
+      // We scoped channels and groups only in the client.
+      moduleRegistry.registerInternalModule(new ScopedNotificationsChannelManager(scopedContext, experienceId));
+      moduleRegistry.registerInternalModule(new ScopedNotificationsGroupManager(scopedContext, experienceId));
+    }
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();

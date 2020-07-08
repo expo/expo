@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.RequiresApi;
-import expo.modules.notifications.notifications.channels.manager.NotificationsChannelManager;
+import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
 import expo.modules.notifications.notifications.enums.NotificationImportance;
 
 import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.IMPORTANCE_KEY;
@@ -29,11 +30,15 @@ import static expo.modules.notifications.notifications.channels.NotificationChan
 public class NotificationChannelManagerModule extends ExportedModule {
   private final static String EXPORTED_NAME = "ExpoNotificationChannelManager";
 
-  private final NotificationsChannelManager mChannelManager;
+  private NotificationsChannelManager mChannelManager;
 
-  public NotificationChannelManagerModule(Context context, NotificationsChannelManager channelManager) {
+  public NotificationChannelManagerModule(Context context) {
     super(context);
-    mChannelManager = channelManager;
+  }
+
+  @Override
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    mChannelManager = moduleRegistry.getModule(NotificationsChannelManager.class);
   }
 
   @Override
