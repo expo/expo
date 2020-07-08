@@ -13,8 +13,10 @@ import expo.modules.notifications.badge.BadgeModule;
 import expo.modules.notifications.badge.ExpoBadgeManager;
 import expo.modules.notifications.installationid.InstallationIdProvider;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.SoundResolver;
 import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule;
 import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule;
+import expo.modules.notifications.notifications.channels.manager.AndroidXNotificationsChannelManager;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
@@ -34,7 +36,7 @@ public class NotificationsPackage extends BasePackage {
         new NotificationScheduler(context),
         new InstallationIdProvider(context),
         new NotificationPermissionsModule(context),
-        new NotificationChannelManagerModule(context),
+        new NotificationChannelManagerModule(context, new AndroidXNotificationsChannelManager(context, new SoundResolver(context))),
         new ExpoNotificationPresentationModule(context),
         new NotificationChannelGroupManagerModule(context)
     );
