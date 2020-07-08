@@ -4,6 +4,7 @@ import android.os.Parcel;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 /**
@@ -45,4 +46,13 @@ public class FirebaseNotificationTrigger implements NotificationTrigger {
       return new FirebaseNotificationTrigger[size];
     }
   };
+
+  @Nullable
+  @Override
+  public String getNotificationChannel() {
+    if (getRemoteMessage().getData().containsKey("channelId")) {
+      return getRemoteMessage().getData().get("channelId");
+    }
+    return NotificationTrigger.super.getNotificationChannel();
+  }
 }

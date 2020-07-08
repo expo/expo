@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -44,16 +45,28 @@ public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBu
     }
 
     NotificationTrigger trigger = getTrigger();
-    if (!(trigger instanceof FirebaseNotificationTrigger)) {
+    if (trigger == null) {
+      Log.e("notifications", String.format("Couldn't get channel for the notifications - trigger is 'null'. Fallback to '%s' channel", FALLBACK_CHANNEL_ID));
       return getFallbackNotificationChannel().getId();
     }
 
-    FirebaseNotificationTrigger firebaseNotificationTrigger = (FirebaseNotificationTrigger) trigger;
-    if (firebaseNotificationTrigger.getRemoteMessage().getData().containsKey("channelId")) {
-      return firebaseNotificationTrigger.getRemoteMessage().getData().get("channelId");
+    NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    if (manager == null) {
+      Log.e("notifications", String.format("Couldn't get channel for the notifications - manager is 'null'. Fallback to '%s' channel", FALLBACK_CHANNEL_ID));
+      return getFallbackNotificationChannel().getId();
     }
 
-    return getFallbackNotificationChannel().getId();
+    String channelId = trigger.getNotificationChannel();
+    if (channelId == null) {
+      return getFallbackNotificationChannel().getId();
+    }
+
+    if (manager.getNotificationChannel(channelId) == null) {
+      Log.e("notifications", String.format("Channel '%s' doesn't exists. Fallback to '%s' channel", channelId, FALLBACK_CHANNEL_ID));
+      return getFallbackNotificationChannel().getId();
+    }
+
+    return channelId;
   }
 
   /**
