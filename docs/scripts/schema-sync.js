@@ -1,3 +1,10 @@
+/*
+This script updates the necessary schema for the passed-in version.
+
+yarn run schema-sync 38 -> updates the schema that versions/v38.0.0/sdk/app-config.md uses
+yarn run schema-sync unversioned -> updates the schema that versions/unversioned/sdk/app-config.md uses
+*/
+
 const axios = require('axios');
 let fsExtra = require('fs-extra');
 
