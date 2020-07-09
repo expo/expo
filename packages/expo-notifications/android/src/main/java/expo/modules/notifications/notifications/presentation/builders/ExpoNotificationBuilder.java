@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -26,6 +28,7 @@ import static expo.modules.notifications.notifications.service.NotificationRespo
  */
 public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
   public static final String META_DATA_DEFAULT_ICON_KEY = "expo.modules.notifications.default_notification_icon";
+  public static final String META_DATA_LARGE_ICON_KEY = "expo.modules.notifications.large_notification_icon";
   public static final String META_DATA_DEFAULT_COLOR_KEY = "expo.modules.notifications.default_notification_color";
   public static final String EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY = "expo.notification_request";
   private static final String EXTRAS_BODY_KEY = "body";
@@ -39,6 +42,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
   protected NotificationCompat.Builder createBuilder() {
     NotificationCompat.Builder builder = super.createBuilder();
     builder.setSmallIcon(getIcon());
+    builder.setLargeIcon(getLargeIcon());
     builder.setPriority(getPriority());
 
     NotificationContent content = getNotificationContent();
@@ -199,9 +203,9 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
       // ...or by setting min/max values for priority:
       // If the notification has no priority set, let's pick a neutral value and depend solely on the behavior.
       int requestPriorityValue =
-          requestPriority != null
-              ? requestPriority.getNativeValue()
-              : NotificationPriority.DEFAULT.getNativeValue();
+        requestPriority != null
+          ? requestPriority.getNativeValue()
+          : NotificationPriority.DEFAULT.getNativeValue();
 
       if (getNotificationBehavior().shouldShowAlert()) {
         // Display as a heads-up notification, as per the behavior
@@ -221,6 +225,26 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
     // By default let's show the notification
     return NotificationCompat.PRIORITY_HIGH;
+  }
+
+  /**
+   * The method first tries to get the large icon from the manifest's meta-data {@link #META_DATA_DEFAULT_ICON_KEY}.
+   * If a custom setting is not found, the method falls back to null.
+   *
+   * @return Bitmap containing larger icon or null if a custom settings was not provided.
+   */
+  @Nullable
+  protected Bitmap getLargeIcon() {
+    try {
+      ApplicationInfo ai = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+      if (ai.metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
+        int resourceId = ai.metaData.getInt(META_DATA_LARGE_ICON_KEY);
+        return BitmapFactory.decodeResource(getContext().getResources(), resourceId);
+      }
+    } catch (PackageManager.NameNotFoundException | ClassCastException e) {
+      Log.e("expo-notifications", "Could not have fetched large notification icon.");
+    }
+    return null;
   }
 
   /**
