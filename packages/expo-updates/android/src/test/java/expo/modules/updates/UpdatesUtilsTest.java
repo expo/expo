@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 
 public class UpdatesUtilsTest {
   @Test
-  public void createFilenameForAsset() {
+  public void testCreateFilenameForAsset() {
     AssetEntity assetEntity = new AssetEntity("key", "png");
     Assert.assertEquals("key", UpdatesUtils.createFilenameForAsset(assetEntity));
 
@@ -27,7 +27,7 @@ public class UpdatesUtilsTest {
   }
 
   @Test
-  public void getRuntimeVersion() {
+  public void testGetRuntimeVersion() {
     UpdatesConfiguration sdkOnlyConfig = mock(UpdatesConfiguration.class);
     when(sdkOnlyConfig.getSdkVersion()).thenReturn("38.0.0");
     when(sdkOnlyConfig.getRuntimeVersion()).thenReturn(null);
@@ -46,7 +46,7 @@ public class UpdatesUtilsTest {
   }
 
   @Test(expected = AssertionError.class)
-  public void getRuntimeVersion_neitherDefined() {
+  public void testGetRuntimeVersion_neitherDefined() {
     // should throw if neither are specified
     UpdatesConfiguration neitherConfig = mock(UpdatesConfiguration.class);
     when(neitherConfig.getSdkVersion()).thenReturn(null);
