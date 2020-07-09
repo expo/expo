@@ -1160,8 +1160,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 36c50c5316c42f9eed14b552bed8b1ba
-      Release: 36c50c5316c42f9eed14b552bed8b1ba
+      Debug: 487fbf5467fd0e479571760f7c0ca7fa
+      Release: 487fbf5467fd0e479571760f7c0ca7fa
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1171,8 +1171,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c76680ccea079068ed88c4cec6d12dfe
-      Release: c76680ccea079068ed88c4cec6d12dfe
+      Debug: b09fd15fac79c2cfc0331bc606e1a5d8
+      Release: b09fd15fac79c2cfc0331bc606e1a5d8
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -2309,6 +2309,148 @@ CACHE_KEYS:
     PROJECT_NAME: RNScreens
     SPECS:
       - RNScreens (2.8.0)
+  RNSVG:
+    BUILD_SETTINGS_CHECKSUM:
+      RNSVG:
+        :debug: 866c2cb09710d849891ca739d49e4e9c
+        :release: 866c2cb09710d849891ca739d49e4e9c
+    CHECKSUM: ce9d996113475209013317e48b05c21ee988d42e
+    FILES:
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGBrushType.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGContextBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGContextBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainter.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainter.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainterBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainterBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGSolidColorBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGSolidColorBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGClipPath.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGClipPath.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGDefs.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGDefs.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGForeignObject.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGForeignObject.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGGroup.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGGroup.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGImage.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGImage.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGLinearGradient.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGLinearGradient.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMarker.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMarker.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMask.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMask.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPath.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPath.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPattern.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPattern.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGRadialGradient.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGRadialGradient.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSvgView.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSvgView.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSymbol.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSymbol.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGUse.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGUse.m"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGContainer.h"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGNode.h"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGNode.m"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGRenderable.h"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGRenderable.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGCircle.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGCircle.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGEllipse.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGEllipse.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGLine.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGLine.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGRect.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGRect.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGFontData.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGFontData.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGGlyphContext.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGGlyphContext.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGPropHelper.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGPropHelper.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGText.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGText.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextPath.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextPath.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextProperties.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextProperties.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTSpan.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTSpan.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RCTConvert+RNSVG.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RCTConvert+RNSVG.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGBezierElement.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGBezierElement.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGCGFCRule.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGLength.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGLength.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGMarkerPosition.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGMarkerPosition.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathMeasure.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathMeasure.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathParser.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathParser.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGUnits.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGVBMOS.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGVectorEffect.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGViewBox.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGViewBox.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGCircleManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGCircleManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGClipPathManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGClipPathManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGDefsManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGDefsManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGEllipseManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGEllipseManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGForeignObjectManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGForeignObjectManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGGroupManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGGroupManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGImageManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGImageManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLinearGradientManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLinearGradientManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLineManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLineManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMarkerManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMarkerManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMaskManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMaskManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGNodeManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGNodeManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPathManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPathManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPatternManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPatternManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRadialGradientManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRadialGradientManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRectManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRectManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRenderableManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRenderableManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSvgViewManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSvgViewManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSymbolManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSymbolManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextPathManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextPathManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTSpanManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTSpanManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGUseManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGUseManager.m"
+      - "../../../../node_modules/react-native-svg/LICENSE"
+      - "../../../../node_modules/react-native-svg/README.md"
+    PROJECT_NAME: RNSVG
+    SPECS:
+      - RNSVG (12.1.0)
   SDWebImage:
     BUILD_SETTINGS_CHECKSUM:
       SDWebImage:

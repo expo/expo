@@ -101,6 +101,7 @@
     "react-native-reanimated": "~1.9.0",
     "react-native-safe-area-context": "3.0.2",
     "react-native-screens": "~2.8.0",
+    "react-native-svg": "12.1.0",
     "react-native-unimodules": "~0.10.1",
     "test-suite": "*"
   },

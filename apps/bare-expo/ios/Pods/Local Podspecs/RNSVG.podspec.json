@@ -1,0 +1,23 @@
+{
+  "name": "RNSVG",
+  "version": "12.1.0",
+  "summary": "SVG library for react-native",
+  "license": "MIT",
+  "homepage": "https://github.com/react-native-community/react-native-svg",
+  "authors": "Horcrux Chen",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source": {
+    "git": "https://github.com/react-native-community/react-native-svg.git",
+    "tag": "v12.1.0"
+  },
+  "source_files": "ios/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "React": [
+
+    ]
+  }
+}
