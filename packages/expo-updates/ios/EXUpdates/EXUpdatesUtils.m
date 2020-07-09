@@ -2,7 +2,6 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <arpa/inet.h>
@@ -74,9 +73,8 @@ static NSString * const kEXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }
 }
 
-+ (BOOL)shouldCheckForUpdate
++ (BOOL)shouldCheckForUpdateWithConfig:(EXUpdatesConfig *)config
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig sharedInstance];
   switch (config.checkOnLaunch) {
     case EXUpdatesCheckAutomaticallyConfigNever:
       return NO;
@@ -98,9 +96,9 @@ static NSString * const kEXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }
 }
 
-+ (NSString *)getRuntimeVersion
++ (NSString *)getRuntimeVersionWithConfig:(EXUpdatesConfig *)config
 {
-  return EXUpdatesConfig.sharedInstance.runtimeVersion ?: EXUpdatesConfig.sharedInstance.sdkVersion;
+  return config.runtimeVersion ?: config.sdkVersion;
 }
 
 @end
