@@ -370,6 +370,10 @@ react-native-appearance:
   LABEL: react-native-appearance
   PROJECT_PATH: react-native-appearance.xcodeproj
   UUID: A6256F4276AA88FDEAAA83D3F4FEBA89
+react-native-netinfo:
+  LABEL: react-native-netinfo
+  PROJECT_PATH: react-native-netinfo.xcodeproj
+  UUID: 0C0919986EFBF5011021A24B7EA0C60C
 react-native-safe-area-context:
   LABEL: react-native-safe-area-context
   PROJECT_PATH: react-native-safe-area-context.xcodeproj

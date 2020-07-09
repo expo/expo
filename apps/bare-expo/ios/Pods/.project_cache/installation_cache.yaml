@@ -1150,8 +1150,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4fb39190f6524eb721bfd2c9d4622751
-      Release: 4fb39190f6524eb721bfd2c9d4622751
+      Debug: 321f0aae42d5490d389f63c7d4cedde2
+      Release: 321f0aae42d5490d389f63c7d4cedde2
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1161,8 +1161,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1c5b3a773f4b08d166adcd2fd330d7d7
-      Release: 1c5b3a773f4b08d166adcd2fd330d7d7
+      Debug: ad79ef09ca568cddec2226376026fb55
+      Release: ad79ef09ca568cddec2226376026fb55
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -1744,6 +1744,24 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-appearance
     SPECS:
       - react-native-appearance (0.3.4)
+  react-native-netinfo:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-netinfo:
+        :debug: 8d862780d65e2ad6c775f10d621b98e7
+        :release: 8d862780d65e2ad6c775f10d621b98e7
+    CHECKSUM: cb74e17062b2af5a16a4b137f32495f241df1a8e
+    FILES:
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionState.h"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionState.m"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionStateWatcher.h"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionStateWatcher.m"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.h"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m"
+      - "../../../../node_modules/@react-native-community/netinfo/LICENSE"
+      - "../../../../node_modules/@react-native-community/netinfo/README.md"
+    PROJECT_NAME: react-native-netinfo
+    SPECS:
+      - react-native-netinfo (5.9.2)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context:
