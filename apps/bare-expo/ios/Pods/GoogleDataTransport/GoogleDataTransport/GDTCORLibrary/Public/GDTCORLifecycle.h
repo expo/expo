@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * When backgrounding, the library doesn't stop processing events, it's just that several background
  * tasks will end up being created for every event that's sent, and the stateful objects of the
- * library (GDTCORStorage and GDTCORUploadCoordinator singletons) will deserialize themselves from
+ * library (GDTCORStorage and GDTCORUploadCoordinator instances) will deserialize themselves from
  * and to disk before and after every operation, respectively.
  */
 @interface GDTCORLifecycle : NSObject <GDTCORApplicationDelegate>

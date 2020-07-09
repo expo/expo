@@ -1,0 +1,26 @@
+{
+  "name": "EXVideoThumbnails",
+  "version": "4.2.1",
+  "summary": "ExpoVideoThumbnails standalone module",
+  "description": "ExpoVideoThumbnails standalone module",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXVideoThumbnails/**/*.{h,m}",
+  "preserve_paths": "EXVideoThumbnails/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ],
+    "UMFileSystemInterface": [
+
+    ]
+  }
+}

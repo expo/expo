@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "TargetConditionals.h"
+#import <TargetConditionals.h>
 
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 #import <GoogleUtilities/GULAppEnvironmentUtil.h>
 #import <GoogleUtilities/GULLogger.h>
 #import <GoogleUtilities/GULMutableDictionary.h>
-#import "../Common/GULLoggerCodes.h"
-#import "Internal/GULAppDelegateSwizzler_Private.h"
+#import "GoogleUtilities/AppDelegateSwizzler/Internal/GULAppDelegateSwizzler_Private.h"
+#import "GoogleUtilities/Common/GULLoggerCodes.h"
 
 #import <objc/runtime.h>
 
@@ -30,11 +30,6 @@ typedef BOOL (*GULRealOpenURLSourceApplicationAnnotationIMP)(
 
 typedef BOOL (*GULRealOpenURLOptionsIMP)(
     id, SEL, GULApplication *, NSURL *, NSDictionary<NSString *, id> *);
-
-#if UISCENE_SUPPORTED
-API_AVAILABLE(ios(13.0), tvos(13.0))
-typedef void (*GULOpenURLContextsIMP)(id, SEL, UIScene *, NSSet<UIOpenURLContext *> *);
-#endif  // UISCENE_SUPPORTED
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
@@ -58,14 +53,14 @@ typedef void (*GULRealDidFailToRegisterForRemoteNotificationsIMP)(id,
 
 typedef void (*GULRealDidReceiveRemoteNotificationIMP)(id, SEL, GULApplication *, NSDictionary *);
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-// This is needed to for the library to be warning free on iOS versions < 7.
+// TODO: Since we don't support iOS 7 anymore, see if we can remove the check below.
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000 && !TARGET_OS_WATCH
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 typedef void (*GULRealDidReceiveRemoteNotificationWithCompletionIMP)(
     id, SEL, GULApplication *, NSDictionary *, void (^)(UIBackgroundFetchResult));
 #pragma clang diagnostic pop
-#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000 && !TARGET_OS_WATCH
 
 typedef void (^GULAppDelegateInterceptorCallback)(id<GULApplicationDelegate>);
 
@@ -80,11 +75,12 @@ static GULLoggerService kGULLoggerSwizzler = @"[GoogleUtilities/AppDelegateSwizz
 // Since Firebase SDKs also use this for app delegate proxying, in order to not be a breaking change
 // we disable App Delegate proxying when either of these two flags are set to NO.
 
-/** Plist key that allows Firebase developers to disable App Delegate Proxying. */
+/** Plist key that allows Firebase developers to disable App and Scene Delegate Proxying. */
 static NSString *const kGULFirebaseAppDelegateProxyEnabledPlistKey =
     @"FirebaseAppDelegateProxyEnabled";
 
-/** Plist key that allows developers not using Firebase to disable App Delegate Proxying. */
+/** Plist key that allows developers not using Firebase to disable App and Scene Delegate Proxying.
+ */
 static NSString *const kGULGoogleUtilitiesAppDelegateProxyEnabledPlistKey =
     @"GoogleUtilitiesAppDelegateProxyEnabled";
 
@@ -294,20 +290,6 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
     id<GULApplicationDelegate> originalDelegate =
         [GULAppDelegateSwizzler sharedApplication].delegate;
     [GULAppDelegateSwizzler proxyAppDelegate:originalDelegate];
-
-#if UISCENE_SUPPORTED
-    if (@available(iOS 13.0, tvOS 13.0, *)) {
-      if (![GULAppDelegateSwizzler isAppDelegateProxyEnabled]) {
-        return;
-      } else {
-        [[NSNotificationCenter defaultCenter]
-            addObserver:self
-               selector:@selector(handleSceneWillConnectToNotification:)
-                   name:UISceneWillConnectNotification
-                 object:nil];
-      }
-    }
-#endif  // UISCENE_SUPPORTED
   });
 }
 
@@ -537,7 +519,7 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
        storeDestinationImplementationTo:realImplementationsBySelector];
 
   // For application:didReceiveRemoteNotification:fetchCompletionHandler:
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000 && !TARGET_OS_WATCH
   if ([GULAppEnvironmentUtil isIOS7OrHigher]) {
     SEL didReceiveRemoteNotificationWithCompletionSEL =
         NSSelectorFromString(kGULDidReceiveRemoteNotificationWithCompletionSEL);
@@ -558,7 +540,7 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
            storeDestinationImplementationTo:realImplementationsBySelector];
     }
   }
-#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000 && !TARGET_OS_WATCH
 }
 
 /// We have to do this to invalidate the cache that caches the original respondsToSelector of
@@ -567,11 +549,13 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
 /// Register KVO only once. Otherwise, the observing method will be called as many times as
 /// being registered.
 + (void)reassignAppDelegate {
+#if !TARGET_OS_WATCH
   id<GULApplicationDelegate> delegate = [self sharedApplication].delegate;
   [self sharedApplication].delegate = nil;
   [self sharedApplication].delegate = delegate;
   gOriginalAppDelegate = delegate;
   [[GULAppDelegateObserver sharedInstance] observeUIApplication];
+#endif
 }
 
 #pragma mark - Helper methods
@@ -701,17 +685,6 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
   }];
 }
 
-#if UISCENE_SUPPORTED
-+ (void)handleSceneWillConnectToNotification:(NSNotification *)notification {
-  if (@available(iOS 13.0, tvOS 13.0, *)) {
-    if ([notification.object isKindOfClass:[UIScene class]]) {
-      UIScene *scene = (UIScene *)notification.object;
-      [GULAppDelegateSwizzler proxySceneDelegateIfNeeded:scene];
-    }
-  }
-}
-#endif  // UISCENE_SUPPORTED
-
 // The methods below are donor methods which are added to the dynamic subclass of the App Delegate.
 // They are called within the scope of the real App Delegate so |self| does not refer to the
 // GULAppDelegateSwizzler instance but the real App Delegate instance.
@@ -791,36 +764,6 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
 
 #endif  // TARGET_OS_IOS
 
-#pragma mark - [Donor Methods] UISceneDelegate URL handler
-
-#if UISCENE_SUPPORTED
-- (void)scene:(UIScene *)scene
-    openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts API_AVAILABLE(ios(13.0), tvos(13.0)) {
-  if (@available(iOS 13.0, tvOS 13.0, *)) {
-    SEL methodSelector = @selector(scene:openURLContexts:);
-    // Call the real implementation if the real App Delegate has any.
-    NSValue *openURLContextsIMPPointer =
-        [GULAppDelegateSwizzler originalImplementationForSelector:methodSelector object:self];
-    GULOpenURLContextsIMP openURLContextsIMP = [openURLContextsIMPPointer pointerValue];
-
-    [GULAppDelegateSwizzler
-        notifyInterceptorsWithMethodSelector:methodSelector
-                                    callback:^(id<GULApplicationDelegate> interceptor) {
-                                      if ([interceptor
-                                              conformsToProtocol:@protocol(UISceneDelegate)]) {
-                                        id<UISceneDelegate> sceneInterceptor =
-                                            (id<UISceneDelegate>)interceptor;
-                                        [sceneInterceptor scene:scene openURLContexts:URLContexts];
-                                      }
-                                    }];
-
-    if (openURLContextsIMP) {
-      openURLContextsIMP(self, methodSelector, scene, URLContexts);
-    }
-  }
-}
-#endif  // UISCENE_SUPPORTED
-
 #pragma mark - [Donor Methods] Network overridden handler methods
 
 #if TARGET_OS_IOS || TARGET_OS_TV
@@ -869,6 +812,7 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
       continueUserActivityIMPPointer.pointerValue;
 
   __block BOOL returnedValue = NO;
+#if !TARGET_OS_WATCH
   [GULAppDelegateSwizzler
       notifyInterceptorsWithMethodSelector:methodSelector
                                   callback:^(id<GULApplicationDelegate> interceptor) {
@@ -876,6 +820,7 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
                                                          continueUserActivity:userActivity
                                                            restorationHandler:restorationHandler];
                                   }];
+#endif
   // Call the real implementation if the real App Delegate has any.
   if (continueUserActivityIMP) {
     returnedValue |= continueUserActivityIMP(self, methodSelector, application, userActivity,
@@ -940,8 +885,7 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
   }
 }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-// This is needed to for the library to be warning free on iOS versions < 7.
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000 && !TARGET_OS_WATCH
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)application:(GULApplication *)application
@@ -974,7 +918,7 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
   }
 }
 #pragma clang diagnostic pop
-#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000 && !TARGET_OS_WATCH
 
 - (void)application:(GULApplication *)application
     donor_didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -1061,97 +1005,6 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
     return;
   }
 }
-
-#if UISCENE_SUPPORTED
-+ (void)proxySceneDelegateIfNeeded:(UIScene *)scene {
-  Class realClass = [scene.delegate class];
-  NSString *className = NSStringFromClass(realClass);
-
-  // Skip proxying if the class has a prefix of kGULAppDelegatePrefix, which means it has been
-  // proxied before.
-  if (className == nil || [className hasPrefix:kGULAppDelegatePrefix]) {
-    return;
-  }
-
-  NSString *classNameWithPrefix = [kGULAppDelegatePrefix stringByAppendingString:className];
-  NSString *newClassName =
-      [NSString stringWithFormat:@"%@-%@", classNameWithPrefix, [NSUUID UUID].UUIDString];
-
-  if (NSClassFromString(newClassName)) {
-    GULLogError(
-        kGULLoggerSwizzler, NO,
-        [NSString
-            stringWithFormat:@"I-SWZ%06ld",
-                             (long)kGULSwizzlerMessageCodeAppDelegateSwizzlingInvalidSceneDelegate],
-        @"Cannot create a proxy for Scene Delegate. Subclass already exists. Original Class"
-        @": %@, subclass: %@",
-        className, newClassName);
-    return;
-  }
-
-  // Register the new class as subclass of the real one. Do not allocate more than the real class
-  // size.
-  Class sceneDelegateSubClass = objc_allocateClassPair(realClass, newClassName.UTF8String, 0);
-  if (sceneDelegateSubClass == Nil) {
-    GULLogError(
-        kGULLoggerSwizzler, NO,
-        [NSString
-            stringWithFormat:@"I-SWZ%06ld",
-                             (long)kGULSwizzlerMessageCodeAppDelegateSwizzlingInvalidSceneDelegate],
-        @"Cannot create a proxy for Scene Delegate. Subclass already exists. Original Class"
-        @": %@, subclass: Nil",
-        className);
-    return;
-  }
-
-  NSMutableDictionary<NSString *, NSValue *> *realImplementationsBySelector =
-      [[NSMutableDictionary alloc] init];
-
-  // For scene:openURLContexts:
-  SEL openURLContextsSEL = @selector(scene:openURLContexts:);
-  [self proxyDestinationSelector:openURLContextsSEL
-      implementationsFromSourceSelector:openURLContextsSEL
-                              fromClass:[GULAppDelegateSwizzler class]
-                                toClass:sceneDelegateSubClass
-                              realClass:realClass
-       storeDestinationImplementationTo:realImplementationsBySelector];
-
-  // Store original implementations to a fake property of the original delegate.
-  objc_setAssociatedObject(scene.delegate, &kGULRealIMPBySelectorKey,
-                           [realImplementationsBySelector copy], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  objc_setAssociatedObject(scene.delegate, &kGULRealClassKey, realClass,
-                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-  // The subclass size has to be exactly the same size with the original class size. The subclass
-  // cannot have more ivars/properties than its superclass since it will cause an offset in memory
-  // that can lead to overwriting the isa of an object in the next frame.
-  if (class_getInstanceSize(realClass) != class_getInstanceSize(sceneDelegateSubClass)) {
-    GULLogError(
-        kGULLoggerSwizzler, NO,
-        [NSString
-            stringWithFormat:@"I-SWZ%06ld",
-                             (long)kGULSwizzlerMessageCodeAppDelegateSwizzlingInvalidSceneDelegate],
-        @"Cannot create subclass of Scene Delegate, because the created subclass is not the "
-        @"same size. %@",
-        className);
-    NSAssert(NO, @"Classes must be the same size to swizzle isa");
-    return;
-  }
-
-  // Make the newly created class to be the subclass of the real Scene Delegate class.
-  objc_registerClassPair(sceneDelegateSubClass);
-  if (object_setClass(scene.delegate, sceneDelegateSubClass)) {
-    GULLogDebug(
-        kGULLoggerSwizzler, NO,
-        [NSString
-            stringWithFormat:@"I-SWZ%06ld",
-                             (long)kGULSwizzlerMessageCodeAppDelegateSwizzlingInvalidSceneDelegate],
-        @"Successfully created Scene Delegate Proxy automatically. To disable the "
-        @"proxy, set the flag %@ to NO (Boolean) in the Info.plist",
-        [GULAppDelegateSwizzler correctAppDelegateProxyKey]);
-  }
-}
-#endif  // UISCENE_SUPPORTED
 
 #pragma mark - Methods to print correct debug logs
 

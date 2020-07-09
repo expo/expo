@@ -18,6 +18,8 @@
 
 #import <GoogleDataTransport/GDTCORConsoleLogger.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /** A block type that could be run instead of normal assertion logging. No return type, no params.
  */
 typedef void (^GDTCORAssertionBlock)(void);
@@ -46,21 +48,20 @@ FOUNDATION_EXPORT GDTCORAssertionBlock _Nullable GDTCORAssertionBlockToRunInstea
  *
  * @param condition The condition you'd expect to be YES.
  */
-#define GDTCORAssert(condition, ...)                                                             \
-  do {                                                                                           \
-    if (__builtin_expect(!(condition), 0)) {                                                     \
-      GDTCORAssertionBlock assertionBlock = GDTCORAssertionBlockToRunInstead();                  \
-      if (assertionBlock) {                                                                      \
-        assertionBlock();                                                                        \
-      } else {                                                                                   \
-        __PRAGMA_PUSH_NO_EXTRA_ARG_WARNINGS                                                      \
-        NSString *__assert_file__ = [NSString stringWithUTF8String:__FILE__];                    \
-        __assert_file__ = __assert_file__ ? __assert_file__ : @"<Unknown File>";                 \
-        GDTCORLogError(GDTCORMCEGeneralError, @"Assertion failed (%@:%d): %s,", __assert_file__, \
-                       __LINE__, ##__VA_ARGS__);                                                 \
-        __PRAGMA_POP_NO_EXTRA_ARG_WARNINGS                                                       \
-      }                                                                                          \
-    }                                                                                            \
+#define GDTCORAssert(condition, format, ...)                                     \
+  do {                                                                           \
+    __PRAGMA_PUSH_NO_EXTRA_ARG_WARNINGS                                          \
+    if (__builtin_expect(!(condition), 0)) {                                     \
+      GDTCORAssertionBlock assertionBlock = GDTCORAssertionBlockToRunInstead();  \
+      if (assertionBlock) {                                                      \
+        assertionBlock();                                                        \
+      } else {                                                                   \
+        NSString *__assert_file__ = [NSString stringWithUTF8String:__FILE__];    \
+        __assert_file__ = __assert_file__ ? __assert_file__ : @"<Unknown File>"; \
+        GDTCORLogAssert(NO, __assert_file__, __LINE__, format, ##__VA_ARGS__);   \
+        __PRAGMA_POP_NO_EXTRA_ARG_WARNINGS                                       \
+      }                                                                          \
+    }                                                                            \
   } while (0);
 
 /** Asserts by logging to the console and throwing an exception if NS_BLOCK_ASSERTIONS is not
@@ -68,24 +69,27 @@ FOUNDATION_EXPORT GDTCORAssertionBlock _Nullable GDTCORAssertionBlockToRunInstea
  *
  * @param condition The condition you'd expect to be YES.
  */
-#define GDTCORFatalAssert(condition, ...)                                               \
-  do {                                                                                  \
-    __PRAGMA_PUSH_NO_EXTRA_ARG_WARNINGS                                                 \
-    if (__builtin_expect(!(condition), 0)) {                                            \
-      NSString *__assert_file__ = [NSString stringWithUTF8String:__FILE__];             \
-      __assert_file__ = __assert_file__ ? __assert_file__ : @"<Unknown File>";          \
-      GDTCORLogError(GDTCORMCEFatalAssertion,                                           \
-                     @"Fatal assertion encountered, please open an issue at "           \
-                      "https://github.com/firebase/firebase-ios-sdk/issues "            \
-                      "(%@:%d): %s,",                                                   \
-                     __assert_file__, __LINE__, ##__VA_ARGS__);                         \
-      [[NSAssertionHandler currentHandler] handleFailureInMethod:_cmd                   \
-                                                          object:self                   \
-                                                            file:__assert_file__        \
-                                                      lineNumber:__LINE__               \
-                                                     description:@"%@", ##__VA_ARGS__]; \
-    }                                                                                   \
-    __PRAGMA_POP_NO_EXTRA_ARG_WARNINGS                                                  \
+#define GDTCORFatalAssert(condition, format, ...)                                          \
+  do {                                                                                     \
+    __PRAGMA_PUSH_NO_EXTRA_ARG_WARNINGS                                                    \
+    if (__builtin_expect(!(condition), 0)) {                                               \
+      GDTCORAssertionBlock assertionBlock = GDTCORAssertionBlockToRunInstead();            \
+      if (assertionBlock) {                                                                \
+        assertionBlock();                                                                  \
+      } else {                                                                             \
+        NSString *__assert_file__ = [NSString stringWithUTF8String:__FILE__];              \
+        __assert_file__ = __assert_file__ ? __assert_file__ : @"<Unknown File>";           \
+        GDTCORLogAssert(YES, __assert_file__, __LINE__, format, ##__VA_ARGS__);            \
+        [[NSAssertionHandler currentHandler] handleFailureInMethod:_cmd                    \
+                                                            object:self                    \
+                                                              file:__assert_file__         \
+                                                        lineNumber:__LINE__                \
+                                                       description:format, ##__VA_ARGS__]; \
+        __PRAGMA_POP_NO_EXTRA_ARG_WARNINGS                                                 \
+      }                                                                                    \
+    }                                                                                      \
   } while (0);
 
 #endif  // defined(NS_BLOCK_ASSERTIONS)
+
+NS_ASSUME_NONNULL_END
