@@ -1160,8 +1160,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 66ad7a9951e9d99d176660250855a589
-      Release: 66ad7a9951e9d99d176660250855a589
+      Debug: 1fea4d37a86406a6e776fa77b0fdc8b1
+      Release: 1fea4d37a86406a6e776fa77b0fdc8b1
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1171,8 +1171,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: d6606f648ed877c43a86bc6904fc9c1a
-      Release: d6606f648ed877c43a86bc6904fc9c1a
+      Debug: cadc4f5603fbca60536e7ddc135e07a2
+      Release: cadc4f5603fbca60536e7ddc135e07a2
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -2341,6 +2341,36 @@ CACHE_KEYS:
     PROJECT_NAME: RNScreens
     SPECS:
       - RNScreens (2.8.0)
+  RNSharedElement:
+    BUILD_SETTINGS_CHECKSUM:
+      RNSharedElement:
+        :debug: 75ae23bfef89dc376660dcd31c5e6b1e
+        :release: 75ae23bfef89dc376660dcd31c5e6b1e
+    CHECKSUM: 00b1a1420d213a34459bb9a5aacabb38107d7948
+    FILES:
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementContent.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementContent.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementCornerRadii.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementCornerRadii.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementDelegate.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNode.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNode.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNodeManager.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNodeManager.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementStyle.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementStyle.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransition.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransition.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionItem.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionItem.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionManager.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionManager.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTypes.h"
+      - "../../../../node_modules/react-native-shared-element/LICENSE.txt"
+      - "../../../../node_modules/react-native-shared-element/README.md"
+    PROJECT_NAME: RNSharedElement
+    SPECS:
+      - RNSharedElement (0.7.0)
   RNSVG:
     BUILD_SETTINGS_CHECKSUM:
       RNSVG:
