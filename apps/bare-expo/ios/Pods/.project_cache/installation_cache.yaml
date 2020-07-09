@@ -1150,8 +1150,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ad528f21f99e268d15e083848669c0c8
-      Release: ad528f21f99e268d15e083848669c0c8
+      Debug: f2adf5e63b06d001a132ef8f6d3c8833
+      Release: f2adf5e63b06d001a132ef8f6d3c8833
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1161,8 +1161,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 33f5196ba23e62cede87bf0d0ef286e0
-      Release: 33f5196ba23e62cede87bf0d0ef286e0
+      Debug: e64a0be2fef84b2883d3918fda6e7327
+      Release: e64a0be2fef84b2883d3918fda6e7327
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -2082,6 +2082,22 @@ CACHE_KEYS:
     PROJECT_NAME: RNCMaskedView
     SPECS:
       - RNCMaskedView (0.1.10)
+  RNCPicker:
+    BUILD_SETTINGS_CHECKSUM:
+      RNCPicker:
+        :debug: 5777d140be36534f6bdfa54c24ed4852
+        :release: 5777d140be36534f6bdfa54c24ed4852
+    CHECKSUM: bab63e6fed69ac6122fcd9993209b6854de46d0b
+    FILES:
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPicker.h"
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPicker.m"
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPickerManager.h"
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPickerManager.m"
+      - "../../../../node_modules/@react-native-community/picker/LICENCE"
+      - "../../../../node_modules/@react-native-community/picker/README.md"
+    PROJECT_NAME: RNCPicker
+    SPECS:
+      - RNCPicker (1.6.0)
   RNDateTimePicker:
     BUILD_SETTINGS_CHECKSUM:
       RNDateTimePicker:
