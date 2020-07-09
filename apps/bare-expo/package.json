@@ -41,10 +41,10 @@
     "expo-payments-stripe",
     "expo-ads-facebook",
     "expo-ads-admob",
-    "expo-module-template",
     "expo-apple-authentication",
     "expo-updates",
-    "expo-splash-screen"
+    "expo-splash-screen",
+    "expo-module-template"
   ],
   "detox": {
     "configurations": {

@@ -372,8 +372,8 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics:
-        :debug: cc401ee0180ae21c92b2d4a83982840d
-        :release: cc401ee0180ae21c92b2d4a83982840d
+        :debug: e839f3b1cc774098693d74e5616458c1
+        :release: e839f3b1cc774098693d74e5616458c1
     CHECKSUM: b502d650cb33c2d137cb19d639f8b315ee7e5ad3
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
@@ -384,8 +384,8 @@ CACHE_KEYS:
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore:
-        :debug: 558caeb4b0121e43433c08b1594d5793
-        :release: 558caeb4b0121e43433c08b1594d5793
+        :debug: 4ca6f8711f0b0c91373a3fb35a3015fe
+        :release: 4ca6f8711f0b0c91373a3fb35a3015fe
     CHECKSUM: 7e720f6f3725795b960b9e59dfcd46e674b30774
     FILES:
       - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
@@ -1006,8 +1006,8 @@ CACHE_KEYS:
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase:
-        :debug: 043d6ce04946d5de6f1a25bee76f328d
-        :release: 043d6ce04946d5de6f1a25bee76f328d
+        :debug: 904f904fb3904e0a75b26a7be14f50da
+        :release: 904f904fb3904e0a75b26a7be14f50da
     CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
     PROJECT_NAME: Firebase
     SPECS:
@@ -1016,8 +1016,8 @@ CACHE_KEYS:
   FirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseAnalytics:
-        :debug: d3b8372472720ab5e91b3a3adc59720a
-        :release: d3b8372472720ab5e91b3a3adc59720a
+        :debug: d56dc0c3f6fae9bdeb049f3b415c86a8
+        :release: d56dc0c3f6fae9bdeb049f3b415c86a8
     CHECKSUM: f68b9f3f1241385129ae0a83b63627fc420c05e5
     PROJECT_NAME: FirebaseAnalytics
     SPECS:
@@ -1025,8 +1025,8 @@ CACHE_KEYS:
   FirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseCore:
-        :debug: 9e46d904547d9ac25ab4b4514fc0a2f7
-        :release: 9e46d904547d9ac25ab4b4514fc0a2f7
+        :debug: f4f8de5d41df948fdddfe14e24f514c2
+        :release: f4f8de5d41df948fdddfe14e24f514c2
     CHECKSUM: 632e05cc5e1199d9147122c16d92305eb04c34bd
     PROJECT_NAME: FirebaseCore
     SPECS:
@@ -1034,26 +1034,26 @@ CACHE_KEYS:
   FirebaseCoreDiagnostics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseCoreDiagnostics:
-        :debug: d94bfb53514b8d2ac93bd041c0ca0e12
-        :release: d94bfb53514b8d2ac93bd041c0ca0e12
-    CHECKSUM: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
+        :debug: f358731925dcbd079cb3af88934b9c72
+        :release: f358731925dcbd079cb3af88934b9c72
+    CHECKSUM: b59c024493a409f8aecba02c99928d0d8431d159
     PROJECT_NAME: FirebaseCoreDiagnostics
     SPECS:
-      - FirebaseCoreDiagnostics (1.1.2)
+      - FirebaseCoreDiagnostics (1.2.4)
   FirebaseCoreDiagnosticsInterop:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseCoreDiagnosticsInterop:
         :debug: 156db52ee23ec56ad2ede89ad1ee8a2b
         :release: 156db52ee23ec56ad2ede89ad1ee8a2b
-    CHECKSUM: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
+    CHECKSUM: 296e2c5f5314500a850ad0b83e9e7c10b011a850
     PROJECT_NAME: FirebaseCoreDiagnosticsInterop
     SPECS:
-      - FirebaseCoreDiagnosticsInterop (1.1.0)
+      - FirebaseCoreDiagnosticsInterop (1.2.0)
   FirebaseInstanceID:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseInstanceID:
-        :debug: c417e45eb1ce3ddd5681ade464f26b8e
-        :release: c417e45eb1ce3ddd5681ade464f26b8e
+        :debug: 3a7d8020f55c77efed7d837def2ede66
+        :release: 3a7d8020f55c77efed7d837def2ede66
     CHECKSUM: ce993a3c3670a8f5d47ce371ac5d143c560608c5
     PROJECT_NAME: FirebaseInstanceID
     SPECS:
@@ -1080,8 +1080,8 @@ CACHE_KEYS:
   GoogleAppMeasurement:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAppMeasurement:
-        :debug: 8edf625de9a660fae9e528eb6d244601
-        :release: 8edf625de9a660fae9e528eb6d244601
+        :debug: adcce4463bb4b2795ff1cbab40c74c1e
+        :release: adcce4463bb4b2795ff1cbab40c74c1e
     CHECKSUM: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
     PROJECT_NAME: GoogleAppMeasurement
     SPECS:
@@ -1089,21 +1089,21 @@ CACHE_KEYS:
   GoogleDataTransport:
     BUILD_SETTINGS_CHECKSUM:
       GoogleDataTransport:
-        :debug: c52a5276024512707683f66e6cfe0966
-        :release: c52a5276024512707683f66e6cfe0966
-    CHECKSUM: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
+        :debug: 2ae8cece9a24d5c9a8018b13ce4af8a6
+        :release: 2ae8cece9a24d5c9a8018b13ce4af8a6
+    CHECKSUM: 9a8a16f79feffc7f42096743de2a7c4815e84020
     PROJECT_NAME: GoogleDataTransport
     SPECS:
-      - GoogleDataTransport (3.2.0)
+      - GoogleDataTransport (6.2.1)
   GoogleDataTransportCCTSupport:
     BUILD_SETTINGS_CHECKSUM:
       GoogleDataTransportCCTSupport:
-        :debug: 1974efffec58f9b1b16d714da50b2d51
-        :release: 1974efffec58f9b1b16d714da50b2d51
-    CHECKSUM: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
+        :debug: f7fe8edf6850d8ac300b3e38ac5748b9
+        :release: f7fe8edf6850d8ac300b3e38ac5748b9
+    CHECKSUM: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
     PROJECT_NAME: GoogleDataTransportCCTSupport
     SPECS:
-      - GoogleDataTransportCCTSupport (1.2.3)
+      - GoogleDataTransportCCTSupport (3.0.0)
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn:
@@ -1116,19 +1116,19 @@ CACHE_KEYS:
   GoogleUtilities:
     BUILD_SETTINGS_CHECKSUM:
       GoogleUtilities:
-        :debug: c7dbbc462e97d6f959d7b7bdd3d67f38
-        :release: c7dbbc462e97d6f959d7b7bdd3d67f38
-    CHECKSUM: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
+        :debug: 261e32886a9ecf5b59bf22dbd4251df8
+        :release: 261e32886a9ecf5b59bf22dbd4251df8
+    CHECKSUM: 39530bc0ad980530298e9c4af8549e991fd033b1
     PROJECT_NAME: GoogleUtilities
     SPECS:
-      - GoogleUtilities/AppDelegateSwizzler (6.4.0)
-      - GoogleUtilities/Environment (6.4.0)
-      - GoogleUtilities/Logger (6.4.0)
-      - GoogleUtilities/MethodSwizzler (6.4.0)
-      - GoogleUtilities/Network (6.4.0)
-      - "GoogleUtilities/NSData+zlib (6.4.0)"
-      - GoogleUtilities/Reachability (6.4.0)
-      - GoogleUtilities/UserDefaults (6.4.0)
+      - GoogleUtilities/AppDelegateSwizzler (6.6.0)
+      - GoogleUtilities/Environment (6.6.0)
+      - GoogleUtilities/Logger (6.6.0)
+      - GoogleUtilities/MethodSwizzler (6.6.0)
+      - GoogleUtilities/Network (6.6.0)
+      - "GoogleUtilities/NSData+zlib (6.6.0)"
+      - GoogleUtilities/Reachability (6.6.0)
+      - GoogleUtilities/UserDefaults (6.6.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth:
@@ -1162,8 +1162,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 59209083b32e0666f470ecd647cd022f
-      Release: 59209083b32e0666f470ecd647cd022f
+      Debug: f8741109a9147bd48706d513b5136865
+      Release: f8741109a9147bd48706d513b5136865
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1173,8 +1173,17 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c31b4230dc33908cb8b3b94f62d39238
-      Release: c31b4230dc33908cb8b3b94f62d39238
+      Debug: 6c73477cd02b14d1c430deb413f7a760
+      Release: 6c73477cd02b14d1c430deb413f7a760
+  PromisesObjC:
+    BUILD_SETTINGS_CHECKSUM:
+      PromisesObjC:
+        :debug: 1b7465c5d645bb553b8076da86b881fc
+        :release: 1b7465c5d645bb553b8076da86b881fc
+    CHECKSUM: b48e0338dbbac2207e611750777895f7a5811b75
+    PROJECT_NAME: PromisesObjC
+    SPECS:
+      - PromisesObjC (1.2.9)
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:

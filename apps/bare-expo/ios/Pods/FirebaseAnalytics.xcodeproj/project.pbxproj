@@ -9,55 +9,55 @@
 /* Begin PBXAggregateTarget section */
 		3DC59710253F562E6B3BE135BABFBA19 /* FirebaseAnalytics */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 7AE68BAEF10449E1FDDC6450BF87958B /* Build configuration list for PBXAggregateTarget "FirebaseAnalytics" */;
+			buildConfigurationList = DCD6CF5E4B4830400E93573BCC4D868E /* Build configuration list for PBXAggregateTarget "FirebaseAnalytics" */;
 			buildPhases = (
 			);
 			dependencies = (
-				66F4EF0359F05EDC4AE85A70967C44C3 /* PBXTargetDependency */,
-				AD14C22BAD5B818631DD51AA5B0347D0 /* PBXTargetDependency */,
-				BC4091FF450313B76EF2768AF9112D62 /* PBXTargetDependency */,
-				1D69BC9551EE4D55FBD53BBF7498DF31 /* PBXTargetDependency */,
-				DB237E78C14850E28F8DEB7C5ECFF34E /* PBXTargetDependency */,
+				146855F0F3B5ADF38213DFFA1E4C67B2 /* PBXTargetDependency */,
+				9FB72E4CDCD5AE58DBE3DD4857A9D212 /* PBXTargetDependency */,
+				87555E9B03D38F2E91A0C4DC692960A2 /* PBXTargetDependency */,
+				745D424B407493882751FF05F97B4479 /* PBXTargetDependency */,
+				37CD136865F7E72DC13DC143ECB9BE20 /* PBXTargetDependency */,
 			);
 			name = FirebaseAnalytics;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		4D783B91065F3DCA2831388585DC0536 /* PBXContainerItemProxy */ = {
+		6469F73C0692413E0E83AA44D3A96041 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CD2763802FBC7FA4F923E6CB868C330E /* GoogleAppMeasurement.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9677266E0E3834B96EA12E3394F9063D;
 			remoteInfo = GoogleAppMeasurement;
 		};
-		54F2B2CE49365CA8640250AB5D235105 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7550AC1E6CED2CF53E5FD2966E9FBAFD /* GoogleUtilities.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
-			remoteInfo = GoogleUtilities;
-		};
-		86C7D8662B066386E1160D78A5660E36 /* PBXContainerItemProxy */ = {
+		6827952C95E2BAB1AC8916DCAB332B38 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E07AB05D788176688CF56E971C111E89 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
 		};
-		E15B0B24A36DDEC8A1FC795C20EE6EE3 /* PBXContainerItemProxy */ = {
+		783AA394EA53995C0FEAC3B2583DE2C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D2C3915E8330EBCFACA70BC633CF71AF /* FirebaseInstanceID.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
+			remoteInfo = FirebaseInstanceID;
+		};
+		E632947BEE5B134AE6B13FFD246E17BE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A6484606E929A3565DBA17DE6C3ED22F /* nanopb.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
 			remoteInfo = nanopb;
 		};
-		E9E40E78B7E201B173F5ADB5CB2D53FC /* PBXContainerItemProxy */ = {
+		EF10A9C59A8F84885C605A02E8340A63 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D2C3915E8330EBCFACA70BC633CF71AF /* FirebaseInstanceID.xcodeproj */;
+			containerPortal = 7550AC1E6CED2CF53E5FD2966E9FBAFD /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
-			remoteInfo = FirebaseInstanceID;
+			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
+			remoteInfo = GoogleUtilities;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -184,30 +184,30 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		1D69BC9551EE4D55FBD53BBF7498DF31 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GoogleUtilities;
-			targetProxy = 54F2B2CE49365CA8640250AB5D235105 /* PBXContainerItemProxy */;
-		};
-		66F4EF0359F05EDC4AE85A70967C44C3 /* PBXTargetDependency */ = {
+		146855F0F3B5ADF38213DFFA1E4C67B2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseCore;
-			targetProxy = 86C7D8662B066386E1160D78A5660E36 /* PBXContainerItemProxy */;
+			targetProxy = 6827952C95E2BAB1AC8916DCAB332B38 /* PBXContainerItemProxy */;
 		};
-		AD14C22BAD5B818631DD51AA5B0347D0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseInstanceID;
-			targetProxy = E9E40E78B7E201B173F5ADB5CB2D53FC /* PBXContainerItemProxy */;
-		};
-		BC4091FF450313B76EF2768AF9112D62 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GoogleAppMeasurement;
-			targetProxy = 4D783B91065F3DCA2831388585DC0536 /* PBXContainerItemProxy */;
-		};
-		DB237E78C14850E28F8DEB7C5ECFF34E /* PBXTargetDependency */ = {
+		37CD136865F7E72DC13DC143ECB9BE20 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = nanopb;
-			targetProxy = E15B0B24A36DDEC8A1FC795C20EE6EE3 /* PBXContainerItemProxy */;
+			targetProxy = E632947BEE5B134AE6B13FFD246E17BE /* PBXContainerItemProxy */;
+		};
+		745D424B407493882751FF05F97B4479 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleUtilities;
+			targetProxy = EF10A9C59A8F84885C605A02E8340A63 /* PBXContainerItemProxy */;
+		};
+		87555E9B03D38F2E91A0C4DC692960A2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleAppMeasurement;
+			targetProxy = 6469F73C0692413E0E83AA44D3A96041 /* PBXContainerItemProxy */;
+		};
+		9FB72E4CDCD5AE58DBE3DD4857A9D212 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseInstanceID;
+			targetProxy = 783AA394EA53995C0FEAC3B2583DE2C3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -272,7 +272,7 @@
 			};
 			name = Release;
 		};
-		A8DB2D215D2D5C1B50437134643BCFA5 /* Debug */ = {
+		8EC18440B7F998687D420D3F14E6F2D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4C912F062131F7BBC6B7BD49E8B5CC1E /* FirebaseAnalytics.debug.xcconfig */;
 			buildSettings = {
@@ -285,7 +285,7 @@
 			};
 			name = Debug;
 		};
-		BCAAACC5220B194D390368BB506D094E /* Release */ = {
+		9582E50F24BC976193DDD66CA5DE815D /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1963669BE92F113AF5EB52C3F578DC9A /* FirebaseAnalytics.release.xcconfig */;
 			buildSettings = {
@@ -366,20 +366,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7AE68BAEF10449E1FDDC6450BF87958B /* Build configuration list for PBXAggregateTarget "FirebaseAnalytics" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A8DB2D215D2D5C1B50437134643BCFA5 /* Debug */,
-				BCAAACC5220B194D390368BB506D094E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		94BEE24D9EBC9A6A27050CD616B878DC /* Build configuration list for PBXProject "FirebaseAnalytics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F1C43C4F0E71B278F504643B29A746C8 /* Debug */,
 				19C02F9C83B15A2B3457144C7F227DBB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DCD6CF5E4B4830400E93573BCC4D868E /* Build configuration list for PBXAggregateTarget "FirebaseAnalytics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8EC18440B7F998687D420D3F14E6F2D6 /* Debug */,
+				9582E50F24BC976193DDD66CA5DE815D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

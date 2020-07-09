@@ -7,43 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		40DD91FC669A6182AEECAAF1FA0B9740 /* JSINativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = F07D4339BAB2C24F11FEB79587234ED0 /* JSINativeModules.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		96126139E3982F5E56A881691D1FF320 /* JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14053426BED23476BF217B7E29A17F4E /* JSIExecutor.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B98AAF8ABA9CE369D48A0926796B716D /* React-jsiexecutor-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 19743E55A7C43D12411F2A46E6F3B592 /* React-jsiexecutor-dummy.m */; };
-		F479BCA40CE5D7C6359080D3C4195DBD /* JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 25CD7766E4512D78547CB76CAA622EA0 /* JSIExecutor.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F48DEA2C266E8EBBF5425920D1EF08B1 /* JSINativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F43C2CBEB809E7884F08262CC665DA2A /* JSINativeModules.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1A90C4FBF81BD3666CDCBFED5F8EC01F /* JSINativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F43C2CBEB809E7884F08262CC665DA2A /* JSINativeModules.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4B3D4DA407FAFDCA5ACCA2FD4A50C3E1 /* JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14053426BED23476BF217B7E29A17F4E /* JSIExecutor.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5BA6940DE81834AF8E23D15D128FD962 /* JSINativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = F07D4339BAB2C24F11FEB79587234ED0 /* JSINativeModules.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DF37DEF8DE7799809819B9FCFF7870C8 /* React-jsiexecutor-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 19743E55A7C43D12411F2A46E6F3B592 /* React-jsiexecutor-dummy.m */; };
+		F28793B28C7DB7FAC3E1BE0854D9EA8F /* JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 25CD7766E4512D78547CB76CAA622EA0 /* JSIExecutor.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		316A71D5C10AEFC76F7F2363C6F73C2E /* PBXContainerItemProxy */ = {
+		2B73C0C8A857F38234B94867A517A1BE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C0392BA5ADFEAF2FF5E962E31141AEC5 /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
 			remoteInfo = DoubleConversion;
 		};
-		5435BB1458C543E03FDDA2577FAB0FFB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B21B273C3E40D42211CF371B740DDB52 /* React-cxxreact.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
-			remoteInfo = "React-cxxreact";
-		};
-		8E2E1ED2848BE5932E8743300A9010D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6165594CF2AE00F17E27511FACCD4525 /* glog.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
-			remoteInfo = glog;
-		};
-		B7EF0E8B9885C5B2154C3639CCE9DCEE /* PBXContainerItemProxy */ = {
+		3732128890C964C23B6F60F028BE1DE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E5A3A96A8849B4F4177F3B211D7E7DE0 /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
 		};
-		C1933CA88D0A480C48B65F4DD086E181 /* PBXContainerItemProxy */ = {
+		619ECD7A3CB0B08523EA7E7E1E625FA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B21B273C3E40D42211CF371B740DDB52 /* React-cxxreact.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
+			remoteInfo = "React-cxxreact";
+		};
+		9028ABB22FF6932D87A3B0278ADAC45F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6165594CF2AE00F17E27511FACCD4525 /* glog.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
+			remoteInfo = glog;
+		};
+		F3934832320BC81F1CBDA04E36EDF933 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BB6EB2627E2F287BED7902E5B8954AC5 /* React-jsi.xcodeproj */;
 			proxyType = 1;
@@ -71,7 +71,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		FB04766FBBCAAD641BA6D6071F449FF8 /* Frameworks */ = {
+		A6EFA4F70E0C5B5387E3C6B89BF9AFC4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -155,12 +155,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		AC0459C06F6E29876AC8BF18B72371D6 /* Headers */ = {
+		0C35E743573870334A0B8DC8411C7B1D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F479BCA40CE5D7C6359080D3C4195DBD /* JSIExecutor.h in Headers */,
-				40DD91FC669A6182AEECAAF1FA0B9740 /* JSINativeModules.h in Headers */,
+				F28793B28C7DB7FAC3E1BE0854D9EA8F /* JSIExecutor.h in Headers */,
+				5BA6940DE81834AF8E23D15D128FD962 /* JSINativeModules.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,20 +169,20 @@
 /* Begin PBXNativeTarget section */
 		7F7693C84AD2D676CE4E5741F508C198 /* React-jsiexecutor */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CA711327A1A5C985432DADB6602289AE /* Build configuration list for PBXNativeTarget "React-jsiexecutor" */;
+			buildConfigurationList = 310B79DD39EC8470140A95CE38810953 /* Build configuration list for PBXNativeTarget "React-jsiexecutor" */;
 			buildPhases = (
-				AC0459C06F6E29876AC8BF18B72371D6 /* Headers */,
-				2DF6D0B65B81FFD6164E26D0D130E062 /* Sources */,
-				FB04766FBBCAAD641BA6D6071F449FF8 /* Frameworks */,
+				0C35E743573870334A0B8DC8411C7B1D /* Headers */,
+				96A1D96990BC68FB1EBA9519CD8E41FA /* Sources */,
+				A6EFA4F70E0C5B5387E3C6B89BF9AFC4 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B3F18BB280B8F6A818A33E4387E9D293 /* PBXTargetDependency */,
-				18E1DC5EB22E19EA92EA96962A5314AB /* PBXTargetDependency */,
-				1EC09607BBE87F30552832BB94B9EEED /* PBXTargetDependency */,
-				F3BBEAD96A390FC9C4002D2AD7EC9AB5 /* PBXTargetDependency */,
-				1DC1DC93817CD2C29217DC6363BFD284 /* PBXTargetDependency */,
+				F05838F6E0044430B7770A8690CFDC14 /* PBXTargetDependency */,
+				7CA81F0D4CC1B50DF74832424090F2F0 /* PBXTargetDependency */,
+				6E2EF4763D3A77B44D46594D88623CEE /* PBXTargetDependency */,
+				254644D80572B88B2B390808BE35CF24 /* PBXTargetDependency */,
+				B0883ED040FC4A2B02F2F302BC01B4E2 /* PBXTargetDependency */,
 			);
 			name = "React-jsiexecutor";
 			productName = "React-jsiexecutor";
@@ -234,43 +234,43 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2DF6D0B65B81FFD6164E26D0D130E062 /* Sources */ = {
+		96A1D96990BC68FB1EBA9519CD8E41FA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96126139E3982F5E56A881691D1FF320 /* JSIExecutor.cpp in Sources */,
-				F48DEA2C266E8EBBF5425920D1EF08B1 /* JSINativeModules.cpp in Sources */,
-				B98AAF8ABA9CE369D48A0926796B716D /* React-jsiexecutor-dummy.m in Sources */,
+				4B3D4DA407FAFDCA5ACCA2FD4A50C3E1 /* JSIExecutor.cpp in Sources */,
+				1A90C4FBF81BD3666CDCBFED5F8EC01F /* JSINativeModules.cpp in Sources */,
+				DF37DEF8DE7799809819B9FCFF7870C8 /* React-jsiexecutor-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		18E1DC5EB22E19EA92EA96962A5314AB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = B7EF0E8B9885C5B2154C3639CCE9DCEE /* PBXContainerItemProxy */;
-		};
-		1DC1DC93817CD2C29217DC6363BFD284 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = glog;
-			targetProxy = 8E2E1ED2848BE5932E8743300A9010D7 /* PBXContainerItemProxy */;
-		};
-		1EC09607BBE87F30552832BB94B9EEED /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-cxxreact";
-			targetProxy = 5435BB1458C543E03FDDA2577FAB0FFB /* PBXContainerItemProxy */;
-		};
-		B3F18BB280B8F6A818A33E4387E9D293 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DoubleConversion;
-			targetProxy = 316A71D5C10AEFC76F7F2363C6F73C2E /* PBXContainerItemProxy */;
-		};
-		F3BBEAD96A390FC9C4002D2AD7EC9AB5 /* PBXTargetDependency */ = {
+		254644D80572B88B2B390808BE35CF24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsi";
-			targetProxy = C1933CA88D0A480C48B65F4DD086E181 /* PBXContainerItemProxy */;
+			targetProxy = F3934832320BC81F1CBDA04E36EDF933 /* PBXContainerItemProxy */;
+		};
+		6E2EF4763D3A77B44D46594D88623CEE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-cxxreact";
+			targetProxy = 619ECD7A3CB0B08523EA7E7E1E625FA4 /* PBXContainerItemProxy */;
+		};
+		7CA81F0D4CC1B50DF74832424090F2F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = 3732128890C964C23B6F60F028BE1DE2 /* PBXContainerItemProxy */;
+		};
+		B0883ED040FC4A2B02F2F302BC01B4E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = glog;
+			targetProxy = 9028ABB22FF6932D87A3B0278ADAC45F /* PBXContainerItemProxy */;
+		};
+		F05838F6E0044430B7770A8690CFDC14 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DoubleConversion;
+			targetProxy = 2B73C0C8A857F38234B94867A517A1BE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -335,31 +335,7 @@
 			};
 			name = Release;
 		};
-		B128BF3B8F68D7E636C308F6E94A3DE9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD62189026C6126B5D9DD9B0D319DE67 /* React-jsiexecutor.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-jsiexecutor/React-jsiexecutor-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = jsireact;
-				PRODUCT_NAME = "React-jsiexecutor";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		B9BA0E6446B038541021E15225F13EA9 /* Release */ = {
+		D5FF13A20521B906093C30BE6E62AA38 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F36290041765993A02BB43A7913A31C8 /* React-jsiexecutor.release.xcconfig */;
 			buildSettings = {
@@ -383,6 +359,30 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		E6D22E5805976B36DB12B227A30B251B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD62189026C6126B5D9DD9B0D319DE67 /* React-jsiexecutor.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-jsiexecutor/React-jsiexecutor-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = jsireact;
+				PRODUCT_NAME = "React-jsiexecutor";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		ECBC408EEE58E34E511AD3BB4120D91C /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -451,20 +451,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		310B79DD39EC8470140A95CE38810953 /* Build configuration list for PBXNativeTarget "React-jsiexecutor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E6D22E5805976B36DB12B227A30B251B /* Debug */,
+				D5FF13A20521B906093C30BE6E62AA38 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		8E6336494851EA04CA75A1C86EC66B38 /* Build configuration list for PBXProject "React-jsiexecutor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ECBC408EEE58E34E511AD3BB4120D91C /* Debug */,
 				690DC5B3945612055D163C1C1AB3AE53 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CA711327A1A5C985432DADB6602289AE /* Build configuration list for PBXNativeTarget "React-jsiexecutor" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B128BF3B8F68D7E636C308F6E94A3DE9 /* Debug */,
-				B9BA0E6446B038541021E15225F13EA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

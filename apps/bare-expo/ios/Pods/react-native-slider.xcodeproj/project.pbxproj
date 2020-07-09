@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		351DFF8DB665AD950DC3DB9F09DAD317 /* RNCSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FA8076CA0F498A8D557ACF6C0071CE /* RNCSliderManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7E41846A318FD61720C93D6ECEE23325 /* RNCSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = 44B45722C5FF588ED02F705D269F7E52 /* RNCSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		98D74DF11497413E29803FED7CF44014 /* RNCSliderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 842F8847BA24FCE47A3B660A66A21AC0 /* RNCSliderManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CA66C806253F0C0802E20B2FE583C374 /* react-native-slider-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 88908B2ED5D19B86F30FAA9A383F3BF7 /* react-native-slider-dummy.m */; };
-		F2978F3A10599AD2986C7A742419A364 /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A3968AD6A4E4D92CA27318BF8033F65 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1454A9FF47D594C8B2B1C311CFB46B2A /* RNCSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FA8076CA0F498A8D557ACF6C0071CE /* RNCSliderManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		59242C2876834494051297B3D3A90198 /* RNCSliderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 842F8847BA24FCE47A3B660A66A21AC0 /* RNCSliderManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6634BDB16FA1AA5B46EBB3BEBB39A846 /* RNCSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = 44B45722C5FF588ED02F705D269F7E52 /* RNCSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8745EAD38485BCF8F7496592A7842C99 /* react-native-slider-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 88908B2ED5D19B86F30FAA9A383F3BF7 /* react-native-slider-dummy.m */; };
+		A2D89B2A015EDF019547254538E2D8DD /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A3968AD6A4E4D92CA27318BF8033F65 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		775DB3EB02D79180349F7C871B8706AE /* PBXContainerItemProxy */ = {
+		7ED73ED97DDDC7684A16CDFEF1F6D854 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDE06A2ABD071875C47DCA847E4D3AB /* React.xcodeproj */;
 			proxyType = 1;
@@ -39,7 +39,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		56F582781E23645F9F6522C92E1D97E7 /* Frameworks */ = {
+		8F6849F9AEAE4DFBBDCCB1AE44DB339B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,12 +119,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		263FE205C7C83A8393236125BD9F0E9B /* Headers */ = {
+		69F0DE2C91DE7A08D1B4079D85642EB7 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E41846A318FD61720C93D6ECEE23325 /* RNCSlider.h in Headers */,
-				98D74DF11497413E29803FED7CF44014 /* RNCSliderManager.h in Headers */,
+				6634BDB16FA1AA5B46EBB3BEBB39A846 /* RNCSlider.h in Headers */,
+				59242C2876834494051297B3D3A90198 /* RNCSliderManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,16 +133,16 @@
 /* Begin PBXNativeTarget section */
 		F3C1D8A71F2007982BE1C3D3D3B64151 /* react-native-slider */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 74E4A3421D0DF7F96A7F69135833C333 /* Build configuration list for PBXNativeTarget "react-native-slider" */;
+			buildConfigurationList = 40AF5D360DBAE97EC4B4B9A30EE14E95 /* Build configuration list for PBXNativeTarget "react-native-slider" */;
 			buildPhases = (
-				263FE205C7C83A8393236125BD9F0E9B /* Headers */,
-				5F5668254AA89991C36877AFEE7ED8C1 /* Sources */,
-				56F582781E23645F9F6522C92E1D97E7 /* Frameworks */,
+				69F0DE2C91DE7A08D1B4079D85642EB7 /* Headers */,
+				B4A255ED29C9373F797474F51110603A /* Sources */,
+				8F6849F9AEAE4DFBBDCCB1AE44DB339B /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C8DC0B340CEEAFA230027EB4261B454A /* PBXTargetDependency */,
+				FAF0DFB6F59F722C4CB3B3004A9726AC /* PBXTargetDependency */,
 			);
 			name = "react-native-slider";
 			productName = "react-native-slider";
@@ -182,28 +182,52 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5F5668254AA89991C36877AFEE7ED8C1 /* Sources */ = {
+		B4A255ED29C9373F797474F51110603A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA66C806253F0C0802E20B2FE583C374 /* react-native-slider-dummy.m in Sources */,
-				F2978F3A10599AD2986C7A742419A364 /* RNCSlider.m in Sources */,
-				351DFF8DB665AD950DC3DB9F09DAD317 /* RNCSliderManager.m in Sources */,
+				8745EAD38485BCF8F7496592A7842C99 /* react-native-slider-dummy.m in Sources */,
+				A2D89B2A015EDF019547254538E2D8DD /* RNCSlider.m in Sources */,
+				1454A9FF47D594C8B2B1C311CFB46B2A /* RNCSliderManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C8DC0B340CEEAFA230027EB4261B454A /* PBXTargetDependency */ = {
+		FAF0DFB6F59F722C4CB3B3004A9726AC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 775DB3EB02D79180349F7C871B8706AE /* PBXContainerItemProxy */;
+			targetProxy = 7ED73ED97DDDC7684A16CDFEF1F6D854 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		34B4E0AF0B7ACAEA5D1DABD721B5FC3B /* Release */ = {
+		498FA8425E88D09547E5D089EE0E8217 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD5AEF29C0119F402489EC08FB4F3D77 /* react-native-slider.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-slider/react-native-slider-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_slider;
+				PRODUCT_NAME = "react-native-slider";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C527AB01414E8D1EE3DA3322BAAF90FD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0B209C2DECB5D870C37E0BE14A826772 /* react-native-slider.release.xcconfig */;
 			buildSettings = {
@@ -227,30 +251,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		D427F2A2A845EB0337D07F71C4B9A387 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD5AEF29C0119F402489EC08FB4F3D77 /* react-native-slider.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-slider/react-native-slider-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_slider;
-				PRODUCT_NAME = "react-native-slider";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		E247639E53BE5C2144230B4E060E6FE5 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -388,11 +388,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		74E4A3421D0DF7F96A7F69135833C333 /* Build configuration list for PBXNativeTarget "react-native-slider" */ = {
+		40AF5D360DBAE97EC4B4B9A30EE14E95 /* Build configuration list for PBXNativeTarget "react-native-slider" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D427F2A2A845EB0337D07F71C4B9A387 /* Debug */,
-				34B4E0AF0B7ACAEA5D1DABD721B5FC3B /* Release */,
+				498FA8425E88D09547E5D089EE0E8217 /* Debug */,
+				C527AB01414E8D1EE3DA3322BAAF90FD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

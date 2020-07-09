@@ -66,6 +66,10 @@ EXCalendar:
   LABEL: EXCalendar
   PROJECT_PATH: EXCalendar.xcodeproj
   UUID: 0F2988851D689F1E41CFC89C31422758
+EXCamera:
+  LABEL: EXCamera
+  PROJECT_PATH: EXCamera.xcodeproj
+  UUID: 4B109C23F45DFD6B4CA40B87D733EB11
 EXCellular:
   LABEL: EXCellular
   PROJECT_PATH: EXCellular.xcodeproj
@@ -98,6 +102,10 @@ EXFacebook:
   LABEL: EXFacebook
   PROJECT_PATH: EXFacebook.xcodeproj
   UUID: FEAA3FBA5C5225363EE9E6D0B5B3183B
+EXFaceDetector:
+  LABEL: EXFaceDetector
+  PROJECT_PATH: EXFaceDetector.xcodeproj
+  UUID: E3D1D7C85F27952DD8B1371AFE371A98
 EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
@@ -290,6 +298,18 @@ FirebaseInstanceID:
   LABEL: FirebaseInstanceID
   PROJECT_PATH: FirebaseInstanceID.xcodeproj
   UUID: 828A845A4F63A824ED62A82D61941B85
+FirebaseMLCommon:
+  LABEL: FirebaseMLCommon
+  PROJECT_PATH: FirebaseMLCommon.xcodeproj
+  UUID: 655B4D5DC1C1034B3458073E51ECD859
+FirebaseMLVision:
+  LABEL: FirebaseMLVision
+  PROJECT_PATH: FirebaseMLVision.xcodeproj
+  UUID: 3D5358053745F186EF3299093007AD97
+FirebaseMLVisionFaceModel:
+  LABEL: FirebaseMLVisionFaceModel
+  PROJECT_PATH: FirebaseMLVisionFaceModel.xcodeproj
+  UUID: D61B01865B69609E47812F6C78446AFB
 Folly:
   LABEL: Folly
   PROJECT_PATH: Folly.xcodeproj
@@ -298,6 +318,10 @@ glog:
   LABEL: glog
   PROJECT_PATH: glog.xcodeproj
   UUID: 86F597DC3D8F3D7A34EC5A5C413F7255
+GoogleAPIClientForREST:
+  LABEL: GoogleAPIClientForREST
+  PROJECT_PATH: GoogleAPIClientForREST.xcodeproj
+  UUID: E899E01EE94E3AAE44DBC0A0C183AD70
 GoogleAppMeasurement:
   LABEL: GoogleAppMeasurement
   PROJECT_PATH: GoogleAppMeasurement.xcodeproj
@@ -314,6 +338,10 @@ GoogleSignIn:
   LABEL: GoogleSignIn
   PROJECT_PATH: GoogleSignIn.xcodeproj
   UUID: 70D52585A9FA4EEA343010638ADABC11
+GoogleToolboxForMac:
+  LABEL: GoogleToolboxForMac
+  PROJECT_PATH: GoogleToolboxForMac.xcodeproj
+  UUID: 6A6C31AF5480BB69EDDFCD50D28967CD
 GoogleUtilities:
   LABEL: GoogleUtilities
   PROJECT_PATH: GoogleUtilities.xcodeproj
@@ -338,6 +366,14 @@ Pods-BareExpoTests:
   LABEL: Pods-BareExpoTests
   PROJECT_PATH: Pods.xcodeproj
   UUID: 5ED670BDDA55CB27689267F688CCA84B
+PromisesObjC:
+  LABEL: PromisesObjC
+  PROJECT_PATH: PromisesObjC.xcodeproj
+  UUID: 615BB6D15EC37D16C898941802F0D251
+Protobuf:
+  LABEL: Protobuf
+  PROJECT_PATH: Protobuf.xcodeproj
+  UUID: BF47F3270E009392526FDEE0C3BA42AD
 RCTRequired:
   LABEL: RCTRequired
   PROJECT_PATH: RCTRequired.xcodeproj
@@ -510,6 +546,10 @@ UMCore:
   LABEL: UMCore
   PROJECT_PATH: UMCore.xcodeproj
   UUID: 153171642F5C5CBC05FD3EF6B23A3F36
+UMFaceDetectorInterface:
+  LABEL: UMFaceDetectorInterface
+  PROJECT_PATH: UMFaceDetectorInterface.xcodeproj
+  UUID: 8DC606D9CFDD04C553C81728629364B3
 UMFileSystemInterface:
   LABEL: UMFileSystemInterface
   PROJECT_PATH: UMFileSystemInterface.xcodeproj

@@ -9,31 +9,31 @@
 /* Begin PBXAggregateTarget section */
 		9677266E0E3834B96EA12E3394F9063D /* GoogleAppMeasurement */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = AE5BDF28C8239A90AEC78106B6E19D53 /* Build configuration list for PBXAggregateTarget "GoogleAppMeasurement" */;
+			buildConfigurationList = 9D930273FF666F4C8EBE68EE19ED0063 /* Build configuration list for PBXAggregateTarget "GoogleAppMeasurement" */;
 			buildPhases = (
 			);
 			dependencies = (
-				FFF6FD7EA67367DC31D42F3F2035F5BD /* PBXTargetDependency */,
-				AE60BBB486C25376AFD49A92678DD3FE /* PBXTargetDependency */,
+				F482BCD2D1963552A9686C8DBB948BC2 /* PBXTargetDependency */,
+				8EF71ED0B2BDDBE3FA0BE015C7DA49BC /* PBXTargetDependency */,
 			);
 			name = GoogleAppMeasurement;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		4149566495E7CC345792A89E6752F7D0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F066E3ECBE8B460E55410B3554DDE30C /* nanopb.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
-			remoteInfo = nanopb;
-		};
-		90BF32574B8713EF2F22CE1331EAEADB /* PBXContainerItemProxy */ = {
+		08027D98DC8C9F1E8E3D011E8BAED247 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B14A6E5D41DC74FF5FB1D41790DF8C06 /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
 			remoteInfo = GoogleUtilities;
+		};
+		FFD0F959938710DFACB46A89DCE96610 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F066E3ECBE8B460E55410B3554DDE30C /* nanopb.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
+			remoteInfo = nanopb;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -143,20 +143,20 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		AE60BBB486C25376AFD49A92678DD3FE /* PBXTargetDependency */ = {
+		8EF71ED0B2BDDBE3FA0BE015C7DA49BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = nanopb;
-			targetProxy = 4149566495E7CC345792A89E6752F7D0 /* PBXContainerItemProxy */;
+			targetProxy = FFD0F959938710DFACB46A89DCE96610 /* PBXContainerItemProxy */;
 		};
-		FFF6FD7EA67367DC31D42F3F2035F5BD /* PBXTargetDependency */ = {
+		F482BCD2D1963552A9686C8DBB948BC2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleUtilities;
-			targetProxy = 90BF32574B8713EF2F22CE1331EAEADB /* PBXContainerItemProxy */;
+			targetProxy = 08027D98DC8C9F1E8E3D011E8BAED247 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1FA6A7D999021D7158BEF48E5593DECE /* Debug */ = {
+		201DB642C1E1E2A1D14A16C10D9BB74B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BCF9098EBC5D5A318CF7964F16F0C55A /* GoogleAppMeasurement.debug.xcconfig */;
 			buildSettings = {
@@ -293,7 +293,7 @@
 			};
 			name = Release;
 		};
-		EB8C1F222915C0E96C10AB7BE473718B /* Release */ = {
+		E3FB84253E9AD66E466E5DF0FFFC206F /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 592442F389ACEEC9F19EC017010D2C6F /* GoogleAppMeasurement.release.xcconfig */;
 			buildSettings = {
@@ -319,11 +319,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AE5BDF28C8239A90AEC78106B6E19D53 /* Build configuration list for PBXAggregateTarget "GoogleAppMeasurement" */ = {
+		9D930273FF666F4C8EBE68EE19ED0063 /* Build configuration list for PBXAggregateTarget "GoogleAppMeasurement" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1FA6A7D999021D7158BEF48E5593DECE /* Debug */,
-				EB8C1F222915C0E96C10AB7BE473718B /* Release */,
+				201DB642C1E1E2A1D14A16C10D9BB74B /* Debug */,
+				E3FB84253E9AD66E466E5DF0FFFC206F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
