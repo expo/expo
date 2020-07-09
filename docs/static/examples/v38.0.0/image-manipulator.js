@@ -29,7 +29,7 @@ export default function App() {
     return (
       <View style={{ marginVertical: 20, alignItems: 'center', justifyContent: 'center' }}>
         <Image
-          source={{ uri: this.state.image.localUri || this.state.image.uri }}
+          source={{ uri: image.localUri || image.uri }}
           style={{ width: 300, height: 300, resizeMode: 'contain' }}
         />
       </View>
