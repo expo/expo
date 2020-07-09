@@ -378,28 +378,6 @@ Object {
   "fixableWarningCount": 0,
   "messages": Array [
     Object {
-      "column": 6,
-      "endColumn": 8,
-      "endLine": 7,
-      "line": 7,
-      "message": "React Hook useEffect has a missing dependency: 'dependentVariable'. Either include it or remove the dependency array.",
-      "nodeType": "ArrayExpression",
-      "ruleId": "react-hooks/exhaustive-deps",
-      "severity": 1,
-      "suggestions": Array [
-        Object {
-          "desc": "Update the dependencies array to be: [dependentVariable]",
-          "fix": Object {
-            "range": Array [
-              177,
-              179,
-            ],
-            "text": "[dependentVariable]",
-          },
-        },
-      ],
-    },
-    Object {
       "column": 5,
       "endColumn": 14,
       "endLine": 10,
@@ -448,6 +426,6 @@ function notAHook() {
   useEffect(() => {});
 }
 ",
-  "warningCount": 2,
+  "warningCount": 1,
 }
 `;

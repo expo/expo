@@ -23,8 +23,8 @@ export function usePermissions(type, options = {}) {
     // note: its intentional to listen to `type`, not `types`.
     // when `type` is casted to an array, it possible creates a new one on every render.
     // to prevent unnecessary function instances we need to listen to the "raw" value.
-    const askPermissions = useCallback(() => askAsync(...types).then(setData), [type]); // eslint-disable-line react-hooks/exhaustive-deps
-    const getPermissions = useCallback(() => getAsync(...types).then(setData), [type]); // eslint-disable-line react-hooks/exhaustive-deps
+    const askPermissions = useCallback(() => askAsync(...types).then(setData), [type]);
+    const getPermissions = useCallback(() => getAsync(...types).then(setData), [type]);
     useEffect(() => {
         if (ask) {
             askPermissions();

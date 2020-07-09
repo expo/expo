@@ -2,6 +2,8 @@
 
 #import <React/RCTBridge.h>
 
+#import <EXUpdates/EXUpdatesConfig.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesUtils : NSObject
@@ -10,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)sha256WithData:(NSData *)data;
 + (nullable NSURL *)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error;
 + (void)sendEventToBridge:(nullable RCTBridge *)bridge withType:(NSString *)eventType body:(NSDictionary *)body;
-+ (BOOL)shouldCheckForUpdate;
-+ (NSString *)getRuntimeVersion;
++ (BOOL)shouldCheckForUpdateWithConfig:(EXUpdatesConfig *)config;
++ (NSString *)getRuntimeVersionWithConfig:(EXUpdatesConfig *)config;
 
 @end
 

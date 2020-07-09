@@ -456,7 +456,7 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
     throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
   }
 
-  return ExpoContacts.getPermissionsAsync();
+  return await ExpoContacts.getPermissionsAsync();
 }
 
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {

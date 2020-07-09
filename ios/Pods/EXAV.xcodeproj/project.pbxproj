@@ -356,7 +356,7 @@
 			};
 			name = Release;
 		};
-		040F4DF8C25B3692291EEFEA8F76C7C1 /* Debug */ = {
+		413779FF53A9206AD725012ABC45E2B4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E7C6DF114803D736BE7B1530ED980BE4 /* EXAV.debug.xcconfig */;
 			buildSettings = {
@@ -376,11 +376,12 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		F574EC0C44BEB8AD1E1A35582764EBB6 /* Release */ = {
+		CC7210FCF467BB62140A0EF61D5F6E2E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B522DFBE79C317F1BDDD050D57B4D2BD /* EXAV.release.xcconfig */;
 			buildSettings = {
@@ -400,6 +401,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -475,8 +477,8 @@
 		0BBAD823B16235FC6C2BB56995AF0B70 /* Build configuration list for PBXNativeTarget "EXAV" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				040F4DF8C25B3692291EEFEA8F76C7C1 /* Debug */,
-				F574EC0C44BEB8AD1E1A35582764EBB6 /* Release */,
+				413779FF53A9206AD725012ABC45E2B4 /* Debug */,
+				CC7210FCF467BB62140A0EF61D5F6E2E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
