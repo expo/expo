@@ -135,7 +135,7 @@ export default function App() {
     return () => {
       Notifications.removeAllNotificationListeners();
     };
-  });
+  }, []);
 
   return (
     <View
@@ -148,7 +148,7 @@ export default function App() {
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>Data: {notification && JSON.stringify(notification.request.content.data.body)}</Text>
+        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
       </View>
       <Button
         title="Press to Send Notification"
@@ -214,6 +214,8 @@ async function registerForPushNotificationsAsync() {
 ```
 
 </SnackInline>
+
+> **Note** this demo might not fully work when you run it from the snack, because `app.json` needs to contain `useNextNotificationsApi` flag. Unfortunately, the snack doesn't support custom `app.json`.
 
 ## Android push notification payload specification
 

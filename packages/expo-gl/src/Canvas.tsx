@@ -72,11 +72,11 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
     if (ref.current != null) {
       setSize(getSize());
     }
-  }, [ref]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ref]);
 
   React.useEffect(() => {
     updateCanvasSize();
-  }, [size]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [size]);
 
   React.useEffect(() => {
     const canvas = _canvasRef.current;
@@ -84,7 +84,7 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
       updateCanvasSize();
     }
     setRef(props.canvasRef, canvas);
-  }, [_canvasRef]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [_canvasRef]);
 
   return (
     <View {...props} pointerEvents="box-none" ref={ref} onLayout={onLayout}>

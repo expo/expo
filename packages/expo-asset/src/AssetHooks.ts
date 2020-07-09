@@ -25,7 +25,7 @@ export function useAssets(moduleIds: number | number[]): [Asset[] | undefined, E
     Asset.loadAsync(moduleIds)
       .then(setAssets)
       .catch(setError);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return [assets, error];
 }

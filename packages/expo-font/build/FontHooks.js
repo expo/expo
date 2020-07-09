@@ -17,7 +17,7 @@ export function useFonts(map) {
         loadAsync(map)
             .then(() => setLoaded(true))
             .catch(setError);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
     return [loaded, error];
 }
 //# sourceMappingURL=FontHooks.js.map

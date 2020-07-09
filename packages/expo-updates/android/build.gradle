@@ -74,4 +74,7 @@ dependencies {
   implementation("com.squareup.okio:okio:1.15.0")
   implementation("commons-io:commons-io:2.6")
   implementation("org.apache.commons:commons-lang3:3.9")
+
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.mockito:mockito-core:1.10.19'
 }

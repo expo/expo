@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 1.1.3 — 2020-07-09
+
+### 🐛 Bug fixes
+
 - Use a shim `View` on web in place of a `WebView` for `react-native-web@0.12` support. ([#9021](https://github.com/expo/expo/pull/9021) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.1.2 — 2020-05-29

@@ -115,7 +115,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     dispatch_semaphore_signal(dbSemaphore);
   });
 
-  BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdate];
+  BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdateWithConfig:EXUpdatesConfig.sharedInstance];
   NSNumber *launchWaitMs = [EXUpdatesConfig sharedInstance].launchWaitMs;
   if ([launchWaitMs isEqualToNumber:@(0)] || !shouldCheckForUpdate) {
     self->_isTimerFinished = YES;

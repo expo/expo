@@ -35,7 +35,6 @@ includeUnimodulesProjects(
 // section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
         'expo-bluetooth',
         'expo-in-app-purchases',
-        'expo-updates',
         'expo-splash-screen'
 // FLAG_END_REMOVE__UPDATE_EXPOKIT
     ]

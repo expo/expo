@@ -163,7 +163,7 @@ export async function getPermissionsAsync() {
     if (!ExpoContacts.getPermissionsAsync) {
         throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
     }
-    return ExpoContacts.getPermissionsAsync();
+    return await ExpoContacts.getPermissionsAsync();
 }
 export async function requestPermissionsAsync() {
     if (!ExpoContacts.requestPermissionsAsync) {

@@ -33,17 +33,13 @@ export function useAuthRequest(config, discovery) {
         const result = await request?.promptAsync(discovery, options);
         setResult(result);
         return result;
-    }, 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [request?.url, discovery?.authorizationEndpoint]);
+    }, [request?.url, discovery?.authorizationEndpoint]);
     useEffect(() => {
         if (discovery) {
             const request = new AuthRequest(config);
             request.makeAuthUrlAsync(discovery).then(() => setRequest(request));
         }
-    }, 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
+    }, [
         discovery?.authorizationEndpoint,
         config.clientId,
         config.redirectUri,
