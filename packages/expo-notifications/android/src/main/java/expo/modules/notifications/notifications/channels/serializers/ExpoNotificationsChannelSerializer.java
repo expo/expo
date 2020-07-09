@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.enums.AudioContentType;
@@ -26,12 +27,12 @@ public class ExpoNotificationsChannelSerializer implements NotificationsChannelS
     }
 
     Bundle result = new Bundle();
-    result.putString(ID_KEY, channel.getId());
+    result.putString(ID_KEY, getChannelId(channel));
     result.putString(NAME_KEY, channel.getName().toString());
     result.putInt(IMPORTANCE_KEY, NotificationImportance.fromNativeValue(channel.getImportance()).getEnumValue());
     result.putBoolean(BYPASS_DND_KEY, channel.canBypassDnd());
     result.putString(DESCRIPTION_KEY, channel.getDescription());
-    result.putString(GROUP_ID_KEY, channel.getGroup());
+    result.putString(GROUP_ID_KEY, getGroupId(channel));
     result.putString(LIGHT_COLOR_KEY, String.format("#%08x", Color.valueOf(channel.getLightColor()).toArgb()).toUpperCase());
     result.putInt(LOCKSCREEN_VISIBILITY_KEY, NotificationVisibility.fromNativeValue(channel.getLockscreenVisibility()).getEnumValue());
     result.putBoolean(SHOW_BADGE_KEY, channel.canShowBadge());
@@ -41,6 +42,18 @@ public class ExpoNotificationsChannelSerializer implements NotificationsChannelS
     result.putBoolean(ENABLE_LIGHTS_KEY, channel.shouldShowLights());
     result.putBoolean(ENABLE_VIBRATE_KEY, channel.shouldVibrate());
     return result;
+  }
+
+  @NonNull
+  @RequiresApi(api = Build.VERSION_CODES.O)
+  protected String getChannelId(@NonNull NotificationChannel channel) {
+    return channel.getId();
+  }
+
+  @NonNull
+  @RequiresApi(api = Build.VERSION_CODES.O)
+  protected String getGroupId(@NonNull NotificationChannel channel) {
+    return channel.getGroup();
   }
 
   @Nullable

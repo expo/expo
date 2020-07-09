@@ -8,6 +8,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -27,14 +28,20 @@ public class ExpoNotificationsChannelGroupSerializer implements NotificationsCha
       return null;
     }
     Bundle result = new Bundle();
-    result.putString("id", group.getId());
+    result.putString(ID_KEY, getId(group));
     result.putString(NAME_KEY, group.getName().toString());
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
       result.putString(DESCRIPTION_KEY, group.getDescription());
-      result.putBoolean("isBlocked", group.isBlocked());
+      result.putBoolean(IS_BLOCKED_KEY, group.isBlocked());
     }
-    result.putParcelableArrayList("channels", toList(group.getChannels()));
+    result.putParcelableArrayList(CHANNELS_KEY, toList(group.getChannels()));
     return result;
+  }
+
+  @NonNull
+  @RequiresApi(api = Build.VERSION_CODES.O)
+  protected String getId(@NonNull NotificationChannelGroup channel) {
+    return channel.getId();
   }
 
   @RequiresApi(api = Build.VERSION_CODES.O)

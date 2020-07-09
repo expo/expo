@@ -29,11 +29,11 @@ public class ScopedNotificationsChannelsFactory extends AndroidXNotificationsCha
 
   @Override
   public NotificationsChannelSerializer createChannelSerializer() {
-    return super.createChannelSerializer();
+    return new ScopedChannelSerializer();
   }
 
   @Override
   public NotificationsChannelGroupSerializer createGroupSerializer() {
-    return super.createGroupSerializer();
+    return new ScopedGroupSerializer(createChannelSerializer());
   }
 }

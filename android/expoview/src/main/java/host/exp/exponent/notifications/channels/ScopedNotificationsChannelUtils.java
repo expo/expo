@@ -23,6 +23,21 @@ public class ScopedNotificationsChannelUtils {
     return SCOPED_GROUP_TAG + SEPARATOR + experienceId.get() + SEPARATOR + channelId;
   }
 
+  @NonNull
+  static String getUnscopedId(@NonNull String scopedId) {
+    if (!scopedId.startsWith(SCOPED_CHANNEL_TAG) && !scopedId.startsWith(SCOPED_GROUP_TAG)) {
+      return scopedId;
+    }
+
+    String[] idFragments = scopedId.split(SEPARATOR);
+    StringBuilder sb = new StringBuilder();
+    for(int i = 3; i < idFragments.length; i++) {
+      sb.append(idFragments[i]);
+    }
+
+    return sb.toString();
+  }
+
   @RequiresApi(api = Build.VERSION_CODES.O)
   static boolean checkIfGroupBelongsToExperience(@NonNull ExperienceId experienceId, @NonNull NotificationChannelGroup channelGroup) {
     return checkIfIdBelongsToExperience(experienceId, channelGroup.getId());
