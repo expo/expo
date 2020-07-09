@@ -96,44 +96,42 @@ export default class AppConfigSchemaPropertiesTable extends React.Component {
     var formattedSchema = formatSchema(rawSchema);
 
     return (
-      <div>
-        <table className={STYLES_TABLE}>
-          <thead className={STYLES_HEAD}>
-            <tr>
-              <td>Property</td>
-              <td>Type</td>
-              <td>Description</td>
-            </tr>
-          </thead>
-          <tbody>
-            {formattedSchema.map((property, index) => {
-              return (
-                <tr key={index}>
-                  <td>
-                    <div
-                      data-testid={property.name}
-                      style={{
-                        marginLeft: `${12 + property.level * 32}px`,
-                        display: property.level ? 'list-item' : 'block',
-                        listStyleType: property.level % 2 ? 'default' : 'circle',
-                        width: 'fit-content',
-                        overflowX: 'visible',
-                      }}>
-                      <MDX components={components}>{property.name}</MDX>
-                    </div>
-                  </td>
-                  <td>
-                    <InlineCode>{property.type && property.type.toString()}</InlineCode>
-                  </td>
-                  <td className={STYLES_DESCRIPTION_CELL}>
-                    <MDX components={components}>{property.description}</MDX>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <table className={STYLES_TABLE}>
+        <thead className={STYLES_HEAD}>
+          <tr>
+            <td>Property</td>
+            <td>Type</td>
+            <td>Description</td>
+          </tr>
+        </thead>
+        <tbody>
+          {formattedSchema.map((property, index) => {
+            return (
+              <tr key={index}>
+                <td>
+                  <div
+                    data-testid={property.name}
+                    style={{
+                      marginLeft: `${12 + property.level * 32}px`,
+                      display: property.level ? 'list-item' : 'block',
+                      listStyleType: property.level % 2 ? 'default' : 'circle',
+                      width: 'fit-content',
+                      overflowX: 'visible',
+                    }}>
+                    <MDX components={components}>{property.name}</MDX>
+                  </div>
+                </td>
+                <td>
+                  <InlineCode>{property.type && property.type.toString()}</InlineCode>
+                </td>
+                <td className={STYLES_DESCRIPTION_CELL}>
+                  <MDX components={components}>{property.description}</MDX>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     );
   }
 }
