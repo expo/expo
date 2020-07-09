@@ -47,9 +47,13 @@ In order to be able to receive push notifications on the device ensure that your
 
 The notification icon and the default color can be customized.
 - **To customize the icon**:
+
+  You can customize two icons: the default and the large one. See [the Android documentation](https://developer.android.com/guide/topics/ui/notifiers/notifications#Templates) for more details. The steps for them are very similar. The only difference is the tag in the second step.
+
   1. You will need to ensure that the icon is properly set up and added the project. To read more on how to create a notification icon and add it to the project check out the [“Create notification icon” section](https://developer.android.com/studio/write/image-asset-studio#create-notification) at the official Android guide. Remember the name you use for the icon asset, you will need it later!
-  2. Then head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_icon"` inside the `<application>` node referencing the custom icon with `@drawable/<notification_icon_name_you_used_in_step_1>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L44-L46).
+  2. Then head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_icon"` (or `android:name="expo.modules.notifications.large_notification_icon"` if you are changing the large icon) inside the `<application>` node referencing the custom icon with `@drawable/<notification_icon_name_you_used_in_step_1>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L44-L46).
   3. In the end your `AndroidManifest.xml` should look more or less like this:
+
   ```xml
   <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
     ...

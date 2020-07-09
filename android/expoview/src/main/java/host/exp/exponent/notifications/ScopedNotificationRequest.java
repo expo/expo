@@ -3,8 +3,8 @@ package host.exp.exponent.notifications;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.NotificationContent;
@@ -29,7 +29,7 @@ public class ScopedNotificationRequest extends NotificationRequest {
     mExperienceIdString = in.readString();
   }
 
-  boolean checkIfBelongsToExperience(@Nonnull ExperienceId experienceId) {
+  boolean checkIfBelongsToExperience(@NonNull ExperienceId experienceId) {
     if (mExperienceIdString == null) {
       return true;
     }
@@ -46,7 +46,8 @@ public class ScopedNotificationRequest extends NotificationRequest {
     }
   };
 
-  String getExperienceIdString() {
+  @Nullable
+  public String getExperienceIdString() {
     return mExperienceIdString;
   }
 
