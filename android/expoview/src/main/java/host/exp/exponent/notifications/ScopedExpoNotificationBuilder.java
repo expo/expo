@@ -9,13 +9,18 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.notifications.channels.ScopedNotificationsChannelManager;
+import host.exp.exponent.notifications.channels.ScopedNotificationsGroupManager;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.R;
@@ -26,6 +31,9 @@ public class ScopedExpoNotificationBuilder extends ExpoNotificationBuilder {
 
   @Nullable
   JSONObject manifest;
+
+  @Nullable
+  ExperienceId mExperienceId;
 
   public ScopedExpoNotificationBuilder(Context context) {
     super(context);
@@ -39,8 +47,8 @@ public class ScopedExpoNotificationBuilder extends ExpoNotificationBuilder {
     // We parse manifest here to have easy access to it from other methods.
     NotificationRequest requester = getNotification().getNotificationRequest();
     if (requester instanceof ScopedNotificationRequest) {
-      String experienceIdString = ((ScopedNotificationRequest) requester).getExperienceIdString();
-      ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(experienceIdString);
+      mExperienceId = ExperienceId.create(((ScopedNotificationRequest) requester).getExperienceIdString());
+      ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(mExperienceId.get());
       try {
         manifest = new JSONObject(experience.manifest);
       } catch (JSONException e) {
@@ -50,6 +58,16 @@ public class ScopedExpoNotificationBuilder extends ExpoNotificationBuilder {
     }
 
     return this;
+  }
+
+  @NonNull
+  @Override
+  protected NotificationsChannelManager getNotificationsChannelManager() {
+    if (mExperienceId == null) {
+      return super.getNotificationsChannelManager();
+    }
+
+    return new ScopedNotificationsChannelManager(getContext(), mExperienceId, new ScopedNotificationsGroupManager(getContext(), mExperienceId));
   }
 
   @Override

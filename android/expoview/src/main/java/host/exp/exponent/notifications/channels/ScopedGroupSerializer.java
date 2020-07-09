@@ -4,6 +4,7 @@ import android.app.NotificationChannelGroup;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.channels.serializers.ExpoNotificationsChannelGroupSerializer;
 import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer;
@@ -13,7 +14,7 @@ public class ScopedGroupSerializer extends ExpoNotificationsChannelGroupSerializ
     super(channelSerializer);
   }
 
-  @NonNull
+  @Nullable
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   protected String getId(@NonNull NotificationChannelGroup channel) {

@@ -38,7 +38,7 @@ public class ExpoNotificationsChannelGroupSerializer implements NotificationsCha
     return result;
   }
 
-  @NonNull
+  @Nullable
   @RequiresApi(api = Build.VERSION_CODES.O)
   protected String getId(@NonNull NotificationChannelGroup channel) {
     return channel.getId();
