@@ -40,16 +40,6 @@ CACHE_KEYS:
     PROJECT_NAME: boost-for-react-native
     SPECS:
       - boost-for-react-native (1.63.0)
-  Branch:
-    BUILD_SETTINGS_CHECKSUM:
-      Branch:
-        :debug: 9d186888e388d0c6920574cb9733ddc3
-        :release: 9d186888e388d0c6920574cb9733ddc3
-    CHECKSUM: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
-    PROJECT_NAME: Branch
-    SPECS:
-      - Branch (0.29.0)
-      - Branch/Core (0.29.0)
   DoubleConversion:
     BUILD_SETTINGS_CHECKSUM:
       DoubleConversion:
@@ -1160,8 +1150,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1fea4d37a86406a6e776fa77b0fdc8b1
-      Release: 1fea4d37a86406a6e776fa77b0fdc8b1
+      Debug: e881db1744adf8211c374f30afbf1c0a
+      Release: e881db1744adf8211c374f30afbf1c0a
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1171,8 +1161,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: cadc4f5603fbca60536e7ddc135e07a2
-      Release: cadc4f5603fbca60536e7ddc135e07a2
+      Debug: b005bd3833694175f64824a1eb4aacb8
+      Release: b005bd3833694175f64824a1eb4aacb8
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -1754,40 +1744,6 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-appearance
     SPECS:
       - react-native-appearance (0.3.4)
-  react-native-branch:
-    BUILD_SETTINGS_CHECKSUM:
-      react-native-branch:
-        :debug: 723e380447419a3b7fbe1a8ca0c1981e
-        :release: 723e380447419a3b7fbe1a8ca0c1981e
-    CHECKSUM: cc611a2d0e7e6c7c4cafebc8e59065b89c38002b
-    FILES:
-      - "../../../../node_modules/react-native-branch/ios/BranchContentMetadata+RNBranch.h"
-      - "../../../../node_modules/react-native-branch/ios/BranchContentMetadata+RNBranch.m"
-      - "../../../../node_modules/react-native-branch/ios/BranchEvent+RNBranch.h"
-      - "../../../../node_modules/react-native-branch/ios/BranchEvent+RNBranch.m"
-      - "../../../../node_modules/react-native-branch/ios/BranchLinkProperties+RNBranch.h"
-      - "../../../../node_modules/react-native-branch/ios/BranchLinkProperties+RNBranch.m"
-      - "../../../../node_modules/react-native-branch/ios/BranchUniversalObject+RNBranch.h"
-      - "../../../../node_modules/react-native-branch/ios/BranchUniversalObject+RNBranch.m"
-      - "../../../../node_modules/react-native-branch/ios/NSObject+RNBranch.h"
-      - "../../../../node_modules/react-native-branch/ios/NSObject+RNBranch.m"
-      - "../../../../node_modules/react-native-branch/ios/RNBranch.h"
-      - "../../../../node_modules/react-native-branch/ios/RNBranch.m"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchAgingDictionary.h"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchAgingDictionary.m"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchAgingItem.h"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchAgingItem.m"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchConfig.h"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchConfig.m"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchEventEmitter.h"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchEventEmitter.m"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchProperty.h"
-      - "../../../../node_modules/react-native-branch/ios/RNBranchProperty.m"
-      - "../../../../node_modules/react-native-branch/LICENSE"
-      - "../../../../node_modules/react-native-branch/README.md"
-    PROJECT_NAME: react-native-branch
-    SPECS:
-      - react-native-branch (4.2.1)
   react-native-netinfo:
     BUILD_SETTINGS_CHECKSUM:
       react-native-netinfo:
