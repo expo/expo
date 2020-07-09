@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLoader.h>
+#import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
@@ -18,7 +19,7 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
 
 @end
 
-@interface EXUpdatesAppController : NSObject
+@interface EXUpdatesAppController : NSObject <EXUpdatesAppLoaderTaskDelegate>
 
 /**
  Delegate which will be notified when EXUpdates has an update ready to launch and
