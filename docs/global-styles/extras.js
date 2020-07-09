@@ -88,4 +88,21 @@ export const globalExtras = `
   .snack-inline-example-button:active {
       transform: scale(0.99);
   }
+
+  .diff-container {
+    border: 1px solid #e3e3e3;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+
+  .diff-container table {
+    font-size: 0.9rem;
+    border-radius: none;
+    border: none;
+  }
+
+  .diff-container td, .diff-container th {
+    border-bottom: none;
+    border-right: none;
+  }
 `;
