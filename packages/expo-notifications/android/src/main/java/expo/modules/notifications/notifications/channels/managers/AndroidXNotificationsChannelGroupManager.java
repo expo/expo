@@ -5,9 +5,7 @@ import android.content.Context;
 import android.os.Build;
 
 import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.InternalModule;
 
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -15,19 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
-import static expo.modules.notifications.notifications.channels.NotificationChannelGroupSerializer.DESCRIPTION_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelGroupSerializer.DESCRIPTION_KEY;
 
-public class AndroidXNotificationsChannelGroupManager implements InternalModule, NotificationsChannelGroupManager {
+public class AndroidXNotificationsChannelGroupManager implements NotificationsChannelGroupManager {
   private final NotificationManagerCompat mNotificationManager;
 
   public AndroidXNotificationsChannelGroupManager(Context context) {
     mNotificationManager = NotificationManagerCompat.from(context);
-  }
-
-  @Override
-  @RequiresApi(api = Build.VERSION_CODES.O)
-  public List<? extends Class> getExportedInterfaces() {
-    return Collections.singletonList(NotificationsChannelGroupManager.class);
   }
 
   @Nullable

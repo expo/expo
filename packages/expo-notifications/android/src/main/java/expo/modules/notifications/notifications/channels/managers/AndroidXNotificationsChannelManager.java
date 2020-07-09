@@ -9,12 +9,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 
-import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.arguments.MapArguments;
 import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.InternalModule;
 
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -27,41 +24,33 @@ import expo.modules.notifications.notifications.enums.AudioContentType;
 import expo.modules.notifications.notifications.enums.AudioUsage;
 import expo.modules.notifications.notifications.enums.NotificationVisibility;
 
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.AUDIO_ATTRIBUTES_CONTENT_TYPE_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.AUDIO_ATTRIBUTES_FLAGS_ENFORCE_AUDIBILITY_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.AUDIO_ATTRIBUTES_FLAGS_HW_AV_SYNC_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.AUDIO_ATTRIBUTES_FLAGS_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.AUDIO_ATTRIBUTES_USAGE_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.BYPASS_DND_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.DESCRIPTION_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.ENABLE_LIGHTS_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.ENABLE_VIBRATE_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.GROUP_ID_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.LIGHT_COLOR_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.LOCKSCREEN_VISIBILITY_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SHOW_BADGE_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SOUND_AUDIO_ATTRIBUTES_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.SOUND_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.VIBRATION_PATTERN_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.AUDIO_ATTRIBUTES_CONTENT_TYPE_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.AUDIO_ATTRIBUTES_FLAGS_ENFORCE_AUDIBILITY_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.AUDIO_ATTRIBUTES_FLAGS_HW_AV_SYNC_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.AUDIO_ATTRIBUTES_FLAGS_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.AUDIO_ATTRIBUTES_USAGE_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.BYPASS_DND_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.DESCRIPTION_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.ENABLE_LIGHTS_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.ENABLE_VIBRATE_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.GROUP_ID_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.LIGHT_COLOR_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.LOCKSCREEN_VISIBILITY_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.SHOW_BADGE_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.SOUND_AUDIO_ATTRIBUTES_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.SOUND_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.VIBRATION_PATTERN_KEY;
 
-public class AndroidXNotificationsChannelManager implements NotificationsChannelManager, InternalModule {
+
+public class AndroidXNotificationsChannelManager implements NotificationsChannelManager {
   private final NotificationManagerCompat mNotificationManager;
   private NotificationsChannelGroupManager mNotificationsChannelGroupManager;
   private final SoundResolver mSoundResolver;
 
-  public AndroidXNotificationsChannelManager(Context context) {
+  public AndroidXNotificationsChannelManager(Context context, NotificationsChannelGroupManager groupManager) {
     mNotificationManager = NotificationManagerCompat.from(context);
     mSoundResolver = new SoundResolver(context);
-  }
-
-  @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    mNotificationsChannelGroupManager = moduleRegistry.getModule(NotificationsChannelGroupManager.class);
-  }
-
-  @Override
-  public List<? extends Class> getExportedInterfaces() {
-    return Collections.singletonList(NotificationsChannelManager.class);
+    mNotificationsChannelGroupManager = groupManager;
   }
 
 

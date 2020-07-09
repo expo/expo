@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.R;
+import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
@@ -72,7 +73,7 @@ public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBu
   }
 
   protected NotificationsChannelManager getNotificationsChannelManager() {
-    return new AndroidXNotificationsChannelManager(getContext());
+    return new AndroidXNotificationsChannelManager(getContext(), new AndroidXNotificationsChannelGroupManager(getContext()));
   }
 
   /**

@@ -1,4 +1,4 @@
-package host.exp.exponent.notifications;
+package host.exp.exponent.notifications.channels;
 
 import android.app.NotificationChannelGroup;
 import android.content.Context;
@@ -27,7 +27,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannelGroup getNotificationChannelGroup(@NonNull String channelGroupId) {
-    NotificationChannelGroup scopedGroup = super.getNotificationChannelGroup(ScopedNotificationsChannelUtilities.getScopedGroupId(mExperienceId, channelGroupId));
+    NotificationChannelGroup scopedGroup = super.getNotificationChannelGroup(ScopedNotificationsChannelUtils.getScopedGroupId(mExperienceId, channelGroupId));
     if (scopedGroup != null) {
       return scopedGroup;
     }
@@ -43,7 +43,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
     ArrayList<NotificationChannelGroup> result = new ArrayList<>();
     List<NotificationChannelGroup> channelGroups = super.getNotificationChannelGroups();
     for (NotificationChannelGroup group : channelGroups) {
-      if (ScopedNotificationsChannelUtilities.checkIfGroupBelongsToExperience(mExperienceId, group)) {
+      if (ScopedNotificationsChannelUtils.checkIfGroupBelongsToExperience(mExperienceId, group)) {
         result.add(group);
       }
     }
@@ -54,7 +54,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannelGroup createNotificationChannelGroup(@NonNull String groupId, @NonNull CharSequence name, ReadableArguments groupOptions) {
-    return super.createNotificationChannelGroup(ScopedNotificationsChannelUtilities.getScopedGroupId(mExperienceId, groupId), name, groupOptions);
+    return super.createNotificationChannelGroup(ScopedNotificationsChannelUtils.getScopedGroupId(mExperienceId, groupId), name, groupOptions);
   }
 
   @Override

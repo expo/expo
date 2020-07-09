@@ -18,11 +18,11 @@ import java.util.Objects;
 
 import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
+import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer;
 import expo.modules.notifications.notifications.enums.NotificationImportance;
 
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.IMPORTANCE_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.NAME_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelSerializer.toBundle;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.IMPORTANCE_KEY;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer.NAME_KEY;
 
 /**
  * An exported module responsible for exposing methods for managing notification channels.
@@ -31,6 +31,7 @@ public class NotificationChannelManagerModule extends ExportedModule {
   private final static String EXPORTED_NAME = "ExpoNotificationChannelManager";
 
   private NotificationsChannelManager mChannelManager;
+  private NotificationsChannelSerializer mChannelSerializer;
 
   public NotificationChannelManagerModule(Context context) {
     super(context);
@@ -38,7 +39,9 @@ public class NotificationChannelManagerModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mChannelManager = moduleRegistry.getModule(NotificationsChannelManager.class);
+    NotificationsChannelsFactory factory = moduleRegistry.getModule(NotificationsChannelsFactory.class);
+    mChannelManager = factory.createChannelManager();
+    mChannelSerializer = factory.createChannelSerializer();
   }
 
   @Override
@@ -53,7 +56,7 @@ public class NotificationChannelManagerModule extends ExportedModule {
       return;
     }
 
-    promise.resolve(toBundle(mChannelManager.getNotificationChannel(channelId)));
+    promise.resolve(mChannelSerializer.toBundle(mChannelManager.getNotificationChannel(channelId)));
   }
 
   @ExpoMethod
@@ -66,7 +69,7 @@ public class NotificationChannelManagerModule extends ExportedModule {
     List<NotificationChannel> existingChannels = mChannelManager.getNotificationChannels();
     List<Bundle> serializedChannels = new ArrayList<>(existingChannels.size());
     for (NotificationChannel channel : existingChannels) {
-      serializedChannels.add(toBundle(channel));
+      serializedChannels.add(mChannelSerializer.toBundle(channel));
     }
     promise.resolve(serializedChannels);
   }
@@ -79,7 +82,7 @@ public class NotificationChannelManagerModule extends ExportedModule {
     }
 
     NotificationChannel channel = mChannelManager.createNotificationChannel(channelId, getNameFromOptions(channelOptions), getImportanceFromOptions(channelOptions), channelOptions);
-    promise.resolve(toBundle(channel));
+    promise.resolve(mChannelSerializer.toBundle(channel));
   }
 
   @ExpoMethod

@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelGroupManager;
+import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelGroupSerializer;
 
-import static expo.modules.notifications.notifications.channels.NotificationChannelGroupSerializer.NAME_KEY;
-import static expo.modules.notifications.notifications.channels.NotificationChannelGroupSerializer.toBundle;
+import static expo.modules.notifications.notifications.channels.serializers.NotificationsChannelGroupSerializer.NAME_KEY;
 
 /**
  * An exported module responsible for exposing methods for managing notification channel groups.
@@ -24,7 +24,8 @@ import static expo.modules.notifications.notifications.channels.NotificationChan
 public class NotificationChannelGroupManagerModule extends ExportedModule {
   private final static String EXPORTED_NAME = "ExpoNotificationChannelGroupManager";
 
-  private NotificationsChannelGroupManager mNotificationManager;
+  private NotificationsChannelGroupManager mGroupManager;
+  private NotificationsChannelGroupSerializer mGroupSerializer;
 
   public NotificationChannelGroupManagerModule(Context context) {
     super(context);
@@ -32,7 +33,9 @@ public class NotificationChannelGroupManagerModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mNotificationManager = moduleRegistry.getModule(NotificationsChannelGroupManager.class);
+    NotificationsChannelsFactory factory = moduleRegistry.getModule(NotificationsChannelsFactory.class);
+    mGroupManager = factory.createGroupManager();
+    mGroupSerializer = factory.createGroupSerializer();
   }
 
   @Override
@@ -47,8 +50,8 @@ public class NotificationChannelGroupManagerModule extends ExportedModule {
       return;
     }
 
-    NotificationChannelGroup group = mNotificationManager.getNotificationChannelGroup(groupId);
-    promise.resolve(toBundle(group));
+    NotificationChannelGroup group = mGroupManager.getNotificationChannelGroup(groupId);
+    promise.resolve(mGroupSerializer.toBundle(group));
   }
 
   @ExpoMethod
@@ -58,10 +61,10 @@ public class NotificationChannelGroupManagerModule extends ExportedModule {
       return;
     }
 
-    List<NotificationChannelGroup> existingChannels = mNotificationManager.getNotificationChannelGroups();
+    List<NotificationChannelGroup> existingChannels = mGroupManager.getNotificationChannelGroups();
     List<Bundle> serializedChannels = new ArrayList<>(existingChannels.size());
     for (NotificationChannelGroup channelGroup : existingChannels) {
-      serializedChannels.add(toBundle(channelGroup));
+      serializedChannels.add(mGroupSerializer.toBundle(channelGroup));
     }
     promise.resolve(serializedChannels);
   }
@@ -73,8 +76,8 @@ public class NotificationChannelGroupManagerModule extends ExportedModule {
       return;
     }
 
-    NotificationChannelGroup group = mNotificationManager.createNotificationChannelGroup(groupId, getNameFromOptions(groupOptions), groupOptions);
-    promise.resolve(toBundle(group));
+    NotificationChannelGroup group = mGroupManager.createNotificationChannelGroup(groupId, getNameFromOptions(groupOptions), groupOptions);
+    promise.resolve(mGroupSerializer.toBundle(group));
   }
 
   @ExpoMethod
@@ -84,7 +87,7 @@ public class NotificationChannelGroupManagerModule extends ExportedModule {
       return;
     }
 
-    mNotificationManager.deleteNotificationChannelGroup(groupId);
+    mGroupManager.deleteNotificationChannelGroup(groupId);
     promise.resolve(null);
   }
 

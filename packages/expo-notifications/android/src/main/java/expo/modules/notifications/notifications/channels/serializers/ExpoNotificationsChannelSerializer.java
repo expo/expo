@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.channels;
+package expo.modules.notifications.notifications.channels.serializers;
 
 import android.app.NotificationChannel;
 import android.graphics.Color;
@@ -15,32 +15,12 @@ import expo.modules.notifications.notifications.enums.AudioUsage;
 import expo.modules.notifications.notifications.enums.NotificationImportance;
 import expo.modules.notifications.notifications.enums.NotificationVisibility;
 
-public class NotificationChannelSerializer {
-  // Keys reused in NotificationChannelManagerModule for fetching configuration from options
-  public final static String ID_KEY = "id";
-  public final static String NAME_KEY = "name";
-  public final static String IMPORTANCE_KEY = "importance";
-  public final static String BYPASS_DND_KEY = "bypassDnd";
-  public final static String DESCRIPTION_KEY = "description";
-  public final static String GROUP_ID_KEY = "groupId";
-  public final static String LIGHT_COLOR_KEY = "lightColor";
-  public final static String LOCKSCREEN_VISIBILITY_KEY = "lockscreenVisibility";
-  public final static String SHOW_BADGE_KEY = "showBadge";
-  public final static String SOUND_KEY = "sound";
-  public final static String SOUND_AUDIO_ATTRIBUTES_KEY = "audioAttributes";
-  public final static String VIBRATION_PATTERN_KEY = "vibrationPattern";
-  public final static String ENABLE_LIGHTS_KEY = "enableLights";
-  public final static String ENABLE_VIBRATE_KEY = "enableVibrate";
+public class ExpoNotificationsChannelSerializer implements NotificationsChannelSerializer {
 
-  public final static String AUDIO_ATTRIBUTES_USAGE_KEY = "usage";
-  public final static String AUDIO_ATTRIBUTES_CONTENT_TYPE_KEY = "contentType";
-  public final static String AUDIO_ATTRIBUTES_FLAGS_KEY = "flags";
-  public final static String AUDIO_ATTRIBUTES_FLAGS_ENFORCE_AUDIBILITY_KEY = "enforceAudibility";
-  public final static String AUDIO_ATTRIBUTES_FLAGS_HW_AV_SYNC_KEY = "requestHardwareAudioVideoSynchronization";
-
+  @Override
   @Nullable
   @RequiresApi(api = Build.VERSION_CODES.O)
-  public static Bundle toBundle(@Nullable NotificationChannel channel) {
+  public Bundle toBundle(@Nullable NotificationChannel channel) {
     if (channel == null) {
       return null;
     }
@@ -64,7 +44,7 @@ public class NotificationChannelSerializer {
   }
 
   @Nullable
-  public static String toString(@Nullable Uri uri) {
+  private String toString(@Nullable Uri uri) {
     if (uri == null) {
       return null;
     }
@@ -76,7 +56,7 @@ public class NotificationChannelSerializer {
     return "custom";
   }
 
-  public static Bundle toBundle(@Nullable AudioAttributes attributes) {
+  private Bundle toBundle(@Nullable AudioAttributes attributes) {
     if (attributes == null) {
       return null;
     }
@@ -94,7 +74,7 @@ public class NotificationChannelSerializer {
   }
 
   @Nullable
-  public static double[] toArray(@Nullable long[] array) {
+  private double[] toArray(@Nullable long[] array) {
     if (array == null) {
       return null;
     }

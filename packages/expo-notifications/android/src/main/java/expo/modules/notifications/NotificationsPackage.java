@@ -15,11 +15,9 @@ import expo.modules.notifications.badge.BadgeModule;
 import expo.modules.notifications.badge.ExpoBadgeManager;
 import expo.modules.notifications.installationid.InstallationIdProvider;
 import expo.modules.notifications.notifications.NotificationManager;
-import expo.modules.notifications.notifications.SoundResolver;
 import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule;
 import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule;
-import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
-import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
+import expo.modules.notifications.notifications.channels.AndroidXNotificationsChannelsFactory;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
@@ -56,9 +54,6 @@ public class NotificationsPackage extends BasePackage {
 
   @Override
   public List<InternalModule> createInternalModules(Context context) {
-    return Arrays.asList(
-      new AndroidXNotificationsChannelManager(context),
-      new AndroidXNotificationsChannelGroupManager(context)
-    );
+    return Collections.singletonList(new AndroidXNotificationsChannelsFactory(context));
   }
 }

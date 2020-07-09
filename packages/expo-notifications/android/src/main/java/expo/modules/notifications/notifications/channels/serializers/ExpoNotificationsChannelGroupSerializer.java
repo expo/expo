@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.channels;
+package expo.modules.notifications.notifications.channels.serializers;
 
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -11,13 +11,18 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-public class NotificationChannelGroupSerializer {
-  public static String NAME_KEY = "name";
-  public static String DESCRIPTION_KEY = "description";
+public class ExpoNotificationsChannelGroupSerializer implements NotificationsChannelGroupSerializer {
 
+  private NotificationsChannelSerializer mChannelSerializer;
+
+  public ExpoNotificationsChannelGroupSerializer(NotificationsChannelSerializer channelSerializer) {
+    mChannelSerializer = channelSerializer;
+  }
+
+  @Override
   @Nullable
   @RequiresApi(api = Build.VERSION_CODES.O)
-  public static Bundle toBundle(@Nullable NotificationChannelGroup group) {
+  public Bundle toBundle(@Nullable NotificationChannelGroup group) {
     if (group == null) {
       return null;
     }
@@ -33,10 +38,10 @@ public class NotificationChannelGroupSerializer {
   }
 
   @RequiresApi(api = Build.VERSION_CODES.O)
-  public static ArrayList<Bundle> toList(List<NotificationChannel> channels) {
+  private ArrayList<Bundle> toList(List<NotificationChannel> channels) {
     ArrayList<Bundle> results = new ArrayList<>(channels.size());
     for (NotificationChannel channel : channels) {
-      results.add(NotificationChannelSerializer.toBundle(channel));
+      results.add(mChannelSerializer.toBundle(channel));
     }
     return results;
   }

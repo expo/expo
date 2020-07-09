@@ -1,4 +1,4 @@
-package host.exp.exponent.notifications;
+package host.exp.exponent.notifications.channels;
 
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import host.exp.exponent.kernel.ExperienceId;
 
-public class ScopedNotificationsChannelUtilities {
+public class ScopedNotificationsChannelUtils {
   static final String SCOPED_GROUP_TAG = "EXPO_GROUP";
   static final String SCOPED_CHANNEL_TAG = "EXPO_CHANNEL";
   static final String SEPARATOR = "/";
