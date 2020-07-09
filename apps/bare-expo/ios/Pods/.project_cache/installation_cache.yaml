@@ -1160,8 +1160,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 487fbf5467fd0e479571760f7c0ca7fa
-      Release: 487fbf5467fd0e479571760f7c0ca7fa
+      Debug: a72e8fce5b895de26f8c0df42d8b9daf
+      Release: a72e8fce5b895de26f8c0df42d8b9daf
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1171,8 +1171,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: b09fd15fac79c2cfc0331bc606e1a5d8
-      Release: b09fd15fac79c2cfc0331bc606e1a5d8
+      Debug: 115e8a6f20f1220d67aea50c886b70e3
+      Release: 115e8a6f20f1220d67aea50c886b70e3
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -1866,6 +1866,20 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-slider
     SPECS:
       - react-native-slider (3.0.0)
+  react-native-view-shot:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-view-shot:
+        :debug: bf1c13877c96b0043ea33a6148f0c843
+        :release: bf1c13877c96b0043ea33a6148f0c843
+    CHECKSUM: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
+    FILES:
+      - "../../../../node_modules/react-native-view-shot/ios/RNViewShot.h"
+      - "../../../../node_modules/react-native-view-shot/ios/RNViewShot.m"
+      - "../../../../node_modules/react-native-view-shot/LICENSE"
+      - "../../../../node_modules/react-native-view-shot/README.md"
+    PROJECT_NAME: react-native-view-shot
+    SPECS:
+      - react-native-view-shot (3.1.2)
   react-native-viewpager:
     BUILD_SETTINGS_CHECKSUM:
       react-native-viewpager:

@@ -394,6 +394,10 @@ react-native-slider:
   LABEL: react-native-slider
   PROJECT_PATH: react-native-slider.xcodeproj
   UUID: F3C1D8A71F2007982BE1C3D3D3B64151
+react-native-view-shot:
+  LABEL: react-native-view-shot
+  PROJECT_PATH: react-native-view-shot.xcodeproj
+  UUID: E2467C029EBD31A567D815A97DFFBB51
 react-native-viewpager:
   LABEL: react-native-viewpager
   PROJECT_PATH: react-native-viewpager.xcodeproj
