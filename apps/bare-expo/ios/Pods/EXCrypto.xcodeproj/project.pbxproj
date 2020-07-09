@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1669FA24B2978469057BFC527577343D /* EXCrypto-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E33CDA22424F925B64F6761A253865 /* EXCrypto-dummy.m */; };
-		2E6F9A6EF6E43D9623753539E1EC2141 /* EXCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 49FE0FE2364BFA326C41C25A2263E064 /* EXCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		77A6EB03BC629BBE0A803AA4D47DEB47 /* EXCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E782F865D7965C71A30A1A2F1A46A0 /* EXCrypto.m */; };
+		0F586B416ADE22EA518EC761DAD78B1D /* EXCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 49FE0FE2364BFA326C41C25A2263E064 /* EXCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		658DFED6C9D26D084091B7A4E29FC3B1 /* EXCrypto-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E33CDA22424F925B64F6761A253865 /* EXCrypto-dummy.m */; };
+		DACF13D06C8C7990C5D9F078DC9987B9 /* EXCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E782F865D7965C71A30A1A2F1A46A0 /* EXCrypto.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D8FA97EE4E37DA1A7AD865BAC83CC0AC /* PBXContainerItemProxy */ = {
+		D004ACC1D0AE024D5EB731232235AAA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3D7A5E962369B34F51EEF1F94DBCB390 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		DEFA55DF076FA8E5820494092FE273AA /* Frameworks */ = {
+		CC567C1FDAA59DB3E6CCDE5DE5F04184 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D32834D5FFF3305589AC9AF462A9D949 /* Headers */ = {
+		1441FE21056B792C82B9EABF27780905 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E6F9A6EF6E43D9623753539E1EC2141 /* EXCrypto.h in Headers */,
+				0F586B416ADE22EA518EC761DAD78B1D /* EXCrypto.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		7313EAFC3221A55173D00B5135657D25 /* EXCrypto */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9E5A6763ECB3347FA643B16C61231049 /* Build configuration list for PBXNativeTarget "EXCrypto" */;
+			buildConfigurationList = 9A4F8034C3A18095C3231083603283CA /* Build configuration list for PBXNativeTarget "EXCrypto" */;
 			buildPhases = (
-				D32834D5FFF3305589AC9AF462A9D949 /* Headers */,
-				BF50D9469EC3C6F7E9FB422CB4F22D96 /* Sources */,
-				DEFA55DF076FA8E5820494092FE273AA /* Frameworks */,
+				1441FE21056B792C82B9EABF27780905 /* Headers */,
+				54A418D934967902F9FA4F7A95DB97DB /* Sources */,
+				CC567C1FDAA59DB3E6CCDE5DE5F04184 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E359DAC68316AC9413873019BFC128C1 /* PBXTargetDependency */,
+				72CFA8755E1DA9075A4B063D8730D3A8 /* PBXTargetDependency */,
 			);
 			name = EXCrypto;
 			productName = EXCrypto;
@@ -175,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BF50D9469EC3C6F7E9FB422CB4F22D96 /* Sources */ = {
+		54A418D934967902F9FA4F7A95DB97DB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1669FA24B2978469057BFC527577343D /* EXCrypto-dummy.m in Sources */,
-				77A6EB03BC629BBE0A803AA4D47DEB47 /* EXCrypto.m in Sources */,
+				658DFED6C9D26D084091B7A4E29FC3B1 /* EXCrypto-dummy.m in Sources */,
+				DACF13D06C8C7990C5D9F078DC9987B9 /* EXCrypto.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E359DAC68316AC9413873019BFC128C1 /* PBXTargetDependency */ = {
+		72CFA8755E1DA9075A4B063D8730D3A8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D8FA97EE4E37DA1A7AD865BAC83CC0AC /* PBXContainerItemProxy */;
+			targetProxy = D004ACC1D0AE024D5EB731232235AAA5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -319,7 +319,7 @@
 			};
 			name = Release;
 		};
-		BF014CC3F881BD7786806F4345A5283B /* Debug */ = {
+		C04A5D859E9956C4C019AA21D946CEBB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14438ACC7C88C3A5002E083620854A77 /* EXCrypto.debug.xcconfig */;
 			buildSettings = {
@@ -344,7 +344,7 @@
 			};
 			name = Debug;
 		};
-		F6006B451FDE0FB1558BD26A7E1C9768 /* Release */ = {
+		DFE848F6B058E97091B68723247D819F /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F34CA6A1671CE7C544368ECFB361F692 /* EXCrypto.release.xcconfig */;
 			buildSettings = {
@@ -373,11 +373,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9E5A6763ECB3347FA643B16C61231049 /* Build configuration list for PBXNativeTarget "EXCrypto" */ = {
+		9A4F8034C3A18095C3231083603283CA /* Build configuration list for PBXNativeTarget "EXCrypto" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BF014CC3F881BD7786806F4345A5283B /* Debug */,
-				F6006B451FDE0FB1558BD26A7E1C9768 /* Release */,
+				C04A5D859E9956C4C019AA21D946CEBB /* Debug */,
+				DFE848F6B058E97091B68723247D819F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

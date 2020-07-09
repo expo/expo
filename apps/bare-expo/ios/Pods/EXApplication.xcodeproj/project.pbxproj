@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		20079C04279A3EDC0CBAE2D482F20A93 /* EXApplication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0DF4445909DD366CCAF00E00BFF9CE /* EXApplication-dummy.m */; };
-		518B10494EE459AA6928D8B1C0EED7C3 /* EXApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 630E3FC145F51558044BA3D4BC549AFF /* EXApplication.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7F3360236C48F7C7E7D205BEBB95C99A /* EXProvisioningProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 589CB19450E9A892C4FCBA5F4AB4ECC8 /* EXProvisioningProfile.m */; };
-		8D8D4E6944F5D0A69ADC4A3EE37891E7 /* EXProvisioningProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E0E948C8C1A79C12A8A5E659D03BA9 /* EXProvisioningProfile.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BEA1208CD8C78578C5AEC7DE8FBCEE0B /* EXApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 9977A5A84EE80590854F65DA2618FEED /* EXApplication.m */; };
+		6006F8BCB338392C4840802E78258109 /* EXProvisioningProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 18E0E948C8C1A79C12A8A5E659D03BA9 /* EXProvisioningProfile.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		967988573BD1C463F2D68DA4E81E4782 /* EXApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 9977A5A84EE80590854F65DA2618FEED /* EXApplication.m */; };
+		AACC7490A272E513C6A4FACF311EFC48 /* EXApplication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A0DF4445909DD366CCAF00E00BFF9CE /* EXApplication-dummy.m */; };
+		DE81588EC64BD00A405B9588CFC9E4C7 /* EXProvisioningProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 589CB19450E9A892C4FCBA5F4AB4ECC8 /* EXProvisioningProfile.m */; };
+		F3D6F7E4E7BB4886A17FDCE58D6E2ADE /* EXApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 630E3FC145F51558044BA3D4BC549AFF /* EXApplication.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D8596FEE3F9AA219F39859ACBF97749D /* PBXContainerItemProxy */ = {
+		B6BE829E166BB7A8E45B0500A70DF3E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D235D9A92F093BF19BC4BA36FEA73BBB /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -39,7 +39,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4965359CF2EF57529EF00EB2C42128A8 /* Frameworks */ = {
+		2707AFA9FF26AFA4E645C0B89CDEFF79 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,12 +119,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		B528201A149B4E7470D0A93C55A871F2 /* Headers */ = {
+		14BB78C12F295FDD1FEAB2BFF022A31B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				518B10494EE459AA6928D8B1C0EED7C3 /* EXApplication.h in Headers */,
-				8D8D4E6944F5D0A69ADC4A3EE37891E7 /* EXProvisioningProfile.h in Headers */,
+				F3D6F7E4E7BB4886A17FDCE58D6E2ADE /* EXApplication.h in Headers */,
+				6006F8BCB338392C4840802E78258109 /* EXProvisioningProfile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,16 +133,16 @@
 /* Begin PBXNativeTarget section */
 		2C391225329DE46C6566ED1ADF52F10D /* EXApplication */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 233AF52EF3A306AC12CBC3485029389B /* Build configuration list for PBXNativeTarget "EXApplication" */;
+			buildConfigurationList = FEE3E852AB6EA3B2E17EFE58FD9AAE85 /* Build configuration list for PBXNativeTarget "EXApplication" */;
 			buildPhases = (
-				B528201A149B4E7470D0A93C55A871F2 /* Headers */,
-				96E69FA9032D5734A69A78E0FA41CF5E /* Sources */,
-				4965359CF2EF57529EF00EB2C42128A8 /* Frameworks */,
+				14BB78C12F295FDD1FEAB2BFF022A31B /* Headers */,
+				183DF83BCCD3A5D517C108C9D471A528 /* Sources */,
+				2707AFA9FF26AFA4E645C0B89CDEFF79 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				82C2463B8D3AF8D906C2EDFC1B95E14C /* PBXTargetDependency */,
+				BE3B4427B5E02AF46BCE3E5F26FC07CE /* PBXTargetDependency */,
 			);
 			name = EXApplication;
 			productName = EXApplication;
@@ -182,28 +182,54 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		96E69FA9032D5734A69A78E0FA41CF5E /* Sources */ = {
+		183DF83BCCD3A5D517C108C9D471A528 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20079C04279A3EDC0CBAE2D482F20A93 /* EXApplication-dummy.m in Sources */,
-				BEA1208CD8C78578C5AEC7DE8FBCEE0B /* EXApplication.m in Sources */,
-				7F3360236C48F7C7E7D205BEBB95C99A /* EXProvisioningProfile.m in Sources */,
+				AACC7490A272E513C6A4FACF311EFC48 /* EXApplication-dummy.m in Sources */,
+				967988573BD1C463F2D68DA4E81E4782 /* EXApplication.m in Sources */,
+				DE81588EC64BD00A405B9588CFC9E4C7 /* EXProvisioningProfile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		82C2463B8D3AF8D906C2EDFC1B95E14C /* PBXTargetDependency */ = {
+		BE3B4427B5E02AF46BCE3E5F26FC07CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D8596FEE3F9AA219F39859ACBF97749D /* PBXContainerItemProxy */;
+			targetProxy = B6BE829E166BB7A8E45B0500A70DF3E4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		10339118C8CEDE1BBEB019837EA11029 /* Debug */ = {
+		2108063BEF866CC29F108FBFD57A70AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 990E3DA67D8D02F2C2436833EA9ED59D /* EXApplication.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXApplication;
+				PRODUCT_NAME = EXApplication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		246C6DCC625D39235ECE244479C1960E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 86793F36B3212109D74F29738996A997 /* EXApplication.debug.xcconfig */;
 			buildSettings = {
@@ -352,49 +378,23 @@
 			};
 			name = Release;
 		};
-		F118415C6B302E502C4CB900207CE1CE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 990E3DA67D8D02F2C2436833EA9ED59D /* EXApplication.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXApplication;
-				PRODUCT_NAME = EXApplication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		233AF52EF3A306AC12CBC3485029389B /* Build configuration list for PBXNativeTarget "EXApplication" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				10339118C8CEDE1BBEB019837EA11029 /* Debug */,
-				F118415C6B302E502C4CB900207CE1CE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		E0A32C73E012662728CB7BCB6DA9259E /* Build configuration list for PBXProject "EXApplication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BBDE9075AC14AEBF2BC803A728262169 /* Debug */,
 				E36E8865092FC1C145DEA61C717851BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FEE3E852AB6EA3B2E17EFE58FD9AAE85 /* Build configuration list for PBXNativeTarget "EXApplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				246C6DCC625D39235ECE244479C1960E /* Debug */,
+				2108063BEF866CC29F108FBFD57A70AC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

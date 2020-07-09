@@ -9,18 +9,18 @@
 /* Begin PBXAggregateTarget section */
 		2B622CBAFD85AC413ED6306FD8B71B00 /* React-RCTActionSheet */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = CD6D48342AC7045B05606F6E9543FD36 /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */;
+			buildConfigurationList = CD85073308E5CBA83E15F675A9CCD54C /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */;
 			buildPhases = (
 			);
 			dependencies = (
-				6D731199ECD7F283BACCAB595AED4BEF /* PBXTargetDependency */,
+				3122F01328F02FF6DF0BA9AC97E1E74D /* PBXTargetDependency */,
 			);
 			name = "React-RCTActionSheet";
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		13EB2F013C43250FE52435ABFDC10E10 /* PBXContainerItemProxy */ = {
+		0A81D7D11951C925EB696B0475FE64CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FCF084C4B4379E37652B4620EE24359B /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -130,27 +130,14 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		6D731199ECD7F283BACCAB595AED4BEF /* PBXTargetDependency */ = {
+		3122F01328F02FF6DF0BA9AC97E1E74D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 13EB2F013C43250FE52435ABFDC10E10 /* PBXContainerItemProxy */;
+			targetProxy = 0A81D7D11951C925EB696B0475FE64CB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		11AA79885ACA5494ABAC0EDD96FC8A46 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4209800EAA0369F4CE9A0A2D811D3D1D /* React-RCTActionSheet.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		3FD13E3651D1BB7217C6E212BFDF80D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -215,7 +202,20 @@
 			};
 			name = Debug;
 		};
-		A2AB38786207F4E9238C1F5137783617 /* Release */ = {
+		436C16579C0412A9A59D46B6C541E2CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4209800EAA0369F4CE9A0A2D811D3D1D /* React-RCTActionSheet.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		95B8740D64494B4E594ADC810E6BFE6D /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9E6CE25D7ECEBB9AF6C7B0AC977E12BC /* React-RCTActionSheet.release.xcconfig */;
 			buildSettings = {
@@ -292,11 +292,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CD6D48342AC7045B05606F6E9543FD36 /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */ = {
+		CD85073308E5CBA83E15F675A9CCD54C /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				11AA79885ACA5494ABAC0EDD96FC8A46 /* Debug */,
-				A2AB38786207F4E9238C1F5137783617 /* Release */,
+				436C16579C0412A9A59D46B6C541E2CD /* Debug */,
+				95B8740D64494B4E594ADC810E6BFE6D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

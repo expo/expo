@@ -7,47 +7,47 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0267DEA25CB81C11C5385E16E09C1DA7 /* EXTask.h in Headers */ = {isa = PBXBuildFile; fileRef = D8F34FAD185ECCA371DE3486033F89AF /* EXTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		488BAFE974641080CD6C627FACD63238 /* EXTaskExecutionRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBE752A791FC9CE2FFF5718F78AD80E /* EXTaskExecutionRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		626619FFB162106C5B7693E5CBC5BEC1 /* EXTaskManagerAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 23D74150C5E8232BDB83F0A82FD706CD /* EXTaskManagerAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		92AF126CA0D9DA1FFB2E14FEE5DBE6F1 /* EXTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D975F8FCBC08F685781BEC963771E520 /* EXTaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A22ED30B137BB437C2915244C421715B /* EXTaskExecutionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C961F8D495D9416315BBFF9E6FF936 /* EXTaskExecutionRequest.m */; };
-		D15748539C9539BA11571B9D316804CA /* EXTaskManager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DF0B25063EBEEF55E3E9A31255C7704 /* EXTaskManager-dummy.m */; };
-		DC1E6C90A49A6CEBC1389C447F9EBC68 /* EXTaskService.h in Headers */ = {isa = PBXBuildFile; fileRef = 483A964129675F68D72F6D9B318B5D15 /* EXTaskService.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DF3849E455F5DC50C2AA8E8C3840D9FD /* EXTask.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C9D26C683CFD3BD72409CD736FBE60 /* EXTask.m */; };
-		F6AFA52A69ADC72AC48CE98F6549A956 /* EXTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F49743E3E42CDEE9EA2664818D17E1 /* EXTaskManager.m */; };
-		FA8F2B829A79BBEFDE185EF97060672F /* EXTaskService.m in Sources */ = {isa = PBXBuildFile; fileRef = CBF9B8375A35418F7D30E9A05A4F8343 /* EXTaskService.m */; };
-		FCFE82900B338ECB6BECAAA16BEA1020 /* EXTaskManagerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DADA9B3D0A5C5CF66C5A60506CB19FA /* EXTaskManagerAppDelegate.m */; };
+		05665A171D16ED4E323891EFA656FCE3 /* EXTaskService.m in Sources */ = {isa = PBXBuildFile; fileRef = CBF9B8375A35418F7D30E9A05A4F8343 /* EXTaskService.m */; };
+		1F9535EB3021D748E3B6DA4508F76F02 /* EXTask.h in Headers */ = {isa = PBXBuildFile; fileRef = D8F34FAD185ECCA371DE3486033F89AF /* EXTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		29E0FB5FA8DFB24AF53BA16F9E21D540 /* EXTaskManagerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DADA9B3D0A5C5CF66C5A60506CB19FA /* EXTaskManagerAppDelegate.m */; };
+		2CC0582D9B19774B35469E3D296DEC7B /* EXTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D975F8FCBC08F685781BEC963771E520 /* EXTaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		575A4BC8160060D589071B55CCEA2389 /* EXTaskExecutionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C961F8D495D9416315BBFF9E6FF936 /* EXTaskExecutionRequest.m */; };
+		6FE1A4DCC465CACF31894D7695D28B66 /* EXTaskManager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DF0B25063EBEEF55E3E9A31255C7704 /* EXTaskManager-dummy.m */; };
+		B786A3E4D3BCCFA82E0E681DAD0EAA58 /* EXTask.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C9D26C683CFD3BD72409CD736FBE60 /* EXTask.m */; };
+		BDD09B20DBECAFA620E8755D9BB70E86 /* EXTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F49743E3E42CDEE9EA2664818D17E1 /* EXTaskManager.m */; };
+		C2447823F0537AE4B6212F631FCF635D /* EXTaskService.h in Headers */ = {isa = PBXBuildFile; fileRef = 483A964129675F68D72F6D9B318B5D15 /* EXTaskService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C8DE75524B46D3F3D035B8E8127F4B96 /* EXTaskExecutionRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBE752A791FC9CE2FFF5718F78AD80E /* EXTaskExecutionRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DCE653F09E3D235D6D2A0723C53387D2 /* EXTaskManagerAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 23D74150C5E8232BDB83F0A82FD706CD /* EXTaskManagerAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2169607D00DCD58C6AC51BFDFE9E3D31 /* PBXContainerItemProxy */ = {
+		180C81030CD23F5BF96F41F003BF39C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B4677D1564B4CB7AD3766C77CB1BF367 /* UMAppLoader.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AD914734744A00B4515A3E7A846EDC15;
 			remoteInfo = UMAppLoader;
 		};
-		A9B0C6B940C9C2DF6ED3B1DE19EDE178 /* PBXContainerItemProxy */ = {
+		B97767A194C740B36B4C03B5095E98CE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4195E20AD3069378B10DF814EC28FDD5 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		F8BC485802F5DDA1E7679D66E81E6F7B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8CD283112DA8107AFEDE66840B84ED1C /* UMTaskManagerInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
-			remoteInfo = UMTaskManagerInterface;
-		};
-		FA1F2B9A266EAD9565D7E79B9407A892 /* PBXContainerItemProxy */ = {
+		F4D9039E5138C29416358A9B249914C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F3875BD62C5ED59F7AC09E19616F54A /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
+		};
+		F72B7DE289031204D6E582492B1EBC7B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CD283112DA8107AFEDE66840B84ED1C /* UMTaskManagerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
+			remoteInfo = UMTaskManagerInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -75,7 +75,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B8CCEC44E958E6DEBC4925CFD03CFA7F /* Frameworks */ = {
+		F48DAFCBB8B1BE9C6ED362D92795A44E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -164,15 +164,15 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		B09B660D7B3D8CC45D289833B423B058 /* Headers */ = {
+		C8FD41BB9A7FF6EAF1468C5220DC0256 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0267DEA25CB81C11C5385E16E09C1DA7 /* EXTask.h in Headers */,
-				488BAFE974641080CD6C627FACD63238 /* EXTaskExecutionRequest.h in Headers */,
-				92AF126CA0D9DA1FFB2E14FEE5DBE6F1 /* EXTaskManager.h in Headers */,
-				626619FFB162106C5B7693E5CBC5BEC1 /* EXTaskManagerAppDelegate.h in Headers */,
-				DC1E6C90A49A6CEBC1389C447F9EBC68 /* EXTaskService.h in Headers */,
+				1F9535EB3021D748E3B6DA4508F76F02 /* EXTask.h in Headers */,
+				C8DE75524B46D3F3D035B8E8127F4B96 /* EXTaskExecutionRequest.h in Headers */,
+				2CC0582D9B19774B35469E3D296DEC7B /* EXTaskManager.h in Headers */,
+				DCE653F09E3D235D6D2A0723C53387D2 /* EXTaskManagerAppDelegate.h in Headers */,
+				C2447823F0537AE4B6212F631FCF635D /* EXTaskService.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,19 +181,19 @@
 /* Begin PBXNativeTarget section */
 		86D546D1F048CDA66BE7589194F91D23 /* EXTaskManager */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9655CEDEBFF00262ED0C9A316CB5EDF3 /* Build configuration list for PBXNativeTarget "EXTaskManager" */;
+			buildConfigurationList = 60091F6B265982F2C603C47A986F34B3 /* Build configuration list for PBXNativeTarget "EXTaskManager" */;
 			buildPhases = (
-				B09B660D7B3D8CC45D289833B423B058 /* Headers */,
-				5575B16A7C1F62F704FADC03BAFD8FFD /* Sources */,
-				B8CCEC44E958E6DEBC4925CFD03CFA7F /* Frameworks */,
+				C8FD41BB9A7FF6EAF1468C5220DC0256 /* Headers */,
+				23FABA2D9730843E798D3DDBB8C3C1F1 /* Sources */,
+				F48DAFCBB8B1BE9C6ED362D92795A44E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2EA9D2FA71C4D8F90EA46FE2AF48DFB9 /* PBXTargetDependency */,
-				B24CE032A778C78C31A1357E7F2FDBFE /* PBXTargetDependency */,
-				18F462563F12917D6D798011A5D8EA3D /* PBXTargetDependency */,
-				EE3DAD1E45C604F57B7544E6121FAB10 /* PBXTargetDependency */,
+				BF6BE33C505D5C036B85E992216E1392 /* PBXTargetDependency */,
+				4EDF8E9B32016ED7A2C86976F4A06652 /* PBXTargetDependency */,
+				E75B3B51DA07B288485D23067FA0E367 /* PBXTargetDependency */,
+				2DE64D85F44A817EA2F875543F6A5925 /* PBXTargetDependency */,
 			);
 			name = EXTaskManager;
 			productName = EXTaskManager;
@@ -242,41 +242,41 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5575B16A7C1F62F704FADC03BAFD8FFD /* Sources */ = {
+		23FABA2D9730843E798D3DDBB8C3C1F1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF3849E455F5DC50C2AA8E8C3840D9FD /* EXTask.m in Sources */,
-				A22ED30B137BB437C2915244C421715B /* EXTaskExecutionRequest.m in Sources */,
-				D15748539C9539BA11571B9D316804CA /* EXTaskManager-dummy.m in Sources */,
-				F6AFA52A69ADC72AC48CE98F6549A956 /* EXTaskManager.m in Sources */,
-				FCFE82900B338ECB6BECAAA16BEA1020 /* EXTaskManagerAppDelegate.m in Sources */,
-				FA8F2B829A79BBEFDE185EF97060672F /* EXTaskService.m in Sources */,
+				B786A3E4D3BCCFA82E0E681DAD0EAA58 /* EXTask.m in Sources */,
+				575A4BC8160060D589071B55CCEA2389 /* EXTaskExecutionRequest.m in Sources */,
+				6FE1A4DCC465CACF31894D7695D28B66 /* EXTaskManager-dummy.m in Sources */,
+				BDD09B20DBECAFA620E8755D9BB70E86 /* EXTaskManager.m in Sources */,
+				29E0FB5FA8DFB24AF53BA16F9E21D540 /* EXTaskManagerAppDelegate.m in Sources */,
+				05665A171D16ED4E323891EFA656FCE3 /* EXTaskService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		18F462563F12917D6D798011A5D8EA3D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = A9B0C6B940C9C2DF6ED3B1DE19EDE178 /* PBXContainerItemProxy */;
-		};
-		2EA9D2FA71C4D8F90EA46FE2AF48DFB9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMAppLoader;
-			targetProxy = 2169607D00DCD58C6AC51BFDFE9E3D31 /* PBXContainerItemProxy */;
-		};
-		B24CE032A778C78C31A1357E7F2FDBFE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMConstantsInterface;
-			targetProxy = FA1F2B9A266EAD9565D7E79B9407A892 /* PBXContainerItemProxy */;
-		};
-		EE3DAD1E45C604F57B7544E6121FAB10 /* PBXTargetDependency */ = {
+		2DE64D85F44A817EA2F875543F6A5925 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMTaskManagerInterface;
-			targetProxy = F8BC485802F5DDA1E7679D66E81E6F7B /* PBXContainerItemProxy */;
+			targetProxy = F72B7DE289031204D6E582492B1EBC7B /* PBXContainerItemProxy */;
+		};
+		4EDF8E9B32016ED7A2C86976F4A06652 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMConstantsInterface;
+			targetProxy = F4D9039E5138C29416358A9B249914C0 /* PBXContainerItemProxy */;
+		};
+		BF6BE33C505D5C036B85E992216E1392 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMAppLoader;
+			targetProxy = 180C81030CD23F5BF96F41F003BF39C0 /* PBXContainerItemProxy */;
+		};
+		E75B3B51DA07B288485D23067FA0E367 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = B97767A194C740B36B4C03B5095E98CE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -338,6 +338,32 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		86EB921C3963B91B404E5D3D219F499B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 09819C294B469BC80B576C27F9431229 /* EXTaskManager.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXTaskManager/EXTaskManager-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXTaskManager;
+				PRODUCT_NAME = EXTaskManager;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -405,7 +431,7 @@
 			};
 			name = Debug;
 		};
-		CF9DFB2AE5E9AAAF4EA7B9317488ACC5 /* Debug */ = {
+		FFDF92CD9ECED7277BB3A6654B25015C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 126178ACAB0C500B00126A16E3A67222 /* EXTaskManager.debug.xcconfig */;
 			buildSettings = {
@@ -430,40 +456,14 @@
 			};
 			name = Debug;
 		};
-		E6A8E98BAB48216B641A3C639214608A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 09819C294B469BC80B576C27F9431229 /* EXTaskManager.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXTaskManager/EXTaskManager-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXTaskManager;
-				PRODUCT_NAME = EXTaskManager;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9655CEDEBFF00262ED0C9A316CB5EDF3 /* Build configuration list for PBXNativeTarget "EXTaskManager" */ = {
+		60091F6B265982F2C603C47A986F34B3 /* Build configuration list for PBXNativeTarget "EXTaskManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CF9DFB2AE5E9AAAF4EA7B9317488ACC5 /* Debug */,
-				E6A8E98BAB48216B641A3C639214608A /* Release */,
+				FFDF92CD9ECED7277BB3A6654B25015C /* Debug */,
+				86EB921C3963B91B404E5D3D219F499B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

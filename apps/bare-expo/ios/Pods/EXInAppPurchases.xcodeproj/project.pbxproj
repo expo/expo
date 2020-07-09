@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		712D0E229549CD248673CD24D4D63529 /* EXInAppPurchases-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC29197A89BFC19B12C22B9159B2C6A /* EXInAppPurchases-dummy.m */; };
-		AB1776173CFC4B093BFC3E3B53E3004F /* EXInAppPurchasesModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C627DF5D0868F3D44495E038E11908 /* EXInAppPurchasesModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B62012A5D57D3379BDF4E6B52FC5996B /* EXInAppPurchasesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CA527ED6781F7581BF1732C704F02C /* EXInAppPurchasesModule.m */; };
+		31CE64B8DF2D1FF6B3D37F3D86BC74B7 /* EXInAppPurchasesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CA527ED6781F7581BF1732C704F02C /* EXInAppPurchasesModule.m */; };
+		4D34467E65D92FCC751B934E90D2CBA6 /* EXInAppPurchases-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC29197A89BFC19B12C22B9159B2C6A /* EXInAppPurchases-dummy.m */; };
+		72780D2904D3AE533C44A73A9A2B92CD /* EXInAppPurchasesModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C627DF5D0868F3D44495E038E11908 /* EXInAppPurchasesModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D2FB3787582C976386C09811E71CC64C /* PBXContainerItemProxy */ = {
+		AA5B3642506477C8EA4CD1625F6D77D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 532911685E398B0D24DD5D8724861C01 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		79A8B4F528D859B4C1DB0A82F69C247E /* Frameworks */ = {
+		EAF1D631F23B589A7C1CED693E5EC0C0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E1B9B93214C28DA4175184C53A99C5A0 /* Headers */ = {
+		57A34BBF5DD8DA47CB025E245965DF2F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB1776173CFC4B093BFC3E3B53E3004F /* EXInAppPurchasesModule.h in Headers */,
+				72780D2904D3AE533C44A73A9A2B92CD /* EXInAppPurchasesModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		D42675B43F7A8B793138E364CE98BFEE /* EXInAppPurchases */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 232E9AD81E12A7263662C0ADD106E539 /* Build configuration list for PBXNativeTarget "EXInAppPurchases" */;
+			buildConfigurationList = 6A9CDBC28A51923F7D5283F484B9C25A /* Build configuration list for PBXNativeTarget "EXInAppPurchases" */;
 			buildPhases = (
-				E1B9B93214C28DA4175184C53A99C5A0 /* Headers */,
-				1E553D6E2DA3DA3FC7382DEFC069F7D8 /* Sources */,
-				79A8B4F528D859B4C1DB0A82F69C247E /* Frameworks */,
+				57A34BBF5DD8DA47CB025E245965DF2F /* Headers */,
+				70F358793507631E457B845531D974D1 /* Sources */,
+				EAF1D631F23B589A7C1CED693E5EC0C0 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				1FA38071BC33156F11137E8B1542568F /* PBXTargetDependency */,
+				585FBE47BF94593EFE495322AED4581D /* PBXTargetDependency */,
 			);
 			name = EXInAppPurchases;
 			productName = EXInAppPurchases;
@@ -175,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1E553D6E2DA3DA3FC7382DEFC069F7D8 /* Sources */ = {
+		70F358793507631E457B845531D974D1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				712D0E229549CD248673CD24D4D63529 /* EXInAppPurchases-dummy.m in Sources */,
-				B62012A5D57D3379BDF4E6B52FC5996B /* EXInAppPurchasesModule.m in Sources */,
+				4D34467E65D92FCC751B934E90D2CBA6 /* EXInAppPurchases-dummy.m in Sources */,
+				31CE64B8DF2D1FF6B3D37F3D86BC74B7 /* EXInAppPurchasesModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1FA38071BC33156F11137E8B1542568F /* PBXTargetDependency */ = {
+		585FBE47BF94593EFE495322AED4581D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D2FB3787582C976386C09811E71CC64C /* PBXContainerItemProxy */;
+			targetProxy = AA5B3642506477C8EA4CD1625F6D77D3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -319,32 +319,7 @@
 			};
 			name = Debug;
 		};
-		8A972E1320C4124AA63C06AD249BE184 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F6EED5095639FB09FE581D046A1FC93 /* EXInAppPurchases.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXInAppPurchases/EXInAppPurchases-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXInAppPurchases;
-				PRODUCT_NAME = EXInAppPurchases;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		A9703BD7D285473AC3E4C1C94251F7CF /* Release */ = {
+		669E4DD4B44F14E4BE394CA17EC99C70 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 103A757DD2DD20AAE07BAF5BA679CE93 /* EXInAppPurchases.release.xcconfig */;
 			buildSettings = {
@@ -370,14 +345,39 @@
 			};
 			name = Release;
 		};
+		D3817789B2294690E3C982A50EC6F6B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F6EED5095639FB09FE581D046A1FC93 /* EXInAppPurchases.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXInAppPurchases/EXInAppPurchases-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXInAppPurchases;
+				PRODUCT_NAME = EXInAppPurchases;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		232E9AD81E12A7263662C0ADD106E539 /* Build configuration list for PBXNativeTarget "EXInAppPurchases" */ = {
+		6A9CDBC28A51923F7D5283F484B9C25A /* Build configuration list for PBXNativeTarget "EXInAppPurchases" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8A972E1320C4124AA63C06AD249BE184 /* Debug */,
-				A9703BD7D285473AC3E4C1C94251F7CF /* Release */,
+				D3817789B2294690E3C982A50EC6F6B5 /* Debug */,
+				669E4DD4B44F14E4BE394CA17EC99C70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

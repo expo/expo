@@ -7,32 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63C89F9F64E1DAD64F7CE652C1D0215A /* EXSegment.h in Headers */ = {isa = PBXBuildFile; fileRef = A96932435FCCBFA95FE6D922BDE510E5 /* EXSegment.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A26029F94F103F3897A0E4BBB579AFD7 /* EXSegment-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EC4DF22D912EFF4129106B9E15D2EC /* EXSegment-dummy.m */; };
-		BB6870D25E6C6F1BC4C7F88F70D6A2F1 /* EXSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = A2477934FE22179EFFD5BE72F9486A97 /* EXSegment.m */; };
+		063D0F6B85513F5759FE4CA30BC8F99C /* EXSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = A2477934FE22179EFFD5BE72F9486A97 /* EXSegment.m */; };
+		5A098A7305899855DE7BECC731141370 /* EXSegment-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EC4DF22D912EFF4129106B9E15D2EC /* EXSegment-dummy.m */; };
+		C3C69E390288C80F5AF024A9025415C6 /* EXSegment.h in Headers */ = {isa = PBXBuildFile; fileRef = A96932435FCCBFA95FE6D922BDE510E5 /* EXSegment.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6C4B4EA7D0EF1C26A22632A0793235F0 /* PBXContainerItemProxy */ = {
+		21C29E404B1DCA0B6A0D5D94D4BB7BE7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CFCF55B7910F570D4C311BA7AA328B58 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		8ADD112F3732CBABBBABAAB8DBABE374 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7F51D67361E0A3B01DB2D0A952027E98 /* Analytics.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
-			remoteInfo = Analytics;
-		};
-		A5CC58EA2A8208C7B866ADA755A7B634 /* PBXContainerItemProxy */ = {
+		4C7B621C4D24B80C6E920A1665CE0453 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 347AA387D01E4B646A5466697C592780 /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
+		};
+		5C4FBAD127C515D078B71131FF57202B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7F51D67361E0A3B01DB2D0A952027E98 /* Analytics.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
+			remoteInfo = Analytics;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -51,7 +51,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3BC998CBA730E10FC1D4640DDC510C67 /* Frameworks */ = {
+		45CE4D4F8D632D90E791E3E0F5CA0640 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -131,11 +131,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		05AE45E2CD32FE693BFEBEDF2DBC4E58 /* Headers */ = {
+		D27E493CED4A878C014F2A49BEE42DF1 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63C89F9F64E1DAD64F7CE652C1D0215A /* EXSegment.h in Headers */,
+				C3C69E390288C80F5AF024A9025415C6 /* EXSegment.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,18 +144,18 @@
 /* Begin PBXNativeTarget section */
 		D65C18BEC619DFEA9C73805518539F66 /* EXSegment */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4CAE2B78564C0C7126874B55450199D1 /* Build configuration list for PBXNativeTarget "EXSegment" */;
+			buildConfigurationList = B975DF9252D9F0C873F263E9888A4795 /* Build configuration list for PBXNativeTarget "EXSegment" */;
 			buildPhases = (
-				05AE45E2CD32FE693BFEBEDF2DBC4E58 /* Headers */,
-				E3FBA267035F599C3092BA6278FA9833 /* Sources */,
-				3BC998CBA730E10FC1D4640DDC510C67 /* Frameworks */,
+				D27E493CED4A878C014F2A49BEE42DF1 /* Headers */,
+				B87E839C64CF79100ED30509EB5B65D9 /* Sources */,
+				45CE4D4F8D632D90E791E3E0F5CA0640 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0CACAD9DB8B8F6E60EC7225460E2AC61 /* PBXTargetDependency */,
-				193DE2FEDFC5AC9ED2A2A655BD53CA11 /* PBXTargetDependency */,
-				647FB38FCBE83AE81C591EA2D6266333 /* PBXTargetDependency */,
+				772DE608CE0514B633073AFB5AA843B1 /* PBXTargetDependency */,
+				144ED2D7CB3F2C25FE5F04555986DF77 /* PBXTargetDependency */,
+				6FC08488BF83C6DE95EC6637011A0C84 /* PBXTargetDependency */,
 			);
 			name = EXSegment;
 			productName = EXSegment;
@@ -201,36 +201,61 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E3FBA267035F599C3092BA6278FA9833 /* Sources */ = {
+		B87E839C64CF79100ED30509EB5B65D9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A26029F94F103F3897A0E4BBB579AFD7 /* EXSegment-dummy.m in Sources */,
-				BB6870D25E6C6F1BC4C7F88F70D6A2F1 /* EXSegment.m in Sources */,
+				5A098A7305899855DE7BECC731141370 /* EXSegment-dummy.m in Sources */,
+				063D0F6B85513F5759FE4CA30BC8F99C /* EXSegment.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0CACAD9DB8B8F6E60EC7225460E2AC61 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Analytics;
-			targetProxy = 8ADD112F3732CBABBBABAAB8DBABE374 /* PBXContainerItemProxy */;
-		};
-		193DE2FEDFC5AC9ED2A2A655BD53CA11 /* PBXTargetDependency */ = {
+		144ED2D7CB3F2C25FE5F04555986DF77 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMConstantsInterface;
-			targetProxy = A5CC58EA2A8208C7B866ADA755A7B634 /* PBXContainerItemProxy */;
+			targetProxy = 4C7B621C4D24B80C6E920A1665CE0453 /* PBXContainerItemProxy */;
 		};
-		647FB38FCBE83AE81C591EA2D6266333 /* PBXTargetDependency */ = {
+		6FC08488BF83C6DE95EC6637011A0C84 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 6C4B4EA7D0EF1C26A22632A0793235F0 /* PBXContainerItemProxy */;
+			targetProxy = 21C29E404B1DCA0B6A0D5D94D4BB7BE7 /* PBXContainerItemProxy */;
+		};
+		772DE608CE0514B633073AFB5AA843B1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Analytics;
+			targetProxy = 5C4FBAD127C515D078B71131FF57202B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		42A171DD3EC0F08D433185CCBC235C6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 803C635076B99F11C04D8D837039CBC6 /* EXSegment.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSegment/EXSegment-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSegment;
+				PRODUCT_NAME = EXSegment;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		6005967BA53119DD6538BF0B06B7CB8F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -295,9 +320,9 @@
 			};
 			name = Debug;
 		};
-		AFE87310E4E45D290C8DD12DC3B00D7F /* Debug */ = {
+		769EC48CB2789C8BECCFAC947B6A9D36 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 803C635076B99F11C04D8D837039CBC6 /* EXSegment.debug.xcconfig */;
+			baseConfigurationReference = 9BA4CCE1B1FF5C24010BCFF2C4B87D62 /* EXSegment.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -317,8 +342,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		E51560415B61E99F08D8594CBE534C67 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -380,32 +406,6 @@
 			};
 			name = Release;
 		};
-		FAE00E10000A78CD856C6424592D8A3A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9BA4CCE1B1FF5C24010BCFF2C4B87D62 /* EXSegment.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSegment/EXSegment-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSegment;
-				PRODUCT_NAME = EXSegment;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -418,11 +418,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4CAE2B78564C0C7126874B55450199D1 /* Build configuration list for PBXNativeTarget "EXSegment" */ = {
+		B975DF9252D9F0C873F263E9888A4795 /* Build configuration list for PBXNativeTarget "EXSegment" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AFE87310E4E45D290C8DD12DC3B00D7F /* Debug */,
-				FAE00E10000A78CD856C6424592D8A3A /* Release */,
+				42A171DD3EC0F08D433185CCBC235C6C /* Debug */,
+				769EC48CB2789C8BECCFAC947B6A9D36 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		76F598E8AD5CEE6705C98CFE00CD9D41 /* RNCAsyncStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 36947B5F45CBD2EB83C9C83EEA3B3D85 /* RNCAsyncStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		82A318F37773A9AD229D49A03D35B876 /* RNCAsyncStorageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FA61B31854D9267DCD00694F3391F42 /* RNCAsyncStorageDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C356D4F958D2B30AF332FDA85D499CBA /* RNCAsyncStorage-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D1CB13F059BB003C7FE945E2F6EE74 /* RNCAsyncStorage-dummy.m */; };
-		FEF60AC445CD29AB5A00FD584D01BB7C /* RNCAsyncStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A44A8F2DAC1FA6D2C0D582B5827D87E /* RNCAsyncStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		41C5FDF265A595CAFA3D2ADF6D33D3CE /* RNCAsyncStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A44A8F2DAC1FA6D2C0D582B5827D87E /* RNCAsyncStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4D504EB49380C47FF1FEC1D0E0F47999 /* RNCAsyncStorageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FA61B31854D9267DCD00694F3391F42 /* RNCAsyncStorageDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DBABBFDA430B0763B706934F853718D8 /* RNCAsyncStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 36947B5F45CBD2EB83C9C83EEA3B3D85 /* RNCAsyncStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F70EC3FECE09CDA35B5A05F1CCB939D2 /* RNCAsyncStorage-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D1CB13F059BB003C7FE945E2F6EE74 /* RNCAsyncStorage-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E724C7A4F170B34C7BD8978D47F64630 /* PBXContainerItemProxy */ = {
+		703B2C87C9CC1498475C007F4FE36F0A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3C855816F121590A1E6E8DFE9353ADEF /* React.xcodeproj */;
 			proxyType = 1;
@@ -39,7 +39,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E05FCB7F51F72E3B7752F59954E899D8 /* Frameworks */ = {
+		CC937976744324355CE18FA8B0BC23BC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -120,12 +120,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		CB094C63B17E2381F8C2C878A6EB9030 /* Headers */ = {
+		04E04877C579F3AB0D8F4B5849ED13D8 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FEF60AC445CD29AB5A00FD584D01BB7C /* RNCAsyncStorage.h in Headers */,
-				82A318F37773A9AD229D49A03D35B876 /* RNCAsyncStorageDelegate.h in Headers */,
+				41C5FDF265A595CAFA3D2ADF6D33D3CE /* RNCAsyncStorage.h in Headers */,
+				4D504EB49380C47FF1FEC1D0E0F47999 /* RNCAsyncStorageDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,16 +134,16 @@
 /* Begin PBXNativeTarget section */
 		67B87A0A71A334A77129363BDFF7DC94 /* RNCAsyncStorage */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 73ED553FF0F13983EAA1502CEF8FCC69 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */;
+			buildConfigurationList = BDE2A5CA360A0F605C90869594022016 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */;
 			buildPhases = (
-				CB094C63B17E2381F8C2C878A6EB9030 /* Headers */,
-				63D64324C7AC876D50BB000CE8F1A115 /* Sources */,
-				E05FCB7F51F72E3B7752F59954E899D8 /* Frameworks */,
+				04E04877C579F3AB0D8F4B5849ED13D8 /* Headers */,
+				DC26627746EB577C3CF82A583BD82A44 /* Sources */,
+				CC937976744324355CE18FA8B0BC23BC /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8787607F8C5F5C64E8044634DF121340 /* PBXTargetDependency */,
+				6E8640CE7E232BF874ED1F772ED7CF9A /* PBXTargetDependency */,
 			);
 			name = RNCAsyncStorage;
 			productName = RNCAsyncStorage;
@@ -183,27 +183,27 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		63D64324C7AC876D50BB000CE8F1A115 /* Sources */ = {
+		DC26627746EB577C3CF82A583BD82A44 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C356D4F958D2B30AF332FDA85D499CBA /* RNCAsyncStorage-dummy.m in Sources */,
-				76F598E8AD5CEE6705C98CFE00CD9D41 /* RNCAsyncStorage.m in Sources */,
+				F70EC3FECE09CDA35B5A05F1CCB939D2 /* RNCAsyncStorage-dummy.m in Sources */,
+				DBABBFDA430B0763B706934F853718D8 /* RNCAsyncStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8787607F8C5F5C64E8044634DF121340 /* PBXTargetDependency */ = {
+		6E8640CE7E232BF874ED1F772ED7CF9A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = E724C7A4F170B34C7BD8978D47F64630 /* PBXContainerItemProxy */;
+			targetProxy = 703B2C87C9CC1498475C007F4FE36F0A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		04378E2B2564D583767559C7D91FDF8B /* Debug */ = {
+		0F20ED43DF6D5E70ECAB3DAF99C98A06 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F42B9FBDC8BA4B98C5055EEC37B1E14C /* RNCAsyncStorage.debug.xcconfig */;
 			buildSettings = {
@@ -226,6 +226,31 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		3F1EFB83AD8EFC18E82B0C6BD98FE316 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CDA0DB209B02536564AEBA1E8F983B3C /* RNCAsyncStorage.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNCAsyncStorage/RNCAsyncStorage-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNCAsyncStorage;
+				PRODUCT_NAME = RNCAsyncStorage;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		6611C49FA4D6054C1C3E01595B82F314 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -284,31 +309,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		755E2808EDADE7C1668974C8FB3565EA /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CDA0DB209B02536564AEBA1E8F983B3C /* RNCAsyncStorage.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNCAsyncStorage/RNCAsyncStorage-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNCAsyncStorage;
-				PRODUCT_NAME = RNCAsyncStorage;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -388,11 +388,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		73ED553FF0F13983EAA1502CEF8FCC69 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */ = {
+		BDE2A5CA360A0F605C90869594022016 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				04378E2B2564D583767559C7D91FDF8B /* Debug */,
-				755E2808EDADE7C1668974C8FB3565EA /* Release */,
+				0F20ED43DF6D5E70ECAB3DAF99C98A06 /* Debug */,
+				3F1EFB83AD8EFC18E82B0C6BD98FE316 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
