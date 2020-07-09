@@ -1,11 +1,14 @@
 import { render } from '@testing-library/react';
-import AppConfigSchemaPropertiesTable from './AppConfigSchemaPropertiesTable';
+import AppConfigSchemaPropertiesTable, {
+  formatSchema,
+  createDescription,
+} from './AppConfigSchemaPropertiesTable';
 import { SluggerContext } from '~/components/page-higher-order/withSlugger';
 import GithubSlugger from 'github-slugger';
 
 var testSchema = {
   name: {
-    description: 'Name of your app. ',
+    description: 'Name of your app.',
     type: 'string',
     meta: {
       bareWorkflow: "Edit the 'Display Name' field in Xcode",
@@ -24,6 +27,9 @@ var testSchema = {
             type: 'boolean',
           },
         },
+        meta: {
+          expoKit: 'Set this property using Xcode.',
+        },
         enum: ['leanback', 'immersive', 'sticky-immersive'],
       },
       backgroundColor: {
@@ -34,6 +40,10 @@ var testSchema = {
           regexHuman: "6 character long hex color string, eg: `'#000000'`",
         },
       },
+    },
+    meta: {
+      expoKit: 'Set this property using AppConstants.java.',
+      bareWorkflow: 'Set this property using just Xcode',
     },
   },
   intentFilters: {
@@ -75,97 +85,107 @@ var testSchema = {
       additionalProperties: false,
       required: ['action'],
     },
+    meta: {
+      bareWorkflow: 'This is set in AndroidManifest.xml directly.',
+    },
   },
 };
 
-test('correct property and subproperty indent styling', () => {
-  const { getByTestId } = render(
-    <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppConfigSchemaPropertiesTable schema={testSchema} />
-    </SluggerContext.Provider>
-  );
-
-  const level_0_style = `
-    marginLeft: 12px,
-    display: 'block',
-    listStyleType: 'circle',
-    width: 'fit-content',
-    overflowX: 'visible',
-  `;
-
-  const level_1_style = `
-    marginLeft: 44px,
-    display: 'inline',
-    listStyleType: 'default',
-    width: 'fit-content',
-    overflowX: 'visible',
-  `;
-
-  const level_2_style = `
-    marginLeft: 76px,
-    display: 'inline',
-    listStyleType: 'circle',
-    width: 'fit-content',
-    overflowX: 'visible',
-  `;
-
-  //level-0 property
-  //the #### is added to link this property name by markdown and included in the data-testid
-  expect(getByTestId('#### `name`')).toHaveStyle(level_0_style);
-
-  //level-0 property
-  expect(getByTestId('#### `androidNavigationBar`')).toHaveStyle(level_0_style);
-
-  //level-1 subproperty
-  expect(getByTestId('`visible`')).toHaveStyle(level_1_style);
-
-  //level-2 subproperty
-  expect(getByTestId('`always`')).toHaveStyle(level_2_style);
-
-  //level-1 subproperty
-  expect(getByTestId('`backgroundColor`')).toHaveStyle(level_1_style);
-
-  //level-0 property
-  expect(getByTestId('#### `intentFilters`')).toHaveStyle(level_0_style);
-
-  //level-1 subproperty
-  expect(getByTestId('`autoVerify`')).toHaveStyle(level_1_style);
-
-  //level-1 subproperty
-  expect(getByTestId('`data`')).toHaveStyle(level_1_style);
-
-  //level-2 subproperty
-  expect(getByTestId('`host`')).toHaveStyle(level_2_style);
+describe('AppConfigSchemaPropertiesTable', () => {
+  test('correctly matches snapshot', () => {
+    const { container } = render(
+      <SluggerContext.Provider value={new GithubSlugger()}>
+        <AppConfigSchemaPropertiesTable schema={testSchema} />
+      </SluggerContext.Provider>
+    );
+    expect(container).toMatchSnapshot();
+  });
 });
 
-test('correct description add-ons (bareWorkflow, regexHuman, etc.)', () => {
-  const { container } = render(
-    <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppConfigSchemaPropertiesTable schema={testSchema} />
-    </SluggerContext.Provider>
-  );
-
-  const name_description =
-    "Name of your app. Bare workflow: Edit the 'Display Name' field in Xcode";
-
-  const backgroundColor_description =
-    "Specifies the background color of the navigation bar. 6 character long hex color string, eg: '#000000'";
-
-  const intentFilters_description =
-    'Configuration for setting an array of custom intent filters in Android manifest. [{ "autoVerify": true, "data": {"host": "*.expo.io" } }]';
-
-  expect(container).toHaveTextContent(name_description);
-  expect(container).toHaveTextContent(backgroundColor_description);
-  expect(container).toHaveTextContent(intentFilters_description);
+describe('formatSchema', () => {
+  const formattedSchema = formatSchema(Object.entries(testSchema));
+  test('name is property level 0', () => {
+    expect(formattedSchema[0].level).toBe(0);
+  });
+  test('androidNavigationBar is property level 0', () => {
+    expect(formattedSchema[1].level).toBe(0);
+  });
+  test('visible is subproperty level 1', () => {
+    expect(formattedSchema[2].level).toBe(1);
+  });
+  test('visible has type "enum"', () => {
+    expect(formattedSchema[2].type).toBe('enum');
+  });
+  test('always is subproperty level 2', () => {
+    expect(formattedSchema[3].level).toBe(2);
+  });
+  test('backgroundColor is subproperty level 1', () => {
+    expect(formattedSchema[4].level).toBe(1);
+  });
+  test('intentFilters is property level 0', () => {
+    expect(formattedSchema[5].level).toBe(0);
+  });
+  test('autoVerify is subproperty level 1', () => {
+    expect(formattedSchema[6].level).toBe(1);
+  });
+  test('data is subproperty level 1', () => {
+    expect(formattedSchema[7].level).toBe(1);
+  });
+  test('host is subproperty level 2', () => {
+    expect(formattedSchema[8].level).toBe(2);
+  });
 });
 
-test('correct enum type value', () => {
-  const { container } = render(
-    <SluggerContext.Provider value={new GithubSlugger()}>
-      <AppConfigSchemaPropertiesTable schema={testSchema} />
-    </SluggerContext.Provider>
-  );
+describe('createDescription', () => {
+  test('exampleString, bareWorkflow are both added correctly to intentFilters', () => {
+    const intentFiltersObject = Object.entries(testSchema)[2];
+    const intentFiltersObjectValue = intentFiltersObject[1];
+    const result = createDescription(intentFiltersObject);
 
-  //the two words in the Property and Type td columns run together in raw TextContent
-  expect(container).toHaveTextContent('visibleenum');
+    expect(result).toBe(
+      `${intentFiltersObjectValue.description}\n\n>${intentFiltersObjectValue.exampleString}\n\n>**Bare workflow**: ${intentFiltersObjectValue.meta.bareWorkflow}`
+    );
+  });
+
+  test('regexHuman is added correctly to backgroundColor', () => {
+    //Note: to access this subproperty is tedious without a call to formatSchema
+    const backgroundColorObject = Object.entries(Object.values(testSchema)[1].properties)[1];
+    const backgroundColorObjectValue = backgroundColorObject[1];
+    const result = createDescription(backgroundColorObject);
+
+    expect(result).toBe(
+      `${backgroundColorObjectValue.description}\n\n${backgroundColorObjectValue.meta.regexHuman}`
+    );
+  });
+
+  test('expoKit is added correctly to visible', () => {
+    //Note: to access this subproperty is tedious without a call to formatSchema
+    const visibleObject = Object.entries(Object.values(testSchema)[1].properties)[0];
+    const visibleObjectValue = visibleObject[1];
+    const result = createDescription(visibleObject);
+
+    expect(result).toBe(
+      `${visibleObjectValue.description}\n>**ExpoKit**: ${visibleObjectValue.meta.expoKit}`
+    );
+  });
+
+  test('bareWorkflow is added correctly to name', () => {
+    const nameObject = Object.entries(testSchema)[0];
+    const nameObjectValue = nameObject[1];
+    const result = createDescription(nameObject);
+
+    expect(result).toBe(
+      `${nameObjectValue.description}\n>**Bare workflow**: ${nameObjectValue.meta.bareWorkflow}`
+    );
+  });
+
+  test('expoKit, bareWorkflow both added correctly to androidNavigationBar', () => {
+    const androidNavigationBarObject = Object.entries(testSchema)[1];
+    const androidNavigationBarObjectValue = androidNavigationBarObject[1];
+    const result = createDescription(androidNavigationBarObject);
+
+    expect(result).toBe(
+      `${androidNavigationBarObjectValue.description}\n>**ExpoKit**: ${androidNavigationBarObjectValue.meta.expoKit}\n\n>**Bare workflow**: ${androidNavigationBarObjectValue.meta.bareWorkflow}`
+    );
+  });
 });

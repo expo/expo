@@ -20,7 +20,7 @@ const STYLES_DESCRIPTION_CELL = css`
   white-space: break-spaces;
 `;
 
-function formatSchema(rawSchema) {
+export function formatSchema(rawSchema) {
   var formattedSchema = [];
 
   //appends each schema property (each index will become a tablerow)
@@ -67,24 +67,24 @@ function appendProperty(formattedSchema, property, _level) {
 }
 
 //setting up a property's formatted description value, with all the possible extra values
-function createDescription(property) {
+export function createDescription(property) {
   const propertyValue = property[1];
 
   var propertyDescription = propertyValue.description;
   if (propertyValue.exampleString) {
-    propertyDescription += `\n\n >` + propertyValue.exampleString;
+    propertyDescription += `\n\n>` + propertyValue.exampleString;
   }
   if (propertyValue.meta && propertyValue.meta.regexHuman) {
     propertyDescription += `\n\n` + propertyValue.meta.regexHuman;
   }
   if (propertyValue.meta && propertyValue.meta.expoKit) {
-    propertyDescription += `\n` + `>**ExpoKit**: ` + propertyValue.meta.expoKit;
+    propertyDescription += `\n>**ExpoKit**: ` + propertyValue.meta.expoKit;
   }
   if (propertyValue.meta && propertyValue.meta.bareWorkflow) {
     if (propertyValue.meta.expoKit || propertyValue.exampleString) {
       propertyDescription += `\n`;
     }
-    propertyDescription += `\n` + `>**Bare workflow**: ` + propertyValue.meta.bareWorkflow;
+    propertyDescription += `\n>**Bare workflow**: ` + propertyValue.meta.bareWorkflow;
   }
 
   return propertyDescription;
