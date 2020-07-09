@@ -378,6 +378,10 @@ react-native-segmented-control:
   LABEL: react-native-segmented-control
   PROJECT_PATH: react-native-segmented-control.xcodeproj
   UUID: 16ABF49F17747086945AFC5E30F90858
+react-native-slider:
+  LABEL: react-native-slider
+  PROJECT_PATH: react-native-slider.xcodeproj
+  UUID: F3C1D8A71F2007982BE1C3D3D3B64151
 React-RCTActionSheet:
   LABEL: React-RCTActionSheet
   PROJECT_PATH: React-RCTActionSheet.xcodeproj

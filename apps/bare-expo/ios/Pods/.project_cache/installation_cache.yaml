@@ -1150,8 +1150,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 95e01c0f62411df42f66b4033f8d0a79
-      Release: 95e01c0f62411df42f66b4033f8d0a79
+      Debug: 4fb39190f6524eb721bfd2c9d4622751
+      Release: 4fb39190f6524eb721bfd2c9d4622751
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1161,8 +1161,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 50a77c041a05d40a76d5d8ee29daffc9
-      Release: 50a77c041a05d40a76d5d8ee29daffc9
+      Debug: 1c5b3a773f4b08d166adcd2fd330d7d7
+      Release: 1c5b3a773f4b08d166adcd2fd330d7d7
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -1790,6 +1790,20 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-segmented-control
     SPECS:
       - react-native-segmented-control (1.6.1)
+  react-native-slider:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-slider:
+        :debug: 51a39056e93ea8cd332c29e87fb5c637
+        :release: 51a39056e93ea8cd332c29e87fb5c637
+    CHECKSUM: 12bd76d3d568c9c5500825db54123d44b48e4ad4
+    FILES:
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSlider.h"
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSlider.m"
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSliderManager.h"
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSliderManager.m"
+    PROJECT_NAME: react-native-slider
+    SPECS:
+      - react-native-slider (3.0.0)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet:

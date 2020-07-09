@@ -448,6 +448,8 @@ PODS:
     - React
   - react-native-segmented-control (1.6.1):
     - React
+  - react-native-slider (3.0.0):
+    - React
   - React-RCTActionSheet (0.62.2):
     - React-Core/RCTActionSheetHeaders (= 0.62.2)
   - React-RCTAnimation (0.62.2):
@@ -619,6 +621,7 @@ DEPENDENCIES:
   - react-native-appearance (from `../../../node_modules/react-native-appearance`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-community/segmented-control`)"
+  - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
   - React-RCTActionSheet (from `../../../react-native-lab/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../../react-native-lab/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../../../react-native-lab/react-native/Libraries/Blob`)
@@ -821,6 +824,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/@react-native-community/segmented-control"
+  react-native-slider:
+    :path: "../../../node_modules/@react-native-community/slider"
   React-RCTActionSheet:
     :path: "../../../react-native-lab/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -972,6 +977,7 @@ SPEC CHECKSUMS:
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
   react-native-safe-area-context: b11a34881faac509cad5578726c98161ad4d275c
   react-native-segmented-control: d7c444e5cc5f526da766f8ff24346898b7ac7be5
+  react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
