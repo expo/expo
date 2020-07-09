@@ -70,7 +70,7 @@ function appendProperty(formattedSchema, property, _level) {
 export function createDescription(property) {
   const propertyValue = property[1];
 
-  var propertyDescription = propertyValue.description;
+  let propertyDescription = propertyValue.description;
   if (propertyValue.exampleString) {
     propertyDescription += `\n\n>` + propertyValue.exampleString;
   }
