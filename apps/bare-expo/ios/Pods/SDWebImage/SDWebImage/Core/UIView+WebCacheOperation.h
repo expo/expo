@@ -11,7 +11,7 @@
 
 /**
  These methods are used to support canceling for UIView image loading, it's designed to be used internal but not external.
- All the stored operations are weak, so it will be dalloced after image loading finished. If you need to store operations, use your own class to keep a strong reference for them.
+ All the stored operations are weak, so it will be dealloced after image loading finished. If you need to store operations, use your own class to keep a strong reference for them.
  */
 @interface UIView (WebCacheOperation)
 

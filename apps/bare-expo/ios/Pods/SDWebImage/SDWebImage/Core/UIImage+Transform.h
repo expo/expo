@@ -27,7 +27,7 @@ typedef NS_OPTIONS(NSUInteger, SDRectCorner) {
 #endif
 
 /**
- Provide some commen method for `UIImage`.
+ Provide some common method for `UIImage`.
  Image process is based on Core Graphics and vImage.
  */
 @interface UIImage (Transform)

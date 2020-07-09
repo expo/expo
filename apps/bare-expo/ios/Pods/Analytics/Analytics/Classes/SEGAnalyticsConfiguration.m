@@ -24,11 +24,15 @@
 
 @end
 
+@implementation SEGAnalyticsExperimental
+@end
+
 
 @interface SEGAnalyticsConfiguration ()
 
 @property (nonatomic, copy, readwrite) NSString *writeKey;
 @property (nonatomic, strong, readonly) NSMutableArray *factories;
+@property (nonatomic, strong) SEGAnalyticsExperimental *experimental;
 
 @end
 
@@ -51,6 +55,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
+        self.experimental = [[SEGAnalyticsExperimental alloc] init];
         self.shouldUseLocationServices = NO;
         self.enableAdvertisingTracking = YES;
         self.shouldUseBluetooth = NO;
@@ -63,10 +68,7 @@
         _factories = [NSMutableArray array];
         Class applicationClass = NSClassFromString(@"UIApplication");
         if (applicationClass) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            _application = [applicationClass performSelector:NSSelectorFromString(@"sharedApplication")];
-#pragma clang diagnostic pop
+            _application = [applicationClass performSelector:@selector(sharedApplication)];
         }
     }
     return self;

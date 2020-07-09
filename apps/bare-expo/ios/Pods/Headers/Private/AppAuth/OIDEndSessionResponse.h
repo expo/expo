@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDEndSessionResponse.h
+../../../AppAuth/Source/AppAuthCore/OIDEndSessionResponse.h
