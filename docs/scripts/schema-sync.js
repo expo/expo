@@ -10,17 +10,23 @@ let fsExtra = require('fs-extra');
 
 let version = process.argv[2];
 
+if (!version) {
+  console.log('Please enter a version number\n');
+  console.log('E.g., "yarn run schema-sync 38" \nor, "yarn run schema-sync unversioned"');
+  return;
+}
+
 if (version === 'unversioned') {
   axios
     .get(`http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`)
     .then(async ({ data }) => {
       await fsExtra.writeFile(
-        `./pages/versions/unversioned/app-config-schema.js`,
+        `scripts/schemas/unversioned/app-config-schema.js`,
         'export default ',
         'utf8'
       );
       await fsExtra.appendFile(
-        `./pages/versions/unversioned/app-config-schema.js`,
+        `scripts/schemas/unversioned/app-config-schema.js`,
         JSON.stringify(data.data.schema.properties),
         'utf8'
       );
@@ -30,12 +36,12 @@ if (version === 'unversioned') {
     .get(`http://exp.host/--/api/v2/project/configuration/schema/${version}.0.0`)
     .then(async ({ data }) => {
       await fsExtra.writeFile(
-        `./pages/versions/v${version}.0.0/app-config-schema.js`,
+        `scripts/schemas/v${version}.0.0/app-config-schema.js`,
         'export default ',
         'utf8'
       );
       await fsExtra.appendFile(
-        `./pages/versions/v${version}.0.0/app-config-schema.js`,
+        `scripts/schemas/v${version}.0.0/app-config-schema.js`,
         JSON.stringify(data.data.schema.properties),
         'utf8'
       );
