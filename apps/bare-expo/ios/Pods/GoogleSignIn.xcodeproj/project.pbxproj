@@ -9,34 +9,34 @@
 /* Begin PBXAggregateTarget section */
 		70D52585A9FA4EEA343010638ADABC11 /* GoogleSignIn */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = ADD282AC3C4DE0B355F28C1FB62B5DDB /* Build configuration list for PBXAggregateTarget "GoogleSignIn" */;
+			buildConfigurationList = 5BDBA2FA6136B807DAD219EB4B6FBEDD /* Build configuration list for PBXAggregateTarget "GoogleSignIn" */;
 			buildPhases = (
 			);
 			dependencies = (
-				FDFD7402F06687BE1970B5FDED2067A6 /* PBXTargetDependency */,
-				542FA5AE979A37E2F9F347656ACE4BD0 /* PBXTargetDependency */,
-				D61342A1F94321EDF717166B6CB22B2F /* PBXTargetDependency */,
+				2ED08B9E7E45221B0B57B424A0DED2EF /* PBXTargetDependency */,
+				A09709884DB0B57572FA6BD819A551A5 /* PBXTargetDependency */,
+				24489018560BAD888DC05B745C6D7AB9 /* PBXTargetDependency */,
 			);
 			name = GoogleSignIn;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		8FE683FBF4FCB4B8C23BE7760A97FAB2 /* PBXContainerItemProxy */ = {
+		1BAD91D6615E62FE066362503971BC1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EB042BCC144B6A014BA9B50F5036853E /* GTMAppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AFFE62B58843E7D325544E4D760E8920;
 			remoteInfo = GTMAppAuth;
 		};
-		CAD39D7013F27D36D39BD3234BE99E47 /* PBXContainerItemProxy */ = {
+		96213DB3AF894E503A98F93C69CA046B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AAB213FF8B3B34C742C88E631A9D55D4 /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
 			remoteInfo = GTMSessionFetcher;
 		};
-		DB0653254F9D031B6A09612BFBDEA645 /* PBXContainerItemProxy */ = {
+		BD3F07676FB461CF2C0DE27920C8BEAC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CB2D9210EF148D2DC5D65B9406311595 /* AppAuth.xcodeproj */;
 			proxyType = 1;
@@ -166,20 +166,20 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		542FA5AE979A37E2F9F347656ACE4BD0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GTMAppAuth;
-			targetProxy = 8FE683FBF4FCB4B8C23BE7760A97FAB2 /* PBXContainerItemProxy */;
-		};
-		D61342A1F94321EDF717166B6CB22B2F /* PBXTargetDependency */ = {
+		24489018560BAD888DC05B745C6D7AB9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GTMSessionFetcher;
-			targetProxy = CAD39D7013F27D36D39BD3234BE99E47 /* PBXContainerItemProxy */;
+			targetProxy = 96213DB3AF894E503A98F93C69CA046B /* PBXContainerItemProxy */;
 		};
-		FDFD7402F06687BE1970B5FDED2067A6 /* PBXTargetDependency */ = {
+		2ED08B9E7E45221B0B57B424A0DED2EF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AppAuth;
-			targetProxy = DB0653254F9D031B6A09612BFBDEA645 /* PBXContainerItemProxy */;
+			targetProxy = BD3F07676FB461CF2C0DE27920C8BEAC /* PBXContainerItemProxy */;
+		};
+		A09709884DB0B57572FA6BD819A551A5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GTMAppAuth;
+			targetProxy = 1BAD91D6615E62FE066362503971BC1A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -244,7 +244,7 @@
 			};
 			name = Release;
 		};
-		56F3166894B56ED77FB395B469FDA6B5 /* Debug */ = {
+		29AC161660F19A7D2B3C39241F8EAAF2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B2834995F8CF458535DB0C40EAF13F62 /* GoogleSignIn.debug.xcconfig */;
 			buildSettings = {
@@ -321,7 +321,7 @@
 			};
 			name = Debug;
 		};
-		F2AAE4A34530F3705E7877DF611060AC /* Release */ = {
+		A9ACDC0B9C1C70469B1A0174BAC15E18 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0A7DA241E4A685E1B4FC100CC912B3A1 /* GoogleSignIn.release.xcconfig */;
 			buildSettings = {
@@ -338,11 +338,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		ADD282AC3C4DE0B355F28C1FB62B5DDB /* Build configuration list for PBXAggregateTarget "GoogleSignIn" */ = {
+		5BDBA2FA6136B807DAD219EB4B6FBEDD /* Build configuration list for PBXAggregateTarget "GoogleSignIn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				56F3166894B56ED77FB395B469FDA6B5 /* Debug */,
-				F2AAE4A34530F3705E7877DF611060AC /* Release */,
+				29AC161660F19A7D2B3C39241F8EAAF2 /* Debug */,
+				A9ACDC0B9C1C70469B1A0174BAC15E18 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

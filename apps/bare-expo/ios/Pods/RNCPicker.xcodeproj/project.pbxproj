@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		14F05D976F20C3986BFFBC54D1245CFE /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 522D4EA96D44A06FE4DA1C19174EF377 /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		3E034107DB49BADCFC6DBFCD467887EE /* RNCPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B7CD962CDF471F5E9882FBAA9CFC8ED0 /* RNCPicker-dummy.m */; };
-		958D819EB7DB313212B93EBFF0AC16CC /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 825D5DA7FA532F9FAF94736114C28936 /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A32AE4950489529DD7976B9A995749BE /* RNCPickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1401437ECD68C82E4014B97A85F0248B /* RNCPickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E77C9A979E42D27DF176BE22CB1E0FAD /* RNCPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B7B73F1642329C8EBE46452DEDE8DE /* RNCPicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4423A63BA1A6EFFD06BD40503DABF722 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 522D4EA96D44A06FE4DA1C19174EF377 /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		495916D8D6EE5F00530E15ABF8BA464F /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 825D5DA7FA532F9FAF94736114C28936 /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		707BACB1DD7239156EA29962E4602C95 /* RNCPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B7CD962CDF471F5E9882FBAA9CFC8ED0 /* RNCPicker-dummy.m */; };
+		76F33F8EFE3C774DC6FAB11AF7E0A892 /* RNCPickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1401437ECD68C82E4014B97A85F0248B /* RNCPickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EE85DBDBCFE7487AC000C683B2EE5689 /* RNCPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B7B73F1642329C8EBE46452DEDE8DE /* RNCPicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		AF6062C573C223320C01B7F6FA3F0BDC /* PBXContainerItemProxy */ = {
+		77791A09DD4891567FE3FCF6DCA4884E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 473CAB28524EBE11E0E325CDA8F25E3E /* React.xcodeproj */;
 			proxyType = 1;
@@ -41,7 +41,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5B70276C37CBF0955C914841DD7DC1AA /* Frameworks */ = {
+		E1FDE6687A4C430B2AB97C31EC57577E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -123,12 +123,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		F31086E439DCF3F889D423F9A656B207 /* Headers */ = {
+		FC6B25CF656C9C2A71233B3207D3C0BA /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E77C9A979E42D27DF176BE22CB1E0FAD /* RNCPicker.h in Headers */,
-				A32AE4950489529DD7976B9A995749BE /* RNCPickerManager.h in Headers */,
+				EE85DBDBCFE7487AC000C683B2EE5689 /* RNCPicker.h in Headers */,
+				76F33F8EFE3C774DC6FAB11AF7E0A892 /* RNCPickerManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,16 +137,16 @@
 /* Begin PBXNativeTarget section */
 		379A5889161D6AB9EB39C236491A579D /* RNCPicker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B3EB1649FD02B6DC3A3F4EF5EA2F0F47 /* Build configuration list for PBXNativeTarget "RNCPicker" */;
+			buildConfigurationList = F3B1525DECE7341B4DD99CA2FF9B1035 /* Build configuration list for PBXNativeTarget "RNCPicker" */;
 			buildPhases = (
-				F31086E439DCF3F889D423F9A656B207 /* Headers */,
-				380C80813122AD47C7336193A12466F8 /* Sources */,
-				5B70276C37CBF0955C914841DD7DC1AA /* Frameworks */,
+				FC6B25CF656C9C2A71233B3207D3C0BA /* Headers */,
+				D1EE1BB64F1FFCE7978D587D8B3D0500 /* Sources */,
+				E1FDE6687A4C430B2AB97C31EC57577E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				4F4C98AC3539FFDE8420ADBB384154CE /* PBXTargetDependency */,
+				C2DD5B05147896E20F2DC5DCD0BC2759 /* PBXTargetDependency */,
 			);
 			name = RNCPicker;
 			productName = RNCPicker;
@@ -186,23 +186,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		380C80813122AD47C7336193A12466F8 /* Sources */ = {
+		D1EE1BB64F1FFCE7978D587D8B3D0500 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3E034107DB49BADCFC6DBFCD467887EE /* RNCPicker-dummy.m in Sources */,
-				958D819EB7DB313212B93EBFF0AC16CC /* RNCPicker.m in Sources */,
-				14F05D976F20C3986BFFBC54D1245CFE /* RNCPickerManager.m in Sources */,
+				707BACB1DD7239156EA29962E4602C95 /* RNCPicker-dummy.m in Sources */,
+				495916D8D6EE5F00530E15ABF8BA464F /* RNCPicker.m in Sources */,
+				4423A63BA1A6EFFD06BD40503DABF722 /* RNCPickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4F4C98AC3539FFDE8420ADBB384154CE /* PBXTargetDependency */ = {
+		C2DD5B05147896E20F2DC5DCD0BC2759 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = AF6062C573C223320C01B7F6FA3F0BDC /* PBXContainerItemProxy */;
+			targetProxy = 77791A09DD4891567FE3FCF6DCA4884E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -271,6 +271,31 @@
 			};
 			name = Debug;
 		};
+		797479DF48BC447E432C666408BFB314 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 26C80A2E5F6F90764D65499CE9A0A953 /* RNCPicker.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNCPicker/RNCPicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNCPicker;
+				PRODUCT_NAME = RNCPicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		B9E5857F89A1310E039174BCA2350D44 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -331,7 +356,7 @@
 			};
 			name = Release;
 		};
-		C75CEC4584F33F533A9D678D27EBBCB6 /* Debug */ = {
+		EC7E7B2700D6BC1FB1154BCC10C83A67 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 31A9CA1FED22EDBE5A5F223635659C49 /* RNCPicker.debug.xcconfig */;
 			buildSettings = {
@@ -355,31 +380,6 @@
 			};
 			name = Debug;
 		};
-		E182B81F30DFFCCC27742E5E21684F7F /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 26C80A2E5F6F90764D65499CE9A0A953 /* RNCPicker.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNCPicker/RNCPicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNCPicker;
-				PRODUCT_NAME = RNCPicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -392,11 +392,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B3EB1649FD02B6DC3A3F4EF5EA2F0F47 /* Build configuration list for PBXNativeTarget "RNCPicker" */ = {
+		F3B1525DECE7341B4DD99CA2FF9B1035 /* Build configuration list for PBXNativeTarget "RNCPicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C75CEC4584F33F533A9D678D27EBBCB6 /* Debug */,
-				E182B81F30DFFCCC27742E5E21684F7F /* Release */,
+				EC7E7B2700D6BC1FB1154BCC10C83A67 /* Debug */,
+				797479DF48BC447E432C666408BFB314 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8EB1D4359A9CB385FB8CB6B5C2C3B193 /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835781D240C10AA86CE9A5980022C3D /* EXSharingModule.m */; };
-		E10F83508445AD716054ED165EE41CBD /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DD37D017B0654883C0E26420A0193054 /* EXSharing-dummy.m */; };
-		EB37B84D34C5428875CD6C7EE6DA0268 /* EXSharingModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 990583AB09941F2D1DFC0D02C1F19A9E /* EXSharingModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6C4B19961E3F0203ED868884B8B7C2D9 /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835781D240C10AA86CE9A5980022C3D /* EXSharingModule.m */; };
+		8115AF8A31209E1234A71FD1AD093BB8 /* EXSharingModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 990583AB09941F2D1DFC0D02C1F19A9E /* EXSharingModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E4D58721D9057637F59B54500B024C52 /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DD37D017B0654883C0E26420A0193054 /* EXSharing-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		07CC1B216B28D3698DFC3A98613BC1A3 /* PBXContainerItemProxy */ = {
+		57872ECFC88643EB93CCB8CE4BBE58FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4426472595AA918722579EC11CFF2955 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		C7A601CFB38144E1036CEC7CDCB63FD2 /* PBXContainerItemProxy */ = {
+		C2EAAD1F89CDE6BFF756989B648D22EB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0BE026E50B27274472C84DA2A53C9F51 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -43,7 +43,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		7C7ECBCA01E3D9DE7305D0F4B45EA093 /* Frameworks */ = {
+		D7ADA47DFACAD9FE25759D1BE0ABAD67 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,11 +122,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		EAAB034FE6B6EF7CD8AD4EBFE9BAA7DE /* Headers */ = {
+		458B68AD1F683B16EE5547A27199BDDC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB37B84D34C5428875CD6C7EE6DA0268 /* EXSharingModule.h in Headers */,
+				8115AF8A31209E1234A71FD1AD093BB8 /* EXSharingModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,17 +135,17 @@
 /* Begin PBXNativeTarget section */
 		1458926EF4B0A3DF1C40B5639E7358B1 /* EXSharing */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 489FC4730ABE913EE66E1B8558F18D87 /* Build configuration list for PBXNativeTarget "EXSharing" */;
+			buildConfigurationList = 1420350743A22FA96A2BE106D8AAC86B /* Build configuration list for PBXNativeTarget "EXSharing" */;
 			buildPhases = (
-				EAAB034FE6B6EF7CD8AD4EBFE9BAA7DE /* Headers */,
-				3E672927E720648346661D84796D817E /* Sources */,
-				7C7ECBCA01E3D9DE7305D0F4B45EA093 /* Frameworks */,
+				458B68AD1F683B16EE5547A27199BDDC /* Headers */,
+				2523768F981F0FCEAD0C360E18D2073E /* Sources */,
+				D7ADA47DFACAD9FE25759D1BE0ABAD67 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				119E31ADB89774D44A0E6583461C23F5 /* PBXTargetDependency */,
-				2CFF92CEE5F831747CDFE1E957355AD8 /* PBXTargetDependency */,
+				A15BFFA5454AC808907574B791ACE9BA /* PBXTargetDependency */,
+				97622096C2CC4DB479CF9F366FC8FD14 /* PBXTargetDependency */,
 			);
 			name = EXSharing;
 			productName = EXSharing;
@@ -188,31 +188,56 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3E672927E720648346661D84796D817E /* Sources */ = {
+		2523768F981F0FCEAD0C360E18D2073E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E10F83508445AD716054ED165EE41CBD /* EXSharing-dummy.m in Sources */,
-				8EB1D4359A9CB385FB8CB6B5C2C3B193 /* EXSharingModule.m in Sources */,
+				E4D58721D9057637F59B54500B024C52 /* EXSharing-dummy.m in Sources */,
+				6C4B19961E3F0203ED868884B8B7C2D9 /* EXSharingModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		119E31ADB89774D44A0E6583461C23F5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = C7A601CFB38144E1036CEC7CDCB63FD2 /* PBXContainerItemProxy */;
-		};
-		2CFF92CEE5F831747CDFE1E957355AD8 /* PBXTargetDependency */ = {
+		97622096C2CC4DB479CF9F366FC8FD14 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = 07CC1B216B28D3698DFC3A98613BC1A3 /* PBXContainerItemProxy */;
+			targetProxy = 57872ECFC88643EB93CCB8CE4BBE58FC /* PBXContainerItemProxy */;
+		};
+		A15BFFA5454AC808907574B791ACE9BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = C2EAAD1F89CDE6BFF756989B648D22EB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1AA9066DEFE1B9B69C580F45FA3E983F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AAD65B4AE1A2442C3AB8868E43F01838 /* EXSharing.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSharing/EXSharing-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSharing;
+				PRODUCT_NAME = EXSharing;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		215DA6CCE2C1BF05CAE6718CEA945910 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -273,7 +298,7 @@
 			};
 			name = Release;
 		};
-		3808697F4C87AB6AFDDAF99D0DBF18A1 /* Release */ = {
+		A25BECE36537C6A56CF20A91B561AA43 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 05AD695E9110583DEF72C8ECC4CF96DF /* EXSharing.release.xcconfig */;
 			buildSettings = {
@@ -298,31 +323,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		D8687CD41ABF1CEF77A8A750F6A24403 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = AAD65B4AE1A2442C3AB8868E43F01838 /* EXSharing.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSharing/EXSharing-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSharing;
-				PRODUCT_NAME = EXSharing;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		EF59D6C8A874AFA74A0EDE9E3E81E276 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -391,11 +391,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		489FC4730ABE913EE66E1B8558F18D87 /* Build configuration list for PBXNativeTarget "EXSharing" */ = {
+		1420350743A22FA96A2BE106D8AAC86B /* Build configuration list for PBXNativeTarget "EXSharing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D8687CD41ABF1CEF77A8A750F6A24403 /* Debug */,
-				3808697F4C87AB6AFDDAF99D0DBF18A1 /* Release */,
+				1AA9066DEFE1B9B69C580F45FA3E983F /* Debug */,
+				A25BECE36537C6A56CF20A91B561AA43 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05F88C75B19698A7C4EC20BFC6C0EC05 /* RNSScreenContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20A1C521E15417B5781B0C85F8FD63FF /* RNSScreenContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		30ECCADDB692DAACF9E44FC8D392289D /* RNSScreenStackHeaderConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F3F10BB8C09267AC0C9EBC5C1C1BCF0 /* RNSScreenStackHeaderConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8317538243E6F874184F3261516AA7F3 /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E12A88AA01B50F4AFAA0C61BC141E3DA /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		885DDEF68A6E1E689E557FF9E0D8BAC5 /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = BFC334CE5003EA7749B96C3B056C51FA /* RNSScreenContainer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		899F2519F7D906964236025665D88A3E /* RNScreens-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EAC70E002D5514F194F577929186D143 /* RNScreens-dummy.m */; };
-		8FCCB06F16761A10C536E638FB8289B9 /* RNSScreenStack.h in Headers */ = {isa = PBXBuildFile; fileRef = B634C11AB55A9FC462D463C742009B2C /* RNSScreenStack.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		99E427BB29604AAC9F234854BB5E9A8D /* RNSScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = D5290121338AA5B6D2C1CF855E1C6C30 /* RNSScreen.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B1FD2F88856A64EF30088373C1DFAF8D /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE6FE6AD0AF78756677C7A44235F2DB /* RNSScreen.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DE08003EAEF9A7C24005E6D818221BAB /* RNSScreenStackHeaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 704C5436BC47E76F2299D8747FAF620D /* RNSScreenStackHeaderConfig.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		312F0046473FDD5010898B8725C9ABD7 /* RNSScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = D5290121338AA5B6D2C1CF855E1C6C30 /* RNSScreen.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4348E87142BBF4F6EA8EDF850A6B6355 /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = BFC334CE5003EA7749B96C3B056C51FA /* RNSScreenContainer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		497D7F58825340EACD1464DCB1738F70 /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE6FE6AD0AF78756677C7A44235F2DB /* RNSScreen.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		70F1797ECED6916216A954B35207FC4E /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E12A88AA01B50F4AFAA0C61BC141E3DA /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8A780B82E553C34BD0EDD92230E201CC /* RNSScreenContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20A1C521E15417B5781B0C85F8FD63FF /* RNSScreenContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ED0E0BD84B1C4F67EFBDA1A7FE4B4D03 /* RNSScreenStackHeaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 704C5436BC47E76F2299D8747FAF620D /* RNSScreenStackHeaderConfig.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F78F309D47D1B1B8E3856EEDFE34476E /* RNSScreenStackHeaderConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F3F10BB8C09267AC0C9EBC5C1C1BCF0 /* RNSScreenStackHeaderConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F7B16395221BBE67F19951230C55141A /* RNScreens-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EAC70E002D5514F194F577929186D143 /* RNScreens-dummy.m */; };
+		F86E9B3183BC30158CABEB14F8771132 /* RNSScreenStack.h in Headers */ = {isa = PBXBuildFile; fileRef = B634C11AB55A9FC462D463C742009B2C /* RNSScreenStack.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		85C1ACCFE96A7C12D98A57BEF17ADC7A /* PBXContainerItemProxy */ = {
+		5C81F390D6AA288D7AC678A87BAB3872 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 872F6F6306A98CCDC071A3FEEB61B9B0 /* React.xcodeproj */;
 			proxyType = 1;
@@ -49,7 +49,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		606411625A51E63AC8E06A8D20BA683C /* Frameworks */ = {
+		F6B17CCAAEAA118C3E06EC261B0DDFED /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -135,14 +135,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		1B117C294ED264AB5B45DDA6FB89A867 /* Headers */ = {
+		0AB5767F8CBE4BE20C263CB5ADAC246F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				99E427BB29604AAC9F234854BB5E9A8D /* RNSScreen.h in Headers */,
-				05F88C75B19698A7C4EC20BFC6C0EC05 /* RNSScreenContainer.h in Headers */,
-				8FCCB06F16761A10C536E638FB8289B9 /* RNSScreenStack.h in Headers */,
-				30ECCADDB692DAACF9E44FC8D392289D /* RNSScreenStackHeaderConfig.h in Headers */,
+				312F0046473FDD5010898B8725C9ABD7 /* RNSScreen.h in Headers */,
+				8A780B82E553C34BD0EDD92230E201CC /* RNSScreenContainer.h in Headers */,
+				F86E9B3183BC30158CABEB14F8771132 /* RNSScreenStack.h in Headers */,
+				F78F309D47D1B1B8E3856EEDFE34476E /* RNSScreenStackHeaderConfig.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,16 +151,16 @@
 /* Begin PBXNativeTarget section */
 		A72DB725A68697789F3F72BCF9C3A522 /* RNScreens */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 83EE405A7DAC0A0B32643A417EC846C9 /* Build configuration list for PBXNativeTarget "RNScreens" */;
+			buildConfigurationList = FDAE63E964A3C2D09E318FD27D72E875 /* Build configuration list for PBXNativeTarget "RNScreens" */;
 			buildPhases = (
-				1B117C294ED264AB5B45DDA6FB89A867 /* Headers */,
-				F3E7C7A6DD0401A325863134904D0DD5 /* Sources */,
-				606411625A51E63AC8E06A8D20BA683C /* Frameworks */,
+				0AB5767F8CBE4BE20C263CB5ADAC246F /* Headers */,
+				246EAF9E9EB9D270736C2FD4E209EABF /* Sources */,
+				F6B17CCAAEAA118C3E06EC261B0DDFED /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5CFC6D6EA101D4B0FC14091AED8AB71B /* PBXTargetDependency */,
+				8370EF9DE78A329ED81B569DE6A8C9BF /* PBXTargetDependency */,
 			);
 			name = RNScreens;
 			productName = RNScreens;
@@ -200,29 +200,78 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F3E7C7A6DD0401A325863134904D0DD5 /* Sources */ = {
+		246EAF9E9EB9D270736C2FD4E209EABF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				899F2519F7D906964236025665D88A3E /* RNScreens-dummy.m in Sources */,
-				B1FD2F88856A64EF30088373C1DFAF8D /* RNSScreen.m in Sources */,
-				885DDEF68A6E1E689E557FF9E0D8BAC5 /* RNSScreenContainer.m in Sources */,
-				8317538243E6F874184F3261516AA7F3 /* RNSScreenStack.m in Sources */,
-				DE08003EAEF9A7C24005E6D818221BAB /* RNSScreenStackHeaderConfig.m in Sources */,
+				F7B16395221BBE67F19951230C55141A /* RNScreens-dummy.m in Sources */,
+				497D7F58825340EACD1464DCB1738F70 /* RNSScreen.m in Sources */,
+				4348E87142BBF4F6EA8EDF850A6B6355 /* RNSScreenContainer.m in Sources */,
+				70F1797ECED6916216A954B35207FC4E /* RNSScreenStack.m in Sources */,
+				ED0E0BD84B1C4F67EFBDA1A7FE4B4D03 /* RNSScreenStackHeaderConfig.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5CFC6D6EA101D4B0FC14091AED8AB71B /* PBXTargetDependency */ = {
+		8370EF9DE78A329ED81B569DE6A8C9BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 85C1ACCFE96A7C12D98A57BEF17ADC7A /* PBXContainerItemProxy */;
+			targetProxy = 5C81F390D6AA288D7AC678A87BAB3872 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		10E83C296E666A85DA96FF75E1BAFBCE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7F0FEF8A24D611DB1D3978FEB7D1EBCC /* RNScreens.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNScreens;
+				PRODUCT_NAME = RNScreens;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1449380D65CA55B6B71333EDC0809839 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D8603788A87ECC98858AEF3F8382CE1C /* RNScreens.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNScreens;
+				PRODUCT_NAME = RNScreens;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		1EE53705A65B87856EA683A5E79F7F1E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -287,30 +336,6 @@
 			};
 			name = Debug;
 		};
-		28ED527E9B8A31259D1E3E55C557AA95 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7F0FEF8A24D611DB1D3978FEB7D1EBCC /* RNScreens.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNScreens;
-				PRODUCT_NAME = RNScreens;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		D636C5C38FB121D58F454E597147386C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -371,31 +396,6 @@
 			};
 			name = Release;
 		};
-		E4B72B0AE33D9895D2FC1BF700531DEE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D8603788A87ECC98858AEF3F8382CE1C /* RNScreens.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNScreens;
-				PRODUCT_NAME = RNScreens;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -408,11 +408,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83EE405A7DAC0A0B32643A417EC846C9 /* Build configuration list for PBXNativeTarget "RNScreens" */ = {
+		FDAE63E964A3C2D09E318FD27D72E875 /* Build configuration list for PBXNativeTarget "RNScreens" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				28ED527E9B8A31259D1E3E55C557AA95 /* Debug */,
-				E4B72B0AE33D9895D2FC1BF700531DEE /* Release */,
+				10E83C296E666A85DA96FF75E1BAFBCE /* Debug */,
+				1449380D65CA55B6B71333EDC0809839 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

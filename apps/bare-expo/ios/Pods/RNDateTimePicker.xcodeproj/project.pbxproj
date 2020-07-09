@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7A94C345C98ADED7B48A36C65BC40356 /* RNDateTimePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB61514D901E1B159AB5FC6357C9 /* RNDateTimePicker-dummy.m */; };
-		DE91B63E77474E0E2614BEEFB0D345D5 /* RNDateTimePickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F4D68803792265FF2DD72BA0FAD757DF /* RNDateTimePickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E7CA56F3F5A3FC845C426C078F138228 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 84A900D00ED58E9FF91A2C4407572E90 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F0D16EE026EEB802ACFAB80ACB7CCA37 /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C3158A5A15632761B916AFEB31ED1CC8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F3C19EA034CD48CDB6B1926204EC1DB4 /* RNDateTimePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 27612B8C1661EA10C2EFC99332246CCF /* RNDateTimePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0F3CA4C3E63D4C00A6D0F4A4CC9D3899 /* RNDateTimePickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F4D68803792265FF2DD72BA0FAD757DF /* RNDateTimePickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		29E3A455E5EA62C9C52C11030F692D10 /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C3158A5A15632761B916AFEB31ED1CC8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4478092CC34F7806191E93897E1713E7 /* RNDateTimePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB61514D901E1B159AB5FC6357C9 /* RNDateTimePicker-dummy.m */; };
+		5C6EFF402249B9A48D9EBB632EFF5EC4 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 84A900D00ED58E9FF91A2C4407572E90 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F046E14F0FF9A5933CE78B237D0FCFA5 /* RNDateTimePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 27612B8C1661EA10C2EFC99332246CCF /* RNDateTimePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		EB9E48F65960C9FE8F899691CC57A5D0 /* PBXContainerItemProxy */ = {
+		CE93EA489DC9402CE01808002B4D2FB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 24E2C5DAB8DB64F4E67E24CA3B079C3C /* React.xcodeproj */;
 			proxyType = 1;
@@ -41,7 +41,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A4D5AAB4D568DEB0D3614AB22E7D50AD /* Frameworks */ = {
+		94AA7A410B7C1E4D9349A49BC4BA3FA0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -123,12 +123,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		496D903584D6858FC33C1C1C4C55D8C2 /* Headers */ = {
+		CE66748B24109890B59F89A5F7072D77 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3C19EA034CD48CDB6B1926204EC1DB4 /* RNDateTimePicker.h in Headers */,
-				DE91B63E77474E0E2614BEEFB0D345D5 /* RNDateTimePickerManager.h in Headers */,
+				F046E14F0FF9A5933CE78B237D0FCFA5 /* RNDateTimePicker.h in Headers */,
+				0F3CA4C3E63D4C00A6D0F4A4CC9D3899 /* RNDateTimePickerManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,16 +137,16 @@
 /* Begin PBXNativeTarget section */
 		862E1DA0F45BF8C82AA7330F871534CF /* RNDateTimePicker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A69B2ADFBB39A67BB7E20762C415D9A6 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */;
+			buildConfigurationList = 5DBFA33D7486B1268468B31C169B01FA /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */;
 			buildPhases = (
-				496D903584D6858FC33C1C1C4C55D8C2 /* Headers */,
-				31D79682BF95D70203292F1CF54385B4 /* Sources */,
-				A4D5AAB4D568DEB0D3614AB22E7D50AD /* Frameworks */,
+				CE66748B24109890B59F89A5F7072D77 /* Headers */,
+				5D3F1F316F4725A70D6B0EB1E5767866 /* Sources */,
+				94AA7A410B7C1E4D9349A49BC4BA3FA0 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				916135F42EC4E07642EAC94086D08AF2 /* PBXTargetDependency */,
+				8836965562CA6A96F5D139FCCD300BF0 /* PBXTargetDependency */,
 			);
 			name = RNDateTimePicker;
 			productName = RNDateTimePicker;
@@ -186,23 +186,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		31D79682BF95D70203292F1CF54385B4 /* Sources */ = {
+		5D3F1F316F4725A70D6B0EB1E5767866 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7A94C345C98ADED7B48A36C65BC40356 /* RNDateTimePicker-dummy.m in Sources */,
-				E7CA56F3F5A3FC845C426C078F138228 /* RNDateTimePicker.m in Sources */,
-				F0D16EE026EEB802ACFAB80ACB7CCA37 /* RNDateTimePickerManager.m in Sources */,
+				4478092CC34F7806191E93897E1713E7 /* RNDateTimePicker-dummy.m in Sources */,
+				5C6EFF402249B9A48D9EBB632EFF5EC4 /* RNDateTimePicker.m in Sources */,
+				29E3A455E5EA62C9C52C11030F692D10 /* RNDateTimePickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		916135F42EC4E07642EAC94086D08AF2 /* PBXTargetDependency */ = {
+		8836965562CA6A96F5D139FCCD300BF0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = EB9E48F65960C9FE8F899691CC57A5D0 /* PBXContainerItemProxy */;
+			targetProxy = CE93EA489DC9402CE01808002B4D2FB4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -271,7 +271,7 @@
 			};
 			name = Debug;
 		};
-		DC2E96F96249D52702AF07D55125EBA2 /* Debug */ = {
+		A65B51BBBCC1D58779A696823D801BF4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 282CB33110240740B27CFE8B54B9CA21 /* RNDateTimePicker.debug.xcconfig */;
 			buildSettings = {
@@ -295,7 +295,7 @@
 			};
 			name = Debug;
 		};
-		EAD91B6BBF65729E16C2BE3D3A94701B /* Release */ = {
+		AA6A07FD6DED964A46CD615B28DAE342 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 056C10410C6328704DE08EA3B950FE9F /* RNDateTimePicker.release.xcconfig */;
 			buildSettings = {
@@ -383,20 +383,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5DBFA33D7486B1268468B31C169B01FA /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A65B51BBBCC1D58779A696823D801BF4 /* Debug */,
+				AA6A07FD6DED964A46CD615B28DAE342 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7BE22E92DA15A4B4533529482010FE38 /* Build configuration list for PBXProject "RNDateTimePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				57A649E99CC170BE4C322E36D7E61874 /* Debug */,
 				F6A7469FD4BE3C3790183AB9F039812E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A69B2ADFBB39A67BB7E20762C415D9A6 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DC2E96F96249D52702AF07D55125EBA2 /* Debug */,
-				EAD91B6BBF65729E16C2BE3D3A94701B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,45 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0EF39EC4689987E8A665B9B025A4170D /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F37F9B733EC5E9CEF30822F9DB0FCD3 /* Assume.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		178D53B0DD33D6FDD2C135843E89D86F /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 824CB4FBA7F6AEFB726A80CB433523E7 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1FC0B321B02F5159F5FE76A22E0915BE /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 277348353165C2EB7B595853E0EF3894 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6D282ACD92B5C9E9AE586B4102ABAFCB /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3D90C188A05E97258751D955C9CACD4 /* json_pointer.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7072C25DE32696A00040C0AE7A72B0A8 /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68145D2D531292FF22953701DC076C6C /* SpookyHashV2.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		956255FC1C72FAE25C8529DFC1096002 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A98742543B1B2FDCA74BE2D03AAA0FC /* Format.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9F1F3EE5C439CB2946FFD18AAD747A7B /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0675B3AF3D79C5FCE510E27388D31D1 /* F14Table.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A0FC51CF7FA61B58EE321D5649A04B6E /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46497B1D24C175B68B2C54E732903B61 /* Conv.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A326527399CCD1A36400028653D2E133 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03C96FAB5797118622274BF5E7F29C4B /* dynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A92BE4D3880B1695254CA44F21815A27 /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06F5193137CFFCAA796FDFB9D45904E /* ScopeGuard.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		BF84FF2FE7CC5C3A394D1F0B7A53B6DB /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C4413B34460FDF5FDF1525137FBECC4C /* Unicode.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C71A07D53CC5954989541E8AB34E467D /* Folly-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8672934E078865EFE002FFF5C11567EF /* Folly-dummy.m */; };
-		C9289F39CCB39181091D1695166481E9 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FC7082FFDD8D9123404A277C4EBC5A /* String.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CE15FC8D3F21E319F1B3C5D4484208BB /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFB7D61A3EA82B9AA551CC5CE24114 /* ColdClass.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FAA3C46743DB55924FEC15EB599C560C /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5B9E77201EE94707D053C282A8BD2C /* json.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FECA2D8793BC964E73AD9EA418842E88 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15ACB2897EDCB4667EE0E0761CDF58B4 /* MallocImpl.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		099D716FAEDFD397674C5611E7155CDE /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 277348353165C2EB7B595853E0EF3894 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1302359DF0B7A9CD00679D6F8F04BEC1 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15ACB2897EDCB4667EE0E0761CDF58B4 /* MallocImpl.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		152B646A074F85D2A1FBBA775FDCC3E1 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A98742543B1B2FDCA74BE2D03AAA0FC /* Format.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2093F86B36A43DA948147A9CF5332D5E /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68145D2D531292FF22953701DC076C6C /* SpookyHashV2.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		263668CF8E81B50360EF994CA26538C0 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 824CB4FBA7F6AEFB726A80CB433523E7 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		30F28195AD18B3C2C9E6D35EA68D067B /* Folly-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8672934E078865EFE002FFF5C11567EF /* Folly-dummy.m */; };
+		384986C29EEFB981D04580FE2F9A6044 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FC7082FFDD8D9123404A277C4EBC5A /* String.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5CE05E0C66F02B9CAC71641364F24326 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03C96FAB5797118622274BF5E7F29C4B /* dynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		648329ABF68446881B982928AE99FAD2 /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0675B3AF3D79C5FCE510E27388D31D1 /* F14Table.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9897E08E27407067C8FFA7D6FE5FEDB3 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46497B1D24C175B68B2C54E732903B61 /* Conv.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B76640E8C691CEA5D6B541BF3C2D8784 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5B9E77201EE94707D053C282A8BD2C /* json.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D201493016EA15945E2E4EEEBB3482A8 /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3D90C188A05E97258751D955C9CACD4 /* json_pointer.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DBD454D712AB3B96E106A30BB89E3E29 /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06F5193137CFFCAA796FDFB9D45904E /* ScopeGuard.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DD4A5F6A4B111D84970397A1EF436856 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C4413B34460FDF5FDF1525137FBECC4C /* Unicode.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EC5D634E1E684E6F49CD150D7602633A /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F37F9B733EC5E9CEF30822F9DB0FCD3 /* Assume.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F899755A85C1EFE0A645DE37E5D1811A /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFB7D61A3EA82B9AA551CC5CE24114 /* ColdClass.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		08D9585FD44DF8022852F8ED7A893B5C /* PBXContainerItemProxy */ = {
+		378DC4C0DF05BCD6761AE593AE3F2E48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0CE66E39013028C80C062C515A568DFB /* glog.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
+			remoteInfo = glog;
+		};
+		990E88EF54AF321CE670572A90811366 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 28081F2DF85A9F5DAB33F83BF4A38723 /* boost-for-react-native.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
 			remoteInfo = "boost-for-react-native";
 		};
-		1DAF0AC6933C92634CE2E2623441DFE4 /* PBXContainerItemProxy */ = {
+		D39B04E933982E546DF510DD3DC3C293 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F38A732023BFACDE8354EA52B33591F9 /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
 			remoteInfo = DoubleConversion;
-		};
-		989958B008426B3D20EE5BE95CC3A621 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0CE66E39013028C80C062C515A568DFB /* glog.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
-			remoteInfo = glog;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -76,7 +76,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		40F28312A525071EA4709EA313E8CD7C /* Frameworks */ = {
+		9C82B6DC1D56FBF48795FB63DAF0E229 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -160,7 +160,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		2F77F83932F93DB8C9A1DC0FBDD7F47F /* Headers */ = {
+		06CA0C24A676819D9F4310FA769B810A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -172,18 +172,18 @@
 /* Begin PBXNativeTarget section */
 		14BB2B7275726942E762F076FA966088 /* Folly */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8453C95704B641F5E50FA9E9255253A1 /* Build configuration list for PBXNativeTarget "Folly" */;
+			buildConfigurationList = E6749141538F9E0A8A7E20F8FAB513B2 /* Build configuration list for PBXNativeTarget "Folly" */;
 			buildPhases = (
-				2F77F83932F93DB8C9A1DC0FBDD7F47F /* Headers */,
-				9BA5FC19809E4A489DC7A8643D726B56 /* Sources */,
-				40F28312A525071EA4709EA313E8CD7C /* Frameworks */,
+				06CA0C24A676819D9F4310FA769B810A /* Headers */,
+				DEECA60EBC39D49A056D772ED6B18892 /* Sources */,
+				9C82B6DC1D56FBF48795FB63DAF0E229 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EB50BD0836E1CADF8681110D840E9362 /* PBXTargetDependency */,
-				250E800E70E403BDB3709A612129A4A9 /* PBXTargetDependency */,
-				6BCBB838A794CF1FCDC4D278D7EB8BE3 /* PBXTargetDependency */,
+				9659BB61A64329F789D1B23ABD7E4B27 /* PBXTargetDependency */,
+				3A86F4477D1A5E80DD1182B196E6B91A /* PBXTargetDependency */,
+				2D5ABC20AA44575F2D3F9BF67B0C9389 /* PBXTargetDependency */,
 			);
 			name = Folly;
 			productName = Folly;
@@ -229,53 +229,53 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9BA5FC19809E4A489DC7A8643D726B56 /* Sources */ = {
+		DEECA60EBC39D49A056D772ED6B18892 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0EF39EC4689987E8A665B9B025A4170D /* Assume.cpp in Sources */,
-				CE15FC8D3F21E319F1B3C5D4484208BB /* ColdClass.cpp in Sources */,
-				A0FC51CF7FA61B58EE321D5649A04B6E /* Conv.cpp in Sources */,
-				1FC0B321B02F5159F5FE76A22E0915BE /* Demangle.cpp in Sources */,
-				178D53B0DD33D6FDD2C135843E89D86F /* Demangle.cpp in Sources */,
-				A326527399CCD1A36400028653D2E133 /* dynamic.cpp in Sources */,
-				9F1F3EE5C439CB2946FFD18AAD747A7B /* F14Table.cpp in Sources */,
-				C71A07D53CC5954989541E8AB34E467D /* Folly-dummy.m in Sources */,
-				956255FC1C72FAE25C8529DFC1096002 /* Format.cpp in Sources */,
-				FAA3C46743DB55924FEC15EB599C560C /* json.cpp in Sources */,
-				6D282ACD92B5C9E9AE586B4102ABAFCB /* json_pointer.cpp in Sources */,
-				FECA2D8793BC964E73AD9EA418842E88 /* MallocImpl.cpp in Sources */,
-				A92BE4D3880B1695254CA44F21815A27 /* ScopeGuard.cpp in Sources */,
-				7072C25DE32696A00040C0AE7A72B0A8 /* SpookyHashV2.cpp in Sources */,
-				C9289F39CCB39181091D1695166481E9 /* String.cpp in Sources */,
-				BF84FF2FE7CC5C3A394D1F0B7A53B6DB /* Unicode.cpp in Sources */,
+				EC5D634E1E684E6F49CD150D7602633A /* Assume.cpp in Sources */,
+				F899755A85C1EFE0A645DE37E5D1811A /* ColdClass.cpp in Sources */,
+				9897E08E27407067C8FFA7D6FE5FEDB3 /* Conv.cpp in Sources */,
+				099D716FAEDFD397674C5611E7155CDE /* Demangle.cpp in Sources */,
+				263668CF8E81B50360EF994CA26538C0 /* Demangle.cpp in Sources */,
+				5CE05E0C66F02B9CAC71641364F24326 /* dynamic.cpp in Sources */,
+				648329ABF68446881B982928AE99FAD2 /* F14Table.cpp in Sources */,
+				30F28195AD18B3C2C9E6D35EA68D067B /* Folly-dummy.m in Sources */,
+				152B646A074F85D2A1FBBA775FDCC3E1 /* Format.cpp in Sources */,
+				B76640E8C691CEA5D6B541BF3C2D8784 /* json.cpp in Sources */,
+				D201493016EA15945E2E4EEEBB3482A8 /* json_pointer.cpp in Sources */,
+				1302359DF0B7A9CD00679D6F8F04BEC1 /* MallocImpl.cpp in Sources */,
+				DBD454D712AB3B96E106A30BB89E3E29 /* ScopeGuard.cpp in Sources */,
+				2093F86B36A43DA948147A9CF5332D5E /* SpookyHashV2.cpp in Sources */,
+				384986C29EEFB981D04580FE2F9A6044 /* String.cpp in Sources */,
+				DD4A5F6A4B111D84970397A1EF436856 /* Unicode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		250E800E70E403BDB3709A612129A4A9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "boost-for-react-native";
-			targetProxy = 08D9585FD44DF8022852F8ED7A893B5C /* PBXContainerItemProxy */;
-		};
-		6BCBB838A794CF1FCDC4D278D7EB8BE3 /* PBXTargetDependency */ = {
+		2D5ABC20AA44575F2D3F9BF67B0C9389 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = glog;
-			targetProxy = 989958B008426B3D20EE5BE95CC3A621 /* PBXContainerItemProxy */;
+			targetProxy = 378DC4C0DF05BCD6761AE593AE3F2E48 /* PBXContainerItemProxy */;
 		};
-		EB50BD0836E1CADF8681110D840E9362 /* PBXTargetDependency */ = {
+		3A86F4477D1A5E80DD1182B196E6B91A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "boost-for-react-native";
+			targetProxy = 990E88EF54AF321CE670572A90811366 /* PBXContainerItemProxy */;
+		};
+		9659BB61A64329F789D1B23ABD7E4B27 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = DoubleConversion;
-			targetProxy = 1DAF0AC6933C92634CE2E2623441DFE4 /* PBXContainerItemProxy */;
+			targetProxy = D39B04E933982E546DF510DD3DC3C293 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0B36A20B82762E10E422C3685991F9FF /* Release */ = {
+		575BB274EAD50729AACE494DA7E5C58B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89906260910A852B53B3D762D6BF737D /* Folly.release.xcconfig */;
+			baseConfigurationReference = A9C3285499C91652EB8B2635E8763859 /* Folly.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -294,9 +294,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		8FE960564CC14F9B9342A9053B5E0F4D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -362,9 +361,9 @@
 			};
 			name = Debug;
 		};
-		F93862F0BE873EBABF62FF3C7AEBE782 /* Debug */ = {
+		F38B274B6B6B47CEAA8A6796757AFCD3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A9C3285499C91652EB8B2635E8763859 /* Folly.debug.xcconfig */;
+			baseConfigurationReference = 89906260910A852B53B3D762D6BF737D /* Folly.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -383,8 +382,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		FFAF1DB89EA39F512C259F6D4473005F /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -458,11 +458,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8453C95704B641F5E50FA9E9255253A1 /* Build configuration list for PBXNativeTarget "Folly" */ = {
+		E6749141538F9E0A8A7E20F8FAB513B2 /* Build configuration list for PBXNativeTarget "Folly" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F93862F0BE873EBABF62FF3C7AEBE782 /* Debug */,
-				0B36A20B82762E10E422C3685991F9FF /* Release */,
+				575BB274EAD50729AACE494DA7E5C58B /* Debug */,
+				F38B274B6B6B47CEAA8A6796757AFCD3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

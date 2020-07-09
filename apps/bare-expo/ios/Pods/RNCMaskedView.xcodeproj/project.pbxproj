@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		243515E0F57C46B94B27112F06E203EA /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A827474A1DD39B45EFAC2A2E451D0BAA /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7717EEAD5F993B3E17EB7B62E2B567F0 /* RNCMaskedView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 05DEC45A532B34466C3699AD054325BD /* RNCMaskedView-dummy.m */; };
-		80DDD6A311778CB8AFFBA288DAA4E68E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = CFE90E216DA0921164D32020D8F2B4E2 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		86FDD1E3D64BE08B695581A145D8720A /* RNCMaskedView.h in Headers */ = {isa = PBXBuildFile; fileRef = A14CB57C4944C977997E89C369112DD2 /* RNCMaskedView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EDAD800EA194DCE7D5C258105CC06C4F /* RNCMaskedViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F05D47202D44ACFE90C4DB3288C85EB3 /* RNCMaskedViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		15D5210DC79E5FB1B24F2FF76B96992B /* RNCMaskedViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F05D47202D44ACFE90C4DB3288C85EB3 /* RNCMaskedViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		33B89FF7AE9CA24A79729CF23DD87AF3 /* RNCMaskedView.h in Headers */ = {isa = PBXBuildFile; fileRef = A14CB57C4944C977997E89C369112DD2 /* RNCMaskedView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3547C90461E6DC6D452D6385AF801D7A /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = CFE90E216DA0921164D32020D8F2B4E2 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		66BFC844B8644436F6C34F6D708A6644 /* RNCMaskedView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 05DEC45A532B34466C3699AD054325BD /* RNCMaskedView-dummy.m */; };
+		C793A05C3A9A91CB13837965C66A6C3C /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A827474A1DD39B45EFAC2A2E451D0BAA /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3B06875C980F6A28505B5B4905E95A27 /* PBXContainerItemProxy */ = {
+		6E246C054E4240C69C107DD63E43FFAF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CA9511A4431A77EF0DCFA6B5BE8F3AB6 /* React.xcodeproj */;
 			proxyType = 1;
@@ -40,7 +40,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E997DD686C60BCD4775E1000A08FB84A /* Frameworks */ = {
+		FA8AAE6B999E310B82A516A85B2720D7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -121,12 +121,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		7077358591D55949D234F2643E70B93D /* Headers */ = {
+		D910A63F739D411D8D55A5D1EB1F66D2 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86FDD1E3D64BE08B695581A145D8720A /* RNCMaskedView.h in Headers */,
-				EDAD800EA194DCE7D5C258105CC06C4F /* RNCMaskedViewManager.h in Headers */,
+				33B89FF7AE9CA24A79729CF23DD87AF3 /* RNCMaskedView.h in Headers */,
+				15D5210DC79E5FB1B24F2FF76B96992B /* RNCMaskedViewManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,16 +135,16 @@
 /* Begin PBXNativeTarget section */
 		3A3AC6D68A9DF5A1C1346B6F2C044396 /* RNCMaskedView */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B73A42DA96D614AD6D159BDDF8135003 /* Build configuration list for PBXNativeTarget "RNCMaskedView" */;
+			buildConfigurationList = 368346E449839945B5F57BE8E201B89D /* Build configuration list for PBXNativeTarget "RNCMaskedView" */;
 			buildPhases = (
-				7077358591D55949D234F2643E70B93D /* Headers */,
-				59392262FF4F7B200A2A745C8780D4AB /* Sources */,
-				E997DD686C60BCD4775E1000A08FB84A /* Frameworks */,
+				D910A63F739D411D8D55A5D1EB1F66D2 /* Headers */,
+				7174D52171860EFF78C4AF5E14A1E1A7 /* Sources */,
+				FA8AAE6B999E310B82A516A85B2720D7 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E3E648B4959E24ECBBCC3251DCF7EE6D /* PBXTargetDependency */,
+				536CB78D526EF6181D83CC97955539D3 /* PBXTargetDependency */,
 			);
 			name = RNCMaskedView;
 			productName = RNCMaskedView;
@@ -184,28 +184,28 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		59392262FF4F7B200A2A745C8780D4AB /* Sources */ = {
+		7174D52171860EFF78C4AF5E14A1E1A7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7717EEAD5F993B3E17EB7B62E2B567F0 /* RNCMaskedView-dummy.m in Sources */,
-				80DDD6A311778CB8AFFBA288DAA4E68E /* RNCMaskedView.m in Sources */,
-				243515E0F57C46B94B27112F06E203EA /* RNCMaskedViewManager.m in Sources */,
+				66BFC844B8644436F6C34F6D708A6644 /* RNCMaskedView-dummy.m in Sources */,
+				3547C90461E6DC6D452D6385AF801D7A /* RNCMaskedView.m in Sources */,
+				C793A05C3A9A91CB13837965C66A6C3C /* RNCMaskedViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E3E648B4959E24ECBBCC3251DCF7EE6D /* PBXTargetDependency */ = {
+		536CB78D526EF6181D83CC97955539D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 3B06875C980F6A28505B5B4905E95A27 /* PBXContainerItemProxy */;
+			targetProxy = 6E246C054E4240C69C107DD63E43FFAF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3A4EA245BC92FAF39A63506EA45F138F /* Release */ = {
+		65CA28F1941811D347DFB217892C09F2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C200635281327E246596634703CABE95 /* RNCMaskedView.release.xcconfig */;
 			buildSettings = {
@@ -294,7 +294,7 @@
 			};
 			name = Debug;
 		};
-		ABAB6A8C89AD3480F0EE207896D44EA8 /* Debug */ = {
+		D2F5ADEC5D22645B0E5D87A2B3FF658E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0F9E87BBFF09D436658D02A49E7C1E56 /* RNCMaskedView.debug.xcconfig */;
 			buildSettings = {
@@ -381,20 +381,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		368346E449839945B5F57BE8E201B89D /* Build configuration list for PBXNativeTarget "RNCMaskedView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2F5ADEC5D22645B0E5D87A2B3FF658E /* Debug */,
+				65CA28F1941811D347DFB217892C09F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		83CD1C2896C6A7A917DC1080990FA8F2 /* Build configuration list for PBXProject "RNCMaskedView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7D6F4936A36047795396110FFF16381A /* Debug */,
 				D46ACA6A75238EFB4AB54DCEA936012B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B73A42DA96D614AD6D159BDDF8135003 /* Build configuration list for PBXNativeTarget "RNCMaskedView" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				ABAB6A8C89AD3480F0EE207896D44EA8 /* Debug */,
-				3A4EA245BC92FAF39A63506EA45F138F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

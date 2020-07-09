@@ -934,6 +934,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXTaskManager
     SPECS:
       - EXTaskManager (8.3.0)
+  EXVideoThumbnails:
+    BUILD_SETTINGS_CHECKSUM:
+      EXVideoThumbnails:
+        :debug: 5041c7e0d825e2ec0f00297c32567ce6
+        :release: 5041c7e0d825e2ec0f00297c32567ce6
+    CHECKSUM: f70bdc5511749f3181028f5000bcb7be203c631d
+    FILES:
+      - "../../../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.h"
+      - "../../../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.m"
+    PROJECT_NAME: EXVideoThumbnails
+    SPECS:
+      - EXVideoThumbnails (4.2.1)
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser:
@@ -1150,8 +1162,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e881db1744adf8211c374f30afbf1c0a
-      Release: e881db1744adf8211c374f30afbf1c0a
+      Debug: 59209083b32e0666f470ecd647cd022f
+      Release: 59209083b32e0666f470ecd647cd022f
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1161,8 +1173,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: b005bd3833694175f64824a1eb4aacb8
-      Release: b005bd3833694175f64824a1eb4aacb8
+      Debug: c31b4230dc33908cb8b3b94f62d39238
+      Release: c31b4230dc33908cb8b3b94f62d39238
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
