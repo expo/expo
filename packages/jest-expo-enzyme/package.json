@@ -38,7 +38,7 @@
     "expo-module": "expo-module"
   },
   "peerDependencies": {
-    "react": "~16.11.0",
+    "react": "16.13.1",
     "react-native": "*",
     "react-native-web": "~0.12.0"
   },
