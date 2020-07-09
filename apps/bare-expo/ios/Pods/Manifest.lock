@@ -529,7 +529,7 @@ PODS:
     - React
   - RNReanimated (1.9.0):
     - React
-  - RNScreens (2.8.0):
+  - RNScreens (2.9.0):
     - React
   - RNSharedElement (0.7.0):
     - React
@@ -1038,7 +1038,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: c4285bfdd87430f1e575b81a4742b7586a09d53e
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNReanimated: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
-  RNScreens: 62211832af51e0aebcf6e8c36bcf7dd65592f244
+  RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   SDWebImage: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86

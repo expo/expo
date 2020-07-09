@@ -100,7 +100,6 @@
     "react-native-redash": "^14.1.1",
     "react-native-safe-area-context": "3.0.2",
     "react-native-safe-area-view": "^0.14.8",
-    "react-native-screens": "~2.8.0",
     "react-native-shared-element": "0.7.0",
     "react-native-svg": "12.1.0",
     "react-native-view-shot": "^3.1.2",
