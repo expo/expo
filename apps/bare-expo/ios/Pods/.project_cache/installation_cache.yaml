@@ -1160,8 +1160,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a72e8fce5b895de26f8c0df42d8b9daf
-      Release: a72e8fce5b895de26f8c0df42d8b9daf
+      Debug: 66ad7a9951e9d99d176660250855a589
+      Release: 66ad7a9951e9d99d176660250855a589
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1171,8 +1171,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 115e8a6f20f1220d67aea50c886b70e3
-      Release: 115e8a6f20f1220d67aea50c886b70e3
+      Debug: d6606f648ed877c43a86bc6904fc9c1a
+      Release: d6606f648ed877c43a86bc6904fc9c1a
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -1900,6 +1900,24 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-viewpager
     SPECS:
       - react-native-viewpager (3.3.0)
+  react-native-webview:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-webview:
+        :debug: d8043c3b132d3ae3e27129393b1fe555
+        :release: d8043c3b132d3ae3e27129393b1fe555
+    CHECKSUM: cf5527893252b3b036eea024a1da6996f7344c74
+    FILES:
+      - "../../../../node_modules/react-native-webview/apple/RNCWebView.h"
+      - "../../../../node_modules/react-native-webview/apple/RNCWebView.m"
+      - "../../../../node_modules/react-native-webview/apple/RNCWebViewManager.h"
+      - "../../../../node_modules/react-native-webview/apple/RNCWebViewManager.m"
+      - "../../../../node_modules/react-native-webview/apple/RNCWKProcessPoolManager.h"
+      - "../../../../node_modules/react-native-webview/apple/RNCWKProcessPoolManager.m"
+      - "../../../../node_modules/react-native-webview/LICENSE"
+      - "../../../../node_modules/react-native-webview/README.md"
+    PROJECT_NAME: react-native-webview
+    SPECS:
+      - react-native-webview (9.4.0)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet:

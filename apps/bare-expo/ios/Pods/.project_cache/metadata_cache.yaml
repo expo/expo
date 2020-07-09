@@ -402,6 +402,10 @@ react-native-viewpager:
   LABEL: react-native-viewpager
   PROJECT_PATH: react-native-viewpager.xcodeproj
   UUID: CFC877DE04A417D8C15AFE74E1B178E8
+react-native-webview:
+  LABEL: react-native-webview
+  PROJECT_PATH: react-native-webview.xcodeproj
+  UUID: 42F64E6A68A3E4462CDCAC8DD31120D1
 React-RCTActionSheet:
   LABEL: React-RCTActionSheet
   PROJECT_PATH: React-RCTActionSheet.xcodeproj
