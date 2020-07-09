@@ -28,8 +28,6 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
 
-> ⚠️ **Important Android limitation:** Local notifications are cleared when an Android device is restarted. ([See the feature request](https://expo.canny.io/feature-requests/p/keep-scheduled-notifications-after-reboot)).
-
 ## Installation
 
 <InstallSection packageName="expo-notifications" />
