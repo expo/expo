@@ -22,7 +22,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 <ConfigurationDiff source="/static/diffs/react-native-unimodules-ios.diff" />
 
-<details><summary>Need to customize node_modules path?</summary>
+<details><summary><h4>💡 Need to customize node_modules path?</h4></summary>
 <p>
 
 If you need to customize the path to node_modules, for example because you are using yarn workspaces, then you can pass in a param for this: `use_unimodules!(modules_paths: ['./path/to/node_modules'])`
@@ -30,7 +30,9 @@ If you need to customize the path to node_modules, for example because you are u
 </p>
 </details>
 
-<details><summary>Need to exclude some unimodules that are being automatically linked?</summary> 
+<div style={{marginTop: -10}} />
+
+<details><summary><h4>💡 Need to exclude some unimodules that are being automatically linked?</h4></summary>
 <p>
 
 If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you want to exclude `expo-face-detector`, you may want to use this: `use_unimodules!(exclude: ['expo-face-detector'])`
@@ -38,11 +40,13 @@ If you need to exclude some of the unimodules that you are not using but they go
 </p>
 </details>
 
+<div style={{marginTop: 50}} />
+
 ## Configuration for Android
 
 <ConfigurationDiff source="/static/diffs/react-native-unimodules-android.diff" />
 
-<details><summary>Need to customize node_modules path?</summary>
+<details><summary><h4>💡 Need to customize node_modules path?</h4></summary>
 <p>
 
 If you need to customize the path to node_modules, for example because you are using yarn workspaces, then you can pass in a param `modulesPaths` for both of these functions: `includeUnimodulesProjects([modulesPaths: ['./path/to/node_modules']])`, `addUnimodulesDependencies([modulesPaths: ['./path/to/node_modules']])`
@@ -50,7 +54,9 @@ If you need to customize the path to node_modules, for example because you are u
 </p>
 </details>
 
-<details><summary>Need to exclude some unimodules that are being automatically linked?</summary>
+<div style={{marginTop: -10}} />
+
+<details><summary><h4>💡 Need to exclude some unimodules that are being automatically linked?</h4></summary>
 <p>
 
 If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you want to exclude `expo-face-detector`, you may want to use this: `addUnimodulesDependencies([exclude: ['expo-face-detector']])`
@@ -58,13 +64,17 @@ If you need to exclude some of the unimodules that you are not using but they go
 </p>
 </details>
 
-<details><summary>Need to customize configuration of unimodule dependencies?</summary>
+<div style={{marginTop: -10}} />
+
+<details><summary><h4>💡 Need to customize configuration of unimodule dependencies?</h4></summary>
 <p>
 
 You can also customize the configuration of the unimodules dependencies (the default is `implementation`, if you're using Gradle older than 3.0, you will need to set `configuration: "compile"` in `addUnimodulesDependencies`, like: `addUnimodulesDependencies([configuration: "compile"])`)
 
 </p>
 </details>
+
+<div style={{marginTop: 50}} />
 
 ## Usage
 
