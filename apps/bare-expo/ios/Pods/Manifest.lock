@@ -7,6 +7,9 @@ PODS:
   - AppAuth/Core (1.3.0)
   - AppAuth/ExternalUserAgent (1.3.0)
   - boost-for-react-native (1.63.0)
+  - Branch (0.29.0):
+    - Branch/Core (= 0.29.0)
+  - Branch/Core (0.29.0)
   - DoubleConversion (1.1.6)
   - EXAmplitude (8.2.1):
     - Amplitude-iOS (~> 4.7.1)
@@ -444,6 +447,9 @@ PODS:
   - React-jsinspector (0.62.2)
   - react-native-appearance (0.3.4):
     - React
+  - react-native-branch (4.2.1):
+    - Branch (= 0.29.0)
+    - React
   - react-native-netinfo (5.9.2):
     - React
   - react-native-safe-area-context (3.0.2):
@@ -627,6 +633,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../../../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../../react-native-lab/react-native/ReactCommon/jsinspector`)
   - react-native-appearance (from `../../../node_modules/react-native-appearance`)
+  - react-native-branch (from `../../../node_modules/react-native-branch`)
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-community/segmented-control`)"
@@ -670,6 +677,7 @@ SPEC REPOS:
     - Analytics
     - AppAuth
     - boost-for-react-native
+    - Branch
     - FBSDKCoreKit
     - FBSDKLoginKit
     - Firebase
@@ -832,6 +840,8 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/ReactCommon/jsinspector"
   react-native-appearance:
     :path: "../../../node_modules/react-native-appearance"
+  react-native-branch:
+    :path: "../../../node_modules/react-native-branch"
   react-native-netinfo:
     :path: "../../../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -908,6 +918,7 @@ SPEC CHECKSUMS:
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   AppAuth: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  Branch: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAmplitude: 9232a37c556ab739c42adcbd0b239b5c1ac61f10
   EXAppAuth: 98c853968adeec68008887a0cb475efb2656f196
@@ -995,6 +1006,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
+  react-native-branch: cc611a2d0e7e6c7c4cafebc8e59065b89c38002b
   react-native-netinfo: cb74e17062b2af5a16a4b137f32495f241df1a8e
   react-native-safe-area-context: b11a34881faac509cad5578726c98161ad4d275c
   react-native-segmented-control: d7c444e5cc5f526da766f8ff24346898b7ac7be5

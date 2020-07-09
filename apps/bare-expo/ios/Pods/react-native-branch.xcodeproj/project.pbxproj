@@ -1,0 +1,497 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07B643BF4D0821DC5ACAB3BADE306483 /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 426DEA94A54D9238E212AF4D3E2A61D8 /* RNBranchConfig.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0BDE68971CDB03C4EBD6100C6A38D449 /* RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A9A97DE49BF79A2EC5A56E2322763E1 /* RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1FA0AB320388F677F3671306C08AB7FC /* BranchContentMetadata+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0AE951E5E41BD820DC1098FF0B6329 /* BranchContentMetadata+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		249C171AD9650AC4B5FD649A4C94F145 /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = D84EA2C34C83A504486229C5C6530577 /* NSObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		29A22E44F61A4655968C58429AA518C3 /* RNBranchAgingDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = A79C4142FBD1857BE6AC22A3E2B9CB79 /* RNBranchAgingDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		37F4CBAFB2B728DCF120D1620EB9276D /* RNBranchProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 71A2E04801517E74B5567A24C528C8EA /* RNBranchProperty.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4A36C47A95A36C3A339761A6DCB83711 /* NSObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB2820EE2F89374F6F5A9B04F30502E /* NSObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5DB504C386FA445FD99AF31AF66E5CEA /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B5C54630B99BEED609DCE3065A7D7C5 /* RNBranchAgingDictionary.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		603EB87A6BBD2A1AF8C783ECFB123CE9 /* BranchUniversalObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = EBCDC45E80A082BDA2269BBD588BFB63 /* BranchUniversalObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		739DF35021D88679C908604B3D97EFDD /* RNBranchConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB7971D92D4B8897FCAAB3C6F900F6D /* RNBranchConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		78C26014B3CF4C1C1EB36C8FC59B3779 /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FDDF75AE790042BBB3302F7C682C483 /* RNBranchAgingItem.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		865F271DEA64A4A2E8223C49031B8F71 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C216882E8C5E37439F00D12E757701 /* BranchLinkProperties+RNBranch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9AF5B57481A535C42A1ECAF57C10D9BF /* RNBranchEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 052D542344FBF335130F6803AE56567B /* RNBranchEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B6B504D12A7FCB5D4100D40FF4CE7F5E /* BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = E6BAF37070E92BD8B5D49A5FF50B5E3D /* BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BAE10BB9DF05966E69CFDC5EB83C7BD3 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF691F6AE766D88BAD8E10759516B1C /* BranchUniversalObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BEA301225F47B61CD26FD3B42FF53B42 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE522C4D7FEEFC5872BFF52BFB651F5 /* RNBranchProperty.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D94C8259615738511A5F18A19A949212 /* RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 23055C023FB6831C934B5B0212F293CB /* RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DBEDB1D4314485733EFAD72F19C91A19 /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B7E266917EC8A65E3B4FDF5D118D6D91 /* BranchContentMetadata+RNBranch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E34B1DB78449F346E79F6A57783D8F8E /* react-native-branch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DC4DB6A44B689A0A6BFD8DA440A1C6D /* react-native-branch-dummy.m */; };
+		E39FAD333E9B517B970837B7733A4326 /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 784D8E044B6ABB7E2838805723831FD4 /* BranchEvent+RNBranch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EA7AD6D294F74771CDEC50DD9EE8E308 /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D81FBDF9D77BC0AD4494D1DF2425C56 /* RNBranchEventEmitter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EE8D0F5C0953BDAC60CF90DC431B0AD3 /* BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 747D3403D356130763727F23352E0EB9 /* BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F2549587C41CED909DC2DD5141BA6E90 /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E1F0BE44238B2D78B9D672B6B12EF16 /* RNBranch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2AB4B294165C1CB4CA689DAFC6E5BA5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A83CAFA30E27032E24C32FD37BD2CD4D /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
+		};
+		523D50A15D8117034EA6995629D0CD24 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD41C7396DFDEA963A2A0702E66210EF /* Branch.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
+			remoteInfo = Branch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		052D542344FBF335130F6803AE56567B /* RNBranchEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNBranchEventEmitter.h; path = ios/RNBranchEventEmitter.h; sourceTree = "<group>"; };
+		0D81FBDF9D77BC0AD4494D1DF2425C56 /* RNBranchEventEmitter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNBranchEventEmitter.m; path = ios/RNBranchEventEmitter.m; sourceTree = "<group>"; };
+		1B5C54630B99BEED609DCE3065A7D7C5 /* RNBranchAgingDictionary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNBranchAgingDictionary.m; path = ios/RNBranchAgingDictionary.m; sourceTree = "<group>"; };
+		1FDDF75AE790042BBB3302F7C682C483 /* RNBranchAgingItem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNBranchAgingItem.m; path = ios/RNBranchAgingItem.m; sourceTree = "<group>"; };
+		23055C023FB6831C934B5B0212F293CB /* RNBranchAgingItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNBranchAgingItem.h; path = ios/RNBranchAgingItem.h; sourceTree = "<group>"; };
+		2A9A97DE49BF79A2EC5A56E2322763E1 /* RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNBranch.h; path = ios/RNBranch.h; sourceTree = "<group>"; };
+		3180A36AB79BA7F1357EB3FCADE160A1 /* react-native-branch.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-branch.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		3CCA0AB382E9EEA1919787FBD4C15660 /* libreact-native-branch.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libreact-native-branch.a"; path = "libreact-native-branch.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3DB7971D92D4B8897FCAAB3C6F900F6D /* RNBranchConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNBranchConfig.h; path = ios/RNBranchConfig.h; sourceTree = "<group>"; };
+		426DEA94A54D9238E212AF4D3E2A61D8 /* RNBranchConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNBranchConfig.m; path = ios/RNBranchConfig.m; sourceTree = "<group>"; };
+		4AF691F6AE766D88BAD8E10759516B1C /* BranchUniversalObject+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "BranchUniversalObject+RNBranch.m"; path = "ios/BranchUniversalObject+RNBranch.m"; sourceTree = "<group>"; };
+		6036B986354B33FDC6E5B85FDE8F53F2 /* react-native-branch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-branch-prefix.pch"; sourceTree = "<group>"; };
+		6453671B89402884CEB78C8C2F86A6B4 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		6A0AE951E5E41BD820DC1098FF0B6329 /* BranchContentMetadata+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "BranchContentMetadata+RNBranch.h"; path = "ios/BranchContentMetadata+RNBranch.h"; sourceTree = "<group>"; };
+		7025BD500E91A9ACA9F617613C429ECE /* react-native-branch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-branch.release.xcconfig"; sourceTree = "<group>"; };
+		71A2E04801517E74B5567A24C528C8EA /* RNBranchProperty.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNBranchProperty.h; path = ios/RNBranchProperty.h; sourceTree = "<group>"; };
+		73C216882E8C5E37439F00D12E757701 /* BranchLinkProperties+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "BranchLinkProperties+RNBranch.m"; path = "ios/BranchLinkProperties+RNBranch.m"; sourceTree = "<group>"; };
+		747D3403D356130763727F23352E0EB9 /* BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "BranchLinkProperties+RNBranch.h"; path = "ios/BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
+		784D8E044B6ABB7E2838805723831FD4 /* BranchEvent+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "BranchEvent+RNBranch.m"; path = "ios/BranchEvent+RNBranch.m"; sourceTree = "<group>"; };
+		7EE522C4D7FEEFC5872BFF52BFB651F5 /* RNBranchProperty.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNBranchProperty.m; path = ios/RNBranchProperty.m; sourceTree = "<group>"; };
+		8DC4DB6A44B689A0A6BFD8DA440A1C6D /* react-native-branch-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-branch-dummy.m"; sourceTree = "<group>"; };
+		9E1F0BE44238B2D78B9D672B6B12EF16 /* RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNBranch.m; path = ios/RNBranch.m; sourceTree = "<group>"; };
+		A79C4142FBD1857BE6AC22A3E2B9CB79 /* RNBranchAgingDictionary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNBranchAgingDictionary.h; path = ios/RNBranchAgingDictionary.h; sourceTree = "<group>"; };
+		A83CAFA30E27032E24C32FD37BD2CD4D /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		AD41C7396DFDEA963A2A0702E66210EF /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
+		B7E266917EC8A65E3B4FDF5D118D6D91 /* BranchContentMetadata+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "BranchContentMetadata+RNBranch.m"; path = "ios/BranchContentMetadata+RNBranch.m"; sourceTree = "<group>"; };
+		CCB2820EE2F89374F6F5A9B04F30502E /* NSObject+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSObject+RNBranch.h"; path = "ios/NSObject+RNBranch.h"; sourceTree = "<group>"; };
+		D59CA2446A5F11130272B51246919C57 /* react-native-branch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-branch.debug.xcconfig"; sourceTree = "<group>"; };
+		D84EA2C34C83A504486229C5C6530577 /* NSObject+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSObject+RNBranch.m"; path = "ios/NSObject+RNBranch.m"; sourceTree = "<group>"; };
+		E6BAF37070E92BD8B5D49A5FF50B5E3D /* BranchEvent+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "BranchEvent+RNBranch.h"; path = "ios/BranchEvent+RNBranch.h"; sourceTree = "<group>"; };
+		EBCDC45E80A082BDA2269BBD588BFB63 /* BranchUniversalObject+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "BranchUniversalObject+RNBranch.h"; path = "ios/BranchUniversalObject+RNBranch.h"; sourceTree = "<group>"; };
+		ED3C9ABF94A0EEF2D2700E76EF28AE0D /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		74EC04181306343C45A76B242DD7495B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0B71FF3AB4173B3860EBB57B7B449686 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				6453671B89402884CEB78C8C2F86A6B4 /* LICENSE */,
+				3180A36AB79BA7F1357EB3FCADE160A1 /* react-native-branch.podspec */,
+				ED3C9ABF94A0EEF2D2700E76EF28AE0D /* README.md */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		42FD5D29BC64BFECA52F43ECB939B76A /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				8DC4DB6A44B689A0A6BFD8DA440A1C6D /* react-native-branch-dummy.m */,
+				6036B986354B33FDC6E5B85FDE8F53F2 /* react-native-branch-prefix.pch */,
+				D59CA2446A5F11130272B51246919C57 /* react-native-branch.debug.xcconfig */,
+				7025BD500E91A9ACA9F617613C429ECE /* react-native-branch.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/react-native-branch";
+			sourceTree = "<group>";
+		};
+		44CAD386C1E5B01767201226736F416C = {
+			isa = PBXGroup;
+			children = (
+				DE67BDBD43A2374A0311B7AFEE9EB803 /* Dependencies */,
+				F8CB355EC8DB852EE2753D3F4D1EAD86 /* Frameworks */,
+				EA76724EF2975A2476CAC06B911B91AC /* Products */,
+				BA49B791BBBF52CF7A06444B663FA166 /* react-native-branch */,
+			);
+			sourceTree = "<group>";
+		};
+		BA49B791BBBF52CF7A06444B663FA166 /* react-native-branch */ = {
+			isa = PBXGroup;
+			children = (
+				6A0AE951E5E41BD820DC1098FF0B6329 /* BranchContentMetadata+RNBranch.h */,
+				B7E266917EC8A65E3B4FDF5D118D6D91 /* BranchContentMetadata+RNBranch.m */,
+				E6BAF37070E92BD8B5D49A5FF50B5E3D /* BranchEvent+RNBranch.h */,
+				784D8E044B6ABB7E2838805723831FD4 /* BranchEvent+RNBranch.m */,
+				747D3403D356130763727F23352E0EB9 /* BranchLinkProperties+RNBranch.h */,
+				73C216882E8C5E37439F00D12E757701 /* BranchLinkProperties+RNBranch.m */,
+				EBCDC45E80A082BDA2269BBD588BFB63 /* BranchUniversalObject+RNBranch.h */,
+				4AF691F6AE766D88BAD8E10759516B1C /* BranchUniversalObject+RNBranch.m */,
+				CCB2820EE2F89374F6F5A9B04F30502E /* NSObject+RNBranch.h */,
+				D84EA2C34C83A504486229C5C6530577 /* NSObject+RNBranch.m */,
+				2A9A97DE49BF79A2EC5A56E2322763E1 /* RNBranch.h */,
+				9E1F0BE44238B2D78B9D672B6B12EF16 /* RNBranch.m */,
+				A79C4142FBD1857BE6AC22A3E2B9CB79 /* RNBranchAgingDictionary.h */,
+				1B5C54630B99BEED609DCE3065A7D7C5 /* RNBranchAgingDictionary.m */,
+				23055C023FB6831C934B5B0212F293CB /* RNBranchAgingItem.h */,
+				1FDDF75AE790042BBB3302F7C682C483 /* RNBranchAgingItem.m */,
+				3DB7971D92D4B8897FCAAB3C6F900F6D /* RNBranchConfig.h */,
+				426DEA94A54D9238E212AF4D3E2A61D8 /* RNBranchConfig.m */,
+				052D542344FBF335130F6803AE56567B /* RNBranchEventEmitter.h */,
+				0D81FBDF9D77BC0AD4494D1DF2425C56 /* RNBranchEventEmitter.m */,
+				71A2E04801517E74B5567A24C528C8EA /* RNBranchProperty.h */,
+				7EE522C4D7FEEFC5872BFF52BFB651F5 /* RNBranchProperty.m */,
+				0B71FF3AB4173B3860EBB57B7B449686 /* Pod */,
+				42FD5D29BC64BFECA52F43ECB939B76A /* Support Files */,
+			);
+			name = "react-native-branch";
+			path = "../../../../node_modules/react-native-branch";
+			sourceTree = "<group>";
+		};
+		DE67BDBD43A2374A0311B7AFEE9EB803 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				AD41C7396DFDEA963A2A0702E66210EF /* Branch */,
+				A83CAFA30E27032E24C32FD37BD2CD4D /* React */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		EA76724EF2975A2476CAC06B911B91AC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3CCA0AB382E9EEA1919787FBD4C15660 /* libreact-native-branch.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F8CB355EC8DB852EE2753D3F4D1EAD86 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C405F2F54001728A530213457DEC7D85 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1FA0AB320388F677F3671306C08AB7FC /* BranchContentMetadata+RNBranch.h in Headers */,
+				B6B504D12A7FCB5D4100D40FF4CE7F5E /* BranchEvent+RNBranch.h in Headers */,
+				EE8D0F5C0953BDAC60CF90DC431B0AD3 /* BranchLinkProperties+RNBranch.h in Headers */,
+				603EB87A6BBD2A1AF8C783ECFB123CE9 /* BranchUniversalObject+RNBranch.h in Headers */,
+				4A36C47A95A36C3A339761A6DCB83711 /* NSObject+RNBranch.h in Headers */,
+				0BDE68971CDB03C4EBD6100C6A38D449 /* RNBranch.h in Headers */,
+				29A22E44F61A4655968C58429AA518C3 /* RNBranchAgingDictionary.h in Headers */,
+				D94C8259615738511A5F18A19A949212 /* RNBranchAgingItem.h in Headers */,
+				739DF35021D88679C908604B3D97EFDD /* RNBranchConfig.h in Headers */,
+				9AF5B57481A535C42A1ECAF57C10D9BF /* RNBranchEventEmitter.h in Headers */,
+				37F4CBAFB2B728DCF120D1620EB9276D /* RNBranchProperty.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		BA47A315C7B71D68560B96280D945371 /* react-native-branch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C15143B56932FE577118FD702F31BD90 /* Build configuration list for PBXNativeTarget "react-native-branch" */;
+			buildPhases = (
+				C405F2F54001728A530213457DEC7D85 /* Headers */,
+				5E8CE8764A5BBB9836B3EA0CF8F47698 /* Sources */,
+				74EC04181306343C45A76B242DD7495B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				65CD6351207BEE0DBEF2AA642AA4C7D6 /* PBXTargetDependency */,
+				B56A6C48D211069807F92D1EAE7C812F /* PBXTargetDependency */,
+			);
+			name = "react-native-branch";
+			productName = "react-native-branch";
+			productReference = 3CCA0AB382E9EEA1919787FBD4C15660 /* libreact-native-branch.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3574F34A5218606DBDE0B7BA68C24E09 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = CB4EDD9D0CE7B43DC1175212DCBCDD57 /* Build configuration list for PBXProject "react-native-branch" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 44CAD386C1E5B01767201226736F416C;
+			productRefGroup = EA76724EF2975A2476CAC06B911B91AC /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = AD41C7396DFDEA963A2A0702E66210EF /* Branch */;
+				},
+				{
+					ProjectRef = A83CAFA30E27032E24C32FD37BD2CD4D /* React */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				BA47A315C7B71D68560B96280D945371 /* react-native-branch */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5E8CE8764A5BBB9836B3EA0CF8F47698 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBEDB1D4314485733EFAD72F19C91A19 /* BranchContentMetadata+RNBranch.m in Sources */,
+				E39FAD333E9B517B970837B7733A4326 /* BranchEvent+RNBranch.m in Sources */,
+				865F271DEA64A4A2E8223C49031B8F71 /* BranchLinkProperties+RNBranch.m in Sources */,
+				BAE10BB9DF05966E69CFDC5EB83C7BD3 /* BranchUniversalObject+RNBranch.m in Sources */,
+				249C171AD9650AC4B5FD649A4C94F145 /* NSObject+RNBranch.m in Sources */,
+				E34B1DB78449F346E79F6A57783D8F8E /* react-native-branch-dummy.m in Sources */,
+				F2549587C41CED909DC2DD5141BA6E90 /* RNBranch.m in Sources */,
+				5DB504C386FA445FD99AF31AF66E5CEA /* RNBranchAgingDictionary.m in Sources */,
+				78C26014B3CF4C1C1EB36C8FC59B3779 /* RNBranchAgingItem.m in Sources */,
+				07B643BF4D0821DC5ACAB3BADE306483 /* RNBranchConfig.m in Sources */,
+				EA7AD6D294F74771CDEC50DD9EE8E308 /* RNBranchEventEmitter.m in Sources */,
+				BEA301225F47B61CD26FD3B42FF53B42 /* RNBranchProperty.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		65CD6351207BEE0DBEF2AA642AA4C7D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Branch;
+			targetProxy = 523D50A15D8117034EA6995629D0CD24 /* PBXContainerItemProxy */;
+		};
+		B56A6C48D211069807F92D1EAE7C812F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 2AB4B294165C1CB4CA689DAFC6E5BA5D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		056920B52027FAE6B732DE35EE8A1D92 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D59CA2446A5F11130272B51246919C57 /* react-native-branch.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-branch/react-native-branch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNBranch;
+				PRODUCT_NAME = "react-native-branch";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4BAED920590F3E2CEABAD6FAE8D3C075 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		AEF7496168184FC14F71AC9544C5D296 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		B3E96021B00ABF4992966DE7CEC5E3B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7025BD500E91A9ACA9F617613C429ECE /* react-native-branch.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-branch/react-native-branch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNBranch;
+				PRODUCT_NAME = "react-native-branch";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C15143B56932FE577118FD702F31BD90 /* Build configuration list for PBXNativeTarget "react-native-branch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				056920B52027FAE6B732DE35EE8A1D92 /* Debug */,
+				B3E96021B00ABF4992966DE7CEC5E3B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CB4EDD9D0CE7B43DC1175212DCBCDD57 /* Build configuration list for PBXProject "react-native-branch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4BAED920590F3E2CEABAD6FAE8D3C075 /* Debug */,
+				AEF7496168184FC14F71AC9544C5D296 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3574F34A5218606DBDE0B7BA68C24E09 /* Project object */;
+}

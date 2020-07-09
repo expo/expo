@@ -14,6 +14,10 @@ boost-for-react-native:
   LABEL: boost-for-react-native
   PROJECT_PATH: boost-for-react-native.xcodeproj
   UUID: AA4CE39926C0C12D02F874C1C48A5710
+Branch:
+  LABEL: Branch
+  PROJECT_PATH: Branch.xcodeproj
+  UUID: 32AB2597F26D238AAF12A9F8A95B992E
 DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
@@ -370,6 +374,10 @@ react-native-appearance:
   LABEL: react-native-appearance
   PROJECT_PATH: react-native-appearance.xcodeproj
   UUID: A6256F4276AA88FDEAAA83D3F4FEBA89
+react-native-branch:
+  LABEL: react-native-branch
+  PROJECT_PATH: react-native-branch.xcodeproj
+  UUID: BA47A315C7B71D68560B96280D945371
 react-native-netinfo:
   LABEL: react-native-netinfo
   PROJECT_PATH: react-native-netinfo.xcodeproj
