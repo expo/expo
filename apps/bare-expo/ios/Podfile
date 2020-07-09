@@ -61,6 +61,7 @@ target 'BareExpo' do
     }
   )
 
+  pod 'EXUpdates', path: '../../../packages/expo-updates/ios', :testspecs => ['Tests']
   pod 'expo-image', path: '../../../packages/expo-image'
 
   # react-native-cli auto-linking
