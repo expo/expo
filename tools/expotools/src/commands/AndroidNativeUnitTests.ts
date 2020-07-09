@@ -13,7 +13,6 @@ const excludedInTests = [
   'expo-notifications',
   'expo-in-app-purchases',
   'expo-splash-screen',
-  'expo-updates',
   'unimodules-test-core',
 ];
 
