@@ -1150,8 +1150,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 321f0aae42d5490d389f63c7d4cedde2
-      Release: 321f0aae42d5490d389f63c7d4cedde2
+      Debug: ad528f21f99e268d15e083848669c0c8
+      Release: ad528f21f99e268d15e083848669c0c8
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1161,8 +1161,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ad79ef09ca568cddec2226376026fb55
-      Release: ad79ef09ca568cddec2226376026fb55
+      Debug: 33f5196ba23e62cede87bf0d0ef286e0
+      Release: 33f5196ba23e62cede87bf0d0ef286e0
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -2082,6 +2082,22 @@ CACHE_KEYS:
     PROJECT_NAME: RNCMaskedView
     SPECS:
       - RNCMaskedView (0.1.10)
+  RNDateTimePicker:
+    BUILD_SETTINGS_CHECKSUM:
+      RNDateTimePicker:
+        :debug: 7962906a014255e7534cb63849999d5b
+        :release: 7962906a014255e7534cb63849999d5b
+    CHECKSUM: c4285bfdd87430f1e575b81a4742b7586a09d53e
+    FILES:
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePicker.h"
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePicker.m"
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePickerManager.h"
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePickerManager.m"
+      - "../../../../node_modules/@react-native-community/datetimepicker/LICENSE.md"
+      - "../../../../node_modules/@react-native-community/datetimepicker/README.md"
+    PROJECT_NAME: RNDateTimePicker
+    SPECS:
+      - RNDateTimePicker (2.4.0)
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler:

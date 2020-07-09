@@ -434,6 +434,10 @@ RNCMaskedView:
   LABEL: RNCMaskedView
   PROJECT_PATH: RNCMaskedView.xcodeproj
   UUID: 3A3AC6D68A9DF5A1C1346B6F2C044396
+RNDateTimePicker:
+  LABEL: RNDateTimePicker
+  PROJECT_PATH: RNDateTimePicker.xcodeproj
+  UUID: 862E1DA0F45BF8C82AA7330F871534CF
 RNGestureHandler:
   LABEL: RNGestureHandler
   PROJECT_PATH: RNGestureHandler.xcodeproj
