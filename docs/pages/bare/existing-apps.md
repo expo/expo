@@ -5,15 +5,15 @@ sidebar_title: Existing Apps
 
 If you want to use parts of the Expo SDK in your existing React Native app, you are in the right place.
 
-Most packages in the Expo SDK depend on a React Native module dependency injection and utility library called [react-native-unimodules](https://github.com/expo/expo/tree/master/packages/react-native-unimodules). Once it is installed and configured in your app, you can install other packages from the Expo SDK just as you would any other React Native library.
+**Most packages in the Expo SDK depend on a React Native module dependency injection and utility library called [react-native-unimodules](https://github.com/expo/expo/tree/master/packages/react-native-unimodules). Once it is installed and configured in your app, you can install other packages from the Expo SDK just as you would any other React Native library.**
 
-> 💡 react-native-unimodules has a minimal overhead on your app size, and it's configurable so you can have full control over what pieces you want to use. Most developers will leave the default configuration, but check out the "Advanced Configuration" sections if you are curious.
+The reason react-native-unimodules exists is so that we can reuse native code across Expo modules to reduce code duplication, improve reliability, and provide a consistent API across modules. For example, `Camera` can use native code from `FileSystem` and `Permissions` rather than `Camera` reimplementing the functionality those modules provide.
 
 ## Setting up react-native-unimodules
 
-The most up-to-date installation and configuration instructions are kept [in the README on GitHub](https://github.com/expo/expo/blob/master/packages/react-native-unimodules/README.md) Follow those instructions and it should take a few minutes to set up. If you'd prefer, you can use expo-cli to initialize a new app preconfigured with react-native-unimodules and expo-updates for you. [Read about that in "Up and Running"](../hello-world/).
+Follow the the [installing react-native-unimodules guide](/bare/installing-unimodules/). It should take about five minutes to configure in an existing app.
 
-## Installing libraries from the Expo SDK
+## Install libraries from the Expo SDK
 
 The short version: find an Expo package that you would like to use in the API reference or by searching this documentation, eg: [expo-web-browser](/versions/latest/sdk/webbrowser/),install it with npm, then run `npx pod-install` and re-build your app.
 
@@ -21,4 +21,4 @@ The longer, more detailed version: check out [Install an Expo SDK package](../he
 
 ## That's it!
 
-You're ready to go. Might I suggest checking out [expo-updates](/versions/latest/sdk/updates/)?
+You're ready to go. You may also want to install expo-updates in your app to add support for over-the-air-updates. If so, follow the [installing expo-updates guide](/bare/installing-updates/) guide once you have installed react-native-unimodules.

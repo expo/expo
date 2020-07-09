@@ -3,7 +3,9 @@ title: Up and Running
 sidebar_label: Up and Running
 ---
 
-To get started with a bare React Native project, run `expo init` and choose one of the bare templates. We'll use the minimum template here. This guide assumes that you have Xcode and/or Android Studio installed and working.
+> This guide assumes that you have Xcode and/or Android Studio installed and working. It also assumes that you want to create a new project. If you have an existing app that you would like to integrate the Expo SDK in an existing app, read the [existing apps guide](/bare/existing-apps/).
+
+To get started with a bare React Native project, run `expo init` and choose one of the bare templates. We'll use the minimum template here.
 
 ```sh
 # If you don't have expo-cli yet, get it
