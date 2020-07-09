@@ -1150,8 +1150,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: f2adf5e63b06d001a132ef8f6d3c8833
-      Release: f2adf5e63b06d001a132ef8f6d3c8833
+      Debug: e4d3632f842b5c9d54afc209e980a014
+      Release: e4d3632f842b5c9d54afc209e980a014
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1161,8 +1161,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e64a0be2fef84b2883d3918fda6e7327
-      Release: e64a0be2fef84b2883d3918fda6e7327
+      Debug: f5e601d71232c20429e5224a7af3c36a
+      Release: f5e601d71232c20429e5224a7af3c36a
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -1822,6 +1822,26 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-slider
     SPECS:
       - react-native-slider (3.0.0)
+  react-native-viewpager:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-viewpager:
+        :debug: 7b4707a93d41400143c1750ffa361fd7
+        :release: 7b4707a93d41400143c1750ffa361fd7
+    CHECKSUM: a7b438ca32c57b2614ece2a123e7fe116f743131
+    FILES:
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerNavigationOrientation.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerNavigationOrientation.m"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerTransitionStyle.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerTransitionStyle.m"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactNativePageView.m"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactViewPagerManager.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactViewPagerManager.m"
+      - "../../../../node_modules/@react-native-community/viewpager/LICENSE"
+      - "../../../../node_modules/@react-native-community/viewpager/README.md"
+    PROJECT_NAME: react-native-viewpager
+    SPECS:
+      - react-native-viewpager (3.3.0)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet:

@@ -452,6 +452,8 @@ PODS:
     - React
   - react-native-slider (3.0.0):
     - React
+  - react-native-viewpager (3.3.0):
+    - React
   - React-RCTActionSheet (0.62.2):
     - React-Core/RCTActionSheetHeaders (= 0.62.2)
   - React-RCTAnimation (0.62.2):
@@ -629,6 +631,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-community/segmented-control`)"
   - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
+  - "react-native-viewpager (from `../../../node_modules/@react-native-community/viewpager`)"
   - React-RCTActionSheet (from `../../../react-native-lab/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../../react-native-lab/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../../../react-native-lab/react-native/Libraries/Blob`)
@@ -837,6 +840,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/@react-native-community/segmented-control"
   react-native-slider:
     :path: "../../../node_modules/@react-native-community/slider"
+  react-native-viewpager:
+    :path: "../../../node_modules/@react-native-community/viewpager"
   React-RCTActionSheet:
     :path: "../../../react-native-lab/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -994,6 +999,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: b11a34881faac509cad5578726c98161ad4d275c
   react-native-segmented-control: d7c444e5cc5f526da766f8ff24346898b7ac7be5
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
+  react-native-viewpager: a7b438ca32c57b2614ece2a123e7fe116f743131
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
