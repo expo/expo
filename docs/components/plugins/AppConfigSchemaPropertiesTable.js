@@ -21,7 +21,7 @@ const STYLES_DESCRIPTION_CELL = css`
 `;
 
 export function formatSchema(rawSchema) {
-  var formattedSchema = [];
+  let formattedSchema = [];
 
   //appends each schema property (each index will become a tablerow)
   rawSchema.map(property => {
