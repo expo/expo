@@ -67,9 +67,19 @@ Once you have applied the changes from the above diff, the following additional 
 <div style={{marginTop: -10}} />
 
 - Add the `"Supporting"` directory containing `"Expo.plist"` to your project in Xcode.
-- In Xcode, under the Build Phases tab of your main project, expand the phase entitled "Bundle React Native code and images." Add the following line to the bottom of the script: `../node_modules/expo-updates/scripts/create-manifest-ios.sh`. This provides expo-updates with some important metadata about the update and assets that are embedded in your IPA.
+- In Xcode, under the Build Phases tab of your main project, expand the phase entitled "Bundle React Native code and images." Add the following to a new line at the bottom of the script: `../node_modules/expo-updates/scripts/create-manifest-ios.sh`
 
 <div style={{marginTop: -15}} />
+
+<details><summary><h4>💡 What is the create-manifest-ios script for?</h4></summary>
+<p>
+
+This provides expo-updates with some essential metadata about the update and assets that are embedded in your IPA.
+
+</p>
+</details>
+
+<div style={{marginTop: -10}} />
 
 <details><summary><h4>💡 Are you using expo-splash-screen in your app?</h4></summary>
 <p>
