@@ -1,6 +1,0 @@
-framework module RCTImage {
-  umbrella header "React-RCTImage-umbrella.h"
-
-  export *
-  module * { export * }
-}

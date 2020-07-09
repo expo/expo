@@ -1,6 +1,0 @@
-framework module jsireact {
-  umbrella header "React-jsiexecutor-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -1,6 +1,0 @@
-framework module Pods_EXUpdates_Example {
-  umbrella header "Pods-EXUpdates_Example-umbrella.h"
-
-  export *
-  module * { export * }
-}
