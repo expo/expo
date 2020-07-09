@@ -15,9 +15,6 @@ import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
 import host.exp.exponent.kernel.ExperienceId;
 
-import static host.exp.exponent.notifications.ScopedNotificationsChannelUtilities.SEPARATOR;
-import static host.exp.exponent.notifications.ScopedNotificationsChannelUtilities.SCOPED_CHANNEL_TAG;
-
 public class ScopedNotificationsChannelManager extends AndroidXNotificationsChannelManager {
 
   private ExperienceId mExperienceId;

@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications.channels.managers;
 
 import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioAttributes;
@@ -8,6 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.arguments.MapArguments;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.InternalModule;
 
@@ -43,11 +46,17 @@ import static expo.modules.notifications.notifications.channels.NotificationChan
 
 public class AndroidXNotificationsChannelManager implements NotificationsChannelManager, InternalModule {
   private final NotificationManagerCompat mNotificationManager;
+  private NotificationsChannelGroupManager mNotificationsChannelGroupManager;
   private final SoundResolver mSoundResolver;
 
   public AndroidXNotificationsChannelManager(Context context) {
     mNotificationManager = NotificationManagerCompat.from(context);
     mSoundResolver = new SoundResolver(context);
+  }
+
+  @Override
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    mNotificationsChannelGroupManager = moduleRegistry.getModule(NotificationsChannelGroupManager.class);
   }
 
   @Override
@@ -81,6 +90,7 @@ public class AndroidXNotificationsChannelManager implements NotificationsChannel
   public NotificationChannel createNotificationChannel(@NonNull String channelId, CharSequence name, int importance, ReadableArguments channelOptions) {
     NotificationChannel channel = new NotificationChannel(channelId, name, importance);
     configureChannelWithOptions(channel, channelOptions);
+    mNotificationManager.createNotificationChannel(channel);
     return channel;
   }
 
@@ -104,7 +114,12 @@ public class AndroidXNotificationsChannelManager implements NotificationsChannel
       channel.setLightColor(Color.parseColor(args.getString(LIGHT_COLOR_KEY)));
     }
     if (args.containsKey(GROUP_ID_KEY)) {
-      channel.setGroup(args.getString(GROUP_ID_KEY));
+      String groupId = args.getString(GROUP_ID_KEY);
+      NotificationChannelGroup group = mNotificationsChannelGroupManager.getNotificationChannelGroup(groupId);
+      if (group == null) {
+        group = mNotificationsChannelGroupManager.createNotificationChannelGroup(groupId, groupId, new MapArguments());
+      }
+      channel.setGroup(group.getId());
     }
     if (args.containsKey(LOCKSCREEN_VISIBILITY_KEY)) {
       NotificationVisibility visibility = NotificationVisibility.fromEnumValue(args.getInt(LOCKSCREEN_VISIBILITY_KEY));

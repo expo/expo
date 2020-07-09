@@ -54,7 +54,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannelGroup createNotificationChannelGroup(@NonNull String groupId, @NonNull CharSequence name, ReadableArguments groupOptions) {
-    return super.createNotificationChannelGroup(ScopedNotificationsChannelUtilities.getScopedChannelId(mExperienceId, groupId), name, groupOptions);
+    return super.createNotificationChannelGroup(ScopedNotificationsChannelUtilities.getScopedGroupId(mExperienceId, groupId), name, groupOptions);
   }
 
   @Override
