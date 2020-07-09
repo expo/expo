@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   update.updateId = uuid;
   update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
-  update.runtimeVersion = [EXUpdatesUtils getRuntimeVersion];
+  update.runtimeVersion = [EXUpdatesUtils getRuntimeVersionWithConfig:EXUpdatesConfig.sharedInstance];
   if (metadata) {
     update.metadata = (NSDictionary *)metadata;
   }
