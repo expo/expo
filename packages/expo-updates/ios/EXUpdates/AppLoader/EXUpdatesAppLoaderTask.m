@@ -119,11 +119,12 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 
 - (void)_finishWithError:(nullable NSError *)error
 {
+  dispatch_assert_queue(_loaderTaskQueue);
+
   if (_hasLaunched) {
     // we've already fired once, don't do it again
     return;
   }
-
   _hasLaunched = YES;
 
   if (_delegate) {
