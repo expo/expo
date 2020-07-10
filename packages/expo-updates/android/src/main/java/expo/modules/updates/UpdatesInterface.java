@@ -3,7 +3,7 @@ package expo.modules.updates;
 import java.io.File;
 import java.util.Map;
 
-import expo.modules.updates.db.UpdatesDatabase;
+import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
@@ -14,9 +14,7 @@ public interface UpdatesInterface {
   UpdatesConfiguration getConfiguration();
   SelectionPolicy getSelectionPolicy();
   File getDirectory();
-  // TODO: replace with DatabaseHolder
-  UpdatesDatabase getDatabase();
-  void releaseDatabase();
+  DatabaseHolder getDatabaseHolder();
 
   boolean isEmergencyLaunch();
   boolean isUsingEmbeddedAssets();

@@ -14,6 +14,7 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import androidx.annotation.Nullable;
+import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -168,20 +169,20 @@ public class UpdatesModule extends ExportedModule {
       }
 
       AsyncTask.execute(() -> {
-        UpdatesDatabase database = updatesService.getDatabase();
-        new RemoteLoader(getContext(), database, updatesService.getDirectory())
+        final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+        new RemoteLoader(getContext(), databaseHolder.getDatabase(), updatesService.getDirectory())
           .start(
             updatesService.getConfiguration().getUpdateUrl(),
             new RemoteLoader.LoaderCallback() {
               @Override
               public void onFailure(Exception e) {
-                updatesService.releaseDatabase();
+                databaseHolder.releaseDatabase();
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e);
               }
 
               @Override
               public void onSuccess(@Nullable UpdateEntity update) {
-                updatesService.releaseDatabase();
+                databaseHolder.releaseDatabase();
                 Bundle updateInfo = new Bundle();
                 if (update == null) {
                   updateInfo.putBoolean("isNew", false);

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.updates.db.UpdatesDatabase;
+import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
@@ -47,13 +47,8 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
   }
 
   @Override
-  public UpdatesDatabase getDatabase() {
-    return UpdatesController.getInstance().getDatabase();
-  }
-
-  @Override
-  public void releaseDatabase() {
-    UpdatesController.getInstance().releaseDatabase();
+  public DatabaseHolder getDatabaseHolder() {
+    return UpdatesController.getInstance().getDatabaseHolder();
   }
 
   @Override
