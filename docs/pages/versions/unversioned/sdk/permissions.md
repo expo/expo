@@ -38,6 +38,10 @@ See the [`Permission types`](#permission-types) below to learn about which Andro
 
 > **Note:** by default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml`. To exclude permissions, you have to define the `android.permissions` manifest property or [blacklist them in the bare workflow](#excluding-android-permissions-in-bare-workflow).
 
+### Permissions on Web
+
+On web permissions like the `Camera` and `Location` can only be requested from a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure), e.g. using `https://` or `http://localhost`. This limitation is similar to Android's manifest permissions and iOS's infoPlist usage messages and enforced to increase privacy.
+
 ## Usage
 
 ### Manually testing permissions
