@@ -977,6 +977,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.m"
       - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.h"
       - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.m"
       - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.h"
       - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.m"
       - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesBareUpdate.h"
