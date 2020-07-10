@@ -3,7 +3,6 @@ package expo.modules.updates;
 import java.io.File;
 import java.util.Map;
 
-import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
