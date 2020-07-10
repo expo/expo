@@ -1,16 +1,16 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
-#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesModule.h>
+#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
+#import <EXUpdates/EXUpdatesService.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 @interface EXUpdatesModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXUpdatesInterface> updatesService;
 
 @end
 
@@ -20,18 +20,17 @@ UM_EXPORT_MODULE(ExpoUpdates);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _moduleRegistry = moduleRegistry;
+  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUpdatesInterface)];
 }
 
 - (NSDictionary *)constantsToExport
 {
-  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
-  if (!controller.isStarted) {
+  if (!_updatesService.isStarted) {
     return @{
       @"isEnabled": @(NO)
     };
   }
-  EXUpdatesUpdate *launchedUpdate = controller.launchedUpdate;
+  EXUpdatesUpdate *launchedUpdate = _updatesService.launchedUpdate;
   if (!launchedUpdate) {
     return @{
       @"isEnabled": @(NO)
@@ -39,12 +38,12 @@ UM_EXPORT_MODULE(ExpoUpdates);
   } else {
     return @{
       @"isEnabled": @(YES),
-      @"isUsingEmbeddedAssets": @(controller.isUsingEmbeddedAssets),
+      @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
       @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
       @"manifest": launchedUpdate.rawManifest ?: @{},
-      @"releaseChannel": [EXUpdatesConfig sharedInstance].releaseChannel,
-      @"localAssets": controller.assetFilesMap ?: @{},
-      @"isEmergencyLaunch": @(controller.isEmergencyLaunch)
+      @"releaseChannel": _updatesService.config.releaseChannel,
+      @"localAssets": _updatesService.assetFilesMap ?: @{},
+      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch)
     };
   }
   
@@ -54,12 +53,12 @@ UM_EXPORT_METHOD_AS(reload,
                     reloadAsync:(UMPromiseResolveBlock)resolve
                          reject:(UMPromiseRejectBlock)reject)
 {
-  if (![EXUpdatesAppController sharedInstance].isStarted) {
+  if (!_updatesService.isStarted) {
     reject(@"ERR_UPDATES_DISABLED", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot use this method. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
     return;
   }
 
-  [[EXUpdatesAppController sharedInstance] requestRelaunchWithCompletion:^(BOOL success) {
+  [_updatesService requestRelaunchWithCompletion:^(BOOL success) {
     if (success) {
       resolve(nil);
     } else {
@@ -72,15 +71,15 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
                     checkForUpdateAsync:(UMPromiseResolveBlock)resolve
                                  reject:(UMPromiseRejectBlock)reject)
 {
-  if (![EXUpdatesAppController sharedInstance].isStarted) {
+  if (!_updatesService.isStarted) {
     reject(@"ERR_UPDATES_DISABLED", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot check for updates. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
     return;
   }
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] init];
-  [fileDownloader downloadManifestFromURL:[EXUpdatesConfig sharedInstance].updateUrl successBlock:^(EXUpdatesUpdate *update) {
-    EXUpdatesUpdate *launchedUpdate = [EXUpdatesAppController sharedInstance].launchedUpdate;
-    id<EXUpdatesSelectionPolicy> selectionPolicy = [EXUpdatesAppController sharedInstance].selectionPolicy;
+  [fileDownloader downloadManifestFromURL:_updatesService.config.updateUrl successBlock:^(EXUpdatesUpdate *update) {
+    EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
+    id<EXUpdatesSelectionPolicy> selectionPolicy = self->_updatesService.selectionPolicy;
     if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate]) {
       resolve(@{
         @"isAvailable": @(YES),
@@ -100,13 +99,13 @@ UM_EXPORT_METHOD_AS(fetchUpdateAsync,
                     fetchUpdateAsync:(UMPromiseResolveBlock)resolve
                               reject:(UMPromiseRejectBlock)reject)
 {
-  if (![EXUpdatesAppController sharedInstance].isStarted) {
+  if (!_updatesService.isStarted) {
     reject(@"ERR_UPDATES_DISABLED", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot fetch updates. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
     return;
   }
 
   EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithCompletionQueue:self.methodQueue];
-  [remoteAppLoader loadUpdateFromUrl:[EXUpdatesConfig sharedInstance].updateUrl success:^(EXUpdatesUpdate * _Nullable update) {
+  [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
       resolve(@{
         @"isNew": @(YES),
