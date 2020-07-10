@@ -955,6 +955,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader+Private.h"
       - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.h"
       - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.m"
       - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.h"
       - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.m"
       - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesCrypto.h"
