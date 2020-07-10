@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. The `expo-permissions` module makes requesting these permissions easy, fast, and reliable.
 
-Please read the [permissions on iOS](#permissions-on-ios) and [permissions on Android](#permissions-on-android) before deploying your app to the stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
+Please read the [permissions on iOS](#permissions-on-ios) and [permissions on Android](#permissions-on-android) sections carefully before deploying your app to the stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 
 <PlatformsSection android emulator ios simulator web />
 
