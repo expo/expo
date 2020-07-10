@@ -12,7 +12,7 @@ import abi38_0_0.org.unimodules.core.Promise;
 import abi38_0_0.org.unimodules.core.interfaces.services.EventEmitter;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 
 /**
  * A "task" responsible for managing response to a single notification.
@@ -42,6 +42,7 @@ import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
   private EventEmitter mEventEmitter;
   private Notification mNotification;
   private NotificationBehavior mBehavior;
+  private NotificationsHelper mNotificationsHelper;
   private NotificationsHandler mDelegate;
 
   private Runnable mTimeoutRunnable = new Runnable() {
@@ -51,10 +52,11 @@ import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
     }
   };
 
-  /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, Notification notification, NotificationsHandler delegate) {
+  /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, Notification notification, NotificationsHelper notificationsHelper, NotificationsHandler delegate) {
     mContext = context;
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mNotification = notification;
+    mNotificationsHelper = notificationsHelper;
     mDelegate = delegate;
   }
 
@@ -97,14 +99,14 @@ import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
     HANDLER.post(new Runnable() {
       @Override
       public void run() {
-        BaseNotificationsHelper.enqueuePresent(mContext, mNotification, mBehavior, new ResultReceiver(HANDLER) {
+        mNotificationsHelper.presentNotification(mNotification, mBehavior, new ResultReceiver(HANDLER) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
-            if (resultCode == BaseNotificationsHelper.SUCCESS_CODE) {
+            if (resultCode == NotificationsHelper.SUCCESS_CODE) {
               promise.resolve(null);
             } else {
-              Exception e = (Exception) resultData.getSerializable(BaseNotificationsHelper.EXCEPTION_KEY);
+              Exception e = (Exception) resultData.getSerializable(NotificationsHelper.EXCEPTION_KEY);
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
             }
           }

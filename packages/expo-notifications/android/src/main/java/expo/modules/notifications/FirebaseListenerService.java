@@ -16,7 +16,7 @@ import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
-import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener;
 
 /**
@@ -82,7 +82,11 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   @Override
   public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
     super.onMessageReceived(remoteMessage);
-    BaseNotificationsHelper.enqueueReceive(this, createNotification(remoteMessage));
+    createNotificationsHelper().notificationReceived(createNotification(remoteMessage));
+  }
+
+  protected NotificationsHelper createNotificationsHelper() {
+    return new NotificationsHelper(this, new ExpoNotificationsReconstructor());
   }
 
   protected Notification createNotification(RemoteMessage remoteMessage) {
@@ -103,6 +107,6 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   @Override
   public void onDeletedMessages() {
     super.onDeletedMessages();
-    BaseNotificationsHelper.enqueueDropped(this);
+    createNotificationsHelper().dropped(null);
   }
 }

@@ -13,10 +13,12 @@ import expo.modules.notifications.FirebaseListenerService;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.PushNotificationHelper;
+import host.exp.exponent.notifications.ScopedExpoNotificationsReconstructor;
 import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
@@ -98,5 +100,10 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
       experienceId = ExperienceId.create(data.get("experienceId"));
     }
     return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceId);
+  }
+
+  @Override
+  protected NotificationsHelper createNotificationsHelper() {
+    return new NotificationsHelper(this, new ScopedExpoNotificationsReconstructor());
   }
 }

@@ -17,13 +17,16 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.service.BaseNotificationsHelper;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 
 public class ExpoNotificationPresentationModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationPresenter";
 
-  public ExpoNotificationPresentationModule(Context context) {
+  private final NotificationsHelper mNotificationsHelper;
+
+  public ExpoNotificationPresentationModule(Context context, NotificationsHelper notificationsHelper) {
     super(context);
+    mNotificationsHelper = notificationsHelper;
   }
 
   @Override
@@ -37,14 +40,14 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
     NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(payload).build();
     NotificationRequest request = createNotificationRequest(identifier, content, null);
     Notification notification = new Notification(request);
-    BaseNotificationsHelper.enqueuePresent(getContext(), notification, null, new ResultReceiver(null) {
+    mNotificationsHelper.presentNotification(notification, null, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        if (resultCode == BaseNotificationsHelper.SUCCESS_CODE) {
+        if (resultCode == NotificationsHelper.SUCCESS_CODE) {
           promise.resolve(identifier);
         } else {
-          Exception e = (Exception) resultData.getSerializable(BaseNotificationsHelper.EXCEPTION_KEY);
+          Exception e = (Exception) resultData.getSerializable(NotificationsHelper.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e);
         }
       }
@@ -53,15 +56,15 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   @ExpoMethod
   public void getPresentedNotificationsAsync(final Promise promise) {
-    BaseNotificationsHelper.enqueueGetAllPresented(getContext(), new ResultReceiver(null) {
+    mNotificationsHelper.getAllPresented(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        Collection<Notification> notifications = resultData.getParcelableArrayList(BaseNotificationsHelper.NOTIFICATIONS_KEY);
-        if (resultCode == BaseNotificationsHelper.SUCCESS_CODE && notifications != null) {
+        Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsHelper.NOTIFICATIONS_KEY);
+        if (resultCode == NotificationsHelper.SUCCESS_CODE && notifications != null) {
           promise.resolve(serializeNotifications(notifications));
         } else {
-          Exception e = resultData.getParcelable(BaseNotificationsHelper.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
         }
       }
@@ -70,14 +73,14 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   @ExpoMethod
   public void dismissNotificationAsync(String identifier, final Promise promise) {
-    BaseNotificationsHelper.enqueueDismiss(getContext(), identifier, new ResultReceiver(null) {
+    mNotificationsHelper.dismiss(identifier, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        if (resultCode == BaseNotificationsHelper.SUCCESS_CODE) {
+        if (resultCode == NotificationsHelper.SUCCESS_CODE) {
           promise.resolve(null);
         } else {
-          Exception e = resultData.getParcelable(BaseNotificationsHelper.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATION_DISMISSAL_FAILED", "Notification could not be dismissed.", e);
         }
       }
@@ -86,14 +89,14 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   @ExpoMethod
   public void dismissAllNotificationsAsync(final Promise promise) {
-    BaseNotificationsHelper.enqueueDismissAll(getContext(), new ResultReceiver(null) {
+    mNotificationsHelper.dismissAll(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        if (resultCode == BaseNotificationsHelper.SUCCESS_CODE) {
+        if (resultCode == NotificationsHelper.SUCCESS_CODE) {
           promise.resolve(null);
         } else {
-          Exception e = resultData.getParcelable(BaseNotificationsHelper.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_DISMISSAL_FAILED", "Notifications could not be dismissed.", e);
         }
       }
