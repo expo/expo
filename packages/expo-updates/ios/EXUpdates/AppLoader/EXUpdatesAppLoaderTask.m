@@ -132,7 +132,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
         [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher];
       } else {
         [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
-          NSLocalizedDescriptionKey: @"Blah blah blah"
+          NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask encountered an unexpected error and could not launch an update."
         }]];
       }
     });
