@@ -1,7 +1,7 @@
-
 {
   "extends": "../expo-module-scripts/tsconfig.base",
   "compilerOptions": {
+    "target": "ES2019",
     "outDir": "./build"
   },
   "include": ["./src"],
