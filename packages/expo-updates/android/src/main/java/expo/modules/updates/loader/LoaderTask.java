@@ -225,6 +225,14 @@ public class LoaderTask {
           }
 
           @Override
+          public boolean onManifestLoaded(Manifest manifest) {
+            return mSelectionPolicy.shouldLoadNewUpdate(
+              manifest.getUpdateEntity(),
+              mLauncher.getLaunchedUpdate()
+            );
+          }
+
+          @Override
           public void onSuccess(@Nullable UpdateEntity update) {
             // a new update has loaded successfully; we need to launch it with a new Launcher and
             // replace the old Launcher so that the callback fires with the new one

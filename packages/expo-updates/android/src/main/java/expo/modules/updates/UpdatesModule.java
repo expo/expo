@@ -181,6 +181,14 @@ public class UpdatesModule extends ExportedModule {
               }
 
               @Override
+              public boolean onManifestLoaded(Manifest manifest) {
+                return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
+                  manifest.getUpdateEntity(),
+                  updatesService.getLaunchedUpdate()
+                );
+              }
+
+              @Override
               public void onSuccess(@Nullable UpdateEntity update) {
                 databaseHolder.releaseDatabase();
                 Bundle updateInfo = new Bundle();

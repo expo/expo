@@ -35,6 +35,17 @@ public class RemoteLoader {
   public interface LoaderCallback {
     void onFailure(Exception e);
     void onSuccess(@Nullable UpdateEntity update);
+
+    /**
+     * Called when a manifest has been downloaded. The calling class should determine whether or not
+     * the RemoteLoader should continue to download the update described by this manifest, based on
+     * (for example) whether or not it already has the update downloaded locally.
+     *
+     * @param manifest Manifest downloaded by RemoteLoader
+     * @return true if RemoteLoader should download the update described in the manifest,
+     *         false if not.
+     */
+    boolean onManifestLoaded(Manifest manifest);
   }
 
   public RemoteLoader(Context context, UpdatesDatabase database, File updatesDirectory) {
@@ -61,11 +72,7 @@ public class RemoteLoader {
 
       @Override
       public void onSuccess(Manifest manifest) {
-        boolean shouldContinue = UpdatesController.getInstance().getSelectionPolicy().shouldLoadNewUpdate(
-          manifest.getUpdateEntity(),
-          UpdatesController.getInstance().getLaunchedUpdate()
-        );
-        if (shouldContinue) {
+        if (mCallback.onManifestLoaded(manifest)) {
           processManifest(manifest);
         } else {
           mCallback.onSuccess(null);
