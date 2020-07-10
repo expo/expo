@@ -18,7 +18,7 @@ Please read the [permissions on iOS](#permissions-on-ios) and [permissions on An
 
 ### Permissions on iOS
 
-To request and use permissions on iOS, you have to describe why the permissions are required. You can do that by defining `ios.infoPlist` property in your [`app.json` manifest](../../workflow/configuration/#ios) in the managed workflow. When using the bare workflow, you have to edit the `infoPlist` file directly.
+To request and use permissions on iOS, you have to describe why the permissions are required. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [`app.json` file](../../workflow/configuration/#ios). When using the bare workflow, you have to edit the `info.plist` file directly.
 
 See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property you need to define for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documented the basic guidelines about the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
 
