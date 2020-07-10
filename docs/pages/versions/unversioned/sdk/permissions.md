@@ -20,7 +20,7 @@ Please read the [permissions on iOS](#permissions-on-ios) and [permissions on An
 
 To request and use permissions on iOS, you have to describe why the permissions are required. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [`app.json` file](../../workflow/configuration/#ios). When using the bare workflow, you have to edit the `info.plist` file directly.
 
-See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property you need to define for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documented the basic guidelines about the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property you need to define for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
 
 > **Note:** apps using permissions without descriptions _may be rejected from the App Store_. (see the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios))
 
@@ -48,11 +48,11 @@ On web permissions like the `Camera` and `Location` can only be requested from a
 
 ### Manually testing permissions
 
-Often you want to be able to test what happens when you reject a permission to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions, you may need to uninstall and reinstall the Expo app. In the simulator this is as easy as deleting the app and expo-cli will automatically install it again next time you launch the project from it.
+Often you want to be able to test what happens when a user rejects a permission, to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions in development, you may need to uninstall and reinstall the Expo client app. In the simulator this is as easy as deleting the app, and `expo-cli` will automatically install it again next time you launch the project.
 
 ### Usage in bare workflow
 
-`expo-permissions` includes the shared infrastructure for handling system permissions, on iOS, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
+`expo-permissions` includes the shared infrastructure for handling system permissions. On iOS, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
 
 The following table shows you which permissions correspond to which packages.
 
@@ -72,9 +72,9 @@ The following table shows you which permissions correspond to which packages.
 
 ### Excluding Android permissions in bare workflow
 
-When adding Expo and React Native modules to your project, certail Android permissions might be implied. The modules should only add the relevant permissions required to use the module. Sometimes you want to remove some of these permissions. Unfortunately, the `android.permission` manifest property doesn't work in the bare workflow.
+When adding Expo and other React Native modules to your project, certain Android permissions might be implied automatically. The modules should only add relevant permissions **required** to use the module, however, sometimes you may want to remove some of these permissions.
 
-When you want to exclude specific permissions from the build, you have to "blacklist" them in your `AndroidManifest.xml`. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+Since the `android.permissions` manifest property doesn't work in the bare workflow- when you want to exclude specific permissions from the build, you have to "blacklist" them in your `AndroidManifest.xml`. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
 
 ```xml
 <manifest xmlns:tools="http://schemas.android.com/tools">
@@ -238,7 +238,7 @@ This property is set to `true` when all requested permission are granted. If one
 
 #### PermissionResponse.expires
 
-This property is set to the permission that expires the earliest. When none of the requested permissions expires, it's set to `never`.
+This property coincides with the expiration time of the permission that expires the earliest. When none of the requested permissions expires, it's set to `never`.
 
 #### PermissionResponse.canAskAgain
 
