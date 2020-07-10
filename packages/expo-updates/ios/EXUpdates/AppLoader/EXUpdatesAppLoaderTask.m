@@ -142,6 +142,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   if (_timer) {
     [_timer invalidate];
   }
+  _isTimerFinished = YES;
 }
 
 - (void)_maybeFinish
