@@ -1,6 +1,6 @@
 {
   "name": "Folly",
-  "version": "2018.10.22.00",
+  "version": "2020.01.13.00",
   "license": {
     "type": "Apache License, Version 2.0"
   },
@@ -9,7 +9,7 @@
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/folly.git",
-    "tag": "v2018.10.22.00"
+    "tag": "v2020.01.13.00"
   },
   "module_name": "folly",
   "dependencies": {
@@ -28,7 +28,9 @@
     "folly/String.cpp",
     "folly/Conv.cpp",
     "folly/Demangle.cpp",
+    "folly/FileUtil.cpp",
     "folly/Format.cpp",
+    "folly/lang/SafeAssert.cpp",
     "folly/ScopeGuard.cpp",
     "folly/Unicode.cpp",
     "folly/dynamic.cpp",
@@ -36,10 +38,13 @@
     "folly/json_pointer.cpp",
     "folly/container/detail/F14Table.cpp",
     "folly/detail/Demangle.cpp",
+    "folly/detail/UniqueInstance.cpp",
     "folly/hash/SpookyHashV2.cpp",
     "folly/lang/Assume.cpp",
-    "folly/lang/ColdClass.cpp",
-    "folly/memory/detail/MallocImpl.cpp"
+    "folly/lang/CString.cpp",
+    "folly/memory/detail/MallocImpl.cpp",
+    "folly/net/NetOps.cpp",
+    "folly/portability/SysUio.cpp"
   ],
   "preserve_paths": [
     "folly/*.h",
@@ -51,6 +56,8 @@
     "folly/lang/*.h",
     "folly/memory/*.h",
     "folly/memory/detail/*.h",
+    "folly/net/*.h",
+    "folly/net/detail/*.h",
     "folly/portability/*.h"
   ],
   "libraries": "stdc++",
@@ -61,8 +68,8 @@
   },
   "default_subspecs": "Default",
   "platforms": {
-    "ios": "9.0",
-    "tvos": "9.2"
+    "ios": "10.0",
+    "tvos": "10.0"
   },
   "subspecs": [
     {
@@ -71,12 +78,9 @@
     {
       "name": "Fabric",
       "source_files": [
-        "folly/portability/SysUio.cpp",
-        "folly/FileUtil.cpp",
         "folly/SharedMutex.cpp",
         "folly/concurrency/CacheLocality.cpp",
         "folly/detail/Futex.cpp",
-        "folly/lang/SafeAssert.cpp",
         "folly/synchronization/ParkingLot.cpp",
         "folly/portability/Malloc.cpp"
       ],

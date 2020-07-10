@@ -1,11 +1,11 @@
 /*
- * Copyright 2016-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -80,21 +80,21 @@ class Indestructible final {
    */
   template <
       typename U = T,
-      _t<std::enable_if<std::is_constructible<T, U&&>::value>>* = nullptr,
-      _t<std::enable_if<
-          !std::is_same<Indestructible<T>, remove_cvref_t<U>>::value>>* =
+      std::enable_if_t<std::is_constructible<T, U&&>::value>* = nullptr,
+      std::enable_if_t<
+          !std::is_same<Indestructible<T>, remove_cvref_t<U>>::value>* =
           nullptr,
-      _t<std::enable_if<!std::is_convertible<U&&, T>::value>>* = nullptr>
+      std::enable_if_t<!std::is_convertible<U&&, T>::value>* = nullptr>
   explicit constexpr Indestructible(U&& u) noexcept(
       noexcept(T(std::declval<U>())))
       : storage_(std::forward<U>(u)) {}
   template <
       typename U = T,
-      _t<std::enable_if<std::is_constructible<T, U&&>::value>>* = nullptr,
-      _t<std::enable_if<
-          !std::is_same<Indestructible<T>, remove_cvref_t<U>>::value>>* =
+      std::enable_if_t<std::is_constructible<T, U&&>::value>* = nullptr,
+      std::enable_if_t<
+          !std::is_same<Indestructible<T>, remove_cvref_t<U>>::value>* =
           nullptr,
-      _t<std::enable_if<std::is_convertible<U&&, T>::value>>* = nullptr>
+      std::enable_if_t<std::is_convertible<U&&, T>::value>* = nullptr>
   /* implicit */ constexpr Indestructible(U&& u) noexcept(
       noexcept(T(std::declval<U>())))
       : storage_(std::forward<U>(u)) {}

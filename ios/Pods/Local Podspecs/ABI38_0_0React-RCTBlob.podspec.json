@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "Folly": [
-      "2018.10.22.00"
+      "2020.01.13.00"
     ],
     "ABI38_0_0FBReactNativeSpec": [
       "0.62.2"

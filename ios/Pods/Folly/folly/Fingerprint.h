@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,7 +72,7 @@ template <int BITS>
 const poly_table<BITS> FingerprintTable<BITS>::table = {};
 
 #ifndef _MSC_VER
-// MSVC 2015 can't handle these extern specialization declarations,
+// MSVC as of 2017 can't handle these extern specialization declarations,
 // but they aren't needed for things to work right, so we just don't
 // declare them in the header for MSVC.
 
