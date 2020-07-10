@@ -628,7 +628,7 @@ Alias: `expo u`
 
 | Option            | Description                                       |
 | ----------------- | ------------------------------------------------- |
-| `--id` <id>       | ID of the webhook to remove (see `expo webhooks`) |
+| `--id` [id]       | ID of the webhook to remove (see `expo webhooks`) |
 | `--config` [path] | Specify a path to app.json.                       |
 
 </p>
@@ -640,7 +640,7 @@ Alias: `expo u`
 
 | Option              | Description                                                                                                             |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `--id` <id>         | ID of the webhook to remove (see `expo webhooks`)                                                                       |
+| `--id` [id]         | ID of the webhook to remove (see `expo webhooks`)                                                                       |
 | `--url` [url]       | Webhook to be called after building the app.                                                                            |
 | `--event` [type]    | The type of webhook: [build].                                                                                           |
 | `--secret` [secret] | Secret to be used to calculate the webhook request payload signature. See docs for more details. Must be 16 chars long. |
