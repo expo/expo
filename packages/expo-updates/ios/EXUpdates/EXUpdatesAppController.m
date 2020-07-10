@@ -143,7 +143,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   [self start];
 }
 
-- (void)requestRelaunchWithCompletion:(EXUpdatesAppControllerRelaunchCompletionBlock)completion
+- (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   if (_bridge) {
     EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithCompletionQueue:_controllerQueue];

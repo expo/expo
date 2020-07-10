@@ -5,11 +5,10 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
+#import <EXUpdates/EXUpdatesService.h>
 #import <React/RCTBridge.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
 
 @class EXUpdatesAppController;
 
@@ -91,7 +90,7 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
  */
 - (void)startAndShowLaunchScreen:(UIWindow *)window;
 
-- (void)requestRelaunchWithCompletion:(EXUpdatesAppControllerRelaunchCompletionBlock)completion;
+- (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion;
 
 @end
 

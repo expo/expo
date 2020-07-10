@@ -14,6 +14,7 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import androidx.annotation.Nullable;
+import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -42,22 +43,26 @@ public class UpdatesModule extends ExportedModule {
     mModuleRegistry = moduleRegistry;
   }
 
+  private UpdatesInterface getUpdatesService() {
+    return mModuleRegistry.getModule(UpdatesInterface.class);
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
 
     try {
-      UpdatesController controller = UpdatesController.getInstance();
-      if (controller != null) {
-        constants.put("isEmergencyLaunch", controller.isEmergencyLaunch());
+      UpdatesInterface updatesService = getUpdatesService();
+      if (updatesService != null) {
+        constants.put("isEmergencyLaunch", updatesService.isEmergencyLaunch());
 
-        UpdateEntity launchedUpdate = controller.getLaunchedUpdate();
+        UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
           constants.put("updateId", launchedUpdate.id.toString());
           constants.put("manifestString", launchedUpdate.metadata != null ? launchedUpdate.metadata.toString() : "{}");
         }
 
-        Map<AssetEntity, String> localAssetFiles = controller.getLocalAssetFiles();
+        Map<AssetEntity, String> localAssetFiles = updatesService.getLocalAssetFiles();
         if (localAssetFiles != null) {
           Map<String, String> localAssets = new HashMap<>();
           for (AssetEntity asset : localAssetFiles.keySet()) {
@@ -66,9 +71,9 @@ public class UpdatesModule extends ExportedModule {
           constants.put("localAssets", localAssets);
         }
 
-        constants.put("isEnabled", controller.getUpdatesConfiguration().isEnabled());
-        constants.put("releaseChannel", controller.getUpdatesConfiguration().getReleaseChannel());
-        constants.put("isUsingEmbeddedAssets", controller.isUsingEmbeddedAssets());
+        constants.put("isEnabled", updatesService.getConfiguration().isEnabled());
+        constants.put("releaseChannel", updatesService.getConfiguration().getReleaseChannel());
+        constants.put("isUsingEmbeddedAssets", updatesService.isUsingEmbeddedAssets());
       }
     } catch (IllegalStateException e) {
       // do nothing; this is expected in a development client
@@ -81,13 +86,13 @@ public class UpdatesModule extends ExportedModule {
   @ExpoMethod
   public void reload(final Promise promise) {
     try {
-      UpdatesController controller = UpdatesController.getInstance();
-      if (!controller.getUpdatesConfiguration().isEnabled()) {
+      UpdatesInterface updatesService = getUpdatesService();
+      if (!updatesService.getConfiguration().isEnabled()) {
         promise.reject("ERR_UPDATES_DISABLED", "You cannot reload when expo-updates is not enabled.");
         return;
       }
 
-      controller.relaunchReactApplication(getContext(), new Launcher.LauncherCallback() {
+      updatesService.relaunchReactApplication(new Launcher.LauncherCallback() {
         @Override
         public void onFailure(Exception e) {
           Log.e(TAG, "Failed to relaunch application", e);
@@ -110,13 +115,13 @@ public class UpdatesModule extends ExportedModule {
   @ExpoMethod
   public void checkForUpdateAsync(final Promise promise) {
     try {
-      final UpdatesController controller = UpdatesController.getInstance();
-      if (!controller.getUpdatesConfiguration().isEnabled()) {
+      final UpdatesInterface updatesService = getUpdatesService();
+      if (!updatesService.getConfiguration().isEnabled()) {
         promise.reject("ERR_UPDATES_DISABLED", "You cannot check for updates when expo-updates is not enabled.");
         return;
       }
 
-      FileDownloader.downloadManifest(controller.getUpdateUrl(), getContext(), new FileDownloader.ManifestDownloadCallback() {
+      FileDownloader.downloadManifest(updatesService.getConfiguration().getUpdateUrl(), getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);
@@ -125,7 +130,7 @@ public class UpdatesModule extends ExportedModule {
 
         @Override
         public void onSuccess(Manifest manifest) {
-          UpdateEntity launchedUpdate = controller.getLaunchedUpdate();
+          UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
           Bundle updateInfo = new Bundle();
           if (launchedUpdate == null) {
             // this shouldn't ever happen, but if we don't have anything to compare
@@ -136,7 +141,7 @@ public class UpdatesModule extends ExportedModule {
             return;
           }
 
-          if (controller.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
             updateInfo.putBoolean("isAvailable", true);
             updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
             promise.resolve(updateInfo);
@@ -157,27 +162,27 @@ public class UpdatesModule extends ExportedModule {
   @ExpoMethod
   public void fetchUpdateAsync(final Promise promise) {
     try {
-      final UpdatesController controller = UpdatesController.getInstance();
-      if (!controller.getUpdatesConfiguration().isEnabled()) {
+      final UpdatesInterface updatesService = getUpdatesService();
+      if (!updatesService.getConfiguration().isEnabled()) {
         promise.reject("ERR_UPDATES_DISABLED", "You cannot fetch updates when expo-updates is not enabled.");
         return;
       }
 
       AsyncTask.execute(() -> {
-        UpdatesDatabase database = controller.getDatabase();
-        new RemoteLoader(getContext(), database, controller.getUpdatesDirectory())
+        final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+        new RemoteLoader(getContext(), databaseHolder.getDatabase(), updatesService.getDirectory())
           .start(
-            controller.getUpdateUrl(),
+            updatesService.getConfiguration().getUpdateUrl(),
             new RemoteLoader.LoaderCallback() {
               @Override
               public void onFailure(Exception e) {
-                controller.releaseDatabase();
+                databaseHolder.releaseDatabase();
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e);
               }
 
               @Override
               public void onSuccess(@Nullable UpdateEntity update) {
-                controller.releaseDatabase();
+                databaseHolder.releaseDatabase();
                 Bundle updateInfo = new Bundle();
                 if (update == null) {
                   updateInfo.putBoolean("isNew", false);
