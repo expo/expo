@@ -172,6 +172,10 @@ public class UpdatesController {
 
   // other getters
 
+  public DatabaseHolder getDatabaseHolder() {
+    return mDatabaseHolder;
+  }
+
   public UpdatesDatabase getDatabase() {
     return mDatabaseHolder.getDatabase();
   }
