@@ -26,7 +26,9 @@ See the [`Permission types`](#permission-types) below to learn about what `infoP
 
 ### Permissions on Android
 
-To use permissions on Android, they have to be defined in your `AndroidManifest.xml` first. Some Expo and React Native modules imply these permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your `AndroidManifest.xml` when building a standalone app.
+On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [`app.json` file](../workflow/configuration/#android). In the bare workflow, they have to be defined in your `AndroidManifest.xml`. 
+
+> Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically. 
 
 You can limit these permissions by defining `android.permissions` property in your [`app.json` manifest](../workflow/configuration/#android) in the managed workflow. Only the minimum required permissions for Expo and the permissions listed in the `android.permissions` array are added. When using the bare workflow, you have to [blacklist permissions in your `AndroidManifest.xml`](#excluding-android-permissions-in-bare-workflow) manually.
 
