@@ -21,6 +21,7 @@ NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
   dispatch_once(&once, ^{
     if (!embeddedManifest) {
       NSString *path = [[NSBundle mainBundle] pathForResource:kEXUpdatesEmbeddedManifestName ofType:kEXUpdatesEmbeddedManifestType];
+      // TODO: handle nil manifestData in Expo client case
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
 
       NSError *err;
