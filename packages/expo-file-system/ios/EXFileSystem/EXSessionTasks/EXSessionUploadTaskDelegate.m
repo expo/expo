@@ -10,6 +10,14 @@
 
 @implementation EXSessionUploadTaskDelegate
 
+- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+{
+  if (self = [super initWithResolve:resolve reject:reject]) {
+    _responseData = [NSMutableData new];
+  }
+  return self;
+}
+
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
 {
   if (!data.length) {
