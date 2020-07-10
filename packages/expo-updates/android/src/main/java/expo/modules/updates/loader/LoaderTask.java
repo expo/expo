@@ -210,7 +210,7 @@ public class LoaderTask {
   private void launchRemoteUpdateInBackground(Context context, Callback remoteUpdateCallback) {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = mDatabaseHolder.getDatabase();
-      new RemoteLoader(context, database, mDirectory)
+      new RemoteLoader(context, mConfiguration, database, mDirectory)
         .start(mConfiguration.getUpdateUrl(), new RemoteLoader.LoaderCallback() {
           @Override
           public void onFailure(Exception e) {

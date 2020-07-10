@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 
 import org.json.JSONException;
@@ -75,18 +76,18 @@ public class FileDownloader {
     });
   }
 
-  public static void downloadManifest(final Uri url, final Context context, final ManifestDownloadCallback callback) {
+  public static void downloadManifest(final UpdatesConfiguration configuration, final Context context, final ManifestDownloadCallback callback) {
     try {
-      downloadData(addHeadersToManifestUrl(url, context), new Callback() {
+      downloadData(addHeadersToManifestUrl(configuration, context), new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
-          callback.onFailure("Failed to download manifest from URL: " + url, e);
+          callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), e);
         }
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
           if (!response.isSuccessful()) {
-            callback.onFailure("Failed to download manifest from URL: " + url, new Exception(response.body().string()));
+            callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), new Exception(response.body().string()));
             return;
           }
 
@@ -129,7 +130,7 @@ public class FileDownloader {
         }
       });
     } catch (Exception e) {
-      callback.onFailure("Failed to download manifest from URL " + url.toString(), e);
+      callback.onFailure("Failed to download manifest from URL " + configuration.getUpdateUrl().toString(), e);
     }
   }
 
@@ -198,9 +199,9 @@ public class FileDownloader {
     return requestBuilder.build();
   }
 
-  private static Request addHeadersToManifestUrl(Uri url, Context context) {
+  private static Request addHeadersToManifestUrl(UpdatesConfiguration configuration, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
-            .url(url.toString())
+            .url(configuration.getUpdateUrl().toString())
             .header("Accept", "application/expo+json,application/json")
             .header("Expo-Platform", "android")
             .header("Expo-Api-Version", "1")
@@ -209,15 +210,15 @@ public class FileDownloader {
             .header("Expo-Accept-Signature", "true")
             .cacheControl(CacheControl.FORCE_NETWORK);
 
-    String runtimeVersion = UpdatesController.getInstance().getUpdatesConfiguration().getRuntimeVersion();
-    String sdkVersion = UpdatesController.getInstance().getUpdatesConfiguration().getSdkVersion();
+    String runtimeVersion = configuration.getRuntimeVersion();
+    String sdkVersion = configuration.getSdkVersion();
     if (runtimeVersion != null && runtimeVersion.length() > 0) {
       requestBuilder = requestBuilder.header("Expo-Runtime-Version", runtimeVersion);
     } else {
       requestBuilder = requestBuilder.header("Expo-SDK-Version", sdkVersion);
     }
 
-    String releaseChannel = UpdatesController.getInstance().getUpdatesConfiguration().getReleaseChannel();
+    String releaseChannel = configuration.getReleaseChannel();
     requestBuilder = requestBuilder.header("Expo-Release-Channel", releaseChannel);
 
     String previousFatalError = NoDatabaseLauncher.consumeErrorLog(context);

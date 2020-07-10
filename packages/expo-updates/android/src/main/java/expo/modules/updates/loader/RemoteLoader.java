@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.UpdatesUtils;
@@ -22,6 +23,7 @@ public class RemoteLoader {
   private static String TAG = RemoteLoader.class.getSimpleName();
 
   private Context mContext;
+  private UpdatesConfiguration mConfiguration;
   private UpdatesDatabase mDatabase;
   private File mUpdatesDirectory;
 
@@ -48,8 +50,9 @@ public class RemoteLoader {
     boolean onManifestLoaded(Manifest manifest);
   }
 
-  public RemoteLoader(Context context, UpdatesDatabase database, File updatesDirectory) {
+  public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory) {
     mContext = context;
+    mConfiguration = configuration;
     mDatabase = database;
     mUpdatesDirectory = updatesDirectory;
   }
@@ -64,7 +67,7 @@ public class RemoteLoader {
 
     mCallback = callback;
 
-    FileDownloader.downloadManifest(url, mContext, new FileDownloader.ManifestDownloadCallback() {
+    FileDownloader.downloadManifest(mConfiguration, mContext, new FileDownloader.ManifestDownloadCallback() {
       @Override
       public void onFailure(String message, Exception e) {
         finishWithError(message, e);
