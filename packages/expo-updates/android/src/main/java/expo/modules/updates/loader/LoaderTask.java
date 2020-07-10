@@ -180,16 +180,16 @@ public class LoaderTask {
 
   private void launchFallbackUpdateFromDisk(Context context, Callback diskUpdateCallback) {
     UpdatesDatabase database = mDatabaseHolder.getDatabase();
-    DatabaseLauncher launcher = new DatabaseLauncher(mDirectory, mSelectionPolicy);
+    DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
     mLauncher = launcher;
 
     // if the embedded update should be launched (e.g. if it's newer than any other update we have
     // in the database, which can happen if the app binary is updated), load it into the database
     // so we can launch it
-    UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context).getUpdateEntity();
+    UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
     UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
     if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate)) {
-      new EmbeddedLoader(context, database, mDirectory).loadEmbeddedUpdate();
+      new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
     }
 
     launcher.launch(database, context, new Launcher.LauncherCallback() {
@@ -236,7 +236,7 @@ public class LoaderTask {
           public void onSuccess(@Nullable UpdateEntity update) {
             // a new update has loaded successfully; we need to launch it with a new Launcher and
             // replace the old Launcher so that the callback fires with the new one
-            final DatabaseLauncher newLauncher = new DatabaseLauncher(mDirectory, mSelectionPolicy);
+            final DatabaseLauncher newLauncher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
             newLauncher.launch(database, context, new Launcher.LauncherCallback() {
               @Override
               public void onFailure(Exception e) {

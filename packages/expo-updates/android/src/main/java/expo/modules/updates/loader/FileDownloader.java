@@ -109,7 +109,7 @@ public class FileDownloader {
                     public void onCompleted(boolean isValid) {
                       if (isValid) {
                         try {
-                          Manifest manifest = ManifestFactory.getManifest(context, new JSONObject(innerManifestString));
+                          Manifest manifest = ManifestFactory.getManifest(new JSONObject(innerManifestString), configuration, context);
                           callback.onSuccess(manifest);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);
@@ -121,7 +121,7 @@ public class FileDownloader {
                   }
               );
             } else {
-              Manifest manifest = ManifestFactory.getManifest(context, manifestJson);
+              Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration, context);
               callback.onSuccess(manifest);
             }
           } catch (Exception e) {
