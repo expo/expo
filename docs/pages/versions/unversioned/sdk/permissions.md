@@ -30,7 +30,7 @@ On Android, permissions are little bit simpler than iOS. In the managed workflow
 
 > Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically. 
 
-You can limit these permissions by defining `android.permissions` property in your [`app.json` manifest](../workflow/configuration/#android) in the managed workflow. Only the minimum required permissions for Expo and the permissions listed in the `android.permissions` array are added. When using the bare workflow, you have to [blacklist permissions in your `AndroidManifest.xml`](#excluding-android-permissions-in-bare-workflow) manually.
+To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../workflow/configuration/#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. If you leave this property out, all permissions will be included in your app. When using the bare workflow, you have to [blacklist permissions in your `AndroidManifest.xml`](#excluding-android-permissions-in-bare-workflow) manually.
 
 See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
