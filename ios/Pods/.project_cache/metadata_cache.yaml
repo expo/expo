@@ -1658,6 +1658,10 @@ EXTaskManager:
   LABEL: EXTaskManager
   PROJECT_PATH: EXTaskManager.xcodeproj
   UUID: 86D546D1F048CDA66BE7589194F91D23
+EXUpdates:
+  LABEL: EXUpdates
+  PROJECT_PATH: EXUpdates.xcodeproj
+  UUID: 076FF2640FFF3466FB36FD12A629113A
 EXVideoThumbnails:
   LABEL: EXVideoThumbnails
   PROJECT_PATH: EXVideoThumbnails.xcodeproj
