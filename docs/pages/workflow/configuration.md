@@ -2,6 +2,10 @@
 title: Configuration with app.json / app.config.js
 ---
 
+import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectNotification';
+
+<PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
+
 `app.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`. It looks something like this:
 
 ```javascript
@@ -15,11 +19,11 @@ title: Configuration with app.json / app.config.js
 
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](/versions/latest/sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
-## Available Properties
+## List of configurable properties
 
-To see a full list of available properties, please refer to the [app.json / app.config.js reference](/versions/latest/config/app/). 
+`app.json` configures many things, from your app name to icon to splash screen and even deep linking scheme and API keys to use for some services. To see a full list of available properties, please refer to the [app.json / app.config.js reference](/versions/latest/config/app/).
 
-Install the [vscode-expo](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) Visual Studio Code extension to get auto-completion of properties in `app.json` files.
+> 💡 Do you use Visual Studio Code? If so, we recommend that you install the [vscode-expo](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) extension to get auto-completion of properties in `app.json` files.
 
 ## Dynamic configuration with app.config.js
 
