@@ -4,7 +4,7 @@ title: Glossary of terms
 
 ### app.json
 
-`app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json"](../configuration/)
+`app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json / app.config.js"](../configuration/)
 
 ### create-react-native-app
 

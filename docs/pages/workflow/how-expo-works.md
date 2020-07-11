@@ -25,7 +25,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Expo Manifest`
 
-The following is an example of a manifest being served through Expo CLI. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json](../configuration/#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
+The following is an example of a manifest being served through Expo CLI. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json / app.config.js](../configuration/#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
 
 ```javascript
 {

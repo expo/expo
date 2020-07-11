@@ -1,5 +1,5 @@
 ---
-title: Errors and Debugging
+title: Errors and debugging
 ---
 
 import Video from '~/components/plugins/Video'
