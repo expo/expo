@@ -51,7 +51,7 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 
 There are other options you might want to add to `app.json`. We have only covered what is
 required. For example, some people like to configure their own build number, linking scheme, and
-more. We highly recommend you read through [Configuration with app.json](../../workflow/configuration/) for the
+more. We highly recommend you read through [Configuration with app.json / app.config.js](../../workflow/configuration/) for the
 full spec. This is also your last chance to double check our [recommendations](../app-stores/)
 for App Store metadata.
 

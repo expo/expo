@@ -13,6 +13,7 @@ const DIR_MAPPING = {
   bare: 'Essentials',
   tutorials: 'Tutorials',
   sdk: 'Expo SDK',
+  config: 'Configuration Files',
   'react-native': 'React Native',
   'get-started': 'Get Started',
   tutorial: 'Tutorial',
