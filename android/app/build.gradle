@@ -21,8 +21,7 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
-
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 128
