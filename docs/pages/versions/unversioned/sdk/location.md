@@ -233,7 +233,7 @@ Returns a promise resolving to a subscription object, which has one field:
 
 Geocode an address string to latitiude-longitude location.
 
-> **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
+> **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly. It's also discouraged to use geocoding while the app is in the background and its results won't be shown to the user immediately.
 >
 > On Android, you must request a location permission (`Permissions.LOCATION`) from the user before geocoding can be used.
 
@@ -254,8 +254,8 @@ Returns a promise resolving to an array (in most cases its size is 1) of geocode
 
 Reverse geocode a location to postal address.
 
-> **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly.
-
+> **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly. It's also discouraged to use geocoding while the app is in the background and its results won't be shown to the user immediately.
+>
 > On Android, you must request a location permission (`Permissions.LOCATION`) from the user before geocoding can be used.
 
 #### Arguments

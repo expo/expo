@@ -15,7 +15,6 @@
 #import <CoreLocation/CLCircularRegion.h>
 
 #import <UMCore/UMEventEmitterService.h>
-#import <UMCore/UMAppLifecycleService.h>
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
@@ -31,10 +30,8 @@ NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXLocationDelegate*> *delegates;
 @property (nonatomic, strong) NSMutableSet<EXLocationDelegate *> *retainedDelegates;
-@property (nonatomic, assign, getter=isPaused) BOOL paused;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
-@property (nonatomic, weak) id<UMAppLifecycleService> lifecycleService;
 @property (nonatomic, weak) id<UMTaskManagerInterface> tasksManager;
 
 @end
@@ -54,19 +51,10 @@ UM_EXPORT_MODULE(ExpoLocation);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  if (_lifecycleService) {
-    [_lifecycleService unregisterAppLifecycleListener:self];
-  }
-
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
   [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationPermissionRequester new]] withPermissionsManager:_permissionsManager];
-  _lifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
-
-  if (_lifecycleService) {
-    [_lifecycleService registerAppLifecycleListener:self];
-  }
 }
 
 - (dispatch_queue_t)methodQueue
@@ -294,10 +282,6 @@ UM_EXPORT_METHOD_AS(geocodeAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if ([self isPaused]) {
-    return;
-  }
-
   CLGeocoder *geocoder = [[CLGeocoder alloc] init];
 
   [geocoder geocodeAddressString:address completionHandler:^(NSArray* placemarks, NSError* error){
@@ -328,10 +312,6 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if ([self isPaused]) {
-    return;
-  }
-
   CLGeocoder *geocoder = [[CLGeocoder alloc] init];
   CLLocation *location = [[CLLocation alloc] initWithLatitude:[locationMap[@"latitude"] floatValue] longitude:[locationMap[@"longitude"] floatValue]];
 
@@ -594,22 +574,6 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
     }
   }
   return CLActivityTypeOther;
-}
-
-# pragma mark - UMAppLifecycleListener
-
-- (void)onAppForegrounded
-{
-  if ([self isPaused]) {
-    [self setPaused:NO];
-  }
-}
-
-- (void)onAppBackgrounded
-{
-  if (![self isPaused]) {
-    [self setPaused:YES];
-  }
 }
 
 @end
