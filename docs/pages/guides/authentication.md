@@ -1128,11 +1128,11 @@ export default function App() {
 - Replace `YOUR_GUID` with your "Web client ID" and open this link:
   - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
 - Under "URIs" add your hosts URLs
-  - Web dev: https://localhost:19006
+  - Web dev: http://localhost:19006
   - Expo Client Proxy: https://auth.expo.io
 - Under "Authorized redirect URIs"
-  - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
-  - Expo Client Proxy: https://auth.expo.io/@yourname/your-app
+  - Web dev: http://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
+  - Expo Client Proxy: https://auth.expo.io/@yourname/your-app-slug
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
@@ -1192,7 +1192,8 @@ export default function App() {
       ],
       extraParams: {
         nonce,
-      }
+      },
+      usePKCE: false
     },
     discovery
   );
@@ -1213,7 +1214,7 @@ export default function App() {
   return (
     <Button
       /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request || !nonce)}
+      disabled={(!request || !nonce)}
       /* @end */
       title="Login"
       onPress={() => {
