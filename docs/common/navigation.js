@@ -16,6 +16,7 @@ const GROUPS = {
   Deprecated: ['ExpoKit'],
   'Bare Workflow': ['Essentials'],
   'Expo SDK': ['Expo SDK'],
+  'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
 };
 
@@ -46,7 +47,7 @@ const sections = [
       'Sharing the image',
       'Handling platform differences',
       'Configuring a splash screen and app icon',
-      'Errors and Debugging',
+      'Errors and debugging',
       'Learning more',
     ],
   },
@@ -142,7 +143,7 @@ const sections = [
       'Android Studio Emulator',
       'Debugging',
       'Common Development Errors',
-      'Configuration with app.json',
+      'Configuration with app.json / app.config.js',
       'Publishing',
       'Release Channels',
       'Building Standalone Apps',
@@ -171,6 +172,10 @@ const sections = [
       'Migrating from ExpoKit',
       'Updating your App',
     ],
+  },
+  {
+    name: 'Configuration Files',
+    reference: ['app.json / app.config.js', 'metro.config.js'],
   },
   {
     name: 'React Native',
@@ -290,6 +295,7 @@ const ROOT = [
   'Assorted Guides',
   'Essentials',
   'Expo SDK',
+  'Configuration Files',
   'React Native',
   'ExpoKit',
 ];
@@ -304,7 +310,10 @@ const sortAccordingToReference = (arr, reference) => {
   });
 
   const arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
-  return subSort(arrSortedByWeight, arrSortedByWeight.findIndex(o => o.weight === 1));
+  return subSort(
+    arrSortedByWeight,
+    arrSortedByWeight.findIndex(o => o.weight === 1)
+  );
 };
 
 const sortNav = nav => {
