@@ -42,7 +42,8 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - run: bin/expotools ios-generate-dynamic-macros
+      - run: echo "::add-path::$(pwd)/bin"
+      - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
       - name: bundler cache
         uses: actions/cache@v1
@@ -57,7 +58,7 @@ jobs:
         run: |
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
-      - run: fastlane ios create_simulator_build
+      - run: expotools client-build --platform ios
         timeout-minutes: 60
       - name: Save test results
         if: always()
@@ -65,7 +66,7 @@ jobs:
         with:
           name: fastlane-logs
           path: ~/Library/Logs/fastlane
-      - run: expotools client-build --platform ios --release
+      - run: expotools client-build --platform ios --release # should only upload already-built app
         if: ${{ github.event.action == 'release-simulator' }}
       - uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
