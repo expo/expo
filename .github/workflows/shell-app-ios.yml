@@ -93,7 +93,7 @@ jobs:
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
