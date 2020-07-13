@@ -19,7 +19,7 @@ import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectN
 
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](/versions/latest/sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
-## List of configurable properties
+## Properties
 
 `app.json` configures many things, from your app name to icon to splash screen and even deep linking scheme and API keys to use for some services. To see a full list of available properties, please refer to the [app.json / app.config.js reference](/versions/latest/config/app/).
 
