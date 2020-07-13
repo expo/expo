@@ -1,8 +1,7 @@
 name: iOS Shell App
 
 on:
-  repository_dispatch:
-    types: [ release-shell-ios ]
+  workflow_dispatch:
   schedule:
     - cron: '20 5 * * 2,4,6'
 
@@ -12,7 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.client_payload.ref }}
           submodules: true
       - name: Get cache key of git lfs files
         id: git-lfs
@@ -82,7 +80,7 @@ jobs:
             shellAppWorkspaces \
             ios
       - name: upload tarball trigger
-        if: ${{ github.event.action == 'release-shell-ios' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         timeout-minutes: 40
         run: |
           aws s3 cp --acl public-read "/tmp/${{ steps.tarball.outputs.filename }}" s3://exp-artifacts
