@@ -1,10 +1,10 @@
 package expo.modules.notifications.notifications.interfaces;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 /**
  * An interface specifying source of the notification, to be implemented
@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
  */
 public interface NotificationTrigger extends Parcelable {
   @Nullable
-  @TargetApi(Build.VERSION_CODES.O)
+  @RequiresApi(api = Build.VERSION_CODES.O)
   default String getNotificationChannel() {
     return null;
   }
