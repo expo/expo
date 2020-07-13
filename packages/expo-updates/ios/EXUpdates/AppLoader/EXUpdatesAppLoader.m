@@ -1,6 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesAppLoader+Private.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
@@ -26,7 +25,10 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 @implementation EXUpdatesAppLoader
 
-- (instancetype)initWithCompletionQueue:(dispatch_queue_t)completionQueue
+- (instancetype)initWithConfig:(EXUpdatesConfig *)config
+                      database:(EXUpdatesDatabase *)database
+                     directory:(NSURL *)directory
+               completionQueue:(dispatch_queue_t)completionQueue
 {
   if (self = [super init]) {
     _assetsToLoad = [NSMutableArray new];
@@ -34,6 +36,9 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     _finishedAssets = [NSMutableArray new];
     _existingAssets = [NSMutableArray new];
     _arrayLock = [[NSLock alloc] init];
+    _config = config;
+    _database = database;
+    _directory = directory;
     _completionQueue = completionQueue;
   }
   return self;
@@ -46,6 +51,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   _finishedAssets = [NSMutableArray new];
   _existingAssets = [NSMutableArray new];
   _updateManifest = nil;
+  _manifestBlock = nil;
   _successBlock = nil;
   _errorBlock = nil;
 }
@@ -53,6 +59,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 # pragma mark - subclass methods
 
 - (void)loadUpdateFromUrl:(NSURL *)url
+               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
@@ -75,10 +82,9 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     return;
   }
 
-  EXUpdatesDatabase *database = [EXUpdatesAppController sharedInstance].database;
-  dispatch_async(database.databaseQueue, ^{
+  dispatch_async(_database.databaseQueue, ^{
     NSError *existingUpdateError;
-    EXUpdatesUpdate *existingUpdate = [database updateWithId:updateManifest.updateId error:&existingUpdateError];
+    EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError];
 
     if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
       if (self->_successBlock) {
@@ -100,7 +106,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       // no update already exists with this ID, so we need to insert it and download everything.
       self->_updateManifest = updateManifest;
       NSError *updateError;
-      [database addUpdate:self->_updateManifest error:&updateError];
+      [self->_database addUpdate:self->_updateManifest error:&updateError];
 
       if (updateError) {
         [self _finishWithError:updateError];
@@ -111,23 +117,22 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     if (self->_updateManifest.assets && self->_updateManifest.assets.count > 0) {
       self->_assetsToLoad = [self->_updateManifest.assets mutableCopy];
 
-      NSURL *updatesDirectory = EXUpdatesAppController.sharedInstance.updatesDirectory;
       for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
         // before downloading, check to see if we already have this asset in the database
         NSError *matchingAssetError;
-        EXUpdatesAsset *matchingDbEntry = [database assetWithKey:asset.key error:&matchingAssetError];
+        EXUpdatesAsset *matchingDbEntry = [self->_database assetWithKey:asset.key error:&matchingAssetError];
 
         if (matchingAssetError || !matchingDbEntry || !matchingDbEntry.filename) {
           [self downloadAsset:asset];
         } else {
           NSError *mergeError;
-          [database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
+          [self->_database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
           if (mergeError) {
             NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);
           }
           // make sure the file actually exists on disk
-          dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
-            NSURL *urlOnDisk = [updatesDirectory URLByAppendingPathComponent:asset.filename];
+          dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
+            NSURL *urlOnDisk = [self->_directory URLByAppendingPathComponent:asset.filename];
             if ([[NSFileManager defaultManager] fileExistsAtPath:[urlOnDisk path]]) {
               // file already exists, we don't need to download it again
               dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -191,8 +196,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 - (BOOL)_shouldStartLoadingUpdate:(EXUpdatesUpdate *)updateManifest
 {
-  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
-  return [controller.selectionPolicy shouldLoadNewUpdate:updateManifest withLaunchedUpdate:controller.launchedUpdate];
+  return _manifestBlock(updateManifest);
 }
 
 - (void)_finishWithError:(NSError *)error
@@ -207,16 +211,15 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 - (void)_finish
 {
-  EXUpdatesDatabase *database = [EXUpdatesAppController sharedInstance].database;
-  dispatch_async(database.databaseQueue, ^{
+  dispatch_async(_database.databaseQueue, ^{
     [self->_arrayLock lock];
     for (EXUpdatesAsset *existingAsset in self->_existingAssets) {
       NSError *error;
-      BOOL existingAssetFound = [database addExistingAsset:existingAsset toUpdateWithId:self->_updateManifest.updateId error:&error];
+      BOOL existingAssetFound = [self->_database addExistingAsset:existingAsset toUpdateWithId:self->_updateManifest.updateId error:&error];
       if (!existingAssetFound) {
         // the database and filesystem have gotten out of sync
         // do our best to create a new entry for this file even though it already existed on disk
-        NSData *contents = [NSData dataWithContentsOfURL:[[EXUpdatesAppController sharedInstance].updatesDirectory URLByAppendingPathComponent:existingAsset.filename]];
+        NSData *contents = [NSData dataWithContentsOfURL:[self->_directory URLByAppendingPathComponent:existingAsset.filename]];
         existingAsset.contentHash = [EXUpdatesUtils sha256WithData:contents];
         existingAsset.downloadTime = [NSDate date];
         [self->_finishedAssets addObject:existingAsset];
@@ -226,7 +229,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       }
     }
     NSError *assetError;
-    [database addNewAssets:self->_finishedAssets toUpdateWithId:self->_updateManifest.updateId error:&assetError];
+    [self->_database addNewAssets:self->_finishedAssets toUpdateWithId:self->_updateManifest.updateId error:&assetError];
     if (assetError) {
       [self->_arrayLock unlock];
       [self _finishWithError:assetError];
@@ -235,7 +238,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
     if (![self->_erroredAssets count]) {
       NSError *updateReadyError;
-      [database markUpdateFinished:self->_updateManifest error:&updateReadyError];
+      [self->_database markUpdateFinished:self->_updateManifest error:&updateReadyError];
       if (updateReadyError) {
         [self->_arrayLock unlock];
         [self _finishWithError:updateReadyError];

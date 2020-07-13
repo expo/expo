@@ -4,7 +4,6 @@
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
 #import <EXUpdates/EXUpdatesUtils.h>
@@ -13,8 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
 
+static NSString * const kEXUpdatesConfigPlistName = @"Expo";
+
 @interface EXUpdatesAppController ()
 
+@property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
 @property (nonatomic, readwrite, strong) id<EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) EXUpdatesDatabase *database;
 @property (nonatomic, readwrite, strong) id<EXUpdatesSelectionPolicy> selectionPolicy;
@@ -48,8 +50,9 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 - (instancetype)init
 {
   if (self = [super init]) {
+    _config = [self _loadConfigFromExpoPlist];
     _database = [[EXUpdatesDatabase alloc] init];
-    _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] init];
+    _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
@@ -59,18 +62,23 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
 - (void)setConfiguration:(NSDictionary *)configuration
 {
-  NSAssert(!_updatesDirectory, @"EXUpdatesAppController:setConfiguration should not be called after start");
-  [EXUpdatesConfig.sharedInstance loadConfigFromDictionary:configuration];
+  if (!_updatesDirectory) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"EXUpdatesAppController:setConfiguration should not be called after start"
+                                 userInfo:@{}];
+  }
+  _config = [EXUpdatesConfig configWithDictionary:configuration];
+  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
 }
 
 - (void)start
 {
   NSAssert(!_updatesDirectory, @"EXUpdatesAppController:start should only be called once per instance");
 
-  if (!EXUpdatesConfig.sharedInstance.isEnabled) {
+  if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
     _launcher = launcher;
-    [launcher launchUpdate];
+    [launcher launchUpdateWithConfig:_config];
 
     if (_delegate) {
       [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
@@ -79,7 +87,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     return;
   }
 
-  if (!EXUpdatesConfig.sharedInstance.updateUrl) {
+  if (!_config.updateUrl) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
@@ -98,7 +106,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   __block NSError *dbError;
   dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
   dispatch_async(_database.databaseQueue, ^{
-    dbSuccess = [self->_database openDatabaseWithError:&dbError];
+    dbSuccess = [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
     dispatch_semaphore_signal(dbSemaphore);
   });
 
@@ -108,7 +116,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     return;
   }
 
-  EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:EXUpdatesConfig.sharedInstance
+  EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:_database
                                                                             directory:_updatesDirectory
                                                                       selectionPolicy:_selectionPolicy
@@ -146,7 +154,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   if (_bridge) {
-    EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithCompletionQueue:_controllerQueue];
+    EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
     _candidateLauncher = launcher;
     [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
       if (success) {
@@ -219,11 +227,26 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
 # pragma mark - internal
 
+- (EXUpdatesConfig *)_loadConfigFromExpoPlist
+{
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:kEXUpdatesConfigPlistName ofType:@"plist"];
+  if (!configPath) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+
+  return [EXUpdatesConfig configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+}
+
 - (void)_runReaper
 {
   if (_launcher.launchedUpdate) {
-    [EXUpdatesReaper reapUnusedUpdatesWithSelectionPolicy:self->_selectionPolicy
-                                           launchedUpdate:self->_launcher.launchedUpdate];
+    [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
+                                        database:_database
+                                       directory:_updatesDirectory
+                                 selectionPolicy:_selectionPolicy
+                                  launchedUpdate:_launcher.launchedUpdate];
   }
 }
 
@@ -233,7 +256,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
   EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   _launcher = launcher;
-  [launcher launchUpdateWithFatalError:error];
+  [launcher launchUpdateWithConfig:_config fatalError:error];
 
   if (_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{

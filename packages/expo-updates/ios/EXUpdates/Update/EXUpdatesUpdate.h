@@ -1,6 +1,9 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAsset.h>
+#import <EXUpdates/EXUpdatesConfig.h>
+
+@class EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,10 +35,17 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
               runtimeVersion:(NSString *)runtimeVersion
                     metadata:(nullable NSDictionary *)metadata
                       status:(EXUpdatesUpdateStatus)status
-                        keep:(BOOL)keep;
+                        keep:(BOOL)keep
+                      config:(EXUpdatesConfig *)config
+                    database:(EXUpdatesDatabase *)database;
 
-+ (instancetype)updateWithManifest:(NSDictionary *)manifest;
-+ (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest;
++ (instancetype)updateWithManifest:(NSDictionary *)manifest
+                            config:(EXUpdatesConfig *)config
+                          database:(EXUpdatesDatabase *)database;
+
++ (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest
+                                    config:(EXUpdatesConfig *)config
+                                  database:(nullable EXUpdatesDatabase *)database;
 
 @end
 

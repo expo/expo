@@ -1,6 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
@@ -15,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, strong, readwrite) NSURL *launchAssetUrl;
 @property (nullable, nonatomic, strong, readwrite) NSMutableDictionary *assetFilesMap;
 
+@property (nonatomic, strong) EXUpdatesConfig *config;
+@property (nonatomic, strong) EXUpdatesDatabase *database;
+@property (nonatomic, strong) NSURL *directory;
 @property (nonatomic, strong) EXUpdatesFileDownloader *downloader;
 @property (nonatomic, copy) EXUpdatesAppLauncherCompletionBlock completion;
 @property (nonatomic, strong) dispatch_queue_t completionQueue;
@@ -30,24 +32,31 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 @implementation EXUpdatesAppLauncherWithDatabase
 
-- (instancetype)initWithCompletionQueue:(dispatch_queue_t)completionQueue
+- (instancetype)initWithConfig:(EXUpdatesConfig *)config
+                      database:(EXUpdatesDatabase *)database
+                     directory:(NSURL *)directory
+               completionQueue:(dispatch_queue_t)completionQueue
 {
   if (self = [super init]) {
     _launcherQueue = dispatch_queue_create("expo.launcher.LauncherQueue", DISPATCH_QUEUE_SERIAL);
     _completedAssets = 0;
+    _config = config;
+    _database = database;
+    _directory = directory;
     _completionQueue = completionQueue;
   }
   return self;
 }
 
-+ (void)launchableUpdateWithSelectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
-                                 completion:(EXUpdatesAppLauncherUpdateCompletionBlock)completion
-                            completionQueue:(dispatch_queue_t)completionQueue
++ (void)launchableUpdateWithConfig:(EXUpdatesConfig *)config
+                          database:(EXUpdatesDatabase *)database
+                   selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+                        completion:(EXUpdatesAppLauncherUpdateCompletionBlock)completion
+                   completionQueue:(dispatch_queue_t)completionQueue
 {
-  EXUpdatesDatabase *database = [EXUpdatesAppController sharedInstance].database;
   dispatch_async(database.databaseQueue, ^{
     NSError *error;
-    NSArray<EXUpdatesUpdate *> *launchableUpdates = [database launchableUpdatesWithError:&error];
+    NSArray<EXUpdatesUpdate *> *launchableUpdates = [database launchableUpdatesWithConfig:config error:&error];
     dispatch_async(completionQueue, ^{
       if (!launchableUpdates) {
         completion(error, nil);
@@ -56,7 +65,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       // We can only run an update marked as embedded if it's actually the update embedded in the
       // current binary. We might have an older update from a previous binary still listed in the
       // database with Embedded status so we need to filter that out here.
-      EXUpdatesUpdate *embeddedManifest = [EXUpdatesEmbeddedAppLoader embeddedManifest];
+      EXUpdatesUpdate *embeddedManifest = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:config database:database];
       NSMutableArray<EXUpdatesUpdate *>*filteredLaunchableUpdates = [NSMutableArray new];
       for (EXUpdatesUpdate *update in launchableUpdates) {
         if (update.status == EXUpdatesUpdateStatusEmbedded) {
@@ -79,12 +88,19 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   _completion = completion;
 
   if (!_launchedUpdate) {
-    [[self class] launchableUpdateWithSelectionPolicy:selectionPolicy completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
-      if (error) {
+    [[self class] launchableUpdateWithConfig:_config database:_database selectionPolicy:selectionPolicy completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
+      if (error || !launchableUpdate) {
         if (self->_completion) {
-          self->_completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1011 userInfo:@{NSLocalizedDescriptionKey: @"No launchable updates found in database", NSUnderlyingErrorKey: error}], NO);
+          dispatch_async(self->_completionQueue, ^{
+            NSMutableDictionary *userInfo = [NSMutableDictionary new];
+            userInfo[NSLocalizedDescriptionKey] = @"No launchable updates found in database";
+            if (error) {
+              userInfo[NSUnderlyingErrorKey] = error;
+            }
+            self->_completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1011 userInfo:userInfo], NO);
+          });
         }
-      } else if (launchableUpdate) {
+      } else {
         self->_launchedUpdate = launchableUpdate;
         [self _ensureAllAssetsExist];
       }
@@ -113,12 +129,11 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
 
   _assetFilesMap = [NSMutableDictionary new];
-  NSURL *updatesDirectory = EXUpdatesAppController.sharedInstance.updatesDirectory;
 
   if (_launchedUpdate) {
     NSUInteger totalAssetCount = _launchedUpdate.assets.count;
     for (EXUpdatesAsset *asset in _launchedUpdate.assets) {
-      NSURL *assetLocalUrl = [updatesDirectory URLByAppendingPathComponent:asset.filename];
+      NSURL *assetLocalUrl = [_directory URLByAppendingPathComponent:asset.filename];
       [self _ensureAssetExists:asset withLocalUrl:assetLocalUrl completion:^(BOOL exists) {
         dispatch_assert_queue(self->_launcherQueue);
         self->_completedAssets++;
@@ -174,10 +189,9 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         } else {
           // attempt to update the database record to match the newly downloaded asset
           // but don't block launching on this
-          EXUpdatesDatabase *database = [EXUpdatesAppController sharedInstance].database;
-          dispatch_async(database.databaseQueue, ^{
+          dispatch_async(self->_database.databaseQueue, ^{
             NSError *error;
-            [database updateAsset:asset error:&error];
+            [self->_database updateAsset:asset error:&error];
             if (error) {
               NSLog(@"Could not write data for downloaded asset to database: %@", error.localizedDescription);
             }
@@ -192,7 +206,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 - (void)_checkExistenceOfAsset:(EXUpdatesAsset *)asset withLocalUrl:(NSURL *)assetLocalUrl completion:(void (^)(BOOL exists))completion
 {
-  dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
+  dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     BOOL exists = [NSFileManager.defaultManager fileExistsAtPath:[assetLocalUrl path]];
     dispatch_async(self->_launcherQueue, ^{
       completion(exists);
@@ -204,7 +218,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
                          withLocalUrl:(NSURL *)assetLocalUrl
                            completion:(void (^)(BOOL success, NSError * _Nullable error))completion
 {
-  EXUpdatesUpdate *embeddedManifest = [EXUpdatesEmbeddedAppLoader embeddedManifest];
+  EXUpdatesUpdate *embeddedManifest = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:_config database:_database];
   if (embeddedManifest) {
     EXUpdatesAsset *matchingAsset;
     for (EXUpdatesAsset *embeddedAsset in embeddedManifest.assets) {
@@ -215,7 +229,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
     }
 
     if (matchingAsset && matchingAsset.mainBundleFilename) {
-      dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
+      dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
         NSString *bundlePath = [[NSBundle mainBundle] pathForResource:matchingAsset.mainBundleFilename ofType:matchingAsset.type];
         NSError *error;
         BOOL success = [NSFileManager.defaultManager copyItemAtPath:bundlePath toPath:[assetLocalUrl path] error:&error];
@@ -237,7 +251,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   if (!asset.url) {
     completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
   }
-  dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
+  dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
