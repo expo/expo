@@ -112,7 +112,7 @@ The notification icon and the default color can be customized.
 
 If you would like to send notifications with Expo servers, the servers will need to have a way to authenticate with APNS/FCM that they are authorized to send notifications on your behalf. To do this:
 
-- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/guides/using-fcm/#uploading-server-credentials)_,
+- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/push-notifications/using-fcm/#uploading-server-credentials)_,
 - for APNS:
   - run `expo credentials:manager` in the root of your application,
   - if you've already uploaded a Push Notifications Key in another project and would like to reuse it in the current project, select _Use existing Push Notifications Key in current project_ (you may need to set `slug` and `ios.bundleIdentifier` fields in `app.json` so that the server knows to which `experienceId` and `bundleIdentifier` the key should be attributed),
