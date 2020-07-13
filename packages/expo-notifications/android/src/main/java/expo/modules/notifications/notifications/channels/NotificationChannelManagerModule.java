@@ -39,9 +39,9 @@ public class NotificationChannelManagerModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    NotificationsChannelsFactory factory = moduleRegistry.getModule(NotificationsChannelsFactory.class);
-    mChannelManager = factory.createChannelManager();
-    mChannelSerializer = factory.createChannelSerializer();
+    NotificationsChannelsProvider provider = moduleRegistry.getModule(NotificationsChannelsProvider.class);
+    mChannelManager = provider.getChannelManager();
+    mChannelSerializer = provider.getChannelSerializer();
   }
 
   @Override
