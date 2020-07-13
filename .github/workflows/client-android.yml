@@ -1,8 +1,7 @@
 name: Android Client
 
 on:
-  repository_dispatch:
-    types: [ release-google-play, release-apk ]
+  workflow_dispatch:
   pull_request:
     branches: [ master ]
     paths:
@@ -112,13 +111,13 @@ jobs:
         with:
           name: gradle-daemon-logs
           path: ~/.gradle/daemon
-      - if: ${{ github.event.action == 'release-apk' }}
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
         run: bin/expotools client-build --platform android --release
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
       - name: Upload APK to Google Play and release to production
-        if: ${{ github.event.action == 'release-google-play' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: fastlane android prod_release
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.SUPPLY_JSON_KEY_DATA }}
