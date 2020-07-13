@@ -211,21 +211,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     });
     timeoutObject.start();
 
-    // Have location cached already?
-    if (options.containsKey("maximumAge")) {
-      final Double maximumAge = (Double) options.get("maximumAge");
-
-      getLastKnownLocation(maximumAge, new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-          if (location != null) {
-            promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
-            timeoutObject.markDoneIfNotTimedOut();
-          }
-        }
-      });
-    }
-
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
       LocationHelpers.requestSingleLocation(this, locationRequest, timeoutObject, promise);
     } else {
