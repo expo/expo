@@ -679,7 +679,7 @@ export async function test(t) {
       });
 
       if (Constants.appOwnership === 'expo') {
-        t.fit('includes the foreign persistent notification', async () => {
+        t.it('includes the foreign persistent notification', async () => {
           const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
           t.expect(displayedNotifications).toContain(
             t.jasmine.objectContaining({
