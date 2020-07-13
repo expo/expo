@@ -65,6 +65,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
+  protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
+
   private static class SetSpanOperation {
     protected int start, end;
     protected ReactSpan what;
@@ -136,12 +138,18 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         YogaValue widthValue = child.getStyleWidth();
         YogaValue heightValue = child.getStyleHeight();
 
+        float width;
+        float height;
         if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
-          throw new IllegalViewOperationException(
-              "Views nested within a <Text> must have a width and height");
+          // If the measurement of the child isn't calculated, we calculate the layout for the
+          // view using Yoga
+          child.calculateLayout();
+          width = child.getLayoutWidth();
+          height = child.getLayoutHeight();
+        } else {
+          width = widthValue.value;
+          height = heightValue.value;
         }
-        float width = widthValue.value;
-        float height = heightValue.value;
 
         // We make the inline view take up 1 character in the span and put a corresponding character
         // into
@@ -301,6 +309,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(
         heightOfTallestInlineViewOrImage);
 
+    if (mReactTextViewManagerCallback != null) {
+      mReactTextViewManagerCallback.onPostProcessSpannable(sb);
+    }
+
     return sb;
   }
 
@@ -361,16 +373,20 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    */
   protected @Nullable String mFontFamily = null;
 
-  /**
-   * @see android.graphics.Paint#setFontFeatureSettings
-   */
+  /** @see android.graphics.Paint#setFontFeatureSettings */
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
   protected Map<Integer, ReactShadowNode> mInlineViews;
 
   public ReactBaseTextShadowNode() {
+    this(null);
+  }
+
+  public ReactBaseTextShadowNode(
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     mTextAttributes = new TextAttributes();
+    mReactTextViewManagerCallback = reactTextViewManagerCallback;
   }
 
   // Return text alignment according to LTR or RTL style
@@ -453,7 +469,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.COLOR)
+  @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
