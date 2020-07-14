@@ -59,14 +59,16 @@ Using the Submission Service is easy - it's just one additional flag: `expo uplo
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
 
-**Disclaimer:** This feature only works on macOS. If you want to upload an iOS app to the Apple App Store you will need to have access to a macOS device.
+**Disclaimer:** This feature only works on macOS. If you want to upload an iOS app to the 
+
+App Store you will need to have access to a macOS device.
 
 ### Using expo-cli
 
 To upload your iOS app to TestFlight, run `expo upload:ios`. You can set following options when uploading an iOS standalone app:
 
 - `--apple-id <apple-id>` **(required)** - your Apple ID login. Alternatively you can set the `EXPO_APPLE_ID` environment variable.
-- `--apple-id-password <apple-id-password>` **(required)** - your Apple ID password. Alternatively you can set the `EXPO_APPLE_ID_PASSWORD` environment variable.
+- `--apple-id-password <apple-id-password>` **(required)** - your Apple ID password. Alternatively you can set the `EXPO_APPLE_PASSWORD` environment variable.
 - `--app-name <app-name>` - your app display name, will be used to name an app on App Store Connect
 - `--sku <sku>` - a unique ID for your app that is not visible on the App Store, will be generated unless provided
 - `--language <language>` - primary language (e.g. English, German; run `expo upload:ios --help` to see the list of available languages) (default: English)
