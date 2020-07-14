@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesConfig ()
 
 @property (nonatomic, readwrite, assign) BOOL isEnabled;
+@property (nonatomic, readwrite, strong) NSString *projectIdentifier;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
@@ -20,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const kEXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
+static NSString * const kEXUpdatesConfigProjectIdentifierKey = @"EXUpdatesProjectIdentifier";
 static NSString * const kEXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
 static NSString * const kEXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
 static NSString * const kEXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
@@ -63,8 +65,23 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   id updateUrl = config[kEXUpdatesConfigUpdateUrlKey];
   if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
     NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];
-    NSAssert(url, @"EXUpdatesURL must be a valid URL");
     _updateUrl = url;
+  }
+
+  id projectIdentifier = config[kEXUpdatesConfigProjectIdentifierKey];
+  if (projectIdentifier && [projectIdentifier isKindOfClass:[NSString class]]) {
+    _projectIdentifier = (NSString *)projectIdentifier;
+  }
+
+  // set updateUrl as the default value if none is provided
+  if (!_projectIdentifier) {
+    if (_updateUrl) {
+      _projectIdentifier = _updateUrl.absoluteString;
+    } else {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"expo-updates must be configured with a valid update URL or project identifier."
+                                   userInfo:@{}];
+    }
   }
 
   id releaseChannel = config[kEXUpdatesConfigReleaseChannelKey];

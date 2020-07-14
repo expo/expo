@@ -33,6 +33,7 @@ public class LegacyManifest implements Manifest {
   private Uri mAssetsUrlBase = null;
 
   private UUID mId;
+  private String mProjectIdentifier;
   private Date mCommitTime;
   private String mRuntimeVersion;
   private JSONObject mMetadata;
@@ -42,10 +43,19 @@ public class LegacyManifest implements Manifest {
   private JSONObject mManifestJson;
   private Uri mManifestUrl;
 
-  private LegacyManifest(JSONObject manifestJson, Uri manifestUrl, UUID id, Date commitTime, String runtimeVersion, JSONObject metadata, Uri bundleUrl, JSONArray assets) {
+  private LegacyManifest(JSONObject manifestJson,
+                         Uri manifestUrl,
+                         UUID id,
+                         String projectIdentifier,
+                         Date commitTime,
+                         String runtimeVersion,
+                         JSONObject metadata,
+                         Uri bundleUrl,
+                         JSONArray assets) {
     mManifestJson = manifestJson;
     mManifestUrl = manifestUrl;
     mId = id;
+    mProjectIdentifier = projectIdentifier;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
     mMetadata = metadata;
@@ -79,7 +89,7 @@ public class LegacyManifest implements Manifest {
 
     JSONArray bundledAssets = manifestJson.optJSONArray("bundledAssets");
 
-    return new LegacyManifest(manifestJson, configuration.getUpdateUrl(), id, commitTime, runtimeVersion, manifestJson, bundleUrl, bundledAssets);
+    return new LegacyManifest(manifestJson,configuration.getUpdateUrl(), id, configuration.getProjectIdentifier(), commitTime, runtimeVersion, manifestJson, bundleUrl, bundledAssets);
   }
 
   public JSONObject getRawManifestJson() {
@@ -87,8 +97,7 @@ public class LegacyManifest implements Manifest {
   }
 
   public UpdateEntity getUpdateEntity() {
-    String projectIdentifier = mManifestUrl.toString();
-    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, projectIdentifier);
+    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mProjectIdentifier);
     if (mMetadata != null) {
       updateEntity.metadata = mMetadata;
     }

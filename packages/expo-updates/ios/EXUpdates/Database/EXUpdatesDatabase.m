@@ -353,8 +353,8 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT * FROM updates;";
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
+  NSString * const sql = @"SELECT * FROM updates WHERE project_identifier = ?1;";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.projectIdentifier] error:error];
   if (!rows) {
     return nil;
   }
@@ -370,9 +370,10 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 {
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
-  WHERE status IN (%li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded];
+  WHERE project_identifier = ?1\
+  AND status IN (%li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded];
 
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.projectIdentifier] error:error];
   if (!rows) {
     return nil;
   }

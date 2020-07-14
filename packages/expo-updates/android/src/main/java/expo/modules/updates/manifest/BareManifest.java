@@ -24,17 +24,23 @@ public class BareManifest implements Manifest {
   private static String TAG = BareManifest.class.getSimpleName();
 
   private UUID mId;
+  private String mProjectIdentifier;
   private Date mCommitTime;
   private String mRuntimeVersion;
   private JSONObject mMetadata;
   private JSONArray mAssets;
 
   private JSONObject mManifestJson;
-  private Uri mManifestUri;
 
-  private BareManifest(JSONObject manifestJson, Uri manifestUri, UUID id, Date commitTime, String runtimeVersion, JSONObject metadata, JSONArray assets) {
+  private BareManifest(JSONObject manifestJson,
+                       UUID id,
+                       String projectIdentifier,
+                       Date commitTime,
+                       String runtimeVersion,
+                       JSONObject metadata,
+                       JSONArray assets) {
     mManifestJson = manifestJson;
-    mManifestUri = manifestUri;
+    mProjectIdentifier = projectIdentifier;
     mId = id;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
@@ -49,7 +55,7 @@ public class BareManifest implements Manifest {
     JSONObject metadata = manifestJson.optJSONObject("metadata");
     JSONArray assets = manifestJson.optJSONArray("assets");
 
-    return new BareManifest(manifestJson, configuration.getUpdateUrl(), id, commitTime, runtimeVersion, metadata, assets);
+    return new BareManifest(manifestJson, id, configuration.getProjectIdentifier(), commitTime, runtimeVersion, metadata, assets);
   }
 
   public JSONObject getRawManifestJson() {
@@ -57,8 +63,7 @@ public class BareManifest implements Manifest {
   }
 
   public UpdateEntity getUpdateEntity() {
-    String projectIdentifier = mManifestUri.toString();
-    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, projectIdentifier);
+    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mProjectIdentifier);
     if (mMetadata != null) {
       updateEntity.metadata = mMetadata;
     }
