@@ -82,7 +82,7 @@ export function setTrackingOptions(options: AmplitudeTrackingOptions) {
   return ExpoAmplitude.setTrackingOptions(options);
 }
 
-// Keep to avoid an abrupt breaking change
+// Keep to avoid an abrupt breaking change, remove for SDK 40
 export function logEvent(eventName: string): Promise<void> {
   console.log(
     'This method is deprecated. Please use Amplitude.logEventAsync instead (it is functionally the same).'
