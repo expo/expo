@@ -32,7 +32,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/packages/expo-splash-screen",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-splash-screen",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
