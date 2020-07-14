@@ -2,6 +2,10 @@ name: iOS Shell App
 
 on:
   workflow_dispatch:
+    inputs:
+      releaseShellIOS:
+        description: 'type "release-shell-ios" to confirm upload'
+        required: false
   schedule:
     - cron: '20 5 * * 2,4,6'
 
@@ -70,7 +74,7 @@ jobs:
         id: tarball
         run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}"
       - name: Package release tarball
-        if: ${{ github.event.action == 'release-shell-ios' }}
+        if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
         run: |
           tar \
             -zcf "/tmp/${{ steps.tarball.outputs.filename }}" \
@@ -79,8 +83,8 @@ jobs:
             shellAppBase-builds \
             shellAppWorkspaces \
             ios
-      - name: upload tarball trigger
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+      - name: upload tarball
+        if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
         timeout-minutes: 40
         run: |
           aws s3 cp --acl public-read "/tmp/${{ steps.tarball.outputs.filename }}" s3://exp-artifacts
