@@ -1,6 +1,9 @@
-const { join } = require('path');
-const { copySync, removeSync } = require('fs-extra');
 const withCSS = require('@zeit/next-css');
+const { copySync, removeSync } = require('fs-extra');
+const { join } = require('path');
+const semver = require('semver');
+
+const { version } = require('./package.json');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
@@ -36,6 +39,11 @@ module.exports = withCSS({
         if (pathname.match(/unversioned/)) {
           return {};
         } else {
+          // hide versions greater than the package.json version number
+          const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
+          if (versionMatch && versionMatch[1] && semver.gt(versionMatch[1], version)) {
+            return {};
+          }
           return { [pathname]: page };
         }
       })
