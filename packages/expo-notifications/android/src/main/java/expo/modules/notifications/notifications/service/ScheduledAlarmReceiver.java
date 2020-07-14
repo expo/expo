@@ -17,6 +17,6 @@ public class ScheduledAlarmReceiver extends BroadcastReceiver {
   @SuppressLint("UnsafeProtectedBroadcastReceiver")
   @Override
   public void onReceive(Context context, Intent intent) {
-    ExpoNotificationSchedulerService.enqueueWork(context, intent);
+    NotificationSchedulerService.enqueueWork(context, intent);
   }
 }

@@ -47,10 +47,10 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  * and delegating work to specific methods.
  */
 public class NotificationsHelper {
-  public static final String NOTIFICATION_EVENT_ACTION = "expo.modules.notifications.NOTIFICATION_EVENT";
 
   // Known result codes
   public static final int SUCCESS_CODE = 0;
+  @SuppressWarnings("unused")
   public static final int EXCEPTION_OCCURRED_CODE = -1;
   public static final String EXCEPTION_KEY = "exception";
   public static final String NOTIFICATIONS_KEY = "notifications";
@@ -60,7 +60,6 @@ public class NotificationsHelper {
   public static final String INTERNAL_IDENTIFIER_TAG_KEY = "tag";
   public static final String INTERNAL_IDENTIFIER_ID_KEY = "id";
 
-  private static final int JOB_ID = NotificationsHelper.class.getName().hashCode();
   protected static final int ANDROID_NOTIFICATION_ID = 0;
 
   private Context mContext;
@@ -119,18 +118,18 @@ public class NotificationsHelper {
   private boolean mIsAppInForeground = false;
 
   /**
-   * A helper function for dispatching a "fetch all displayed notifications" command to the service.
+   * A function returning all presented notifications to receiver
    *
    * @param receiver A receiver to which send the notifications
    */
   public void getAllPresented(@Nullable ResultReceiver receiver) {
     Bundle bundle = new Bundle();
     bundle.putParcelableArrayList(NOTIFICATIONS_KEY, new ArrayList<>(getDisplayedNotifications()));
-    receiver.send(SUCCESS_CODE, bundle);
+    notifyReceiverSuccess(receiver, bundle);
   }
 
   /**
-   * A helper function for dispatching a "present notification" command to the service.
+   * A helper function for presenting a notification
    *
    * @param notification Notification to present
    * @param behavior     Allowed notification behavior
@@ -139,11 +138,11 @@ public class NotificationsHelper {
   public void presentNotification(@NonNull Notification notification, @Nullable NotificationBehavior behavior, @Nullable ResultReceiver receiver) {
     String tag = notification.getNotificationRequest().getIdentifier();
     NotificationManagerCompat.from(mContext).notify(tag, ANDROID_NOTIFICATION_ID, getNotification(mContext, notification, behavior));
-    notifyReceiverSuccess(receiver);
+    notifyReceiverSuccess(receiver, null);
   }
 
   /**
-   * A helper function for dispatching a "notification received" command to the service.
+   * A helper function for handling received notification
    *
    * @param notification Notification received
    */
@@ -152,7 +151,7 @@ public class NotificationsHelper {
   }
 
   /**
-   * A helper function for dispatching a "notification received" command to the service.
+   * A helper function for handling received notification
    *
    * @param notification Notification received
    * @param receiver     Result receiver
@@ -165,21 +164,21 @@ public class NotificationsHelper {
     } else {
       presentNotification(notification, null, null);
     }
-    notifyReceiverSuccess(receiver);
+    notifyReceiverSuccess(receiver, null);
   }
 
   /**
-   * A helper function for dispatching a "dismiss notification" command to the service.
+   * A helper function for dismissing notification.
    *
    * @param identifier Notification identifier
    */
   public void dismiss(@NonNull String identifier, @Nullable ResultReceiver receiver) {
     dismiss(identifier);
-    notifyReceiverSuccess(receiver);
+    notifyReceiverSuccess(receiver, null);
   }
 
   /**
-   * A helper function for dispatching a "dismiss selected notification" command to the service.
+   * A helper function for dismissing multiple notifications
    *
    * @param identifiers Notification identifiers
    */
@@ -187,6 +186,7 @@ public class NotificationsHelper {
     for (String identifier : identifiers) {
       dismiss(identifier);
     }
+    notifyReceiverSuccess(receiver, null);
   }
 
   private void dismiss(@NonNull String identifier) {
@@ -201,25 +201,25 @@ public class NotificationsHelper {
   }
 
   /**
-   * A helper function for dispatching a "dismiss all notifications" command to the service.
+   * A helper function for dispatching all notification
    */
   public void dismissAll(@Nullable ResultReceiver receiver) {
     NotificationManagerCompat.from(mContext).cancelAll();
-    notifyReceiverSuccess(receiver);
+    notifyReceiverSuccess(receiver, null);
   }
 
   /**
-   * A helper function for dispatching a "notifications dropped" command to the service.
+   * A helper function for dispatching dropped notification
    */
   public void dropped(@Nullable ResultReceiver receiver) {
     for (NotificationManager listener : getListeners()) {
       listener.onNotificationsDropped();
     }
-    notifyReceiverSuccess(receiver);
+    notifyReceiverSuccess(receiver, null);
   }
 
   /**
-   * A helper function for dispatching a "notification response received" command to the service.
+   * A helper function for handling notification's response
    *
    * @param response Notification response received
    */
@@ -234,18 +234,10 @@ public class NotificationsHelper {
     }
   }
 
-  protected static Uri.Builder getUriBuilder() {
-    return Uri.parse("expo-notifications://notifications/").buildUpon();
-  }
-
-  private void notifyReceiverSuccess(@Nullable ResultReceiver receiver) {
+  private void notifyReceiverSuccess(@Nullable ResultReceiver receiver, @Nullable Bundle data) {
     if (receiver != null) {
-      receiver.send(SUCCESS_CODE, null);
+      receiver.send(SUCCESS_CODE, data);
     }
-  }
-
-  protected static Uri.Builder getUriBuilderForIdentifier(String identifier) {
-    return getUriBuilder().appendPath(identifier);
   }
 
   /**
