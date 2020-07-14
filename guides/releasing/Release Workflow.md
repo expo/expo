@@ -62,6 +62,21 @@
 - Repeat **iOS** and **Android** specific steps if you want to delete more SDK versions.
 - Commit changes and create a pull request to `master` branch.
 
+## 0.2. Update vendored modules
+
+**Why:** Vendored modules often ship bugfixes and new features during our SDK cycles and we generally want these as part of our product, as well.
+
+**How:**
+
+- Wait until as close as possible to the branch cutoff to do this, as we generally want the most up-to-date versions of these libraries as possible.
+- Run `et update-vendored-module --list-outdated`.
+- Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
+  - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
+- Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
+- Make sure that each individual library update lands on `master` as a **separate commit** so that it's easy to revert later on if needed.
+
+- Finally, talk to @brentvatne or @tsapeta about any modules extracted from RN that we need to include community versions of.
+
 ## 0.2. Update schema on staging
 
 **Why:** Various tools we will use throughout this process, including `expo-cli`, depend on the versioned schema hosted by www. We need to create the schema for this new SDK version.
