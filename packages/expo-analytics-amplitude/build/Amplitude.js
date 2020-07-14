@@ -24,13 +24,13 @@ export function clearUserProperties() {
     }
     ExpoAmplitude.clearUserProperties();
 }
-export function logEventAsync(eventName) {
+export async function logEventAsync(eventName) {
     if (!ExpoAmplitude.logEventAsync) {
         throw new UnavailabilityError('Amplitude', 'logEventAsync');
     }
     return ExpoAmplitude.logEventAsync(eventName);
 }
-export function logEventWithPropertiesAsync(eventName, properties) {
+export async function logEventWithPropertiesAsync(eventName, properties) {
     if (!ExpoAmplitude.logEventWithPropertiesAsync) {
         throw new UnavailabilityError('Amplitude', 'logEventWithPropertiesAsync');
     }
@@ -51,16 +51,16 @@ export function setTrackingOptions(options) {
 // Keep to avoid an abrupt breaking change
 export function logEvent(eventName) {
     console.log('This method is deprecated. Please use Amplitude.logEventAsync instead (it is functionally the same).');
-    if (!ExpoAmplitude.logEvent) {
-        throw new UnavailabilityError('Amplitude', 'logEvent');
+    if (!ExpoAmplitude.logEventAsync) {
+        throw new UnavailabilityError('Amplitude', 'logEventAsync');
     }
-    return ExpoAmplitude.logEvent(eventName);
+    return ExpoAmplitude.logEventAsync(eventName);
 }
 export function logEventWithProperties(eventName, properties) {
     console.log('This method is deprecated. Please use Amplitude.logEventWithPropertiesAsync instead (it is functionally the same).');
-    if (!ExpoAmplitude.logEventWithProperties) {
-        throw new UnavailabilityError('Amplitude', 'logEventWithProperties');
+    if (!ExpoAmplitude.logEventWithPropertiesAsync) {
+        throw new UnavailabilityError('Amplitude', 'logEventWithPropertiesAsync');
     }
-    return ExpoAmplitude.logEventWithProperties(eventName, properties);
+    return ExpoAmplitude.logEventWithPropertiesAsync(eventName, properties);
 }
 //# sourceMappingURL=Amplitude.js.map

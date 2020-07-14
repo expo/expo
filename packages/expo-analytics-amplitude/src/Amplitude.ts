@@ -51,14 +51,14 @@ export function clearUserProperties() {
   ExpoAmplitude.clearUserProperties();
 }
 
-export function logEventAsync(eventName: string): Promise<void> {
+export async function logEventAsync(eventName: string): Promise<void> {
   if (!ExpoAmplitude.logEventAsync) {
     throw new UnavailabilityError('Amplitude', 'logEventAsync');
   }
   return ExpoAmplitude.logEventAsync(eventName);
 }
 
-export function logEventWithPropertiesAsync(
+export async function logEventWithPropertiesAsync(
   eventName: string,
   properties: { [name: string]: any }
 ): Promise<void> {
@@ -87,10 +87,10 @@ export function logEvent(eventName: string): Promise<void> {
   console.log(
     'This method is deprecated. Please use Amplitude.logEventAsync instead (it is functionally the same).'
   );
-  if (!ExpoAmplitude.logEvent) {
-    throw new UnavailabilityError('Amplitude', 'logEvent');
+  if (!ExpoAmplitude.logEventAsync) {
+    throw new UnavailabilityError('Amplitude', 'logEventAsync');
   }
-  return ExpoAmplitude.logEvent(eventName);
+  return ExpoAmplitude.logEventAsync(eventName);
 }
 
 export function logEventWithProperties(
@@ -100,8 +100,8 @@ export function logEventWithProperties(
   console.log(
     'This method is deprecated. Please use Amplitude.logEventWithPropertiesAsync instead (it is functionally the same).'
   );
-  if (!ExpoAmplitude.logEventWithProperties) {
-    throw new UnavailabilityError('Amplitude', 'logEventWithProperties');
+  if (!ExpoAmplitude.logEventWithPropertiesAsync) {
+    throw new UnavailabilityError('Amplitude', 'logEventWithPropertiesAsync');
   }
-  return ExpoAmplitude.logEventWithProperties(eventName, properties);
+  return ExpoAmplitude.logEventWithPropertiesAsync(eventName, properties);
 }
