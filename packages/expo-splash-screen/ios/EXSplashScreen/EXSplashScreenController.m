@@ -2,6 +2,7 @@
 
 #import <EXSplashScreen/EXSplashScreenController.h>
 #import <UMCore/UMDefines.h>
+#import <UMCore/UMUtilities.h>
 #import <React/RCTRootView.h>
 
 @interface EXSplashScreenController ()
@@ -41,26 +42,22 @@
 
 - (void)showWithCallback:(nullable void(^)(void))successCallback
 {
-  if (![NSThread isMainThread]) {
-    @throw [NSError errorWithDomain:@"EXSplashScreenDomain"
-                               code:0
-                           userInfo:@{
-                             NSLocalizedDescriptionKey: @"Showing SplashScreen must be performed from the main thread."
-                           }];
-  }
-  UIView *rootView = self.viewController.view;
-  self.splashScreenView.frame = rootView.bounds;
-  [rootView addSubview:self.splashScreenView];
-  if ([rootView isKindOfClass:RCTRootView.class]) {
-    ((RCTRootView *) rootView).loadingView = self.splashScreenView;
-    // defaults for these properties below are 0.25
-    ((RCTRootView *) rootView).loadingViewFadeDelay = 0.05;
-    ((RCTRootView *) rootView).loadingViewFadeDuration = 0.05;
-  }
-  self.splashScreenShown = YES;
-  if (successCallback) {
-    successCallback();
-  }
+  [UMUtilities performSynchronouslyOnMainThread:^{
+    UIView *rootView = self.viewController.view;
+    self.splashScreenView.frame = rootView.bounds;
+    [rootView addSubview:self.splashScreenView];
+    if ([rootView isKindOfClass:RCTRootView.class]) {
+      RCTRootView *rctRootView = (RCTRootView *) rootView;
+      rctRootView.loadingView = self.splashScreenView;
+      // defaults for these properties below are 0.25
+      rctRootView.loadingViewFadeDelay = 0.05;
+      rctRootView.loadingViewFadeDuration = 0.05;
+    }
+    self.splashScreenShown = YES;
+    if (successCallback) {
+      successCallback();
+    }
+  }];
 }
 
 - (void)preventAutoHideWithCallback:(void (^)(BOOL))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
