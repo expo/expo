@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed flicker in-between SplashScreen and ReactApp phases on iOS. ([#8739](https://github.com/expo/expo/pull/8739) by [@bbarthec](https://github.com/bbarthec))
+
 ## 0.3.1 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
