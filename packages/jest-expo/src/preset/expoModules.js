@@ -160,8 +160,8 @@ module.exports = {
         ],
         ExpoAmplitude: [
           { key: 0, argumentsCount: 1, name: 'setUserId' },
-          { key: 1, argumentsCount: 1, name: 'logEvent' },
-          { key: 2, argumentsCount: 2, name: 'logEventWithProperties' },
+          { key: 1, argumentsCount: 1, name: 'logEventAsync' },
+          { key: 2, argumentsCount: 2, name: 'logEventWithPropertiesAsync' },
           { key: 3, argumentsCount: 1, name: 'initialize' },
           { key: 4, argumentsCount: 1, name: 'setTrackingOptions' },
           { key: 5, argumentsCount: 1, name: 'setUserProperties' },
