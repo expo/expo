@@ -19,7 +19,8 @@ After that, you can integrate this in your project by using the `useFonts` hook 
 
 ```js
 import React from 'react';
-import { useFonts, Inter_900Black } from '@expo-google-fonts/inter';
+import { useFonts } from 'expo-font';
+import { Inter_900Black } from '@expo-google-fonts/inter';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -43,9 +44,9 @@ To create a new project including this example, run `npx create-react-native-app
 
 ```js
 import React from 'react';
-import { useFonts } from '@use-expo/font';
 import { Text, View } from 'react-native';
 import { AppLoading } from 'expo';
+import { useFonts } from 'expo-font';
 
 export default props => {
   let [fontsLoaded] = useFonts({
@@ -124,32 +125,19 @@ In general, your safest bets are just to use the system default which will usual
 
 ## Using the `useFonts` hook
 
-The example in this guide uses the `useFonts` hook from the [`use-expo`](https://github.com/byCedric/use-expo) hooks library by Cedric van Putten. It is the easiest way to load custom fonts in modern React.
-
-To set it up, first add the library to your project, either by
-
-```sh
-yarn add @use-expo/font
-```
-
-or
-
-```sh
-npm install --save @use-expo/font
-
-```
-
-Once the library is installed, you can import the hook with
+Starting from SDK 38, `expo-font` is shipped with the `useFonts` hook. It is the easiest way to load custom fonts in modern React.
 
 ```js
-import { useFonts } from '@use-expo/font';
+import { useFonts } from 'expo-font';
 ```
+
+> If you are running an older SDK, you can use the `useFonts` hook from the [`use-expo`](https://github.com/byCedric/use-expo) hooks library by Cedric van Putten.
 
 To use any hook in React, you need to use a function component.
 
-The `useFonts` hook returns a single item list containing a value telling you whether the font is loaded or not.
+The `useFonts` hook returns an item list containing a value telling you whether the font is loaded or not, and an error if encountered.
 
-```javascript
+```js
 [isLoaded] = useFonts({ ... });
 ```
 
