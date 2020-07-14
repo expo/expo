@@ -103,43 +103,6 @@ And on web, there are a number of generic font families that you can specify. Di
 
 In general, your safest bets are just to use the system default which will usually be an easy-to-read sans-serif font that the user of any system should be familiar with; or to use your own custom font so you have precise control over what the user will see.
 
-## Using the `useFonts` hook
-
-The example in this guide uses the `useFonts` hook from the [`use-expo`](https://github.com/byCedric/use-expo) hooks library by Cedric van Putten. It is the easiest way to load custom fonts in modern React.
-
-To set it up, first add the library to your project, either by
-
-```sh
-yarn add @use-expo/font
-```
-
-or
-
-```sh
-npm install --save @use-expo/font
-
-```
-
-Once the library is installed, you can import the hook with
-
-```js
-import { useFonts } from '@use-expo/font';
-```
-
-To use any hook in React, you need to use a function component.
-
-The `useFonts` hook returns a single item list containing a value telling you whether the font is loaded or not.
-
-```javascript
-[isLoaded] = useFonts({ ... });
-```
-
-It takes one argument which is a JS object mapping the names you want to give your fonts to the assets they point to.
-
-The assets can be either assest in your project, specified by `require('./path/to/your_asset')` or they can be URLs to font files on the web, like `'https://example.org/path/to/your_font.ttf'`.
-
-In general, it's best to use assets from your project when possible.
-
 ## Using the `<AppLoading />` component
 
 Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready.
@@ -168,14 +131,13 @@ To do this, just replace the `require('./assets/fonts/MyFont.otf')` with the URL
 
 Here is a minimal, complete example.
 
-<SnackInline label='Remote Font' dependencies={['@use-expo/font']}>
+<SnackInline label='Remote Font' dependencies={['expo-font']}>
 
 ```js
 import React from 'react';
-
-import { useFonts } from '@use-expo/font';
 import { Text, View } from 'react-native';
 import { AppLoading } from 'expo';
+import { useFonts } from 'expo-font';
 
 export default props => {
   let [fontsLoaded] = useFonts({
