@@ -59,9 +59,7 @@ Using the Submission Service is easy - it's just one additional flag: `expo uplo
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
 
-**Disclaimer:** This feature only works on macOS. If you want to upload an iOS app to the 
-
-App Store you will need to have access to a macOS device.
+**Disclaimer:** This feature only works on macOS. If you want to upload an iOS app to the App Store you will need to have access to a macOS device.
 
 ### Using expo-cli
 
