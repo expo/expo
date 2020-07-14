@@ -241,6 +241,10 @@ public class Exponent {
     mActivityResultListeners.add(listener);
   }
 
+  public void removeActivityResultListener(ActivityResultListener listener) {
+    mActivityResultListeners.remove(listener);
+  }
+
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     for (ActivityResultListener listener : mActivityResultListeners) {
       listener.onActivityResult(requestCode, resultCode, data);
