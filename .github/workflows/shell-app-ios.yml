@@ -99,5 +99,5 @@ jobs:
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: job,ref
-          author_name: iOS Shell App
+          fields: job,eventName
+          author_name: iOS Shell App (triggered by ${{ github.actor }})
