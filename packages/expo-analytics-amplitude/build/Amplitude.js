@@ -4,48 +4,63 @@ export function initialize(apiKey) {
     if (!ExpoAmplitude.initialize) {
         throw new UnavailabilityError('Amplitude', 'initialize');
     }
-    return ExpoAmplitude.initialize(apiKey);
+    ExpoAmplitude.initialize(apiKey);
 }
 export function setUserId(userId) {
     if (!ExpoAmplitude.setUserId) {
         throw new UnavailabilityError('Amplitude', 'setUserId');
     }
-    return ExpoAmplitude.setUserId(userId);
+    ExpoAmplitude.setUserId(userId);
 }
 export function setUserProperties(userProperties) {
     if (!ExpoAmplitude.setUserProperties) {
         throw new UnavailabilityError('Amplitude', 'setUserProperties');
     }
-    return ExpoAmplitude.setUserProperties(userProperties);
+    ExpoAmplitude.setUserProperties(userProperties);
 }
 export function clearUserProperties() {
     if (!ExpoAmplitude.clearUserProperties) {
         throw new UnavailabilityError('Amplitude', 'clearUserProperties');
     }
-    return ExpoAmplitude.clearUserProperties();
+    ExpoAmplitude.clearUserProperties();
 }
-export function logEvent(eventName) {
-    if (!ExpoAmplitude.logEvent) {
-        throw new UnavailabilityError('Amplitude', 'logEvent');
+export function logEventAsync(eventName) {
+    if (!ExpoAmplitude.logEventAsync) {
+        throw new UnavailabilityError('Amplitude', 'logEventAsync');
     }
-    return ExpoAmplitude.logEvent(eventName);
+    return ExpoAmplitude.logEventAsync(eventName);
 }
-export function logEventWithProperties(eventName, properties) {
-    if (!ExpoAmplitude.logEventWithProperties) {
-        throw new UnavailabilityError('Amplitude', 'logEventWithProperties');
+export function logEventWithPropertiesAsync(eventName, properties) {
+    if (!ExpoAmplitude.logEventWithPropertiesAsync) {
+        throw new UnavailabilityError('Amplitude', 'logEventWithPropertiesAsync');
     }
-    return ExpoAmplitude.logEventWithProperties(eventName, properties);
+    return ExpoAmplitude.logEventWithPropertiesAsync(eventName, properties);
 }
 export function setGroup(groupType, groupNames) {
     if (!ExpoAmplitude.setGroup) {
         throw new UnavailabilityError('Amplitude', 'setGroup');
     }
-    return ExpoAmplitude.setGroup(groupType, groupNames);
+    ExpoAmplitude.setGroup(groupType, groupNames);
 }
 export function setTrackingOptions(options) {
     if (!ExpoAmplitude.setTrackingOptions) {
         throw new UnavailabilityError('Amplitude', 'setTrackingOptions');
     }
     return ExpoAmplitude.setTrackingOptions(options);
+}
+// Keep to avoid an abrupt breaking change
+export function logEvent(eventName) {
+    console.log('This method is deprecated. Please use Amplitude.logEventAsync instead (it is functionally the same).');
+    if (!ExpoAmplitude.logEvent) {
+        throw new UnavailabilityError('Amplitude', 'logEvent');
+    }
+    return ExpoAmplitude.logEvent(eventName);
+}
+export function logEventWithProperties(eventName, properties) {
+    console.log('This method is deprecated. Please use Amplitude.logEventWithPropertiesAsync instead (it is functionally the same).');
+    if (!ExpoAmplitude.logEventWithProperties) {
+        throw new UnavailabilityError('Amplitude', 'logEventWithProperties');
+    }
+    return ExpoAmplitude.logEventWithProperties(eventName, properties);
 }
 //# sourceMappingURL=Amplitude.js.map

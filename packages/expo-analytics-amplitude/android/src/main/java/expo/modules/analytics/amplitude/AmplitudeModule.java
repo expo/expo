@@ -73,7 +73,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void logEvent(final String eventName, Promise promise) {
+  public void logEventAsync(final String eventName, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
@@ -83,7 +83,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void logEventWithProperties(final String eventName, final Map<String, Object> properties, Promise promise) {
+  public void logEventWithPropertiesAsync(final String eventName, final Map<String, Object> properties, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }

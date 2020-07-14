@@ -52,8 +52,8 @@ UM_EXPORT_METHOD_AS(clearUserProperties,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logEvent,
-                    logEvent:(NSString *)eventName
+UM_EXPORT_METHOD_AS(logEventAsync,
+                    logEventAsync:(NSString *)eventName
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -61,8 +61,8 @@ UM_EXPORT_METHOD_AS(logEvent,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logEventWithProperties,
-                    logEventWithProperties:(NSString *)eventName
+UM_EXPORT_METHOD_AS(logEventWithPropertiesAsync,
+                    logEventWithPropertiesAsync:(NSString *)eventName
                     withProperties:(NSDictionary *)properties
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
