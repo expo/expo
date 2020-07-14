@@ -7,13 +7,13 @@ import com.facebook.react.bridge.ReactContext;
 import org.unimodules.adapters.react.services.UIManagerModuleWrapper;
 import org.unimodules.core.interfaces.ActivityEventListener;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import host.exp.exponent.ActivityResultListener;
 import host.exp.expoview.Exponent;
 
 public class ScopedUIManagerModuleWrapper extends UIManagerModuleWrapper implements ActivityResultListener {
-  private ArrayList<ActivityEventListener> mActivityEventListeners = new ArrayList<>();
+  private CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners = new CopyOnWriteArraySet<>();
 
   public ScopedUIManagerModuleWrapper(ReactContext reactContext) {
     super(reactContext);
