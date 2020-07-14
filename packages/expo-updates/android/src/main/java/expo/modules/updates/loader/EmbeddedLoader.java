@@ -75,6 +75,7 @@ public class EmbeddedLoader {
         sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(context, new JSONObject(manifestString));
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
+        // TODO: we don't want to throw in the Expo client case, but do want to throw elsewhere
         throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.getMessage());
       }
     }

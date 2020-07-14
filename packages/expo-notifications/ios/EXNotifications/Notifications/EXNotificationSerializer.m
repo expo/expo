@@ -37,12 +37,12 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
-  serializedRequest[@"content"] = [self serializedNotificationContent:request.content];
+  serializedRequest[@"content"] = [self serializedNotificationContent:request.content isRemote:[request.trigger isKindOfClass:[UNPushNotificationTrigger class]]];
   serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request.trigger];
   return serializedRequest;
 }
 
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content
++ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content isRemote:(BOOL)isRemote
 {
   NSMutableDictionary *serializedContent = [NSMutableDictionary dictionary];
   serializedContent[@"title"] = content.title ?: [NSNull null];
@@ -51,7 +51,8 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedContent[@"badge"] = content.badge ?: [NSNull null];
   serializedContent[@"sound"] = [self serializedNotificationSound:content.sound] ?: [NSNull null];
   serializedContent[@"launchImageName"] = content.launchImageName ?: [NSNull null];
-  serializedContent[@"data"] = content.userInfo ?: [NSNull null];
+  NSDictionary *data = isRemote ? [self flatDataDictionary:content.userInfo] : content.userInfo;
+  serializedContent[@"data"] = data ?: [NSNull null];
   serializedContent[@"attachments"] = [self serializedNotificationAttachments:content.attachments];
 
   if (@available(iOS 12.0, *)) {
@@ -66,6 +67,18 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   }
 
   return serializedContent;
+}
+
++ (NSDictionary * _Nullable)flatDataDictionary:(NSDictionary * _Nullable)data
+{
+  if (data[@"body"] && data[@"aps"]) {
+    NSMutableDictionary *result = [data mutableCopy];
+    [result addEntriesFromDictionary:data[@"body"]];
+    [result removeObjectForKey:@"body"];
+    return result;
+  }
+  
+  return data;
 }
 
 + (NSString *)serializedNotificationSound:(UNNotificationSound *)sound

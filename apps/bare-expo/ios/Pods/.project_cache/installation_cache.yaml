@@ -934,6 +934,67 @@ CACHE_KEYS:
     PROJECT_NAME: EXTaskManager
     SPECS:
       - EXTaskManager (8.3.0)
+  EXUpdates:
+    BUILD_SETTINGS_CHECKSUM:
+      EXUpdates:
+        :debug: 86c6b68fdb0958c31d7a22818bdfddf4
+        :release: 86c6b68fdb0958c31d7a22818bdfddf4
+      EXUpdates/Tests:
+        :debug: ab27ba0035ff382128e04e0f627d09d5
+        :release: ab27ba0035ff382128e04e0f627d09d5
+    CHECKSUM: 9dd77b2e9e33d4347ae8ca81cc771cd16170e5af
+    FILES:
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncher.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherWithDatabase.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherWithDatabase.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicy.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicyNewest.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicyNewest.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader+Private.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesCrypto.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesCrypto.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesEmbeddedAppLoader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesEmbeddedAppLoader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesFileDownloader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesFileDownloader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesRemoteAppLoader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesRemoteAppLoader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesDatabase.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesDatabase.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesReaper.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesReaper.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesAppController.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesAppController.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesBareUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesBareUpdate.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesLegacyUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesLegacyUpdate.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesNewUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesNewUpdate.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate+Private.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.m"
+      - "../../../../packages/expo-updates/ios/Tests/Tests.m"
+    PROJECT_NAME: EXUpdates
+    SPECS:
+      - EXUpdates (0.2.11)
+      - EXUpdates/Tests (0.2.11)
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
       EXVideoThumbnails:
@@ -1162,8 +1223,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: f8741109a9147bd48706d513b5136865
-      Release: f8741109a9147bd48706d513b5136865
+      Debug: 4da8014d06095f02dfdfffa33770d92a
+      Release: 4da8014d06095f02dfdfffa33770d92a
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1173,8 +1234,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 6c73477cd02b14d1c430deb413f7a760
-      Release: 6c73477cd02b14d1c430deb413f7a760
+      Debug: e28b7da4a40cba4caa89da79c2c6d7d4
+      Release: e28b7da4a40cba4caa89da79c2c6d7d4
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

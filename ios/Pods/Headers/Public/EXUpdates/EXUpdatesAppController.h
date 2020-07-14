@@ -1,0 +1,1 @@
+../../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesAppController.h

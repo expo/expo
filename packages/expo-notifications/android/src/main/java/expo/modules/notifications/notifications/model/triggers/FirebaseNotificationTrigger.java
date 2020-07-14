@@ -1,10 +1,12 @@
 package expo.modules.notifications.notifications.model.triggers;
 
+import android.os.Build;
 import android.os.Parcel;
 
 import com.google.firebase.messaging.RemoteMessage;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 /**
@@ -49,6 +51,7 @@ public class FirebaseNotificationTrigger implements NotificationTrigger {
 
   @Nullable
   @Override
+  @RequiresApi(api = Build.VERSION_CODES.O)
   public String getNotificationChannel() {
     if (getRemoteMessage().getData().containsKey("channelId")) {
       return getRemoteMessage().getData().get("channelId");

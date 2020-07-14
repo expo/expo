@@ -1,0 +1,1 @@
+../../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesEmbeddedAppLoader.h
