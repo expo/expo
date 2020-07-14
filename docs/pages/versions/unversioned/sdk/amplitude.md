@@ -62,7 +62,7 @@ Set properties for the current user. See [here for details](https://amplitude.ze
 
 Clear properties set by [`Amplitude.setUserProperties()`](#expoamplitudesetuserproperties 'Amplitude.setUserProperties').
 
-### `Amplitude.logEvent(eventName)`
+### `Amplitude.logEventAsync(eventName)`
 
 Log an event to Amplitude. For more information about what kind of events to track, [see here](https://amplitude.zendesk.com/hc/en-us/articles/206404698-Step-3-Track-Events-and-Understand-the-Actions-Users-Take).
 
@@ -70,7 +70,7 @@ Log an event to Amplitude. For more information about what kind of events to tra
 
 - **eventName (_string_)** -- The event name.
 
-### `Amplitude.logEventWithProperties(eventName, properties)`
+### `Amplitude.logEventWithPropertiesAsync(eventName, properties)`
 
 Log an event to Amplitude with custom properties. For more information about what kind of events to track, [see here](https://amplitude.zendesk.com/hc/en-us/articles/206404698-Step-3-Track-Events-and-Understand-the-Actions-Users-Take).
 
@@ -99,7 +99,7 @@ By default the Amplitude SDK will track several user properties such as carrier 
 - **trackingOptions (object)** -- Options object for what should not be tracked. The table below describes what properties the object may contain. All properties are expected to be booleans. For example, passing `disableCarrier: true` disables tracking the device's carrier.
 
 | Property                    | Description                                                                |
-|-----------------------------|----------------------------------------------------------------------------|
+| --------------------------- | -------------------------------------------------------------------------- |
 | `disableCarrier`            | Disable tracking of the device's carrier.                                  |
 | `disableCity`               | Disable tracking of the user's city.                                       |
 | `disableCountry`            | Disable tracking of the user's country.                                    |
