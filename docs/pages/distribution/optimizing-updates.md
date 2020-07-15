@@ -14,7 +14,7 @@ title: Optimizing Updates
   - [Self-hosting Your Updates](#self-hosting-your-updates)
 - [A Glimpse at the Future](#a-glimpse-at-the-future)
 
-## What's in an Update?
+## What's in an update?
 
 An update for an Expo app comprises the JavaScript, manifest, images, and other assets that a compatible Expo client app can download and run.
 
