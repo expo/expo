@@ -17,7 +17,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Configuration
 
-In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
+In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)) is added automatically.
 
 ## API
 
