@@ -1,5 +1,5 @@
 ---
-title: App signing
+title: App Signing
 ---
 
 Expo automates the process of signing your app for iOS and Android, but in both cases you can choose to provide your own overrides. Both `expo build:ios` and
