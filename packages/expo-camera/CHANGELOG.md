@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add default camera permission on Android. ([#9224](https://github.com/expo/expo/pull/9224) by [@bycedric](https://github.com/bycedric))
+
 ### 🎉 New features
 
 - Remove `fbjs` dependency
