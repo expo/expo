@@ -58,7 +58,7 @@ Other image optimizers are lossy, which means the optimized image is different t
 
 Large npm dependencies can contribute greatly to the size of your code in an update. While dependencies like `expo`, `react`, and several more packages are necessary and very useful, sometimes a dependency can be surprisingly large even if you use only one method from it, or you might have multiple versions of the same dependency in your JS bundle. [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer) works for Expo apps as well as bare React Native apps and shows a detailed view of the files in your JS bundle.
 
-### Download Files when Needed
+### Download files when needed
 
 Sometimes apps include files that they don't need right away when the app launches In these scenarios, you can upload these extra files to your own servers and reference the URLs from your application code via `fetch(url)` or `<Image source={{ uri: url }}>`, for example. By downloading these files on demand, you can move them out of the update and reduce its size.
 
