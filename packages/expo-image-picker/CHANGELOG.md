@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add camera and camera roll permissions on Android. ([#9230](https://github.com/expo/expo/pull/9230) by [@bycedric](https://github.com/bycedric))
+
 ### 🎉 New features
 
 - Added support for the limited `CAMERA_ROLL` permission on iOS 14. ([#9423](https://github.com/expo/expo/pull/9423) by [@lukmccall](https://github.com/lukmccall))
