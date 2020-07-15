@@ -4,7 +4,7 @@ title: Optimizing Updates
 
 ## Table of contents
 
-- [What's in an Update?](#whats-in-an-update)
+- [What's in an update?](#whats-in-an-update)
   - [Estimating the Size of an Update](#estimating-the-size-of-an-update)
 - [Limits on Expo's Updates Service](#limits-on-expos-updates-service)
   - [Optimize Images](#optimize-images)
