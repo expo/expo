@@ -18,7 +18,7 @@ title: Optimizing Updates
 
 An update for an Expo app comprises the JavaScript, manifest, images, and other assets that a compatible Expo client app can download and run.
 
-On Android and iOS, the standalone apps you submit to the app stores are examples of client apps that run your updates. On the web, the web browser is the client app that runs updates. In fact, on the web, Expo updates are just web applications!
+On Android and iOS, the standalone apps you submit to the app stores are examples of client apps that run your updates. On the web, the web browser is the client app that runs updates. In fact, on the web, Expo updates are just web applications.
 
 Updates are embedded in standalone apps and delivered over the internet. Because downloading an update over the internet uses bandwidth and takes time, one of the most effective ways to optimize an update is to make it smaller. This guide covers some ways to reduce the sizes of your updates.
 
