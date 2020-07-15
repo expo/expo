@@ -250,12 +250,11 @@ public class LocationHelpers {
       case LocationModule.ACCURACY_HIGH:
         return LocationRequest.PRIORITY_HIGH_ACCURACY;
       case LocationModule.ACCURACY_BALANCED:
+      case LocationModule.ACCURACY_LOW:
       default:
         return LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-      case LocationModule.ACCURACY_LOW:
-        return LocationRequest.PRIORITY_LOW_POWER;
       case LocationModule.ACCURACY_LOWEST:
-        return LocationRequest.PRIORITY_NO_POWER;
+        return LocationRequest.PRIORITY_LOW_POWER;
     }
   }
 
