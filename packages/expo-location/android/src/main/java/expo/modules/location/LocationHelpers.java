@@ -42,6 +42,9 @@ public class LocationHelpers {
   }
 
   public static <BundleType extends BaseBundle> BundleType locationToBundle(Location location, Class<BundleType> bundleTypeClass) {
+    if (location == null) {
+      return null;
+    }
     try {
       BundleType map = bundleTypeClass.newInstance();
       BundleType coords = locationToCoordsBundle(location, bundleTypeClass);
@@ -176,6 +179,20 @@ public class LocationHelpers {
         promise.reject(exception);
       }
     });
+  }
+
+  /**
+   * Checks whether given location didn't exceed given `maxAge` and fits in the required accuracy.
+   */
+  public static boolean isLocationValid(Location location, final Map<String, Object> options) {
+    if (location == null) {
+      return false;
+    }
+    double maxAge = options.containsKey("maxAge") ? (double) options.get("maxAge") : Double.MAX_VALUE;
+    double requiredAccuracy = options.containsKey("requiredAccuracy") ? (double) options.get("requiredAccuracy") : Double.MAX_VALUE;
+    double timeDiff = System.currentTimeMillis() - location.getTime();
+
+    return timeDiff <= maxAge && location.getAccuracy() <= requiredAccuracy;
   }
 
   //endregion

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 import * as Location from 'expo-location';
 ```
 
-<TableOfContentSection title='Methods' contents={['Location.hasServicesEnabledAsync()', 'Location.requestPermissionsAsync()', 'Location.getPermissionsAsync()', 'Location.getLastKnownPositionAsync()', 'Location.getCurrentPositionAsync(options)', 'Location.watchPositionAsync(options, callback)', 'Location.getProviderStatusAsync()', 'Location.enableNetworkProviderAsync()', 'Location.getHeadingAsync()', 'Location.watchHeadingAsync(callback)', 'Location.geocodeAsync(address)', 'Location.reverseGeocodeAsync(location)', 'Location.setApiKey(apiKey)', 'Location.installWebGeolocationPolyfill()']} />
+<TableOfContentSection title='Methods' contents={['Location.hasServicesEnabledAsync()', 'Location.requestPermissionsAsync()', 'Location.getPermissionsAsync()', 'Location.getLastKnownPositionAsync(options)', 'Location.getCurrentPositionAsync(options)', 'Location.watchPositionAsync(options, callback)', 'Location.getProviderStatusAsync()', 'Location.enableNetworkProviderAsync()', 'Location.getHeadingAsync()', 'Location.watchHeadingAsync(callback)', 'Location.geocodeAsync(address)', 'Location.reverseGeocodeAsync(location)', 'Location.setApiKey(apiKey)', 'Location.installWebGeolocationPolyfill()']} />
 
 <TableOfContentSection title='Background Location Methods' contents={['Location.startLocationUpdatesAsync(taskName, options)', 'Location.stopLocationUpdatesAsync(taskName)', 'Location.hasStartedLocationUpdatesAsync(taskName)']} />
 
@@ -124,19 +124,25 @@ Checks user's permissions for accessing location. Alias for `Permissions.getAsyn
 
 A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
-### `Location.getLastKnownPositionAsync()`
+### `Location.getLastKnownPositionAsync(options)`
 
-Get the last known position of the device.
+Gets the last known position of the device. It's considered to be faster than `getCurrentPositionAsync` as it doesn't request for the current location, but keep in mind the returned location may not be up-to-date.
+
+#### Arguments
+
+- **options (_object_)** -- A map of options:
+  - **maxAge (_number_)** -- A number of miliseconds after which the last known location starts to be invalid and thus `null` will be returned.
+  - **requiredAccuracy (_number_)** - The maximum radius of uncertainty for the location, measured in meters. If the last known location has
 
 #### Returns
 
-Returns a promise resolving to an object representing [Location](#type-location) type.
+Returns a promise resolving to an object representing [Location](#type-location) type or `null` if it's not available or doesn't match given requirements such as maximum age or required accuracy.
 
 ### `Location.getCurrentPositionAsync(options)`
 
-Get the current position of the device.
+Requests for one-time delivery of the user's current location. Depending on given `accuracy` option it may take some time to resolve, especially when you're inside a building.
 
-> **Note:** calling it on iOS causes the location manager to obtain a location fix which may take several seconds. Consider using [Location.getLastKnownPositionAsync](#locationgetlastknownpositionasync) if you expect to get a quick response and high accuracy is not required.
+> **Note:** calling it on iOS causes the location manager to obtain a location fix which may take several seconds. Consider using [Location.getLastKnownPositionAsync](#locationgetlastknownpositionasyncoptions) if you expect to get a quick response and high accuracy is not required.
 
 #### Arguments
 

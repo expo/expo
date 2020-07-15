@@ -32,8 +32,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
@@ -61,9 +59,6 @@ import expo.modules.location.exceptions.LocationUnauthorizedException;
 import expo.modules.location.exceptions.LocationUnavailableException;
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer;
 import expo.modules.location.taskConsumers.LocationTaskConsumer;
-import io.nlopez.smartlocation.OnGeocodingListener;
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.geocoding.utils.LocationAddress;
 import io.nlopez.smartlocation.location.config.LocationParams;
@@ -91,9 +86,14 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   public static final int GEOFENCING_REGION_STATE_INSIDE = 1;
   public static final int GEOFENCING_REGION_STATE_OUTSIDE = 2;
 
+  public interface OnResultListener {
+    void onResult(Location location);
+  }
+
   private Context mContext;
   private SensorManager mSensorManager;
   private GeomagneticField mGeofield;
+  private FusedLocationProviderClient mLocationProvider;
 
   private Map<Integer, LocationCallback> mLocationCallbacks = new HashMap<>();
   private Map<Integer, LocationRequest> mLocationRequests = new HashMap<>();
@@ -168,23 +168,29 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
+  /**
+   * Resolves to the last known position if it is available and matches given requirements or null otherwise.
+   */
   @ExpoMethod
-  public void getLastKnownPositionAsync(final Promise promise) {
+  public void getLastKnownPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Check for permissions
     if (isMissingPermissions()) {
       promise.reject(new LocationUnauthorizedException());
       return;
     }
-
-    getLastKnownLocation(null, location -> {
-      if (location == null) {
-        promise.reject("E_LAST_KNOWN_LOCATION_NOT_FOUND", "Last known location not found.", null);
-        return;
+    getLastKnownLocation(location -> {
+      if (LocationHelpers.isLocationValid(location, options)) {
+        promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
+      } else {
+        promise.resolve(null);
       }
-      promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
     });
   }
 
+  /**
+   * Requests for the current position. Depending on given accuracy, it may take some time to resolve.
+   * If you don't need an up-to-date location see `getLastKnownPosition`.
+   */
   @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
@@ -215,6 +221,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   public void getProviderStatusAsync(final Promise promise) {
     if (mContext == null) {
       promise.reject("E_CONTEXT_UNAVAILABLE", "Context is not available");
+      return;
     }
 
     LocationState state = SmartLocation.with(mContext).location().state();
@@ -255,14 +262,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       LocationHelpers.requestContinuousUpdates(this, locationRequest, watchId, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-        @Override
-        public void onResult(int resultCode) {
-          if (resultCode == Activity.RESULT_OK) {
-            LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest, watchId, promise);
-          } else {
-            promise.reject(new LocationSettingsUnsatisfiedException());
-          }
+      addPendingLocationRequest(locationRequest, resultCode -> {
+        if (resultCode == Activity.RESULT_OK) {
+          LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest, watchId, promise);
+        } else {
+          promise.reject(new LocationSettingsUnsatisfiedException());
         }
       });
     }
@@ -299,22 +303,19 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
     if (Geocoder.isPresent()) {
       SmartLocation.with(mContext).geocoding()
-          .direct(address, new OnGeocodingListener() {
-            @Override
-            public void onLocationResolved(String s, List<LocationAddress> list) {
-              List<Bundle> results = new ArrayList<>(list.size());
+          .direct(address, (s, list) -> {
+            List<Bundle> results = new ArrayList<>(list.size());
 
-              for (LocationAddress locationAddress : list) {
-                Bundle coords = LocationHelpers.locationToCoordsBundle(locationAddress.getLocation(), Bundle.class);
+            for (LocationAddress locationAddress : list) {
+              Bundle coords = LocationHelpers.locationToCoordsBundle(locationAddress.getLocation(), Bundle.class);
 
-                if (coords != null) {
-                  results.add(coords);
-                }
+              if (coords != null) {
+                results.add(coords);
               }
-
-              SmartLocation.with(mContext).geocoding().stop();
-              promise.resolve(results);
             }
+
+            SmartLocation.with(mContext).geocoding().stop();
+            promise.resolve(results);
           });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
@@ -339,18 +340,15 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
     if (Geocoder.isPresent()) {
       SmartLocation.with(mContext).geocoding()
-          .reverse(location, new OnReverseGeocodingListener() {
-            @Override
-            public void onAddressResolved(Location original, List<Address> addresses) {
-              List<Bundle> results = new ArrayList<>(addresses.size());
+          .reverse(location, (original, addresses) -> {
+            List<Bundle> results = new ArrayList<>(addresses.size());
 
-              for (Address address : addresses) {
-                results.add(LocationHelpers.addressToBundle(address));
-              }
-
-              SmartLocation.with(mContext).geocoding().stop();
-              promise.resolve(results);
+            for (Address address : addresses) {
+              results.add(LocationHelpers.addressToBundle(address));
             }
+
+            SmartLocation.with(mContext).geocoding().stop();
+            promise.resolve(results);
           });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
@@ -364,16 +362,13 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<String, Object>());
+    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<>());
 
-    addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-      @Override
-      public void onResult(int resultCode) {
-        if (resultCode == Activity.RESULT_OK) {
-          promise.resolve(null);
-        } else {
-          promise.reject(new LocationSettingsUnsatisfiedException());
-        }
+    addPendingLocationRequest(locationRequest, resultCode -> {
+      if (resultCode == Activity.RESULT_OK) {
+        promise.resolve(null);
+      } else {
+        promise.reject(new LocationSettingsUnsatisfiedException());
       }
     });
   }
@@ -444,7 +439,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   //region public methods
 
   void requestLocationUpdates(final LocationRequest locationRequest, Integer requestId, final LocationRequestCallbacks callbacks) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+    final FusedLocationProviderClient locationProvider = getLocationProvider();
 
     LocationCallback locationCallback = new LocationCallback() {
       @Override
@@ -471,7 +466,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     try {
-      locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+      locationProvider.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
       callbacks.onRequestSuccess();
     } catch (SecurityException e) {
       callbacks.onRequestFailed(new LocationRequestRejectedException(e));
@@ -480,26 +475,34 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   //region private methods
 
+  /**
+   * Checks whether all required permissions have been granted by the user.
+   */
   private boolean isMissingPermissions() {
     return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
-  private void getLastKnownLocation(final Double maximumAge, final OnSuccessListener<Location> callback) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+  /**
+   * Helper method that lazy-loads the location provider for the context that the module was created.
+   */
+  private FusedLocationProviderClient getLocationProvider() {
+    if (mLocationProvider == null) {
+      mLocationProvider = LocationServices.getFusedLocationProviderClient(mContext);
+    }
+    return mLocationProvider;
+  }
 
+  /**
+   * Gets the best most recent location found by the provider.
+   */
+  private void getLastKnownLocation(final OnResultListener callback) {
     try {
-      locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-          if (location != null && (maximumAge == null || System.currentTimeMillis() - location.getTime() < maximumAge)) {
-            callback.onSuccess(location);
-          } else {
-            callback.onSuccess(null);
-          }
-        }
-      });
+      getLocationProvider().getLastLocation()
+        .addOnSuccessListener(location -> callback.onResult(location))
+        .addOnCanceledListener(() -> callback.onResult(null))
+        .addOnFailureListener(exception -> callback.onResult(null));
     } catch (SecurityException e) {
-      callback.onSuccess(null);
+      callback.onResult(null);
     }
   }
 
@@ -513,6 +516,9 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
+  /**
+   * Triggers system's dialog to ask the user to enable settings required for given location request.
+   */
   private void resolveUserSettingsForRequest(LocationRequest locationRequest) {
     final Activity activity = mActivityProvider.getCurrentActivity();
 
@@ -526,54 +532,43 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     SettingsClient client = LocationServices.getSettingsClient(mContext);
     Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-    task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
-      @Override
-      public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-        // All location settings requirements are satisfied.
-        executePendingRequests(Activity.RESULT_OK);
-      }
+    task.addOnSuccessListener(locationSettingsResponse -> {
+      // All location settings requirements are satisfied.
+      executePendingRequests(Activity.RESULT_OK);
     });
 
-    task.addOnFailureListener(new OnFailureListener() {
-      @Override
-      public void onFailure(@NonNull Exception e) {
-        int statusCode = ((ApiException) e).getStatusCode();
+    task.addOnFailureListener(e -> {
+      int statusCode = ((ApiException) e).getStatusCode();
 
-        switch (statusCode) {
-          case CommonStatusCodes.RESOLUTION_REQUIRED:
-            // Location settings are not satisfied, but this can be fixed by showing the user a dialog.
-            // Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().
+      if (statusCode == CommonStatusCodes.RESOLUTION_REQUIRED) {
+        // Location settings are not satisfied, but this can be fixed by showing the user a dialog.
+        // Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().
 
-            try {
-              ResolvableApiException resolvable = (ResolvableApiException) e;
+        try {
+          ResolvableApiException resolvable = (ResolvableApiException) e;
 
-              mUIManager.registerActivityEventListener(LocationModule.this);
-              resolvable.startResolutionForResult(activity, CHECK_SETTINGS_REQUEST_CODE);
-            } catch (IntentSender.SendIntentException sendEx) {
-              // Ignore the error.
-              executePendingRequests(Activity.RESULT_CANCELED);
-            }
-            break;
-          default:
-            // Location settings are not satisfied. However, we have no way to fix the settings so we won't show the dialog.
-            executePendingRequests(Activity.RESULT_CANCELED);
-            break;
+          mUIManager.registerActivityEventListener(LocationModule.this);
+          resolvable.startResolutionForResult(activity, CHECK_SETTINGS_REQUEST_CODE);
+        } catch (IntentSender.SendIntentException sendEx) {
+          // Ignore the error.
+          executePendingRequests(Activity.RESULT_CANCELED);
         }
+      } else {// Location settings are not satisfied. However, we have no way to fix the settings so we won't show the dialog.
+        executePendingRequests(Activity.RESULT_CANCELED);
       }
     });
   }
 
   private void pauseLocationUpdatesForRequest(Integer requestId) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+    LocationCallback locationCallback = mLocationCallbacks.get(requestId);
 
-    if (mLocationCallbacks.containsKey(requestId)) {
-      LocationCallback locationCallback = mLocationCallbacks.get(requestId);
-      locationClient.removeLocationUpdates(locationCallback);
+    if (locationCallback != null) {
+      getLocationProvider().removeLocationUpdates(locationCallback);
     }
   }
 
   private void resumeLocationUpdates() {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+    final FusedLocationProviderClient locationClient = getLocationProvider();
 
     for (Integer requestId : mLocationCallbacks.keySet()) {
       LocationCallback locationCallback = mLocationCallbacks.get(requestId);
@@ -622,16 +617,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
           (float) currLoc.getAltitude(),
           System.currentTimeMillis());
     } else {
-      locationControl.start(new OnLocationUpdatedListener() {
-        @Override
-        public void onLocationUpdated(Location location) {
-          mGeofield = new GeomagneticField(
-              (float) location.getLatitude(),
-              (float) location.getLongitude(),
-              (float) location.getAltitude(),
-              System.currentTimeMillis());
-        }
-      });
+      locationControl.start(location -> mGeofield = new GeomagneticField(
+          (float) location.getLatitude(),
+          (float) location.getLongitude(),
+          (float) location.getAltitude(),
+          System.currentTimeMillis()));
     }
     mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
         SensorManager.SENSOR_DELAY_NORMAL);

@@ -161,51 +161,20 @@ UM_EXPORT_METHOD_AS(watchPositionImplAsync,
 }
 
 UM_EXPORT_METHOD_AS(getLastKnownPositionAsync,
-                    getLastKnownPositionAsync:(UMPromiseResolveBlock)resolve
+                    getLastKnownPositionWithOptions:(NSDictionary *)options
+                    resolve:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![self checkPermissions:reject]) {
     return;
   }
-  
-  UM_WEAKIFY(self)
-  __block CLLocationManager *lockMgr = [self locationManagerWithOptions:nil];
-  __block EXLocationDelegate *delegate;
- 
-  delegate = [[EXLocationDelegate alloc] initWithId:nil withLocMgr:lockMgr onUpdateLocations:^(NSArray<CLLocation *> * _Nonnull locations) {
-    if (lockMgr) {
-      [lockMgr stopUpdatingLocation];
-      lockMgr = nil;
-    }
-    
-    if (delegate) {
-      if (locations.lastObject) {
-        resolve([EXLocation exportLocation:locations.lastObject]);
-      } else {
-        reject(@"E_LAST_KNOWN_LOCATION_NOT_FOUND", @"Last known location not found.", nil);
-      }
-      
-      UM_ENSURE_STRONGIFY(self)
-      [self.retainedDelegates removeObject:delegate];
-      delegate = nil;
-    }
-  } onUpdateHeadings:nil onError:^(NSError *error) {
-    if (lockMgr) {
-      [lockMgr stopUpdatingLocation];
-      lockMgr = nil;
-    }
-    
-    reject(@"E_LOCATION_UNAVAILABLE", [@"Cannot obtain last known location: " stringByAppendingString:error.description], nil);
-    
-    UM_ENSURE_STRONGIFY(self)
-    if (delegate) {
-      [self.retainedDelegates removeObject:delegate];
-      delegate = nil;
-    }
-  }];
-  
-  lockMgr.delegate = delegate;
-  [lockMgr startUpdatingLocation];
+  CLLocation *location = [[self locationManagerWithOptions:nil] location];
+
+  if ([self.class isLocation:location validWithOptions:options]) {
+    resolve([EXLocation exportLocation:location]);
+  } else {
+    resolve([NSNull null]);
+  }
 }
 
 // Watch method for getting compass updates
@@ -574,6 +543,18 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
     }
   }
   return CLActivityTypeOther;
+}
+
++ (BOOL)isLocation:(nullable CLLocation *)location validWithOptions:(nullable NSDictionary *)options
+{
+  if (location == nil) {
+    return NO;
+  }
+  NSTimeInterval maxAge = options[@"maxAge"] ? [options[@"maxAge"] doubleValue] : DBL_MAX;
+  CLLocationAccuracy requiredAccuracy = options[@"requiredAccuracy"] ? [options[@"requiredAccuracy"] doubleValue] : DBL_MAX;
+  NSTimeInterval timeDiff = -location.timestamp.timeIntervalSinceNow;
+
+  return location != nil && timeDiff * 1000 <= maxAge && location.horizontalAccuracy <= requiredAccuracy;
 }
 
 @end
