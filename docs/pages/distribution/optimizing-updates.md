@@ -68,7 +68,7 @@ If you need to build an app with large assets, such as large embedded videos, a 
 
 With `expo-updates` you can also host updates on your own servers, which may support arbitrarily large files.
 
-## Self-hosting your Updates
+## Self-hosting your updates
 
 In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](https://docs.expo.io/distribution/hosting-your-app/).
 
