@@ -62,7 +62,7 @@ Large npm dependencies can contribute greatly to the size of your code in an upd
 
 Sometimes apps include files that they don't need right away when the app launches In these scenarios, you can upload these extra files to your own servers and reference the URLs from your application code via `fetch(url)` or `<Image source={{ uri: url }}>`, for example. By downloading these files on demand, you can move them out of the update and reduce its size.
 
-## Building Your App on Your Own Computer
+## Building your app on your own computer
 
 If you need to build an app with large assets, such as large embedded videos, a simple and practical solution is to use the bare workflow and compile the app using Android Studio and Xcode. You can either use your own computer or provision Linux and macOS VMs with a cloud provider on which to run the standard build toolchains for Android and iOS.
 
