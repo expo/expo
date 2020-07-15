@@ -38,10 +38,9 @@ git push origin master
 
 To setup a QR code to view your hosted update, or if you want to host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section.
 
-<<<<<<< HEAD
 ### HTTP Headers
 
-In some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of Javascript files as `"application/javascript"` so that [OTA Updates](https://docs.expo.io/guides/configuring-ota-updates/) work correctly. Otherwise [Updates.checkForUpdateAsync()](https://docs.expo.io/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
+On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of JavaScript files as `"application/javascript"` so that [OTA Updates](https://docs.expo.io/guides/configuring-ota-updates/) work correctly. Otherwise [Updates.checkForUpdateAsync()](https://docs.expo.io/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
 
 Here's an example of `firebase.json` configuration, with a [deploy target](https://firebase.google.com/docs/cli/targets) named "native".
 
@@ -75,12 +74,7 @@ expo export --public-url https://my-app-native.firebaseapp.com/
 firebase deploy --only hosting:native -m "Deploy my app"`
 ```
 
-## Build standalone app
-||||||| parent of d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
-## Build standalone app
-=======
 ## Building the standalone app
->>>>>>> d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
 
 In order to configure your standalone binary to pull OTA updates from your server, you’ll need to define the URL where you will host your `index.json` file. Pass the URL to your hosted `index.json` file to the `expo build` command.
 
@@ -125,14 +119,8 @@ URI: `exp://192.xxx.xxx.xxx:8000/android-index.json` (find your local IP with a 
 QR code: Generate a QR code using your URI from a website like https://www.qr-code-generator.com/
 
 ### URL
-<<<<<<< HEAD
 
-If you are loading in your app into the expo client by passing in a URL string, you will need to pass in an URL pointing to your json file.
-||||||| parent of d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
-If you are loading in your app into the expo client by passing in a URL string, you will need to pass in an URL pointing to your json file.
-=======
 If you are loading in your update into a development client by passing in a URL string, you will need to pass in an URL pointing to your JSON manifest file.
->>>>>>> d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
 
 Here is an example URL from a remote server: [https://expo.github.io/self-hosting-example/android-index.json](https://expo.github.io/self-hosting-example/android-index.json)
 
@@ -141,14 +129,8 @@ Here is an example URL from localhost: `http://localhost:8000/android-index.json
 ## Advanced Topics
 
 ### Debugging
-<<<<<<< HEAD
 
-When we bundle your app, minification is always enabled. In order to see the original source code of your app for debugging purposes, you can generate source maps. Here is an example workflow:
-||||||| parent of d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
-When we bundle your app, minification is always enabled. In order to see the original source code of your app for debugging purposes, you can generate source maps. Here is an example workflow:
-=======
 When Expo CLI bundles your update, minification is always enabled. In order to see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
->>>>>>> d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
 
 1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the `bundles` directory.
 2. A `debug.html` file will also be created at the root of your output directory.
@@ -162,14 +144,8 @@ As new Expo SDK versions are released, you may want to serve multiple versions o
 In order to do this, you can run `expo export` with some merge flags to combine previously exported updates into a single multiversion update which you can serve from your servers.
 
 Here is an example workflow:
-<<<<<<< HEAD
 
-1. Release your app with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the app (SDK 29) to a directory named `sdk29`.
-||||||| parent of d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
-1. Release your app with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the app (SDK 29) to a directory named `sdk29`.
-=======
 1. Release your update with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the update (SDK 29) to a directory named `sdk29`.
->>>>>>> d8a277cbce... Address Brent's comments. Update "Hosting Your App" page to talk about Updates, not Apps
 
 2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion update in the `dist` output directory. The `asset` and `bundle` folders contain everything that the source directories had, and the `index.json` file contains an array of the individual `index.json` files found in the source directories.
 
