@@ -2,7 +2,6 @@ import { Platform } from 'react-native';
 import { coalesceExpirations, coalesceStatuses, coalesceCanAskAgain, coalesceGranted, } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
 import { PermissionStatus, } from './Permissions.types';
-export { usePermissions } from './PermissionsHooks';
 export { PermissionStatus, };
 export const CAMERA = 'camera';
 export const CAMERA_ROLL = 'cameraRoll';

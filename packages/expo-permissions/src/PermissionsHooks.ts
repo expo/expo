@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { PermissionType, PermissionResponse, askAsync, getAsync } from './Permissions';
+import { askAsync, getAsync } from './Permissions';
+import { PermissionResponse, PermissionType } from './Permissions.types';
 
 /**
  * Get or ask permission for protected functionality within the app.
