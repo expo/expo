@@ -130,21 +130,67 @@ export async function test(t) {
 
       t.it(
         'gets a result of the correct shape, or throws error if no permission or disabled',
-        testShapeOrUnauthorized(() =>
-          Location.getLastKnownPositionAsync({
-            accuracy: Location.Accuracy.Balanced,
-          })
-        ),
+        testShapeOrUnauthorized(() => Location.getLastKnownPositionAsync()),
         timeout
       );
+
+      t.it(
+        'returns the same or newer location as previously ran `getCurrentPositionAsync`',
+        async () => {
+          const current = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Lowest,
+          });
+          const lastKnown = await Location.getLastKnownPositionAsync();
+
+          t.expect(current).not.toBeNull();
+          t.expect(lastKnown).not.toBeNull();
+          t.expect(lastKnown.timestamp).toBeGreaterThanOrEqual(current.timestamp);
+        }
+      );
+
+      t.it('returns null if maxAge is zero', async () => {
+        const location = await Location.getLastKnownPositionAsync({ maxAge: 0 });
+        t.expect(location).toBeNull();
+      });
+
+      t.it('returns null if maxAge is negative', async () => {
+        const location = await Location.getLastKnownPositionAsync({ maxAge: -1000 });
+        t.expect(location).toBeNull();
+      });
+
+      t.it("returns location that doesn't exceed maxAge or null", async () => {
+        const maxAge = 5000;
+        const timestampBeforeCall = Date.now();
+        const location = await Location.getLastKnownPositionAsync({ maxAge });
+
+        if (location !== null) {
+          t.expect(timestampBeforeCall - location.timestamp).toBeLessThan(maxAge);
+        }
+      });
+
+      t.it('returns location with required accuracy or null', async () => {
+        const requiredAccuracy = 70;
+        const location = await Location.getLastKnownPositionAsync({ requiredAccuracy });
+
+        if (location !== null) {
+          t.expect(location.coords.accuracy).toBeLessThanOrEqual(requiredAccuracy);
+        }
+      });
+
+      t.it('returns null if required accuracy is zero', async () => {
+        const location = await Location.getLastKnownPositionAsync({
+          requiredAccuracy: 0,
+        });
+        t.expect(location).toBeNull();
+      });
 
       t.it(
         'resolves when called simultaneously',
         async () => {
           await Promise.all([
             Location.getLastKnownPositionAsync(),
-            Location.getLastKnownPositionAsync(),
-            Location.getLastKnownPositionAsync(),
+            Location.getLastKnownPositionAsync({ maxAge: 1000 }),
+            Location.getLastKnownPositionAsync({ requiredAccuracy: 100 }),
           ]);
         },
         timeout
@@ -230,20 +276,17 @@ export async function test(t) {
         timeout + second
       );
 
-      // NOTE(2020-06-03): this test is flaky on Android so we disable it for now
-      if (Platform.OS !== 'android') {
-        t.it(
-          'resolves when called simultaneously',
-          async () => {
-            await Promise.all([
-              Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
-              Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest }),
-              Location.getCurrentPositionAsync(),
-            ]);
-          },
-          timeout
-        );
-      }
+      t.it(
+        'resolves when called simultaneously',
+        async () => {
+          await Promise.all([
+            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
+            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest }),
+            Location.getCurrentPositionAsync(),
+          ]);
+        },
+        timeout
+      );
 
       t.it('resolves when watchPositionAsync is running', async () => {
         const subscriber = await Location.watchPositionAsync({}, () => {});
@@ -263,25 +306,22 @@ export async function test(t) {
         });
       });
 
-      // NOTE(2020-06-03): this test is flaky on Android so we disable it for now
-      if (Platform.OS !== 'android') {
-        t.it('can be called simultaneously', async () => {
-          const spies = [1, 2, 3].map(number => t.jasmine.createSpy(`watchPosition${number}`));
+      t.it('can be called simultaneously', async () => {
+        const spies = [1, 2, 3].map(number => t.jasmine.createSpy(`watchPosition${number}`));
 
-          const subscribers = await Promise.all(
-            spies.map(spy => Location.watchPositionAsync({}, spy))
-          );
+        const subscribers = await Promise.all(
+          spies.map(spy => Location.watchPositionAsync({}, spy))
+        );
 
-          await new Promise((resolve, reject) => {
-            setTimeout(() => {
-              spies.forEach(spy => t.expect(spy).toHaveBeenCalled());
-              resolve();
-            }, 1000);
-          });
-
-          subscribers.forEach(subscriber => subscriber.remove());
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            spies.forEach(spy => t.expect(spy).toHaveBeenCalled());
+            resolve();
+          }, 1000);
         });
-      }
+
+        subscribers.forEach(subscriber => subscriber.remove());
+      });
     });
 
     describeWithPermissions('Location.getHeadingAsync()', () => {
