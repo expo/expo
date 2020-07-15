@@ -72,6 +72,6 @@ With `expo-updates` you can also host updates on your own servers, which may sup
 
 In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](https://docs.expo.io/distribution/hosting-your-app/).
 
-## A Glimpse at the Future
+## A glimpse at the future
 
 The next generation of services for Expo apps, Expo Application Services (EAS), will support higher limits and a scalable pricing model for startups and ohter businesses with those needs. This is a long-term engineering project and we hope to have more to share sometime in 2021.
