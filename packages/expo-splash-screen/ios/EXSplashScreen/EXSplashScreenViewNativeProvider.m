@@ -33,7 +33,9 @@
     if (!views.firstObject) {
       @throw [NSException exceptionWithName:@"ERR_INVALID_SPLASH_SCREEN" reason:@"'SplashScreen.xib' does not contain any views. Add a view to the 'SplashScreen.xib' or create 'SplashScreen.storyboard' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios)." userInfo:nil];
     }
-    return views.firstObject;
+    UIView* view = views.firstObject;
+    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    return view;
   }
   
   @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN" reason:@"Couln't locate neither 'SplashScreen.storyboard' file nor 'SplashScreen.xib' file. Create one of these in the project to make 'expo-splash-screen' work (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios)." userInfo:nil];

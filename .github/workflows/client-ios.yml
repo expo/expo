@@ -2,6 +2,10 @@ name: iOS Client
 
 on:
   workflow_dispatch:
+    inputs:
+      releaseSimulator:
+        description: 'type "release-simulator" to confirm upload'
+        required: false
   pull_request:
     branches: [ master ]
     paths:
@@ -66,7 +70,7 @@ jobs:
           name: fastlane-logs
           path: ~/Library/Logs/fastlane
       - run: expotools client-build --platform ios --release # should only upload already-built app
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event.inputs.releaseSimulator == 'release-simulator' }}
       - uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:

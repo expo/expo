@@ -90,7 +90,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  UIViewController *rootViewController = [[UIApplication.sharedApplication keyWindow] rootViewController];
+  UIViewController *rootViewController = [[application keyWindow] rootViewController];
   [self showSplashScreenFor:rootViewController];
   return YES;
 }
