@@ -18,8 +18,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
-
 import android.util.Log;
 
 import com.google.android.gms.common.api.ApiException;
@@ -58,13 +56,11 @@ import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import expo.modules.location.exceptions.LocationRequestRejectedException;
-import expo.modules.location.exceptions.LocationRequestTimeoutException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
 import expo.modules.location.exceptions.LocationUnauthorizedException;
 import expo.modules.location.exceptions.LocationUnavailableException;
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer;
 import expo.modules.location.taskConsumers.LocationTaskConsumer;
-import expo.modules.location.utils.TimeoutObject;
 import io.nlopez.smartlocation.OnGeocodingListener;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.OnReverseGeocodingListener;
@@ -192,7 +188,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
-    final Long timeout = options.containsKey("timeout") ? ((Double) options.get("timeout")).longValue() : null;
     final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
     boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
 
@@ -202,27 +197,15 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    final TimeoutObject timeoutObject = new TimeoutObject(timeout);
-    timeoutObject.onTimeout(new TimeoutObject.TimeoutListener() {
-      @Override
-      public void onTimeout() {
-        promise.reject(new LocationRequestTimeoutException());
-      }
-    });
-    timeoutObject.start();
-
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
-      LocationHelpers.requestSingleLocation(this, locationRequest, timeoutObject, promise);
+      LocationHelpers.requestSingleLocation(this, locationRequest, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-        @Override
-        public void onResult(int resultCode) {
-          if (resultCode == Activity.RESULT_OK) {
-            LocationHelpers.requestSingleLocation(LocationModule.this, locationRequest, timeoutObject, promise);
-          } else {
-            promise.reject(new LocationSettingsUnsatisfiedException());
-          }
+      addPendingLocationRequest(locationRequest, resultCode -> {
+        if (resultCode == Activity.RESULT_OK) {
+          LocationHelpers.requestSingleLocation(LocationModule.this, locationRequest, promise);
+        } else {
+          promise.reject(new LocationSettingsUnsatisfiedException());
         }
       });
     }

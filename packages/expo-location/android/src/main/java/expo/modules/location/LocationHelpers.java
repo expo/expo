@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.errors.CodedException;
-import expo.modules.location.utils.TimeoutObject;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 
@@ -135,30 +134,24 @@ public class LocationHelpers {
     return locationParamsBuilder.build();
   }
 
-  static void requestSingleLocation(final LocationModule locationModule, final LocationRequest locationRequest, final TimeoutObject timeoutObject, final Promise promise) {
+  static void requestSingleLocation(final LocationModule locationModule, final LocationRequest locationRequest, final Promise promise) {
     // we want just one update
     locationRequest.setNumUpdates(1);
 
     locationModule.requestLocationUpdates(locationRequest, null, new LocationRequestCallbacks() {
       @Override
       public void onLocationChanged(Location location) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
-        }
+        promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
       }
 
       @Override
       public void onLocationError(CodedException exception) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.reject(exception);
-        }
+        promise.reject(exception);
       }
 
       @Override
       public void onRequestFailed(CodedException exception) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.reject(exception);
-        }
+        promise.reject(exception);
       }
     });
   }
