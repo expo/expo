@@ -22,7 +22,7 @@ On Android and iOS, the standalone apps you submit to the app stores are example
 
 Updates are embedded in standalone apps and delivered over the internet. Because downloading an update over the internet uses bandwidth and takes time, one of the most effective ways to optimize an update is to make it smaller. This guide covers some ways to reduce the sizes of your updates.
 
-### Estimating the Size of an Update
+### Estimating the size of an update
 
 One way to estimate the size of an update is to run `expo export`, which exports an update for each platform, which can be self-hosted. The update includes a JSON manifest, a JavaScript bundle, and several assets like images and custom fonts.
 
