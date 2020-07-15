@@ -16,8 +16,6 @@ import {
   PermissionInfo,
 } from './Permissions.types';
 
-export { usePermissions } from './PermissionsHooks';
-
 export {
   PermissionStatus,
   PermissionResponse,

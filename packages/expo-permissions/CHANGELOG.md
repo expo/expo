@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `askAsync` rejecting with `permission cannot be null or empty` in the bare workflow. ([#8910](https://github.com/expo/expo/pull/8910) by [@lukmccall](https://github.com/lukmccall))
+- Remove require cycle for `usePermissions` hook. ([#9219](https://github.com/expo/expo/pull/9219) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.0.1 — 2020-05-29
 
