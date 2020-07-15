@@ -54,7 +54,7 @@ There are many other image optimizers you may like to use like [jpegoptim](https
 Some image optimizers are lossless. This means they re-encode your image to be smaller without any change, or loss, in the pixels that are displayed. When you need each pixel to be untouched from the original image, a lossless optimizer and a lossless image format like PNG is a good choice.
 Other image optimizers are lossy, which means the optimized image is different than the original image. Often, lossy optimizers are more efficient because they discard visual information that reduces file size while making the image look nearly the same to humans. Tools like `imagemagick` can use comparison algorithms like [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) to give a sense of how similar two images look. It's quite common for an optimized image that is over 95% similar to the original image to be far less than 95% of the original file size!
 
-### Reduce Large Dependencies
+### Reduce large dependencies
 
 Large npm dependencies can contribute greatly to the size of your code in an update. While dependencies like `expo`, `react`, and several more packages are necessary and very useful, sometimes a dependency can be surprisingly large even if you use only one method from it, or you might have multiple versions of the same dependency in your JS bundle. [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer) works for Expo apps as well as bare React Native apps and shows a detailed view of the files in your JS bundle.
 
