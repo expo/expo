@@ -10,13 +10,21 @@ export interface ProviderStatus {
 }
 export interface LocationOptions {
     accuracy?: LocationAccuracy;
-    maximumAge?: number;
     enableHighAccuracy?: boolean;
     timeInterval?: number;
     distanceInterval?: number;
-    timeout?: number;
     mayShowUserSettingsDialog?: boolean;
 }
+export declare type LocationLastKnownOptions = {
+    /**
+     * Maximum age of the location in miliseconds.
+     */
+    maxAge?: number;
+    /**
+     * Maximum radius of horizontal accuracy in meters.
+     */
+    requiredAccuracy?: number;
+};
 export interface LocationData {
     coords: {
         latitude: number;
@@ -113,8 +121,18 @@ export declare enum GeofencingRegionState {
 declare function _getCurrentWatchId(): number;
 export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
+/**
+ * Requests for one-time delivery of the user's current location.
+ * Depending on given `accuracy` option it may take some time to resolve,
+ * especially when you're inside a building.
+ */
 export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
-export declare function getLastKnownPositionAsync(): Promise<LocationData>;
+/**
+ * Gets the last known position of the device or `null` if it's not available
+ * or doesn't match given requirements such as maximum age or required accuracy.
+ * It's considered to be faster than `getCurrentPositionAsync` as it doesn't request for the current location.
+ */
+export declare function getLastKnownPositionAsync(options?: LocationLastKnownOptions): Promise<LocationData | null>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
 export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<{
     remove: () => void;

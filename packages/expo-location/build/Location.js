@@ -59,11 +59,21 @@ export async function enableNetworkProviderAsync() {
         return ExpoLocation.enableNetworkProviderAsync();
     }
 }
+/**
+ * Requests for one-time delivery of the user's current location.
+ * Depending on given `accuracy` option it may take some time to resolve,
+ * especially when you're inside a building.
+ */
 export async function getCurrentPositionAsync(options = {}) {
     return ExpoLocation.getCurrentPositionAsync(options);
 }
-export async function getLastKnownPositionAsync() {
-    return ExpoLocation.getLastKnownPositionAsync();
+/**
+ * Gets the last known position of the device or `null` if it's not available
+ * or doesn't match given requirements such as maximum age or required accuracy.
+ * It's considered to be faster than `getCurrentPositionAsync` as it doesn't request for the current location.
+ */
+export async function getLastKnownPositionAsync(options = {}) {
+    return ExpoLocation.getLastKnownPositionAsync(options);
 }
 // Start Compass Module
 // To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait
