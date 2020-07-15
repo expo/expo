@@ -27,7 +27,12 @@ Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
-No additional set up necessary.
+This package automatically adds the `CAMERA` permission to your app.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.CAMERA" />
+```
 
 # Contributing
 
