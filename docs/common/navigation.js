@@ -107,11 +107,11 @@ const sections = [
     reference: [
       'Overview',
       'Building Standalone Apps',
-      'App signing',
+      'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
-      'Hosting An App on Your Servers',
+      'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',
       'Uploading Apps to the Apple App Store and Google Play',
       'App Transfers',
