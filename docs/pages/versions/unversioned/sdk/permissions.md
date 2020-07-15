@@ -42,13 +42,59 @@ The following table shows you which permissions correspond to which packages.
 
 Often you want to be able to test what happens when you reject a permission to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions, you may need to uninstall and reinstall the Expo app. In the simulator this is as easy as deleting the app and expo-cli will automatically install it again next time you launch the project from it.
 
-## API
+# API
 
 ```js
 import * as Permissions from 'expo-permissions';
 ```
 
-### `Permissions.getAsync(...permissionTypes)`
+## Hooks
+
+### `usePermissions`
+
+```ts
+const [permission, askPermission, getPermission] = usePermissions(Permissions.CAMERA, { ... });
+```
+
+Get or ask permission for protected functionality within the app. This returns the result for the requested permissions. It also returns additional callback to interact based on user input.
+
+#### Arguments
+
+- **permissionTypes (_Type|Type[]_)** -- One or more types to get or ask permission for. After the permission status is fetched, you can show different UI based on the current status.
+- **permissionOptions** -- Optional configuration to change the behavior of the hook.
+  - **get (_boolean_)** -- Retrieves the permission status without interacting with the user, `true` by default.
+  - **ask (_boolean_)** -- Prompts the user with the requested permission directly. Without using the `askPermission` callback, `false` by default.
+
+#### Returns
+
+- **permission (_[PermissionsResponse](#permissions-response)|undefined_)** -- An object with information about the permissions, including status, expiration, and scope (if applicable).
+- **askPermission (_() => void_)** -- A callback to ask the user for permission.
+- **getPermission (_() => void_)** -- A callback to get the permission status without interacting with the user.
+
+#### Example: hook
+
+```tsx
+function App() {
+  const [permission, askForPermission] = usePermissions(Permissions.CAMERA, { ask: true });
+
+  if (!permission || permission.status !== 'granted') {
+    return (
+      <View>
+        <Text>Permission is not granted</Text>
+        <Button title="Grant permission" onPress={askForPermission} />
+      </View>
+    );
+  }
+
+  return (
+    <View>
+      <Camera />
+    </View>
+  );
+}
+```
+
+### `Permissions.getAsync(...types)`
 
 Determines whether your app has already been granted access to the provided permissions types.
 
@@ -58,35 +104,7 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Returns
 
-A `Promise` that is resolved with information about the permissions, including status, expiration, and scope (if applicable).
-The top-level `status`, `expires` and `canAskAgain` keys are a reduction of the values from each individual permission.
-If all single permissions have a `status` of `'denied'`, then that the top level `status` is `denied`; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. Otherwise, `status` is`undetermined`.
-If any single permission has a `status` different then `granted`, then top-level `granted` is `false`. Otherwise, it is `true`.
-Top-level `expires` has value of the earliest expirated permission.
-
-Examples `[...componentsValues] => topLevelStatus`:
-
-- `[granted, denied, granted] => denied`
-- `[granted, granted, granted] => granted`
-
-```javascript
-{
-  status, // combined status of all component permissions being asked for, if any of has status !== 'granted' then that status is propagated here
-  expires, // combined expires of all permissions being asked for, same as status
-  canAskAgain,
-  granted,
-  permissions: { // an object with an entry for each permission requested
-    [Permissions.TYPE]: {
-      status,
-      expires,
-      canAskAgain,
-      granted,
-      ... // any additional permission-specific fields
-    },
-    ...
-  },
-}
-```
+A `Promise` with a [`PermissionResponse`](#permissions-response) object.
 
 #### Example
 
@@ -119,7 +137,7 @@ Prompt the user for types of permissions. If they have already granted access, r
 
 #### Returns
 
-Same as for `Permissions.getAsync`
+A `Promise` with a [`PermissionResponse`](#permissions-response) object.
 
 #### Example
 
@@ -134,6 +152,58 @@ async function getLocationAsync() {
   }
 }
 ```
+
+## Permissions response
+
+An object with information about the permissions, including status, expiration, and scope (if applicable).
+
+```javascript
+{
+  status, // combined status of all component permissions being asked for
+  expires, // combined expires of all permissions being asked for, same as status
+  canAskAgain,
+  granted,
+  permissions: { // an object with an entry for each permission requested
+    [Permissions.TYPE]: {
+      status,
+      expires,
+      canAskAgain,
+      granted,
+      ... // any additional permission-specific fields
+    },
+    ...
+  },
+}
+```
+
+The top-level `status`, `expires`, `granted` and `canAskAgain` keys depend on the values returned for each of the individual permission requests:
+
+### `status`
+
+The status represents a combined status of all combined permissions, using the following rules:
+
+- If **one or more permissions** have a `status` of _undetermined_, the top level `status` is _undetermined_.
+- If **one or more permissions** have a `status` of _denied_ and none _undetermined_, then the top level `status` is _denied_.
+- If **all permissions** have a `status` of _granted_, then the top level `status` is _granted_.
+
+Examples for the `status` top level property:
+
+- `[granted, undetermined, undetermined] => undetermined`
+- `[granted, denied, undetermined] => undetermined`
+- `[granted, denied, granted] => denied`
+- `[granted, granted, granted] => granted`
+
+### `expires`
+
+The top-level `expires` field matches the value of the earliest expiring permission.
+
+### `granted`
+
+If every single permission has a `status` of _granted_, then the top level `granted` field is `true`. Otherwise, it is `false`.
+
+### `canAskAgain`
+
+If every single permission can be asked again, then the top level is `true`. Otherwise, it is `false`.
 
 ## Permissions types
 
