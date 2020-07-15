@@ -344,9 +344,12 @@ export default {
   },
 };
 
-export function getRequestMotionPermission(): () => Promise<PermissionState> | null {
-  // @ts-ignore: requestPermission does not exist
-  return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
+export function getRequestMotionPermission(): (() => Promise<PermissionState>) | null {
+  if (typeof DeviceMotionEvent !== 'undefined' && !!DeviceMotionEvent?.requestPermission) {
+    return DeviceMotionEvent.requestPermission;
+  }
+
+  return null;
 }
 
 // https://stackoverflow.com/a/9039885/4047926
