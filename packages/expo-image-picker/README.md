@@ -34,6 +34,15 @@ Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
+This package automatically adds the `CAMERA`, `READ_EXTERNAL_STORAGE`, and `WRITE_EXTERNAL_STORAGE` permissions. They are used when picking images from the camera directly, or from the camera roll.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
 In `AndroidManifest.xml` add the following `activity` within `application`:
 
 ```xml
@@ -41,13 +50,6 @@ In `AndroidManifest.xml` add the following `activity` within `application`:
   android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
   android:theme="@style/Base.Theme.AppCompat">
 </activity>
-```
-
-and add following permissions:
-
-```xml
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
 # Contributing
