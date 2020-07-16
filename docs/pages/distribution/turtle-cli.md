@@ -62,10 +62,11 @@ need to free up some disk space.
 
 When you're building standalone apps with Turtle CLI, the build process is happening on your local machine.
 Turtle CLI makes use of exactly the same codebase which is running on our servers (`expo build:[ios|android]` command).
-This means you're required to publish your app to Expo servers or host it on your own server prior to building it with Turtle CLI.
+This means you're required to publish your app to Expo's servers or host it on your own server **prior to building it with Turtle CLI**. Whether you want Expo to host your app, or you'd like to do it yourself, all you need to do is follow the appropriate guide:
 
-You can publish your app using `expo-cli`. See the guide on [how to publish your project](../../workflow/publishing/)
-with Expo CLI or [how to host an app on your servers](../hosting-your-app/).
+- [Publishing an app to Expo's servers](../../workflow/publishing/)
+- [Hosting an app on your own server](../hosting-your-app/)
+
 
 ## Start the build
 
