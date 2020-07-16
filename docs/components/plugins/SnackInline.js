@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import { SNACK_URL, getInlineSnackContent } from '../../common/snack';
+
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 
 const DEFAULT_PLATFORM = 'android';
@@ -60,7 +63,7 @@ export default class SnackInline extends React.Component {
     let templateId = this.props.templateId;
 
     let baseUrl =
-      `https://snack.expo.io?platform=${this.props.defaultPlatform || DEFAULT_PLATFORM}&name=` +
+      `${SNACK_URL}?platform=${this.props.defaultPlatform || DEFAULT_PLATFORM}&name=` +
       encodeURIComponent(label) +
       `&sdkVersion=${this._getSnackSdkVersion()}` +
       `&dependencies=${encodeURIComponent(this._getDependencies())}`;
@@ -82,10 +85,12 @@ export default class SnackInline extends React.Component {
   };
 
   render() {
+    const { files, children } = getInlineSnackContent(this.props.children);
+
     if (this.props.templateId) {
       return (
         <div>
-          <div ref={this.contentRef}>{this.props.children}</div>
+          <div ref={this.contentRef}>{children}</div>
           {this.state.showLink ? (
             <a className="snack-inline-example-button" href={this._getSnackUrl()} target="_blank">
               Try this example on Snack <OpenIcon />
@@ -96,10 +101,10 @@ export default class SnackInline extends React.Component {
     } else {
       return (
         <div>
-          <div ref={this.contentRef}>{this.props.children}</div>
+          <div ref={this.contentRef}>{children}</div>
 
           {/* TODO: this should be a POST request, need to change Snack to support it though */}
-          <form ref={this.formRef} action="https://snack.expo.io" method="POST" target="_blank">
+          <form ref={this.formRef} action={SNACK_URL} method="POST" target="_blank">
             <input
               type="hidden"
               name="platform"
@@ -108,7 +113,7 @@ export default class SnackInline extends React.Component {
             <input type="hidden" name="name" value={this.props.label || 'Example'} />
             <input type="hidden" name="dependencies" value={this._getDependencies()} />
             <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
-            <input type="hidden" name="code" value={this._getCode()} />
+            <input type="hidden" name="files" value={JSON.stringify(files)} />
 
             <button className="snack-inline-example-button">
               Try this example on Snack <OpenIcon />
