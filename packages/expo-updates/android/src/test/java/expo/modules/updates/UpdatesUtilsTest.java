@@ -4,11 +4,14 @@ import android.net.Uri;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import expo.modules.updates.db.entity.AssetEntity;
 
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class UpdatesUtilsTest {
   @Test
   public void testCreateFilenameForAsset() {
