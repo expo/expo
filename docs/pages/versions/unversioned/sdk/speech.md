@@ -88,7 +88,7 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
 #### Arguments
 
-- **text (_string_)** -- The text to be spoken. Cannot be longer than `Speech.maxSpeechInputLength`.
+- **text (_string_)** -- The text to be spoken. Cannot be longer than [`Speech.maxSpeechInputLength`](#speechmaxspeechinputlength).
 - **options (_object_)** --
 
   A map of options:
@@ -104,7 +104,7 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
 #### Error Codes
 
-- [`ERR_SPEECH_INPUT_LENGTH`](#errspeechinputlength)
+- [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
 
 ---
 
