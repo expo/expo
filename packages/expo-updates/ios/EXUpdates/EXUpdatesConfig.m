@@ -76,7 +76,7 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   // set updateUrl as the default value if none is provided
   if (!_scopeKey) {
     if (_updateUrl) {
-      _scopeKey = _updateUrl.absoluteString;
+      _scopeKey = [NSString stringWithFormat:@"%@://%@", _updateUrl.scheme, _updateUrl.host];
     } else {
       @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                      reason:@"expo-updates must be configured with a valid update URL or scope key."

@@ -79,9 +79,10 @@ public class UpdatesConfiguration {
 
       String urlString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATE_URL");
       mUpdateUrl = urlString == null ? null : Uri.parse(urlString);
+      mScopeKey = ai.metaData.getString("expo.modules.updates.EXPO_SCOPE_KEY");
+      maybeSetDefaultScopeKey();
 
       mIsEnabled = ai.metaData.getBoolean("expo.modules.updates.ENABLED", true);
-      mScopeKey = ai.metaData.getString("expo.modules.updates.EXPO_SCOPE_KEY", urlString);
       mSdkVersion = ai.metaData.getString("expo.modules.updates.EXPO_SDK_VERSION");
       mReleaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default");
       mLaunchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0);
@@ -117,15 +118,7 @@ public class UpdatesConfiguration {
     if (scopeKeyFromMap != null) {
       mScopeKey = scopeKeyFromMap;
     }
-
-    // set updateUrl as the default value if none is provided
-    if (mScopeKey == null) {
-      if (mUpdateUrl != null) {
-        mScopeKey = mUpdateUrl.toString();
-      } else {
-        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
-      }
-    }
+    maybeSetDefaultScopeKey();
 
     String releaseChannelFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, String.class);
     if (releaseChannelFromMap != null) {
@@ -157,6 +150,17 @@ public class UpdatesConfiguration {
     }
 
     return this;
+  }
+
+  private void maybeSetDefaultScopeKey() {
+    // set updateUrl as the default value if none is provided
+    if (mScopeKey == null) {
+      if (mUpdateUrl != null) {
+        mScopeKey = mUpdateUrl.getScheme() + "://" + mUpdateUrl.getHost();
+      } else {
+        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
+      }
+    }
   }
 
   private @Nullable <T> T readValueCheckingType(Map<String, Object> map, String key, Class<T> clazz) {

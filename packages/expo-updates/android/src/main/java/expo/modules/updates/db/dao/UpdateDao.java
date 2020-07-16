@@ -24,7 +24,7 @@ public abstract class UpdateDao {
   @Query("SELECT * FROM updates WHERE status IN (:statuses);")
   public abstract List<UpdateEntity> _loadUpdatesWithStatuses(List<UpdateStatus> statuses);
 
-  @Query("SELECT * FROM updates WHERE project_identifier = :scopeKey AND status IN (:statuses);")
+  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND status IN (:statuses);")
   public abstract List<UpdateEntity> _loadUpdatesForProjectWithStatuses(String scopeKey, List<UpdateStatus> statuses);
 
   @Query("SELECT * FROM updates WHERE id = :id;")
@@ -44,7 +44,7 @@ public abstract class UpdateDao {
    * for public use
    */
 
-  @Query("SELECT * FROM updates WHERE project_identifier = :scopeKey;")
+  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey;")
   public abstract List<UpdateEntity> loadAllUpdatesForScope(String scopeKey);
 
   public List<UpdateEntity> loadLaunchableUpdatesForScope(String scopeKey) {
