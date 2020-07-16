@@ -10,7 +10,7 @@ UM_EXPORT_MODULE(ExpoNotificationCategoriesModule);
 # pragma mark - Exported methods
 
 UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+                 getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
