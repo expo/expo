@@ -5,6 +5,7 @@ import android.location.Address;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.BaseBundle;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -78,6 +79,11 @@ public class LocationHelpers {
       coords.putDouble("heading", location.getBearing());
       coords.putDouble("speed", location.getSpeed());
 
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        coords.putDouble("altitudeAccuracy", location.getVerticalAccuracyMeters());
+      } else {
+        coords.putString("altitudeAccuracy", null);
+      }
       return coords;
     } catch (IllegalAccessException | InstantiationException e) {
       Log.e(TAG, "Unexpected exception was thrown when converting location to coords bundle: " + e.toString());
