@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Added constant `Speech.maxSpeechInputLength` - returns maximum input text length for `Speech.speak()`. ([#9243](https://github.com/expo/expo/pull/9243) by [@barthap](https://github.com/barthap))
+
 ### 🐛 Bug fixes
+
+- Fixed issue where Speech failed on Android when input text was too long. ([#9243](https://github.com/expo/expo/pull/9243) by [@barthap](https://github.com/barthap))
 
 ## 8.2.1 — 2020-05-29
 
