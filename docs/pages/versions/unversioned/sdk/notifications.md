@@ -106,7 +106,7 @@ Check out the Snack below to see Notifications in action, but be sure to use a p
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -120,18 +120,23 @@ Notifications.setNotificationHandler({
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-    Notifications.addNotificationReceivedListener(notification => {
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
-    Notifications.addNotificationResponseReceivedListener(response => {
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
     });
 
     return () => {
-      Notifications.removeAllNotificationListeners();
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
     };
   }, []);
 
