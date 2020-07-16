@@ -42,6 +42,18 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   [_session finishTasksAndInvalidate];
 }
 
++ (dispatch_queue_t)assetFilesQueue
+{
+  static dispatch_queue_t theQueue;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    if (!theQueue) {
+      theQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
+    }
+  });
+  return theQueue;
+}
+
 - (void)downloadFileFromURL:(NSURL *)url
                      toPath:(NSString *)destinationPath
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
@@ -64,13 +76,16 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 }
 
 - (void)downloadManifestFromURL:(NSURL *)url
+                     withConfig:(EXUpdatesConfig *)config
+                       database:(EXUpdatesDatabase *)database
+                 cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                      timeoutInterval:kEXUpdatesDefaultTimeoutInterval];
-  [self _setManifestHTTPHeaderFields:request];
+  [self _setManifestHTTPHeaderFields:request withConfig:config];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
     id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
@@ -83,12 +98,15 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
       NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
                                      signature:(NSString *)signature
+                                cacheDirectory:cacheDirectory
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
                                                     NSError *err;
                                                     id innerManifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
                                                     NSAssert(!err && innerManifest && [innerManifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)innerManifest];
+                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)innerManifest
+                                                                                                           config:config
+                                                                                                         database:database];
                                                     successBlock(update);
                                                   } else {
                                                     NSError *error = [NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
@@ -100,7 +118,9 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                                                 }
       ];
     } else {
-      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest];
+      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest
+                                                             config:config
+                                                           database:database];
       successBlock(update);
     }
   } errorBlock:errorBlock];
@@ -149,19 +169,19 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
 }
 
-- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request
+- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withConfig:(EXUpdatesConfig *)config
 {
   [self _setHTTPHeaderFields:request];
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-Accept-Signature"];
-  [request setValue:[EXUpdatesConfig sharedInstance].releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
+  [request setValue:config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
 
-  NSString *runtimeVersion = [EXUpdatesConfig sharedInstance].runtimeVersion;
+  NSString *runtimeVersion = config.runtimeVersion;
   if (runtimeVersion) {
     [request setValue:runtimeVersion forHTTPHeaderField:@"Expo-Runtime-Version"];
   } else {
-    [request setValue:[EXUpdatesConfig sharedInstance].sdkVersion forHTTPHeaderField:@"Expo-SDK-Version"];
+    [request setValue:config.sdkVersion forHTTPHeaderField:@"Expo-SDK-Version"];
   }
 
   NSString *previousFatalError = [EXUpdatesAppLauncherNoDatabase consumeError];

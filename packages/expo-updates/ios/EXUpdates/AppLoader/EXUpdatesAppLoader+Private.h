@@ -2,13 +2,18 @@
 
 #import <EXUpdates/EXUpdatesAppLoader.h>
 #import <EXUpdates/EXUpdatesAsset.h>
+#import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesAppLoader ()
 
+@property (nonatomic, strong) EXUpdatesConfig *config;
+@property (nonatomic, strong) EXUpdatesDatabase *database;
+@property (nonatomic, strong) NSURL *directory;
 @property (nonatomic, strong) EXUpdatesUpdate *updateManifest;
+@property (nonatomic, copy) EXUpdatesAppLoaderManifestBlock manifestBlock;
 @property (nonatomic, copy) EXUpdatesAppLoaderSuccessBlock successBlock;
 @property (nonatomic, copy) EXUpdatesAppLoaderErrorBlock errorBlock;
 

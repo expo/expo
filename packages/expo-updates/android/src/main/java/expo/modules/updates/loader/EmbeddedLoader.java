@@ -3,6 +3,7 @@ package expo.modules.updates.loader;
 import android.content.Context;
 import android.util.Log;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.UpdatesDatabase;
@@ -33,6 +34,7 @@ public class EmbeddedLoader {
   private static Manifest sEmbeddedManifest = null;
 
   private Context mContext;
+  private UpdatesConfiguration mConfiguration;
   private UpdatesDatabase mDatabase;
   private File mUpdatesDirectory;
   private float mPixelDensity;
@@ -43,8 +45,9 @@ public class EmbeddedLoader {
   private ArrayList<AssetEntity> mExistingAssetList = new ArrayList<>();
   private ArrayList<AssetEntity> mFinishedAssetList = new ArrayList<>();
 
-  public EmbeddedLoader(Context context, UpdatesDatabase database, File updatesDirectory) {
+  public EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory) {
     mContext = context;
+    mConfiguration = configuration;
     mDatabase = database;
     mUpdatesDirectory = updatesDirectory;
     mPixelDensity = context.getResources().getDisplayMetrics().density;
@@ -52,7 +55,7 @@ public class EmbeddedLoader {
 
   public boolean loadEmbeddedUpdate() {
     boolean success = false;
-    Manifest manifest = readEmbeddedManifest(mContext);
+    Manifest manifest = readEmbeddedManifest(mContext, mConfiguration);
     if (manifest != null) {
       success = processManifest(manifest);
       reset();
@@ -68,11 +71,11 @@ public class EmbeddedLoader {
     mFinishedAssetList = new ArrayList<>();
   }
 
-  public static Manifest readEmbeddedManifest(Context context) {
+  public static Manifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
     if (sEmbeddedManifest == null) {
       try (InputStream stream = context.getAssets().open(MANIFEST_FILENAME)) {
         String manifestString = IOUtils.toString(stream, "UTF-8");
-        sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(context, new JSONObject(manifestString));
+        sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(new JSONObject(manifestString), configuration, context);
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
         // TODO: we don't want to throw in the Expo client case, but do want to throw elsewhere

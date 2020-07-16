@@ -216,17 +216,17 @@ public class UpdatesController {
    */
   public synchronized void start(final Context context) {
     if (!mUpdatesConfiguration.isEnabled()) {
-      mLauncher = new NoDatabaseLauncher(context);
+      mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration);
     }
     if (mUpdatesDirectory == null) {
-      mLauncher = new NoDatabaseLauncher(context, mUpdatesDirectoryException);
+      mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, mUpdatesDirectoryException);
       mIsEmergencyLaunch = true;
     }
 
     new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mSelectionPolicy, new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
-        mLauncher = new NoDatabaseLauncher(context, e);
+        mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
         mIsEmergencyLaunch = true;
         notifyController();
       }
@@ -271,7 +271,7 @@ public class UpdatesController {
     final String oldLaunchAssetFile = mLauncher.getLaunchAssetFile();
 
     UpdatesDatabase database = getDatabase();
-    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
+    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mSelectionPolicy);
     newLauncher.launch(database, context, new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {

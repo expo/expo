@@ -9,6 +9,7 @@ typedef void (^EXUpdatesVerifySignatureErrorBlock)(NSError *error);
 
 + (void)verifySignatureWithData:(NSString *)data
                       signature:(NSString *)signature
+                 cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesVerifySignatureSuccessBlock)successBlock
                      errorBlock:(EXUpdatesVerifySignatureErrorBlock)errorBlock;
 

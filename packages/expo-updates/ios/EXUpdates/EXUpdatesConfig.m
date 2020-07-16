@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesConfigPlistName = @"Expo";
 static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const kEXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
@@ -35,18 +34,6 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
 
 @implementation EXUpdatesConfig
 
-+ (instancetype)sharedInstance
-{
-  static EXUpdatesConfig *theConfig;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    if (!theConfig) {
-      theConfig = [[EXUpdatesConfig alloc] init];
-    }
-  });
-  return theConfig;
-}
-
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -55,17 +42,15 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
     _launchWaitMs = @(0);
     _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
     _usesLegacyManifest = YES;
-    [self _loadConfigFromExpoPlist];
   }
   return self;
 }
 
-- (void)_loadConfigFromExpoPlist
++ (instancetype)configWithDictionary:(NSDictionary *)config
 {
-  NSString *configPath = [[NSBundle mainBundle] pathForResource:kEXUpdatesConfigPlistName ofType:@"plist"];
-  if (configPath) {
-    [self loadConfigFromDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
-  }
+  EXUpdatesConfig *updatesConfig = [[EXUpdatesConfig alloc] init];
+  [updatesConfig loadConfigFromDictionary:config];
+  return updatesConfig;
 }
 
 - (void)loadConfigFromDictionary:(NSDictionary *)config
