@@ -3,18 +3,10 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
-import BrandLogo from '~/components/icons/BrandLogo';
-import DismissIcon from '~/components/icons/DismissIcon';
-import MenuIcon from '~/components/icons/Menu';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 
 const STYLES_LOGO = css`
   display: flex;
-`;
-
-const STYLES_UNSTYLED_ANCHOR = css`
-  color: inherit;
-  text-decoration: none;
 `;
 
 const STYLES_LEFT = css`
@@ -38,109 +30,115 @@ const STYLES_LOGO_CONTAINER = css`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding-top: 8px;
 `;
 
 const STYLES_NAV = css`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1440px;
+  position: relative;
+  background-color: white;
+  z-index: 2;
   margin: 0 auto;
-  height: 58px;
+  padding: 0 16px;
+  height: 60px;
   width: 100%;
-  padding: 0 24px 0 24px;
+  max-width: 1440px;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    padding: 0 16px 0 16px;
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   }
 `;
 
-const HIDDEN_ON_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+const STYLES_MOBILE_NAV = css`
+  padding: 0px;
+  height: 56px;
+
+  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+    display: none;
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    border-bottom: none;
+  }
+`;
+
+const STYLES_SEARCH_OVERLAY = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    z-index: 1;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    opacity: 0.5;
+    background-color: ${Constants.expoColors.black};
+  }
+`;
+
+const STYLES_HIDDEN_ON_MOBILE = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
     display: none;
   }
 `;
 
 const SECTION_LINKS_WRAPPER = css`
-  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-    padding-left: 10px;
-    margin-left: 15px;
-    border-left-width: 1px;
-    border-left-color: #eee;
-    border-left-style: solid;
-  }
+  margin-left: 16px;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    margin-left: 15px;
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    margin-left: 0px;
   }
 `;
 
-const STYLES_TITLE_TEXT = css`
-  white-space: nowrap;
-  padding: 0 0 0 8px;
-  font-size: 1.3rem;
-  display: flex;
-  padding-bottom: 2px;
-  font-family: ${Constants.fonts.demi};
-  cursor: pointer;
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: none;
-  }
+const STYLES_MENU_BUTTON_CONTAINER = css`
+  display: grid;
+  grid-gap: 12px;
+  grid-auto-flow: column;
 `;
 
 const STYLES_MENU_BUTTON = css`
+  display: none;
   cursor: pointer;
   height: 100%;
   align-items: center;
   justify-content: center;
-  padding-left: 24px;
-  margin-left: 16px;
-  border-left: 1px solid ${Constants.colors.border};
-  text-decoration: none;
-  color: ${Constants.colors.black};
-
-  :visited {
-    color: ${Constants.colors.black};
-  }
+  height: 40px;
+  width: 40px;
+  border-radius: 2px;
 
   :hover {
-    color: ${Constants.colors.expo};
+    background-color: ${Constants.expoColors.gray[100]};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    padding-left: 16px;
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    display: grid;
   }
-`;
-
-const STYLES_MENU_BUTTON_IS_MOBILE = css`
-  display: none;
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: flex;
-  }
-`;
-
-const STYLES_MENU_BUTTON_VISIBLE = css`
-  display: flex;
-`;
-
-const SECTION_LINK_CONTAINER = css`
-  display: flex;
 `;
 
 const SECTION_LINK = css`
   text-decoration: none;
   font-weight: 900;
   font-family: expo-brand-demi, sans-serif;
+
+  padding: 0 16px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 2px;
   :hover {
-    opacity: 0.5;
+    background-color: ${Constants.expoColors.gray[100]};
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    height: 56px;
+    border-radius: 0px;
   }
 `;
 
 const SECTION_LINK_ACTIVE = css`
-  text-decoration: underline;
+  color: #000 !important;
+  background-color: ${Constants.expoColors.gray[200]};
 `;
 
 const SECTION_LINK_INACTIVE = css`
@@ -163,54 +161,72 @@ function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style, 
 
 export default class DocumentationHeader extends React.PureComponent {
   render() {
+    const HIDE_ON_MOBILE = true;
+    const SHOW_ON_MOBILE = false;
+
     return (
-      <header className={STYLES_NAV}>
-        <div className={STYLES_LEFT}>
-          <div className={STYLES_LOGO_CONTAINER}>
-            <Link href="/">
-              <a className={STYLES_LOGO}>
-                <BrandLogo />
-              </a>
-            </Link>
+      <div>
+        <header className={STYLES_NAV}>
+          <div className={STYLES_LEFT}>
+            <div className={STYLES_LOGO_CONTAINER}>
+              <Link href="/">
+                <span className={STYLES_LOGO}>
+                  <img src={'/static/images/header/docs-logo.svg'} />
+                </span>
+              </Link>
 
-            <Link href="/">
-              <a className={STYLES_UNSTYLED_ANCHOR}>
-                <h1 className={STYLES_TITLE_TEXT}>Expo</h1>
-              </a>
-            </Link>
-
-            {this._renderSectionLinks()}
+              {this._renderSectionLinks(HIDE_ON_MOBILE)}
+            </div>
           </div>
-        </div>
-        <div className={STYLES_RIGHT}>
-          {!this.props.isAlogliaSearchHidden && (
-            <AlgoliaSearch router={this.props.router} version={this.props.version} />
-          )}
+          <div className={STYLES_RIGHT}>
+            {!this.props.isAlogliaSearchHidden && (
+              <AlgoliaSearch
+                router={this.props.router}
+                version={this.props.version}
+                hiddenOnMobile={HIDE_ON_MOBILE}
+              />
+            )}
 
-          {!this.props.isMenuActive && (
-            <span
-              className={`${STYLES_MENU_BUTTON} ${STYLES_MENU_BUTTON_IS_MOBILE}`}
-              onClick={this.props.onShowMenu}>
-              <MenuIcon />
-            </span>
-          )}
+            {!this.props.isMenuActive && (
+              <div className={STYLES_MENU_BUTTON_CONTAINER}>
+                <span className={STYLES_MENU_BUTTON} onClick={this.props.onShowSearch}>
+                  <img src={'/static/images/header/search.svg'} />
+                </span>
+                <span className={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
+                  <img src={'/static/images/header/more-horizontal.svg'} />
+                </span>
+              </div>
+            )}
 
-          {this.props.isMenuActive && (
-            <span
-              className={`${STYLES_MENU_BUTTON} ${STYLES_MENU_BUTTON_VISIBLE}`}
-              onClick={this.props.onHideMenu}>
-              <DismissIcon />
-            </span>
+            {this.props.isMenuActive && (
+              <span className={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
+                <img src={'/static/images/header/x.svg'} />
+              </span>
+            )}
+          </div>
+        </header>
+        <header className={`${STYLES_NAV} ${STYLES_MOBILE_NAV}`}>
+          {this.props.isMobileSearchActive ? (
+            <AlgoliaSearch
+              router={this.props.router}
+              version={this.props.version}
+              hiddenOnMobile={SHOW_ON_MOBILE}
+              onHideSearch={this.props.onHideSearch}
+              onStartMobileSearchText={this.props.onStartMobileSearchText}
+            />
+          ) : (
+            this._renderSectionLinks(SHOW_ON_MOBILE)
           )}
-        </div>
-      </header>
+        </header>
+        <div className={`${this.props.isMobileSearchTextActive && STYLES_SEARCH_OVERLAY}`} />
+      </div>
     );
   }
 
-  _renderSectionLinks = () => {
+  _renderSectionLinks = hiddenOnMobile => {
     return (
-      <div className={SECTION_LINKS_WRAPPER}>
-        <SectionContainer spaceBetween={15}>
+      <div className={`${SECTION_LINKS_WRAPPER} ${hiddenOnMobile && STYLES_HIDDEN_ON_MOBILE}`}>
+        <SectionContainer spaceBetween={hiddenOnMobile ? 8 : 0}>
           <Link href="/">
             <a
               className={`${SECTION_LINK} ${
@@ -242,7 +258,7 @@ export default class DocumentationHeader extends React.PureComponent {
                         : SECTION_LINK_INACTIVE
                     }
                   `}>
-              <span className={HIDDEN_ON_MOBILE}>API</span> Reference
+              API Reference
             </a>
           </Link>
         </SectionContainer>

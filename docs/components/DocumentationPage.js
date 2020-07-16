@@ -83,11 +83,37 @@ export default class DocumentationPage extends React.Component {
     this.setState({
       isMenuActive: true,
     });
+    this._handleHideSearch();
   };
 
   _handleHideMenu = () => {
     this.setState({
       isMenuActive: false,
+    });
+  };
+
+  _handleShowSearch = () => {
+    this.setState({
+      isMobileSearchActive: true,
+    });
+  };
+
+  _handleHideSearch = () => {
+    this.setState({
+      isMobileSearchActive: false,
+    });
+    this._handleEndMobileSearchText();
+  };
+
+  _handleStartMobileSearchText = () => {
+    this.setState({
+      isMobileSearchTextActive: true,
+    });
+  };
+
+  _handleEndMobileSearchText = () => {
+    this.setState({
+      isMobileSearchTextActive: false,
     });
   };
 
@@ -162,10 +188,15 @@ export default class DocumentationPage extends React.Component {
         pathname={this.props.url.pathname}
         version={this._version}
         isMenuActive={this.state.isMenuActive}
+        isMobileSearchActive={this.state.isMobileSearchActive}
+        isMobileSearchTextActive={this.state.isMobileSearchTextActive}
         isAlogiaSearchHidden={this.state.isMenuActive}
         onSetVersion={this._handleSetVersion}
         onShowMenu={this._handleShowMenu}
         onHideMenu={this._handleHideMenu}
+        onHideSearch={this._handleHideSearch}
+        onShowSearch={this._handleShowSearch}
+        onStartMobileSearchText={this._handleStartMobileSearchText}
       />
     );
 
@@ -186,6 +217,8 @@ export default class DocumentationPage extends React.Component {
         header={headerElement}
         sidebar={sidebarElement}
         isMenuActive={this.state.isMenuActive}
+        isMobileSearchActive={this.state.isMobileSearchActive}
+        isMobileSearchTextActive={this.state.mobileSearchText}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           <AlgoliaDocsearchMeta
