@@ -35,7 +35,7 @@ public class ImagePickerFileUtils {
   }
 
 
-  public static  String generateOutputPath(File internalDirectory, String dirName, String extension) throws IOException {
+  public static String generateOutputPath(File internalDirectory, String dirName, String extension) throws IOException {
     File directory = new File(internalDirectory + File.separator + dirName);
     ImagePickerFileUtils.ensureDirExists(directory);
     String filename = UUID.randomUUID().toString();
