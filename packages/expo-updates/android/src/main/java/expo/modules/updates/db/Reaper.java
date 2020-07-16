@@ -21,7 +21,7 @@ public class Reaper {
       return;
     }
 
-    List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdatesForProject(configuration.getProjectIdentifier());
+    List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdatesForScope(configuration.getScopeKey());
 
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(allUpdates, launchedUpdate);
     database.updateDao().deleteUpdates(updatesToDelete);

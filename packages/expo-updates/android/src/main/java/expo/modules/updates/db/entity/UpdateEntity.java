@@ -31,7 +31,7 @@ public class UpdateEntity {
 
   @ColumnInfo(name = "project_identifier")
   @NonNull
-  public String projectIdentifier;
+  public String scopeKey;
 
   @ColumnInfo(name = "commit_time")
   @NonNull
@@ -52,10 +52,10 @@ public class UpdateEntity {
   @NonNull
   public boolean keep = false;
 
-  public UpdateEntity(UUID id, Date commitTime, String runtimeVersion, String projectIdentifier) {
+  public UpdateEntity(UUID id, Date commitTime, String runtimeVersion, String scopeKey) {
     this.id = id;
     this.commitTime = commitTime;
     this.runtimeVersion = runtimeVersion;
-    this.projectIdentifier = projectIdentifier;
+    this.scopeKey = scopeKey;
   }
 }

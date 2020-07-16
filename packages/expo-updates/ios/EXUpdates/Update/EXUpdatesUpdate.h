@@ -19,7 +19,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @interface EXUpdatesUpdate : NSObject
 
 @property (nonatomic, strong, readonly) NSUUID *updateId;
-@property (nonatomic, strong, readonly) NSString *projectIdentifier;
+@property (nonatomic, strong, readonly) NSString *scopeKey;
 @property (nonatomic, strong, readonly) NSDate *commitTime;
 @property (nonatomic, strong, readonly) NSString *runtimeVersion;
 @property (nonatomic, strong, readonly, nullable) NSDictionary * metadata;

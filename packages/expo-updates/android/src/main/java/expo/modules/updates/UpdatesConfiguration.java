@@ -15,7 +15,7 @@ public class UpdatesConfiguration {
   private static final String TAG = UpdatesConfiguration.class.getSimpleName();
 
   public static final String UPDATES_CONFIGURATION_ENABLED_KEY = "enabled";
-  public static final String UPDATES_CONFIGURATION_PROJECT_ID_KEY = "projectIdentifier";
+  public static final String UPDATES_CONFIGURATION_SCOPE_KEY_KEY = "scopeKey";
   public static final String UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl";
   public static final String UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY = "releaseChannel";
   public static final String UPDATES_CONFIGURATION_SDK_VERSION_KEY = "sdkVersion";
@@ -33,7 +33,7 @@ public class UpdatesConfiguration {
   }
 
   private boolean mIsEnabled;
-  private String mProjectIdentifier;
+  private String mScopeKey;
   private Uri mUpdateUrl;
   private String mSdkVersion;
   private String mRuntimeVersion;
@@ -45,8 +45,8 @@ public class UpdatesConfiguration {
     return mIsEnabled;
   }
 
-  public String getProjectIdentifier() {
-    return mProjectIdentifier;
+  public String getScopeKey() {
+    return mScopeKey;
   }
 
   public Uri getUpdateUrl() {
@@ -81,7 +81,7 @@ public class UpdatesConfiguration {
       mUpdateUrl = urlString == null ? null : Uri.parse(urlString);
 
       mIsEnabled = ai.metaData.getBoolean("expo.modules.updates.ENABLED", true);
-      mProjectIdentifier = ai.metaData.getString("expo.modules.updates.EXPO_PROJECT_IDENTIFIER", urlString);
+      mScopeKey = ai.metaData.getString("expo.modules.updates.EXPO_SCOPE_KEY", urlString);
       mSdkVersion = ai.metaData.getString("expo.modules.updates.EXPO_SDK_VERSION");
       mReleaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default");
       mLaunchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0);
@@ -113,17 +113,17 @@ public class UpdatesConfiguration {
       mUpdateUrl = updateUrlFromMap;
     }
 
-    String projectIdentifierFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_PROJECT_ID_KEY, String.class);
-    if (projectIdentifierFromMap != null) {
-      mProjectIdentifier = projectIdentifierFromMap;
+    String scopeKeyFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_SCOPE_KEY_KEY, String.class);
+    if (scopeKeyFromMap != null) {
+      mScopeKey = scopeKeyFromMap;
     }
 
     // set updateUrl as the default value if none is provided
-    if (mProjectIdentifier == null) {
+    if (mScopeKey == null) {
       if (mUpdateUrl != null) {
-        mProjectIdentifier = mUpdateUrl.toString();
+        mScopeKey = mUpdateUrl.toString();
       } else {
-        throw new AssertionError("expo-updates must be configured with a valid update URL or project identifier.");
+        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
       }
     }
 

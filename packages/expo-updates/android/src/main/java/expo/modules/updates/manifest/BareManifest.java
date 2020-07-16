@@ -1,6 +1,5 @@
 package expo.modules.updates.manifest;
 
-import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -12,7 +11,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import expo.modules.updates.UpdatesConfiguration;
-import expo.modules.updates.UpdatesController;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -24,7 +22,7 @@ public class BareManifest implements Manifest {
   private static String TAG = BareManifest.class.getSimpleName();
 
   private UUID mId;
-  private String mProjectIdentifier;
+  private String mScopeKey;
   private Date mCommitTime;
   private String mRuntimeVersion;
   private JSONObject mMetadata;
@@ -34,13 +32,13 @@ public class BareManifest implements Manifest {
 
   private BareManifest(JSONObject manifestJson,
                        UUID id,
-                       String projectIdentifier,
+                       String scopeKey,
                        Date commitTime,
                        String runtimeVersion,
                        JSONObject metadata,
                        JSONArray assets) {
     mManifestJson = manifestJson;
-    mProjectIdentifier = projectIdentifier;
+    mScopeKey = scopeKey;
     mId = id;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
@@ -55,7 +53,7 @@ public class BareManifest implements Manifest {
     JSONObject metadata = manifestJson.optJSONObject("metadata");
     JSONArray assets = manifestJson.optJSONArray("assets");
 
-    return new BareManifest(manifestJson, id, configuration.getProjectIdentifier(), commitTime, runtimeVersion, metadata, assets);
+    return new BareManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, assets);
   }
 
   public JSONObject getRawManifestJson() {
@@ -63,7 +61,7 @@ public class BareManifest implements Manifest {
   }
 
   public UpdateEntity getUpdateEntity() {
-    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mProjectIdentifier);
+    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey);
     if (mMetadata != null) {
       updateEntity.metadata = mMetadata;
     }

@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import expo.modules.updates.UpdatesConfiguration;
-import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
@@ -33,7 +32,7 @@ public class LegacyManifest implements Manifest {
   private Uri mAssetsUrlBase = null;
 
   private UUID mId;
-  private String mProjectIdentifier;
+  private String mScopeKey;
   private Date mCommitTime;
   private String mRuntimeVersion;
   private JSONObject mMetadata;
@@ -46,7 +45,7 @@ public class LegacyManifest implements Manifest {
   private LegacyManifest(JSONObject manifestJson,
                          Uri manifestUrl,
                          UUID id,
-                         String projectIdentifier,
+                         String scopeKey,
                          Date commitTime,
                          String runtimeVersion,
                          JSONObject metadata,
@@ -55,7 +54,7 @@ public class LegacyManifest implements Manifest {
     mManifestJson = manifestJson;
     mManifestUrl = manifestUrl;
     mId = id;
-    mProjectIdentifier = projectIdentifier;
+    mScopeKey = scopeKey;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
     mMetadata = metadata;
@@ -89,7 +88,7 @@ public class LegacyManifest implements Manifest {
 
     JSONArray bundledAssets = manifestJson.optJSONArray("bundledAssets");
 
-    return new LegacyManifest(manifestJson,configuration.getUpdateUrl(), id, configuration.getProjectIdentifier(), commitTime, runtimeVersion, manifestJson, bundleUrl, bundledAssets);
+    return new LegacyManifest(manifestJson,configuration.getUpdateUrl(), id, configuration.getScopeKey(), commitTime, runtimeVersion, manifestJson, bundleUrl, bundledAssets);
   }
 
   public JSONObject getRawManifestJson() {
@@ -97,7 +96,7 @@ public class LegacyManifest implements Manifest {
   }
 
   public UpdateEntity getUpdateEntity() {
-    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mProjectIdentifier);
+    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey);
     if (mMetadata != null) {
       updateEntity.metadata = mMetadata;
     }

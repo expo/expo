@@ -149,7 +149,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
   [self _executeSql:sql
            withArgs:@[
                       update.updateId,
-                      update.projectIdentifier,
+                      update.scopeKey,
                       @([update.commitTime timeIntervalSince1970] * 1000),
                       update.runtimeVersion,
                       update.metadata ?: [NSNull null],
@@ -354,7 +354,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
   NSString * const sql = @"SELECT * FROM updates WHERE project_identifier = ?1;";
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.projectIdentifier] error:error];
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
   if (!rows) {
     return nil;
   }
@@ -373,7 +373,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
   WHERE project_identifier = ?1\
   AND status IN (%li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded];
 
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.projectIdentifier] error:error];
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
   if (!rows) {
     return nil;
   }

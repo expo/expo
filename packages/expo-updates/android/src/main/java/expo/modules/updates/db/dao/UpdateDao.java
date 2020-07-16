@@ -24,8 +24,8 @@ public abstract class UpdateDao {
   @Query("SELECT * FROM updates WHERE status IN (:statuses);")
   public abstract List<UpdateEntity> _loadUpdatesWithStatuses(List<UpdateStatus> statuses);
 
-  @Query("SELECT * FROM updates WHERE project_identifier = :projectIdentifier AND status IN (:statuses);")
-  public abstract List<UpdateEntity> _loadUpdatesForProjectWithStatuses(String projectIdentifier, List<UpdateStatus> statuses);
+  @Query("SELECT * FROM updates WHERE project_identifier = :scopeKey AND status IN (:statuses);")
+  public abstract List<UpdateEntity> _loadUpdatesForProjectWithStatuses(String scopeKey, List<UpdateStatus> statuses);
 
   @Query("SELECT * FROM updates WHERE id = :id;")
   public abstract List<UpdateEntity> _loadUpdatesWithId(UUID id);
@@ -44,11 +44,11 @@ public abstract class UpdateDao {
    * for public use
    */
 
-  @Query("SELECT * FROM updates WHERE project_identifier = :projectIdentifier;")
-  public abstract List<UpdateEntity> loadAllUpdatesForProject(String projectIdentifier);
+  @Query("SELECT * FROM updates WHERE project_identifier = :scopeKey;")
+  public abstract List<UpdateEntity> loadAllUpdatesForScope(String scopeKey);
 
-  public List<UpdateEntity> loadLaunchableUpdatesForProject(String projectIdentifier) {
-    return _loadUpdatesForProjectWithStatuses(projectIdentifier, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED));
+  public List<UpdateEntity> loadLaunchableUpdatesForScope(String scopeKey) {
+    return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED));
   }
 
   public UpdateEntity loadUpdateWithId(UUID id) {

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     _rawManifest = manifest;
     _config = config;
     _database = database;
-    _projectIdentifier = config.projectIdentifier;
+    _scopeKey = config.scopeKey;
   }
   return self;
 }
