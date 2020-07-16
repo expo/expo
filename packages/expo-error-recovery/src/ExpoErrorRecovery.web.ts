@@ -10,6 +10,7 @@ function _consumeRecoveryProps(): string | null {
   } catch (e) {
     console.log(e);
   }
+  return null;
 }
 
 export default {
