@@ -24,31 +24,27 @@ const STYLES_INPUT = css`
     font-family: ${Constants.fontFamilies.book};
     color: ${Constants.colors.black80};
     box-sizing: border-box;
-    width: 380px;
-    font-size: 14px;
-    padding: 2px 36px 0 14px;
-    border-radius: 5px;
-    height: 36px;
+    width: 38vw;
+    font-size: 16px;
+    line-height: 16px;
+    padding: 2px 36px 0 36px;
+    border-radius: 2px;
+    height: 40px;
     outline: 0;
     border: 1px solid ${Constants.colors.border};
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.08);
+    background-color: ${Constants.expoColors.gray[200]};
+  }
 
-    :hover {
-      border-color: rgba(0, 0, 0, 0.4);
-      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4);
-    }
-
-    :focus {
-      border: 1px solid ${Constants.colors.expo};
-      outline: 0;
-    }
+  input::placeholder,
+  input::value {
+    transform: translateY(0.5px);
   }
 
   .svg-icons {
     left: 240px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
     display: none;
   }
 
@@ -58,15 +54,52 @@ const STYLES_INPUT = css`
     transform: translateY(-50%);
     height: 20px;
     width: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    color: rgba(0, 0, 0, 0.3);
-    border-radius: 5px;
-    right: 10px;
+    right: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-top: 2px;
     pointer-events: none;
+  }
+
+  .search {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    display: flex;
+    left: 8px;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
+
+const STYLES_INPUT_MOBILE = css`
+  flex: auto;
+  margin: 0px 16px;
+
+  .searchbox__input,
+  input {
+    width: calc(100vw - 32px) !important;
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    display: flex;
+  }
+
+  .close-search {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    color: rgba(0, 0, 0, 0.3);
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
@@ -94,7 +127,9 @@ class AlgoliaSearch extends React.Component {
     this.docsearch = docsearch({
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
       indexName: 'expo',
-      inputSelector: '#algolia-search-box',
+      inputSelector: this.props.hiddenOnMobile
+        ? '#algolia-search-box'
+        : '#algolia-search-box-mobile',
       enhancedSearchInput: false,
       algoliaOptions: {
         // include pages without version (guides/get-started) OR exact version (api-reference)
@@ -150,21 +185,36 @@ class AlgoliaSearch extends React.Component {
 
   render() {
     return (
-      <div className={STYLES_INPUT} style={this.props.style}>
+      <div
+        className={`${STYLES_INPUT} ${!this.props.hiddenOnMobile && STYLES_INPUT_MOBILE}`}
+        style={this.props.style}>
+        <div className="search">
+          <img src={'/static/images/header/search.svg'} />
+        </div>
+
         <input
           onFocus={() => this.setState({ isFocused: true })}
           onBlur={() => this.setState({ isFocused: false })}
-          id="algolia-search-box"
+          id={this.props.hiddenOnMobile ? 'algolia-search-box' : 'algolia-search-box-mobile'}
           type="text"
           placeholder="Search the documentation"
           autoComplete="off"
           spellCheck="false"
           dir="auto"
+          onClick={this.props.onStartMobileSearchText}
         />
 
-        <div className="shortcut-hint" style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
-          /
-        </div>
+        {this.props.hiddenOnMobile ? (
+          <div
+            className="shortcut-hint"
+            style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
+            <img src={'/static/images/header/slash.svg'} />
+          </div>
+        ) : (
+          <span className="close-search" onClick={this.props.onHideSearch}>
+            <img src={'/static/images/header/x.svg'} />
+          </span>
+        )}
       </div>
     );
   }
