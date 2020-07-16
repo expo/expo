@@ -69,6 +69,7 @@ export const WebBrowserResultType = {
    * Android only
    */
   OPENED: 'opened',
+  LOCKED: 'locked',
 } as const;
 
 export type WebBrowserResultType = typeof WebBrowserResultType[keyof typeof WebBrowserResultType];
