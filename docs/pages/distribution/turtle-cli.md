@@ -67,7 +67,6 @@ This means you're required to publish your app to Expo's servers or host it on y
 - [Publishing an app to Expo's servers](../../workflow/publishing/)
 - [Hosting an app on your own server](../hosting-your-app/)
 
-
 ## Start the build
 
 If you choose to publish your app to Expo servers, you must have an Expo
