@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -23,6 +24,7 @@ public class DatabaseLauncher implements Launcher {
 
   private static final String TAG = DatabaseLauncher.class.getSimpleName();
 
+  private UpdatesConfiguration mConfiguration;
   private File mUpdatesDirectory;
   private SelectionPolicy mSelectionPolicy;
 
@@ -37,7 +39,8 @@ public class DatabaseLauncher implements Launcher {
 
   private LauncherCallback mCallback = null;
 
-  public DatabaseLauncher(File updatesDirectory, SelectionPolicy selectionPolicy) {
+  public DatabaseLauncher(UpdatesConfiguration configuration, File updatesDirectory, SelectionPolicy selectionPolicy) {
+    mConfiguration = configuration;
     mUpdatesDirectory = updatesDirectory;
     mSelectionPolicy = selectionPolicy;
   }
@@ -126,7 +129,7 @@ public class DatabaseLauncher implements Launcher {
     // We can only run an update marked as embedded if it's actually the update embedded in the
     // current binary. We might have an older update from a previous binary still listed as
     // "EMBEDDED" in the database so we need to do this check.
-    Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context);
+    Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
     ArrayList<UpdateEntity> filteredLaunchableUpdates = new ArrayList<>();
     for (UpdateEntity update : launchableUpdates) {
       if (update.status == UpdateStatus.EMBEDDED) {
@@ -146,7 +149,7 @@ public class DatabaseLauncher implements Launcher {
     if (!assetFileExists) {
       // something has gone wrong, we're missing this asset
       // first we check to see if a copy is embedded in the binary
-      Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context);
+      Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
       if (embeddedManifest != null) {
         ArrayList<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
         AssetEntity matchingEmbeddedAsset = null;

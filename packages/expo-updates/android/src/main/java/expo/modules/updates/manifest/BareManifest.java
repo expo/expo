@@ -1,5 +1,6 @@
 package expo.modules.updates.manifest;
 
+import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesController;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -28,9 +30,11 @@ public class BareManifest implements Manifest {
   private JSONArray mAssets;
 
   private JSONObject mManifestJson;
+  private Uri mManifestUri;
 
-  private BareManifest(JSONObject manifestJson, UUID id, Date commitTime, String runtimeVersion, JSONObject metadata, JSONArray assets) {
+  private BareManifest(JSONObject manifestJson, Uri manifestUri, UUID id, Date commitTime, String runtimeVersion, JSONObject metadata, JSONArray assets) {
     mManifestJson = manifestJson;
+    mManifestUri = manifestUri;
     mId = id;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
@@ -38,14 +42,14 @@ public class BareManifest implements Manifest {
     mAssets = assets;
   }
 
-  public static BareManifest fromManifestJson(JSONObject manifestJson) throws JSONException {
+  public static BareManifest fromManifestJson(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
     UUID id = UUID.fromString(manifestJson.getString("id"));
     Date commitTime = new Date(manifestJson.getLong("commitTime"));
-    String runtimeVersion = UpdatesUtils.getRuntimeVersion(UpdatesController.getInstance().getUpdatesConfiguration());
+    String runtimeVersion = UpdatesUtils.getRuntimeVersion(configuration);
     JSONObject metadata = manifestJson.optJSONObject("metadata");
     JSONArray assets = manifestJson.optJSONArray("assets");
 
-    return new BareManifest(manifestJson, id, commitTime, runtimeVersion, metadata, assets);
+    return new BareManifest(manifestJson, configuration.getUpdateUrl(), id, commitTime, runtimeVersion, metadata, assets);
   }
 
   public JSONObject getRawManifestJson() {
@@ -53,7 +57,7 @@ public class BareManifest implements Manifest {
   }
 
   public UpdateEntity getUpdateEntity() {
-    String projectIdentifier = UpdatesController.getInstance().getUpdateUrl().toString();
+    String projectIdentifier = mManifestUri.toString();
     UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, projectIdentifier);
     if (mMetadata != null) {
       updateEntity.metadata = mMetadata;
