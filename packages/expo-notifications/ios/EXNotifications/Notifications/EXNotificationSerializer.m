@@ -59,8 +59,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     serializedContent[@"summaryArgument"] = content.summaryArgument ?: [NSNull null];
     serializedContent[@"summaryArgumentCount"] = @(content.summaryArgumentCount);
   }
-
-  serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ?: [NSNull null];
+  serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ? [self maybeAddCategoryIdentifierPrefix: content.categoryIdentifier userInfo:data] : [NSNull null];
   serializedContent[@"threadIdentifier"] = content.threadIdentifier ?: [NSNull null];
   if (@available(iOS 13.0, *)) {
     serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
@@ -79,6 +78,17 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   }
   
   return data;
+}
+
++ (NSString *)maybeAddCategoryIdentifierPrefix:(NSString *)identifier userInfo:(NSDictionary *)userInfo
+{
+  // experienceId only exists in the Expo client
+  NSString *experienceId = userInfo[@"experienceId"] ?: [NSNull null];
+  if (experienceId) {
+    NSString *scopedCategoryPrefix = [NSString stringWithFormat:@"%@-", experienceId];
+    return [identifier stringByReplacingOccurrencesOfString:scopedCategoryPrefix withString:@""];
+  }
+  return identifier;
 }
 
 + (NSString *)serializedNotificationSound:(UNNotificationSound *)sound
