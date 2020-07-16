@@ -7,5 +7,6 @@ declare const _default: {
     stop(): Promise<void>;
     pause(): Promise<void>;
     resume(): Promise<void>;
+    maxSpeechInputLength: number;
 };
 export default _default;
