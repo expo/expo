@@ -106,7 +106,6 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
 - [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
 
----
 
 ### `Speech.stop()`
 
