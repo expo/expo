@@ -2,7 +2,6 @@
    LukyVj who works at Algolia: https://github.com/algolia/docsearch/issues/181 */
 
 @media (max-width: 748px) {
-  /* Abi added this */
   .searchbox {
     width: 100%;
     margin-bottom: 0px;
@@ -40,14 +39,14 @@
     display: none !important;
   }
 
-  /* Abi added this; neccessary to prevent mobile Safari from zooming in */
+  /* neccessary to prevent mobile Safari from zooming in */
   .algolia-autocomplete .searchbox__input {
     font-size: 16px;
   }
 }
 
+/* !important tags, box-shadow are needed for desktop, but make overwritting difficult, so moved out of algolia.min.css */
 @media (min-width: 748px) {
-  /* Abi added this */
   .algolia-autocomplete.algolia-autocomplete-left .ds-dropdown-menu {
     left: 0 !important;
   }
