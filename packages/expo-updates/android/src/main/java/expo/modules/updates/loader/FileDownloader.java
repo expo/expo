@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.Map;
 
 import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -134,7 +135,7 @@ public class FileDownloader {
     }
   }
 
-  public static void downloadAsset(final AssetEntity asset, File destinationDirectory, Context context, final AssetDownloadCallback callback) {
+  public static void downloadAsset(final AssetEntity asset, File destinationDirectory, UpdatesConfiguration configuration, final AssetDownloadCallback callback) {
     if (asset.url == null) {
       callback.onFailure(new Exception("Could not download asset " + asset.key + " with no URL"), asset);
       return;
@@ -148,7 +149,7 @@ public class FileDownloader {
       callback.onSuccess(asset, false);
     } else {
       try {
-        downloadFileToPath(addHeadersToUrl(asset.url, context), path, new FileDownloadCallback() {
+        downloadFileToPath(addHeadersToUrl(asset.url, configuration), path, new FileDownloadCallback() {
           @Override
           public void onFailure(Exception e) {
             callback.onFailure(e, asset);
@@ -190,12 +191,19 @@ public class FileDownloader {
     });
   }
 
-  private static Request addHeadersToUrl(Uri url, Context context) {
+  private static Request addHeadersToUrl(Uri url, UpdatesConfiguration configuration) {
     Request.Builder requestBuilder = new Request.Builder()
             .url(url.toString())
             .header("Expo-Platform", "android")
             .header("Expo-Api-Version", "1")
             .header("Expo-Updates-Environment", "BARE");
+
+    if (configuration.getRequestHeaders() != null) {
+      for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
+        requestBuilder.header(entry.getKey(), entry.getValue());
+      }
+    }
+
     return requestBuilder.build();
   }
 
@@ -231,6 +239,13 @@ public class FileDownloader {
         previousFatalError.substring(0, Math.min(1024, previousFatalError.length()))
       );
     }
+
+    if (configuration.getRequestHeaders() != null) {
+      for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
+        requestBuilder.header(entry.getKey(), entry.getValue());
+      }
+    }
+
     return requestBuilder.build();
   }
 }

@@ -17,6 +17,7 @@ public class UpdatesConfiguration {
   public static final String UPDATES_CONFIGURATION_ENABLED_KEY = "enabled";
   public static final String UPDATES_CONFIGURATION_SCOPE_KEY_KEY = "scopeKey";
   public static final String UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl";
+  public static final String UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "requestHeaders";
   public static final String UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY = "releaseChannel";
   public static final String UPDATES_CONFIGURATION_SDK_VERSION_KEY = "sdkVersion";
   public static final String UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY = "runtimeVersion";
@@ -36,6 +37,7 @@ public class UpdatesConfiguration {
   private boolean mIsEnabled;
   private String mScopeKey;
   private Uri mUpdateUrl;
+  private Map<String, String> mRequestHeaders;
   private String mSdkVersion;
   private String mRuntimeVersion;
   private String mReleaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE;
@@ -53,6 +55,10 @@ public class UpdatesConfiguration {
 
   public Uri getUpdateUrl() {
     return mUpdateUrl;
+  }
+
+  public Map<String, String> getRequestHeaders() {
+    return mRequestHeaders;
   }
 
   public String getReleaseChannel() {
@@ -125,6 +131,11 @@ public class UpdatesConfiguration {
       mScopeKey = scopeKeyFromMap;
     }
     maybeSetDefaultScopeKey();
+
+    Map<String, String> requestHeadersFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, Map.class);
+    if (requestHeadersFromMap != null) {
+      mRequestHeaders = requestHeadersFromMap;
+    }
 
     String releaseChannelFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, String.class);
     if (releaseChannelFromMap != null) {
