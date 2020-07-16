@@ -33,6 +33,7 @@
     NSString *categoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, content.categoryIdentifier];
     [content setCategoryIdentifier:categoryIdentifier];
   }
+  
   return content;
 }
 
