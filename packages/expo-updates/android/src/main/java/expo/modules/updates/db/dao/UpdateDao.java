@@ -21,9 +21,6 @@ public abstract class UpdateDao {
    * must be marked public for Room
    * so we use the underscore to discourage use
    */
-  @Query("SELECT * FROM updates WHERE status IN (:statuses);")
-  public abstract List<UpdateEntity> _loadUpdatesWithStatuses(List<UpdateStatus> statuses);
-
   @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND status IN (:statuses);")
   public abstract List<UpdateEntity> _loadUpdatesForProjectWithStatuses(String scopeKey, List<UpdateStatus> statuses);
 
