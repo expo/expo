@@ -1,7 +1,6 @@
 /**
  * @flow
  */
-
 import Constants from 'expo-constants';
 import React from 'react';
 import { AppState, Clipboard, View } from 'react-native';
@@ -48,8 +47,10 @@ export default class ProjectTools extends React.Component {
   _clipboardUpdateInterval: ?number = null;
 
   componentDidMount() {
-    this._startPollingClipboard();
-    this._fetchClipboardContentsAsync();
+    if (this.props.pollForUpdates) {
+      this._startPollingClipboard();
+      this._fetchClipboardContentsAsync();
+    }
     AppState.addEventListener('change', this._maybeResumePollingFromAppState);
   }
 
