@@ -221,7 +221,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4D705045688E7E462453003918A4E15D /* Debug */ = {
+		7103590B8F3E5B42249408618CCBB6C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 05CC3C1BDB0CD94CE5CD73F32939B1D5 /* EXBackgroundFetch.debug.xcconfig */;
 			buildSettings = {
@@ -241,34 +241,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		8A7AA99AFB9ABE5A77E99ADCBF877618 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5370DC92528EB576DA335B7AC4D38E1D /* EXBackgroundFetch.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBackgroundFetch;
-				PRODUCT_NAME = EXBackgroundFetch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		A65E88A7B2B9CBA5E5DB6EAF9742FB3F /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -327,6 +303,32 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		B795B4F9605A038109A2D6E03B9B1A7F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5370DC92528EB576DA335B7AC4D38E1D /* EXBackgroundFetch.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBackgroundFetch;
+				PRODUCT_NAME = EXBackgroundFetch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -409,8 +411,8 @@
 		78FDBBA42F6224C080499707400EF85E /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4D705045688E7E462453003918A4E15D /* Debug */,
-				8A7AA99AFB9ABE5A77E99ADCBF877618 /* Release */,
+				7103590B8F3E5B42249408618CCBB6C2 /* Debug */,
+				B795B4F9605A038109A2D6E03B9B1A7F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

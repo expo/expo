@@ -341,9 +341,9 @@
 			};
 			name = Release;
 		};
-		1DF2B73623EFBECF9C3A765445DAAD5D /* Debug */ = {
+		86EB921C3963B91B404E5D3D219F499B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 62939B224EEFD7F54263417BDDA83B01 /* EXTaskManager.debug.xcconfig */;
+			baseConfigurationReference = 9F1E5EE869A046709190340CB26A9B69 /* EXTaskManager.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -361,9 +361,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		A6098BF719541AB06C7F1306E22FFD06 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -429,9 +431,9 @@
 			};
 			name = Debug;
 		};
-		E5FF368AC122F47F5C83C550994A2385 /* Release */ = {
+		FFDF92CD9ECED7277BB3A6654B25015C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9F1E5EE869A046709190340CB26A9B69 /* EXTaskManager.release.xcconfig */;
+			baseConfigurationReference = 62939B224EEFD7F54263417BDDA83B01 /* EXTaskManager.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -449,10 +451,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -460,8 +462,8 @@
 		60091F6B265982F2C603C47A986F34B3 /* Build configuration list for PBXNativeTarget "EXTaskManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1DF2B73623EFBECF9C3A765445DAAD5D /* Debug */,
-				E5FF368AC122F47F5C83C550994A2385 /* Release */,
+				FFDF92CD9ECED7277BB3A6654B25015C /* Debug */,
+				86EB921C3963B91B404E5D3D219F499B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -21,7 +21,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXBackgroundFetch (8.3.0):
+  - EXBackgroundFetch (8.4.0):
     - UMCore
     - UMTaskManagerInterface
   - EXBarCodeScanner (8.2.1):
@@ -114,7 +114,7 @@ PODS:
     - UMCore
   - EXLocalization (8.2.1):
     - UMCore
-  - EXLocation (8.2.1):
+  - EXLocation (8.3.0):
     - UMCore
     - UMPermissionsInterface
     - UMTaskManagerInterface
@@ -169,7 +169,7 @@ PODS:
     - UMFileSystemInterface
   - EXStoreReview (2.1.2):
     - UMCore
-  - EXTaskManager (8.3.0):
+  - EXTaskManager (8.4.0):
     - UMAppLoader
     - UMConstantsInterface
     - UMCore
@@ -952,7 +952,7 @@ SPEC CHECKSUMS:
   EXAppAuth: 98c853968adeec68008887a0cb475efb2656f196
   EXApplication: d7ccb60c33fa4d506967ff6adde42a0f872d69ad
   EXAV: 9a5ff571128707309aa0376171f0903d49410352
-  EXBackgroundFetch: 6e4836e2998b1e045d574fbc2018b6f288e929b6
+  EXBackgroundFetch: b773f1114c5ecbfa79daf228854184e307f9f760
   EXBarCodeScanner: 02c41a2bb7c0747dc96a96ee30b0aa80a0fc4168
   EXBattery: 367aef7eba65f488587610564224952411f1b48b
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
@@ -983,7 +983,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: 663bf3b9009a96567e98498016e40422631be81d
   EXLocalAuthentication: 985c65e08a6eb84f8f98b51f7435df138b18b9e8
   EXLocalization: b5bcfc925ed83123b585d46d3bd54d7b7118f307
-  EXLocation: e93020e255f52a1cc031e0f45b0a24eb20fc4b55
+  EXLocation: 7615a912e30e8834679d9a07c86d99602f45b479
   EXMailComposer: a7e2a9f6ad73718dc1ec0bb786200dbc9376e2c2
   EXMediaLibrary: 0bf8b552392a0ae3919482c1a0f56def9acbd881
   EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
@@ -1002,7 +1002,7 @@ SPEC CHECKSUMS:
   EXSpeech: 9917a04a410a42904f1507a2e06234a91aff1c6d
   EXSQLite: 64611c1b369c0f1e9cae4e551d0aa4478a58cadf
   EXStoreReview: 2b9bdb91b3ed4319b4f6a4cb4647ba48a6ab67c8
-  EXTaskManager: 019344613fa2ad14a85e5b6c2699707eee35a62d
+  EXTaskManager: 556abb392e1b2f3ab3fa7ee81479e95d3fbd65b3
   EXUpdates: 9dd77b2e9e33d4347ae8ca81cc771cd16170e5af
   EXVideoThumbnails: f70bdc5511749f3181028f5000bcb7be203c631d
   EXWebBrowser: d37a5ffdea1b65947352bc001dd9f732463725d4

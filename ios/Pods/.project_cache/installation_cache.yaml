@@ -7677,7 +7677,7 @@ CACHE_KEYS:
       EXBackgroundFetch:
         :debug: 31cd7aae8a0702ead6df592e2bc5812e
         :release: 31cd7aae8a0702ead6df592e2bc5812e
-    CHECKSUM: 6e4836e2998b1e045d574fbc2018b6f288e929b6
+    CHECKSUM: b773f1114c5ecbfa79daf228854184e307f9f760
     FILES:
       - "../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
       - "../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.m"
@@ -7685,7 +7685,7 @@ CACHE_KEYS:
       - "../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m"
     PROJECT_NAME: EXBackgroundFetch
     SPECS:
-      - EXBackgroundFetch (8.3.0)
+      - EXBackgroundFetch (8.4.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
       EXBarCodeScanner:
@@ -8209,7 +8209,7 @@ CACHE_KEYS:
       EXLocation:
         :debug: f7e22c701853afa3061f6d69d867650c
         :release: f7e22c701853afa3061f6d69d867650c
-    CHECKSUM: e93020e255f52a1cc031e0f45b0a24eb20fc4b55
+    CHECKSUM: 7615a912e30e8834679d9a07c86d99602f45b479
     FILES:
       - "../../packages/expo-location/ios/EXLocation/EXLocation.h"
       - "../../packages/expo-location/ios/EXLocation/EXLocation.m"
@@ -8223,7 +8223,7 @@ CACHE_KEYS:
       - "../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.m"
     PROJECT_NAME: EXLocation
     SPECS:
-      - EXLocation (8.2.1)
+      - EXLocation (8.3.0)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
       EXMailComposer:
@@ -8503,7 +8503,7 @@ CACHE_KEYS:
       EXTaskManager:
         :debug: c45e9c9fbb8d73ae7a0ade23384967ee
         :release: c45e9c9fbb8d73ae7a0ade23384967ee
-    CHECKSUM: 019344613fa2ad14a85e5b6c2699707eee35a62d
+    CHECKSUM: 556abb392e1b2f3ab3fa7ee81479e95d3fbd65b3
     FILES:
       - "../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
       - "../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
@@ -8517,7 +8517,7 @@ CACHE_KEYS:
       - "../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.m"
     PROJECT_NAME: EXTaskManager
     SPECS:
-      - EXTaskManager (8.3.0)
+      - EXTaskManager (8.4.0)
   EXUpdates:
     BUILD_SETTINGS_CHECKSUM:
       EXUpdates:
