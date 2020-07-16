@@ -61,7 +61,7 @@ public class UpdatesDatabaseTest {
     Assert.assertEquals(projectId, byId.projectIdentifier);
 
     updateDao.deleteUpdates(Arrays.asList(testUpdate));
-    Assert.assertEquals(0, updateDao.loadAllUpdates().size());
+    Assert.assertEquals(0, updateDao.loadAllUpdatesForProject(projectId).size());
   }
 
   @Test
@@ -73,13 +73,13 @@ public class UpdatesDatabaseTest {
 
     UpdateEntity testUpdate = new UpdateEntity(uuid, date, runtimeVersion, projectId);
     updateDao.insertUpdate(testUpdate);
-    Assert.assertEquals(0, updateDao.loadLaunchableUpdates().size());
+    Assert.assertEquals(0, updateDao.loadLaunchableUpdatesForProject(projectId).size());
 
     updateDao.markUpdateFinished(testUpdate);
-    Assert.assertEquals(1, updateDao.loadLaunchableUpdates().size());
+    Assert.assertEquals(1, updateDao.loadLaunchableUpdatesForProject(projectId).size());
 
     updateDao.deleteUpdates(Arrays.asList(testUpdate));
-    Assert.assertEquals(0, updateDao.loadAllUpdates().size());
+    Assert.assertEquals(0, updateDao.loadAllUpdatesForProject(projectId).size());
   }
 
   @Test
@@ -112,7 +112,7 @@ public class UpdatesDatabaseTest {
     updateDao.markUpdateFinished(update3);
 
     // check that test has been properly set up
-    List<UpdateEntity> allUpdates = updateDao.loadAllUpdates();
+    List<UpdateEntity> allUpdates = updateDao.loadAllUpdatesForProject(projectId);
     Assert.assertEquals(2, allUpdates.size());
     for (UpdateEntity update : allUpdates) {
       if (update.id.equals(update2.id)) {
