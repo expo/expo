@@ -153,6 +153,9 @@ const TabNavigator =
         },
         tabBarComponent: ThemedTabBarComponent,
         tabBarOptions: {
+          labelStyle: {
+            fontWeight: '600',
+          },
           activeTintColor: {
             light: Colors.light.tintColor,
             dark: Colors.light.tintColor,
