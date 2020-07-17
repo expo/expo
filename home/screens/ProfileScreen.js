@@ -1,5 +1,5 @@
 /* @flow */
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '../components/Icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { withNavigation } from 'react-navigation';
@@ -85,8 +85,17 @@ class UserSettingsButton extends React.Component {
     return (
       <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
         {Platform.select({
-          ios: <Text style={{ fontSize: 17, color: Colors.light.tintColor }}>Options</Text>,
-          android: <Ionicons name="md-settings" size={27} color={Colors[this.props.theme].text} />,
+          ios: (
+            <Text style={{ fontSize: 17, color: Colors[this.props.theme].tintColor }}>Options</Text>
+          ),
+          android: (
+            <Ionicons
+              name="md-settings"
+              size={27}
+              lightColor={Colors.light.text}
+              darkColor={Colors.dark.text}
+            />
+          ),
         })}
       </TouchableOpacity>
     );

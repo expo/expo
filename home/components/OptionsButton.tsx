@@ -1,26 +1,13 @@
-/* @flow */
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 
-class OptionsButton extends React.Component {
-  render() {
-    return (
-      <TouchableOpacity style={styles.container} onPress={this._handlePress}>
-        <Ionicons
-          name={Platform.select({ ios: 'ios-more', default: 'md-more' })}
-          size={27}
-          color="#4E9BDE"
-        />
-      </TouchableOpacity>
-    );
-  }
-
-  _handlePress = () => {
+function OptionsButton({ showActionSheetWithOptions }: any) {
+  const handlePress = () => {
     const options = ['Report this user', 'Cancel'];
     const cancelButtonIndex = 1;
-    this.props.showActionSheetWithOptions(
+    showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex,
@@ -35,6 +22,16 @@ class OptionsButton extends React.Component {
       }
     );
   };
+
+  return (
+    <TouchableOpacity style={styles.container} onPress={handlePress}>
+      <Ionicons
+        name={Platform.select({ ios: 'ios-more', default: 'md-more' })}
+        size={27}
+        color="#4E9BDE"
+      />
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
