@@ -242,7 +242,7 @@ export default class ProjectsScreen extends React.Component<Props, State> {
     if (IS_RESTRICTED) {
       return <NoProjectTools />;
     } else {
-      return <ProjectTools pollForUpdates={this.props.isFocused && !isIOS14()} />;
+      return <ProjectTools pollForUpdates={this.props.isFocused && !Environment.isIOS14()} />;
     }
   };
 
@@ -364,12 +364,6 @@ export default class ProjectsScreen extends React.Component<Props, State> {
       return <NoProjectsOpen isAuthenticated={this.props.isAuthenticated} />;
     }
   };
-}
-
-function isIOS14() {
-  if (Platform.OS !== 'ios') return false;
-  const versionNumber = parseInt(String(Platform.Version), 10);
-  return versionNumber >= 14;
 }
 
 const styles = StyleSheet.create({

@@ -8,25 +8,9 @@ import { AppState, Clipboard, View } from 'react-native';
 import Environment from '../utils/Environment';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
 import QRCodeButton from './QRCodeButton';
+import UrlUtils from '../utils/UrlUtils';
 
 const CLIPBOARD_POLL_INTERVAL = 2000;
-
-function clipboardMightBeOpenable(str: string): boolean {
-  if (!str) {
-    return false;
-  }
-
-  // @username/experience
-  if (str.match(/^@\w+\/\w+/)) {
-    return true;
-  } else if (str.startsWith('exp://')) {
-    return true;
-  } else if (str.startsWith('https://expo.io') || str.startsWith('https://exp.host')) {
-    return true;
-  }
-
-  return false;
-}
 
 type Props = {
   pollForUpdates: boolean,
@@ -88,7 +72,7 @@ export default class ProjectTools extends React.Component {
       requestAnimationFrame(() => {
         this.setState({
           clipboardContents,
-          displayOpenClipboardButton: clipboardMightBeOpenable(clipboardContents),
+          displayOpenClipboardButton: UrlUtils.conformsToExpoProtocol(clipboardContents),
         });
       });
     }
