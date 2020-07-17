@@ -106,7 +106,7 @@ export default class SnackInline extends React.Component {
             <input
               type="hidden"
               name="files"
-              value={JSON.stringify(getSnackFiles(this._getCode(), this.props.assets))}
+              value={JSON.stringify(getSnackFiles(this._getCode(), this.props.files))}
             />
 
             <button className="snack-inline-example-button">

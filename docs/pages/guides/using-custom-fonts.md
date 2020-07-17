@@ -47,7 +47,7 @@ To create a new project including this example, run `npx create-react-native-app
 <SnackInline
   label="Custom Font"
   dependencies={['expo-font']}
-  assets={{
+  files={{
     'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
   }}>
 
@@ -201,7 +201,7 @@ If you don't want to use the `useFonts` hook (for example, maybe you prefer clas
 <SnackInline
   label="Font loadAsync"
   dependencies={['expo-font']}
-  assets={{
+  files={{
     'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
   }}>
 
