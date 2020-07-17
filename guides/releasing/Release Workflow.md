@@ -2,8 +2,13 @@
 
   - [Stage 0 - Infra &amp; Prerelease](#stage-0---infra--prerelease)
     - [0.1. Dropping old SDKs](#01-dropping-old-sdks)
-    - [0.2. Update schema on staging](#02-update-schema-on-staging)
-    - [0.3. Update versions on staging](#03-update-versions-on-staging)
+    - [0.2. Update vendored modules](#02-update-vendored-modules)
+    - [0.3. Update schema on staging](#03-update-schema-on-staging)
+    - [0.4. Update versions on staging](#04-update-versions-on-staging)
+    - [0.5. Tag React Native fork](#05-tag-react-native-fork)
+    - [0.6. Generate new mocks](#06-generate-new-mocks)
+    - [0.7. Publishing next packages](#07-publishing-next-packages)
+    - [0.8. Generate new SDK docs](#08-generate-new-sdk-docs)
   - [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
     - [1.1. Cutting off release branch](#11-cutting-off-release-branch)
     - [1.2. Update React Native](#12-update-react-native)
@@ -15,11 +20,9 @@
     - [2.3. Web Quality Assurance](#23-web-quality-assurance)
     - [2.4. Cherry-pick Versioned Code to master](#24-cherry-pick-versioned-code-to-master)
     - [2.5. Publish demo apps](#25-publish-demo-apps)
-  - [Stage 3 - Prerelease](#stage-3---prerelease)
-    - [3.1. Tag React Native fork](#31-tag-react-native-fork)
-    - [3.2. Generate new mocks](#32-generate-new-mocks)
-    - [3.3. Publishing next packages](#33-publishing-next-packages)
-    - [3.4. Publishing next project templates](#34-publishing-next-project-templates)
+  - [Stage 3 - Publish NPM packages](#stage-3---publish-npm-packages)
+    - [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages)
+    - [3.2. Publishing next project templates](#32-publishing-next-project-templates)
   - [Stage 4 - Expo client](#stage-4---expo-client)
     - [4.1. Releasing beta version](#41-releasing-beta-version)
     - [4.2. Making a simulator build](#42-making-a-simulator-build)
@@ -33,7 +36,7 @@
   - [Stage 6 - Final release](#stage-6---final-release)
     - [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)
     - [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)
-    - [6.3. Generate and deploy new docs](#63-generate-and-deploy-new-docs)
+    - [6.3. Deploy new docs](#63-deploy-new-docs)
     - [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint)
     - [6.5. Promote versions to production](#65-promote-versions-to-production)
     - [6.6. Promote packages to latest on NPM registry](#66-promote-packages-to-latest-on-npm-registry)
@@ -62,7 +65,22 @@
 - Repeat **iOS** and **Android** specific steps if you want to delete more SDK versions.
 - Commit changes and create a pull request to `master` branch.
 
-## 0.2. Update schema on staging
+## 0.2. Update vendored modules
+
+**Why:** Vendored modules often ship bugfixes and new features during our SDK cycles and we generally want these as part of our product, as well.
+
+**How:**
+
+- Wait until as close as possible to the branch cutoff to do this, as we generally want the most up-to-date versions of these libraries as possible.
+- Run `et update-vendored-module --list-outdated`.
+- Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
+  - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
+- Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
+- Make sure that each individual library update lands on `master` as a **separate commit** so that it's easy to revert later on if needed.
+
+- Finally, talk to @brentvatne or @tsapeta about any modules extracted from RN that we need to include community versions of.
+
+## 0.3. Update schema on staging
 
 **Why:** Various tools we will use throughout this process, including `expo-cli`, depend on the versioned schema hosted by www. We need to create the schema for this new SDK version.
 
@@ -72,7 +90,7 @@
 - `cp UNVERSIONED-schema.json XX.X.X-schema.json`
 - Commit and push to `master` in order to deploy to staging.
 
-## 0.3. Update versions on staging
+## 0.4. Update versions on staging
 
 **Why:** Various tools we will use throughout this process, including `expo-cli`, depend on data in the versions endpoint.
 
@@ -82,9 +100,57 @@
 - `et update-versions --sdkVersion XX.X.X --key facebookReactNativeVersion --value <react-native package version>`
 - `et update-versions --sdkVersion XX.X.X --key expoReactNativeTag --value sdk-XX.X.X`
 
+## 0.5. Tag React Native fork
+
+**Why:** In managed Expo workflow, we use our forked `react-native` repo. The submodule under `react-native-lab/react-native` is the source of truth for `react-native` version used throughout the repository. We will use it in later steps.
+
+**How:**
+
+- Go to `react-native-lab/react-native` submodule.
+- Make sure you're on the branch dedicated for this SDK release and that your local version of it is up to date by running `git checkout sdk-XX` and then `git pull`.
+- Run `git tag -a 'sdk-XX.X.X' -m 'React Native X.Y.Z for Expo SDKXX'` (where `X.Y.Z` is the React Native version and `XX` is the major number of SDK version), to make a tag for the latest commit in your local repo.
+- Push the tag to the remote using `git push --tags`.
+
+## 0.6. Generate new mocks
+
+**Why:** We provide some mocks of our native methods which are generated by traversing all the modules and its methods and making a configuration of all those methods with the number of arguments etc.
+
+**How:**
+
+- Please follow another guide: [Generating Jest Mocks](Generating%20Jest%20Mocks.md).
+
+## 0.7. Publishing `next` packages
+
+| Prerequisites                                                       |
+| ------------------------------------------------------------------- |
+| [0.6. Generate new mocks](#06-generate-new-mocks) |
+| [0.7. Publishing next packages](#07-publishing-next-packages) |
+
+**Why:** We need to publish the unimodule packages to NPM so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release. We use the `next` tag so people using the modules in bare workflow projects right now do not get these prereleased versions! We do this from master before cutting the release branch so that the version number bumps land on master first.
+
+**How:**
+
+- Run `et publish-packages`. Talk to @tsapeta for more details/information.
+
+## 0.8. Generate new SDK docs
+
+**Why:** We store separate versions of docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on master between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
+
+**How:**
+
+- Do this step immediately before cutting the release branch.
+- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
+- Update the `sourceCodeUrl` frontmatter in the SDK docs to point to the new SDK version (find and replace in editor).
+- Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
+- Commit and push changes to master.
+
 # Stage 1 - Unversioned Quality Assurance and Versioning
 
 ## 1.1. Cutting off release branch
+
+| Prerequisites                                                       |
+| ------------------------------------------------------------------- |
+| All previous tasks |
 
 **Why:** Since we are about to start QA, cutting a branch ensures that we aren't testing and versioning code that is changing under our feet.
 
@@ -216,57 +282,29 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Run `expo publish` for both `community` and `applereview` accounts.
 - Open `native-component-list` from `applereview` account and make sure it launches as expected.
 
-# Stage 3 - Prerelease
+# Stage 3 - Publish NPM packages
 
-## 3.1. Tag React Native fork
-
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
-| [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
-
-**Why:** In managed Expo workflow, we use our forked `react-native` repo. The submodule under `react-native-lab/react-native` is the source of truth for `react-native` version used throughout the repository. We will use it in later steps.
-
-**How:**
-
-- Go to `react-native-lab/react-native` submodule.
-- Make sure you're on the branch dedicated for this SDK release and that your local version of it is up to date by running `git checkout sdk-XX` and then `git pull`.
-- Run `git tag -a 'sdk-XX.X.X' -m 'React Native X.Y.Z for Expo SDKXX'` (where `X.Y.Z` is the React Native version and `XX` is the major number of SDK version), to make a tag for the latest commit in your local repo.
-- Push the tag to the remote using `git push --tags`.
-
-## 3.2. Generate new mocks
-
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
-| [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
-
-**Why:** We provide some mocks of our native methods which are generated by traversing all the modules and its methods and making a configuration of all those methods with the number of arguments etc.
-
-**How:**
-
-- Please follow another guide: [Generating Jest Mocks](Generating%20Jest%20Mocks.md).
-
-## 3.3. Publishing `next` packages
+## 3.1. Publish any missing or changed packages
 
 | Prerequisites                                                       |
 | ------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
 | [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance) |
 | [2.3. Web Quality Assurance](#21-web-quality-assurance) |
-| [3.1. Tag React Native fork](#31-tag-react-native-fork)                   |
-| [3.2. Generate new mocks](#32-generate-new-mocks) |
 
-**Why:** We need to publish the unimodule packages to NPM so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release. We use the `next` tag so people using the modules in bare workflow projects right now do not get these prereleased versions!
+**Why:** Any changes that have been made to packages during QA / since the initial publish (step 0.7) still need to be published for bare workflow users (and managed, for TS changes).
 
 **How:**
 
-- Run `et legacy-publish-packages --tag next` to publish all packages as `rc` versions and as `next` tag.
-- TODO: add information about how to bump the version numbers, if the script does not take care of this. For now talk to @tsapeta
+- From the master branch, run `et publish-packages` and publish all packages with changes.
+- If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on master in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.
+  - Note that **only** the patch version number can be bumped on the release branch; **do not** bump the minor version number of any package on the release branch.
 
-## 3.4. Publishing `next` project templates
+## 3.2. Publishing `next` project templates
 
 | Prerequisites                                                             |
 | ------------------------------------------------------------------------- |
-| [3.3. Publishing next packages](#33-publishing-next-packages) |
+| [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
 **Why:** We also need to prepare project templates that are used when people run `expo init` command and publish them to NPM registry as RC versions so we can test them.
 
@@ -283,7 +321,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 | Prerequisites                                                             |
 | ------------------------------------------------------------------------- |
-| [3.3. Publishing next packages](#33-publishing-next-packages) |
+| [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
 **Why:** As we already published prerelease versions of the packages, now we can publish prerelease version of the client.
 
@@ -337,7 +375,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 | Prerequisites                                                             |
 | ------------------------------------------------------------------------- |
-| [3.4. Publishing next project templates](#34-publishing-next-project-templates) |
+| [3.2. Publishing next project templates](#32-publishing-next-project-templates) |
 | [4.1. Releasing beta version](#41-releasing-beta-version)                 |
 
 **Why:**
@@ -352,7 +390,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 | Prerequisites                                                             |
 | ------------------------------------------------------------------------- |
-| [3.3. Publishing next packages](#33-publishing-next-packages) |
+| [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
 **Why:** Ejected apps use ExpoKit as a dependency containing the core of Expo and some modules that are not yet extracted to unimodules. Since this flow is still supported (we're going to deprecate it) we need to release its new version as well.
 
@@ -440,18 +478,14 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 - Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
 - Promote the `expokit` package published in step 5.1 to `latest` on NPM.
 
-## 6.3. Generate and deploy new docs
+## 6.3. Deploy new docs
 
-**Why:** We store separate versions of docs for each SDK version. That being said, we also have to generate versioned docs.
+**Why:** Show the new docs now that the SDK is being released!
 
 **How:**
 
-- Make sure you have the release branch checked out and have cherry-picked all appropriate docs changes from master that landed after the release branch was cut.
-- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, check with @byCedric.)
-- Update the `sourceCodeUrl` frontmatter in the SDK docs to point to the new SDK version (find and replace in editor).
-- Commit and push changes to release branch.
-- Cherry pick this commit to `master` and push.
-- Open this commit on our CI. Go to the `docs` workflow and approve `docs_approve_deploy` job that starts `docs_deploy` job - keep an eye on it and make sure it gets deployed successfully.
+- Update the `version` field docs/package.json to match the new SDK version and push to master.
+- Ensure that the new SDK version is visible in the API reference and is marked as latest.
 
 ## 6.4. Add related packages to versions endpoint
 
@@ -475,7 +509,7 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 | --------------------------------------------------------- |
 | [6.1. Release iOS/Android clients](#61-release-iosandroid-clients) |
 | [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production) |
-| [6.3. Generate and deploy new docs](#63-generate-and-deploy-new-docs) |
+| [6.3. Deploy new docs](#63-deploy-new-docs) |
 | [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint) |
 
 **Why:** It's time for everything that uses the production versions endpoint to know about this new SDK version!
