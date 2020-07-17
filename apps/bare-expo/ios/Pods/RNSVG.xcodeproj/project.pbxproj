@@ -1,0 +1,965 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01DAC3F3437D92677D7E830825750F2E /* RNSVGLinearGradientManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ABB265EEBAB5EF6DB8B2C5E8B29A5417 /* RNSVGLinearGradientManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		041A3317F7C216E1F78469DBF80578E6 /* RNSVGTSpanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C2A3F08A6A60F582BE905762C7335314 /* RNSVGTSpanManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0893AAD5BCC3ABB39637AA4B8E438B14 /* RNSVGRadialGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = FA90544A6153580CD8211F60DC50F985 /* RNSVGRadialGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0E6810C8E2BF8761FE18F57D104DEFD7 /* RNSVGPathMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = A615E71653A06C553D1067CFFE9CA97D /* RNSVGPathMeasure.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1148A82ED30D38FB5946D54BDA932323 /* RNSVGPathMeasure.h in Headers */ = {isa = PBXBuildFile; fileRef = 30574AE415AB7F04A078397302ED9D6C /* RNSVGPathMeasure.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		144CE1B2D9467A2D1B4A296474177AB1 /* RNSVGImage.h in Headers */ = {isa = PBXBuildFile; fileRef = AAE91C78BBB9F0143AB3DB1AE576946A /* RNSVGImage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		14F3A0CCCBAD3E3D79499272CD1D9E4E /* RNSVGSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = A00E3F64EE3BB2A33D4DE0A6A9B3891C /* RNSVGSymbol.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		188C390DDB7E5FBDB18825DA7E08B7BD /* RNSVGDefsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 22822D35EFAFE9E1560A3E0C81E5BB54 /* RNSVGDefsManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		19932208E0FF7461FAC9178F887450D0 /* RNSVGPainterBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = 89B5849EDC96831DBBB60BDCF15B0E49 /* RNSVGPainterBrush.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		19C7CD0D10E0B539A474B8FB872312D6 /* RNSVGMarkerPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 4372A68353332A1FC60CF3EA4894A720 /* RNSVGMarkerPosition.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1A6BA0B1F390583AF842C458B1F04495 /* RNSVGDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 10FE16A917C925297FB10BDA6CE5777E /* RNSVGDefs.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1CA211648371075A72CA2980B7848DFF /* RNSVGTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E8CAA3BD275A8CA5F3F53EE51FD2431 /* RNSVGTextManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1E2AD8FDA035AB761C76B442E144AFB4 /* RNSVGNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F3165ECF15314B92A3B64E59D1AD5C6 /* RNSVGNodeManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		207F6D6A0D8D8AB072BA9BF2B35FD9F8 /* RNSVGPainter.m in Sources */ = {isa = PBXBuildFile; fileRef = 04CC822601212C38B20D21EBAA44405E /* RNSVGPainter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		25604FF6E2BFA049C8B9125DC2F77534 /* RNSVGGroupManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F5DEA540FB434582133D6D6943D087B6 /* RNSVGGroupManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		267E445186B6445B9FBEFF8C7A653119 /* RNSVGViewBox.h in Headers */ = {isa = PBXBuildFile; fileRef = C9EBFE3C309076046D93C80E9B8F2D5F /* RNSVGViewBox.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2944F6618D328A19521ED79C28DE6FA1 /* RNSVGMask.h in Headers */ = {isa = PBXBuildFile; fileRef = 572A5A0747C5608F8056F2EF74345E43 /* RNSVGMask.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		306DC42C4B1D844B381249BC169E6114 /* RNSVGMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 8ED611250F26FA22AD5EBA1AD46E7214 /* RNSVGMarker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		30CB22B9140C05055B27BD9A3CF1A6E6 /* RNSVGBezierElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D221B05B2E627AC2DC5153BFBB5B12 /* RNSVGBezierElement.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		33C58E35A3542FEE2442FA934C86F064 /* RNSVGText.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F5354809D2D085DF29E9AF47E370264 /* RNSVGText.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3568E567CD8DE7BF52EB2BEF5227509D /* RNSVGMarkerPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 53174F33D3FE514B7F6A441489508BA3 /* RNSVGMarkerPosition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		39DA5E6AEE50A5002AC10CADA55990EC /* RNSVGEllipseManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2592E78E99C7C622F03A3DB92DC48CC1 /* RNSVGEllipseManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3A83F0C87AFB781C8AB798F6E5BA4FF6 /* RNSVGUseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BDEBA379437F3DA6A24C4BD17774A774 /* RNSVGUseManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3B9227D033735C2A66D61D0583736AD7 /* RNSVGGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 175D4EBF6ACB8D0F6E902C68F20CD654 /* RNSVGGroup.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3FDEB480855C6D19994BDBA1E6238A3C /* RNSVGCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF9613AE6EA9EE7ABD0D40F96C6695A /* RNSVGCircle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		43DB165655DEE1A47AA79AA9E74C3999 /* RNSVGLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = B348905D40ADFA2BED3C09B8638FE8E9 /* RNSVGLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		45C55BC747A2C76378BAA1FA8F6D789B /* RNSVGFontData.m in Sources */ = {isa = PBXBuildFile; fileRef = 17E45D926A2CC9C6A39F2BF6C5393495 /* RNSVGFontData.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		469E3B7ED7B03986AE8AF4B8E1D0B3F8 /* RNSVGClipPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 729E07C22374010893436FF5A49287C2 /* RNSVGClipPath.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4AB2E6C3C8C8644D9AC43BC1F82AE4E9 /* RNSVGPainter.h in Headers */ = {isa = PBXBuildFile; fileRef = B0BF137F780BFBF643670375BAF1F855 /* RNSVGPainter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4BCA4CEDCBFBDD946EFCDDB3542CA51B /* RNSVGBezierElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 53D4AF7A09FC4F556223C01D42EB2172 /* RNSVGBezierElement.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4CE19AABAFA2B742E21201664E315BFE /* RNSVGPatternManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E403A2A79D053F76C7616D274360DAD4 /* RNSVGPatternManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4E8534FAEFBAF49EFA4B49BB579D91B6 /* RNSVGBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = A0BF304EC3F508F06A99B0C60D010232 /* RNSVGBrush.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4F8EFE8EEA2B935CDFBBD923EFEF13F9 /* RNSVGUse.h in Headers */ = {isa = PBXBuildFile; fileRef = 3603DBF1E7E101B5BBAA38C9BA42E15B /* RNSVGUse.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		51E8D42A7356CA521EDEADB3911089B1 /* RNSVGClipPathManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F99581865308DD01675B679411B93420 /* RNSVGClipPathManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		55589F2472800A45A6F40DAD2CA0E6AD /* RNSVGDefs.m in Sources */ = {isa = PBXBuildFile; fileRef = B30A7133A640B87076774E767675C880 /* RNSVGDefs.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		56D693237CAD42A111ED0E1D910B7228 /* RNSVGTextPathManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 989A40123C8DEFDDB83AC39C0A61AF9F /* RNSVGTextPathManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5CFE71B644A01BFE3197AD8EE6A135D3 /* RNSVGPathManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B17F860D0A1903F90D8CC704FDD7525 /* RNSVGPathManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5D073BC7F3031FD574CECE8396A2BA86 /* RNSVGSvgView.h in Headers */ = {isa = PBXBuildFile; fileRef = 09E8E3FC943AAE5BD55FE1DB971992C9 /* RNSVGSvgView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5DA1B223F99F687E810AC0694BC17D30 /* RNSVGImageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C64B136F4D9523CFF9DD633470BE07E /* RNSVGImageManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		65C6557B6B73B718229A3A58937C4F81 /* RNSVGRadialGradientManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 90BD7DA3D0C247D56CD8D3956E9330A9 /* RNSVGRadialGradientManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		68886B35564EC2C425B58C7A32112E2F /* RNSVGPropHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 13700FDF6EDFA7E506BDC94EB3542BEE /* RNSVGPropHelper.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6E30B931B9443D750D3A97F692595DAC /* RNSVGTextProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = C23F8CE9147055045877E865B3491C40 /* RNSVGTextProperties.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6F14A6B2825D72C3CA9CC770C0EDDCEA /* RNSVGRadialGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE965D1132E640C2BFFAEC4EF7433CD /* RNSVGRadialGradient.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		723EEF8359B96FA48245FA65914B6037 /* RNSVGPathParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E1B3169C6C74F3A96A507C0B213D0747 /* RNSVGPathParser.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7849ECCA1112E9ABFA8405E37FA55CC5 /* RNSVGGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 78F7079C97D972CBF5FA30F27517D5C1 /* RNSVGGroup.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7AD23A42540289B63EDF517FE990A60D /* RNSVGClipPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 0DA9D3C13EB5D4749FE4A88470240741 /* RNSVGClipPath.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7C18B2C716402D08F9964670E0600775 /* RNSVGPathParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 518B489D5F5B322AFFA3AD9625D62FEF /* RNSVGPathParser.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7DA4157DB71AF6CD122A0D0FC5F48BE4 /* RNSVGRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E40F7D2DA05447DC49DCE6DC9FBDAC1 /* RNSVGRenderable.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7E18E6FD8620648364E2F1577BBDD7A6 /* RNSVGFontData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC81A99E99FCDFAE9DD1BE65679627AA /* RNSVGFontData.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7E5F4315E9CFAF693DA9156B801214C8 /* RNSVGEllipse.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DA20348B1BF749B58978A11E5FED8D0 /* RNSVGEllipse.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7F5DD774DDB95759275AC0B9619406D2 /* RNSVGDefsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C184AC8A2CDA11123CAA2A5C164BA96 /* RNSVGDefsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8161DB0B42B624C1EAAB5290655A0D35 /* RNSVGPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = BF54E44F212F05D56C11B55DE37B8B4A /* RNSVGPattern.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8209E01BC4A78541D54E3F7DA7094A56 /* RNSVGRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E387ECF97024B407ABE82B42B90DC83 /* RNSVGRect.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		83B5A81BBFC1910820085495D74B2B6F /* RNSVGForeignObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB90167DF45C4821B4D23AB816FBE75 /* RNSVGForeignObjectManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		845221D497654E95E32ED5A508BA5C1A /* RNSVGBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FAFD486F8613933121F59F82A5D24C5 /* RNSVGBrush.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8509552ADB1CCBF6651BCB6263EFBBA4 /* RNSVGLineManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A3476F862788FFF91366856566B1A76D /* RNSVGLineManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		883E7451DD4C7CE3336106B637B286E5 /* RNSVGRectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DF4726DBADF01ABF71BC0A1DD580C43 /* RNSVGRectManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		886E4BC11C0E5D24BFF1A9D559A549BC /* RNSVGMask.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA323484D8D7AB1604EC18240248AC1 /* RNSVGMask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8B4EE75CE543DD2475278DD21A600857 /* RNSVGGroupManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F40D8A261653EC04A33ECEBEE960FA2 /* RNSVGGroupManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8CEB70CFF647E5EFB13F512D894FD761 /* RNSVGLine.m in Sources */ = {isa = PBXBuildFile; fileRef = F3669C552ABA33DC6F7E42B3CC9B3CA0 /* RNSVGLine.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8F6494EB18A86A0B9C5E471EFA621D0B /* RNSVGTextPath.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE648D6CDB25C91C908FC12A428B7E4 /* RNSVGTextPath.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		90A76EA5116BFEDF5DE4D661974B13E7 /* RNSVGPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E85A76BFAFFC942AF7698FB5260503 /* RNSVGPath.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		94FAD6C9BFEB82C5C7324CD569F78C91 /* RNSVGRectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 96F5C37782B98FE9B86EE553A74C4925 /* RNSVGRectManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9A6C3D76100599AE66CCDB1A6E08FAC3 /* RNSVGTextProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F7C08854B69C5274A4C16740FCD4908 /* RNSVGTextProperties.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A0F742DC6F223177420FB0642BD3AC82 /* RNSVGImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 933BE985626A8FE1F46D86F1217FA751 /* RNSVGImageManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A26F8AB66308797D85AB156310F75150 /* RNSVGMaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 46270578F44BF3E4C830935A7F5CFDBF /* RNSVGMaskManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A2A698C879DC0FDBECCD78096519A96B /* RNSVGUse.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C02801D529BFBD56C3844952225FCDD /* RNSVGUse.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A2CA278F640A37508441753C72BF81AF /* RNSVGEllipse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7291DB0D3C24EF4D86ADB8A1A55150F5 /* RNSVGEllipse.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A2CA6108D78F448D0C04B26488021F79 /* RNSVGPattern.h in Headers */ = {isa = PBXBuildFile; fileRef = 8827022E94EEEB6D4BBF56889BF7FB35 /* RNSVGPattern.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A3CDB803BD834C24787EBC6D988ED3A1 /* RNSVGForeignObject.h in Headers */ = {isa = PBXBuildFile; fileRef = F9098ECB082839A72043A2241A7E15E0 /* RNSVGForeignObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A4416800CF1A972C31BDB7F3CC29DE3A /* RNSVGPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C417877FBC50877592C271AFEC0700D /* RNSVGPath.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A4C4FC23227DFCCE324BD330E3D94D02 /* RNSVGSolidColorBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = 15A85657E74DDF59A8C8B50F3FE6E9F6 /* RNSVGSolidColorBrush.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A5550893ED6A3DE797B80C9B998FDB5F /* RNSVGRect.m in Sources */ = {isa = PBXBuildFile; fileRef = B39407802344F6DC8DF30EC303CD6E9B /* RNSVGRect.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AACDC82DF11E6583BA4350551655FA7C /* RNSVGText.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4AD61CCA4D16D023133D33D0DB2EEE /* RNSVGText.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ABD2BCBED046B8AAA08DA3BA5845CA9D /* RNSVGRenderableManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D8CC9E670EA3415601B84A93DE462F81 /* RNSVGRenderableManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B053D6076CEB18D96B3FB31E0B444150 /* RNSVGPropHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 231D250FB6D7A0C5083B77CA1274E109 /* RNSVGPropHelper.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B092C1B10247246EF3AA8FB80F6C96AB /* RNSVGLength.h in Headers */ = {isa = PBXBuildFile; fileRef = E4F548F89E8FEAF3E85E12E56992B362 /* RNSVGLength.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B255F095C1052546E41C9704053D7920 /* RNSVGImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F808E6F7A94DAB8C1DC5997478F31264 /* RNSVGImage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B311D039B8DFC49E82C2851EFF43C4C9 /* RNSVGLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2255E53C79741792810F7BE38AB6862C /* RNSVGLinearGradientManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B6867EBD860FBA177020D037AA33F2B6 /* RNSVGBrushType.h in Headers */ = {isa = PBXBuildFile; fileRef = EFEC5FF043D6A7B0C2E2815E4E6A1A94 /* RNSVGBrushType.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B9857D291C255F00EA5472D7A4A06321 /* RNSVGVectorEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = 6288CDCBF042CA2D5B25B7C0E7B7F363 /* RNSVGVectorEffect.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BB4E336EECCAC4EC78D4D270ED4A8776 /* RNSVGSymbolManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F8A7A5812348D361FC2A322CA4849C6 /* RNSVGSymbolManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BB517B633A4E6EA87C883D748F44BBB9 /* RNSVGUseManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B589DB6C995C66DF6CAFF0527351AF73 /* RNSVGUseManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BC9865DC4BE9F45B4C9BDDB8B20476EA /* RNSVGNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 76752A82390C70FB4D18038E3B5E5448 /* RNSVGNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BCBE0E1973C6EAFA3526C6A8F9136869 /* RNSVGClipPathManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 80FEA89E64B233629023487DAFCA1CF8 /* RNSVGClipPathManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BD6B851F3B4F7278365481C755539379 /* RNSVGSvgViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ECF17BB9EDC508E68CD153526B2929A /* RNSVGSvgViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BE93EF1910A45702B1FAB7510095AAED /* RNSVGNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D8E0005027313102ADFFB510D84D9A /* RNSVGNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BF479B538C0D9B869E7922C99F581BED /* RNSVGCircleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FCA70D2360FDCA61CE4D74EDAA85E96 /* RNSVGCircleManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C12F2738A8079DA0F431469C8D3E6C12 /* RNSVGSvgView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC2B5938ECA1AB2C8594A702DA8F602 /* RNSVGSvgView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C15333CB2690E971A2E525B8F5C63092 /* RNSVGCircle.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E32A83001D5B876510159278DB4B655 /* RNSVGCircle.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C217C071DDC0B3DD4AD47C070785C6F8 /* RNSVGMaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E2C9318DF65499892F3C7AE20C047FD /* RNSVGMaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C32AD0624B9943B6665E0865329003D1 /* RNSVGPatternManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B16357E7EE78F7041B49DAE80D6A0AA /* RNSVGPatternManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C42193D01C64E635F13EB511B98756A5 /* RNSVGRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = 531FD5F83A2B56EAEC9C3B305F2DFD7F /* RNSVGRenderable.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C4E47907A9357C7CBD3324D2E6D64F17 /* RNSVGRadialGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C78F09A48D6F954C92EABE08C812082 /* RNSVGRadialGradientManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C557CDB2FF642899CAC7C2DAD06667E9 /* RNSVGLine.h in Headers */ = {isa = PBXBuildFile; fileRef = DB88B0EF25F1AC429E622D56D5BF73D5 /* RNSVGLine.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C83D4BED39F829E41ED3820496FE34D8 /* RNSVGPainterBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 6ACD49CC8A42CCDE1A477FCADA83418C /* RNSVGPainterBrush.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CB029757F79FFEF1A3282038BA32081F /* RNSVGSymbolManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 70B73C17C699D6D1ABF9F4A69D06B11C /* RNSVGSymbolManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CC8FE2CA35B10F9906F5CFB6983EE89B /* RNSVGSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = D44B6CD3B596A06E0561CAE94DB4DBB4 /* RNSVGSymbol.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CD48360405E801D96981A28232E995E7 /* RNSVGForeignObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F0243A7642045817E275160B7E62E6E1 /* RNSVGForeignObjectManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D042901372D2CDEB27068D1E95C3855B /* RNSVGPathManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F09CC3086BFC0712FD1B3A907C7FB77E /* RNSVGPathManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D319D991E820B5E384C5E9B46786FB8F /* RNSVGTSpan.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B8D034178AACC7970A229982D2E9AC /* RNSVGTSpan.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D3A17F7B03EB349AA63DA295A403D43B /* RNSVGMarkerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DE5E6D21FEC1FF485800B295ACD2F94B /* RNSVGMarkerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D494957EE9C1C255CE0721A5960D2066 /* RNSVGVBMOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 583D0C7C9952D97197E2F3C9633D5F13 /* RNSVGVBMOS.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D6E7D86714C1CC172E9213D864201524 /* RNSVGLength.m in Sources */ = {isa = PBXBuildFile; fileRef = 0558A54F4CB13796FFD84BDDA989FA5C /* RNSVGLength.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D8BD91C583F6158D47D09FCECB3BD073 /* RNSVGCircleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DF0A1EFE30CA5614CDC3951D77245B3 /* RNSVGCircleManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D8C1FD6A72011079B72A2351163A7449 /* RNSVGViewBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E8EC486FBA21D28D85281116938B8D1 /* RNSVGViewBox.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D9C1638CA4B960641593816C04CA9602 /* RNSVG-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E8F697B68CE3FE9716F0AF3DF5F3193 /* RNSVG-dummy.m */; };
+		DA3F7BBB3F15050858B271AF4C499031 /* RCTConvert+RNSVG.h in Headers */ = {isa = PBXBuildFile; fileRef = 73752CA91BC69930A547A319131DCAEC /* RCTConvert+RNSVG.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DAC5A234C6A3E38113726122448C7E55 /* RNSVGMarkerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C6D8373F0389FD770C41B70026952079 /* RNSVGMarkerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DC24D43FC459C6055E76AD2A40F39E7E /* RNSVGEllipseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 05BC70706EB93C1E6F80BD3300DAD82E /* RNSVGEllipseManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DE5B9A1BB78A31F3355A109F57838C4A /* RNSVGContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = F9606CF325231C9C442E76FAB32D06F7 /* RNSVGContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E1022274CA860C24519B814BBEDBF25D /* RNSVGGlyphContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 27A4C343214CE3277B75BD4171398339 /* RNSVGGlyphContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E2CD357428DBCFB616530A8BA02F23B4 /* RNSVGTextPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 87D2DCD02D2B3844B0816F53998185D0 /* RNSVGTextPath.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E314FF1B42A7CCE22C9C3FF438552D2D /* RNSVGMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2C4EFAC1414B368C8CCA90591FD3B294 /* RNSVGMarker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E62E8962F4EACCD90170F0DE20F8409B /* RNSVGRenderableManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FE3B49D107F1BB6AD92B50CDB3DF0B8 /* RNSVGRenderableManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E6BFCE5A3734AA615CD5D3662BE754FF /* RNSVGUnits.h in Headers */ = {isa = PBXBuildFile; fileRef = 86A947978D1F4B3C767237D82617A8A8 /* RNSVGUnits.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E7527F0E534E1212CE723EFBD4061C75 /* RNSVGLineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C63B6B68541B3858D9F3E231234D599 /* RNSVGLineManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E7717ED418A7809C1345B6B7F2B50D53 /* RNSVGLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E7A6CC1DFD70CAAB53545E05C347E2 /* RNSVGLinearGradient.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E83B0FA00E4C54AE0F43AA9B6C51C44C /* RCTConvert+RNSVG.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E1D9A96E4F2B77EF78CEE05C00AEDF6 /* RCTConvert+RNSVG.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E988819FA14B5EA52853B0D9104D947A /* RNSVGCGFCRule.h in Headers */ = {isa = PBXBuildFile; fileRef = 56F3A9D18FEA55F110CC4184FBEF9AAF /* RNSVGCGFCRule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E9B1A6461BF1A86E4E1A21B073CA46A0 /* RNSVGSvgViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 99B509443FA5FE471339A92C3C66CDE1 /* RNSVGSvgViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ED1CBA04F6014C36FCBB10AEFC160ACA /* RNSVGTSpan.h in Headers */ = {isa = PBXBuildFile; fileRef = ECA44E10985741ABF842A7EF5E2BA8BE /* RNSVGTSpan.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F0BEBDA16D8406DB9C83D97C7684B0D0 /* RNSVGContextBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = F30130325F60B7C137FDE80BE774D304 /* RNSVGContextBrush.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F47B8FC7C2D4B74568987DDD208B22B4 /* RNSVGTextManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 38AB0D0FE59C8B5F9478AB2CB23F0F1A /* RNSVGTextManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F4C13B5856816C8339782429747F0328 /* RNSVGSolidColorBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 89282832FF86DEF2F879BC238C665F8F /* RNSVGSolidColorBrush.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F5E1F057B3D012CAFE0D0D106535A4E9 /* RNSVGGlyphContext.m in Sources */ = {isa = PBXBuildFile; fileRef = A294AAE26DA294044949F47BFC6C04AF /* RNSVGGlyphContext.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F8B9E876265E19FE2A8C7E9B41022BE3 /* RNSVGNodeManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A59697BE3D7502FF44A6E157875D47B6 /* RNSVGNodeManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FBF8271B762926B66D9DAAD66A7B9C08 /* RNSVGForeignObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F33825883B6EEA51D0B8792E2FE0426 /* RNSVGForeignObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FEC0C2C3743DDD4AC99DF2181093723B /* RNSVGContextBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = C01457FEF8495BC110ADA5F0C1CF21F4 /* RNSVGContextBrush.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FF4C390414540BC6390685E853D342F4 /* RNSVGTSpanManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D81CB8FF65DC322EAC01B29600456A /* RNSVGTSpanManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FF86EC8CB30DA41E701D474710191DC9 /* RNSVGTextPathManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A4E3DA93516CA0B605752085ADCDAF /* RNSVGTextPathManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		469116FE631F5B7119CE165E52B0C248 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4019BE79292C12AAC6DEC7F824C16DC3 /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00D81CB8FF65DC322EAC01B29600456A /* RNSVGTSpanManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGTSpanManager.h; sourceTree = "<group>"; };
+		034D74DD2816CADA3A248DA3585A7EB4 /* RNSVG-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNSVG-prefix.pch"; sourceTree = "<group>"; };
+		04CC822601212C38B20D21EBAA44405E /* RNSVGPainter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPainter.m; sourceTree = "<group>"; };
+		0558A54F4CB13796FFD84BDDA989FA5C /* RNSVGLength.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGLength.m; sourceTree = "<group>"; };
+		05BC70706EB93C1E6F80BD3300DAD82E /* RNSVGEllipseManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGEllipseManager.m; sourceTree = "<group>"; };
+		09E8E3FC943AAE5BD55FE1DB971992C9 /* RNSVGSvgView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGSvgView.h; sourceTree = "<group>"; };
+		0C63B6B68541B3858D9F3E231234D599 /* RNSVGLineManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGLineManager.m; sourceTree = "<group>"; };
+		0DA9D3C13EB5D4749FE4A88470240741 /* RNSVGClipPath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGClipPath.h; sourceTree = "<group>"; };
+		0FE3B49D107F1BB6AD92B50CDB3DF0B8 /* RNSVGRenderableManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGRenderableManager.m; sourceTree = "<group>"; };
+		10FE16A917C925297FB10BDA6CE5777E /* RNSVGDefs.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGDefs.h; sourceTree = "<group>"; };
+		13700FDF6EDFA7E506BDC94EB3542BEE /* RNSVGPropHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPropHelper.h; sourceTree = "<group>"; };
+		15A85657E74DDF59A8C8B50F3FE6E9F6 /* RNSVGSolidColorBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGSolidColorBrush.h; sourceTree = "<group>"; };
+		175D4EBF6ACB8D0F6E902C68F20CD654 /* RNSVGGroup.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGGroup.h; sourceTree = "<group>"; };
+		17A45841D12E8472879F8FD1639A0369 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		17E45D926A2CC9C6A39F2BF6C5393495 /* RNSVGFontData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGFontData.m; sourceTree = "<group>"; };
+		1C184AC8A2CDA11123CAA2A5C164BA96 /* RNSVGDefsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGDefsManager.h; sourceTree = "<group>"; };
+		1C78F09A48D6F954C92EABE08C812082 /* RNSVGRadialGradientManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGRadialGradientManager.m; sourceTree = "<group>"; };
+		1FCA70D2360FDCA61CE4D74EDAA85E96 /* RNSVGCircleManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGCircleManager.m; sourceTree = "<group>"; };
+		2255E53C79741792810F7BE38AB6862C /* RNSVGLinearGradientManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGLinearGradientManager.m; sourceTree = "<group>"; };
+		22822D35EFAFE9E1560A3E0C81E5BB54 /* RNSVGDefsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGDefsManager.m; sourceTree = "<group>"; };
+		231D250FB6D7A0C5083B77CA1274E109 /* RNSVGPropHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPropHelper.m; sourceTree = "<group>"; };
+		2592E78E99C7C622F03A3DB92DC48CC1 /* RNSVGEllipseManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGEllipseManager.h; sourceTree = "<group>"; };
+		27A4C343214CE3277B75BD4171398339 /* RNSVGGlyphContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGGlyphContext.h; sourceTree = "<group>"; };
+		2C4EFAC1414B368C8CCA90591FD3B294 /* RNSVGMarker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGMarker.h; sourceTree = "<group>"; };
+		2DF4726DBADF01ABF71BC0A1DD580C43 /* RNSVGRectManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGRectManager.m; sourceTree = "<group>"; };
+		2E8CAA3BD275A8CA5F3F53EE51FD2431 /* RNSVGTextManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGTextManager.m; sourceTree = "<group>"; };
+		2E8EC486FBA21D28D85281116938B8D1 /* RNSVGViewBox.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGViewBox.m; sourceTree = "<group>"; };
+		2F40D8A261653EC04A33ECEBEE960FA2 /* RNSVGGroupManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGGroupManager.h; sourceTree = "<group>"; };
+		30574AE415AB7F04A078397302ED9D6C /* RNSVGPathMeasure.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPathMeasure.h; sourceTree = "<group>"; };
+		30D8E0005027313102ADFFB510D84D9A /* RNSVGNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSVGNode.m; path = ios/RNSVGNode.m; sourceTree = "<group>"; };
+		34E7A6CC1DFD70CAAB53545E05C347E2 /* RNSVGLinearGradient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGLinearGradient.m; sourceTree = "<group>"; };
+		3603DBF1E7E101B5BBAA38C9BA42E15B /* RNSVGUse.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGUse.h; sourceTree = "<group>"; };
+		38AB0D0FE59C8B5F9478AB2CB23F0F1A /* RNSVGTextManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGTextManager.h; sourceTree = "<group>"; };
+		3E2C9318DF65499892F3C7AE20C047FD /* RNSVGMaskManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGMaskManager.h; sourceTree = "<group>"; };
+		3E40F7D2DA05447DC49DCE6DC9FBDAC1 /* RNSVGRenderable.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSVGRenderable.m; path = ios/RNSVGRenderable.m; sourceTree = "<group>"; };
+		3E4AD61CCA4D16D023133D33D0DB2EEE /* RNSVGText.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGText.m; sourceTree = "<group>"; };
+		4019BE79292C12AAC6DEC7F824C16DC3 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		413F9E71E8265373840A00A64E46C1F1 /* RNSVG.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNSVG.release.xcconfig; sourceTree = "<group>"; };
+		4372A68353332A1FC60CF3EA4894A720 /* RNSVGMarkerPosition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerPosition.h; sourceTree = "<group>"; };
+		46270578F44BF3E4C830935A7F5CFDBF /* RNSVGMaskManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGMaskManager.m; sourceTree = "<group>"; };
+		4C64B136F4D9523CFF9DD633470BE07E /* RNSVGImageManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGImageManager.h; sourceTree = "<group>"; };
+		4F5354809D2D085DF29E9AF47E370264 /* RNSVGText.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGText.h; sourceTree = "<group>"; };
+		4F8A7A5812348D361FC2A322CA4849C6 /* RNSVGSymbolManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGSymbolManager.h; sourceTree = "<group>"; };
+		518B489D5F5B322AFFA3AD9625D62FEF /* RNSVGPathParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPathParser.h; sourceTree = "<group>"; };
+		52E85A76BFAFFC942AF7698FB5260503 /* RNSVGPath.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPath.m; sourceTree = "<group>"; };
+		53174F33D3FE514B7F6A441489508BA3 /* RNSVGMarkerPosition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerPosition.m; sourceTree = "<group>"; };
+		531FD5F83A2B56EAEC9C3B305F2DFD7F /* RNSVGRenderable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSVGRenderable.h; path = ios/RNSVGRenderable.h; sourceTree = "<group>"; };
+		53D4AF7A09FC4F556223C01D42EB2172 /* RNSVGBezierElement.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGBezierElement.h; sourceTree = "<group>"; };
+		56F3A9D18FEA55F110CC4184FBEF9AAF /* RNSVGCGFCRule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGCGFCRule.h; sourceTree = "<group>"; };
+		572A5A0747C5608F8056F2EF74345E43 /* RNSVGMask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGMask.h; sourceTree = "<group>"; };
+		583D0C7C9952D97197E2F3C9633D5F13 /* RNSVGVBMOS.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGVBMOS.h; sourceTree = "<group>"; };
+		5B16357E7EE78F7041B49DAE80D6A0AA /* RNSVGPatternManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPatternManager.h; sourceTree = "<group>"; };
+		5E387ECF97024B407ABE82B42B90DC83 /* RNSVGRect.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGRect.h; sourceTree = "<group>"; };
+		5FAFD486F8613933121F59F82A5D24C5 /* RNSVGBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGBrush.h; sourceTree = "<group>"; };
+		5FE965D1132E640C2BFFAEC4EF7433CD /* RNSVGRadialGradient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGRadialGradient.m; sourceTree = "<group>"; };
+		6288CDCBF042CA2D5B25B7C0E7B7F363 /* RNSVGVectorEffect.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGVectorEffect.h; sourceTree = "<group>"; };
+		6753AA2D78569F0E9594693D992DB2FD /* RNSVG.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNSVG.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		6ACD49CC8A42CCDE1A477FCADA83418C /* RNSVGPainterBrush.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPainterBrush.m; sourceTree = "<group>"; };
+		6C02801D529BFBD56C3844952225FCDD /* RNSVGUse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGUse.m; sourceTree = "<group>"; };
+		6EC2B5938ECA1AB2C8594A702DA8F602 /* RNSVGSvgView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGSvgView.m; sourceTree = "<group>"; };
+		6F33825883B6EEA51D0B8792E2FE0426 /* RNSVGForeignObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObject.m; sourceTree = "<group>"; };
+		70B73C17C699D6D1ABF9F4A69D06B11C /* RNSVGSymbolManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGSymbolManager.m; sourceTree = "<group>"; };
+		7291DB0D3C24EF4D86ADB8A1A55150F5 /* RNSVGEllipse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGEllipse.m; sourceTree = "<group>"; };
+		729E07C22374010893436FF5A49287C2 /* RNSVGClipPath.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGClipPath.m; sourceTree = "<group>"; };
+		73752CA91BC69930A547A319131DCAEC /* RCTConvert+RNSVG.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RNSVG.h"; sourceTree = "<group>"; };
+		75978B034F13E79852F4F77C42B35C8B /* libRNSVG.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRNSVG.a; path = libRNSVG.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		76752A82390C70FB4D18038E3B5E5448 /* RNSVGNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSVGNode.h; path = ios/RNSVGNode.h; sourceTree = "<group>"; };
+		78F7079C97D972CBF5FA30F27517D5C1 /* RNSVGGroup.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGGroup.m; sourceTree = "<group>"; };
+		7B17F860D0A1903F90D8CC704FDD7525 /* RNSVGPathManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPathManager.h; sourceTree = "<group>"; };
+		7E1D9A96E4F2B77EF78CEE05C00AEDF6 /* RCTConvert+RNSVG.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNSVG.m"; sourceTree = "<group>"; };
+		7E32A83001D5B876510159278DB4B655 /* RNSVGCircle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGCircle.h; sourceTree = "<group>"; };
+		7F3165ECF15314B92A3B64E59D1AD5C6 /* RNSVGNodeManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGNodeManager.m; sourceTree = "<group>"; };
+		7F7C08854B69C5274A4C16740FCD4908 /* RNSVGTextProperties.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGTextProperties.h; sourceTree = "<group>"; };
+		80FEA89E64B233629023487DAFCA1CF8 /* RNSVGClipPathManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGClipPathManager.h; sourceTree = "<group>"; };
+		86A947978D1F4B3C767237D82617A8A8 /* RNSVGUnits.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGUnits.h; sourceTree = "<group>"; };
+		87D2DCD02D2B3844B0816F53998185D0 /* RNSVGTextPath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGTextPath.h; sourceTree = "<group>"; };
+		8827022E94EEEB6D4BBF56889BF7FB35 /* RNSVGPattern.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPattern.h; sourceTree = "<group>"; };
+		89282832FF86DEF2F879BC238C665F8F /* RNSVGSolidColorBrush.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGSolidColorBrush.m; sourceTree = "<group>"; };
+		89B5849EDC96831DBBB60BDCF15B0E49 /* RNSVGPainterBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPainterBrush.h; sourceTree = "<group>"; };
+		8C417877FBC50877592C271AFEC0700D /* RNSVGPath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPath.h; sourceTree = "<group>"; };
+		8E8F697B68CE3FE9716F0AF3DF5F3193 /* RNSVG-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNSVG-dummy.m"; sourceTree = "<group>"; };
+		8ED611250F26FA22AD5EBA1AD46E7214 /* RNSVGMarker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarker.m; sourceTree = "<group>"; };
+		90BD7DA3D0C247D56CD8D3956E9330A9 /* RNSVGRadialGradientManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGRadialGradientManager.h; sourceTree = "<group>"; };
+		933BE985626A8FE1F46D86F1217FA751 /* RNSVGImageManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGImageManager.m; sourceTree = "<group>"; };
+		96F5C37782B98FE9B86EE553A74C4925 /* RNSVGRectManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGRectManager.h; sourceTree = "<group>"; };
+		989A40123C8DEFDDB83AC39C0A61AF9F /* RNSVGTextPathManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGTextPathManager.m; sourceTree = "<group>"; };
+		99B509443FA5FE471339A92C3C66CDE1 /* RNSVGSvgViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGSvgViewManager.h; sourceTree = "<group>"; };
+		9DA20348B1BF749B58978A11E5FED8D0 /* RNSVGEllipse.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGEllipse.h; sourceTree = "<group>"; };
+		9DF0A1EFE30CA5614CDC3951D77245B3 /* RNSVGCircleManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGCircleManager.h; sourceTree = "<group>"; };
+		9ECF17BB9EDC508E68CD153526B2929A /* RNSVGSvgViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGSvgViewManager.m; sourceTree = "<group>"; };
+		A00E3F64EE3BB2A33D4DE0A6A9B3891C /* RNSVGSymbol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGSymbol.h; sourceTree = "<group>"; };
+		A0BF304EC3F508F06A99B0C60D010232 /* RNSVGBrush.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGBrush.m; sourceTree = "<group>"; };
+		A294AAE26DA294044949F47BFC6C04AF /* RNSVGGlyphContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGGlyphContext.m; sourceTree = "<group>"; };
+		A3476F862788FFF91366856566B1A76D /* RNSVGLineManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGLineManager.h; sourceTree = "<group>"; };
+		A59697BE3D7502FF44A6E157875D47B6 /* RNSVGNodeManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGNodeManager.h; sourceTree = "<group>"; };
+		A615E71653A06C553D1067CFFE9CA97D /* RNSVGPathMeasure.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPathMeasure.m; sourceTree = "<group>"; };
+		AAE91C78BBB9F0143AB3DB1AE576946A /* RNSVGImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGImage.h; sourceTree = "<group>"; };
+		ABB265EEBAB5EF6DB8B2C5E8B29A5417 /* RNSVGLinearGradientManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGLinearGradientManager.h; sourceTree = "<group>"; };
+		AFE648D6CDB25C91C908FC12A428B7E4 /* RNSVGTextPath.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGTextPath.m; sourceTree = "<group>"; };
+		B0BF137F780BFBF643670375BAF1F855 /* RNSVGPainter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGPainter.h; sourceTree = "<group>"; };
+		B30A7133A640B87076774E767675C880 /* RNSVGDefs.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGDefs.m; sourceTree = "<group>"; };
+		B348905D40ADFA2BED3C09B8638FE8E9 /* RNSVGLinearGradient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGLinearGradient.h; sourceTree = "<group>"; };
+		B39407802344F6DC8DF30EC303CD6E9B /* RNSVGRect.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGRect.m; sourceTree = "<group>"; };
+		B589DB6C995C66DF6CAFF0527351AF73 /* RNSVGUseManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGUseManager.h; sourceTree = "<group>"; };
+		B6D221B05B2E627AC2DC5153BFBB5B12 /* RNSVGBezierElement.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGBezierElement.m; sourceTree = "<group>"; };
+		BBA323484D8D7AB1604EC18240248AC1 /* RNSVGMask.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGMask.m; sourceTree = "<group>"; };
+		BDEBA379437F3DA6A24C4BD17774A774 /* RNSVGUseManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGUseManager.m; sourceTree = "<group>"; };
+		BF54E44F212F05D56C11B55DE37B8B4A /* RNSVGPattern.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPattern.m; sourceTree = "<group>"; };
+		C01457FEF8495BC110ADA5F0C1CF21F4 /* RNSVGContextBrush.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGContextBrush.m; sourceTree = "<group>"; };
+		C23F8CE9147055045877E865B3491C40 /* RNSVGTextProperties.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGTextProperties.m; sourceTree = "<group>"; };
+		C2A3F08A6A60F582BE905762C7335314 /* RNSVGTSpanManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGTSpanManager.m; sourceTree = "<group>"; };
+		C6D8373F0389FD770C41B70026952079 /* RNSVGMarkerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerManager.m; sourceTree = "<group>"; };
+		C9B25B4ABE41039162258CEA0043882F /* RNSVG.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNSVG.debug.xcconfig; sourceTree = "<group>"; };
+		C9EBFE3C309076046D93C80E9B8F2D5F /* RNSVGViewBox.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGViewBox.h; sourceTree = "<group>"; };
+		CC81A99E99FCDFAE9DD1BE65679627AA /* RNSVGFontData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGFontData.h; sourceTree = "<group>"; };
+		CDF9613AE6EA9EE7ABD0D40F96C6695A /* RNSVGCircle.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGCircle.m; sourceTree = "<group>"; };
+		D0A4E3DA93516CA0B605752085ADCDAF /* RNSVGTextPathManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGTextPathManager.h; sourceTree = "<group>"; };
+		D44B6CD3B596A06E0561CAE94DB4DBB4 /* RNSVGSymbol.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGSymbol.m; sourceTree = "<group>"; };
+		D8CC9E670EA3415601B84A93DE462F81 /* RNSVGRenderableManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGRenderableManager.h; sourceTree = "<group>"; };
+		DB88B0EF25F1AC429E622D56D5BF73D5 /* RNSVGLine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGLine.h; sourceTree = "<group>"; };
+		DE5E6D21FEC1FF485800B295ACD2F94B /* RNSVGMarkerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerManager.h; sourceTree = "<group>"; };
+		DEB90167DF45C4821B4D23AB816FBE75 /* RNSVGForeignObjectManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObjectManager.m; sourceTree = "<group>"; };
+		E1B3169C6C74F3A96A507C0B213D0747 /* RNSVGPathParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPathParser.m; sourceTree = "<group>"; };
+		E403A2A79D053F76C7616D274360DAD4 /* RNSVGPatternManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPatternManager.m; sourceTree = "<group>"; };
+		E4F548F89E8FEAF3E85E12E56992B362 /* RNSVGLength.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGLength.h; sourceTree = "<group>"; };
+		ECA44E10985741ABF842A7EF5E2BA8BE /* RNSVGTSpan.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGTSpan.h; sourceTree = "<group>"; };
+		EFEC5FF043D6A7B0C2E2815E4E6A1A94 /* RNSVGBrushType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGBrushType.h; sourceTree = "<group>"; };
+		F0243A7642045817E275160B7E62E6E1 /* RNSVGForeignObjectManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObjectManager.h; sourceTree = "<group>"; };
+		F09CC3086BFC0712FD1B3A907C7FB77E /* RNSVGPathManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGPathManager.m; sourceTree = "<group>"; };
+		F30130325F60B7C137FDE80BE774D304 /* RNSVGContextBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGContextBrush.h; sourceTree = "<group>"; };
+		F3669C552ABA33DC6F7E42B3CC9B3CA0 /* RNSVGLine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGLine.m; sourceTree = "<group>"; };
+		F4B8D034178AACC7970A229982D2E9AC /* RNSVGTSpan.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGTSpan.m; sourceTree = "<group>"; };
+		F5DEA540FB434582133D6D6943D087B6 /* RNSVGGroupManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGGroupManager.m; sourceTree = "<group>"; };
+		F808E6F7A94DAB8C1DC5997478F31264 /* RNSVGImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGImage.m; sourceTree = "<group>"; };
+		F9098ECB082839A72043A2241A7E15E0 /* RNSVGForeignObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObject.h; sourceTree = "<group>"; };
+		F9606CF325231C9C442E76FAB32D06F7 /* RNSVGContainer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSVGContainer.h; path = ios/RNSVGContainer.h; sourceTree = "<group>"; };
+		F99581865308DD01675B679411B93420 /* RNSVGClipPathManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNSVGClipPathManager.m; sourceTree = "<group>"; };
+		FA90544A6153580CD8211F60DC50F985 /* RNSVGRadialGradient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNSVGRadialGradient.h; sourceTree = "<group>"; };
+		FD98E6051344183116A2293685475C40 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8A3A58ED758E7E20F2BC11ECD526E409 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		090456B423A4F8A182293A92D906439E /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				17A45841D12E8472879F8FD1639A0369 /* LICENSE */,
+				FD98E6051344183116A2293685475C40 /* README.md */,
+				6753AA2D78569F0E9594693D992DB2FD /* RNSVG.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		3556706257695B2FA63F93FF760F350F /* Elements */ = {
+			isa = PBXGroup;
+			children = (
+				0DA9D3C13EB5D4749FE4A88470240741 /* RNSVGClipPath.h */,
+				729E07C22374010893436FF5A49287C2 /* RNSVGClipPath.m */,
+				10FE16A917C925297FB10BDA6CE5777E /* RNSVGDefs.h */,
+				B30A7133A640B87076774E767675C880 /* RNSVGDefs.m */,
+				F9098ECB082839A72043A2241A7E15E0 /* RNSVGForeignObject.h */,
+				6F33825883B6EEA51D0B8792E2FE0426 /* RNSVGForeignObject.m */,
+				175D4EBF6ACB8D0F6E902C68F20CD654 /* RNSVGGroup.h */,
+				78F7079C97D972CBF5FA30F27517D5C1 /* RNSVGGroup.m */,
+				AAE91C78BBB9F0143AB3DB1AE576946A /* RNSVGImage.h */,
+				F808E6F7A94DAB8C1DC5997478F31264 /* RNSVGImage.m */,
+				B348905D40ADFA2BED3C09B8638FE8E9 /* RNSVGLinearGradient.h */,
+				34E7A6CC1DFD70CAAB53545E05C347E2 /* RNSVGLinearGradient.m */,
+				2C4EFAC1414B368C8CCA90591FD3B294 /* RNSVGMarker.h */,
+				8ED611250F26FA22AD5EBA1AD46E7214 /* RNSVGMarker.m */,
+				572A5A0747C5608F8056F2EF74345E43 /* RNSVGMask.h */,
+				BBA323484D8D7AB1604EC18240248AC1 /* RNSVGMask.m */,
+				8C417877FBC50877592C271AFEC0700D /* RNSVGPath.h */,
+				52E85A76BFAFFC942AF7698FB5260503 /* RNSVGPath.m */,
+				8827022E94EEEB6D4BBF56889BF7FB35 /* RNSVGPattern.h */,
+				BF54E44F212F05D56C11B55DE37B8B4A /* RNSVGPattern.m */,
+				FA90544A6153580CD8211F60DC50F985 /* RNSVGRadialGradient.h */,
+				5FE965D1132E640C2BFFAEC4EF7433CD /* RNSVGRadialGradient.m */,
+				09E8E3FC943AAE5BD55FE1DB971992C9 /* RNSVGSvgView.h */,
+				6EC2B5938ECA1AB2C8594A702DA8F602 /* RNSVGSvgView.m */,
+				A00E3F64EE3BB2A33D4DE0A6A9B3891C /* RNSVGSymbol.h */,
+				D44B6CD3B596A06E0561CAE94DB4DBB4 /* RNSVGSymbol.m */,
+				3603DBF1E7E101B5BBAA38C9BA42E15B /* RNSVGUse.h */,
+				6C02801D529BFBD56C3844952225FCDD /* RNSVGUse.m */,
+			);
+			name = Elements;
+			path = ios/Elements;
+			sourceTree = "<group>";
+		};
+		43F22C4762FA6BCB2DCA891AC0B432AC /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				4019BE79292C12AAC6DEC7F824C16DC3 /* React */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		59A09CC935CB667B24C7A5701C7C9A56 /* Brushes */ = {
+			isa = PBXGroup;
+			children = (
+				5FAFD486F8613933121F59F82A5D24C5 /* RNSVGBrush.h */,
+				A0BF304EC3F508F06A99B0C60D010232 /* RNSVGBrush.m */,
+				EFEC5FF043D6A7B0C2E2815E4E6A1A94 /* RNSVGBrushType.h */,
+				F30130325F60B7C137FDE80BE774D304 /* RNSVGContextBrush.h */,
+				C01457FEF8495BC110ADA5F0C1CF21F4 /* RNSVGContextBrush.m */,
+				B0BF137F780BFBF643670375BAF1F855 /* RNSVGPainter.h */,
+				04CC822601212C38B20D21EBAA44405E /* RNSVGPainter.m */,
+				89B5849EDC96831DBBB60BDCF15B0E49 /* RNSVGPainterBrush.h */,
+				6ACD49CC8A42CCDE1A477FCADA83418C /* RNSVGPainterBrush.m */,
+				15A85657E74DDF59A8C8B50F3FE6E9F6 /* RNSVGSolidColorBrush.h */,
+				89282832FF86DEF2F879BC238C665F8F /* RNSVGSolidColorBrush.m */,
+			);
+			name = Brushes;
+			path = ios/Brushes;
+			sourceTree = "<group>";
+		};
+		6DD0760CE928F73EF0590E750E9DBBE4 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				73752CA91BC69930A547A319131DCAEC /* RCTConvert+RNSVG.h */,
+				7E1D9A96E4F2B77EF78CEE05C00AEDF6 /* RCTConvert+RNSVG.m */,
+				53D4AF7A09FC4F556223C01D42EB2172 /* RNSVGBezierElement.h */,
+				B6D221B05B2E627AC2DC5153BFBB5B12 /* RNSVGBezierElement.m */,
+				56F3A9D18FEA55F110CC4184FBEF9AAF /* RNSVGCGFCRule.h */,
+				E4F548F89E8FEAF3E85E12E56992B362 /* RNSVGLength.h */,
+				0558A54F4CB13796FFD84BDDA989FA5C /* RNSVGLength.m */,
+				4372A68353332A1FC60CF3EA4894A720 /* RNSVGMarkerPosition.h */,
+				53174F33D3FE514B7F6A441489508BA3 /* RNSVGMarkerPosition.m */,
+				30574AE415AB7F04A078397302ED9D6C /* RNSVGPathMeasure.h */,
+				A615E71653A06C553D1067CFFE9CA97D /* RNSVGPathMeasure.m */,
+				518B489D5F5B322AFFA3AD9625D62FEF /* RNSVGPathParser.h */,
+				E1B3169C6C74F3A96A507C0B213D0747 /* RNSVGPathParser.m */,
+				86A947978D1F4B3C767237D82617A8A8 /* RNSVGUnits.h */,
+				583D0C7C9952D97197E2F3C9633D5F13 /* RNSVGVBMOS.h */,
+				6288CDCBF042CA2D5B25B7C0E7B7F363 /* RNSVGVectorEffect.h */,
+				C9EBFE3C309076046D93C80E9B8F2D5F /* RNSVGViewBox.h */,
+				2E8EC486FBA21D28D85281116938B8D1 /* RNSVGViewBox.m */,
+			);
+			name = Utils;
+			path = ios/Utils;
+			sourceTree = "<group>";
+		};
+		714C52B9FF5DDDB3D8AE3D9F44692DF6 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				8E8F697B68CE3FE9716F0AF3DF5F3193 /* RNSVG-dummy.m */,
+				034D74DD2816CADA3A248DA3585A7EB4 /* RNSVG-prefix.pch */,
+				C9B25B4ABE41039162258CEA0043882F /* RNSVG.debug.xcconfig */,
+				413F9E71E8265373840A00A64E46C1F1 /* RNSVG.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/RNSVG";
+			sourceTree = "<group>";
+		};
+		84978CDED563AFFD546137CFA28FEB56 /* Shapes */ = {
+			isa = PBXGroup;
+			children = (
+				7E32A83001D5B876510159278DB4B655 /* RNSVGCircle.h */,
+				CDF9613AE6EA9EE7ABD0D40F96C6695A /* RNSVGCircle.m */,
+				9DA20348B1BF749B58978A11E5FED8D0 /* RNSVGEllipse.h */,
+				7291DB0D3C24EF4D86ADB8A1A55150F5 /* RNSVGEllipse.m */,
+				DB88B0EF25F1AC429E622D56D5BF73D5 /* RNSVGLine.h */,
+				F3669C552ABA33DC6F7E42B3CC9B3CA0 /* RNSVGLine.m */,
+				5E387ECF97024B407ABE82B42B90DC83 /* RNSVGRect.h */,
+				B39407802344F6DC8DF30EC303CD6E9B /* RNSVGRect.m */,
+			);
+			name = Shapes;
+			path = ios/Shapes;
+			sourceTree = "<group>";
+		};
+		B15BAAE291BDFBE1579BC7CB3C133E0F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C9EA3C117361FC084CFA1A4214102E49 /* Text */ = {
+			isa = PBXGroup;
+			children = (
+				CC81A99E99FCDFAE9DD1BE65679627AA /* RNSVGFontData.h */,
+				17E45D926A2CC9C6A39F2BF6C5393495 /* RNSVGFontData.m */,
+				27A4C343214CE3277B75BD4171398339 /* RNSVGGlyphContext.h */,
+				A294AAE26DA294044949F47BFC6C04AF /* RNSVGGlyphContext.m */,
+				13700FDF6EDFA7E506BDC94EB3542BEE /* RNSVGPropHelper.h */,
+				231D250FB6D7A0C5083B77CA1274E109 /* RNSVGPropHelper.m */,
+				4F5354809D2D085DF29E9AF47E370264 /* RNSVGText.h */,
+				3E4AD61CCA4D16D023133D33D0DB2EEE /* RNSVGText.m */,
+				87D2DCD02D2B3844B0816F53998185D0 /* RNSVGTextPath.h */,
+				AFE648D6CDB25C91C908FC12A428B7E4 /* RNSVGTextPath.m */,
+				7F7C08854B69C5274A4C16740FCD4908 /* RNSVGTextProperties.h */,
+				C23F8CE9147055045877E865B3491C40 /* RNSVGTextProperties.m */,
+				ECA44E10985741ABF842A7EF5E2BA8BE /* RNSVGTSpan.h */,
+				F4B8D034178AACC7970A229982D2E9AC /* RNSVGTSpan.m */,
+			);
+			name = Text;
+			path = ios/Text;
+			sourceTree = "<group>";
+		};
+		DD7EED2D2E754191DF4A652AAA42D631 = {
+			isa = PBXGroup;
+			children = (
+				43F22C4762FA6BCB2DCA891AC0B432AC /* Dependencies */,
+				B15BAAE291BDFBE1579BC7CB3C133E0F /* Frameworks */,
+				E5F5AB8CF452E0293763BCFA2211951E /* Products */,
+				FCA832999DC417E07CE542F09A40346A /* RNSVG */,
+			);
+			sourceTree = "<group>";
+		};
+		E49BDCF8416FC89B4AD8525A67B9B2FF /* ViewManagers */ = {
+			isa = PBXGroup;
+			children = (
+				9DF0A1EFE30CA5614CDC3951D77245B3 /* RNSVGCircleManager.h */,
+				1FCA70D2360FDCA61CE4D74EDAA85E96 /* RNSVGCircleManager.m */,
+				80FEA89E64B233629023487DAFCA1CF8 /* RNSVGClipPathManager.h */,
+				F99581865308DD01675B679411B93420 /* RNSVGClipPathManager.m */,
+				1C184AC8A2CDA11123CAA2A5C164BA96 /* RNSVGDefsManager.h */,
+				22822D35EFAFE9E1560A3E0C81E5BB54 /* RNSVGDefsManager.m */,
+				2592E78E99C7C622F03A3DB92DC48CC1 /* RNSVGEllipseManager.h */,
+				05BC70706EB93C1E6F80BD3300DAD82E /* RNSVGEllipseManager.m */,
+				F0243A7642045817E275160B7E62E6E1 /* RNSVGForeignObjectManager.h */,
+				DEB90167DF45C4821B4D23AB816FBE75 /* RNSVGForeignObjectManager.m */,
+				2F40D8A261653EC04A33ECEBEE960FA2 /* RNSVGGroupManager.h */,
+				F5DEA540FB434582133D6D6943D087B6 /* RNSVGGroupManager.m */,
+				4C64B136F4D9523CFF9DD633470BE07E /* RNSVGImageManager.h */,
+				933BE985626A8FE1F46D86F1217FA751 /* RNSVGImageManager.m */,
+				ABB265EEBAB5EF6DB8B2C5E8B29A5417 /* RNSVGLinearGradientManager.h */,
+				2255E53C79741792810F7BE38AB6862C /* RNSVGLinearGradientManager.m */,
+				A3476F862788FFF91366856566B1A76D /* RNSVGLineManager.h */,
+				0C63B6B68541B3858D9F3E231234D599 /* RNSVGLineManager.m */,
+				DE5E6D21FEC1FF485800B295ACD2F94B /* RNSVGMarkerManager.h */,
+				C6D8373F0389FD770C41B70026952079 /* RNSVGMarkerManager.m */,
+				3E2C9318DF65499892F3C7AE20C047FD /* RNSVGMaskManager.h */,
+				46270578F44BF3E4C830935A7F5CFDBF /* RNSVGMaskManager.m */,
+				A59697BE3D7502FF44A6E157875D47B6 /* RNSVGNodeManager.h */,
+				7F3165ECF15314B92A3B64E59D1AD5C6 /* RNSVGNodeManager.m */,
+				7B17F860D0A1903F90D8CC704FDD7525 /* RNSVGPathManager.h */,
+				F09CC3086BFC0712FD1B3A907C7FB77E /* RNSVGPathManager.m */,
+				5B16357E7EE78F7041B49DAE80D6A0AA /* RNSVGPatternManager.h */,
+				E403A2A79D053F76C7616D274360DAD4 /* RNSVGPatternManager.m */,
+				90BD7DA3D0C247D56CD8D3956E9330A9 /* RNSVGRadialGradientManager.h */,
+				1C78F09A48D6F954C92EABE08C812082 /* RNSVGRadialGradientManager.m */,
+				96F5C37782B98FE9B86EE553A74C4925 /* RNSVGRectManager.h */,
+				2DF4726DBADF01ABF71BC0A1DD580C43 /* RNSVGRectManager.m */,
+				D8CC9E670EA3415601B84A93DE462F81 /* RNSVGRenderableManager.h */,
+				0FE3B49D107F1BB6AD92B50CDB3DF0B8 /* RNSVGRenderableManager.m */,
+				99B509443FA5FE471339A92C3C66CDE1 /* RNSVGSvgViewManager.h */,
+				9ECF17BB9EDC508E68CD153526B2929A /* RNSVGSvgViewManager.m */,
+				4F8A7A5812348D361FC2A322CA4849C6 /* RNSVGSymbolManager.h */,
+				70B73C17C699D6D1ABF9F4A69D06B11C /* RNSVGSymbolManager.m */,
+				38AB0D0FE59C8B5F9478AB2CB23F0F1A /* RNSVGTextManager.h */,
+				2E8CAA3BD275A8CA5F3F53EE51FD2431 /* RNSVGTextManager.m */,
+				D0A4E3DA93516CA0B605752085ADCDAF /* RNSVGTextPathManager.h */,
+				989A40123C8DEFDDB83AC39C0A61AF9F /* RNSVGTextPathManager.m */,
+				00D81CB8FF65DC322EAC01B29600456A /* RNSVGTSpanManager.h */,
+				C2A3F08A6A60F582BE905762C7335314 /* RNSVGTSpanManager.m */,
+				B589DB6C995C66DF6CAFF0527351AF73 /* RNSVGUseManager.h */,
+				BDEBA379437F3DA6A24C4BD17774A774 /* RNSVGUseManager.m */,
+			);
+			name = ViewManagers;
+			path = ios/ViewManagers;
+			sourceTree = "<group>";
+		};
+		E5F5AB8CF452E0293763BCFA2211951E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				75978B034F13E79852F4F77C42B35C8B /* libRNSVG.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FCA832999DC417E07CE542F09A40346A /* RNSVG */ = {
+			isa = PBXGroup;
+			children = (
+				F9606CF325231C9C442E76FAB32D06F7 /* RNSVGContainer.h */,
+				76752A82390C70FB4D18038E3B5E5448 /* RNSVGNode.h */,
+				30D8E0005027313102ADFFB510D84D9A /* RNSVGNode.m */,
+				531FD5F83A2B56EAEC9C3B305F2DFD7F /* RNSVGRenderable.h */,
+				3E40F7D2DA05447DC49DCE6DC9FBDAC1 /* RNSVGRenderable.m */,
+				59A09CC935CB667B24C7A5701C7C9A56 /* Brushes */,
+				3556706257695B2FA63F93FF760F350F /* Elements */,
+				090456B423A4F8A182293A92D906439E /* Pod */,
+				84978CDED563AFFD546137CFA28FEB56 /* Shapes */,
+				714C52B9FF5DDDB3D8AE3D9F44692DF6 /* Support Files */,
+				C9EA3C117361FC084CFA1A4214102E49 /* Text */,
+				6DD0760CE928F73EF0590E750E9DBBE4 /* Utils */,
+				E49BDCF8416FC89B4AD8525A67B9B2FF /* ViewManagers */,
+			);
+			name = RNSVG;
+			path = "../../../../node_modules/react-native-svg";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		54F9E86FA9D62CBF43F0AE1247AA9B56 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA3F7BBB3F15050858B271AF4C499031 /* RCTConvert+RNSVG.h in Headers */,
+				4BCA4CEDCBFBDD946EFCDDB3542CA51B /* RNSVGBezierElement.h in Headers */,
+				845221D497654E95E32ED5A508BA5C1A /* RNSVGBrush.h in Headers */,
+				B6867EBD860FBA177020D037AA33F2B6 /* RNSVGBrushType.h in Headers */,
+				E988819FA14B5EA52853B0D9104D947A /* RNSVGCGFCRule.h in Headers */,
+				C15333CB2690E971A2E525B8F5C63092 /* RNSVGCircle.h in Headers */,
+				D8BD91C583F6158D47D09FCECB3BD073 /* RNSVGCircleManager.h in Headers */,
+				7AD23A42540289B63EDF517FE990A60D /* RNSVGClipPath.h in Headers */,
+				BCBE0E1973C6EAFA3526C6A8F9136869 /* RNSVGClipPathManager.h in Headers */,
+				DE5B9A1BB78A31F3355A109F57838C4A /* RNSVGContainer.h in Headers */,
+				F0BEBDA16D8406DB9C83D97C7684B0D0 /* RNSVGContextBrush.h in Headers */,
+				1A6BA0B1F390583AF842C458B1F04495 /* RNSVGDefs.h in Headers */,
+				7F5DD774DDB95759275AC0B9619406D2 /* RNSVGDefsManager.h in Headers */,
+				7E5F4315E9CFAF693DA9156B801214C8 /* RNSVGEllipse.h in Headers */,
+				39DA5E6AEE50A5002AC10CADA55990EC /* RNSVGEllipseManager.h in Headers */,
+				7E18E6FD8620648364E2F1577BBDD7A6 /* RNSVGFontData.h in Headers */,
+				A3CDB803BD834C24787EBC6D988ED3A1 /* RNSVGForeignObject.h in Headers */,
+				CD48360405E801D96981A28232E995E7 /* RNSVGForeignObjectManager.h in Headers */,
+				E1022274CA860C24519B814BBEDBF25D /* RNSVGGlyphContext.h in Headers */,
+				3B9227D033735C2A66D61D0583736AD7 /* RNSVGGroup.h in Headers */,
+				8B4EE75CE543DD2475278DD21A600857 /* RNSVGGroupManager.h in Headers */,
+				144CE1B2D9467A2D1B4A296474177AB1 /* RNSVGImage.h in Headers */,
+				5DA1B223F99F687E810AC0694BC17D30 /* RNSVGImageManager.h in Headers */,
+				B092C1B10247246EF3AA8FB80F6C96AB /* RNSVGLength.h in Headers */,
+				C557CDB2FF642899CAC7C2DAD06667E9 /* RNSVGLine.h in Headers */,
+				43DB165655DEE1A47AA79AA9E74C3999 /* RNSVGLinearGradient.h in Headers */,
+				01DAC3F3437D92677D7E830825750F2E /* RNSVGLinearGradientManager.h in Headers */,
+				8509552ADB1CCBF6651BCB6263EFBBA4 /* RNSVGLineManager.h in Headers */,
+				E314FF1B42A7CCE22C9C3FF438552D2D /* RNSVGMarker.h in Headers */,
+				D3A17F7B03EB349AA63DA295A403D43B /* RNSVGMarkerManager.h in Headers */,
+				19C7CD0D10E0B539A474B8FB872312D6 /* RNSVGMarkerPosition.h in Headers */,
+				2944F6618D328A19521ED79C28DE6FA1 /* RNSVGMask.h in Headers */,
+				C217C071DDC0B3DD4AD47C070785C6F8 /* RNSVGMaskManager.h in Headers */,
+				BC9865DC4BE9F45B4C9BDDB8B20476EA /* RNSVGNode.h in Headers */,
+				F8B9E876265E19FE2A8C7E9B41022BE3 /* RNSVGNodeManager.h in Headers */,
+				4AB2E6C3C8C8644D9AC43BC1F82AE4E9 /* RNSVGPainter.h in Headers */,
+				19932208E0FF7461FAC9178F887450D0 /* RNSVGPainterBrush.h in Headers */,
+				A4416800CF1A972C31BDB7F3CC29DE3A /* RNSVGPath.h in Headers */,
+				5CFE71B644A01BFE3197AD8EE6A135D3 /* RNSVGPathManager.h in Headers */,
+				1148A82ED30D38FB5946D54BDA932323 /* RNSVGPathMeasure.h in Headers */,
+				7C18B2C716402D08F9964670E0600775 /* RNSVGPathParser.h in Headers */,
+				A2CA6108D78F448D0C04B26488021F79 /* RNSVGPattern.h in Headers */,
+				C32AD0624B9943B6665E0865329003D1 /* RNSVGPatternManager.h in Headers */,
+				68886B35564EC2C425B58C7A32112E2F /* RNSVGPropHelper.h in Headers */,
+				0893AAD5BCC3ABB39637AA4B8E438B14 /* RNSVGRadialGradient.h in Headers */,
+				65C6557B6B73B718229A3A58937C4F81 /* RNSVGRadialGradientManager.h in Headers */,
+				8209E01BC4A78541D54E3F7DA7094A56 /* RNSVGRect.h in Headers */,
+				94FAD6C9BFEB82C5C7324CD569F78C91 /* RNSVGRectManager.h in Headers */,
+				C42193D01C64E635F13EB511B98756A5 /* RNSVGRenderable.h in Headers */,
+				ABD2BCBED046B8AAA08DA3BA5845CA9D /* RNSVGRenderableManager.h in Headers */,
+				A4C4FC23227DFCCE324BD330E3D94D02 /* RNSVGSolidColorBrush.h in Headers */,
+				5D073BC7F3031FD574CECE8396A2BA86 /* RNSVGSvgView.h in Headers */,
+				E9B1A6461BF1A86E4E1A21B073CA46A0 /* RNSVGSvgViewManager.h in Headers */,
+				14F3A0CCCBAD3E3D79499272CD1D9E4E /* RNSVGSymbol.h in Headers */,
+				BB4E336EECCAC4EC78D4D270ED4A8776 /* RNSVGSymbolManager.h in Headers */,
+				33C58E35A3542FEE2442FA934C86F064 /* RNSVGText.h in Headers */,
+				F47B8FC7C2D4B74568987DDD208B22B4 /* RNSVGTextManager.h in Headers */,
+				E2CD357428DBCFB616530A8BA02F23B4 /* RNSVGTextPath.h in Headers */,
+				FF86EC8CB30DA41E701D474710191DC9 /* RNSVGTextPathManager.h in Headers */,
+				9A6C3D76100599AE66CCDB1A6E08FAC3 /* RNSVGTextProperties.h in Headers */,
+				ED1CBA04F6014C36FCBB10AEFC160ACA /* RNSVGTSpan.h in Headers */,
+				FF4C390414540BC6390685E853D342F4 /* RNSVGTSpanManager.h in Headers */,
+				E6BFCE5A3734AA615CD5D3662BE754FF /* RNSVGUnits.h in Headers */,
+				4F8EFE8EEA2B935CDFBBD923EFEF13F9 /* RNSVGUse.h in Headers */,
+				BB517B633A4E6EA87C883D748F44BBB9 /* RNSVGUseManager.h in Headers */,
+				D494957EE9C1C255CE0721A5960D2066 /* RNSVGVBMOS.h in Headers */,
+				B9857D291C255F00EA5472D7A4A06321 /* RNSVGVectorEffect.h in Headers */,
+				267E445186B6445B9FBEFF8C7A653119 /* RNSVGViewBox.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		37F56A737644EA890F883EB95588CAD3 /* RNSVG */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C6C29D39DB83BDDF7AA84479A19CCF2A /* Build configuration list for PBXNativeTarget "RNSVG" */;
+			buildPhases = (
+				54F9E86FA9D62CBF43F0AE1247AA9B56 /* Headers */,
+				1714E88260A6791DFCC7849F74303370 /* Sources */,
+				8A3A58ED758E7E20F2BC11ECD526E409 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7B8421E6B956A071F2288EEE4B19B80A /* PBXTargetDependency */,
+			);
+			name = RNSVG;
+			productName = RNSVG;
+			productReference = 75978B034F13E79852F4F77C42B35C8B /* libRNSVG.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C704D7B2418414A9DC073395446C611B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 1A20AEF0B9A5FF0DE897CD1BC6FBB6E5 /* Build configuration list for PBXProject "RNSVG" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DD7EED2D2E754191DF4A652AAA42D631;
+			productRefGroup = E5F5AB8CF452E0293763BCFA2211951E /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 4019BE79292C12AAC6DEC7F824C16DC3 /* React */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				37F56A737644EA890F883EB95588CAD3 /* RNSVG */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1714E88260A6791DFCC7849F74303370 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E83B0FA00E4C54AE0F43AA9B6C51C44C /* RCTConvert+RNSVG.m in Sources */,
+				D9C1638CA4B960641593816C04CA9602 /* RNSVG-dummy.m in Sources */,
+				30CB22B9140C05055B27BD9A3CF1A6E6 /* RNSVGBezierElement.m in Sources */,
+				4E8534FAEFBAF49EFA4B49BB579D91B6 /* RNSVGBrush.m in Sources */,
+				3FDEB480855C6D19994BDBA1E6238A3C /* RNSVGCircle.m in Sources */,
+				BF479B538C0D9B869E7922C99F581BED /* RNSVGCircleManager.m in Sources */,
+				469E3B7ED7B03986AE8AF4B8E1D0B3F8 /* RNSVGClipPath.m in Sources */,
+				51E8D42A7356CA521EDEADB3911089B1 /* RNSVGClipPathManager.m in Sources */,
+				FEC0C2C3743DDD4AC99DF2181093723B /* RNSVGContextBrush.m in Sources */,
+				55589F2472800A45A6F40DAD2CA0E6AD /* RNSVGDefs.m in Sources */,
+				188C390DDB7E5FBDB18825DA7E08B7BD /* RNSVGDefsManager.m in Sources */,
+				A2CA278F640A37508441753C72BF81AF /* RNSVGEllipse.m in Sources */,
+				DC24D43FC459C6055E76AD2A40F39E7E /* RNSVGEllipseManager.m in Sources */,
+				45C55BC747A2C76378BAA1FA8F6D789B /* RNSVGFontData.m in Sources */,
+				FBF8271B762926B66D9DAAD66A7B9C08 /* RNSVGForeignObject.m in Sources */,
+				83B5A81BBFC1910820085495D74B2B6F /* RNSVGForeignObjectManager.m in Sources */,
+				F5E1F057B3D012CAFE0D0D106535A4E9 /* RNSVGGlyphContext.m in Sources */,
+				7849ECCA1112E9ABFA8405E37FA55CC5 /* RNSVGGroup.m in Sources */,
+				25604FF6E2BFA049C8B9125DC2F77534 /* RNSVGGroupManager.m in Sources */,
+				B255F095C1052546E41C9704053D7920 /* RNSVGImage.m in Sources */,
+				A0F742DC6F223177420FB0642BD3AC82 /* RNSVGImageManager.m in Sources */,
+				D6E7D86714C1CC172E9213D864201524 /* RNSVGLength.m in Sources */,
+				8CEB70CFF647E5EFB13F512D894FD761 /* RNSVGLine.m in Sources */,
+				E7717ED418A7809C1345B6B7F2B50D53 /* RNSVGLinearGradient.m in Sources */,
+				B311D039B8DFC49E82C2851EFF43C4C9 /* RNSVGLinearGradientManager.m in Sources */,
+				E7527F0E534E1212CE723EFBD4061C75 /* RNSVGLineManager.m in Sources */,
+				306DC42C4B1D844B381249BC169E6114 /* RNSVGMarker.m in Sources */,
+				DAC5A234C6A3E38113726122448C7E55 /* RNSVGMarkerManager.m in Sources */,
+				3568E567CD8DE7BF52EB2BEF5227509D /* RNSVGMarkerPosition.m in Sources */,
+				886E4BC11C0E5D24BFF1A9D559A549BC /* RNSVGMask.m in Sources */,
+				A26F8AB66308797D85AB156310F75150 /* RNSVGMaskManager.m in Sources */,
+				BE93EF1910A45702B1FAB7510095AAED /* RNSVGNode.m in Sources */,
+				1E2AD8FDA035AB761C76B442E144AFB4 /* RNSVGNodeManager.m in Sources */,
+				207F6D6A0D8D8AB072BA9BF2B35FD9F8 /* RNSVGPainter.m in Sources */,
+				C83D4BED39F829E41ED3820496FE34D8 /* RNSVGPainterBrush.m in Sources */,
+				90A76EA5116BFEDF5DE4D661974B13E7 /* RNSVGPath.m in Sources */,
+				D042901372D2CDEB27068D1E95C3855B /* RNSVGPathManager.m in Sources */,
+				0E6810C8E2BF8761FE18F57D104DEFD7 /* RNSVGPathMeasure.m in Sources */,
+				723EEF8359B96FA48245FA65914B6037 /* RNSVGPathParser.m in Sources */,
+				8161DB0B42B624C1EAAB5290655A0D35 /* RNSVGPattern.m in Sources */,
+				4CE19AABAFA2B742E21201664E315BFE /* RNSVGPatternManager.m in Sources */,
+				B053D6076CEB18D96B3FB31E0B444150 /* RNSVGPropHelper.m in Sources */,
+				6F14A6B2825D72C3CA9CC770C0EDDCEA /* RNSVGRadialGradient.m in Sources */,
+				C4E47907A9357C7CBD3324D2E6D64F17 /* RNSVGRadialGradientManager.m in Sources */,
+				A5550893ED6A3DE797B80C9B998FDB5F /* RNSVGRect.m in Sources */,
+				883E7451DD4C7CE3336106B637B286E5 /* RNSVGRectManager.m in Sources */,
+				7DA4157DB71AF6CD122A0D0FC5F48BE4 /* RNSVGRenderable.m in Sources */,
+				E62E8962F4EACCD90170F0DE20F8409B /* RNSVGRenderableManager.m in Sources */,
+				F4C13B5856816C8339782429747F0328 /* RNSVGSolidColorBrush.m in Sources */,
+				C12F2738A8079DA0F431469C8D3E6C12 /* RNSVGSvgView.m in Sources */,
+				BD6B851F3B4F7278365481C755539379 /* RNSVGSvgViewManager.m in Sources */,
+				CC8FE2CA35B10F9906F5CFB6983EE89B /* RNSVGSymbol.m in Sources */,
+				CB029757F79FFEF1A3282038BA32081F /* RNSVGSymbolManager.m in Sources */,
+				AACDC82DF11E6583BA4350551655FA7C /* RNSVGText.m in Sources */,
+				1CA211648371075A72CA2980B7848DFF /* RNSVGTextManager.m in Sources */,
+				8F6494EB18A86A0B9C5E471EFA621D0B /* RNSVGTextPath.m in Sources */,
+				56D693237CAD42A111ED0E1D910B7228 /* RNSVGTextPathManager.m in Sources */,
+				6E30B931B9443D750D3A97F692595DAC /* RNSVGTextProperties.m in Sources */,
+				D319D991E820B5E384C5E9B46786FB8F /* RNSVGTSpan.m in Sources */,
+				041A3317F7C216E1F78469DBF80578E6 /* RNSVGTSpanManager.m in Sources */,
+				A2A698C879DC0FDBECCD78096519A96B /* RNSVGUse.m in Sources */,
+				3A83F0C87AFB781C8AB798F6E5BA4FF6 /* RNSVGUseManager.m in Sources */,
+				D8C1FD6A72011079B72A2351163A7449 /* RNSVGViewBox.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7B8421E6B956A071F2288EEE4B19B80A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 469116FE631F5B7119CE165E52B0C248 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		023571C39430BA3859D855564C881A54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		0E324386459FA19B586F8B797FE3BB6D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 413F9E71E8265373840A00A64E46C1F1 /* RNSVG.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNSVG/RNSVG-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNSVG;
+				PRODUCT_NAME = RNSVG;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9494E623992CB8A28592DC9ACBD7D4C9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		A6B4F911719714F383791DFB5090C018 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9B25B4ABE41039162258CEA0043882F /* RNSVG.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNSVG/RNSVG-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNSVG;
+				PRODUCT_NAME = RNSVG;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A20AEF0B9A5FF0DE897CD1BC6FBB6E5 /* Build configuration list for PBXProject "RNSVG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9494E623992CB8A28592DC9ACBD7D4C9 /* Debug */,
+				023571C39430BA3859D855564C881A54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C6C29D39DB83BDDF7AA84479A19CCF2A /* Build configuration list for PBXNativeTarget "RNSVG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6B4F911719714F383791DFB5090C018 /* Debug */,
+				0E324386459FA19B586F8B797FE3BB6D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C704D7B2418414A9DC073395446C611B /* Project object */;
+}

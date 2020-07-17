@@ -145,6 +145,7 @@ export function getTestModules() {
     // Has uncontrolled view controllers
     modules.push(require('./tests/SMS'));
     // Requires permission
+    modules.push(optionalRequire(() => require('./tests/Contacts')));
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));

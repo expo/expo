@@ -45,9 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param event The event to apply transformers on.
  * @param transformers The list of transformers to apply.
+ * @param completion A block to run when an event was written to disk or dropped.
  */
 - (void)transformEvent:(GDTCOREvent *)event
-      withTransformers:(nullable NSArray<id<GDTCOREventTransformer>> *)transformers;
+      withTransformers:(nullable NSArray<id<GDTCOREventTransformer>> *)transformers
+            onComplete:(void (^_Nullable)(BOOL wasWritten, NSError *_Nullable error))completion;
 
 @end
 

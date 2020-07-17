@@ -1,5 +1,6 @@
 const { join } = require('path');
 const { copySync, removeSync } = require('fs-extra');
+const withCSS = require('@zeit/next-css');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
@@ -8,7 +9,7 @@ const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
 
-module.exports = {
+module.exports = withCSS({
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   webpack: (config, options) => {
@@ -16,6 +17,9 @@ module.exports = {
       test: /.mdx?$/, // load both .md and .mdx files
       use: [options.defaultLoaders.babel, '@mdx-js/loader', join(__dirname, './common/md-loader')],
     });
+    config.node = {
+      fs: 'empty',
+    };
     return config;
   },
   async exportPathMap(defaultPathMap, { dev, dir, outDir }) {
@@ -37,4 +41,4 @@ module.exports = {
       })
     );
   },
-};
+});

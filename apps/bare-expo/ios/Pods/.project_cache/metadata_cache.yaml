@@ -14,6 +14,10 @@ boost-for-react-native:
   LABEL: boost-for-react-native
   PROJECT_PATH: boost-for-react-native.xcodeproj
   UUID: AA4CE39926C0C12D02F874C1C48A5710
+Branch:
+  LABEL: Branch
+  PROJECT_PATH: Branch.xcodeproj
+  UUID: 32AB2597F26D238AAF12A9F8A95B992E
 DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
@@ -62,6 +66,10 @@ EXCalendar:
   LABEL: EXCalendar
   PROJECT_PATH: EXCalendar.xcodeproj
   UUID: 0F2988851D689F1E41CFC89C31422758
+EXCamera:
+  LABEL: EXCamera
+  PROJECT_PATH: EXCamera.xcodeproj
+  UUID: 4B109C23F45DFD6B4CA40B87D733EB11
 EXCellular:
   LABEL: EXCellular
   PROJECT_PATH: EXCellular.xcodeproj
@@ -94,6 +102,10 @@ EXFacebook:
   LABEL: EXFacebook
   PROJECT_PATH: EXFacebook.xcodeproj
   UUID: FEAA3FBA5C5225363EE9E6D0B5B3183B
+EXFaceDetector:
+  LABEL: EXFaceDetector
+  PROJECT_PATH: EXFaceDetector.xcodeproj
+  UUID: E3D1D7C85F27952DD8B1371AFE371A98
 EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
@@ -238,6 +250,14 @@ EXTaskManager:
   LABEL: EXTaskManager
   PROJECT_PATH: EXTaskManager.xcodeproj
   UUID: 86D546D1F048CDA66BE7589194F91D23
+EXUpdates:
+  LABEL: EXUpdates
+  PROJECT_PATH: EXUpdates.xcodeproj
+  UUID: 076FF2640FFF3466FB36FD12A629113A
+EXVideoThumbnails:
+  LABEL: EXVideoThumbnails
+  PROJECT_PATH: EXVideoThumbnails.xcodeproj
+  UUID: 16ED442C06F5D444E672AE845A57E796
 EXWebBrowser:
   LABEL: EXWebBrowser
   PROJECT_PATH: EXWebBrowser.xcodeproj
@@ -282,6 +302,18 @@ FirebaseInstanceID:
   LABEL: FirebaseInstanceID
   PROJECT_PATH: FirebaseInstanceID.xcodeproj
   UUID: 828A845A4F63A824ED62A82D61941B85
+FirebaseMLCommon:
+  LABEL: FirebaseMLCommon
+  PROJECT_PATH: FirebaseMLCommon.xcodeproj
+  UUID: 655B4D5DC1C1034B3458073E51ECD859
+FirebaseMLVision:
+  LABEL: FirebaseMLVision
+  PROJECT_PATH: FirebaseMLVision.xcodeproj
+  UUID: 3D5358053745F186EF3299093007AD97
+FirebaseMLVisionFaceModel:
+  LABEL: FirebaseMLVisionFaceModel
+  PROJECT_PATH: FirebaseMLVisionFaceModel.xcodeproj
+  UUID: D61B01865B69609E47812F6C78446AFB
 Folly:
   LABEL: Folly
   PROJECT_PATH: Folly.xcodeproj
@@ -290,6 +322,10 @@ glog:
   LABEL: glog
   PROJECT_PATH: glog.xcodeproj
   UUID: 86F597DC3D8F3D7A34EC5A5C413F7255
+GoogleAPIClientForREST:
+  LABEL: GoogleAPIClientForREST
+  PROJECT_PATH: GoogleAPIClientForREST.xcodeproj
+  UUID: E899E01EE94E3AAE44DBC0A0C183AD70
 GoogleAppMeasurement:
   LABEL: GoogleAppMeasurement
   PROJECT_PATH: GoogleAppMeasurement.xcodeproj
@@ -306,6 +342,10 @@ GoogleSignIn:
   LABEL: GoogleSignIn
   PROJECT_PATH: GoogleSignIn.xcodeproj
   UUID: 70D52585A9FA4EEA343010638ADABC11
+GoogleToolboxForMac:
+  LABEL: GoogleToolboxForMac
+  PROJECT_PATH: GoogleToolboxForMac.xcodeproj
+  UUID: 6A6C31AF5480BB69EDDFCD50D28967CD
 GoogleUtilities:
   LABEL: GoogleUtilities
   PROJECT_PATH: GoogleUtilities.xcodeproj
@@ -330,6 +370,14 @@ Pods-BareExpoTests:
   LABEL: Pods-BareExpoTests
   PROJECT_PATH: Pods.xcodeproj
   UUID: 5ED670BDDA55CB27689267F688CCA84B
+PromisesObjC:
+  LABEL: PromisesObjC
+  PROJECT_PATH: PromisesObjC.xcodeproj
+  UUID: 615BB6D15EC37D16C898941802F0D251
+Protobuf:
+  LABEL: Protobuf
+  PROJECT_PATH: Protobuf.xcodeproj
+  UUID: BF47F3270E009392526FDEE0C3BA42AD
 RCTRequired:
   LABEL: RCTRequired
   PROJECT_PATH: RCTRequired.xcodeproj
@@ -370,6 +418,14 @@ react-native-appearance:
   LABEL: react-native-appearance
   PROJECT_PATH: react-native-appearance.xcodeproj
   UUID: A6256F4276AA88FDEAAA83D3F4FEBA89
+react-native-branch:
+  LABEL: react-native-branch
+  PROJECT_PATH: react-native-branch.xcodeproj
+  UUID: BA47A315C7B71D68560B96280D945371
+react-native-netinfo:
+  LABEL: react-native-netinfo
+  PROJECT_PATH: react-native-netinfo.xcodeproj
+  UUID: 0C0919986EFBF5011021A24B7EA0C60C
 react-native-safe-area-context:
   LABEL: react-native-safe-area-context
   PROJECT_PATH: react-native-safe-area-context.xcodeproj
@@ -378,6 +434,22 @@ react-native-segmented-control:
   LABEL: react-native-segmented-control
   PROJECT_PATH: react-native-segmented-control.xcodeproj
   UUID: 16ABF49F17747086945AFC5E30F90858
+react-native-slider:
+  LABEL: react-native-slider
+  PROJECT_PATH: react-native-slider.xcodeproj
+  UUID: F3C1D8A71F2007982BE1C3D3D3B64151
+react-native-view-shot:
+  LABEL: react-native-view-shot
+  PROJECT_PATH: react-native-view-shot.xcodeproj
+  UUID: E2467C029EBD31A567D815A97DFFBB51
+react-native-viewpager:
+  LABEL: react-native-viewpager
+  PROJECT_PATH: react-native-viewpager.xcodeproj
+  UUID: CFC877DE04A417D8C15AFE74E1B178E8
+react-native-webview:
+  LABEL: react-native-webview
+  PROJECT_PATH: react-native-webview.xcodeproj
+  UUID: 42F64E6A68A3E4462CDCAC8DD31120D1
 React-RCTActionSheet:
   LABEL: React-RCTActionSheet
   PROJECT_PATH: React-RCTActionSheet.xcodeproj
@@ -426,6 +498,14 @@ RNCMaskedView:
   LABEL: RNCMaskedView
   PROJECT_PATH: RNCMaskedView.xcodeproj
   UUID: 3A3AC6D68A9DF5A1C1346B6F2C044396
+RNCPicker:
+  LABEL: RNCPicker
+  PROJECT_PATH: RNCPicker.xcodeproj
+  UUID: 379A5889161D6AB9EB39C236491A579D
+RNDateTimePicker:
+  LABEL: RNDateTimePicker
+  PROJECT_PATH: RNDateTimePicker.xcodeproj
+  UUID: 862E1DA0F45BF8C82AA7330F871534CF
 RNGestureHandler:
   LABEL: RNGestureHandler
   PROJECT_PATH: RNGestureHandler.xcodeproj
@@ -438,6 +518,14 @@ RNScreens:
   LABEL: RNScreens
   PROJECT_PATH: RNScreens.xcodeproj
   UUID: A72DB725A68697789F3F72BCF9C3A522
+RNSharedElement:
+  LABEL: RNSharedElement
+  PROJECT_PATH: RNSharedElement.xcodeproj
+  UUID: 3B3381B4254E1D060981A4320138A0DD
+RNSVG:
+  LABEL: RNSVG
+  PROJECT_PATH: RNSVG.xcodeproj
+  UUID: 37F56A737644EA890F883EB95588CAD3
 SDWebImage:
   LABEL: SDWebImage
   PROJECT_PATH: SDWebImage.xcodeproj
@@ -462,6 +550,10 @@ UMCore:
   LABEL: UMCore
   PROJECT_PATH: UMCore.xcodeproj
   UUID: 153171642F5C5CBC05FD3EF6B23A3F36
+UMFaceDetectorInterface:
+  LABEL: UMFaceDetectorInterface
+  PROJECT_PATH: UMFaceDetectorInterface.xcodeproj
+  UUID: 8DC606D9CFDD04C553C81728629364B3
 UMFileSystemInterface:
   LABEL: UMFileSystemInterface
   PROJECT_PATH: UMFileSystemInterface.xcodeproj

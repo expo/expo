@@ -98,7 +98,7 @@ CACHE_KEYS:
       EXAV:
         :debug: 145c0531e2c7438e612f4f31e07db048
         :release: 145c0531e2c7438e612f4f31e07db048
-    CHECKSUM: 86344030966e0da7e00556fbb97269d9ad16071d
+    CHECKSUM: 9a5ff571128707309aa0376171f0903d49410352
     FILES:
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -118,13 +118,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-av/ios/EXAV/Video/EXVideoView.m"
     PROJECT_NAME: EXAV
     SPECS:
-      - EXAV (8.2.1)
+      - EXAV (8.3.0)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
       EXBackgroundFetch:
         :debug: a5e0aec4c8a3ed87903824257d54d1ee
         :release: a5e0aec4c8a3ed87903824257d54d1ee
-    CHECKSUM: 6e4836e2998b1e045d574fbc2018b6f288e929b6
+    CHECKSUM: b773f1114c5ecbfa79daf228854184e307f9f760
     FILES:
       - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
       - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.m"
@@ -132,7 +132,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m"
     PROJECT_NAME: EXBackgroundFetch
     SPECS:
-      - EXBackgroundFetch (8.3.0)
+      - EXBackgroundFetch (8.4.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
       EXBarCodeScanner:
@@ -372,8 +372,8 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics:
-        :debug: cc401ee0180ae21c92b2d4a83982840d
-        :release: cc401ee0180ae21c92b2d4a83982840d
+        :debug: e839f3b1cc774098693d74e5616458c1
+        :release: e839f3b1cc774098693d74e5616458c1
     CHECKSUM: b502d650cb33c2d137cb19d639f8b315ee7e5ad3
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
@@ -384,8 +384,8 @@ CACHE_KEYS:
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore:
-        :debug: 558caeb4b0121e43433c08b1594d5793
-        :release: 558caeb4b0121e43433c08b1594d5793
+        :debug: 4ca6f8711f0b0c91373a3fb35a3015fe
+        :release: 4ca6f8711f0b0c91373a3fb35a3015fe
     CHECKSUM: 7e720f6f3725795b960b9e59dfcd46e674b30774
     FILES:
       - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
@@ -604,7 +604,7 @@ CACHE_KEYS:
       EXLocation:
         :debug: 2cdf527b8fd9660760dea76fb7930f4a
         :release: 2cdf527b8fd9660760dea76fb7930f4a
-    CHECKSUM: e93020e255f52a1cc031e0f45b0a24eb20fc4b55
+    CHECKSUM: 7615a912e30e8834679d9a07c86d99602f45b479
     FILES:
       - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
       - "../../../../packages/expo-location/ios/EXLocation/EXLocation.m"
@@ -618,7 +618,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.m"
     PROJECT_NAME: EXLocation
     SPECS:
-      - EXLocation (8.2.1)
+      - EXLocation (8.3.0)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
       EXMailComposer:
@@ -919,7 +919,7 @@ CACHE_KEYS:
       EXTaskManager:
         :debug: c89b8cc024ffb647f0baaef50ace5ac4
         :release: c89b8cc024ffb647f0baaef50ace5ac4
-    CHECKSUM: 019344613fa2ad14a85e5b6c2699707eee35a62d
+    CHECKSUM: 556abb392e1b2f3ab3fa7ee81479e95d3fbd65b3
     FILES:
       - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
       - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
@@ -933,7 +933,80 @@ CACHE_KEYS:
       - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.m"
     PROJECT_NAME: EXTaskManager
     SPECS:
-      - EXTaskManager (8.3.0)
+      - EXTaskManager (8.4.0)
+  EXUpdates:
+    BUILD_SETTINGS_CHECKSUM:
+      EXUpdates:
+        :debug: 86c6b68fdb0958c31d7a22818bdfddf4
+        :release: 86c6b68fdb0958c31d7a22818bdfddf4
+      EXUpdates/Tests:
+        :debug: ab27ba0035ff382128e04e0f627d09d5
+        :release: ab27ba0035ff382128e04e0f627d09d5
+    CHECKSUM: 9dd77b2e9e33d4347ae8ca81cc771cd16170e5af
+    FILES:
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncher.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherWithDatabase.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherWithDatabase.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicy.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicyNewest.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicyNewest.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader+Private.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesCrypto.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesCrypto.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesEmbeddedAppLoader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesEmbeddedAppLoader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesFileDownloader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesFileDownloader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesRemoteAppLoader.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesRemoteAppLoader.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesDatabase.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesDatabase.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesReaper.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesReaper.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesAppController.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesAppController.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesBareUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesBareUpdate.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesLegacyUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesLegacyUpdate.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesNewUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesNewUpdate.m"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate+Private.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.h"
+      - "../../../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.m"
+      - "../../../../packages/expo-updates/ios/Tests/Tests.m"
+    PROJECT_NAME: EXUpdates
+    SPECS:
+      - EXUpdates (0.2.11)
+      - EXUpdates/Tests (0.2.11)
+  EXVideoThumbnails:
+    BUILD_SETTINGS_CHECKSUM:
+      EXVideoThumbnails:
+        :debug: 5041c7e0d825e2ec0f00297c32567ce6
+        :release: 5041c7e0d825e2ec0f00297c32567ce6
+    CHECKSUM: f70bdc5511749f3181028f5000bcb7be203c631d
+    FILES:
+      - "../../../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.h"
+      - "../../../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.m"
+    PROJECT_NAME: EXVideoThumbnails
+    SPECS:
+      - EXVideoThumbnails (4.2.1)
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser:
@@ -994,8 +1067,8 @@ CACHE_KEYS:
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase:
-        :debug: 043d6ce04946d5de6f1a25bee76f328d
-        :release: 043d6ce04946d5de6f1a25bee76f328d
+        :debug: 904f904fb3904e0a75b26a7be14f50da
+        :release: 904f904fb3904e0a75b26a7be14f50da
     CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
     PROJECT_NAME: Firebase
     SPECS:
@@ -1004,8 +1077,8 @@ CACHE_KEYS:
   FirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseAnalytics:
-        :debug: d3b8372472720ab5e91b3a3adc59720a
-        :release: d3b8372472720ab5e91b3a3adc59720a
+        :debug: d56dc0c3f6fae9bdeb049f3b415c86a8
+        :release: d56dc0c3f6fae9bdeb049f3b415c86a8
     CHECKSUM: f68b9f3f1241385129ae0a83b63627fc420c05e5
     PROJECT_NAME: FirebaseAnalytics
     SPECS:
@@ -1013,8 +1086,8 @@ CACHE_KEYS:
   FirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseCore:
-        :debug: 9e46d904547d9ac25ab4b4514fc0a2f7
-        :release: 9e46d904547d9ac25ab4b4514fc0a2f7
+        :debug: f4f8de5d41df948fdddfe14e24f514c2
+        :release: f4f8de5d41df948fdddfe14e24f514c2
     CHECKSUM: 632e05cc5e1199d9147122c16d92305eb04c34bd
     PROJECT_NAME: FirebaseCore
     SPECS:
@@ -1022,26 +1095,26 @@ CACHE_KEYS:
   FirebaseCoreDiagnostics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseCoreDiagnostics:
-        :debug: d94bfb53514b8d2ac93bd041c0ca0e12
-        :release: d94bfb53514b8d2ac93bd041c0ca0e12
-    CHECKSUM: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
+        :debug: f358731925dcbd079cb3af88934b9c72
+        :release: f358731925dcbd079cb3af88934b9c72
+    CHECKSUM: b59c024493a409f8aecba02c99928d0d8431d159
     PROJECT_NAME: FirebaseCoreDiagnostics
     SPECS:
-      - FirebaseCoreDiagnostics (1.1.2)
+      - FirebaseCoreDiagnostics (1.2.4)
   FirebaseCoreDiagnosticsInterop:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseCoreDiagnosticsInterop:
         :debug: 156db52ee23ec56ad2ede89ad1ee8a2b
         :release: 156db52ee23ec56ad2ede89ad1ee8a2b
-    CHECKSUM: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
+    CHECKSUM: 296e2c5f5314500a850ad0b83e9e7c10b011a850
     PROJECT_NAME: FirebaseCoreDiagnosticsInterop
     SPECS:
-      - FirebaseCoreDiagnosticsInterop (1.1.0)
+      - FirebaseCoreDiagnosticsInterop (1.2.0)
   FirebaseInstanceID:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseInstanceID:
-        :debug: c417e45eb1ce3ddd5681ade464f26b8e
-        :release: c417e45eb1ce3ddd5681ade464f26b8e
+        :debug: 3a7d8020f55c77efed7d837def2ede66
+        :release: 3a7d8020f55c77efed7d837def2ede66
     CHECKSUM: ce993a3c3670a8f5d47ce371ac5d143c560608c5
     PROJECT_NAME: FirebaseInstanceID
     SPECS:
@@ -1068,8 +1141,8 @@ CACHE_KEYS:
   GoogleAppMeasurement:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAppMeasurement:
-        :debug: 8edf625de9a660fae9e528eb6d244601
-        :release: 8edf625de9a660fae9e528eb6d244601
+        :debug: adcce4463bb4b2795ff1cbab40c74c1e
+        :release: adcce4463bb4b2795ff1cbab40c74c1e
     CHECKSUM: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
     PROJECT_NAME: GoogleAppMeasurement
     SPECS:
@@ -1077,21 +1150,21 @@ CACHE_KEYS:
   GoogleDataTransport:
     BUILD_SETTINGS_CHECKSUM:
       GoogleDataTransport:
-        :debug: c52a5276024512707683f66e6cfe0966
-        :release: c52a5276024512707683f66e6cfe0966
-    CHECKSUM: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
+        :debug: 2ae8cece9a24d5c9a8018b13ce4af8a6
+        :release: 2ae8cece9a24d5c9a8018b13ce4af8a6
+    CHECKSUM: 9a8a16f79feffc7f42096743de2a7c4815e84020
     PROJECT_NAME: GoogleDataTransport
     SPECS:
-      - GoogleDataTransport (3.2.0)
+      - GoogleDataTransport (6.2.1)
   GoogleDataTransportCCTSupport:
     BUILD_SETTINGS_CHECKSUM:
       GoogleDataTransportCCTSupport:
-        :debug: 1974efffec58f9b1b16d714da50b2d51
-        :release: 1974efffec58f9b1b16d714da50b2d51
-    CHECKSUM: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
+        :debug: f7fe8edf6850d8ac300b3e38ac5748b9
+        :release: f7fe8edf6850d8ac300b3e38ac5748b9
+    CHECKSUM: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
     PROJECT_NAME: GoogleDataTransportCCTSupport
     SPECS:
-      - GoogleDataTransportCCTSupport (1.2.3)
+      - GoogleDataTransportCCTSupport (3.0.0)
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn:
@@ -1104,19 +1177,19 @@ CACHE_KEYS:
   GoogleUtilities:
     BUILD_SETTINGS_CHECKSUM:
       GoogleUtilities:
-        :debug: c7dbbc462e97d6f959d7b7bdd3d67f38
-        :release: c7dbbc462e97d6f959d7b7bdd3d67f38
-    CHECKSUM: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
+        :debug: 261e32886a9ecf5b59bf22dbd4251df8
+        :release: 261e32886a9ecf5b59bf22dbd4251df8
+    CHECKSUM: 39530bc0ad980530298e9c4af8549e991fd033b1
     PROJECT_NAME: GoogleUtilities
     SPECS:
-      - GoogleUtilities/AppDelegateSwizzler (6.4.0)
-      - GoogleUtilities/Environment (6.4.0)
-      - GoogleUtilities/Logger (6.4.0)
-      - GoogleUtilities/MethodSwizzler (6.4.0)
-      - GoogleUtilities/Network (6.4.0)
-      - "GoogleUtilities/NSData+zlib (6.4.0)"
-      - GoogleUtilities/Reachability (6.4.0)
-      - GoogleUtilities/UserDefaults (6.4.0)
+      - GoogleUtilities/AppDelegateSwizzler (6.6.0)
+      - GoogleUtilities/Environment (6.6.0)
+      - GoogleUtilities/Logger (6.6.0)
+      - GoogleUtilities/MethodSwizzler (6.6.0)
+      - GoogleUtilities/Network (6.6.0)
+      - "GoogleUtilities/NSData+zlib (6.6.0)"
+      - GoogleUtilities/Reachability (6.6.0)
+      - GoogleUtilities/UserDefaults (6.6.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth:
@@ -1150,8 +1223,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 95e01c0f62411df42f66b4033f8d0a79
-      Release: 95e01c0f62411df42f66b4033f8d0a79
+      Debug: 4da8014d06095f02dfdfffa33770d92a
+      Release: 4da8014d06095f02dfdfffa33770d92a
     FILES:
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
@@ -1161,8 +1234,17 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 50a77c041a05d40a76d5d8ee29daffc9
-      Release: 50a77c041a05d40a76d5d8ee29daffc9
+      Debug: e28b7da4a40cba4caa89da79c2c6d7d4
+      Release: e28b7da4a40cba4caa89da79c2c6d7d4
+  PromisesObjC:
+    BUILD_SETTINGS_CHECKSUM:
+      PromisesObjC:
+        :debug: 1b7465c5d645bb553b8076da86b881fc
+        :release: 1b7465c5d645bb553b8076da86b881fc
+    CHECKSUM: b48e0338dbbac2207e611750777895f7a5811b75
+    PROJECT_NAME: PromisesObjC
+    SPECS:
+      - PromisesObjC (1.2.9)
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -1744,6 +1826,24 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-appearance
     SPECS:
       - react-native-appearance (0.3.4)
+  react-native-netinfo:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-netinfo:
+        :debug: 8d862780d65e2ad6c775f10d621b98e7
+        :release: 8d862780d65e2ad6c775f10d621b98e7
+    CHECKSUM: cb74e17062b2af5a16a4b137f32495f241df1a8e
+    FILES:
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionState.h"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionState.m"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionStateWatcher.h"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionStateWatcher.m"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.h"
+      - "../../../../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m"
+      - "../../../../node_modules/@react-native-community/netinfo/LICENSE"
+      - "../../../../node_modules/@react-native-community/netinfo/README.md"
+    PROJECT_NAME: react-native-netinfo
+    SPECS:
+      - react-native-netinfo (5.9.2)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context:
@@ -1790,6 +1890,72 @@ CACHE_KEYS:
     PROJECT_NAME: react-native-segmented-control
     SPECS:
       - react-native-segmented-control (1.6.1)
+  react-native-slider:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-slider:
+        :debug: 51a39056e93ea8cd332c29e87fb5c637
+        :release: 51a39056e93ea8cd332c29e87fb5c637
+    CHECKSUM: 12bd76d3d568c9c5500825db54123d44b48e4ad4
+    FILES:
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSlider.h"
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSlider.m"
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSliderManager.h"
+      - "../../../../node_modules/@react-native-community/slider/ios/RNCSliderManager.m"
+    PROJECT_NAME: react-native-slider
+    SPECS:
+      - react-native-slider (3.0.0)
+  react-native-view-shot:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-view-shot:
+        :debug: bf1c13877c96b0043ea33a6148f0c843
+        :release: bf1c13877c96b0043ea33a6148f0c843
+    CHECKSUM: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
+    FILES:
+      - "../../../../node_modules/react-native-view-shot/ios/RNViewShot.h"
+      - "../../../../node_modules/react-native-view-shot/ios/RNViewShot.m"
+      - "../../../../node_modules/react-native-view-shot/LICENSE"
+      - "../../../../node_modules/react-native-view-shot/README.md"
+    PROJECT_NAME: react-native-view-shot
+    SPECS:
+      - react-native-view-shot (3.1.2)
+  react-native-viewpager:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-viewpager:
+        :debug: 7b4707a93d41400143c1750ffa361fd7
+        :release: 7b4707a93d41400143c1750ffa361fd7
+    CHECKSUM: a7b438ca32c57b2614ece2a123e7fe116f743131
+    FILES:
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerNavigationOrientation.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerNavigationOrientation.m"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerTransitionStyle.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerTransitionStyle.m"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactNativePageView.m"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactViewPagerManager.h"
+      - "../../../../node_modules/@react-native-community/viewpager/ios/ReactViewPagerManager.m"
+      - "../../../../node_modules/@react-native-community/viewpager/LICENSE"
+      - "../../../../node_modules/@react-native-community/viewpager/README.md"
+    PROJECT_NAME: react-native-viewpager
+    SPECS:
+      - react-native-viewpager (3.3.0)
+  react-native-webview:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-webview:
+        :debug: d8043c3b132d3ae3e27129393b1fe555
+        :release: d8043c3b132d3ae3e27129393b1fe555
+    CHECKSUM: cf5527893252b3b036eea024a1da6996f7344c74
+    FILES:
+      - "../../../../node_modules/react-native-webview/apple/RNCWebView.h"
+      - "../../../../node_modules/react-native-webview/apple/RNCWebView.m"
+      - "../../../../node_modules/react-native-webview/apple/RNCWebViewManager.h"
+      - "../../../../node_modules/react-native-webview/apple/RNCWebViewManager.m"
+      - "../../../../node_modules/react-native-webview/apple/RNCWKProcessPoolManager.h"
+      - "../../../../node_modules/react-native-webview/apple/RNCWKProcessPoolManager.m"
+      - "../../../../node_modules/react-native-webview/LICENSE"
+      - "../../../../node_modules/react-native-webview/README.md"
+    PROJECT_NAME: react-native-webview
+    SPECS:
+      - react-native-webview (9.4.0)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet:
@@ -2050,6 +2216,38 @@ CACHE_KEYS:
     PROJECT_NAME: RNCMaskedView
     SPECS:
       - RNCMaskedView (0.1.10)
+  RNCPicker:
+    BUILD_SETTINGS_CHECKSUM:
+      RNCPicker:
+        :debug: 5777d140be36534f6bdfa54c24ed4852
+        :release: 5777d140be36534f6bdfa54c24ed4852
+    CHECKSUM: bab63e6fed69ac6122fcd9993209b6854de46d0b
+    FILES:
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPicker.h"
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPicker.m"
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPickerManager.h"
+      - "../../../../node_modules/@react-native-community/picker/ios/RNCPickerManager.m"
+      - "../../../../node_modules/@react-native-community/picker/LICENCE"
+      - "../../../../node_modules/@react-native-community/picker/README.md"
+    PROJECT_NAME: RNCPicker
+    SPECS:
+      - RNCPicker (1.6.0)
+  RNDateTimePicker:
+    BUILD_SETTINGS_CHECKSUM:
+      RNDateTimePicker:
+        :debug: 7962906a014255e7534cb63849999d5b
+        :release: 7962906a014255e7534cb63849999d5b
+    CHECKSUM: c4285bfdd87430f1e575b81a4742b7586a09d53e
+    FILES:
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePicker.h"
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePicker.m"
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePickerManager.h"
+      - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePickerManager.m"
+      - "../../../../node_modules/@react-native-community/datetimepicker/LICENSE.md"
+      - "../../../../node_modules/@react-native-community/datetimepicker/README.md"
+    PROJECT_NAME: RNDateTimePicker
+    SPECS:
+      - RNDateTimePicker (2.4.0)
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler:
@@ -2166,7 +2364,7 @@ CACHE_KEYS:
       RNScreens:
         :debug: 1efbeb0b8a12684d4f38f31496c6e780
         :release: 1efbeb0b8a12684d4f38f31496c6e780
-    CHECKSUM: 62211832af51e0aebcf6e8c36bcf7dd65592f244
+    CHECKSUM: c526239bbe0e957b988dacc8d75ac94ec9cb19da
     FILES:
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.m"
@@ -2180,7 +2378,179 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-screens/README.md"
     PROJECT_NAME: RNScreens
     SPECS:
-      - RNScreens (2.8.0)
+      - RNScreens (2.9.0)
+  RNSharedElement:
+    BUILD_SETTINGS_CHECKSUM:
+      RNSharedElement:
+        :debug: 75ae23bfef89dc376660dcd31c5e6b1e
+        :release: 75ae23bfef89dc376660dcd31c5e6b1e
+    CHECKSUM: 00b1a1420d213a34459bb9a5aacabb38107d7948
+    FILES:
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementContent.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementContent.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementCornerRadii.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementCornerRadii.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementDelegate.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNode.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNode.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNodeManager.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementNodeManager.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementStyle.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementStyle.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransition.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransition.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionItem.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionItem.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionManager.h"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTransitionManager.m"
+      - "../../../../node_modules/react-native-shared-element/ios/RNSharedElementTypes.h"
+      - "../../../../node_modules/react-native-shared-element/LICENSE.txt"
+      - "../../../../node_modules/react-native-shared-element/README.md"
+    PROJECT_NAME: RNSharedElement
+    SPECS:
+      - RNSharedElement (0.7.0)
+  RNSVG:
+    BUILD_SETTINGS_CHECKSUM:
+      RNSVG:
+        :debug: 866c2cb09710d849891ca739d49e4e9c
+        :release: 866c2cb09710d849891ca739d49e4e9c
+    CHECKSUM: ce9d996113475209013317e48b05c21ee988d42e
+    FILES:
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGBrushType.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGContextBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGContextBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainter.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainter.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainterBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGPainterBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGSolidColorBrush.h"
+      - "../../../../node_modules/react-native-svg/ios/Brushes/RNSVGSolidColorBrush.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGClipPath.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGClipPath.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGDefs.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGDefs.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGForeignObject.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGForeignObject.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGGroup.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGGroup.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGImage.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGImage.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGLinearGradient.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGLinearGradient.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMarker.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMarker.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMask.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGMask.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPath.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPath.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPattern.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGPattern.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGRadialGradient.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGRadialGradient.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSvgView.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSvgView.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSymbol.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGSymbol.m"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGUse.h"
+      - "../../../../node_modules/react-native-svg/ios/Elements/RNSVGUse.m"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGContainer.h"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGNode.h"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGNode.m"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGRenderable.h"
+      - "../../../../node_modules/react-native-svg/ios/RNSVGRenderable.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGCircle.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGCircle.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGEllipse.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGEllipse.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGLine.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGLine.m"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGRect.h"
+      - "../../../../node_modules/react-native-svg/ios/Shapes/RNSVGRect.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGFontData.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGFontData.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGGlyphContext.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGGlyphContext.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGPropHelper.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGPropHelper.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGText.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGText.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextPath.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextPath.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextProperties.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTextProperties.m"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTSpan.h"
+      - "../../../../node_modules/react-native-svg/ios/Text/RNSVGTSpan.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RCTConvert+RNSVG.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RCTConvert+RNSVG.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGBezierElement.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGBezierElement.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGCGFCRule.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGLength.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGLength.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGMarkerPosition.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGMarkerPosition.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathMeasure.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathMeasure.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathParser.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGPathParser.m"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGUnits.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGVBMOS.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGVectorEffect.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGViewBox.h"
+      - "../../../../node_modules/react-native-svg/ios/Utils/RNSVGViewBox.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGCircleManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGCircleManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGClipPathManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGClipPathManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGDefsManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGDefsManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGEllipseManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGEllipseManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGForeignObjectManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGForeignObjectManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGGroupManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGGroupManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGImageManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGImageManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLinearGradientManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLinearGradientManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLineManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGLineManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMarkerManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMarkerManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMaskManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGMaskManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGNodeManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGNodeManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPathManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPathManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPatternManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGPatternManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRadialGradientManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRadialGradientManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRectManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRectManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRenderableManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGRenderableManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSvgViewManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSvgViewManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSymbolManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGSymbolManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextPathManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTextPathManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTSpanManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGTSpanManager.m"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGUseManager.h"
+      - "../../../../node_modules/react-native-svg/ios/ViewManagers/RNSVGUseManager.m"
+      - "../../../../node_modules/react-native-svg/LICENSE"
+      - "../../../../node_modules/react-native-svg/README.md"
+    PROJECT_NAME: RNSVG
+    SPECS:
+      - RNSVG (12.1.0)
   SDWebImage:
     BUILD_SETTINGS_CHECKSUM:
       SDWebImage:

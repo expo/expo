@@ -24,7 +24,6 @@
 #include <JavaScriptCore/JSTypedArray.h>
 #endif
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,6 +31,15 @@ extern "C" {
 
 // Most of these are adapted from phoboslab/Ejecta on GitHub
 // (https://github.com/phoboslab/Ejecta).
+#ifdef __APPLE__
+static bool iosVersionChecked = false;
+static int32_t TagTypeNumber = 0;
+static int64_t DoubleEncodeOffset = 0;
+#else
+#define TagTypeNumber 0xffff0000
+#define DoubleEncodeOffset (1ll << 48)
+#endif
+#define ValueTrue 0x7
 
 static inline double EXJSValueToNumberFast(JSContextRef ctx, JSValueRef v)
 {
@@ -42,9 +50,14 @@ static inline double EXJSValueToNumberFast(JSContextRef ctx, JSValueRef v)
     struct { int32_t asInt; int32_t tag; } asBits;
   } taggedValue = { .asInt64 = (int64_t)v };
 
-#define DoubleEncodeOffset 0x1000000000000ll
-#define TagTypeNumber 0xffff0000
-#define ValueTrue 0x7
+#ifdef __APPLE__
+  if (!iosVersionChecked) {
+    bool newJsc = EXiOSGetOperatingSystemVersion().majorVersion >= 14;
+    TagTypeNumber = newJsc ? 0xfffe0000 : 0xffff0000;
+    DoubleEncodeOffset = newJsc ? 1ll << 49 : 1ll << 48;
+    iosVersionChecked = true;
+  }
+#endif
 
   if( (taggedValue.asBits.tag & TagTypeNumber) == TagTypeNumber ) {
     return taggedValue.asBits.asInt;

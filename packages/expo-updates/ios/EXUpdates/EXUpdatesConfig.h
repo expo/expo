@@ -21,8 +21,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 
 @property (nonatomic, readonly) BOOL usesLegacyManifest;
 
-+ (instancetype)sharedInstance;
-
++ (instancetype)configWithDictionary:(NSDictionary *)config;
 - (void)loadConfigFromDictionary:(NSDictionary *)config;
 
 @end

@@ -108,15 +108,17 @@ function BarcodeScannerExample() {
     return barCodePoints.map(({ x, y }) => `${Math.round(x)},${Math.round(y)}`).join(' ');
   };
 
-  const circles = [];
-
-  if (state.cornerPoints) {
-    for (const point of state.cornerPoints) {
-      circles.push(
-        <Svg.Circle cx={point.x} cy={point.y} r={2} strokeWidth={0.1} stroke="gray" fill="green" />
-      );
-    }
-  }
+  const circles = (state.cornerPoints || []).map((point, index) => (
+    <Svg.Circle
+      cx={point.x}
+      cy={point.y}
+      r={3}
+      strokeWidth={0.5}
+      stroke="#CF4048"
+      fill="#CF4048"
+      key={index}
+    />
+  ));
 
   return (
     <View style={styles.container}>

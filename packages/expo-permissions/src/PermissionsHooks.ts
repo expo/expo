@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { PermissionType, PermissionResponse, askAsync, getAsync } from './Permissions';
+import { askAsync, getAsync } from './Permissions';
+import { PermissionResponse, PermissionType } from './Permissions.types';
 
 /**
  * Get or ask permission for protected functionality within the app.
@@ -30,9 +31,9 @@ export function usePermissions(
   // when `type` is casted to an array, it possible creates a new one on every render.
   // to prevent unnecessary function instances we need to listen to the "raw" value.
 
-  const askPermissions = useCallback(() => askAsync(...types).then(setData), [type]); // eslint-disable-line react-hooks/exhaustive-deps
+  const askPermissions = useCallback(() => askAsync(...types).then(setData), [type]);
 
-  const getPermissions = useCallback(() => getAsync(...types).then(setData), [type]); // eslint-disable-line react-hooks/exhaustive-deps
+  const getPermissions = useCallback(() => getAsync(...types).then(setData), [type]);
 
   useEffect(() => {
     if (ask) {

@@ -23,6 +23,7 @@
 #import <GoogleDataTransport/GDTCORTransport.h>
 
 #import <GoogleUtilities/GULAppEnvironmentUtil.h>
+#import <GoogleUtilities/GULHeartbeatDateStorage.h>
 #import <GoogleUtilities/GULLogger.h>
 
 #import <FirebaseCoreDiagnosticsInterop/FIRCoreDiagnosticsData.h>
@@ -33,8 +34,6 @@
 #import <nanopb/pb_encode.h>
 
 #import "FIRCDLibrary/Protogen/nanopb/firebasecore.nanopb.h"
-
-#import "FIRCDLibrary/FIRCoreDiagnosticsDateFileStorage.h"
 
 /** The logger service string to use when printing to the console. */
 static GULLoggerService kFIRCoreDiagnostics = @"[FirebaseCoreDiagnostics/FIRCoreDiagnostics]";
@@ -85,6 +84,7 @@ static NSString *const kFIRAppDiagnosticsConfigurationTypeKey =
 static NSString *const kFIRAppDiagnosticsFIRAppKey = @"FIRAppDiagnosticsFIRAppKey";
 static NSString *const kFIRAppDiagnosticsSDKNameKey = @"FIRAppDiagnosticsSDKNameKey";
 static NSString *const kFIRAppDiagnosticsSDKVersionKey = @"FIRAppDiagnosticsSDKVersionKey";
+static NSString *const kFIRCoreDiagnosticsHeartbeatTag = @"FIRCoreDiagnostics";
 
 /**
  * The file name to the recent heartbeat date.
@@ -125,6 +125,7 @@ NSString *const kFIRCoreDiagnosticsHeartbeatDateFileName = @"FIREBASE_DIAGNOSTIC
   // Encode a 2nd time to actually get the bytes from it.
   size_t bufferSize = sizestream.bytes_written;
   CFMutableDataRef dataRef = CFDataCreateMutable(CFAllocatorGetDefault(), bufferSize);
+  CFDataSetLength(dataRef, bufferSize);
   pb_ostream_t ostream = pb_ostream_from_buffer((void *)CFDataGetBytePtr(dataRef), bufferSize);
   if (!pb_encode(&ostream, logs_proto_mobilesdk_ios_ICoreConfiguration_fields, &_config)) {
     GDTCORLogError(GDTCORMCETransportBytesError, @"Error in nanopb encoding for bytes: %s",
@@ -153,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) GDTCORTransport *transport;
 
 /** The storage to store the date of the last sent heartbeat. */
-@property(nonatomic, readonly) FIRCoreDiagnosticsDateFileStorage *heartbeatDateStorage;
+@property(nonatomic, readonly) GULHeartbeatDateStorage *heartbeatDateStorage;
 
 @end
 
@@ -175,8 +176,8 @@ NS_ASSUME_NONNULL_END
                                                              transformers:nil
                                                                    target:kGDTCORTargetFLL];
 
-  FIRCoreDiagnosticsDateFileStorage *dateStorage = [[FIRCoreDiagnosticsDateFileStorage alloc]
-      initWithFileURL:[[self class] filePathURLWithName:kFIRCoreDiagnosticsHeartbeatDateFileName]];
+  GULHeartbeatDateStorage *dateStorage =
+      [[GULHeartbeatDateStorage alloc] initWithFileName:kFIRCoreDiagnosticsHeartbeatDateFileName];
 
   return [self initWithTransport:transport heartbeatDateStorage:dateStorage];
 }
@@ -188,7 +189,7 @@ NS_ASSUME_NONNULL_END
  * @return Returns the initialized `FIRCoreDiagnostics` instance.
  */
 - (instancetype)initWithTransport:(GDTCORTransport *)transport
-             heartbeatDateStorage:(FIRCoreDiagnosticsDateFileStorage *)heartbeatDateStorage {
+             heartbeatDateStorage:(GULHeartbeatDateStorage *)heartbeatDateStorage {
   self = [super init];
   if (self) {
     _diagnosticsQueue =
@@ -197,37 +198,6 @@ NS_ASSUME_NONNULL_END
     _heartbeatDateStorage = heartbeatDateStorage;
   }
   return self;
-}
-
-#pragma mark - File path helpers
-
-/** Returns the URL path of the file with name fileName under the Application Support folder for
- * local logging. Creates the Application Support folder if the folder doesn't exist.
- *
- * @return the URL path of the file with the name fileName in Application Support.
- */
-+ (NSURL *)filePathURLWithName:(NSString *)fileName {
-  @synchronized(self) {
-    NSArray<NSString *> *paths =
-        NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-    NSArray<NSString *> *components = @[ paths.lastObject, @"Google/FIRApp" ];
-    NSString *directoryString = [NSString pathWithComponents:components];
-    NSURL *directoryURL = [NSURL fileURLWithPath:directoryString];
-
-    NSError *error;
-    if (![directoryURL checkResourceIsReachableAndReturnError:&error]) {
-      // If fail creating the Application Support directory, return nil.
-      if (![[NSFileManager defaultManager] createDirectoryAtURL:directoryURL
-                                    withIntermediateDirectories:YES
-                                                     attributes:nil
-                                                          error:&error]) {
-        GULLogWarning(kFIRCoreDiagnostics, YES, @"I-COR100001",
-                      @"Unable to create internal state storage: %@", error);
-        return nil;
-      }
-    }
-    return [directoryURL URLByAppendingPathComponent:fileName];
-  }
 }
 
 #pragma mark - Metadata helpers
@@ -250,7 +220,7 @@ NS_ASSUME_NONNULL_END
 
 #pragma mark - nanopb helper functions
 
-/** Mallocs a pb_bytes_array and copies the given NSString's bytes into the bytes array.
+/** Callocs a pb_bytes_array and copies the given NSString's bytes into the bytes array.
  *
  * @note Memory needs to be free manually, through pb_free or pb_release.
  * @param string The string to encode as pb_bytes.
@@ -260,16 +230,18 @@ pb_bytes_array_t *FIREncodeString(NSString *string) {
   return FIREncodeData(stringBytes);
 }
 
-/** Mallocs a pb_bytes_array and copies the given NSData bytes into the bytes array.
+/** Callocs a pb_bytes_array and copies the given NSData bytes into the bytes array.
  *
  * @note Memory needs to be free manually, through pb_free or pb_release.
  * @param data The data to copy into the new bytes array.
  */
 pb_bytes_array_t *FIREncodeData(NSData *data) {
-  pb_bytes_array_t *pbBytes = malloc(PB_BYTES_ARRAY_T_ALLOCSIZE(data.length));
-  memcpy(pbBytes->bytes, [data bytes], data.length);
-  pbBytes->size = (pb_size_t)data.length;
-  return pbBytes;
+  pb_bytes_array_t *pbBytesArray = calloc(1, PB_BYTES_ARRAY_T_ALLOCSIZE(data.length));
+  if (pbBytesArray != NULL) {
+    [data getBytes:pbBytesArray->bytes length:data.length];
+    pbBytesArray->size = (pb_size_t)data.length;
+  }
+  return pbBytesArray;
 }
 
 /** Maps a service string to the representative nanopb enum.
@@ -538,8 +510,11 @@ void FIRPopulateProtoWithInstalledServices(logs_proto_mobilesdk_ios_ICoreConfigu
   }
 
   logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType *servicesInstalled =
-      malloc(sizeof(logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType) *
-             sdkServiceInstalledArray.count);
+      calloc(sdkServiceInstalledArray.count,
+             sizeof(logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType));
+  if (servicesInstalled == NULL) {
+    return;
+  }
   for (NSUInteger i = 0; i < sdkServiceInstalledArray.count; i++) {
     NSNumber *typeEnum = sdkServiceInstalledArray[i];
     logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType serviceType =
@@ -648,7 +623,8 @@ void FIRPopulateProtoWithInfoPlistValues(logs_proto_mobilesdk_ios_ICoreConfigura
 - (void)setHeartbeatFlagIfNeededToConfig:(logs_proto_mobilesdk_ios_ICoreConfiguration *)config {
   // Check if need to send a heartbeat.
   NSDate *currentDate = [NSDate date];
-  NSDate *lastCheckin = [self.heartbeatDateStorage date];
+  NSDate *lastCheckin =
+      [self.heartbeatDateStorage heartbeatDateForTag:kFIRCoreDiagnosticsHeartbeatTag];
   if (lastCheckin) {
     // Ensure the previous checkin was on a different date in the past.
     if ([self isDate:currentDate inSameDayOrBeforeThan:lastCheckin]) {
@@ -657,12 +633,7 @@ void FIRPopulateProtoWithInfoPlistValues(logs_proto_mobilesdk_ios_ICoreConfigura
   }
 
   // Update heartbeat sent date.
-  NSError *error;
-  if (![self.heartbeatDateStorage setDate:currentDate error:&error]) {
-    GULLogError(kFIRCoreDiagnostics, NO, @"I-COR100004", @"Unable to persist internal state: %@",
-                error);
-  }
-
+  [self.heartbeatDateStorage setHearbeatDate:currentDate forTag:kFIRCoreDiagnosticsHeartbeatTag];
   // Set the flag.
   config->sdk_name = logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType_ICORE;
   config->has_sdk_name = 1;

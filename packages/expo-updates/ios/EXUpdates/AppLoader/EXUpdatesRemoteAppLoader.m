@@ -1,6 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
@@ -16,21 +15,26 @@ static NSString * const kEXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemote
 
 @implementation EXUpdatesRemoteAppLoader
 
-- (instancetype)initWithCompletionQueue:(dispatch_queue_t)completionQueue
+- (instancetype)initWithConfig:(EXUpdatesConfig *)config
+                      database:(EXUpdatesDatabase *)database
+                     directory:(NSURL *)directory
+               completionQueue:(dispatch_queue_t)completionQueue
 {
-  if (self = [super initWithCompletionQueue:completionQueue]) {
+  if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
     _downloader = [[EXUpdatesFileDownloader alloc] init];
   }
   return self;
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
+               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
+  self.manifestBlock = manifestBlock;
   self.successBlock = success;
   self.errorBlock = error;
-  [_downloader downloadManifestFromURL:url successBlock:^(EXUpdatesUpdate *update) {
+  [_downloader downloadManifestFromURL:url withConfig:self.config database:self.database cacheDirectory:self.directory successBlock:^(EXUpdatesUpdate *update) {
     [self startLoadingFromManifest:update];
   } errorBlock:^(NSError *error, NSURLResponse *response) {
     if (self.errorBlock) {
@@ -41,10 +45,9 @@ static NSString * const kEXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemote
 
 - (void)downloadAsset:(EXUpdatesAsset *)asset
 {
-  NSURL *updatesDirectory = EXUpdatesAppController.sharedInstance.updatesDirectory;
-  NSURL *urlOnDisk = [updatesDirectory URLByAppendingPathComponent:asset.filename];
+  NSURL *urlOnDisk = [self.directory URLByAppendingPathComponent:asset.filename];
 
-  dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
+  dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     if ([[NSFileManager defaultManager] fileExistsAtPath:[urlOnDisk path]]) {
       // file already exists, we don't need to download it again
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

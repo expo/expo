@@ -4,10 +4,19 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.R;
+import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
+import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
+import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
 /**
  * A notification builder foundation capable of fetching and/or creating
@@ -39,7 +48,30 @@ public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBu
       return null;
     }
 
-    return getFallbackNotificationChannel().getId();
+    NotificationTrigger trigger = getTrigger();
+    if (trigger == null) {
+      Log.e("notifications", String.format("Couldn't get channel for the notifications - trigger is 'null'. Fallback to '%s' channel", FALLBACK_CHANNEL_ID));
+      return getFallbackNotificationChannel().getId();
+    }
+
+    String channelId = trigger.getNotificationChannel();
+    if (channelId == null) {
+      return getFallbackNotificationChannel().getId();
+    }
+
+    NotificationsChannelManager manager = getNotificationsChannelManager();
+    NotificationChannel channel = manager.getNotificationChannel(channelId);
+    if (channel == null) {
+      Log.e("notifications", String.format("Channel '%s' doesn't exists. Fallback to '%s' channel", channelId, FALLBACK_CHANNEL_ID));
+      return getFallbackNotificationChannel().getId();
+    }
+
+    return channel.getId();
+  }
+
+  @NonNull
+  protected NotificationsChannelManager getNotificationsChannelManager() {
+    return new AndroidXNotificationsChannelManager(getContext(), new AndroidXNotificationsChannelGroupManager(getContext()));
   }
 
   /**
@@ -90,5 +122,15 @@ public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBu
 
   private NotificationManager getNotificationManager() {
     return (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+  }
+
+  @Nullable
+  private NotificationTrigger getTrigger() {
+    NotificationRequest request = getNotification().getNotificationRequest();
+    if (request == null) {
+      return null;
+    }
+
+    return request.getTrigger();
   }
 }

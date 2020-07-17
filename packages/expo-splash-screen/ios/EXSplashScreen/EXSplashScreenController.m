@@ -2,11 +2,12 @@
 
 #import <EXSplashScreen/EXSplashScreenController.h>
 #import <UMCore/UMDefines.h>
+#import <UMCore/UMUtilities.h>
+#import <React/RCTRootView.h>
 
 @interface EXSplashScreenController ()
 
 @property (nonatomic, weak) UIViewController *viewController;
-@property (nonatomic, strong) UIViewController *splashScreenViewController;
 @property (nonatomic, strong) UIView *splashScreenView;
 @property (nonatomic, strong) Class rootViewClass;
 @property (nonatomic, weak) UIView *rootView;
@@ -41,15 +42,22 @@
 
 - (void)showWithCallback:(nullable void(^)(void))successCallback
 {
-  UM_WEAKIFY(self);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
-    [self.viewController.view addSubview:self.splashScreenView];
+  [UMUtilities performSynchronouslyOnMainThread:^{
+    UIView *rootView = self.viewController.view;
+    self.splashScreenView.frame = rootView.bounds;
+    [rootView addSubview:self.splashScreenView];
+    if ([rootView isKindOfClass:RCTRootView.class]) {
+      RCTRootView *rctRootView = (RCTRootView *) rootView;
+      rctRootView.loadingView = self.splashScreenView;
+      // defaults for these properties below are 0.25
+      rctRootView.loadingViewFadeDelay = 0.05;
+      rctRootView.loadingViewFadeDuration = 0.05;
+    }
     self.splashScreenShown = YES;
     if (successCallback) {
       successCallback();
     }
-  });
+  }];
 }
 
 - (void)preventAutoHideWithCallback:(void (^)(BOOL))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback

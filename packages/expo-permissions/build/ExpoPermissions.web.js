@@ -320,8 +320,10 @@ export default {
     },
 };
 export function getRequestMotionPermission() {
-    // @ts-ignore: requestPermission does not exist
-    return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
+    if (typeof DeviceMotionEvent !== 'undefined' && !!DeviceMotionEvent?.requestPermission) {
+        return DeviceMotionEvent.requestPermission;
+    }
+    return null;
 }
 // https://stackoverflow.com/a/9039885/4047926
 function isIOS() {

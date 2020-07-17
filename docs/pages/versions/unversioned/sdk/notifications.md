@@ -28,8 +28,6 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
 
-> ⚠️ **Important Android limitation:** Local notifications are cleared when an Android device is restarted. ([See the feature request](https://expo.canny.io/feature-requests/p/keep-scheduled-notifications-after-reboot)).
-
 ## Installation
 
 <InstallSection packageName="expo-notifications" />
@@ -108,7 +106,7 @@ Check out the Snack below to see Notifications in action, but be sure to use a p
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -122,20 +120,25 @@ Notifications.setNotificationHandler({
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-    Notifications.addNotificationReceivedListener(notification => {
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
-    Notifications.addNotificationResponseReceivedListener(response => {
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
     });
 
     return () => {
-      Notifications.removeAllNotificationListeners();
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
     };
-  });
+  }, []);
 
   return (
     <View
@@ -148,7 +151,7 @@ export default function App() {
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>Data: {notification && JSON.stringify(notification.request.content.data.body)}</Text>
+        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
       </View>
       <Button
         title="Press to Send Notification"
@@ -214,6 +217,8 @@ async function registerForPushNotificationsAsync() {
 ```
 
 </SnackInline>
+
+> **Note** this demo might not fully work when you run it from the snack, because `app.json` needs to contain `useNextNotificationsApi` flag. Unfortunately, the snack doesn't support custom `app.json`.
 
 ## Android push notification payload specification
 

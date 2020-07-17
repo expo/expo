@@ -67,7 +67,7 @@ const STYLES_CONTAINER = css`
 `;
 
 const STYLES_HEADER = css`
-  border-bottom: 1px solid ${Constants.colors.border};
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   background: #fff;
   flex-shrink: 0;
   width: 100%;

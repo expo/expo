@@ -6,3 +6,4 @@ export declare function isSpeakingAsync(): Promise<boolean>;
 export declare function stop(): Promise<void>;
 export declare function pause(): Promise<void>;
 export declare function resume(): Promise<void>;
+export declare const maxSpeechInputLength: number;

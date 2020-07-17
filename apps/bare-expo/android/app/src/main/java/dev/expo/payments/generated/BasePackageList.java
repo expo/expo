@@ -59,6 +59,7 @@ public class BasePackageList {
         new expo.modules.speech.SpeechPackage(),
         new expo.modules.sqlite.SQLitePackage(),
         new expo.modules.taskManager.TaskManagerPackage(),
+        new expo.modules.videothumbnails.VideoThumbnailsPackage(),
         new expo.modules.webbrowser.WebBrowserPackage()
     );
   }

@@ -135,10 +135,11 @@ You're now good to go! If you are experiencing any issues or want to learn more 
 React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
 
 ```sh
-npm install -g react-devtools@^3
+npm install -g react-devtools
+# if you are using Expo SDK <= 37: npm install -g react-devtools@^3
 ```
 
-(if you don't want to install it globally, run `npm install --dev react-devtools@^3` to install it as a project dependency).
+(if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
 
 After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React Devtools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Client). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
 

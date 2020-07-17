@@ -126,7 +126,11 @@ To fetch the push receipts, send a POST request to `https://exp.host/--/api/v2/p
 
 ```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
-  "ids": ["XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"]
+  "ids": [
+    "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+    "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY",
+    "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ",
+  ]
 }'
 ```
 
@@ -136,7 +140,9 @@ The [response body](#push-receipt-response-format) for push receipts is very sim
 {
   "data": {
     "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX": { "status": "ok" },
-    "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY": { "status": "ok" }
+    "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ": { "status": "ok" }
+    // When there is no receipt with a given ID (YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY in this
+    // example), the ID is omitted from the response.
   }
 }
 ```

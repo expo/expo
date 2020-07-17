@@ -1,10 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
+#import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTConvert.h>
 
@@ -18,8 +16,12 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
 @implementation EXUpdatesLegacyUpdate
 
 + (EXUpdatesUpdate *)updateWithLegacyManifest:(NSDictionary *)manifest
+                                       config:(EXUpdatesConfig *)config
+                                     database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest];
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+                                                                  config:config
+                                                                database:database];
 
   id updateId = manifest[@"releaseId"];
   id commitTimeString = manifest[@"commitTime"];
@@ -59,7 +61,7 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
   
-  NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest];
+  NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
 
   for (NSString *bundledAsset in (NSArray *)assets) {
     NSAssert([bundledAsset isKindOfClass:[NSString class]], @"bundledAssets must be an array of strings");
@@ -101,9 +103,9 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   return update;
 }
 
-+ (NSURL *)bundledAssetBaseUrlWithManifest:(NSDictionary *)manifest
++ (NSURL *)bundledAssetBaseUrlWithManifest:(NSDictionary *)manifest config:(EXUpdatesConfig *)config
 {
-  NSURL *manifestUrl = [EXUpdatesConfig sharedInstance].updateUrl;
+  NSURL *manifestUrl = config.updateUrl;
   NSString *host = manifestUrl.host;
   if (!host ||
       [host containsString:kEXUpdatesExpoIoDomain] ||

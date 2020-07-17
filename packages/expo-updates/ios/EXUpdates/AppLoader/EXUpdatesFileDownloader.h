@@ -1,5 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,8 +23,13 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 - (void)downloadManifestFromURL:(NSURL *)url
+                     withConfig:(EXUpdatesConfig *)config
+                       database:(EXUpdatesDatabase *)database
+                 cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
+
++ (dispatch_queue_t)assetFilesQueue;
 
 @end
 

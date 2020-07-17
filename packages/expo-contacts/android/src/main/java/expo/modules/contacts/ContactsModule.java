@@ -12,13 +12,29 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 
-import org.unimodules.core.*;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.permissions.Permissions;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import expo.modules.contacts.models.DateModel;
 import expo.modules.contacts.models.EmailModel;
@@ -28,8 +44,6 @@ import expo.modules.contacts.models.PhoneNumberModel;
 import expo.modules.contacts.models.PostalAddressModel;
 import expo.modules.contacts.models.RelationshipModel;
 import expo.modules.contacts.models.UrlAddressModel;
-
-import java.util.*;
 
 import static expo.modules.contacts.models.BaseModel.decodeList;
 
@@ -55,6 +69,7 @@ public class ContactsModule extends ExportedModule {
   // TODO: Evan: default API is confusing. Duplicate data being requested.
   private static final List<String> DEFAULT_PROJECTION = new ArrayList<String>() {
     {
+      add(ContactsContract.Data.RAW_CONTACT_ID);
       add(ContactsContract.Data.CONTACT_ID);
       add(ContactsContract.Data.LOOKUP_KEY);
       add(ContactsContract.Contacts.Data.MIMETYPE);
@@ -127,20 +142,22 @@ public class ContactsModule extends ExportedModule {
 
         if (options.containsKey("id") && options.get("id") instanceof String) {
           Contact contact = getContactById((String) options.get("id"), keysToFetch, promise);
-          if (contact == null)
-            return;
-          Collection contacts = new ArrayList();
-          contacts.add(contact);
-          ArrayList data = serializeContacts(contacts, keysToFetch, promise);
-          if (data == null)
-            return;
           Bundle output = new Bundle();
-          output.putParcelableArrayList("data", data);
+          if (contact != null) {
+            Collection contacts = new ArrayList();
+            contacts.add(contact);
+            ArrayList data = serializeContacts(contacts, keysToFetch, promise);
+            if (data == null)
+              return;
+            output.putParcelableArrayList("data", data);
+          } else {
+            output.putParcelableArray("data", new Parcelable[0]);
+          }
           promise.resolve(output);
         } else if (options.containsKey("name") && options.get("name") instanceof String) {
           String predicateMatchingName = (String) options.get("name");
           HashMap<String, Object> contactData = getContactByName(predicateMatchingName, keysToFetch, sortOrder,
-              promise);
+            promise);
           Collection<Contact> contacts = (Collection<Contact>) contactData.get("data");
           ArrayList data = serializeContacts(contacts, keysToFetch, promise);
           if (data == null)
@@ -164,7 +181,7 @@ public class ContactsModule extends ExportedModule {
     if (isMissingReadPermission(promise) || isMissingWritePermission(promise)) return;
     Contact contact = mutateContact(null, data);
 
-    ArrayList<ContentProviderOperation> ops = contact.toOperationList();
+    ArrayList<ContentProviderOperation> ops = contact.toInsertOperationList();
 
     try {
       ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
@@ -196,7 +213,7 @@ public class ContactsModule extends ExportedModule {
     Contact targetContact = getContactById(id, keysToFetch, promise);
     if (targetContact != null) {
       targetContact = mutateContact(targetContact, contact);
-      ArrayList<ContentProviderOperation> ops = targetContact.toOperationList();
+      ArrayList<ContentProviderOperation> ops = targetContact.toUpdateOperationList();
       try {
         ContentProviderResult[] result = getResolver().applyBatch(ContactsContract.AUTHORITY, ops);
         if (result.length > 0) {
@@ -290,7 +307,7 @@ public class ContactsModule extends ExportedModule {
 
   private void presentEditForm(Contact contact) {
     Uri selectedContactUri = ContactsContract.Contacts.getLookupUri(Long.parseLong(contact.contactId),
-        contact.lookupKey);
+      contact.lookupKey);
     Intent intent = new Intent(Intent.ACTION_EDIT);
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
@@ -370,24 +387,30 @@ public class ContactsModule extends ExportedModule {
       contact.note = (String) data.get("note");
 
     if (data.containsKey("image")) {
-      Map<String, Object> photo = (Map<String, Object>) data.get("image");
-
-      if (photo.containsKey("uri")) {
-        contact.photoUri = (String) photo.get("uri");
+      if (data.get("image") instanceof String) {
+        contact.photoUri = (String) data.get("image");
         contact.hasPhoto = true;
+      } else if (data.get("image") instanceof Map) {
+        Map<String, Object> photo = (Map<String, Object>) data.get("image");
+
+        if (photo.containsKey("uri")) {
+          contact.photoUri = (String) photo.get("uri");
+          contact.hasPhoto = true;
+        }
       }
+
     }
 
     ArrayList results;
 
     try {
       results = decodeList(data.containsKey("addresses") ? (List) data.get("addresses") : null,
-          PostalAddressModel.class);
+        PostalAddressModel.class);
       if (results != null)
         contact.addresses = results;
 
       results = decodeList(data.containsKey("phoneNumbers") ? (List) data.get("phoneNumbers") : null,
-          PhoneNumberModel.class);
+        PhoneNumberModel.class);
       if (results != null)
         contact.phones = results;
 
@@ -396,12 +419,12 @@ public class ContactsModule extends ExportedModule {
         contact.emails = results;
 
       results = decodeList(data.containsKey("instantMessageAddresses") ? (List) data.get("instantMessageAddresses") : null,
-          ImAddressModel.class);
+        ImAddressModel.class);
       if (results != null)
         contact.imAddresses = results;
 
       results = decodeList(data.containsKey("urlAddresses") ? (List) data.get("urlAddresses") : null,
-          UrlAddressModel.class);
+        UrlAddressModel.class);
       if (results != null)
         contact.urlAddresses = results;
 
@@ -414,7 +437,7 @@ public class ContactsModule extends ExportedModule {
         contact.dates = results;
 
       results = decodeList(data.containsKey("relationships") ? (List) data.get("relationships") : null,
-          RelationshipModel.class);
+        RelationshipModel.class);
       if (results != null)
         contact.relationships = results;
     } catch (Exception e) {
@@ -425,7 +448,7 @@ public class ContactsModule extends ExportedModule {
 
   private String getLookupKeyForContactId(String contactId) {
     Cursor cur = getResolver().query(ContactsContract.Contacts.CONTENT_URI, new String[]{ContactsContract.Contacts.LOOKUP_KEY},
-        ContactsContract.Contacts._ID + " = " + contactId, null, null);
+      ContactsContract.Contacts._ID + " = " + contactId, null, null);
     if (cur.moveToFirst()) {
       return cur.getString(0);
     }
@@ -443,11 +466,11 @@ public class ContactsModule extends ExportedModule {
     String cursorSortOrder = null;
 
     Cursor cursor = getResolver().query(
-        ContactsContract.Data.CONTENT_URI,
-        cursorProjection,
-        cursorSelection,
-        (new String[]{contactId}),
-        cursorSortOrder
+      ContactsContract.Data.CONTENT_URI,
+      cursorProjection,
+      cursorSelection,
+      (new String[]{contactId}),
+      cursorSortOrder
     );
 
     if (cursor != null) {
@@ -489,9 +512,9 @@ public class ContactsModule extends ExportedModule {
   private Set<String> ensureFieldsSet(final Set<String> fieldsSet) {
     if (fieldsSet == null) {
       return newHashSet("phoneNumbers", "emails", "addresses", "note", "birthday", "dates", "instantMessageAddresses",
-          "urlAddresses", "extraNames", "relationships", "phoneticFirstName", "phoneticLastName", "phoneticMiddleName",
-          "namePrefix", "nameSuffix", "name", "firstName", "middleName", "lastName", "nickname", "id", "jobTitle",
-          "company", "department", "image", "imageAvailable", "note");
+        "urlAddresses", "extraNames", "relationships", "phoneticFirstName", "phoneticLastName", "phoneticMiddleName",
+        "namePrefix", "nameSuffix", "name", "firstName", "middleName", "lastName", "nickname", "id", "jobTitle",
+        "company", "department", "image", "imageAvailable", "note");
     }
     return fieldsSet;
   }
@@ -530,7 +553,7 @@ public class ContactsModule extends ExportedModule {
     }
 
     HashMap<String, Object> contactsData = fetchContacts(pageOffset, pageSize, null, null, keysToFetch, sortOrder,
-        promise);
+      promise);
 
     if (contactsData != null) {
       ArrayList<Contact> contacts = (ArrayList<Contact>) contactsData.get("data");
@@ -557,7 +580,7 @@ public class ContactsModule extends ExportedModule {
     List<String> projection = new ArrayList<>(DEFAULT_PROJECTION);
 
     ArrayList<String> selectionArgs = new ArrayList<>(Arrays.asList(CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
-        CommonDataKinds.Organization.CONTENT_ITEM_TYPE));
+      CommonDataKinds.Organization.CONTENT_ITEM_TYPE));
 
     // selection ORs need to match arg count from above selectionArgs
     String selection = EXColumns.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
@@ -684,18 +707,18 @@ public class ContactsModule extends ExportedModule {
       String cursorSelection = queryField + " = ?";
 
       cursor = cr.query(
-          ContactsContract.Data.CONTENT_URI,
-          cursorProjection,
-          cursorSelection,
-          queryStrings,
-          cursorSortOrder);
+        ContactsContract.Data.CONTENT_URI,
+        cursorProjection,
+        cursorSelection,
+        queryStrings,
+        cursorSortOrder);
     } else {
       cursor = cr.query(
-          ContactsContract.Data.CONTENT_URI,
-          projection.toArray(new String[projection.size()]),
-          selection,
-          selectionArgs.toArray(new String[selectionArgs.size()]),
-          cursorSortOrder);
+        ContactsContract.Data.CONTENT_URI,
+        projection.toArray(new String[projection.size()]),
+        selection,
+        selectionArgs.toArray(new String[selectionArgs.size()]),
+        cursorSortOrder);
     }
     if (cursor != null) {
       try {

@@ -14,10 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
-import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService;
@@ -75,6 +76,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
+    moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();

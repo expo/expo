@@ -71,7 +71,7 @@ To share the app with teammates we can run `expo publish` and we’ll build the 
 
 <Video file="exploring-managed/publish.mp4" spaceAfter={30} />
 
-> _Note: Running `expo publish` will upload your app artifacts to Expo's CDN (powered by CloudFront). If you would rather host everything on your own servers, read about how to do this in [Hosting An App on Your Servers](../../distribution/hosting-your-app/)._
+> _Note: Running `expo publish` will upload your app artifacts to Expo's CDN (powered by CloudFront). If you would rather host everything on your own servers, read about how to do this in [Hosting Updates on Your Servers](../../distribution/hosting-your-app/)._
 
 You may have noticed that when we ran `expo publish` the CLI warned us about optimizing assets. We can run `npx expo-optimize` to do this, and it’ll make our assets a bit more lean if possible. Republish after this to reap the rewards.
 

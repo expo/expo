@@ -1,0 +1,1 @@
+../../../../../../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.h
