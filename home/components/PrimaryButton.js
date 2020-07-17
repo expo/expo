@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import Colors from '../constants/Colors';
 
 export default class PrimaryButton extends React.Component {
   render() {
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   button: {
-    backgroundColor: '#4e9bde',
+    backgroundColor: Colors.light.tintColor,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 4,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   },
   plainButton: {},
   plainButtonText: {
-    color: '#0f73b6',
+    color: Colors.light.tintColor,
     textAlign: 'center',
     ...Platform.select({
       android: {

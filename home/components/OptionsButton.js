@@ -3,6 +3,7 @@ import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import Colors from '../constants/Colors';
 
 class OptionsButton extends React.Component {
   render() {
@@ -11,7 +12,7 @@ class OptionsButton extends React.Component {
         <Ionicons
           name={Platform.select({ ios: 'ios-more', default: 'md-more' })}
           size={27}
-          color="#4E9BDE"
+          color={Colors.light.tintColor}
         />
       </TouchableOpacity>
     );
