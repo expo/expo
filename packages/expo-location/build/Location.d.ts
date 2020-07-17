@@ -59,6 +59,7 @@ export declare function hasStartedLocationUpdatesAsync(taskName: string): Promis
 export declare function startGeofencingAsync(taskName: string, regions?: LocationRegion[]): Promise<void>;
 export declare function stopGeofencingAsync(taskName: string): Promise<void>;
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
-export { LocationEventEmitter as EventEmitter, _getCurrentWatchId, LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, };
+export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, };
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';

@@ -242,11 +242,10 @@ export async function hasStartedGeofencingAsync(taskName) {
     _validateTaskName(taskName);
     return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
-export { 
 // For internal purposes
-LocationEventEmitter as EventEmitter, _getCurrentWatchId, 
+export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
 // Export as namespaced types.
-LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, };
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';
 //# sourceMappingURL=Location.js.map
