@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { SNACK_URL, getInlineSnackContent } from '../../common/snack';
+import { SNACK_URL, getSnackFiles } from '../../common/snack';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 
@@ -31,12 +31,8 @@ export default class SnackInline extends React.Component {
   // find the examples in the static dir, and we don't have a `latest` version
   // there, but we do have `unversioned`.
   _getSelectedDocsVersion = () => {
-    let { version } = this.context;
-    if (version === 'latest') {
-      return LATEST_VERSION;
-    }
-
-    return version;
+    const { version } = this.context;
+    return version === 'latest' ? LATEST_VERSION : version;
   };
 
   // Get a SDK version that Snack will understand. `latest` and `unversioned`
@@ -58,41 +54,35 @@ export default class SnackInline extends React.Component {
     return [...this.props.dependencies].join(',');
   };
 
-  _getSnackUrl = () => {
-    let label = this.props.label;
-    let templateId = this.props.templateId;
+  _getSnackUrl = templateId => {
+    const { label, defaultPlatform } = this.props;
+    const templateUrl = `${this._getExamplesPath()}/${templateId}.js`;
 
-    let baseUrl =
-      `${SNACK_URL}?platform=${this.props.defaultPlatform || DEFAULT_PLATFORM}&name=` +
+    // TODO: find a better way to pass in the source-url, as this
+    // clutters the snack-url; and this doesn't support assets
+    return (
+      `${SNACK_URL}?platform=${defaultPlatform || DEFAULT_PLATFORM}&name=` +
       encodeURIComponent(label) +
       `&sdkVersion=${this._getSnackSdkVersion()}` +
-      `&dependencies=${encodeURIComponent(this._getDependencies())}`;
-
-    if (templateId) {
-      let templateUrl = `${this._getExamplesPath()}/${templateId}.js`;
-      return `${baseUrl}&sourceUrl=${encodeURIComponent(templateUrl)}`;
-    } else {
-      return `${baseUrl}&code=${encodeURIComponent(this._getCode())}`;
-    }
+      `&dependencies=${encodeURIComponent(this._getDependencies())}` +
+      `&sourceUrl=${encodeURIComponent(templateUrl)}`
+    );
   };
 
   _getCode = () => {
-    if (this.contentRef.current) {
-      return this.contentRef.current.textContent;
-    } else {
-      return '';
-    }
+    return this.contentRef.current ? this.contentRef.current.textContent : '';
   };
 
   render() {
-    const { files, children } = getInlineSnackContent(this.props.children);
-
     if (this.props.templateId) {
       return (
         <div>
-          <div ref={this.contentRef}>{children}</div>
+          <div ref={this.contentRef}>{this.props.children}</div>
           {this.state.showLink ? (
-            <a className="snack-inline-example-button" href={this._getSnackUrl()} target="_blank">
+            <a
+              className="snack-inline-example-button"
+              href={this._getSnackUrl(this.props.templateId)}
+              target="_blank">
               Try this example on Snack <OpenIcon />
             </a>
           ) : null}
@@ -101,7 +91,7 @@ export default class SnackInline extends React.Component {
     } else {
       return (
         <div>
-          <div ref={this.contentRef}>{children}</div>
+          <div ref={this.contentRef}>{this.props.children}</div>
 
           {/* TODO: this should be a POST request, need to change Snack to support it though */}
           <form ref={this.formRef} action={SNACK_URL} method="POST" target="_blank">
@@ -113,7 +103,11 @@ export default class SnackInline extends React.Component {
             <input type="hidden" name="name" value={this.props.label || 'Example'} />
             <input type="hidden" name="dependencies" value={this._getDependencies()} />
             <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
-            <input type="hidden" name="files" value={JSON.stringify(files)} />
+            <input
+              type="hidden"
+              name="files"
+              value={JSON.stringify(getSnackFiles(this._getCode(), this.props.assets))}
+            />
 
             <button className="snack-inline-example-button">
               Try this example on Snack <OpenIcon />

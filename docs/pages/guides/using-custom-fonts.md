@@ -44,12 +44,13 @@ export default function App() {
 To create a new project including this example, run `npx create-react-native-app --template with-custom-font` in your terminal.
 
 
-<SnackInline label="Custom Font" dependencies={['expo-font']}>
+<SnackInline
+  label="Custom Font"
+  dependencies={['expo-font']}
+  assets={{
+    'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
+  }}>
 
-<!-- Assets -->
-[assets/fonts/Inter-Black.otf](https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67)
-
-<!-- Code -->
 ```js
 import React from 'react';
 import { Text, View } from 'react-native';
@@ -197,9 +198,12 @@ export default props => {
 
 If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. What is happening under the hood is that your fonts are being loaded using `Font.loadAysnc` from the [`expo-font` library](/versions/latest/sdk/font). You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 
-<SnackInline label="Font loadAsync" dependencies={['expo-font']}>
-
-[assets/fonts/Inter-Black.otf](https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67)
+<SnackInline
+  label="Font loadAsync"
+  dependencies={['expo-font']}
+  assets={{
+    'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
+  }}>
 
 ```js
 import React from 'react';
