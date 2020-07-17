@@ -1,0 +1,154 @@
+import { BlurView } from 'expo-blur';
+import { Camera } from 'expo-camera';
+import { throttle } from 'lodash';
+import React from 'react';
+import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+
+import QRFooterButton from '../components/QRFooterButton';
+import QRIndicator from '../components/QRIndicator';
+import isIPhoneX from '../utils/isIPhoneX';
+
+type State = {
+  isVisible: boolean;
+  url: null | string;
+};
+
+const initialState: State = { isVisible: Platform.OS === 'ios', url: null };
+
+export default function BarCodeScreen(props) {
+  const [state, setState] = React.useReducer(
+    (props: State, state: Partial<State>): State => ({ ...props, ...state }),
+    initialState
+  );
+  const [isLit, setLit] = React.useState(false);
+
+  React.useEffect(() => {
+    let timeout;
+    if (!state.isVisible) {
+      timeout = setTimeout(() => {
+        setState({ isVisible: true });
+      }, 800);
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!state.isVisible && state.url) {
+      openUrl(state.url);
+    }
+  }, [state.isVisible, state.url]);
+
+  const _handleBarCodeScanned = throttle(({ data: url }) => {
+    setState({ isVisible: false, url });
+  }, 1000);
+
+  const openUrl = (url: string) => {
+    props.navigation.pop();
+
+    setTimeout(
+      () => {
+        // note(brentvatne): Manually reset the status bar before opening the
+        // experience so that we restore the correct status bar color when
+        // returning to home
+        StatusBar.setBarStyle('default');
+        Linking.openURL(url);
+      },
+      Platform.select({
+        ios: 16,
+        // note(brentvatne): Give the modal a bit of time to dismiss on Android
+        default: 500,
+      })
+    );
+  };
+
+  const onCancel = React.useCallback(() => {
+    if (Platform.OS === 'ios') {
+      props.navigation.pop();
+    } else {
+      props.navigation.goBack(null);
+    }
+  }, []);
+
+  const onFlashToggle = React.useCallback(() => {
+    setLit(isLit => !isLit);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      {state.isVisible ? (
+        <Camera
+          onBarCodeScanned={_handleBarCodeScanned}
+          style={StyleSheet.absoluteFill}
+          flashMode={isLit ? 'torch' : 'off'}
+        />
+      ) : null}
+
+      <View style={styles.header}>
+        <Hint>Scan an Expo QR code</Hint>
+      </View>
+
+      <QRIndicator />
+
+      <View style={styles.footer}>
+        <QRFooterButton onPress={onFlashToggle} isActive={isLit} iconName="ios-flashlight" />
+        <QRFooterButton onPress={onCancel} iconName="ios-close" iconSize={48} />
+      </View>
+
+      <StatusBar barStyle="light-content" backgroundColor="#000" />
+    </View>
+  );
+}
+
+BarCodeScreen.navigationOptions = {
+  headerShown: false,
+};
+
+function Hint({ children }: { children: string }) {
+  return (
+    <BlurView style={styles.hint} intensity={100} tint="dark">
+      <Text style={styles.headerText}>{children}</Text>
+    </BlurView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  hint: {
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  header: {
+    position: 'absolute',
+    top: isIPhoneX ? 80 : 40,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  headerText: {
+    color: '#fff',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: isIPhoneX ? 80 : 30,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: '10%',
+  },
+});
