@@ -200,7 +200,6 @@ class AlgoliaSearch extends React.Component {
           autoComplete="off"
           spellCheck="false"
           dir="auto"
-          onClick={this.props.onStartMobileSearchText}
         />
 
         {this.props.hiddenOnMobile ? (
@@ -210,7 +209,7 @@ class AlgoliaSearch extends React.Component {
             <img src="/static/images/header/slash.svg" />
           </div>
         ) : (
-          <span className="close-search" onClick={this.props.onHideSearch}>
+          <span className="close-search" onClick={this.props.onToggleSearch}>
             <img src="/static/images/header/x.svg" />
           </span>
         )}
