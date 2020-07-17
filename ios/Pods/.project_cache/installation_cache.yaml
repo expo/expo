@@ -8040,7 +8040,7 @@ CACHE_KEYS:
       EXGL:
         :debug: bca8f8421e2d5161f85265d66e770356
         :release: bca8f8421e2d5161f85265d66e770356
-    CHECKSUM: 34fdad312c8fefe8dbc24fa68056868830d8e826
+    CHECKSUM: 5ab2299d0bae290b81ca24fc70e8f1697affbef5
     FILES:
       - "../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -8056,13 +8056,13 @@ CACHE_KEYS:
       - "../../packages/expo-gl/ios/EXGL/EXGLViewManager.m"
     PROJECT_NAME: EXGL
     SPECS:
-      - EXGL (8.3.1)
+      - EXGL (8.4.0)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP:
         :debug: a826c42c1bffaf535c5e5f75d7f48a5d
         :release: a826c42c1bffaf535c5e5f75d7f48a5d
-    CHECKSUM: ed6b6ec48e1253e038003c49cdd29af3e0e8e82c
+    CHECKSUM: 03b30fb5012eee6f4231b6667d97256716e7e13b
     FILES:
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.h"
@@ -8080,8 +8080,8 @@ CACHE_KEYS:
       - "../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (8.3.1)
-      - EXGL_CPP/EXGLContext (8.3.1)
+      - EXGL_CPP (8.4.0)
+      - EXGL_CPP/EXGLContext (8.4.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn:
@@ -8518,62 +8518,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXTaskManager
     SPECS:
       - EXTaskManager (8.4.0)
-  EXUpdates:
-    BUILD_SETTINGS_CHECKSUM:
-      EXUpdates:
-        :debug: 4788dfea139b6300bae5ee54cd0af301
-        :release: 4788dfea139b6300bae5ee54cd0af301
-    CHECKSUM: 9dd77b2e9e33d4347ae8ca81cc771cd16170e5af
-    FILES:
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncher.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherWithDatabase.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherWithDatabase.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicy.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicyNewest.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesSelectionPolicyNewest.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader+Private.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoader.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAppLoaderTask.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesAsset.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesCrypto.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesCrypto.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesEmbeddedAppLoader.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesEmbeddedAppLoader.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesFileDownloader.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesFileDownloader.m"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesRemoteAppLoader.h"
-      - "../../packages/expo-updates/ios/EXUpdates/AppLoader/EXUpdatesRemoteAppLoader.m"
-      - "../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesDatabase.h"
-      - "../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesDatabase.m"
-      - "../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesReaper.h"
-      - "../../packages/expo-updates/ios/EXUpdates/Database/EXUpdatesReaper.m"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesAppController.h"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesAppController.m"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.h"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.m"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.h"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.m"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.h"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesService.m"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.h"
-      - "../../packages/expo-updates/ios/EXUpdates/EXUpdatesUtils.m"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesBareUpdate.h"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesBareUpdate.m"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesLegacyUpdate.h"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesLegacyUpdate.m"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesNewUpdate.h"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesNewUpdate.m"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate+Private.h"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.h"
-      - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.m"
-    PROJECT_NAME: EXUpdates
-    SPECS:
-      - EXUpdates (0.2.11)
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
       EXVideoThumbnails:
@@ -8915,8 +8859,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4152a2a32815f2fe0491a91882892402
-      Release: 4152a2a32815f2fe0491a91882892402
+      Debug: bf4aab63e7369e7a2deb9f1a5e58c65d
+      Release: bf4aab63e7369e7a2deb9f1a5e58c65d
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
@@ -8928,12 +8872,12 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: b0dd47bbea1df554c85ed02c2e335666
-      Release: b0dd47bbea1df554c85ed02c2e335666
+      Debug: 8f4fec814a25f52211061f153478d7da
+      Release: 8f4fec814a25f52211061f153478d7da
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: b0dd47bbea1df554c85ed02c2e335666
-      Release: b0dd47bbea1df554c85ed02c2e335666
+      Debug: 8f4fec814a25f52211061f153478d7da
+      Release: 8f4fec814a25f52211061f153478d7da
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:

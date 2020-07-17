@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import Colors from '../constants/Colors';
 
 // eslint-disable-next-line no-unused-vars
 export default function PrimaryButton({ children, isLoading, plain, style, textStyle, ...props }) {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   button: {
-    backgroundColor: '#4e9bde',
+    backgroundColor: Colors.light.tintColor,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 4,
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
   },
   plainButton: {},
   plainButtonText: {
-    color: '#0f73b6',
+    color: Colors.light.tintColor,
     textAlign: 'center',
     ...Platform.select({
       android: {

@@ -113,6 +113,7 @@ export const expoColors = {
   gray: {
     100: '#F5F5F7',
     200: '#EBEBED',
+    250: '#DDDDE1',
     300: '#CFCFD5',
     400: '#B0B0BA',
     500: '#8F8F9D',
@@ -147,5 +148,6 @@ export const fontFamilies = {
 
 export const breakpoints = {
   mobile: '1024px',
+  mobileStrict: '748px',
   mobileValue: 748,
 };

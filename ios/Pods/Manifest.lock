@@ -1610,14 +1610,14 @@ PODS:
   - EXFont (8.2.1):
     - UMCore
     - UMFontInterface
-  - EXGL (8.3.1):
+  - EXGL (8.4.0):
     - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL_CPP (8.3.1):
-    - EXGL_CPP/EXGLContext (= 8.3.1)
-  - EXGL_CPP/EXGLContext (8.3.1)
+  - EXGL_CPP (8.4.0):
+    - EXGL_CPP/EXGLContext (= 8.4.0)
+  - EXGL_CPP/EXGLContext (8.4.0)
   - EXGoogleSignIn (8.2.1):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -1701,9 +1701,6 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXUpdates (0.2.11):
-    - React
-    - UMCore
   - EXVideoThumbnails (4.2.1):
     - UMCore
     - UMFileSystemInterface
@@ -2488,7 +2485,6 @@ DEPENDENCIES:
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../packages/expo-store-review/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
-  - EXUpdates (from `../packages/expo-updates/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -3263,8 +3259,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-store-review/ios"
   EXTaskManager:
     :path: "../packages/expo-task-manager/ios"
-  EXUpdates:
-    :path: "../packages/expo-updates/ios"
   EXVideoThumbnails:
     :path: "../packages/expo-video-thumbnails/ios"
   EXWebBrowser:
@@ -3665,8 +3659,8 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: b502d650cb33c2d137cb19d639f8b315ee7e5ad3
   EXFirebaseCore: 7e720f6f3725795b960b9e59dfcd46e674b30774
   EXFont: d6cabb73989fc29296972c52915a023f46b2c7f5
-  EXGL: 34fdad312c8fefe8dbc24fa68056868830d8e826
-  EXGL_CPP: ed6b6ec48e1253e038003c49cdd29af3e0e8e82c
+  EXGL: 5ab2299d0bae290b81ca24fc70e8f1697affbef5
+  EXGL_CPP: 03b30fb5012eee6f4231b6667d97256716e7e13b
   EXGoogleSignIn: 02f0db1efb39c8e2508832a0175319f0ce08a80f
   EXHaptics: 5428b344a216ca5d9df6ca8f65720b2a1ad9f109
   EXImageLoader: 02ca02c9cd5cc8a97b423207a73a791e0a86bea5
@@ -3695,7 +3689,6 @@ SPEC CHECKSUMS:
   EXSQLite: 64611c1b369c0f1e9cae4e551d0aa4478a58cadf
   EXStoreReview: 2b9bdb91b3ed4319b4f6a4cb4647ba48a6ab67c8
   EXTaskManager: 556abb392e1b2f3ab3fa7ee81479e95d3fbd65b3
-  EXUpdates: 9dd77b2e9e33d4347ae8ca81cc771cd16170e5af
   EXVideoThumbnails: f70bdc5511749f3181028f5000bcb7be203c631d
   EXWebBrowser: d37a5ffdea1b65947352bc001dd9f732463725d4
   FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
@@ -3765,6 +3758,6 @@ SPEC CHECKSUMS:
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: aaa3961b597c915387e70f8adc670d0e5bd51f2e
+PODFILE CHECKSUM: 2b628561b2a30b9c8498cb3ce3993e0cb02ceb26
 
 COCOAPODS: 1.9.2
