@@ -59,7 +59,6 @@ android {
   productFlavors {
 
     bare {
-      isDefault true
       dimension "exposcope"
     }
 

@@ -1,2 +1,3 @@
 babel.config.js
 assets/**/*
+android/src/expoview

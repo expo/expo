@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications-interface",
-  "version": "1.0.0",
+  "version": "0.4.0",
   "description": "ExpoNotificationsInterface standalone module",
   "main": "build/NotificationsInterface.js",
   "types": "build/NotificationsInterface.d.ts",
