@@ -1,10 +1,10 @@
 import { Platform } from '@unimodules/core';
 
 import ExpoLocation from './ExpoLocation';
-import { LocationData, LocationAccuracy, LocationOptions } from './Location.types';
+import { LocationObject, LocationAccuracy, LocationOptions } from './Location.types';
 import { LocationSubscriber } from './LocationSubscribers';
 
-type GeolocationSuccessCallback = (data: LocationData) => void;
+type GeolocationSuccessCallback = (data: LocationObject) => void;
 type GeolocationErrorCallback = (error: any) => void;
 
 type GeolocationOptions = {

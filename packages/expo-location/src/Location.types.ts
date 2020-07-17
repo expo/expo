@@ -44,8 +44,30 @@ export enum LocationGeofencingRegionState {
  * Type representing options argument in `getCurrentPositionAsync`.
  */
 export type LocationOptions = {
+  /**
+   * Location manager accuracy. Pass one of `LocationAccuracy` enum values.
+   * For low-accuracies the implementation can avoid geolocation providers
+   * that consume a significant amount of power (such as GPS).
+   */
   accuracy?: LocationAccuracy;
+
+  /**
+   * (Android only) Specifies whether to ask the user to turn on improved accuracy location mode
+   * which uses Wi-Fi, cell networks and GPS sensor. Defaults to `true`.
+   */
   mayShowUserSettingsDialog?: boolean;
+
+  /**
+   * (Android only) Minimum time to wait between each update in milliseconds.
+   * Default value may depend on `accuracy` option.
+   */
+  timeInterval?: number;
+
+  /**
+   * Receive updates only when the location has changed by at least this distance in meters.
+   * Default value may depend on `accuracy` option.
+   */
+  distanceInterval?: number;
 };
 
 /**
@@ -66,10 +88,7 @@ export type LocationLastKnownOptions = {
 /**
  * Type representing background location task options.
  */
-export type LocationTaskOptions = {
-  accuracy?: LocationAccuracy;
-  timeInterval?: number; // Android only
-  distanceInterval?: number;
+export type LocationTaskOptions = LocationOptions & {
   showsBackgroundLocationIndicator?: boolean; // iOS only
   deferredUpdatesDistance?: number;
   deferredUpdatesTimeout?: number;
@@ -101,7 +120,7 @@ export type LocationRegion = {
 /**
  * Type representing the location object.
  */
-export type LocationData = {
+export type LocationObject = {
   coords: {
     latitude: number;
     longitude: number;
@@ -117,7 +136,7 @@ export type LocationData = {
 /**
  * Represents `watchPositionAsync` callback.
  */
-export type LocationCallback = (data: LocationData) => any;
+export type LocationCallback = (location: LocationObject) => any;
 
 /**
  * Represents the object containing details about location provider.
@@ -133,7 +152,7 @@ export type LocationProviderStatus = {
 /**
  * Type of the object containing heading details and provided by `watchHeadingAsync` callback.
  */
-export type LocationHeadingData = {
+export type LocationHeadingObject = {
   trueHeading: number;
   magHeading: number;
   accuracy: number;
@@ -142,7 +161,7 @@ export type LocationHeadingData = {
 /**
  * Represents `watchHeadingAsync` callback.
  */
-export type LocationHeadingCallback = (data: LocationHeadingData) => any;
+export type LocationHeadingCallback = (location: LocationHeadingObject) => any;
 
 /**
  * Type representing a result of `geocodeAsync`.
@@ -182,7 +201,7 @@ export type PermissionDetailsLocationAndroid = {
   scope: 'fine' | 'coarse' | 'none';
 };
 
-export interface PermissionResponse extends UMPermissionResponse {
+export interface LocationPermissionResponse extends UMPermissionResponse {
   ios?: PermissionDetailsLocationIOS;
   android?: PermissionDetailsLocationAndroid;
 }

@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'unimodules-permissions-interface';
-import { LocationLastKnownOptions, LocationData, LocationOptions } from './Location.types';
+import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 /**
  * Gets the permission details. The implementation is not very good as it actually requests
  * for the current location, but there is no better way on web so far :(
@@ -10,8 +10,8 @@ declare const _default: {
     getProviderStatusAsync(): Promise<{
         locationServicesEnabled: boolean;
     }>;
-    getLastKnownPositionAsync(options?: LocationLastKnownOptions): Promise<LocationData | null>;
-    getCurrentPositionAsync(options: LocationOptions): Promise<LocationData>;
+    getLastKnownPositionAsync(options?: LocationLastKnownOptions): Promise<LocationObject | null>;
+    getCurrentPositionAsync(options: LocationOptions): Promise<LocationObject>;
     removeWatchAsync(watchId: any): Promise<void>;
     watchDeviceHeading(headingId: any): Promise<void>;
     hasServicesEnabledAsync(): Promise<boolean>;

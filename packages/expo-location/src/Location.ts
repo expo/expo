@@ -5,18 +5,18 @@ import ExpoLocation from './ExpoLocation';
 import {
   LocationAccuracy,
   LocationCallback,
-  LocationData,
   LocationGeocodedAddress,
   LocationGeocodedLocation,
   LocationHeadingCallback,
-  LocationHeadingData,
+  LocationHeadingObject,
   LocationLastKnownOptions,
+  LocationObject,
   LocationOptions,
+  LocationPermissionResponse,
   LocationProviderStatus,
   LocationRegion,
-  LocationTaskOptions,
   LocationSubscription,
-  PermissionResponse,
+  LocationTaskOptions,
 } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
@@ -46,7 +46,7 @@ export async function enableNetworkProviderAsync(): Promise<void> {
  */
 export async function getCurrentPositionAsync(
   options: LocationOptions = {}
-): Promise<LocationData> {
+): Promise<LocationObject> {
   return ExpoLocation.getCurrentPositionAsync(options);
 }
 
@@ -57,7 +57,7 @@ export async function getCurrentPositionAsync(
  */
 export async function getLastKnownPositionAsync(
   options: LocationLastKnownOptions = {}
-): Promise<LocationData | null> {
+): Promise<LocationObject | null> {
   return ExpoLocation.getLastKnownPositionAsync(options);
 }
 
@@ -81,8 +81,8 @@ export async function watchPositionAsync(options: LocationOptions, callback: Loc
  * To simplify, it calls `watchHeadingAsync` and waits for a couple of updates
  * and returns the one that is accurate enough.
  */
-export async function getHeadingAsync(): Promise<LocationHeadingData> {
-  return new Promise<LocationHeadingData>(async resolve => {
+export async function getHeadingAsync(): Promise<LocationHeadingObject> {
+  return new Promise<LocationHeadingObject>(async resolve => {
     let tries = 0;
 
     const subscription = await watchHeadingAsync(heading => {
@@ -236,14 +236,14 @@ function assertGeocodeResults(resultObject: any): void {
 /**
  * Gets the current state of location permissions.
  */
-export async function getPermissionsAsync(): Promise<PermissionResponse> {
+export async function getPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.getPermissionsAsync();
 }
 
 /**
  * Requests the user to grant location permissions.
  */
-export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+export async function requestPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.requestPermissionsAsync();
 }
 

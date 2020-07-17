@@ -2,7 +2,7 @@ import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-int
 
 import {
   LocationLastKnownOptions,
-  LocationData,
+  LocationObject,
   LocationOptions,
   LocationAccuracy,
 } from './Location.types';
@@ -20,7 +20,7 @@ class GeocoderError extends Error {
 /**
  * Converts `GeolocationPosition` to JavaScript object.
  */
-function geolocationPositionToJSON(position: LocationData): LocationData {
+function geolocationPositionToJSON(position: LocationObject): LocationObject {
   const { coords, timestamp } = position;
   return {
     coords: {
@@ -39,7 +39,7 @@ function geolocationPositionToJSON(position: LocationData): LocationData {
 /**
  * Checks whether given location didn't exceed given `maxAge` and fits in the required accuracy.
  */
-function isLocationValid(location: LocationData, options: LocationLastKnownOptions): boolean {
+function isLocationValid(location: LocationObject, options: LocationLastKnownOptions): boolean {
   const maxAge = typeof options.maxAge === 'number' ? options.maxAge : Infinity;
   const requiredAccuracy =
     typeof options.requiredAccuracy === 'number' ? options.requiredAccuracy : Infinity;
@@ -76,7 +76,7 @@ async function getPermissionsAsync(): Promise<PermissionResponse> {
   });
 }
 
-let lastKnownPosition: LocationData | null = null;
+let lastKnownPosition: LocationObject | null = null;
 
 export default {
   get name(): string {
@@ -89,14 +89,14 @@ export default {
   },
   async getLastKnownPositionAsync(
     options: LocationLastKnownOptions = {}
-  ): Promise<LocationData | null> {
+  ): Promise<LocationObject | null> {
     if (lastKnownPosition && isLocationValid(lastKnownPosition, options)) {
       return lastKnownPosition;
     }
     return null;
   },
-  async getCurrentPositionAsync(options: LocationOptions): Promise<LocationData> {
-    return new Promise<LocationData>((resolve, reject) => {
+  async getCurrentPositionAsync(options: LocationOptions): Promise<LocationObject> {
+    return new Promise<LocationObject>((resolve, reject) => {
       const resolver = position => {
         lastKnownPosition = geolocationPositionToJSON(position);
         resolve(lastKnownPosition);
