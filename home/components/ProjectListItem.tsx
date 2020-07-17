@@ -1,47 +1,39 @@
 import * as React from 'react';
-import { View, Linking, Share, StyleSheet, Text } from 'react-native';
-import { withNavigation, NavigationInjectedProps } from 'react-navigation';
+import { Linking, Share, StyleSheet, Text, View } from 'react-native';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
-import { Ionicons } from './Icons';
 import ListItem from './ListItem';
 
-type Props = React.ComponentProps<typeof ListItem> &
-  NavigationInjectedProps & {
-    url: string;
-    unlisted?: boolean;
-    releaseChannel?: string;
-    username?: string;
-  };
+type Props = React.ComponentProps<typeof ListItem> & {
+  url: string;
+  unlisted?: boolean;
+  releaseChannel?: string;
+  username?: string;
+};
 
-class ProjectListItem extends React.PureComponent<Props> {
-  render() {
-    const { url, unlisted, releaseChannel, username, subtitle, ...restProps } = this.props;
-    return (
-      <ListItem
-        onPress={this.handlePress}
-        onLongPress={this.handleLongPress}
-        rightContent={this.renderRightContent()}
-        {...restProps}
-        subtitle={username || subtitle}
-        onPressSubtitle={username ? this.handlePressUsername : undefined}
-      />
-    );
-  }
-
-  private renderRightContent(): React.ReactNode {
-    const { releaseChannel } = this.props;
+function ProjectListItem({
+  navigation,
+  releaseChannel,
+  unlisted,
+  username,
+  subtitle,
+  url,
+  ...props
+}: Props) {
+  const renderRightContent = (): React.ReactNode => {
     return (
       <View style={styles.rightContentContainer}>
         {/* TODO: revisit this when we support "private" - unlisted is }
         {/* {unlisted && this.renderUnlistedIcon()} */}
-        {releaseChannel && this.renderReleaseChannel(releaseChannel)}
+        {releaseChannel && renderReleaseChannel(releaseChannel)}
       </View>
     );
-  }
+  };
 
-  private renderUnlistedIcon() {
+  /*
+  const renderUnlistedIcon = () => {
     return (
       <View style={styles.unlistedContainer}>
         <View style={styles.unlistedIconContainer}>
@@ -50,9 +42,10 @@ class ProjectListItem extends React.PureComponent<Props> {
         <Text style={styles.unlistedText}>Unlisted</Text>
       </View>
     );
-  }
+  };
+  */
 
-  private renderReleaseChannel(releaseChannel: string) {
+  const renderReleaseChannel = (releaseChannel: string) => {
     return (
       <View style={styles.releaseChannelContainer}>
         <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
@@ -60,25 +53,35 @@ class ProjectListItem extends React.PureComponent<Props> {
         </Text>
       </View>
     );
-  }
-
-  private handlePress = () => {
-    const url = UrlUtils.normalizeUrl(this.props.url);
-    Linking.openURL(url);
   };
 
-  private handleLongPress = () => {
-    const url = UrlUtils.normalizeUrl(this.props.url);
+  const handlePress = () => {
+    Linking.openURL(UrlUtils.normalizeUrl(url));
+  };
+
+  const handleLongPress = () => {
+    const message = UrlUtils.normalizeUrl(url);
     Share.share({
-      title: this.props.url,
-      message: url,
-      url,
+      title: url,
+      message,
+      url: message,
     });
   };
 
-  private handlePressUsername = () => {
-    this.props.navigation.navigate('Profile', { username: this.props.username });
+  const handlePressUsername = () => {
+    navigation.navigate('Profile', { username });
   };
+
+  return (
+    <ListItem
+      onPress={handlePress}
+      onLongPress={handleLongPress}
+      rightContent={renderRightContent()}
+      {...props}
+      subtitle={username || subtitle}
+      onPressSubtitle={username ? handlePressUsername : undefined}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
