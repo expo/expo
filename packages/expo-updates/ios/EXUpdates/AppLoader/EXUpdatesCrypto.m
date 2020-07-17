@@ -14,12 +14,14 @@ static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
 
 + (void)verifySignatureWithData:(NSString *)data
                       signature:(NSString *)signature
+                         config:(EXUpdatesConfig *)config
                  cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesVerifySignatureSuccessBlock)successBlock
                      errorBlock:(EXUpdatesVerifySignatureErrorBlock)errorBlock
 {
   [self fetchAndVerifySignatureWithData:data
                               signature:signature
+                                 config:config
                          cacheDirectory:cacheDirectory
                                useCache:YES
                            successBlock:successBlock
@@ -28,6 +30,7 @@ static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
 
 + (void)fetchAndVerifySignatureWithData:(NSString *)data
                               signature:(NSString *)signature
+                                 config:(EXUpdatesConfig *)config
                          cacheDirectory:(NSURL *)cacheDirectory
                                useCache:(BOOL)useCache
                            successBlock:(EXUpdatesVerifySignatureSuccessBlock)successBlock
@@ -47,6 +50,7 @@ static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
       } else {
         [[self class] fetchAndVerifySignatureWithData:data
                                             signature:signature
+                                               config:config
                                        cacheDirectory:cacheDirectory
                                              useCache:NO
                                          successBlock:successBlock
@@ -56,7 +60,7 @@ static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
   } else {
     NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
     configuration.requestCachePolicy = NSURLRequestReloadIgnoringCacheData;
-    EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithURLSessionConfiguration:configuration];
+    EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
     [fileDownloader downloadFileFromURL:[NSURL URLWithString:kEXPublicKeyUrl]
                                  toPath:[cachedPublicKeyUrl path]
                            successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
