@@ -115,7 +115,7 @@ Returns a Promise that resolves with an array of `Asset`s when the asset(s) has 
 #### Example
 
 ```ts
-const [{ localUri }] = await Asset.loadAsync('https://docs.expo.io/static/images/header-logo.png');
+const [{ localUri }] = await Asset.loadAsync(require('./assets/snack-icon.png'));
 ```
 
 ### `Asset.fromModule(module)`
