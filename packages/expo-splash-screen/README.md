@@ -504,7 +504,7 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 +   // SplashScreen.show(...) has to be called after super.onCreate(...)
-+   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
++   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, false);
     ...
   }
 
@@ -525,7 +525,7 @@ public class MainActivity extends ReactActivity {
 +  protected void onCreate(Bundle savedInstanceState) {
 +    super.onCreate(savedInstanceState);
 +   // SplashScreen.show(...) has to be called after super.onCreate(...)
-+   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
++   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, false);
     ...
   }
 
