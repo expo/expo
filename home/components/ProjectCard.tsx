@@ -24,6 +24,7 @@ function ProjectCard({
   projectUrl,
   projectName,
   username,
+  navigation,
 }) {
   const _maybeRenderIcon = () => {
     if (iconUrl) {
@@ -63,7 +64,7 @@ function ProjectCard({
     if (onPressUsername) {
       onPressUsername(username);
     } else {
-      navigation.navigate('Profile', { username: username });
+      navigation.navigate('Profile', { username });
     }
   };
 
