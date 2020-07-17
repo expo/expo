@@ -2,10 +2,8 @@ include ':app'
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'
-project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
 include ':ReactAndroid'
-project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 include ':unimodules-test-core'
 project(':unimodules-test-core').projectDir = new File(rootDir, '../packages/unimodules-test-core/android')
 
@@ -26,18 +24,18 @@ apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 // Include unimodules.
 includeUnimodulesProjects(
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-[
-    modulesPaths: ['../../packages'],
-    target: 'react-native',
-    exclude: [
-        'expo-module-template',
+    [
+        modulesPaths: ['../../packages'],
+        target      : 'react-native',
+        exclude     : [
+            'expo-module-template',
 // FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `et android-build-packages`
 // section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
-        'expo-bluetooth',
-        'expo-in-app-purchases',
-        'expo-splash-screen'
+            'expo-bluetooth',
+            'expo-in-app-purchases',
+            'expo-splash-screen'
 // FLAG_END_REMOVE__UPDATE_EXPOKIT
+        ]
     ]
-]
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 )

@@ -12,6 +12,7 @@ import abi38_0_0.org.unimodules.core.ModuleRegistry;
 import abi38_0_0.org.unimodules.core.Promise;
 import abi38_0_0.org.unimodules.core.arguments.ReadableArguments;
 import abi38_0_0.org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.notifications.ExpoNotificationsReconstructor;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
 import expo.modules.notifications.notifications.model.Notification;
@@ -41,9 +42,9 @@ public class NotificationsHandler extends ExportedModule implements Notification
 
   private Map<String, SingleNotificationHandlerTask> mTasksMap = new HashMap<>();
 
-  public NotificationsHandler(Context context, NotificationsHelper notificationsHelper) {
+  public NotificationsHandler(Context context) {
     super(context);
-    this.mNotificationsHelper = notificationsHelper;
+    this.mNotificationsHelper = new NotificationsHelper(context, new ExpoNotificationsReconstructor());
   }
 
   @Override

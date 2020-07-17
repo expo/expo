@@ -22,7 +22,6 @@ import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.permissions.NotificationPermissionsModule;
 import expo.modules.notifications.tokens.PushTokenManager;
 import expo.modules.notifications.tokens.PushTokenModule;
@@ -30,17 +29,16 @@ import expo.modules.notifications.tokens.PushTokenModule;
 public class NotificationsPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
-    NotificationsHelper notificationsHelper = new NotificationsHelper(context, new ExpoNotificationsReconstructor());
     return Arrays.asList(
       new BadgeModule(context),
       new PushTokenModule(context),
       new NotificationsEmitter(context),
-      new NotificationsHandler(context, notificationsHelper),
+      new NotificationsHandler(context),
       new NotificationScheduler(context),
       new InstallationIdProvider(context),
       new NotificationPermissionsModule(context),
       new NotificationChannelManagerModule(context),
-      new ExpoNotificationPresentationModule(context, notificationsHelper),
+      new ExpoNotificationPresentationModule(context),
       new NotificationChannelGroupManagerModule(context)
     );
   }

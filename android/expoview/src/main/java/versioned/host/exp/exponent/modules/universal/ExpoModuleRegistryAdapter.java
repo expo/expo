@@ -13,9 +13,7 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedExpoNotificationsReconstructor;
 import host.exp.exponent.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
@@ -74,11 +72,10 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceId));
 
     // Overriding expo-notifications classes
-    NotificationsHelper notificationsHelper = new NotificationsHelper(scopedContext, new ScopedExpoNotificationsReconstructor());
     moduleRegistry.registerExportedModule(new ScopedNotificationsEmitter(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, notificationsHelper, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, notificationsHelper, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
 
 

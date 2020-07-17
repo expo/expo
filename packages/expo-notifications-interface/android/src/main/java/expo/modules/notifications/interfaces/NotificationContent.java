@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.model;
+package expo.modules.notifications.interfaces;
 
 import android.net.Uri;
 import android.os.Parcel;
@@ -12,7 +12,6 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.enums.NotificationPriority;
 
 /**
  * A POJO representing a notification content: title, message, body, etc. Instances

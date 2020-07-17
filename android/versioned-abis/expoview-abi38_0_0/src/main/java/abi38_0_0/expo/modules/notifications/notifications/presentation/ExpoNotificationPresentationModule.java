@@ -13,10 +13,11 @@ import abi38_0_0.org.unimodules.core.ExportedModule;
 import abi38_0_0.org.unimodules.core.Promise;
 import abi38_0_0.org.unimodules.core.arguments.ReadableArguments;
 import abi38_0_0.org.unimodules.core.interfaces.ExpoMethod;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.ExpoNotificationsReconstructor;
+import expo.modules.notifications.interfaces.NotificationContent;
+import expo.modules.notifications.interfaces.NotificationRequest;
+import expo.modules.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
-import expo.modules.notifications.notifications.model.NotificationContent;
-import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
 
 public class ExpoNotificationPresentationModule extends ExportedModule {
@@ -24,9 +25,13 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   private final NotificationsHelper mNotificationsHelper;
 
-  public ExpoNotificationPresentationModule(Context context, NotificationsHelper notificationsHelper) {
+  public ExpoNotificationPresentationModule(Context context) {
     super(context);
-    mNotificationsHelper = notificationsHelper;
+    mNotificationsHelper = new NotificationsHelper(context, new ExpoNotificationsReconstructor());
+  }
+
+  protected NotificationsHelper getNotificationsHelper() {
+    return mNotificationsHelper;
   }
 
   @Override

@@ -1,11 +1,9 @@
-package expo.modules.notifications.notifications.model;
+package expo.modules.notifications.interfaces;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
-
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 /**
  * A class representing notification request. A notification request has some content {@link #mContent},

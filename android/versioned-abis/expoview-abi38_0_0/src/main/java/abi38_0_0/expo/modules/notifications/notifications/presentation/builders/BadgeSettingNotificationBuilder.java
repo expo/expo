@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.core.app.NotificationCompat;
-import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.interfaces.NotificationContent;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class BadgeSettingNotificationBuilder extends ExpoNotificationBuilder {

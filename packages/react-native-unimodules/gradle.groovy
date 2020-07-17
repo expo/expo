@@ -222,6 +222,10 @@ ext.addUnimodulesDependencies = { Map customOptions = [:] ->
       exclude      : [],
   ] << customOptions
 
+  if(!customOptions.skipExposcope) {
+    project.android.defaultConfig.missingDimensionStrategy('exposcope', 'bare')
+  }
+  
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     Object dependency = project.project(':' + unimodule.name)
     project.dependencies.add(options.configuration, dependency)

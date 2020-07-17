@@ -10,30 +10,29 @@ import java.util.Collection;
 import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
 import abi38_0_0.expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
 import abi38_0_0.org.unimodules.core.Promise;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.ScopedNotificationRequest;
+import expo.modules.notifications.interfaces.NotificationContent;
+import expo.modules.notifications.interfaces.NotificationRequest;
+import expo.modules.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
-import expo.modules.notifications.notifications.model.NotificationContent;
-import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
 public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPresentationModule {
   private final ExperienceId mExperienceId;
   private final ScopedNotificationsUtils mScopedNotificationsUtils;
-  private final NotificationsHelper mNotificationsHelper;
 
-  public ScopedExpoNotificationPresentationModule(Context context, NotificationsHelper notificationsHelper, ExperienceId experienceId) {
-    super(context, notificationsHelper);
+  public ScopedExpoNotificationPresentationModule(Context context, ExperienceId experienceId) {
+    super(context);
     mExperienceId = experienceId;
     mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
-    mNotificationsHelper = notificationsHelper;
   }
 
   @Override
   protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger) {
-    return new ScopedNotificationRequest(identifier, content, trigger, mExperienceId);
+    String experienceIdString = mExperienceId == null ? null : mExperienceId.get();
+    return new ScopedNotificationRequest(identifier, content, trigger, experienceIdString);
   }
 
   @Override
@@ -50,7 +49,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   public void dismissNotificationAsync(String identifier, Promise promise) {
-    mNotificationsHelper.getAllPresented(new ResultReceiver(null) {
+    getNotificationsHelper().getAllPresented(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -73,7 +72,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   public void dismissAllNotificationsAsync(Promise promise) {
-    mNotificationsHelper.getAllPresented(new ResultReceiver(null) {
+    getNotificationsHelper().getAllPresented(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -99,7 +98,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
   }
 
   private void dismissSelectedAsync(String[] identifiers, final Promise promise) {
-    mNotificationsHelper.enqueueDismissSelected(identifiers, new ResultReceiver(null) {
+    getNotificationsHelper().enqueueDismissSelected(identifiers, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);

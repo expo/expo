@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import expo.modules.notifications.ScopedNotificationRequest;
+import expo.modules.notifications.interfaces.NotificationContent;
+import expo.modules.notifications.interfaces.NotificationRequest;
+import expo.modules.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.NotificationSerializer;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
-import expo.modules.notifications.notifications.model.NotificationContent;
-import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
@@ -32,7 +32,8 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
 
   @Override
   protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, NotificationTrigger notificationTrigger) {
-    return new ScopedNotificationRequest(identifier, content, notificationTrigger, mExperienceId);
+    String experienceIdString = mExperienceId == null ? null : mExperienceId.get();
+    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceIdString);
   }
 
   @Override

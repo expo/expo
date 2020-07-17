@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.interfaces;
+package expo.modules.notifications.interfaces;
 
 import android.os.Build;
 import android.os.Parcelable;

@@ -10,16 +10,14 @@ import org.json.JSONObject;
 import java.util.Map;
 
 import expo.modules.notifications.FirebaseListenerService;
-import expo.modules.notifications.notifications.model.NotificationContent;
-import expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.ScopedNotificationRequest;
+import expo.modules.notifications.interfaces.NotificationContent;
+import expo.modules.notifications.interfaces.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.PushNotificationHelper;
-import host.exp.exponent.notifications.ScopedExpoNotificationsReconstructor;
-import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 
@@ -99,11 +97,7 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
     } else {
       experienceId = ExperienceId.create(data.get("experienceId"));
     }
-    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceId);
-  }
-
-  @Override
-  protected NotificationsHelper createNotificationsHelper() {
-    return new NotificationsHelper(this, new ScopedExpoNotificationsReconstructor());
+    String experienceIdString = experienceId == null ? null : experienceId.get();
+    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceIdString);
   }
 }

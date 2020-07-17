@@ -21,24 +21,21 @@ import abi38_0_0.expo.modules.notifications.tokens.PushTokenManager;
 import abi38_0_0.expo.modules.notifications.tokens.PushTokenModule;
 import abi38_0_0.org.unimodules.core.BasePackage;
 import abi38_0_0.org.unimodules.core.ExportedModule;
-import expo.modules.notifications.ExpoNotificationsReconstructor;
 import expo.modules.notifications.notifications.NotificationManager;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 
 public class NotificationsPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
-    NotificationsHelper notificationsHelper = new NotificationsHelper(context, new ExpoNotificationsReconstructor());
     return Arrays.asList(
       new BadgeModule(context),
       new PushTokenModule(context),
       new NotificationsEmitter(context),
-      new NotificationsHandler(context, notificationsHelper),
+      new NotificationsHandler(context),
       new NotificationScheduler(context),
       new InstallationIdProvider(context),
       new NotificationPermissionsModule(context),
       new NotificationChannelManagerModule(context),
-      new ExpoNotificationPresentationModule(context, notificationsHelper),
+      new ExpoNotificationPresentationModule(context),
       new NotificationChannelGroupManagerModule(context)
     );
   }

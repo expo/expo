@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import expo.modules.notifications.ExpoNotificationsReconstructor;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
@@ -42,9 +43,9 @@ public class NotificationsHandler extends ExportedModule implements Notification
 
   private Map<String, SingleNotificationHandlerTask> mTasksMap = new HashMap<>();
 
-  public NotificationsHandler(Context context, NotificationsHelper notificationsHelper) {
+  public NotificationsHandler(Context context) {
     super(context);
-    this.mNotificationsHelper = notificationsHelper;
+    this.mNotificationsHelper = new NotificationsHelper(context, new ExpoNotificationsReconstructor());
   }
 
   @Override

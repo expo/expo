@@ -1,11 +1,11 @@
-package expo.modules.notifications;
+package expo.modules.notifications.interfaces;
 
 import android.os.Parcel;
-
-import expo.modules.notifications.notifications.model.NotificationRequest;
 
 public interface NotificationsReconstructor {
 
   NotificationRequest reconstructNotificationRequest(Parcel parcel);
+
+  String getName();
 
 }

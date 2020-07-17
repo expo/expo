@@ -5,7 +5,6 @@ import android.content.Context;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
@@ -13,8 +12,8 @@ public class ScopedNotificationsHandler extends NotificationsHandler {
   private ExperienceId mExperienceId;
   private ScopedNotificationsUtils mScopedNotificationsUtils;
 
-  public ScopedNotificationsHandler(Context context, NotificationsHelper notificationsHelper, ExperienceId experienceId) {
-    super(context, notificationsHelper);
+  public ScopedNotificationsHandler(Context context, ExperienceId experienceId) {
+    super(context);
     mExperienceId = experienceId;
     mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
   }

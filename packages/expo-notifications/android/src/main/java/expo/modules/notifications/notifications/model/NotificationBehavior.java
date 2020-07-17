@@ -7,7 +7,7 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.enums.NotificationPriority;
+import expo.modules.notifications.interfaces.NotificationPriority;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 
 /**

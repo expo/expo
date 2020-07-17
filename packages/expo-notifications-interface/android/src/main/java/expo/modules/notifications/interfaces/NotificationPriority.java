@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.enums;
+package expo.modules.notifications.interfaces;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;

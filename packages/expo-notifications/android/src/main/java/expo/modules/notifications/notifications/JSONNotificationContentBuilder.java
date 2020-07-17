@@ -10,8 +10,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.enums.NotificationPriority;
-import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.interfaces.NotificationContent;
+import expo.modules.notifications.interfaces.NotificationPriority;
 
 public class JSONNotificationContentBuilder extends NotificationContent.Builder {
   private static final String TITLE_KEY = "title";
@@ -33,13 +33,13 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
 
   public NotificationContent.Builder setPayload(JSONObject payload) {
     this.setTitle(getTitle(payload))
-        .setSubtitle(getSubtitle(payload))
-        .setText(getText(payload))
-        .setBody(getBody(payload))
-        .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload))
-        .setColor(getColor(payload))
-        .setAutoDismiss(getAutoDismiss(payload));
+      .setSubtitle(getSubtitle(payload))
+      .setText(getText(payload))
+      .setBody(getBody(payload))
+      .setPriority(getPriority(payload))
+      .setBadgeCount(getBadgeCount(payload))
+      .setColor(getColor(payload))
+      .setAutoDismiss(getAutoDismiss(payload));
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {

@@ -1,8 +1,8 @@
 package expo.modules.notifications.notifications.interfaces;
 
+import expo.modules.notifications.interfaces.NotificationContent;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.model.NotificationContent;
 
 /**
  * An object capable of building a {@link Notification} based

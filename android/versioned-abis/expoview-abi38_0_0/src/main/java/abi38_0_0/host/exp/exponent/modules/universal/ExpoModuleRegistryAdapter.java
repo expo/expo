@@ -24,9 +24,7 @@ import abi38_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import abi38_0_0.org.unimodules.core.ModuleRegistry;
 import abi38_0_0.org.unimodules.core.interfaces.InternalModule;
 import abi38_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedExpoNotificationsReconstructor;
 import host.exp.exponent.utils.ScopedContext;
 
 public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements ScopedModuleRegistryAdapter {
@@ -72,11 +70,10 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceId));
 
     // Overriding expo-notifications classes
-    NotificationsHelper notificationsHelper = new NotificationsHelper(scopedContext, new ScopedExpoNotificationsReconstructor());
     moduleRegistry.registerExportedModule(new ScopedNotificationsEmitter(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, notificationsHelper, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, notificationsHelper, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
