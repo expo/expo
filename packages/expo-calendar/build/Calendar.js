@@ -441,10 +441,16 @@ export const ReminderStatus = {
 function stringifyIfDate(date) {
     return date instanceof Date ? date.toISOString() : date;
 }
+function stringifyArrayValues(arr) {
+    return arr.map(obj => stringifyDateValues(obj));
+}
 function stringifyDateValues(obj) {
     return Object.keys(obj).reduce((acc, key) => {
         const value = obj[key];
-        if (typeof value === 'object' && !(value instanceof Date)) {
+        if (value != null && typeof value === 'object' && !(value instanceof Date)) {
+            if (Array.isArray(value)) {
+                return { ...acc, [key]: stringifyArrayValues(value) };
+            }
             return { ...acc, [key]: stringifyDateValues(value) };
         }
         acc[key] = stringifyIfDate(value);
