@@ -284,7 +284,7 @@ export default class Profile extends React.Component {
         key={i}
         url={app.fullName}
         unlisted={app.privacy === 'unlisted'}
-        image={app.iconUrl}
+        image={app.iconUrl || require('../assets/snack.png')}
         title={app.name}
         subtitle={app.packageName || app.fullName}
       />
