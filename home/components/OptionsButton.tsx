@@ -1,7 +1,8 @@
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import { Alert, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+
 import Colors from '../constants/Colors';
 
 function OptionsButton({ showActionSheetWithOptions }: any) {
