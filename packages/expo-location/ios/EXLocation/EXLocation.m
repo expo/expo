@@ -449,11 +449,9 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
 {
   CLLocationManager *locMgr = [[CLLocationManager alloc] init];
   locMgr.allowsBackgroundLocationUpdates = NO;
-  
+
   if (options) {
     locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
-    locMgr.desiredAccuracy = [options[@"enableHighAccuracy"] boolValue] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
-    
 
     if (options[@"accuracy"]) {
       EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;

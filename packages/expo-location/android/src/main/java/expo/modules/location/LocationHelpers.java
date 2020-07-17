@@ -205,14 +205,9 @@ public class LocationHelpers {
   //region private methods
 
   private static int getAccuracyFromOptions(Map<String, Object> options) {
-    // (2018-12): `enableHighAccuracy` is deprecated - use `accuracy` instead.
-    // However, don't remove that option as it must be still supported in navigator.geolocation polyfills.
-    boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
-
-    return options.containsKey("accuracy")
-        ? ((Number) options.get("accuracy")).intValue()
-        : highAccuracy ? ACCURACY_HIGH : ACCURACY_BALANCED;
+    return options.containsKey("accuracy") ? ((Number) options.get("accuracy")).intValue() : ACCURACY_BALANCED;
   }
+
   private static LocationParams.Builder buildLocationParamsForAccuracy(int accuracy) {
     switch (accuracy) {
       case ACCURACY_LOWEST:
