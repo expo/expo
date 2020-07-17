@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.4.0 — 2020-07-17
+
+### 🐛 Bug fixes
+
 - Delete `prop-types` in favor of TypeScript. ([#8675](https://github.com/expo/expo/pull/8675) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix crashes on iOS14 caused by different integer representation in the new JSC. ([#9226](https://github.com/expo/expo/pull/9226) by [@wkozyra95](https://github.com/wkozyra95))
 
