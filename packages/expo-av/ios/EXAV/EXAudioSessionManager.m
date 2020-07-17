@@ -132,6 +132,14 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (void)moduleDidForeground:(id)module
 {
+  // Check if module was already foregrounded
+  for (int i = 0; i < _foregroundedModules.count; i++) {
+    id pointer = [_foregroundedModules pointerAtIndex:i];
+    if (pointer == (__bridge void * _Nullable)(module)) {
+      return;
+    }
+  }
+
   [_foregroundedModules addPointer:(__bridge void * _Nullable)(module)];
 
   // Any possible failures are silent
