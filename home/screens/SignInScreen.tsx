@@ -1,6 +1,6 @@
-/* @flow */
 import * as React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
+import { NavigationInjectedProps } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
@@ -26,7 +26,18 @@ SignInScreen.navigationOptions = {
   headerLeft: () => <CloseButton />,
 };
 
-class SignInView extends React.Component {
+type Props = NavigationInjectedProps & {
+  dispatch: (action: any) => void;
+  session: { sessionSecret?: string };
+};
+
+type State = {
+  email: string;
+  password: string;
+  isLoading: boolean;
+};
+
+class SignInView extends React.Component<Props, State> {
   state = DEBUG
     ? {
         email: 'testing@getexponent.com',
@@ -39,7 +50,7 @@ class SignInView extends React.Component {
         isLoading: false,
       };
 
-  _isMounted: boolean;
+  _isMounted = false;
 
   componentDidMount() {
     this._isMounted = true;
@@ -49,7 +60,7 @@ class SignInView extends React.Component {
     this._isMounted = false;
   }
 
-  componentDidUpdate(prevProps: Object) {
+  componentDidUpdate(prevProps: Props) {
     const hasNewUserSession = this.props.session.sessionSecret && !prevProps.session.sessionSecret;
     if (hasNewUserSession) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
@@ -101,10 +112,10 @@ class SignInView extends React.Component {
     );
   }
 
-  _passwordInput: TextInput;
+  _passwordInput: TextInput | null = null;
 
   _handleSubmitEmail = () => {
-    this._passwordInput.focus();
+    if (this._passwordInput) this._passwordInput.focus();
   };
 
   _handleSubmitPassword = () => {
