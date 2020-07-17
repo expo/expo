@@ -33,16 +33,16 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
 
     NotificationContent content = getNotificationContent();
     
-    String categoryIdentifer = content.getCategoryId();
-    if (categoryIdentifer != null) {
+    String categoryIdentifier = content.getCategoryId();
+    if (categoryIdentifier != null) {
       List<NotificationAction> actions = Collections.emptyList();
       try {
-        NotificationCategory category = mStore.getNotificationCategory(categoryIdentifer);
+        NotificationCategory category = mStore.getNotificationCategory(categoryIdentifier);
         if (category != null) {
           actions = category.getActions();
         }
       } catch (ClassNotFoundException | IOException e) {
-        Log.e("expo-notifications", String.format("Could not read category with identifer: %s. %s", categoryIdentifer, e.getMessage()));
+        Log.e("expo-notifications", String.format("Could not read category with identifier: %s. %s", categoryIdentifier, e.getMessage()));
         e.printStackTrace();
       }
       for (NotificationAction action : actions) {

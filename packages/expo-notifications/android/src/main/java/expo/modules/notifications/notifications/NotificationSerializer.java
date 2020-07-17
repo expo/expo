@@ -88,7 +88,7 @@ public class NotificationSerializer {
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
     if (content.getCategoryId() != null) {
-      serializedContent.putString("categoryIdentifer", content.getCategoryId());
+      serializedContent.putString("categoryIdentifier", content.getCategoryId());
     }
     return serializedContent;
   }

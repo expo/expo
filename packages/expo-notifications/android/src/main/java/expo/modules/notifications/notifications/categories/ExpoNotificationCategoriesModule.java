@@ -23,7 +23,7 @@ import expo.modules.notifications.notifications.service.BaseNotificationsService
 
 public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationCategoriesModule";
-  private static final String IDENTIFER_KEY = "identifier";
+  private static final String IDENTIFIER_KEY = "identifier";
   private static final String BUTTON_TITLE_KEY = "buttonTitle";
   private static final String OPTIONS_KEY = "options";
   private static final String OPENS_APP_TO_FOREGROUND_KEY = "opensAppToForeground";
@@ -65,10 +65,10 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
       MapArguments actionOptions = new MapArguments(actionParams.getMap(OPTIONS_KEY));
       MapArguments textInputOptions = actionParams.containsKey(TEXT_INPUT_OPTIONS_KEY) ? new MapArguments(actionParams.getMap(TEXT_INPUT_OPTIONS_KEY)) : null;
       if (textInputOptions != null) {
-        actions.add(new TextInputNotificationAction(actionParams.getString(IDENTIFER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null),
+        actions.add(new TextInputNotificationAction(actionParams.getString(IDENTIFIER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null),
                 actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true), textInputOptions.getString(SUBMIT_BUTTON_TITLE_KEY, null), textInputOptions.getString(PLACEHOLDER_KEY, null)));
       } else {
-        actions.add(new NotificationAction(actionParams.getString(IDENTIFER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null), actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true)));
+        actions.add(new NotificationAction(actionParams.getString(IDENTIFIER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null), actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true)));
       }
     }
 
