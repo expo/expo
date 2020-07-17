@@ -12,6 +12,8 @@ NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
 NSString * const kEXUpdatesBareEmbeddedBundleFilename = @"main";
 NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
 
+static NSString * const kEXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbeddedAppLoader";
+
 @implementation EXUpdatesEmbeddedAppLoader
 
 + (nullable EXUpdatesUpdate *)embeddedManifestWithConfig:(EXUpdatesConfig *)config
@@ -20,10 +22,16 @@ NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
   static EXUpdatesUpdate *embeddedManifest;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    if (!embeddedManifest) {
+    if (!config.hasEmbeddedUpdate) {
+      embeddedManifest = nil;
+    } else if (!embeddedManifest) {
       NSString *path = [[NSBundle mainBundle] pathForResource:kEXUpdatesEmbeddedManifestName ofType:kEXUpdatesEmbeddedManifestType];
-      // TODO: handle nil manifestData in Expo client case
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
+      if (!manifestData) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
+                                     userInfo:@{}];
+      }
 
       NSError *err;
       id manifest = [NSJSONSerialization JSONObjectWithData:manifestData options:kNilOptions error:&err];
@@ -51,11 +59,18 @@ NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
                                            success:(EXUpdatesAppLoaderSuccessBlock)success
                                              error:(EXUpdatesAppLoaderErrorBlock)error
 {
-  self.manifestBlock = manifestBlock;
-  self.successBlock = success;
-  self.errorBlock = error;
-  [self startLoadingFromManifest:[[self class] embeddedManifestWithConfig:self.config
-                                                                 database:self.database]];
+  EXUpdatesUpdate *embeddedManifest = [[self class] embeddedManifestWithConfig:self.config
+                                                                      database:self.database];
+  if (embeddedManifest) {
+    self.manifestBlock = manifestBlock;
+    self.successBlock = success;
+    self.errorBlock = error;
+    [self startLoadingFromManifest:embeddedManifest];
+  } else {
+    error([NSError errorWithDomain:kEXUpdatesEmbeddedAppLoaderErrorDomain
+                              code:1008
+                          userInfo:@{NSLocalizedDescriptionKey: @"Failed to load embedded manifest. Make sure you have configured expo-updates correctly."}]);
+  }
 }
 
 - (void)downloadAsset:(EXUpdatesAsset *)asset

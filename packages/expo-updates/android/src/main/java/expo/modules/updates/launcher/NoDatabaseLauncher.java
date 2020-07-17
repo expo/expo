@@ -33,6 +33,9 @@ public class NoDatabaseLauncher implements Launcher {
 
   public NoDatabaseLauncher(final Context context, UpdatesConfiguration configuration, final @Nullable Exception fatalException) {
     Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, configuration);
+    if (embeddedManifest == null) {
+      throw new RuntimeException("Failed to launch with embedded update because the embedded manifest was null");
+    }
     if (embeddedManifest instanceof BareManifest) {
       mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
       mLocalAssetFiles = null;
