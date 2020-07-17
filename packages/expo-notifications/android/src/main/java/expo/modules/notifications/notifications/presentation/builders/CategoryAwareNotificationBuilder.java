@@ -4,13 +4,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.RemoteInput;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
@@ -21,7 +20,7 @@ import expo.modules.notifications.notifications.service.TextInputNotificationRes
 import static expo.modules.notifications.notifications.service.TextInputNotificationResponseReceiver.getActionIntent;
 
 public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
-  private SharedPreferencesNotificationCategoriesStore mStore;
+  protected SharedPreferencesNotificationCategoriesStore mStore;
 
   public CategoryAwareNotificationBuilder(Context context, SharedPreferencesNotificationCategoriesStore store) {
     super(context);
@@ -58,12 +57,12 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
     return builder;
   }
 
-  private NotificationCompat.Action buildButtonAction(NotificationAction action) {
+  protected NotificationCompat.Action buildButtonAction(NotificationAction action) {
     PendingIntent intent = getActionIntent(getContext(), action, getNotification());
     return new NotificationCompat.Action.Builder(super.getIcon(), action.getTitle(), intent).build();
   }
 
-  private NotificationCompat.Action buildTextInputAction(TextInputNotificationAction action) {
+  protected NotificationCompat.Action buildTextInputAction(TextInputNotificationAction action) {
     PendingIntent intent = getActionIntent(getContext(), action, getNotification());
     RemoteInput remoteInput = new RemoteInput.Builder(TextInputNotificationResponseReceiver.USER_TEXT_RESPONSE)
       .setLabel(action.getPlaceholder())

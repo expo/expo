@@ -104,7 +104,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     }
   };
 
-  private SharedPreferencesNotificationCategoriesStore mStore;
+  protected SharedPreferencesNotificationCategoriesStore mStore;
 
   @Override
   public void onCreate() {
