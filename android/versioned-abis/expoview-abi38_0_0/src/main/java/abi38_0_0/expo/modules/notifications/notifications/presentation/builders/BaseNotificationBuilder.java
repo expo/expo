@@ -3,9 +3,9 @@ package abi38_0_0.expo.modules.notifications.notifications.presentation.builders
 import android.content.Context;
 
 import abi38_0_0.expo.modules.notifications.notifications.interfaces.NotificationBuilder;
-import expo.modules.notifications.interfaces.NotificationContent;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationContent;
 
 /**
  * A foundation class for {@link NotificationBuilder} implementations. Takes care

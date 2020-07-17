@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.interfaces.NotificationContent;
-import expo.modules.notifications.interfaces.NotificationPriority;
 import expo.modules.notifications.notifications.channels.InvalidVibrationPatternException;
+import expo.modules.notifications.notifications.enums.NotificationPriority;
+import expo.modules.notifications.notifications.model.NotificationContent;
 
 public class ArgumentsNotificationContentBuilder extends NotificationContent.Builder {
   private static final String TITLE_KEY = "title";

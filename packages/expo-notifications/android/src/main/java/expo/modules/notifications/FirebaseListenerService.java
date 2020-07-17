@@ -11,10 +11,10 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
-import expo.modules.notifications.interfaces.NotificationContent;
-import expo.modules.notifications.interfaces.NotificationRequest;
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener;

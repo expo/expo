@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
-import expo.modules.notifications.interfaces.NotificationRequest;
-
 /**
  * A class representing a single notification received at a particular moment ({@link #mDate}).
  */

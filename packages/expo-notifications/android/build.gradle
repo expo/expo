@@ -85,7 +85,6 @@ dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
-  unimodule 'expo-notifications-interface'
 
   api 'androidx.core:core:1.2.0'
   api 'androidx.lifecycle:lifecycle-runtime:2.2.0'

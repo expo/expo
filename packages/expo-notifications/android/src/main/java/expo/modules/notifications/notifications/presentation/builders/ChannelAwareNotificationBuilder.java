@@ -11,11 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.R;
-import expo.modules.notifications.interfaces.NotificationRequest;
-import expo.modules.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 /**
  * A notification builder foundation capable of fetching and/or creating

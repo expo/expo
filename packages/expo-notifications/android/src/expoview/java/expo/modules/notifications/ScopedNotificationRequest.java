@@ -4,9 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.interfaces.NotificationContent;
-import expo.modules.notifications.interfaces.NotificationRequest;
-import expo.modules.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 public class ScopedNotificationRequest extends NotificationRequest {
   // We store String instead of ExperienceId, cause ScopedNotificationRequest must be serializable.

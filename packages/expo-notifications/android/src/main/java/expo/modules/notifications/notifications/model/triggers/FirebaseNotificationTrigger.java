@@ -7,7 +7,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import expo.modules.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 /**
  * A trigger representing an incoming remote Firebase notification.

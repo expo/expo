@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.interfaces.NotificationTrigger;
 
 /**
  * A notification trigger that is serializable - this ensures {@link expo.modules.notifications.notifications.service.SharedPreferencesNotificationsStore}

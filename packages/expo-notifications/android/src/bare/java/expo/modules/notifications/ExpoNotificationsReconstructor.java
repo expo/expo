@@ -2,14 +2,14 @@ package expo.modules.notifications;
 
 import android.os.Parcel;
 
-import expo.modules.notifications.interfaces.NotificationRequest;
-import expo.modules.notifications.interfaces.NotificationsReconstructor;
+import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 public class ExpoNotificationsReconstructor implements NotificationsReconstructor {
 
   @Override
   public NotificationRequest reconstructNotificationRequest(Parcel parcel) {
-    return (NotificationRequest) NotificationRequest.CREATOR.createFromParcel(parcel);
+    return NotificationRequest.CREATOR.createFromParcel(parcel);
   }
 
   @Override

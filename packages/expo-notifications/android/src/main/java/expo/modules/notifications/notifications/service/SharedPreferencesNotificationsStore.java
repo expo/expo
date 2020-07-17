@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import expo.modules.notifications.interfaces.NotificationRequest;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 /**
  * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link ExpoNotificationSchedulerService}.

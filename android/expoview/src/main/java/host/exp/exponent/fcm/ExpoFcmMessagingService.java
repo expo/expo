@@ -11,8 +11,8 @@ import java.util.Map;
 
 import expo.modules.notifications.FirebaseListenerService;
 import expo.modules.notifications.ScopedNotificationRequest;
-import expo.modules.notifications.interfaces.NotificationContent;
-import expo.modules.notifications.interfaces.NotificationRequest;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;

@@ -14,9 +14,9 @@ import android.util.Log;
 import abi38_0_0.expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import expo.modules.notifications.interfaces.NotificationContent;
-import expo.modules.notifications.interfaces.NotificationPriority;
-import expo.modules.notifications.interfaces.NotificationRequest;
+import expo.modules.notifications.notifications.enums.NotificationPriority;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
 import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
