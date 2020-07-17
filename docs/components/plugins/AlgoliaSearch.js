@@ -21,23 +21,17 @@ const STYLES_INPUT = css`
 
   .searchbox__input,
   input {
-    font-family: ${Constants.fontFamilies.book};
+    -webkit-appearance: none;
     color: ${Constants.colors.black80};
     box-sizing: border-box;
     width: 38vw;
     font-size: 16px;
-    line-height: 16px;
-    padding: 2px 36px 0 36px;
+    padding: 1px 36px 0 36px;
     border-radius: 2px;
     height: 40px;
     outline: 0;
     border: 1px solid ${Constants.colors.border};
     background-color: ${Constants.expoColors.gray[200]};
-  }
-
-  input::placeholder,
-  input::value {
-    transform: translateY(0.5px);
   }
 
   .svg-icons {
@@ -181,6 +175,11 @@ class AlgoliaSearch extends React.Component {
         },
       ],
     });
+
+    //auto-focuses on mobile
+    if (!this.props.hiddenOnMobile) {
+      document.getElementById('algolia-search-box-mobile').focus();
+    }
   }
 
   render() {
@@ -189,7 +188,7 @@ class AlgoliaSearch extends React.Component {
         className={`${STYLES_INPUT} ${!this.props.hiddenOnMobile && STYLES_INPUT_MOBILE}`}
         style={this.props.style}>
         <div className="search">
-          <img src={'/static/images/header/search.svg'} />
+          <img src="/static/images/header/search.svg" />
         </div>
 
         <input
@@ -208,11 +207,11 @@ class AlgoliaSearch extends React.Component {
           <div
             className="shortcut-hint"
             style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
-            <img src={'/static/images/header/slash.svg'} />
+            <img src="/static/images/header/slash.svg" />
           </div>
         ) : (
           <span className="close-search" onClick={this.props.onHideSearch}>
-            <img src={'/static/images/header/x.svg'} />
+            <img src="/static/images/header/x.svg" />
           </span>
         )}
       </div>
