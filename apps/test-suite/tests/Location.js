@@ -234,7 +234,7 @@ export async function test(t) {
 
       t.it('resolves when watchPositionAsync is running', async () => {
         const subscriber = await Location.watchPositionAsync({}, () => {});
-        await Location.getCurrentPositionAsync();
+        await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low });
         subscriber.remove();
       });
     });

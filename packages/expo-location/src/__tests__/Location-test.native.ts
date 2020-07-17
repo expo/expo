@@ -106,10 +106,9 @@ describe('navigator.geolocation polyfill', () => {
       const barrier = new Promise(resolve => {
         pass = resolve;
       });
-      const options = {};
-      navigator.geolocation.getCurrentPosition(pass, pass, options);
+      navigator.geolocation.getCurrentPosition(pass, pass, {});
       await barrier;
-      expect(NativeModulesProxy.ExpoLocation.getCurrentPositionAsync).toHaveBeenCalledWith(options);
+      expect(NativeModulesProxy.ExpoLocation.getCurrentPositionAsync).toHaveBeenCalled();
     });
   });
 
