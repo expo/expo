@@ -423,7 +423,7 @@ CACHE_KEYS:
       EXGL:
         :debug: b21ff559aacb62ac621d51e446f9cbce
         :release: b21ff559aacb62ac621d51e446f9cbce
-    CHECKSUM: 34fdad312c8fefe8dbc24fa68056868830d8e826
+    CHECKSUM: 5ab2299d0bae290b81ca24fc70e8f1697affbef5
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -439,13 +439,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLViewManager.m"
     PROJECT_NAME: EXGL
     SPECS:
-      - EXGL (8.3.1)
+      - EXGL (8.4.0)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP:
         :debug: e5c21be87c49c4ea22fb524158d76c6f
         :release: e5c21be87c49c4ea22fb524158d76c6f
-    CHECKSUM: ed6b6ec48e1253e038003c49cdd29af3e0e8e82c
+    CHECKSUM: 03b30fb5012eee6f4231b6667d97256716e7e13b
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.h"
@@ -463,8 +463,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (8.3.1)
-      - EXGL_CPP/EXGLContext (8.3.1)
+      - EXGL_CPP (8.4.0)
+      - EXGL_CPP/EXGLContext (8.4.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn:
