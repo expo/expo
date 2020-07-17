@@ -62,7 +62,7 @@
     "ip": "^1.1.5",
     "jsondiffpatch": "^0.3.11",
     "junit-report-builder": "^1.3.0",
-    "lodash": "^4.2.1",
+    "lodash": "^4.17.19",
     "marked": "^1.1.0",
     "npm-packlist": "^2.1.2",
     "nullthrows": "^1.1.0",
