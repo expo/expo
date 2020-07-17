@@ -109,7 +109,12 @@ function AudioOptionSwitch(props: AudioOptionSwitchProps) {
   return (
     <View style={styles.switch}>
       <StyledText style={styles.optionTitle}>{props.title}</StyledText>
-      <Switch disabled={props.disabled} value={props.value} onValueChange={props.onValueChange} />
+      <Switch
+        trackColor={{ true: Colors.light.tintColor }}
+        disabled={props.disabled}
+        value={props.value}
+        onValueChange={props.onValueChange}
+      />
     </View>
   );
 }
