@@ -7,7 +7,7 @@ const { version } = require('./package.json');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
-const vLatest = join('pages', 'versions', `v${require('./package.json').version}/`);
+const vLatest = join('pages', 'versions', `v${version}/`);
 const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
