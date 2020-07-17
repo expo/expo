@@ -186,9 +186,9 @@
   background: transparent;
   border: none;
   z-index: 1;
-
   max-width: 600px;
   min-width: 500px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.1);
 }
 .algolia-autocomplete .ds-dropdown-menu:before {
   display: block;
