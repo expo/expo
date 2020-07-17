@@ -54,7 +54,7 @@ export default {
       return true;
     } else if (str.startsWith('exp://')) {
       return true;
-    } else if (str.startsWith('https://expo.io') || str.startsWith('https://exp.host')) {
+    } else if (str.startsWith('https://expo.io/') || str.startsWith('https://exp.host/')) {
       return true;
     }
 
