@@ -78,7 +78,7 @@ when new SDKs are relased. The website documents previous SDK versions too.
 
 Version names correspond to directory names under `versions`.
 
-`unversioned` is a special version for the next SDK release. It is not included in production output
+`unversioned` is a special version for the next SDK release. It is not included in production output. Additionally, any versions greater than the package.json `version` number are not included in production output, so that it's possible to generate, test, and make changes to new SDK version docs during the release process.
 
 `latest` is an untracked folder which duplicates the contents of the folder matching the version number in `package.json`.
 
@@ -94,6 +94,7 @@ on `v8.0.0` and `v7.0.0`, you'd do the following after editing the docs in
 
 Any changes in your `git diff` outside the `unversioned` directory are ignored
 so don't worry if you have code changes or such elsewhere.
+
 
 ### Updating latest version of docs
 
