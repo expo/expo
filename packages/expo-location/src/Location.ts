@@ -17,6 +17,9 @@ import {
   LocationRegion,
   LocationSubscription,
   LocationTaskOptions,
+  LocationActivityType,
+  LocationGeofencingEventType,
+  LocationGeofencingRegionState,
 } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
@@ -329,11 +332,15 @@ export async function hasStartedGeofencingAsync(taskName: string): Promise<boole
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
 
+// For internal purposes
+export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
+
+// Export as namespaced types.
 export {
-  // For internal purposes
-  LocationEventEmitter as EventEmitter,
-  _getCurrentWatchId,
   LocationAccuracy as Accuracy,
+  LocationActivityType as ActivityType,
+  LocationGeofencingEventType as GeofencingEventType,
+  LocationGeofencingRegionState as GeofencingRegionState,
   PermissionStatus,
 };
 

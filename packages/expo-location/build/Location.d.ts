@@ -1,5 +1,5 @@
 import { PermissionStatus } from 'unimodules-permissions-interface';
-import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions } from './Location.types';
+import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 import { _getCurrentWatchId } from './LocationSubscribers';
 export declare function getProviderStatusAsync(): Promise<LocationProviderStatus>;
@@ -59,6 +59,6 @@ export declare function hasStartedLocationUpdatesAsync(taskName: string): Promis
 export declare function startGeofencingAsync(taskName: string, regions?: LocationRegion[]): Promise<void>;
 export declare function stopGeofencingAsync(taskName: string): Promise<void>;
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
-export { LocationEventEmitter as EventEmitter, _getCurrentWatchId, LocationAccuracy as Accuracy, PermissionStatus, };
+export { LocationEventEmitter as EventEmitter, _getCurrentWatchId, LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, };
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';
