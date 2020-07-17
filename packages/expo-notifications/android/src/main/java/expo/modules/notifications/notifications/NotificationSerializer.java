@@ -87,6 +87,9 @@ public class NotificationSerializer {
       serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
+    if (content.getCategoryId() != null) {
+      serializedContent.putString("categoryIdentifer", content.getCategoryId());
+    }
     return serializedContent;
   }
 
