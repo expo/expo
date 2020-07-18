@@ -83,7 +83,7 @@ export default class DocumentationPage extends React.Component {
     this.setState({
       isMenuActive: true,
     });
-    this._handleToggleSearch();
+    this._handleHideSearch();
   };
 
   _handleHideMenu = () => {
@@ -96,6 +96,12 @@ export default class DocumentationPage extends React.Component {
     this.setState(prevState => ({
       isMobileSearchActive: !prevState.isMobileSearchActive,
     }));
+  };
+
+  _handleHideSearch = () => {
+    this.setState({
+      isMobileSearchActive: false,
+    });
   };
 
   _isReferencePath = () => {
