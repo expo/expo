@@ -242,7 +242,10 @@ export default class ProjectsScreen extends React.Component<Props, State> {
     if (IS_RESTRICTED) {
       return <NoProjectTools />;
     } else {
-      return <ProjectTools pollForUpdates={this.props.isFocused} />;
+      // Disable polling the clipboard on iOS because it presents a notification every time the clipboard is read.
+      const pollForUpdates = this.props.isFocused && Platform.OS !== 'ios';
+
+      return <ProjectTools pollForUpdates={pollForUpdates} />;
     }
   };
 
