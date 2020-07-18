@@ -159,7 +159,11 @@ const SECTION_LINK_ACTIVE = css`
 
 const SECTION_LINK_TEXT = css`
   color: #000 !important;
-  transform: translateY(1px);
+  position: relative;
+  top: 1px;
+  bottom: 0;
+  left: 0;
+  right: 0;
 `;
 
 function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style, className }) {
