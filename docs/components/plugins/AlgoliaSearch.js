@@ -25,6 +25,7 @@ const STYLES_INPUT = css`
     color: ${Constants.colors.black80};
     box-sizing: border-box;
     width: 38vw;
+    max-width: ${Constants.breakpoints.mobileStrictValue - 32}px;
     font-size: 16px;
     padding: 1px 36px 0 36px;
     border-radius: 2px;
