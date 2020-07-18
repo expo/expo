@@ -13,15 +13,8 @@ const IsIOSRestrictedBuild =
   Platform.OS === 'ios' &&
   Kernel.iosClientReleaseType === Kernel.ExpoClientReleaseType.APPLE_APP_STORE;
 
-function isIOS14(): boolean {
-  if (Platform.OS !== 'ios') return false;
-  const versionNumber = parseInt(String(Platform.Version), 10);
-  return versionNumber >= 14;
-}
-
 export default {
   isProduction,
   IOSClientReleaseType,
   IsIOSRestrictedBuild,
-  isIOS14,
 };
