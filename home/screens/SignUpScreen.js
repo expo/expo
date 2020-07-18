@@ -100,6 +100,7 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="words"
             keyboardType="default"
+            textContentType="givenName"
             label="First name"
             returnKeyType="next"
           />
@@ -113,6 +114,7 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="words"
             keyboardType="default"
+            textContentType="familyName"
             label="Last name"
             returnKeyType="next"
           />
@@ -125,6 +127,7 @@ export default class SignUpScreen extends React.Component {
             value={this.state.username}
             autoCorrect={false}
             autoCapitalize="none"
+            textContentType="username"
             keyboardType="default"
             label="Username"
             returnKeyType="next"
@@ -137,6 +140,7 @@ export default class SignUpScreen extends React.Component {
             onChangeText={value => this._updateValue('email', value)}
             autoCorrect={false}
             autoCapitalize="none"
+            textContentType="emailAddress"
             value={this.state.email}
             keyboardType="email-address"
             label="E-mail address"
@@ -152,6 +156,7 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="none"
             label="Password"
+            textContentType="newPassword"
             returnKeyType="next"
             secureTextEntry
           />
@@ -165,6 +170,7 @@ export default class SignUpScreen extends React.Component {
             hideBottomBorder
             autoCorrect={false}
             autoCapitalize="none"
+            textContentType="password"
             label="Repeat your password"
             returnKeyType="done"
             secureTextEntry

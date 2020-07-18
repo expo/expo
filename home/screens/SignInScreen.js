@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput, Platform } from 'react-native';
 import { connect } from 'react-redux';
 
 import Analytics from '../api/Analytics';
@@ -71,7 +71,8 @@ export default class SignInScreen extends React.Component {
           <Form.Input
             autoCapitalize="none"
             autoCorrect={false}
-            autoFocus
+            autoFocus={Platform.OS !== 'ios'}
+            textContentType="username"
             keyboardType="email-address"
             label="E-mail or username"
             onChangeText={this._handleChangeEmail}
@@ -82,6 +83,7 @@ export default class SignInScreen extends React.Component {
           <Form.Input
             hideBottomBorder
             label="Password"
+            textContentType="password"
             ref={view => {
               this._passwordInput = view;
             }}
