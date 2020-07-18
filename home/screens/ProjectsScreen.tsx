@@ -1,13 +1,14 @@
 import Constants from 'expo-constants';
 import * as React from 'react';
-import { AppState, Alert, Clipboard, Platform, StyleSheet, View } from 'react-native';
+import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
 import {
-  withNavigationFocus,
-  withNavigation,
-  Themed,
   NavigationFocusInjectedProps,
+  Themed,
+  withNavigation,
+  withNavigationFocus,
+  NavigationInjectedProps,
 } from 'react-navigation';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
@@ -24,7 +25,7 @@ import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import HistoryActions from '../redux/HistoryActions';
-import { DevSession, StoreData, HistoryList } from '../types';
+import { DevSession, HistoryList } from '../types';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
@@ -35,7 +36,7 @@ const PROJECT_UPDATE_INTERVAL = 10000;
 const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
 type Props = NavigationFocusInjectedProps & {
-  dispatch: (any) => any;
+  dispatch: (data: any) => any;
   recentHistory: HistoryList;
   allHistory: HistoryList;
   isAuthenticated: boolean;
@@ -47,30 +48,43 @@ type State = {
   isRefreshing: boolean;
 };
 
+export default function ProjectsScreen(props: NavigationInjectedProps) {
+  const dispatch = useDispatch();
+  const { recentHistory, allHistory, isAuthenticated } = useSelector(
+    React.useCallback(data => {
+      const { history } = data.history;
+
+      return {
+        recentHistory: history.take(10),
+        allHistory: history,
+        isAuthenticated: data.session?.sessionSecret,
+      };
+    }, [])
+  );
+  return (
+    <ProjectsView
+      {...props}
+      dispatch={dispatch}
+      recentHistory={recentHistory}
+      allHistory={allHistory}
+      isAuthenticated={isAuthenticated}
+    />
+  );
+}
+
+ProjectsScreen.navigationOptions = {
+  title: 'Projects',
+  ...Platform.select({
+    ios: {
+      headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
+    },
+  }),
+};
+
 @withNavigationFocus
 @withNavigation
-@connect(data => ProjectsScreen.getDataProps(data))
-export default class ProjectsScreen extends React.Component<Props, State> {
+class ProjectsView extends React.Component<Props, State> {
   private _projectPolling?: number;
-
-  static navigationOptions = {
-    title: 'Projects',
-    ...Platform.select({
-      ios: {
-        headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
-      },
-    }),
-  };
-
-  static getDataProps(data: StoreData) {
-    const { history } = data.history;
-
-    return {
-      recentHistory: history.take(10),
-      allHistory: history,
-      isAuthenticated: data.session?.sessionSecret,
-    };
-  }
 
   state: State = {
     projects: [],
