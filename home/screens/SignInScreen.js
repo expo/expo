@@ -72,6 +72,7 @@ export default class SignInScreen extends React.Component {
             autoCapitalize="none"
             autoCorrect={false}
             autoFocus
+            textContentType="username"
             keyboardType="email-address"
             label="E-mail or username"
             onChangeText={this._handleChangeEmail}
@@ -82,6 +83,7 @@ export default class SignInScreen extends React.Component {
           <Form.Input
             hideBottomBorder
             label="Password"
+            textContentType="password"
             ref={view => {
               this._passwordInput = view;
             }}
