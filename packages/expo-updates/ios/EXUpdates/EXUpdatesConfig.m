@@ -76,7 +76,7 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   // set updateUrl as the default value if none is provided
   if (!_scopeKey) {
     if (_updateUrl) {
-      _scopeKey = [NSString stringWithFormat:@"%@://%@", _updateUrl.scheme, _updateUrl.host];
+      _scopeKey = [[self class] normalizedURLOrigin:_updateUrl];
     } else {
       @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                      reason:@"expo-updates must be configured with a valid update URL or scope key."
@@ -125,6 +125,31 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
     _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
   }
+}
+
++ (NSString *)normalizedURLOrigin:(NSURL *)url
+{
+  NSString *scheme = url.scheme;
+  NSNumber *port = url.port;
+  if (port && port.integerValue > -1 && [port isEqual:[[self class] defaultPortForScheme:scheme]]) {
+    port = nil;
+  }
+
+  return (port && port.integerValue > -1)
+    ? [NSString stringWithFormat:@"%@://%@:%ld", scheme, url.host, (long)port.integerValue]
+    : [NSString stringWithFormat:@"%@://%@", scheme, url.host];
+}
+
++ (nullable NSNumber *)defaultPortForScheme:(NSString *)scheme
+{
+  if ([@"http" isEqualToString:scheme] || [@"ws" isEqualToString:scheme]) {
+    return @(80);
+  } else if ([@"https" isEqualToString:scheme] || [@"wss" isEqualToString:scheme]) {
+    return @(443);
+  } else if ([@"ftp" isEqualToString:scheme]) {
+    return @(21);
+  }
+  return nil;
 }
 
 @end

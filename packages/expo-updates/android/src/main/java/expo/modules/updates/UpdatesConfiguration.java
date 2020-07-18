@@ -152,17 +152,6 @@ public class UpdatesConfiguration {
     return this;
   }
 
-  private void maybeSetDefaultScopeKey() {
-    // set updateUrl as the default value if none is provided
-    if (mScopeKey == null) {
-      if (mUpdateUrl != null) {
-        mScopeKey = mUpdateUrl.getScheme() + "://" + mUpdateUrl.getHost();
-      } else {
-        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
-      }
-    }
-  }
-
   private @Nullable <T> T readValueCheckingType(Map<String, Object> map, String key, Class<T> clazz) {
     if (!map.containsKey(key)) {
       return null;
@@ -174,5 +163,39 @@ public class UpdatesConfiguration {
     } else {
       throw new AssertionError("UpdatesConfiguration failed to initialize: bad value of type " + value.getClass().getSimpleName() + " provided for key " + key);
     }
+  }
+
+  private void maybeSetDefaultScopeKey() {
+    // set updateUrl as the default value if none is provided
+    if (mScopeKey == null) {
+      if (mUpdateUrl != null) {
+        mScopeKey = getNormalizedUrlOrigin(mUpdateUrl);
+      } else {
+        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
+      }
+    }
+  }
+
+  /* package */ static String getNormalizedUrlOrigin(Uri url) {
+    String scheme = url.getScheme();
+    int port = url.getPort();
+    if (port == getDefaultPortForScheme(scheme)) {
+      port = -1;
+    }
+
+    return port > -1
+      ? scheme + "://" + url.getHost() + ":" + port
+      : scheme + "://" + url.getHost();
+  }
+
+  private static int getDefaultPortForScheme(String scheme) {
+    if ("http".equals(scheme) || "ws".equals(scheme)) {
+      return 80;
+    } else if ("https".equals(scheme) || "wss".equals(scheme)) {
+      return 443;
+    } else if ("ftp".equals(scheme)) {
+      return 21;
+    }
+    return -1;
   }
 }
