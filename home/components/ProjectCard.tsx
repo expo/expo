@@ -1,6 +1,4 @@
-/* @flow */
-
-import React from 'react';
+import * as React from 'react';
 import {
   Image,
   Keyboard,
@@ -18,54 +16,17 @@ import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
 import UrlUtils from '../utils/UrlUtils';
 
-@withNavigation
-export default class ProjectCard extends React.PureComponent {
-  render() {
-    const { description, projectName, username } = this.props;
-
-    return (
-      <View style={[styles.spacerContainer, this.props.style]}>
-        <StyledButton
-          onPress={this._handlePressProject}
-          style={[styles.container, styles.bottomBorder]}
-          onLongPress={this._handleLongPressProject}
-          fallback={TouchableHighlight}
-          underlayColor="#b7b7b7">
-          <View style={styles.header}>
-            <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
-            <View style={styles.infoContainer}>
-              <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-                {projectName}
-              </StyledText>
-              <View style={styles.projectExtraInfoContainer}>
-                <StyledText
-                  lightColor="rgba(36, 44, 58, 0.4)"
-                  darkColor="#ccc"
-                  onPress={this._handlePressUsername}
-                  style={styles.projectExtraInfoText}
-                  ellipsizeMode="tail"
-                  numberOfLines={1}>
-                  {username}
-                </StyledText>
-              </View>
-            </View>
-          </View>
-          <View style={styles.body}>
-            <StyledText
-              lightColor="rgba(36, 44, 58, 0.7)"
-              darkColor="#eee"
-              style={styles.descriptionText}>
-              {description}
-            </StyledText>
-          </View>
-        </StyledButton>
-      </View>
-    );
-  }
-
-  _maybeRenderIcon = () => {
-    const { iconUrl } = this.props;
-
+function ProjectCard({
+  onPressUsername,
+  style,
+  description,
+  iconUrl,
+  projectUrl,
+  projectName,
+  username,
+  navigation,
+}) {
+  const _maybeRenderIcon = () => {
     if (iconUrl) {
       return (
         <View style={styles.iconClipContainer}>
@@ -79,34 +40,75 @@ export default class ProjectCard extends React.PureComponent {
     }
   };
 
-  _handleLongPressProject = () => {
-    const url = UrlUtils.normalizeUrl(this.props.projectUrl);
+  const _handleLongPressProject = () => {
+    const url = UrlUtils.normalizeUrl(projectUrl);
     Share.share({
-      title: this.props.projectName,
+      title: projectName,
       message: url,
       url,
     });
   };
 
-  _handlePressProject = () => {
+  const _handlePressProject = () => {
     // note(brentvatne): navigation should do this automatically
     Keyboard.dismiss();
 
-    const url = UrlUtils.normalizeUrl(this.props.projectUrl);
+    const url = UrlUtils.normalizeUrl(projectUrl);
     Linking.openURL(url);
   };
 
-  _handlePressUsername = () => {
+  const _handlePressUsername = () => {
     // note(brentvatne): navigation should do this automatically
     Keyboard.dismiss();
 
-    if (this.props.onPressUsername) {
-      this.props.onPressUsername(this.props.username);
+    if (onPressUsername) {
+      onPressUsername(username);
     } else {
-      this.props.navigation.navigate('Profile', { username: this.props.username });
+      navigation.navigate('Profile', { username });
     }
   };
+
+  return (
+    <View style={[styles.spacerContainer, style]}>
+      <StyledButton
+        onPress={_handlePressProject}
+        style={[styles.container]}
+        onLongPress={_handleLongPressProject}
+        fallback={TouchableHighlight}
+        underlayColor="#b7b7b7">
+        <View style={styles.header}>
+          <View style={styles.iconContainer}>{_maybeRenderIcon()}</View>
+          <View style={styles.infoContainer}>
+            <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+              {projectName}
+            </StyledText>
+            <View style={styles.projectExtraInfoContainer}>
+              <StyledText
+                lightColor="rgba(36, 44, 58, 0.4)"
+                darkColor="#ccc"
+                onPress={_handlePressUsername}
+                style={styles.projectExtraInfoText}
+                ellipsizeMode="tail"
+                numberOfLines={1}>
+                {username}
+              </StyledText>
+            </View>
+          </View>
+        </View>
+        <View style={styles.body}>
+          <StyledText
+            lightColor="rgba(36, 44, 58, 0.7)"
+            darkColor="#eee"
+            style={styles.descriptionText}>
+            {description}
+          </StyledText>
+        </View>
+      </StyledButton>
+    </View>
+  );
 }
+
+export default withNavigation(ProjectCard);
 
 const styles = StyleSheet.create({
   container: {

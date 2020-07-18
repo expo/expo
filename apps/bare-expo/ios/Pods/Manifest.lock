@@ -78,14 +78,14 @@ PODS:
   - EXFont (8.2.1):
     - UMCore
     - UMFontInterface
-  - EXGL (8.3.1):
+  - EXGL (8.4.0):
     - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL_CPP (8.3.1):
-    - EXGL_CPP/EXGLContext (= 8.3.1)
-  - EXGL_CPP/EXGLContext (8.3.1)
+  - EXGL_CPP (8.4.0):
+    - EXGL_CPP/EXGLContext (= 8.4.0)
+  - EXGL_CPP/EXGLContext (8.4.0)
   - EXGoogleSignIn (8.2.1):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -971,8 +971,8 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: b502d650cb33c2d137cb19d639f8b315ee7e5ad3
   EXFirebaseCore: 7e720f6f3725795b960b9e59dfcd46e674b30774
   EXFont: d6cabb73989fc29296972c52915a023f46b2c7f5
-  EXGL: 34fdad312c8fefe8dbc24fa68056868830d8e826
-  EXGL_CPP: ed6b6ec48e1253e038003c49cdd29af3e0e8e82c
+  EXGL: 5ab2299d0bae290b81ca24fc70e8f1697affbef5
+  EXGL_CPP: 03b30fb5012eee6f4231b6667d97256716e7e13b
   EXGoogleSignIn: 02f0db1efb39c8e2508832a0175319f0ce08a80f
   EXHaptics: 5428b344a216ca5d9df6ca8f65720b2a1ad9f109
   EXImageLoader: 02ca02c9cd5cc8a97b423207a73a791e0a86bea5

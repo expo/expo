@@ -18,7 +18,7 @@
     "got": "^6.3.0",
     "gulp": "^4.0.0",
     "gulp-shell": "^0.5.2",
-    "lodash": "^4.1.2",
+    "lodash": "^4.17.19",
     "minimist": "^1.2.3",
     "nullthrows": "^1.0.0",
     "semver": "^5.7.0",

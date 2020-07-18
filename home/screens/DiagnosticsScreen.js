@@ -17,9 +17,9 @@ class ShadowButton extends React.Component {
 
   _handleGestureStateChange = active => {
     if (active) {
-      Animated.spring(this.state.scale, { toValue: 0.95 }).start();
+      Animated.spring(this.state.scale, { useNativeDriver: true, toValue: 0.95 }).start();
     } else {
-      Animated.spring(this.state.scale, { toValue: 1 }).start();
+      Animated.spring(this.state.scale, { useNativeDriver: true, toValue: 1 }).start();
     }
   };
 

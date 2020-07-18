@@ -129,7 +129,7 @@ export default class ProjectsScreen extends React.Component<Props, State> {
             leftContent={
               <DevIndicator
                 style={styles.devIndicator}
-                isActive={projects && projects.length}
+                isActive={projects && !!projects.length}
                 isNetworkAvailable={isNetworkAvailable}
               />
             }
