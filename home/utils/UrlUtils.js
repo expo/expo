@@ -43,4 +43,21 @@ export default {
     components.protocol = 'exp:';
     return url.format(components);
   },
+
+  conformsToExpoProtocol(str) {
+    if (!str) {
+      return false;
+    }
+
+    // @username/experience
+    if (str.match(/^@\w+\/\w+/)) {
+      return true;
+    } else if (str.startsWith('exp://')) {
+      return true;
+    } else if (str.startsWith('https://expo.io/') || str.startsWith('https://exp.host/')) {
+      return true;
+    }
+
+    return false;
+  },
 };

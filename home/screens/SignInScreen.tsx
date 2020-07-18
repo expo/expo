@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { Platform, StyleSheet, TextInput } from 'react-native';
 import { NavigationInjectedProps } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -80,7 +80,8 @@ class SignInView extends React.Component<Props, State> {
           <Form.Input
             autoCapitalize="none"
             autoCorrect={false}
-            autoFocus
+            autoFocus={Platform.OS !== 'ios'}
+            textContentType="username"
             keyboardType="email-address"
             label="E-mail or username"
             onChangeText={this._handleChangeEmail}
@@ -91,6 +92,7 @@ class SignInView extends React.Component<Props, State> {
           <Form.Input
             hideBottomBorder
             label="Password"
+            textContentType="password"
             ref={view => {
               this._passwordInput = view;
             }}

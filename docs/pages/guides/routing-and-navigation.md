@@ -12,7 +12,7 @@ Routing and navigation refers to the ability to organize your app into distinct 
 
 <Video file={"routing-and-navigation/preview.mp4"} loop={false} />
 
-> 🎬 This video demonstrates using React Navigation on iOS, Android, and web. Notice that it adapts to the platform conventions in each case. The code that powers this example app is available on GitHub in [react-navigation/example](https://github.com/react-navigation/react-navigation/tree/master/example).
+> 🎬 This video demonstrates using React Navigation on iOS, Android, and web. Notice that it adapts to the platform conventions in each case. The code that powers this example app is available on GitHub in [react-navigation/example](https://github.com/react-navigation/react-navigation/tree/main/example).
 
 The library that we recommend that you use for routing & navigation for iOS, Android, and web is [React Navigation](https://github.com/react-navigation/react-navigation).
 

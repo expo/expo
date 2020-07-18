@@ -115,7 +115,7 @@ class ProjectList extends React.PureComponent {
         <ProjectListItem
           key={index.toString()}
           url={app.fullName}
-          image={app.iconUrl}
+          image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
           title={app.name}
           subtitle={app.packageName || app.fullName}
           last={index === this.props.data.apps.length - 1}
