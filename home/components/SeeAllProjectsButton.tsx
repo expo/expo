@@ -36,7 +36,9 @@ export default class SeeAllProjectsButton extends React.Component<Props> {
         rightContent={
           <View style={styles.appIconContainer}>
             {take(apps, maxIconCount).map((app, i) => {
-              const image = app.iconUrl ? { uri: app.iconUrl } : require('../assets/snack.png');
+              const image = app.iconUrl
+                ? { uri: app.iconUrl }
+                : require('../assets/placeholder-app-icon.png');
               return (
                 <FadeIn key={i} placeholderColor="#eee">
                   <Image source={image} style={styles.appIcon} />
