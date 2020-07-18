@@ -170,7 +170,7 @@ export default class SignUpScreen extends React.Component {
             hideBottomBorder
             autoCorrect={false}
             autoCapitalize="none"
-            textContentType="newPassword"
+            textContentType="password"
             label="Repeat your password"
             returnKeyType="done"
             secureTextEntry
