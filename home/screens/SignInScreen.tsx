@@ -1,8 +1,7 @@
-/* @flow */
-
-import React from 'react';
-import { StyleSheet, TextInput, Platform } from 'react-native';
-import { connect } from 'react-redux';
+import * as React from 'react';
+import { Platform, StyleSheet, TextInput } from 'react-native';
+import { NavigationInjectedProps } from 'react-navigation';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
 import ApolloClient from '../api/ApolloClient';
@@ -16,19 +15,29 @@ import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
-@connect(data => SignInScreen.getDataProps(data))
-export default class SignInScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Sign In',
-    headerLeft: () => <CloseButton />,
-  };
+export default function SignInScreen({ navigation }) {
+  const session = useSelector(data => data.session);
+  const dispatch = useDispatch();
+  return <SignInView dispatch={dispatch} session={session} navigation={navigation} />;
+}
 
-  static getDataProps(data) {
-    return {
-      session: data.session,
-    };
-  }
+SignInScreen.navigationOptions = {
+  title: 'Sign In',
+  headerLeft: () => <CloseButton />,
+};
 
+type Props = NavigationInjectedProps & {
+  dispatch: (action: any) => void;
+  session: { sessionSecret?: string };
+};
+
+type State = {
+  email: string;
+  password: string;
+  isLoading: boolean;
+};
+
+class SignInView extends React.Component<Props, State> {
   state = DEBUG
     ? {
         email: 'testing@getexponent.com',
@@ -41,7 +50,7 @@ export default class SignInScreen extends React.Component {
         isLoading: false,
       };
 
-  _isMounted: boolean;
+  _isMounted = false;
 
   componentDidMount() {
     this._isMounted = true;
@@ -51,7 +60,7 @@ export default class SignInScreen extends React.Component {
     this._isMounted = false;
   }
 
-  componentDidUpdate(prevProps: Object) {
+  componentDidUpdate(prevProps: Props) {
     const hasNewUserSession = this.props.session.sessionSecret && !prevProps.session.sessionSecret;
     if (hasNewUserSession) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
@@ -105,10 +114,10 @@ export default class SignInScreen extends React.Component {
     );
   }
 
-  _passwordInput: TextInput;
+  _passwordInput: TextInput | null = null;
 
   _handleSubmitEmail = () => {
-    this._passwordInput.focus();
+    this._passwordInput?.focus();
   };
 
   _handleSubmitPassword = () => {
