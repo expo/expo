@@ -22,6 +22,7 @@ public class UpdatesConfiguration {
   public static final String UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY = "runtimeVersion";
   public static final String UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch";
   public static final String UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs";
+  public static final String UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE = "hasEmbeddedUpdate";
 
   private static final String UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default";
   private static final int UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0;
@@ -40,6 +41,7 @@ public class UpdatesConfiguration {
   private String mReleaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE;
   private int mLaunchWaitMs = UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE;
   private CheckAutomaticallyConfiguration mCheckOnLaunch = CheckAutomaticallyConfiguration.ALWAYS;
+  private boolean mHasEmbeddedUpdate = true;
 
   public boolean isEnabled() {
     return mIsEnabled;
@@ -71,6 +73,10 @@ public class UpdatesConfiguration {
 
   public int getLaunchWaitMs() {
     return mLaunchWaitMs;
+  }
+
+  public boolean hasEmbeddedUpdate() {
+    return mHasEmbeddedUpdate;
   }
 
   public UpdatesConfiguration loadValuesFromMetadata(Context context) {
@@ -147,6 +153,11 @@ public class UpdatesConfiguration {
     Integer launchWaitMsFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, Integer.class);
     if (launchWaitMsFromMap != null) {
       mLaunchWaitMs = launchWaitMsFromMap;
+    }
+
+    Boolean hasEmbeddedUpdateFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, Boolean.class);
+    if (hasEmbeddedUpdateFromMap != null) {
+      mHasEmbeddedUpdate = hasEmbeddedUpdateFromMap;
     }
 
     return this;

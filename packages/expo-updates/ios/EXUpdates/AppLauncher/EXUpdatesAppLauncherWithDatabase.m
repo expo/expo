@@ -69,7 +69,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       NSMutableArray<EXUpdatesUpdate *>*filteredLaunchableUpdates = [NSMutableArray new];
       for (EXUpdatesUpdate *update in launchableUpdates) {
         if (update.status == EXUpdatesUpdateStatusEmbedded) {
-          if (![update.updateId isEqual:embeddedManifest.updateId]) {
+          if (embeddedManifest && ![update.updateId isEqual:embeddedManifest.updateId]) {
             continue;
           }
         }

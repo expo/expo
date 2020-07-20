@@ -73,7 +73,7 @@ public class DatabaseLauncher implements Launcher {
     mLaunchedUpdate = getLaunchableUpdate(database, context);
 
     if (mLaunchedUpdate == null) {
-      mCallback.onFailure(new Exception("No launchable update was found"));
+      mCallback.onFailure(new Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle."));
       return;
     }
 
@@ -133,7 +133,7 @@ public class DatabaseLauncher implements Launcher {
     ArrayList<UpdateEntity> filteredLaunchableUpdates = new ArrayList<>();
     for (UpdateEntity update : launchableUpdates) {
       if (update.status == UpdateStatus.EMBEDDED) {
-        if (!embeddedManifest.getUpdateEntity().id.equals(update.id)) {
+        if (embeddedManifest != null && !embeddedManifest.getUpdateEntity().id.equals(update.id)) {
           continue;
         }
       }

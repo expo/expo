@@ -29,6 +29,7 @@ static NSString * const kEXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLau
 static NSString * const kEXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
 static NSString * const kEXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
 static NSString * const kEXUpdatesConfigUsesLegacyManifestKey = @"EXUpdatesUsesLegacyManifest";
+static NSString * const kEXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbeddedUpdate";
 
 static NSString * const kEXUpdatesConfigAlwaysString = @"ALWAYS";
 static NSString * const kEXUpdatesConfigWifiOnlyString = @"WIFI_ONLY";
@@ -44,6 +45,7 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
     _launchWaitMs = @(0);
     _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
     _usesLegacyManifest = YES;
+    _hasEmbeddedUpdate = YES;
   }
   return self;
 }
@@ -124,6 +126,11 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   id usesLegacyManifest = config[kEXUpdatesConfigUsesLegacyManifestKey];
   if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
     _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
+  }
+
+  id hasEmbeddedUpdate = config[kEXUpdatesConfigHasEmbeddedUpdateKey];
+  if (hasEmbeddedUpdate && [hasEmbeddedUpdate isKindOfClass:[NSNumber class]]) {
+    _hasEmbeddedUpdate = [(NSNumber *)hasEmbeddedUpdate boolValue];
   }
 }
 
