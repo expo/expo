@@ -87,7 +87,6 @@ function MenuGestureItem() {
     );
   }, [dispatch, devMenuSettings]);
 
-  console.log('devMenuSettings: ', devMenuSettings);
   if (!devMenuSettings) {
     return null;
   }
