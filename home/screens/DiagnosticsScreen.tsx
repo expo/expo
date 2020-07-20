@@ -1,82 +1,72 @@
-import React from 'react';
+import { useTheme } from '@react-navigation/native';
+import * as React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
-import { ThemeContext } from 'react-navigation';
 
 import ScrollView from '../components/NavigationScrollView';
 import { StyledText } from '../components/Text';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
 
-class ShadowButton extends React.Component {
-  static contextType = ThemeContext;
+function ShadowButton(props: { onPress: () => void; children: any }) {
+  const theme = useTheme();
 
-  state = {
-    scale: new Animated.Value(1),
-  };
+  const scale = React.useMemo(() => new Animated.Value(1), []);
 
-  _handleGestureStateChange = active => {
+  const _handleGestureStateChange = active => {
     if (active) {
-      Animated.spring(this.state.scale, { useNativeDriver: true, toValue: 0.95 }).start();
+      Animated.spring(scale, { useNativeDriver: true, toValue: 0.95 }).start();
     } else {
-      Animated.spring(this.state.scale, { useNativeDriver: true, toValue: 1 }).start();
+      Animated.spring(scale, { useNativeDriver: true, toValue: 1 }).start();
     }
   };
 
-  render() {
-    return (
-      <BaseButton
-        onPress={this.props.onPress}
-        onActiveStateChange={this._handleGestureStateChange}
-        style={{
-          paddingHorizontal: 15,
-          paddingTop: 15,
-          paddingBottom: 15,
-          marginTop: -5,
-        }}>
-        <Animated.View
-          style={{
-            backgroundColor: this.context === 'light' ? '#fff' : Colors.dark.cardBackground,
-            padding: 15,
-            borderRadius: 10,
-            shadowOffset: { width: 0, height: 0 },
-            shadowColor: '#000',
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-            transform: [{ scale: this.state.scale }],
-          }}>
-          {this.props.children}
-        </Animated.View>
-      </BaseButton>
-    );
-  }
-}
-
-export default class DiagnosticsScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Diagnostics',
-  };
-
-  render() {
-    return (
-      <View style={{ flex: 1, backgroundColor: Colors.light.greyBackground }}>
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
-          <AudioDiagnostic navigation={this.props.navigation} />
-          {Environment.IsIOSRestrictedBuild ? (
-            <ForegroundLocationDiagnostic navigation={this.props.navigation} />
-          ) : (
-            <BackgroundLocationDiagnostic navigation={this.props.navigation} />
-          )}
-          <GeofencingDiagnostic navigation={this.props.navigation} />
-        </ScrollView>
-      </View>
-    );
-  }
-}
-
-function AudioDiagnostic(props) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Audio')}>
+    <BaseButton
+      onPress={props.onPress}
+      onActiveStateChange={_handleGestureStateChange}
+      style={{
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
+        marginTop: -5,
+      }}>
+      <Animated.View
+        style={{
+          backgroundColor: theme.dark ? Colors.dark.cardBackground : '#fff',
+          padding: 15,
+          borderRadius: 10,
+          shadowOffset: { width: 0, height: 0 },
+          shadowColor: '#000',
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          transform: [{ scale }],
+        }}>
+        {props.children}
+      </Animated.View>
+    </BaseButton>
+  );
+}
+
+export default function DiagnosticsScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: Colors.light.greyBackground }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
+        <AudioDiagnostic navigation={navigation} />
+        {Environment.IsIOSRestrictedBuild ? (
+          <ForegroundLocationDiagnostic navigation={navigation} />
+        ) : (
+          <BackgroundLocationDiagnostic navigation={navigation} />
+        )}
+        <GeofencingDiagnostic navigation={navigation} />
+      </ScrollView>
+    </View>
+  );
+}
+
+function AudioDiagnostic({ navigation }) {
+  return (
+    <ShadowButton onPress={() => navigation.navigate('Audio')}>
       <StyledText style={styles.titleText}>Audio</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS you can play audio
@@ -88,9 +78,9 @@ function AudioDiagnostic(props) {
   );
 }
 
-function BackgroundLocationDiagnostic(props) {
+function BackgroundLocationDiagnostic({ navigation }) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Location')}>
+    <ShadowButton onPress={() => navigation.navigate('Location')}>
       <StyledText style={styles.titleText}>Background location</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS it's possible to track your location when an app is foregrounded, backgrounded, or
@@ -101,9 +91,9 @@ function BackgroundLocationDiagnostic(props) {
   );
 }
 
-function ForegroundLocationDiagnostic(props) {
+function ForegroundLocationDiagnostic({ navigation }) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Location')}>
+    <ShadowButton onPress={() => navigation.navigate('Location')}>
       <StyledText style={styles.titleText}>Location (when app in use)</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS, there are different permissions for tracking your location. This diagnostic allows
@@ -115,9 +105,9 @@ function ForegroundLocationDiagnostic(props) {
   );
 }
 
-function GeofencingDiagnostic(props) {
+function GeofencingDiagnostic({ navigation }) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Geofencing')}>
+    <ShadowButton onPress={() => navigation.navigate('Geofencing')}>
       <StyledText style={styles.titleText}>Geofencing</StyledText>
       <StyledText style={styles.bodyText}>
         You can fire actions when your device enters specific geographical regions represented by a
