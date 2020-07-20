@@ -4,8 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- Changed behavior of `rowAfected` value in result of `executeSql` method in iOS to correctly handle cascade mutations and be on par with Android. ([@9137](https://github.com/expo/expo/pull/9317) by [@mczernek](https://github.com/mczernek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
