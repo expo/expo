@@ -1558,7 +1558,7 @@ PODS:
   - EXBrightness (8.2.1):
     - UMCore
     - UMPermissionsInterface
-  - EXCalendar (8.2.1):
+  - EXCalendar (8.3.0):
     - UMCore
     - UMPermissionsInterface
   - EXCamera (8.3.1):
@@ -3644,7 +3644,7 @@ SPEC CHECKSUMS:
   EXBlur: b622dc0f8a8fe74f05fb437cfb1c5ee16259dab1
   EXBranch: d88a69d32b6a161611497f1dc264cf1cb32be886
   EXBrightness: e02018c74baedcb51825cd91e16886973c81d029
-  EXCalendar: 9157be548211a7b283535d5a5cf7c6843d26108b
+  EXCalendar: 2ddc3ad70875ba1c74243b03618543c7526ca64a
   EXCamera: efef30c8f5016b46fa3119a0c685cf75b841f453
   EXCellular: b571e997db382446d6a5145932d738d694f63949
   EXConstants: f907b3b6ce16e20d1750f22af1e095e924574bcb

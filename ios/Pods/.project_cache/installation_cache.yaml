@@ -7789,7 +7789,7 @@ CACHE_KEYS:
       EXCalendar:
         :debug: ec5f9b9862f62138b07b4a7d9bdacdad
         :release: ec5f9b9862f62138b07b4a7d9bdacdad
-    CHECKSUM: 9157be548211a7b283535d5a5cf7c6843d26108b
+    CHECKSUM: 2ddc3ad70875ba1c74243b03618543c7526ca64a
     FILES:
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendar.h"
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendar.m"
@@ -7801,7 +7801,7 @@ CACHE_KEYS:
       - "../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.m"
     PROJECT_NAME: EXCalendar
     SPECS:
-      - EXCalendar (8.2.1)
+      - EXCalendar (8.3.0)
   EXCamera:
     BUILD_SETTINGS_CHECKSUM:
       EXCamera:

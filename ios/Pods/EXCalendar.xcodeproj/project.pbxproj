@@ -237,7 +237,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		BCF98CC0ADDC5FB3D071B25A74AFC1CE /* Debug */ = {
+		757DA0A6D05667373A7E5D49D5215B0D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0677B704DCCBE27FECB4065B50AB09F2 /* EXCalendar.debug.xcconfig */;
 			buildSettings = {
@@ -257,9 +257,36 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		94704230ABAC76C199C909E4641CB4B1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 76C6E909B3D3C09E0618C5E6750D926F /* EXCalendar.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXCalendar/EXCalendar-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXCalendar;
+				PRODUCT_NAME = EXCalendar;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		C0492438EBAC1E2E9CFA14313CF68D9E /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -385,31 +412,6 @@
 			};
 			name = Release;
 		};
-		E85D484E3C11BFD23652CAFAB355C583 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 76C6E909B3D3C09E0618C5E6750D926F /* EXCalendar.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXCalendar/EXCalendar-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXCalendar;
-				PRODUCT_NAME = EXCalendar;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -425,8 +427,8 @@
 		96FD3A87F5065F3B324BBAD0F2D12243 /* Build configuration list for PBXNativeTarget "EXCalendar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BCF98CC0ADDC5FB3D071B25A74AFC1CE /* Debug */,
-				E85D484E3C11BFD23652CAFAB355C583 /* Release */,
+				757DA0A6D05667373A7E5D49D5215B0D /* Debug */,
+				94704230ABAC76C199C909E4641CB4B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
