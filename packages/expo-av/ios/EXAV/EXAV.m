@@ -114,7 +114,9 @@ UM_EXPORT_MODULE(ExponentAV);
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] unregisterAppLifecycleListener:self];
   _moduleRegistry = moduleRegistry;
   _kernelAudioSessionManagerDelegate = [_moduleRegistry getSingletonModuleForName:@"AudioSessionManager"];
-//  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
+  if (!_isBackgrounded) {
+    [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
+  }
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
   _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
   [UMPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
