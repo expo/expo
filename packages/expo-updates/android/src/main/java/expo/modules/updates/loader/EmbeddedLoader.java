@@ -3,6 +3,7 @@ package expo.modules.updates.loader;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.UpdatesUtils;
@@ -71,14 +72,17 @@ public class EmbeddedLoader {
     mFinishedAssetList = new ArrayList<>();
   }
 
-  public static Manifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
+  public static @Nullable Manifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
+    if (!configuration.hasEmbeddedUpdate()) {
+      return null;
+    }
+
     if (sEmbeddedManifest == null) {
       try (InputStream stream = context.getAssets().open(MANIFEST_FILENAME)) {
         String manifestString = IOUtils.toString(stream, "UTF-8");
         sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(new JSONObject(manifestString), configuration, context);
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
-        // TODO: we don't want to throw in the Expo client case, but do want to throw elsewhere
         throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.getMessage());
       }
     }

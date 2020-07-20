@@ -183,13 +183,15 @@ public class LoaderTask {
     DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
     mLauncher = launcher;
 
-    // if the embedded update should be launched (e.g. if it's newer than any other update we have
-    // in the database, which can happen if the app binary is updated), load it into the database
-    // so we can launch it
-    UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
-    UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
-    if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate)) {
-      new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
+    if (mConfiguration.hasEmbeddedUpdate()) {
+      // if the embedded update should be launched (e.g. if it's newer than any other update we have
+      // in the database, which can happen if the app binary is updated), load it into the database
+      // so we can launch it
+      UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
+      UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
+      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate)) {
+        new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
+      }
     }
 
     launcher.launch(database, context, new Launcher.LauncherCallback() {

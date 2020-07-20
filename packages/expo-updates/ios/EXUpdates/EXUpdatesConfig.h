@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;
 
 @property (nonatomic, readonly) BOOL usesLegacyManifest;
+@property (nonatomic, readonly) BOOL hasEmbeddedUpdate;
 
 + (instancetype)configWithDictionary:(NSDictionary *)config;
 - (void)loadConfigFromDictionary:(NSDictionary *)config;
