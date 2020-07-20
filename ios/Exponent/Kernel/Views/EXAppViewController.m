@@ -6,6 +6,7 @@
 #import "EXAppLoader.h"
 #import "EXAppLoadingView.h"
 #import "EXAppViewController.h"
+#import "EXAppLoadingProgressWindowController.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -51,6 +52,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
 
+/*
+ * Controller for handling all messages from bundler/fetcher.
+ * It shows another UIWindow with text and percentage progress.
+ * Present only in managed workflow.
+ */
+@property (nonatomic, strong, nullable) EXAppLoadingProgressWindowController *appLoadingProgressWindowController;
+
 @end
 
 @implementation EXAppViewController
@@ -77,6 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  
+  if (![EXEnvironment sharedEnvironment].isDetached
+      && _appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+    // managed workflow only
+    _appLoadingProgressWindowController = [EXAppLoadingProgressWindowController new];
+  }
 
   self.view.backgroundColor = [UIColor whiteColor];
   _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
@@ -265,9 +279,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_loadingView updateStatusWithProgress:progress];
-  });
+  if (self.appLoadingProgressWindowController) {
+    [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
+  }
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
@@ -549,8 +563,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (isLoading) {
       self.loadingView.hidden = NO;
       [self.view bringSubviewToFront:self.loadingView];
+      [self.appLoadingProgressWindowController show];
     } else {
       self.loadingView.hidden = YES;
+      [self.appLoadingProgressWindowController hide];
     }
   });
 }

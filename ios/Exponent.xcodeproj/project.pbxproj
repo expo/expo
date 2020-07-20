@@ -214,6 +214,7 @@
 		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -253,7 +254,6 @@
 		B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D4204A66F60035C61C /* EXAppViewController.m */; };
 		B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D6204A66F60035C61C /* EXErrorView.m */; };
 		B5A473E0204A673E0035C61C /* EXAppLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473DE204A673E0035C61C /* EXAppLoadingView.m */; };
-		B5A473E3204A676C0035C61C /* EXAppLoadingProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473E2204A676C0035C61C /* EXAppLoadingProgressView.m */; };
 		B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1D20A0D13E00974CCE /* EXManifestResource.m */; };
 		B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1E20A0D13E00974CCE /* EXCachedResource.m */; };
 		B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1F20A0D13E00974CCE /* EXJavaScriptResource.m */; };
@@ -809,6 +809,8 @@
 		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionItem.m; sourceTree = "<group>"; };
 		7F6CB974983B435DB3C2F7BE /* RNSVGForeignObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObject.h; sourceTree = "<group>"; };
 		80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNodeManager.m; sourceTree = "<group>"; };
+		878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressWindowController.h; sourceTree = "<group>"; };
+		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
 		8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObjectManager.m; sourceTree = "<group>"; };
 		8A3442268EC4E750318A4755 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		90EDC72E21EF251B7424E2E5 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
@@ -887,8 +889,6 @@
 		B5A473D9204A66F60035C61C /* EXErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorView.h; sourceTree = "<group>"; };
 		B5A473DE204A673E0035C61C /* EXAppLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingView.m; sourceTree = "<group>"; };
 		B5A473DF204A673E0035C61C /* EXAppLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingView.h; sourceTree = "<group>"; };
-		B5A473E1204A676C0035C61C /* EXAppLoadingProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressView.h; sourceTree = "<group>"; };
-		B5A473E2204A676C0035C61C /* EXAppLoadingProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressView.m; sourceTree = "<group>"; };
 		B5A72C1A20A0D13E00974CCE /* EXManifestResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXManifestResource.h; sourceTree = "<group>"; };
 		B5A72C1B20A0D13E00974CCE /* EXCachedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCachedResource.h; sourceTree = "<group>"; };
 		B5A72C1C20A0D13E00974CCE /* EXJavaScriptResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXJavaScriptResource.h; sourceTree = "<group>"; };
@@ -1877,10 +1877,10 @@
 			children = (
 				B5A473DF204A673E0035C61C /* EXAppLoadingView.h */,
 				B5A473DE204A673E0035C61C /* EXAppLoadingView.m */,
-				B5A473E1204A676C0035C61C /* EXAppLoadingProgressView.h */,
-				B5A473E2204A676C0035C61C /* EXAppLoadingProgressView.m */,
 				B54D2911205307380019411A /* EXAppLoadingCancelView.h */,
 				B54D2912205307380019411A /* EXAppLoadingCancelView.m */,
+				878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */,
+				878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */,
 			);
 			path = Loading;
 			sourceTree = "<group>";
@@ -2759,7 +2759,6 @@
 				7043DF852283303800272D74 /* RNSVGTextManager.m in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
 				F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */,
-				B5A473E3204A676C0035C61C /* EXAppLoadingProgressView.m in Sources */,
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				314410DC223BF73B00310599 /* RNCWKProcessPoolManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
@@ -2841,6 +2840,7 @@
 				78C832B823545ECF00448582 /* REATransitionValues.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */,
+				878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
 				7043DF802283303800272D74 /* RNSVGSymbolManager.m in Sources */,
 				78C832A523545ECE00448582 /* REAStyleNode.m in Sources */,
