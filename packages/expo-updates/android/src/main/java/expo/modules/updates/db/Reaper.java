@@ -2,6 +2,7 @@ package expo.modules.updates.db;
 
 import android.util.Log;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -14,13 +15,13 @@ public class Reaper {
 
   private static String TAG = Reaper.class.getSimpleName();
 
-  public static void reapUnusedUpdates(UpdatesDatabase database, File updatesDirectory, UpdateEntity launchedUpdate, SelectionPolicy selectionPolicy) {
+  public static void reapUnusedUpdates(UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory, UpdateEntity launchedUpdate, SelectionPolicy selectionPolicy) {
     if (launchedUpdate == null) {
       Log.d(TAG, "Tried to reap while no update was launched; aborting");
       return;
     }
 
-    List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdates();
+    List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdatesForScope(configuration.getScopeKey());
 
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(allUpdates, launchedUpdate);
     database.updateDao().deleteUpdates(updatesToDelete);

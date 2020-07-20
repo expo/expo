@@ -16,8 +16,6 @@ import java.util.UUID;
 import androidx.room.Room;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.runner.AndroidJUnit4;
-import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.dao.AssetDao;
 import expo.modules.updates.db.dao.UpdateDao;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -58,10 +56,10 @@ public class UpdatesDatabaseTest {
     Assert.assertEquals(uuid, byId.id);
     Assert.assertEquals(date, byId.commitTime);
     Assert.assertEquals(runtimeVersion, byId.runtimeVersion);
-    Assert.assertEquals(projectId, byId.projectIdentifier);
+    Assert.assertEquals(projectId, byId.scopeKey);
 
     updateDao.deleteUpdates(Arrays.asList(testUpdate));
-    Assert.assertEquals(0, updateDao.loadAllUpdates().size());
+    Assert.assertEquals(0, updateDao.loadAllUpdatesForScope(projectId).size());
   }
 
   @Test
@@ -73,13 +71,13 @@ public class UpdatesDatabaseTest {
 
     UpdateEntity testUpdate = new UpdateEntity(uuid, date, runtimeVersion, projectId);
     updateDao.insertUpdate(testUpdate);
-    Assert.assertEquals(0, updateDao.loadLaunchableUpdates().size());
+    Assert.assertEquals(0, updateDao.loadLaunchableUpdatesForScope(projectId).size());
 
     updateDao.markUpdateFinished(testUpdate);
-    Assert.assertEquals(1, updateDao.loadLaunchableUpdates().size());
+    Assert.assertEquals(1, updateDao.loadLaunchableUpdatesForScope(projectId).size());
 
     updateDao.deleteUpdates(Arrays.asList(testUpdate));
-    Assert.assertEquals(0, updateDao.loadAllUpdates().size());
+    Assert.assertEquals(0, updateDao.loadAllUpdatesForScope(projectId).size());
   }
 
   @Test
@@ -112,7 +110,7 @@ public class UpdatesDatabaseTest {
     updateDao.markUpdateFinished(update3);
 
     // check that test has been properly set up
-    List<UpdateEntity> allUpdates = updateDao.loadAllUpdates();
+    List<UpdateEntity> allUpdates = updateDao.loadAllUpdatesForScope(projectId);
     Assert.assertEquals(2, allUpdates.size());
     for (UpdateEntity update : allUpdates) {
       if (update.id.equals(update2.id)) {
