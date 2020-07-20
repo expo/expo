@@ -32,7 +32,7 @@
       
       CALayer *topBorderLayer = [CALayer layer];
       topBorderLayer.frame = CGRectMake(0, 0, screenSize.width, 1);
-      topBorderLayer.backgroundColor = [EXUtil colorWithRGB:0xd3d3d3].CGColor;
+      topBorderLayer.backgroundColor = [EXUtil colorWithRGB:0xe3e3e3].CGColor;
       [containerView.layer addSublayer:topBorderLayer];
 
       self.textLabel = [UILabel new];
