@@ -21,7 +21,7 @@ static NSString * const kEXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemote
                completionQueue:(dispatch_queue_t)completionQueue
 {
   if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
-    _downloader = [[EXUpdatesFileDownloader alloc] init];
+    _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
   }
   return self;
 }
@@ -34,7 +34,7 @@ static NSString * const kEXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemote
   self.manifestBlock = manifestBlock;
   self.successBlock = success;
   self.errorBlock = error;
-  [_downloader downloadManifestFromURL:url withConfig:self.config database:self.database cacheDirectory:self.directory successBlock:^(EXUpdatesUpdate *update) {
+  [_downloader downloadManifestFromURL:url withDatabase:self.database cacheDirectory:self.directory successBlock:^(EXUpdatesUpdate *update) {
     [self startLoadingFromManifest:update];
   } errorBlock:^(NSError *error, NSURLResponse *response) {
     if (self.errorBlock) {

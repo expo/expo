@@ -1,7 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 
@@ -14,25 +13,25 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 
 @property (nonatomic, strong) NSURLSession *session;
 @property (nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
+@property (nonatomic, strong) EXUpdatesConfig *config;
 
 @end
 
 @implementation EXUpdatesFileDownloader
 
-- (instancetype)init
+- (instancetype)initWithUpdatesConfig:(EXUpdatesConfig *)updatesConfig
 {
-  if (self = [super init]) {
-    _sessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration;
-    _session = [NSURLSession sessionWithConfiguration:_sessionConfiguration delegate:self delegateQueue:nil];
-  }
-  return self;
+  return [self initWithUpdatesConfig:updatesConfig
+             URLSessionConfiguration:NSURLSessionConfiguration.defaultSessionConfiguration];
 }
 
-- (instancetype)initWithURLSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration
+- (instancetype)initWithUpdatesConfig:(EXUpdatesConfig *)updatesConfig
+              URLSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration
 {
   if (self = [super init]) {
-    _sessionConfiguration = sessionConfiguration ?: NSURLSessionConfiguration.defaultSessionConfiguration;
+    _sessionConfiguration = sessionConfiguration;
     _session = [NSURLSession sessionWithConfiguration:_sessionConfiguration delegate:self delegateQueue:nil];
+    _config = updatesConfig;
   }
   return self;
 }
@@ -76,8 +75,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 }
 
 - (void)downloadManifestFromURL:(NSURL *)url
-                     withConfig:(EXUpdatesConfig *)config
-                       database:(EXUpdatesDatabase *)database
+                   withDatabase:(EXUpdatesDatabase *)database
                  cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
@@ -85,7 +83,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                      timeoutInterval:kEXUpdatesDefaultTimeoutInterval];
-  [self _setManifestHTTPHeaderFields:request withConfig:config];
+  [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
     id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
@@ -98,6 +96,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
       NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
                                      signature:(NSString *)signature
+                                        config:self->_config
                                 cacheDirectory:cacheDirectory
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
@@ -105,7 +104,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                                                     id innerManifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
                                                     NSAssert(!err && innerManifest && [innerManifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
                                                     EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)innerManifest
-                                                                                                           config:config
+                                                                                                           config:self->_config
                                                                                                          database:database];
                                                     successBlock(update);
                                                   } else {
@@ -119,7 +118,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
       ];
     } else {
       EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest
-                                                             config:config
+                                                             config:self->_config
                                                            database:database];
       successBlock(update);
     }
@@ -167,21 +166,24 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
+
+  for (NSString *key in _config.requestHeaders) {
+    [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
+  }
 }
 
-- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withConfig:(EXUpdatesConfig *)config
+- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request
 {
-  [self _setHTTPHeaderFields:request];
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-Accept-Signature"];
-  [request setValue:config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
+  [request setValue:_config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
 
-  NSString *runtimeVersion = config.runtimeVersion;
+  NSString *runtimeVersion = _config.runtimeVersion;
   if (runtimeVersion) {
     [request setValue:runtimeVersion forHTTPHeaderField:@"Expo-Runtime-Version"];
   } else {
-    [request setValue:config.sdkVersion forHTTPHeaderField:@"Expo-SDK-Version"];
+    [request setValue:_config.sdkVersion forHTTPHeaderField:@"Expo-SDK-Version"];
   }
 
   NSString *previousFatalError = [EXUpdatesAppLauncherNoDatabase consumeError];
@@ -194,6 +196,8 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
     }
     [request setValue:previousFatalError forHTTPHeaderField:@"Expo-Fatal-Error"];
   }
+
+  [self _setHTTPHeaderFields:request];
 }
 
 #pragma mark - NSURLSessionTaskDelegate
