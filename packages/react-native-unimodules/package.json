@@ -24,14 +24,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-sms"
+    "directory": "packages/react-native-unimodules"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/sms/",
+  "homepage": "https://docs.expo.io/bare/installing-unimodules/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
