@@ -221,7 +221,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
   NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
   UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    
+  image = [self fixOrientation:image];
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     NSValue* rectVal = [info objectForKey:UIImagePickerControllerCropRect];
     CGRect rect = rectVal.CGRectValue;
@@ -232,7 +232,6 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
                           orientation:image.imageOrientation];
     CGImageRelease(imageRef);
   }
-  image = [self fixOrientation:image];
   response[@"type"] = @"image";
   response[@"width"] = @(image.size.width);
   response[@"height"] = @(image.size.height);
