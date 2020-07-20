@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `Asset.loadAsync()` TypeScript signature to match `Asset.fromModule()` types. ([#9246](https://github.com/expo/expo/pull/9246) by [@barthap](https://github.com/barthap))
+
 ## 8.1.7 — 2020-05-29
 
 *This version does not introduce any user-facing changes.*
