@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite, assign) BOOL isEnabled;
 @property (nonatomic, readwrite, strong) NSString *scopeKey;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
+@property (nonatomic, readwrite, strong) NSDictionary *requestHeaders;
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
 @property (nonatomic, readwrite, assign) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
@@ -23,6 +24,7 @@ static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
 static NSString * const kEXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
 static NSString * const kEXUpdatesConfigScopeKeyKey = @"EXUpdatesScopeKey";
 static NSString * const kEXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
+static NSString * const kEXUpdatesConfigRequestHeadersKey = @"EXUpdatesRequestHeaders";
 static NSString * const kEXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
 static NSString * const kEXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
 static NSString * const kEXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLaunch";
@@ -41,6 +43,7 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
 {
   if (self = [super init]) {
     _isEnabled = YES;
+    _requestHeaders = @{};
     _releaseChannel = kEXUpdatesDefaultReleaseChannelName;
     _launchWaitMs = @(0);
     _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
@@ -84,6 +87,11 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
                                      reason:@"expo-updates must be configured with a valid update URL or scope key."
                                    userInfo:@{}];
     }
+  }
+
+  id requestHeaders = config[kEXUpdatesConfigRequestHeadersKey];
+  if (requestHeaders && [requestHeaders isKindOfClass:[NSDictionary class]]) {
+    _requestHeaders = (NSDictionary *)requestHeaders;
   }
 
   id releaseChannel = config[kEXUpdatesConfigReleaseChannelKey];

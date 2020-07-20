@@ -272,7 +272,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 - (EXUpdatesFileDownloader *)downloader
 {
   if (!_downloader) {
-    _downloader = [[EXUpdatesFileDownloader alloc] init];
+    _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_config];
   }
   return _downloader;
 }
