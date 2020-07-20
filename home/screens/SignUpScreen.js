@@ -1,8 +1,7 @@
 /* @flow */
-
-import React from 'react';
+import * as React from 'react';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
 import AuthApi from '../api/AuthApi';
@@ -15,19 +14,18 @@ import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
-@connect(data => SignUpScreen.getDataProps(data))
-export default class SignUpScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Sign Up',
-    headerLeft: () => <CloseButton />,
-  };
+export default function SignUpScreen({ navigation }) {
+  const session = useSelector(data => data.session);
+  const dispatch = useDispatch();
+  return <SignUpView dispatch={dispatch} session={session} navigation={navigation} />;
+}
 
-  static getDataProps(data) {
-    return {
-      session: data.session,
-    };
-  }
+SignUpScreen.navigationOptions = {
+  title: 'Sign Up',
+  headerLeft: () => <CloseButton />,
+};
 
+class SignUpView extends React.Component {
   state = DEBUG
     ? {
         keyboardHeight: 0,

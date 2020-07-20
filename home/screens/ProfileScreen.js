@@ -1,10 +1,10 @@
 /* @flow */
-import { Ionicons } from '../components/Icons';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
+import * as React from 'react';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { Ionicons } from '../components/Icons';
 import OptionsButton from '../components/OptionsButton';
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
 import Colors from '../constants/Colors';
@@ -14,25 +14,42 @@ import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 
-@connect((data, props) => ProfileScreen.getDataProps(data, props))
-export default class ProfileScreen extends React.Component {
-  static navigationOptions = ({ navigation, theme }) => {
-    return {
-      title: navigation.getParam('username', 'Profile'),
-      headerRight: () =>
-        navigation.getParam('username') ? <OptionsButton /> : <UserSettingsButton theme={theme} />,
-    };
+export default function ProfileScreen({ navigation, ...props }) {
+  // TODO(Bacon): This might not be needed, check during TS migration.
+  const dispatch = useDispatch();
+  const { isAuthenticated, username } = useSelector(
+    React.useCallback(
+      data => {
+        const isAuthenticated = isUserAuthenticated(data.session);
+        return {
+          isAuthenticated,
+          username: navigation.getParam('username'),
+        };
+      },
+      [navigation]
+    )
+  );
+
+  return (
+    <ProfileView
+      {...props}
+      dispatch={dispatch}
+      isAuthenticated={isAuthenticated}
+      username={username}
+      navigation={navigation}
+    />
+  );
+}
+
+ProfileScreen.navigationOptions = ({ navigation, theme }) => {
+  return {
+    title: navigation.getParam('username', 'Profile'),
+    headerRight: () =>
+      navigation.getParam('username') ? <OptionsButton /> : <UserSettingsButton theme={theme} />,
   };
+};
 
-  static getDataProps(data, props) {
-    const isAuthenticated = isUserAuthenticated(data.session);
-
-    return {
-      isAuthenticated,
-      username: props.navigation.getParam('username'),
-    };
-  }
-
+class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
