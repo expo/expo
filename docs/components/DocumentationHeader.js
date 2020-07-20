@@ -7,6 +7,7 @@ import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 
 const STYLES_LOGO = css`
   display: flex;
+  cursor: pointer;
 `;
 
 const STYLES_UNSTYLED_ANCHOR = css`
@@ -160,7 +161,7 @@ const SECTION_LINK_ACTIVE = css`
 const SECTION_LINK_TEXT = css`
   color: #000 !important;
   position: relative;
-  top: 1px;
+  top: 2px;
   bottom: 0;
   left: 0;
   right: 0;
