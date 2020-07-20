@@ -117,7 +117,7 @@ class SignInView extends React.Component<Props, State> {
   _passwordInput: TextInput | null = null;
 
   _handleSubmitEmail = () => {
-    if (this._passwordInput) this._passwordInput.focus();
+    this._passwordInput?.focus();
   };
 
   _handleSubmitPassword = () => {
