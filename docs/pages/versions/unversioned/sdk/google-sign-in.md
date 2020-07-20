@@ -7,7 +7,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](../google) or [expo-app-auth](../app-auth).
+**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](../google) or [expo-app-auth](../app-auth).
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
 
@@ -29,7 +29,7 @@ When using Firebase, also configure the Google-services configuration files:
 3. (**Android only**) Go to your Firebase project's settings, scroll down to "Your apps" and select your Android app. Under `SHA certificate fingerprints`, click `Add fingerprint`, and paste the value of you get for `Google Certificate Fingerprint` when running `expo fetch:android:hashes`.
    > If you haven't already run `expo build:android` for this project, you'll need to do that first before getting the Google Certificate Fingerprint.
 4. Download the `GoogleService-Info.plist` (iOS) & the `google-services.json` (Android) from your Firebase project settings page. Move them to your Expo project.
-5. In `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSE_CLIENT_ID` in the `GoogleService-Info.plist`.
+5. In `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSED_CLIENT_ID` in the `GoogleService-Info.plist`.
 6. Also in `app.json`, set `expo.ios.googleServicesFile` to the relative path of your `GoogleService-Info.plist`. Make sure the file is located somewhere in your Expo project.
 7. And also in `app.json`, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
 
