@@ -124,7 +124,7 @@ public class DatabaseLauncher implements Launcher {
   }
 
   public UpdateEntity getLaunchableUpdate(UpdatesDatabase database, Context context) {
-    List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdates();
+    List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(mConfiguration.getScopeKey());
 
     // We can only run an update marked as embedded if it's actually the update embedded in the
     // current binary. We might have an older update from a previous binary still listed as

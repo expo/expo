@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesConfig ()
 
 @property (nonatomic, readwrite, assign) BOOL isEnabled;
+@property (nonatomic, readwrite, strong) NSString *scopeKey;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
@@ -20,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const kEXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
+static NSString * const kEXUpdatesConfigScopeKeyKey = @"EXUpdatesScopeKey";
 static NSString * const kEXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
 static NSString * const kEXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
 static NSString * const kEXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
@@ -63,8 +65,23 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   id updateUrl = config[kEXUpdatesConfigUpdateUrlKey];
   if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
     NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];
-    NSAssert(url, @"EXUpdatesURL must be a valid URL");
     _updateUrl = url;
+  }
+
+  id scopeKey = config[kEXUpdatesConfigScopeKeyKey];
+  if (scopeKey && [scopeKey isKindOfClass:[NSString class]]) {
+    _scopeKey = (NSString *)scopeKey;
+  }
+
+  // set updateUrl as the default value if none is provided
+  if (!_scopeKey) {
+    if (_updateUrl) {
+      _scopeKey = [[self class] normalizedURLOrigin:_updateUrl];
+    } else {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"expo-updates must be configured with a valid update URL or scope key."
+                                   userInfo:@{}];
+    }
   }
 
   id releaseChannel = config[kEXUpdatesConfigReleaseChannelKey];
@@ -108,6 +125,31 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
     _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
   }
+}
+
++ (NSString *)normalizedURLOrigin:(NSURL *)url
+{
+  NSString *scheme = url.scheme;
+  NSNumber *port = url.port;
+  if (port && port.integerValue > -1 && [port isEqual:[[self class] defaultPortForScheme:scheme]]) {
+    port = nil;
+  }
+
+  return (port && port.integerValue > -1)
+    ? [NSString stringWithFormat:@"%@://%@:%ld", scheme, url.host, (long)port.integerValue]
+    : [NSString stringWithFormat:@"%@://%@", scheme, url.host];
+}
+
++ (nullable NSNumber *)defaultPortForScheme:(NSString *)scheme
+{
+  if ([@"http" isEqualToString:scheme] || [@"ws" isEqualToString:scheme]) {
+    return @(80);
+  } else if ([@"https" isEqualToString:scheme] || [@"wss" isEqualToString:scheme]) {
+    return @(443);
+  } else if ([@"ftp" isEqualToString:scheme]) {
+    return @(21);
+  }
+  return nil;
 }
 
 @end

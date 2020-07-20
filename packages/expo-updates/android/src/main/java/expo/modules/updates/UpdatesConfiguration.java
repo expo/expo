@@ -15,6 +15,7 @@ public class UpdatesConfiguration {
   private static final String TAG = UpdatesConfiguration.class.getSimpleName();
 
   public static final String UPDATES_CONFIGURATION_ENABLED_KEY = "enabled";
+  public static final String UPDATES_CONFIGURATION_SCOPE_KEY_KEY = "scopeKey";
   public static final String UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl";
   public static final String UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY = "releaseChannel";
   public static final String UPDATES_CONFIGURATION_SDK_VERSION_KEY = "sdkVersion";
@@ -32,6 +33,7 @@ public class UpdatesConfiguration {
   }
 
   private boolean mIsEnabled;
+  private String mScopeKey;
   private Uri mUpdateUrl;
   private String mSdkVersion;
   private String mRuntimeVersion;
@@ -41,6 +43,10 @@ public class UpdatesConfiguration {
 
   public boolean isEnabled() {
     return mIsEnabled;
+  }
+
+  public String getScopeKey() {
+    return mScopeKey;
   }
 
   public Uri getUpdateUrl() {
@@ -73,6 +79,8 @@ public class UpdatesConfiguration {
 
       String urlString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATE_URL");
       mUpdateUrl = urlString == null ? null : Uri.parse(urlString);
+      mScopeKey = ai.metaData.getString("expo.modules.updates.EXPO_SCOPE_KEY");
+      maybeSetDefaultScopeKey();
 
       mIsEnabled = ai.metaData.getBoolean("expo.modules.updates.ENABLED", true);
       mSdkVersion = ai.metaData.getString("expo.modules.updates.EXPO_SDK_VERSION");
@@ -105,6 +113,12 @@ public class UpdatesConfiguration {
     if (updateUrlFromMap != null) {
       mUpdateUrl = updateUrlFromMap;
     }
+
+    String scopeKeyFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_SCOPE_KEY_KEY, String.class);
+    if (scopeKeyFromMap != null) {
+      mScopeKey = scopeKeyFromMap;
+    }
+    maybeSetDefaultScopeKey();
 
     String releaseChannelFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, String.class);
     if (releaseChannelFromMap != null) {
@@ -149,5 +163,39 @@ public class UpdatesConfiguration {
     } else {
       throw new AssertionError("UpdatesConfiguration failed to initialize: bad value of type " + value.getClass().getSimpleName() + " provided for key " + key);
     }
+  }
+
+  private void maybeSetDefaultScopeKey() {
+    // set updateUrl as the default value if none is provided
+    if (mScopeKey == null) {
+      if (mUpdateUrl != null) {
+        mScopeKey = getNormalizedUrlOrigin(mUpdateUrl);
+      } else {
+        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
+      }
+    }
+  }
+
+  /* package */ static String getNormalizedUrlOrigin(Uri url) {
+    String scheme = url.getScheme();
+    int port = url.getPort();
+    if (port == getDefaultPortForScheme(scheme)) {
+      port = -1;
+    }
+
+    return port > -1
+      ? scheme + "://" + url.getHost() + ":" + port
+      : scheme + "://" + url.getHost();
+  }
+
+  private static int getDefaultPortForScheme(String scheme) {
+    if ("http".equals(scheme) || "ws".equals(scheme)) {
+      return 80;
+    } else if ("https".equals(scheme) || "wss".equals(scheme)) {
+      return 443;
+    } else if ("ftp".equals(scheme)) {
+      return 21;
+    }
+    return -1;
   }
 }

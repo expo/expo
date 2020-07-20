@@ -21,8 +21,8 @@ public abstract class UpdateDao {
    * must be marked public for Room
    * so we use the underscore to discourage use
    */
-  @Query("SELECT * FROM updates WHERE status IN (:statuses);")
-  public abstract List<UpdateEntity> _loadUpdatesWithStatuses(List<UpdateStatus> statuses);
+  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND status IN (:statuses);")
+  public abstract List<UpdateEntity> _loadUpdatesForProjectWithStatuses(String scopeKey, List<UpdateStatus> statuses);
 
   @Query("SELECT * FROM updates WHERE id = :id;")
   public abstract List<UpdateEntity> _loadUpdatesWithId(UUID id);
@@ -40,11 +40,12 @@ public abstract class UpdateDao {
   /**
    * for public use
    */
-  @Query("SELECT * FROM updates;")
-  public abstract List<UpdateEntity> loadAllUpdates();
 
-  public List<UpdateEntity> loadLaunchableUpdates() {
-    return _loadUpdatesWithStatuses(Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED));
+  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey;")
+  public abstract List<UpdateEntity> loadAllUpdatesForScope(String scopeKey);
+
+  public List<UpdateEntity> loadLaunchableUpdatesForScope(String scopeKey) {
+    return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED));
   }
 
   public UpdateEntity loadUpdateWithId(UUID id) {
