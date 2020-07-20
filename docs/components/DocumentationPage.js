@@ -28,8 +28,20 @@ const STYLES_DOCUMENT = css`
     border-bottom: 0px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
     padding: 20px 16px 48px 16px;
+  }
+`;
+
+const HIDDEN_ON_MOBILE = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    display: none;
+  }
+`;
+
+const HIDDEN_ON_DESKTOP = css`
+  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+    display: none;
   }
 `;
 
@@ -228,14 +240,29 @@ export default class DocumentationPage extends React.Component {
             />
           </div>
         ) : (
-          <DocumentationSidebar
-            url={this.props.url}
-            asPath={this.props.asPath}
-            routes={routes}
-            version={this._version}
-            onSetVersion={this._handleSetVersion}
-            isVersionSelectorHidden={!this._isReferencePath()}
-          />
+          <div>
+            <div className={`${STYLES_DOCUMENT} ${HIDDEN_ON_MOBILE}`}>
+              <H1>{this.props.title}</H1>
+              <DocumentationPageContext.Provider value={{ version: this._version }}>
+                {this.props.children}
+              </DocumentationPageContext.Provider>
+              <DocumentationFooter
+                title={this.props.title}
+                asPath={this.props.asPath}
+                sourceCodeUrl={this.props.sourceCodeUrl}
+              />
+            </div>
+            <div className={HIDDEN_ON_DESKTOP}>
+              <DocumentationSidebar
+                url={this.props.url}
+                asPath={this.props.asPath}
+                routes={routes}
+                version={this._version}
+                onSetVersion={this._handleSetVersion}
+                isVersionSelectorHidden={!this._isReferencePath()}
+              />
+            </div>
+          </div>
         )}
       </DocumentationNestedScrollLayout>
     );
