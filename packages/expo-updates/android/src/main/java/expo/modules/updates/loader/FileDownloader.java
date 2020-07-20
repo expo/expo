@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
 
-import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.manifest.Manifest;
@@ -79,7 +78,7 @@ public class FileDownloader {
 
   public static void downloadManifest(final UpdatesConfiguration configuration, final Context context, final ManifestDownloadCallback callback) {
     try {
-      downloadData(addHeadersToManifestUrl(configuration, context), new Callback() {
+      downloadData(setHeadersForManifestUrl(configuration, context), new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
           callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), e);
@@ -149,7 +148,7 @@ public class FileDownloader {
       callback.onSuccess(asset, false);
     } else {
       try {
-        downloadFileToPath(addHeadersToUrl(asset.url, configuration), path, new FileDownloadCallback() {
+        downloadFileToPath(setHeadersForUrl(asset.url, configuration), path, new FileDownloadCallback() {
           @Override
           public void onFailure(Exception e) {
             callback.onFailure(e, asset);
@@ -191,7 +190,7 @@ public class FileDownloader {
     });
   }
 
-  private static Request addHeadersToUrl(Uri url, UpdatesConfiguration configuration) {
+  private static Request setHeadersForUrl(Uri url, UpdatesConfiguration configuration) {
     Request.Builder requestBuilder = new Request.Builder()
             .url(url.toString())
             .header("Expo-Platform", "android")
@@ -207,7 +206,7 @@ public class FileDownloader {
     return requestBuilder.build();
   }
 
-  private static Request addHeadersToManifestUrl(UpdatesConfiguration configuration, Context context) {
+  private static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
             .url(configuration.getUpdateUrl().toString())
             .header("Accept", "application/expo+json,application/json")
