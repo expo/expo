@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
@@ -37,7 +38,7 @@ public class UpdatesConfiguration {
   private boolean mIsEnabled;
   private String mScopeKey;
   private Uri mUpdateUrl;
-  private Map<String, String> mRequestHeaders;
+  private Map<String, String> mRequestHeaders = new HashMap<>();
   private String mSdkVersion;
   private String mRuntimeVersion;
   private String mReleaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE;
@@ -58,6 +59,9 @@ public class UpdatesConfiguration {
   }
 
   public Map<String, String> getRequestHeaders() {
+    if (mRequestHeaders == null) {
+      return new HashMap<>();
+    }
     return mRequestHeaders;
   }
 

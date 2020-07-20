@@ -197,10 +197,8 @@ public class FileDownloader {
             .header("Expo-Api-Version", "1")
             .header("Expo-Updates-Environment", "BARE");
 
-    if (configuration.getRequestHeaders() != null) {
-      for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
-        requestBuilder.header(entry.getKey(), entry.getValue());
-      }
+    for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
+      requestBuilder.header(entry.getKey(), entry.getValue());
     }
 
     return requestBuilder.build();
@@ -239,10 +237,8 @@ public class FileDownloader {
       );
     }
 
-    if (configuration.getRequestHeaders() != null) {
-      for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
-        requestBuilder.header(entry.getKey(), entry.getValue());
-      }
+    for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
+      requestBuilder.header(entry.getKey(), entry.getValue());
     }
 
     return requestBuilder.build();
