@@ -8474,6 +8474,27 @@ CACHE_KEYS:
     PROJECT_NAME: EXSpeech
     SPECS:
       - EXSpeech (8.2.1)
+  EXSplashScreen:
+    BUILD_SETTINGS_CHECKSUM:
+      EXSplashScreen:
+        :debug: 8f24a4f98ee8a7f928ad6dd2457a7314
+        :release: 8f24a4f98ee8a7f928ad6dd2457a7314
+    CHECKSUM: 1ef82f56e6bcb714d218c3278495d6ab5dc95c88
+    FILES:
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenConfiguration.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenConfiguration.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
+    PROJECT_NAME: EXSplashScreen
+    SPECS:
+      - EXSplashScreen (0.4.0)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
@@ -8859,8 +8880,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: bf4aab63e7369e7a2deb9f1a5e58c65d
-      Release: bf4aab63e7369e7a2deb9f1a5e58c65d
+      Debug: e7e58c8e1cdee64b582fa6a5f9c8efe5
+      Release: e7e58c8e1cdee64b582fa6a5f9c8efe5
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
@@ -8872,12 +8893,12 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8f4fec814a25f52211061f153478d7da
-      Release: 8f4fec814a25f52211061f153478d7da
+      Debug: ebc7f549ee8dce737a17dbf01f1fe37f
+      Release: ebc7f549ee8dce737a17dbf01f1fe37f
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8f4fec814a25f52211061f153478d7da
-      Release: 8f4fec814a25f52211061f153478d7da
+      Debug: ebc7f549ee8dce737a17dbf01f1fe37f
+      Release: ebc7f549ee8dce737a17dbf01f1fe37f
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:

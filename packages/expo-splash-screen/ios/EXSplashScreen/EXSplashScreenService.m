@@ -36,7 +36,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
-  if ([self.splashScreenControllers objectForKey:viewController]) {
+   if ([self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
   }
   
@@ -90,8 +90,8 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  UIViewController *rootViewController = [[application keyWindow] rootViewController];
-  [self showSplashScreenFor:rootViewController];
+  // UIViewController *rootViewController = [[application keyWindow] rootViewController];
+  // [self showSplashScreenFor:rootViewController];
   return YES;
 }
 

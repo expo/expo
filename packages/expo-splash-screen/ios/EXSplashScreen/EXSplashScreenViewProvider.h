@@ -4,6 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Provides a view for SplashScreen that is shown once native LaunchScreen hides.
+ */
 @protocol EXSplashScreenViewProvider
 
 - (UIView *)createSplashScreenView;

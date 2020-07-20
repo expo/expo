@@ -1,0 +1,451 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04FBF3020E115C4900AE51477C753525 /* EXSplashScreenService.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A1041C776AB0FE8580BBAAA5903AACE /* EXSplashScreenService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3C9FD66D6D4D41E3C003C923D4255077 /* EXSplashScreenViewNativeProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 11298C21FA7B35B5F26C48F9C595C915 /* EXSplashScreenViewNativeProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3CF918F9D06B3549E9FAAD42067586D5 /* EXSplashScreenConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F138E98CD8616C8F53FBEC4C5BC6C80 /* EXSplashScreenConfiguration.m */; };
+		47957CDFB257E8F6AB2FB156321DF233 /* EXSplashScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = 301BD8AF4778036864147E522BD18738 /* EXSplashScreenController.m */; };
+		70AC0FDC96C63EB76D56D304350AFCE0 /* EXSplashScreenService.m in Sources */ = {isa = PBXBuildFile; fileRef = E67520A2FAC2CF4641163119DBAEDAEA /* EXSplashScreenService.m */; };
+		73D106FA6E874E9D94FFF2BF3067BCCA /* EXSplashScreenController.h in Headers */ = {isa = PBXBuildFile; fileRef = A8C8888B6FD6827EE5F8D60098412BBA /* EXSplashScreenController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7E98165D6EBDDD0ACF2ACD4587D44C9B /* EXSplashScreenModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 37A0EF0BD69B4159EC5FB29BB3BD6810 /* EXSplashScreenModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A0BEA7A0465253684CAE962386A065B8 /* EXSplashScreen-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A416C2CCB052F4C82582AC4116FC74C6 /* EXSplashScreen-dummy.m */; };
+		B09256FA7969746926E0AF1FBCC0F79F /* EXSplashScreenViewProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = BA9B61863262A72D28A5AF494D44F60D /* EXSplashScreenViewProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C3E0D1DB1301D33AE19EDA174D6AFEAE /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E8B629BABED9FE70886F4F785928FDDE /* EXSplashScreenModule.m */; };
+		D460846B52ECC545CBEA5F056BCFFE47 /* EXSplashScreenViewNativeProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E86B804FCD14F65CCCC516ED3185ECD /* EXSplashScreenViewNativeProvider.m */; };
+		DFA9217DD815DF412133E5CC3624E528 /* EXSplashScreenConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DC7717C79ADCC7DC496F2BB91F688D7 /* EXSplashScreenConfiguration.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2DAF2C4A244360285D41B99B77C976B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 173B91818B426132A59C32DFA7803A69 /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
+		};
+		EB44CCB45857F62BB638A9826BCFDC03 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B99B6AAA3108BB988877C5A5924B4A21 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		11298C21FA7B35B5F26C48F9C595C915 /* EXSplashScreenViewNativeProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSplashScreenViewNativeProvider.h; path = EXSplashScreen/EXSplashScreenViewNativeProvider.h; sourceTree = "<group>"; };
+		173B91818B426132A59C32DFA7803A69 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		1DC7717C79ADCC7DC496F2BB91F688D7 /* EXSplashScreenConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSplashScreenConfiguration.h; path = EXSplashScreen/EXSplashScreenConfiguration.h; sourceTree = "<group>"; };
+		301BD8AF4778036864147E522BD18738 /* EXSplashScreenController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSplashScreenController.m; path = EXSplashScreen/EXSplashScreenController.m; sourceTree = "<group>"; };
+		37A0EF0BD69B4159EC5FB29BB3BD6810 /* EXSplashScreenModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSplashScreenModule.h; path = EXSplashScreen/EXSplashScreenModule.h; sourceTree = "<group>"; };
+		3BD4DA2040E9AC3EC528E0A0B4C1CD93 /* EXSplashScreen.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSplashScreen.release.xcconfig; sourceTree = "<group>"; };
+		783BAE144108CDDC9FAABFA317982094 /* libEXSplashScreen.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSplashScreen.a; path = libEXSplashScreen.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A1041C776AB0FE8580BBAAA5903AACE /* EXSplashScreenService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSplashScreenService.h; path = EXSplashScreen/EXSplashScreenService.h; sourceTree = "<group>"; };
+		9E86B804FCD14F65CCCC516ED3185ECD /* EXSplashScreenViewNativeProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSplashScreenViewNativeProvider.m; path = EXSplashScreen/EXSplashScreenViewNativeProvider.m; sourceTree = "<group>"; };
+		9F138E98CD8616C8F53FBEC4C5BC6C80 /* EXSplashScreenConfiguration.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSplashScreenConfiguration.m; path = EXSplashScreen/EXSplashScreenConfiguration.m; sourceTree = "<group>"; };
+		A10C4B9A3E8BCA9CAE0C0577E4A94254 /* EXSplashScreen.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSplashScreen.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A2506BB40998C477613AC317D2B3DD18 /* EXSplashScreen-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSplashScreen-prefix.pch"; sourceTree = "<group>"; };
+		A416C2CCB052F4C82582AC4116FC74C6 /* EXSplashScreen-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSplashScreen-dummy.m"; sourceTree = "<group>"; };
+		A8C8888B6FD6827EE5F8D60098412BBA /* EXSplashScreenController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSplashScreenController.h; path = EXSplashScreen/EXSplashScreenController.h; sourceTree = "<group>"; };
+		B62887F99C2C4068CBF85CE8C1AD7461 /* EXSplashScreen.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSplashScreen.debug.xcconfig; sourceTree = "<group>"; };
+		B99B6AAA3108BB988877C5A5924B4A21 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		BA9B61863262A72D28A5AF494D44F60D /* EXSplashScreenViewProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSplashScreenViewProvider.h; path = EXSplashScreen/EXSplashScreenViewProvider.h; sourceTree = "<group>"; };
+		E67520A2FAC2CF4641163119DBAEDAEA /* EXSplashScreenService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSplashScreenService.m; path = EXSplashScreen/EXSplashScreenService.m; sourceTree = "<group>"; };
+		E8B629BABED9FE70886F4F785928FDDE /* EXSplashScreenModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSplashScreenModule.m; path = EXSplashScreen/EXSplashScreenModule.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D7CAACBF330B2DB01831BEC6289DCCD5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2041EB017B1AF52F6AA8DA2E67CBB6A3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		313380831F81F2B62A9A6A372C742DD0 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				A10C4B9A3E8BCA9CAE0C0577E4A94254 /* EXSplashScreen.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		35E00E04980B03C8C175929689A6BA77 /* EXSplashScreen */ = {
+			isa = PBXGroup;
+			children = (
+				1DC7717C79ADCC7DC496F2BB91F688D7 /* EXSplashScreenConfiguration.h */,
+				9F138E98CD8616C8F53FBEC4C5BC6C80 /* EXSplashScreenConfiguration.m */,
+				A8C8888B6FD6827EE5F8D60098412BBA /* EXSplashScreenController.h */,
+				301BD8AF4778036864147E522BD18738 /* EXSplashScreenController.m */,
+				37A0EF0BD69B4159EC5FB29BB3BD6810 /* EXSplashScreenModule.h */,
+				E8B629BABED9FE70886F4F785928FDDE /* EXSplashScreenModule.m */,
+				7A1041C776AB0FE8580BBAAA5903AACE /* EXSplashScreenService.h */,
+				E67520A2FAC2CF4641163119DBAEDAEA /* EXSplashScreenService.m */,
+				11298C21FA7B35B5F26C48F9C595C915 /* EXSplashScreenViewNativeProvider.h */,
+				9E86B804FCD14F65CCCC516ED3185ECD /* EXSplashScreenViewNativeProvider.m */,
+				BA9B61863262A72D28A5AF494D44F60D /* EXSplashScreenViewProvider.h */,
+				313380831F81F2B62A9A6A372C742DD0 /* Pod */,
+				A4E95FAE2A979D6326D940E995508862 /* Support Files */,
+			);
+			name = EXSplashScreen;
+			path = "../../packages/expo-splash-screen/ios";
+			sourceTree = "<group>";
+		};
+		A4E95FAE2A979D6326D940E995508862 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				A416C2CCB052F4C82582AC4116FC74C6 /* EXSplashScreen-dummy.m */,
+				A2506BB40998C477613AC317D2B3DD18 /* EXSplashScreen-prefix.pch */,
+				B62887F99C2C4068CBF85CE8C1AD7461 /* EXSplashScreen.debug.xcconfig */,
+				3BD4DA2040E9AC3EC528E0A0B4C1CD93 /* EXSplashScreen.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXSplashScreen";
+			sourceTree = "<group>";
+		};
+		A72FBCC14AA6B64862A4B7F24801EAE9 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				173B91818B426132A59C32DFA7803A69 /* React */,
+				B99B6AAA3108BB988877C5A5924B4A21 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		D33DA80DF8393F21A71A71DBED1B0E29 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				783BAE144108CDDC9FAABFA317982094 /* libEXSplashScreen.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F40060AC85706DE3DD3F4E0674BAFB35 = {
+			isa = PBXGroup;
+			children = (
+				A72FBCC14AA6B64862A4B7F24801EAE9 /* Dependencies */,
+				35E00E04980B03C8C175929689A6BA77 /* EXSplashScreen */,
+				2041EB017B1AF52F6AA8DA2E67CBB6A3 /* Frameworks */,
+				D33DA80DF8393F21A71A71DBED1B0E29 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A33448052FAD6CCB48F67B377CD2C9C8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFA9217DD815DF412133E5CC3624E528 /* EXSplashScreenConfiguration.h in Headers */,
+				73D106FA6E874E9D94FFF2BF3067BCCA /* EXSplashScreenController.h in Headers */,
+				7E98165D6EBDDD0ACF2ACD4587D44C9B /* EXSplashScreenModule.h in Headers */,
+				04FBF3020E115C4900AE51477C753525 /* EXSplashScreenService.h in Headers */,
+				3C9FD66D6D4D41E3C003C923D4255077 /* EXSplashScreenViewNativeProvider.h in Headers */,
+				B09256FA7969746926E0AF1FBCC0F79F /* EXSplashScreenViewProvider.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		DB238802456FCDBECAB3DEF87BC88AC7 /* EXSplashScreen */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 59F7B7729B511425AC6942356779BC66 /* Build configuration list for PBXNativeTarget "EXSplashScreen" */;
+			buildPhases = (
+				A33448052FAD6CCB48F67B377CD2C9C8 /* Headers */,
+				F282B96EDBEBB5429CE1E5C37490740D /* Sources */,
+				D7CAACBF330B2DB01831BEC6289DCCD5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				49BC316A571A5B4B354D4DF4260B7BFC /* PBXTargetDependency */,
+				E5CBE6799AFE8C67D60DE762704550EA /* PBXTargetDependency */,
+			);
+			name = EXSplashScreen;
+			productName = EXSplashScreen;
+			productReference = 783BAE144108CDDC9FAABFA317982094 /* libEXSplashScreen.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4B68D001187318B1B8DEB8FE0C3F7FA8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = E735D04F0B65ECB4939F6A92628154AA /* Build configuration list for PBXProject "EXSplashScreen" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F40060AC85706DE3DD3F4E0674BAFB35;
+			productRefGroup = D33DA80DF8393F21A71A71DBED1B0E29 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = B99B6AAA3108BB988877C5A5924B4A21 /* UMCore */;
+				},
+				{
+					ProjectRef = 173B91818B426132A59C32DFA7803A69 /* React */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				DB238802456FCDBECAB3DEF87BC88AC7 /* EXSplashScreen */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F282B96EDBEBB5429CE1E5C37490740D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0BEA7A0465253684CAE962386A065B8 /* EXSplashScreen-dummy.m in Sources */,
+				3CF918F9D06B3549E9FAAD42067586D5 /* EXSplashScreenConfiguration.m in Sources */,
+				47957CDFB257E8F6AB2FB156321DF233 /* EXSplashScreenController.m in Sources */,
+				C3E0D1DB1301D33AE19EDA174D6AFEAE /* EXSplashScreenModule.m in Sources */,
+				70AC0FDC96C63EB76D56D304350AFCE0 /* EXSplashScreenService.m in Sources */,
+				D460846B52ECC545CBEA5F056BCFFE47 /* EXSplashScreenViewNativeProvider.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		49BC316A571A5B4B354D4DF4260B7BFC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 2DAF2C4A244360285D41B99B77C976B8 /* PBXContainerItemProxy */;
+		};
+		E5CBE6799AFE8C67D60DE762704550EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = EB44CCB45857F62BB638A9826BCFDC03 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3F6149C1319AFF5DF4DBF013AC454BB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3BD4DA2040E9AC3EC528E0A0B4C1CD93 /* EXSplashScreen.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSplashScreen/EXSplashScreen-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSplashScreen;
+				PRODUCT_NAME = EXSplashScreen;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6AA28DD6CA0796C31AC0A9C219CDE1A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		C5B2F0BFE09925B9EB29E58F90934927 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B62887F99C2C4068CBF85CE8C1AD7461 /* EXSplashScreen.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSplashScreen/EXSplashScreen-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSplashScreen;
+				PRODUCT_NAME = EXSplashScreen;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EBEE33D1D74CECC47263C80B6D378FF8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		59F7B7729B511425AC6942356779BC66 /* Build configuration list for PBXNativeTarget "EXSplashScreen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C5B2F0BFE09925B9EB29E58F90934927 /* Debug */,
+				3F6149C1319AFF5DF4DBF013AC454BB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E735D04F0B65ECB4939F6A92628154AA /* Build configuration list for PBXProject "EXSplashScreen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EBEE33D1D74CECC47263C80B6D378FF8 /* Debug */,
+				6AA28DD6CA0796C31AC0A9C219CDE1A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4B68D001187318B1B8DEB8FE0C3F7FA8 /* Project object */;
+}

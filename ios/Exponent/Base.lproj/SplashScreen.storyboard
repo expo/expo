@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="xkG-Jd-hUz">
+    <device id="retina5_5" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--SplashScreenViewController-->
+        <scene sceneID="zGG-yy-Pgq">
+            <objects>
+                <viewController storyboardIdentifier="SplashScreenViewController" title="SplashScreenViewController" id="xkG-Jd-hUz" sceneMemberID="viewController">
+                    <view key="view" clipsSubviews="YES" contentMode="scaleToFill" id="sL7-cn-oXi">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" image="ExponentLaunchText" translatesAutoresizingMaskIntoConstraints="NO" id="Gb6-ic-OtM" userLabel="Exponent Launch Text">
+                                <rect key="frame" x="181.66666666666666" y="694" width="51" height="22"/>
+                            </imageView>
+                            <activityIndicatorView hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="H0s-hd-MLt">
+                                <rect key="frame" x="240.66666666666666" y="695" width="19.999999999999972" height="20"/>
+                            </activityIndicatorView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QBk-jw-zGR" userLabel="Icon View">
+                                <rect key="frame" x="177.66666666666666" y="312" width="59" height="112"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ExponentLaunchIcon" translatesAutoresizingMaskIntoConstraints="NO" id="zed-D5-sjd">
+                                        <rect key="frame" x="0.0" y="0.0" width="59" height="52"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="zed-D5-sjd" firstAttribute="trailing" secondItem="QBk-jw-zGR" secondAttribute="trailing" id="Uq1-J6-HKk"/>
+                                    <constraint firstItem="zed-D5-sjd" firstAttribute="top" secondItem="QBk-jw-zGR" secondAttribute="top" id="dbL-Tu-Cvn"/>
+                                    <constraint firstItem="zed-D5-sjd" firstAttribute="bottom" secondItem="QBk-jw-zGR" secondAttribute="bottom" constant="-60" id="trv-ww-kn6"/>
+                                    <constraint firstItem="zed-D5-sjd" firstAttribute="leading" secondItem="QBk-jw-zGR" secondAttribute="leading" id="yfi-la-qGz"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="H0s-hd-MLt" firstAttribute="centerY" secondItem="Gb6-ic-OtM" secondAttribute="centerY" id="8dZ-w3-a7g"/>
+                            <constraint firstItem="Gb6-ic-OtM" firstAttribute="centerX" secondItem="sL7-cn-oXi" secondAttribute="centerX" id="Fsg-tH-iE3"/>
+                            <constraint firstItem="H0s-hd-MLt" firstAttribute="leading" secondItem="Gb6-ic-OtM" secondAttribute="trailing" constant="8" id="KnY-uz-lhB"/>
+                            <constraint firstItem="QBk-jw-zGR" firstAttribute="centerY" secondItem="sL7-cn-oXi" secondAttribute="centerY" id="MVX-NE-rtW"/>
+                            <constraint firstItem="Jeb-CW-Y3s" firstAttribute="bottom" secondItem="Gb6-ic-OtM" secondAttribute="bottom" constant="20" id="UWh-lX-DTz"/>
+                            <constraint firstItem="QBk-jw-zGR" firstAttribute="centerX" secondItem="sL7-cn-oXi" secondAttribute="centerX" id="aF5-Tb-E0i"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Jeb-CW-Y3s"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QUV-3n-KYI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="144.80000000000001" y="108.39580209895054"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="ExponentLaunchIcon" width="59.333332061767578" height="52"/>
+        <image name="ExponentLaunchText" width="50.333332061767578" height="21.333333969116211"/>
+    </resources>
+</document>

@@ -25,7 +25,6 @@ target 'Exponent' do
       'expo-bluetooth',
       'expo-in-app-purchases',
       'expo-payments-stripe',
-      'expo-splash-screen',
       'expo-updates',
     ],
     flags: {
