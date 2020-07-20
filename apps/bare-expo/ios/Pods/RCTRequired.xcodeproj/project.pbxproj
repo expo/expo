@@ -19,29 +19,16 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		3784930CCE8C2252C2F3F59B18CB696A /* RCTRequired.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTRequired.debug.xcconfig; sourceTree = "<group>"; };
-		41828298124BD8E4446789B83DBD2F99 /* RCTRequired.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTRequired.release.xcconfig; sourceTree = "<group>"; };
-		D05C85F48301DF0512CCFAF572C9C3B1 /* RCTRequired.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RCTRequired.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		D2A117456D0560AD407855F050A40216 /* RCTRequired.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RCTRequired.h; path = RCTRequired/RCTRequired.h; sourceTree = "<group>"; };
+		3B5802C3F4DE73ECEC26672CF9830097 /* RCTRequired.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RCTRequired.h; path = RCTRequired/RCTRequired.h; sourceTree = "<group>"; };
+		3C83453CFF07C5202DF634CD38307E9D /* RCTRequired.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RCTRequired.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5DAF5E0598F17F8BD4EE350E670393BA /* RCTRequired.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTRequired.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		2B3E09694DA6EF386D3812E880A419DA /* RCTRequired */ = {
+		07E62A80BEB9C78901DD900ECE12901B /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				D2A117456D0560AD407855F050A40216 /* RCTRequired.h */,
-				CAB9E0CE33555AE4FCC55A393ADDFDBD /* Pod */,
-				2F411DCD726ADFC2307269440390C8C0 /* Support Files */,
-			);
-			name = RCTRequired;
-			path = "../../../../react-native-lab/react-native/Libraries/RCTRequired";
-			sourceTree = "<group>";
-		};
-		2F411DCD726ADFC2307269440390C8C0 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				3784930CCE8C2252C2F3F59B18CB696A /* RCTRequired.debug.xcconfig */,
-				41828298124BD8E4446789B83DBD2F99 /* RCTRequired.release.xcconfig */,
+				5DAF5E0598F17F8BD4EE350E670393BA /* RCTRequired.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../../apps/bare-expo/ios/Pods/Target Support Files/RCTRequired";
@@ -52,7 +39,7 @@
 			children = (
 				ED7640E698FEDE769747765ED7A74895 /* Frameworks */,
 				9B347E02488D104C64EE238FAC81E0EC /* Products */,
-				2B3E09694DA6EF386D3812E880A419DA /* RCTRequired */,
+				C293EDECCEF3D2DF31044A1AFB1A58F6 /* RCTRequired */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,10 +50,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CAB9E0CE33555AE4FCC55A393ADDFDBD /* Pod */ = {
+		C293EDECCEF3D2DF31044A1AFB1A58F6 /* RCTRequired */ = {
 			isa = PBXGroup;
 			children = (
-				D05C85F48301DF0512CCFAF572C9C3B1 /* RCTRequired.podspec */,
+				3B5802C3F4DE73ECEC26672CF9830097 /* RCTRequired.h */,
+				E6C61A07EB327C5077A625BEFACAB295 /* Pod */,
+				07E62A80BEB9C78901DD900ECE12901B /* Support Files */,
+			);
+			name = RCTRequired;
+			path = "../../../../react-native-lab/react-native/Libraries/RCTRequired";
+			sourceTree = "<group>";
+		};
+		E6C61A07EB327C5077A625BEFACAB295 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				3C83453CFF07C5202DF634CD38307E9D /* RCTRequired.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -230,9 +228,9 @@
 			};
 			name = Release;
 		};
-		9DC8857B021176DEA82F3F2219FD8E80 /* Release */ = {
+		C94A35135E265ABBAECBBB5A48995103 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 41828298124BD8E4446789B83DBD2F99 /* RCTRequired.release.xcconfig */;
+			baseConfigurationReference = 5DAF5E0598F17F8BD4EE350E670393BA /* RCTRequired.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -244,9 +242,9 @@
 			};
 			name = Release;
 		};
-		B64E8687868B184FC7E3CD846407D3C1 /* Debug */ = {
+		F14EC06CD8CC03F81A715F0B96A3D613 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3784930CCE8C2252C2F3F59B18CB696A /* RCTRequired.debug.xcconfig */;
+			baseConfigurationReference = 5DAF5E0598F17F8BD4EE350E670393BA /* RCTRequired.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -272,8 +270,8 @@
 		825D4F966905EB9281D5DCEB44C60465 /* Build configuration list for PBXAggregateTarget "RCTRequired" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B64E8687868B184FC7E3CD846407D3C1 /* Debug */,
-				9DC8857B021176DEA82F3F2219FD8E80 /* Release */,
+				F14EC06CD8CC03F81A715F0B96A3D613 /* Debug */,
+				C94A35135E265ABBAECBBB5A48995103 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

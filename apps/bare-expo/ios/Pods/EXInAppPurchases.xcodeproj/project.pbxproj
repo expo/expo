@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		31CE64B8DF2D1FF6B3D37F3D86BC74B7 /* EXInAppPurchasesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 80CA527ED6781F7581BF1732C704F02C /* EXInAppPurchasesModule.m */; };
-		4D34467E65D92FCC751B934E90D2CBA6 /* EXInAppPurchases-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC29197A89BFC19B12C22B9159B2C6A /* EXInAppPurchases-dummy.m */; };
-		72780D2904D3AE533C44A73A9A2B92CD /* EXInAppPurchasesModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 98C627DF5D0868F3D44495E038E11908 /* EXInAppPurchasesModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		31CE64B8DF2D1FF6B3D37F3D86BC74B7 /* EXInAppPurchasesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 86D3A4B773E0EC378AE7A89A39BE0143 /* EXInAppPurchasesModule.m */; };
+		4D34467E65D92FCC751B934E90D2CBA6 /* EXInAppPurchases-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C465943C7964B7A022FD5EA577558C8 /* EXInAppPurchases-dummy.m */; };
+		72780D2904D3AE533C44A73A9A2B92CD /* EXInAppPurchasesModule.h in Headers */ = {isa = PBXBuildFile; fileRef = B820B3412244CB8655CDA5364C3FAF7A /* EXInAppPurchasesModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,15 +23,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		103A757DD2DD20AAE07BAF5BA679CE93 /* EXInAppPurchases.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXInAppPurchases.release.xcconfig; sourceTree = "<group>"; };
-		2F6EED5095639FB09FE581D046A1FC93 /* EXInAppPurchases.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXInAppPurchases.debug.xcconfig; sourceTree = "<group>"; };
+		0C465943C7964B7A022FD5EA577558C8 /* EXInAppPurchases-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXInAppPurchases-dummy.m"; sourceTree = "<group>"; };
+		468A4BAE5A17D0AF3EA3D93E8D9FC60E /* EXInAppPurchases.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXInAppPurchases.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		532911685E398B0D24DD5D8724861C01 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		80CA527ED6781F7581BF1732C704F02C /* EXInAppPurchasesModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXInAppPurchasesModule.m; path = EXInAppPurchases/EXInAppPurchasesModule.m; sourceTree = "<group>"; };
-		98C627DF5D0868F3D44495E038E11908 /* EXInAppPurchasesModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXInAppPurchasesModule.h; path = EXInAppPurchases/EXInAppPurchasesModule.h; sourceTree = "<group>"; };
-		9BDBA3A7F3DE6255B47C30203211CB37 /* EXInAppPurchases-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXInAppPurchases-prefix.pch"; sourceTree = "<group>"; };
-		BCC29197A89BFC19B12C22B9159B2C6A /* EXInAppPurchases-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXInAppPurchases-dummy.m"; sourceTree = "<group>"; };
+		86D3A4B773E0EC378AE7A89A39BE0143 /* EXInAppPurchasesModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXInAppPurchasesModule.m; path = EXInAppPurchases/EXInAppPurchasesModule.m; sourceTree = "<group>"; };
+		B820B3412244CB8655CDA5364C3FAF7A /* EXInAppPurchasesModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXInAppPurchasesModule.h; path = EXInAppPurchases/EXInAppPurchasesModule.h; sourceTree = "<group>"; };
+		C6707C1ECC9624DDA6628D4C98BC6814 /* EXInAppPurchases-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXInAppPurchases-prefix.pch"; sourceTree = "<group>"; };
+		CE28F32195538D007483A5E898B5641A /* EXInAppPurchases.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXInAppPurchases.xcconfig; sourceTree = "<group>"; };
 		D0ABBCC38E3A8A650CBF4C764B5017CB /* libEXInAppPurchases.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXInAppPurchases.a; path = libEXInAppPurchases.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		DBCEDBD4B840A4CBA2561016F63AD2FB /* EXInAppPurchases.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXInAppPurchases.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,16 +51,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		34CCF4D623BAF859F9FD308913E7646F /* EXInAppPurchases */ = {
+		2D7412F4ED6B7DEE429B233DCEEA44CB /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				98C627DF5D0868F3D44495E038E11908 /* EXInAppPurchasesModule.h */,
-				80CA527ED6781F7581BF1732C704F02C /* EXInAppPurchasesModule.m */,
-				7A8EA59336331DE02FAD57CC83A51600 /* Pod */,
-				48A7895251D8628E6248145017AE8E0F /* Support Files */,
+				468A4BAE5A17D0AF3EA3D93E8D9FC60E /* EXInAppPurchases.podspec */,
 			);
-			name = EXInAppPurchases;
-			path = "../../../../packages/expo-in-app-purchases/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		3A639915E27067527675058D45F57607 /* Products */ = {
@@ -72,24 +67,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		48A7895251D8628E6248145017AE8E0F /* Support Files */ = {
+		A5C2BE81556B34EDF8FF0A863A8D3699 /* EXInAppPurchases */ = {
 			isa = PBXGroup;
 			children = (
-				BCC29197A89BFC19B12C22B9159B2C6A /* EXInAppPurchases-dummy.m */,
-				9BDBA3A7F3DE6255B47C30203211CB37 /* EXInAppPurchases-prefix.pch */,
-				2F6EED5095639FB09FE581D046A1FC93 /* EXInAppPurchases.debug.xcconfig */,
-				103A757DD2DD20AAE07BAF5BA679CE93 /* EXInAppPurchases.release.xcconfig */,
+				B820B3412244CB8655CDA5364C3FAF7A /* EXInAppPurchasesModule.h */,
+				86D3A4B773E0EC378AE7A89A39BE0143 /* EXInAppPurchasesModule.m */,
+				2D7412F4ED6B7DEE429B233DCEEA44CB /* Pod */,
+				F0EEA146F630AED171C57588C3B28EFD /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXInAppPurchases";
-			sourceTree = "<group>";
-		};
-		7A8EA59336331DE02FAD57CC83A51600 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				DBCEDBD4B840A4CBA2561016F63AD2FB /* EXInAppPurchases.podspec */,
-			);
-			name = Pod;
+			name = EXInAppPurchases;
+			path = "../../../../packages/expo-in-app-purchases/ios";
 			sourceTree = "<group>";
 		};
 		B681076B6F284460B9748F8F64C61E36 /* Dependencies */ = {
@@ -104,10 +91,21 @@
 			isa = PBXGroup;
 			children = (
 				B681076B6F284460B9748F8F64C61E36 /* Dependencies */,
-				34CCF4D623BAF859F9FD308913E7646F /* EXInAppPurchases */,
+				A5C2BE81556B34EDF8FF0A863A8D3699 /* EXInAppPurchases */,
 				03A7AEF9FC78B36CAA9FB14CE32518F1 /* Frameworks */,
 				3A639915E27067527675058D45F57607 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		F0EEA146F630AED171C57588C3B28EFD /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				CE28F32195538D007483A5E898B5641A /* EXInAppPurchases.xcconfig */,
+				0C465943C7964B7A022FD5EA577558C8 /* EXInAppPurchases-dummy.m */,
+				C6707C1ECC9624DDA6628D4C98BC6814 /* EXInAppPurchases-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXInAppPurchases";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -319,9 +317,9 @@
 			};
 			name = Debug;
 		};
-		669E4DD4B44F14E4BE394CA17EC99C70 /* Release */ = {
+		5C2309FD7F9961EBDD842DC2A7615B3B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 103A757DD2DD20AAE07BAF5BA679CE93 /* EXInAppPurchases.release.xcconfig */;
+			baseConfigurationReference = CE28F32195538D007483A5E898B5641A /* EXInAppPurchases.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -345,9 +343,9 @@
 			};
 			name = Release;
 		};
-		D3817789B2294690E3C982A50EC6F6B5 /* Debug */ = {
+		AAFAE85421675889090DA6F30B734C4C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F6EED5095639FB09FE581D046A1FC93 /* EXInAppPurchases.debug.xcconfig */;
+			baseConfigurationReference = CE28F32195538D007483A5E898B5641A /* EXInAppPurchases.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -376,8 +374,8 @@
 		6A9CDBC28A51923F7D5283F484B9C25A /* Build configuration list for PBXNativeTarget "EXInAppPurchases" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D3817789B2294690E3C982A50EC6F6B5 /* Debug */,
-				669E4DD4B44F14E4BE394CA17EC99C70 /* Release */,
+				AAFAE85421675889090DA6F30B734C4C /* Debug */,
+				5C2309FD7F9961EBDD842DC2A7615B3B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -4,27 +4,21 @@ BUILD_CONFIGURATIONS:
 CACHE_KEYS:
   Amplitude-iOS:
     BUILD_SETTINGS_CHECKSUM:
-      Amplitude-iOS:
-        :debug: 0cbcb9952774673acc7a6e9a8c1266db
-        :release: 0cbcb9952774673acc7a6e9a8c1266db
+      Amplitude-iOS: 0cbcb9952774673acc7a6e9a8c1266db
     CHECKSUM: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
     PROJECT_NAME: Amplitude-iOS
     SPECS:
       - Amplitude-iOS (4.7.1)
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
-      Analytics:
-        :debug: 4b3b6704130da311e34f2609627e9c55
-        :release: 4b3b6704130da311e34f2609627e9c55
+      Analytics: 4b3b6704130da311e34f2609627e9c55
     CHECKSUM: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
     PROJECT_NAME: Analytics
     SPECS:
       - Analytics (3.7.0)
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      AppAuth:
-        :debug: 645fdba9fe912c64b27cf67add67debb
-        :release: 645fdba9fe912c64b27cf67add67debb
+      AppAuth: 645fdba9fe912c64b27cf67add67debb
     CHECKSUM: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
     PROJECT_NAME: AppAuth
     SPECS:
@@ -33,27 +27,21 @@ CACHE_KEYS:
       - AppAuth/ExternalUserAgent (1.3.0)
   boost-for-react-native:
     BUILD_SETTINGS_CHECKSUM:
-      boost-for-react-native:
-        :debug: e9824834bb3842483c6a4142ac76bb2d
-        :release: e9824834bb3842483c6a4142ac76bb2d
+      boost-for-react-native: e9824834bb3842483c6a4142ac76bb2d
     CHECKSUM: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
     PROJECT_NAME: boost-for-react-native
     SPECS:
       - boost-for-react-native (1.63.0)
   DoubleConversion:
     BUILD_SETTINGS_CHECKSUM:
-      DoubleConversion:
-        :debug: 00ad3596e935bcd21487033fc301bf91
-        :release: 00ad3596e935bcd21487033fc301bf91
+      DoubleConversion: 00ad3596e935bcd21487033fc301bf91
     CHECKSUM: 5805e889d232975c086db112ece9ed034df7a0b2
     PROJECT_NAME: DoubleConversion
     SPECS:
       - DoubleConversion (1.1.6)
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
-      EXAmplitude:
-        :debug: 61eb4bcce3e82c9da4c0d6ef87815f8c
-        :release: 61eb4bcce3e82c9da4c0d6ef87815f8c
+      EXAmplitude: 61eb4bcce3e82c9da4c0d6ef87815f8c
     CHECKSUM: 9232a37c556ab739c42adcbd0b239b5c1ac61f10
     FILES:
       - "../../../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
@@ -63,9 +51,7 @@ CACHE_KEYS:
       - EXAmplitude (8.2.1)
   EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      EXAppAuth:
-        :debug: b4000be4e93e905bd83b52d30660d2ab
-        :release: b4000be4e93e905bd83b52d30660d2ab
+      EXAppAuth: b4000be4e93e905bd83b52d30660d2ab
     CHECKSUM: 98c853968adeec68008887a0cb475efb2656f196
     FILES:
       - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.h"
@@ -81,9 +67,7 @@ CACHE_KEYS:
       - EXAppAuth (9.1.1)
   EXApplication:
     BUILD_SETTINGS_CHECKSUM:
-      EXApplication:
-        :debug: 5fd8b17b356234cacecd3159a6b20ac5
-        :release: 5fd8b17b356234cacecd3159a6b20ac5
+      EXApplication: 5fd8b17b356234cacecd3159a6b20ac5
     CHECKSUM: d7ccb60c33fa4d506967ff6adde42a0f872d69ad
     FILES:
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.h"
@@ -95,9 +79,7 @@ CACHE_KEYS:
       - EXApplication (2.2.1)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
-      EXAV:
-        :debug: 145c0531e2c7438e612f4f31e07db048
-        :release: 145c0531e2c7438e612f4f31e07db048
+      EXAV: 145c0531e2c7438e612f4f31e07db048
     CHECKSUM: 86344030966e0da7e00556fbb97269d9ad16071d
     FILES:
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
@@ -121,9 +103,7 @@ CACHE_KEYS:
       - EXAV (8.2.1)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
-      EXBackgroundFetch:
-        :debug: a5e0aec4c8a3ed87903824257d54d1ee
-        :release: a5e0aec4c8a3ed87903824257d54d1ee
+      EXBackgroundFetch: a5e0aec4c8a3ed87903824257d54d1ee
     CHECKSUM: 6e4836e2998b1e045d574fbc2018b6f288e929b6
     FILES:
       - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
@@ -135,9 +115,7 @@ CACHE_KEYS:
       - EXBackgroundFetch (8.3.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      EXBarCodeScanner:
-        :debug: c28f9ae1e4b34028013b8e5b051e414a
-        :release: c28f9ae1e4b34028013b8e5b051e414a
+      EXBarCodeScanner: c28f9ae1e4b34028013b8e5b051e414a
     CHECKSUM: 02c41a2bb7c0747dc96a96ee30b0aa80a0fc4168
     FILES:
       - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.h"
@@ -159,9 +137,7 @@ CACHE_KEYS:
       - EXBarCodeScanner (8.2.1)
   EXBattery:
     BUILD_SETTINGS_CHECKSUM:
-      EXBattery:
-        :debug: 4dd0f4ce97014997f7d5e8c9ecaff263
-        :release: 4dd0f4ce97014997f7d5e8c9ecaff263
+      EXBattery: 4dd0f4ce97014997f7d5e8c9ecaff263
     CHECKSUM: 367aef7eba65f488587610564224952411f1b48b
     FILES:
       - "../../../../packages/expo-battery/ios/EXBattery/EXBattery.h"
@@ -171,9 +147,7 @@ CACHE_KEYS:
       - EXBattery (2.2.1)
   EXBluetooth:
     BUILD_SETTINGS_CHECKSUM:
-      EXBluetooth:
-        :debug: c7cd39fe92009048c03ff1b68c9b793d
-        :release: c7cd39fe92009048c03ff1b68c9b793d
+      EXBluetooth: c7cd39fe92009048c03ff1b68c9b793d
     CHECKSUM: 9600be8656fa874217f168b6dc8b879f8f288c82
     FILES:
       - "../../../../packages/expo-bluetooth/ios/EXBluetooth/EXBluetooth+JSON.h"
@@ -185,9 +159,7 @@ CACHE_KEYS:
       - EXBluetooth (1.0.0)
   EXBlur:
     BUILD_SETTINGS_CHECKSUM:
-      EXBlur:
-        :debug: 55a74fe9348aa3516c86d90d4db64cd8
-        :release: 55a74fe9348aa3516c86d90d4db64cd8
+      EXBlur: 55a74fe9348aa3516c86d90d4db64cd8
     CHECKSUM: b622dc0f8a8fe74f05fb437cfb1c5ee16259dab1
     FILES:
       - "../../../../packages/expo-blur/ios/EXBlur/EXBlurView.h"
@@ -199,9 +171,7 @@ CACHE_KEYS:
       - EXBlur (8.1.2)
   EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
-      EXBrightness:
-        :debug: b6276dc192939ff820706926254325d2
-        :release: b6276dc192939ff820706926254325d2
+      EXBrightness: b6276dc192939ff820706926254325d2
     CHECKSUM: e02018c74baedcb51825cd91e16886973c81d029
     FILES:
       - "../../../../packages/expo-brightness/ios/EXBrightness/EXBrightness.h"
@@ -213,10 +183,8 @@ CACHE_KEYS:
       - EXBrightness (8.2.1)
   EXCalendar:
     BUILD_SETTINGS_CHECKSUM:
-      EXCalendar:
-        :debug: 36ce61fb0d5ba58b521d7be01d0ae914
-        :release: 36ce61fb0d5ba58b521d7be01d0ae914
-    CHECKSUM: 9157be548211a7b283535d5a5cf7c6843d26108b
+      EXCalendar: 36ce61fb0d5ba58b521d7be01d0ae914
+    CHECKSUM: 593d0dce6a42d7aea0000b9bb90f3d8e051053f5
     FILES:
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendar.h"
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendar.m"
@@ -228,12 +196,10 @@ CACHE_KEYS:
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.m"
     PROJECT_NAME: EXCalendar
     SPECS:
-      - EXCalendar (8.2.1)
+      - EXCalendar (8.2.2)
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
-      EXCellular:
-        :debug: 7ef9adee3605a6606e82ca6c0a3fe96c
-        :release: 7ef9adee3605a6606e82ca6c0a3fe96c
+      EXCellular: 7ef9adee3605a6606e82ca6c0a3fe96c
     CHECKSUM: b571e997db382446d6a5145932d738d694f63949
     FILES:
       - "../../../../packages/expo-cellular/ios/EXCellular/EXCellularModule.h"
@@ -243,9 +209,7 @@ CACHE_KEYS:
       - EXCellular (2.2.1)
   EXConstants:
     BUILD_SETTINGS_CHECKSUM:
-      EXConstants:
-        :debug: c8de149aaeee99038485a80442d25423
-        :release: c8de149aaeee99038485a80442d25423
+      EXConstants: c8de149aaeee99038485a80442d25423
     CHECKSUM: f907b3b6ce16e20d1750f22af1e095e924574bcb
     FILES:
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstants.h"
@@ -257,9 +221,7 @@ CACHE_KEYS:
       - EXConstants (9.1.1)
   EXContacts:
     BUILD_SETTINGS_CHECKSUM:
-      EXContacts:
-        :debug: fe8a1ede70ae72129e31aea29717efbc
-        :release: fe8a1ede70ae72129e31aea29717efbc
+      EXContacts: fe8a1ede70ae72129e31aea29717efbc
     CHECKSUM: 9ecc819adfb7690ed90ebcaf93d23ac84fe957f1
     FILES:
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.h"
@@ -275,9 +237,7 @@ CACHE_KEYS:
       - EXContacts (8.2.1)
   EXCrypto:
     BUILD_SETTINGS_CHECKSUM:
-      EXCrypto:
-        :debug: 54196ec25f36189f9311a05117ea7e1f
-        :release: 54196ec25f36189f9311a05117ea7e1f
+      EXCrypto: 54196ec25f36189f9311a05117ea7e1f
     CHECKSUM: 867e1d45d513e39ab9d7706232435edb1cf756cd
     FILES:
       - "../../../../packages/expo-crypto/ios/EXCrypto/EXCrypto.h"
@@ -287,9 +247,7 @@ CACHE_KEYS:
       - EXCrypto (8.2.1)
   EXDevice:
     BUILD_SETTINGS_CHECKSUM:
-      EXDevice:
-        :debug: f25591df8a38ea58236f841d88b266d3
-        :release: f25591df8a38ea58236f841d88b266d3
+      EXDevice: f25591df8a38ea58236f841d88b266d3
     CHECKSUM: befd3b2619915e615c3753c9f83309808aa0cdf5
     FILES:
       - "../../../../packages/expo-device/ios/EXDevice/EXDevice.h"
@@ -299,9 +257,7 @@ CACHE_KEYS:
       - EXDevice (2.2.1)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
-      EXDocumentPicker:
-        :debug: 5d71813cba1adfa7a8de60a3676f9c65
-        :release: 5d71813cba1adfa7a8de60a3676f9c65
+      EXDocumentPicker: 5d71813cba1adfa7a8de60a3676f9c65
     CHECKSUM: 38b1bc0995d3b8c879142be6d6753866484025a8
     FILES:
       - "../../../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.h"
@@ -311,9 +267,7 @@ CACHE_KEYS:
       - EXDocumentPicker (8.2.1)
   EXErrorRecovery:
     BUILD_SETTINGS_CHECKSUM:
-      EXErrorRecovery:
-        :debug: 07adcc4a982e707abb39742103d288ee
-        :release: 07adcc4a982e707abb39742103d288ee
+      EXErrorRecovery: 07adcc4a982e707abb39742103d288ee
     CHECKSUM: 500f1d4231c534f415e86caeb3fc677c7f5dd23c
     FILES:
       - "../../../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.h"
@@ -323,9 +277,7 @@ CACHE_KEYS:
       - EXErrorRecovery (1.2.1)
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      EXFacebook:
-        :debug: dc1658cf687deeaa14cc9e39f36d7cac
-        :release: dc1658cf687deeaa14cc9e39f36d7cac
+      EXFacebook: dc1658cf687deeaa14cc9e39f36d7cac
     CHECKSUM: 3c124265fb7230cf1071329208b765e0e187789e
     FILES:
       - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
@@ -337,9 +289,7 @@ CACHE_KEYS:
       - EXFacebook (8.2.1)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
-      EXFileSystem:
-        :debug: 384bbcee0771bf79893a232d6cd6c5e2
-        :release: 384bbcee0771bf79893a232d6cd6c5e2
+      EXFileSystem: 384bbcee0771bf79893a232d6cd6c5e2
     CHECKSUM: 76875135b61708b9afa7e6a89b72a60ba0fdfa20
     FILES:
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.h"
@@ -369,9 +319,7 @@ CACHE_KEYS:
       - EXFileSystem (9.0.1)
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
-      EXFirebaseAnalytics:
-        :debug: cc401ee0180ae21c92b2d4a83982840d
-        :release: cc401ee0180ae21c92b2d4a83982840d
+      EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
     CHECKSUM: b502d650cb33c2d137cb19d639f8b315ee7e5ad3
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
@@ -381,9 +329,7 @@ CACHE_KEYS:
       - EXFirebaseAnalytics (2.4.1)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
-      EXFirebaseCore:
-        :debug: 558caeb4b0121e43433c08b1594d5793
-        :release: 558caeb4b0121e43433c08b1594d5793
+      EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
     CHECKSUM: 7e720f6f3725795b960b9e59dfcd46e674b30774
     FILES:
       - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
@@ -396,9 +342,7 @@ CACHE_KEYS:
       - EXFirebaseCore (1.1.1)
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
-      EXFont:
-        :debug: d8920f123f0cdc804585bfcef1a86386
-        :release: d8920f123f0cdc804585bfcef1a86386
+      EXFont: d8920f123f0cdc804585bfcef1a86386
     CHECKSUM: d6cabb73989fc29296972c52915a023f46b2c7f5
     FILES:
       - "../../../../packages/expo-font/ios/EXFont/EXFont.h"
@@ -418,9 +362,7 @@ CACHE_KEYS:
       - EXFont (8.2.1)
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL:
-        :debug: b21ff559aacb62ac621d51e446f9cbce
-        :release: b21ff559aacb62ac621d51e446f9cbce
+      EXGL: b21ff559aacb62ac621d51e446f9cbce
     CHECKSUM: 34fdad312c8fefe8dbc24fa68056868830d8e826
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
@@ -440,9 +382,7 @@ CACHE_KEYS:
       - EXGL (8.3.1)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL_CPP:
-        :debug: e5c21be87c49c4ea22fb524158d76c6f
-        :release: e5c21be87c49c4ea22fb524158d76c6f
+      EXGL_CPP: e5c21be87c49c4ea22fb524158d76c6f
     CHECKSUM: ed6b6ec48e1253e038003c49cdd29af3e0e8e82c
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -465,9 +405,7 @@ CACHE_KEYS:
       - EXGL_CPP/EXGLContext (8.3.1)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
-      EXGoogleSignIn:
-        :debug: f09b309f99f7a0147df78dd155d49661
-        :release: f09b309f99f7a0147df78dd155d49661
+      EXGoogleSignIn: f09b309f99f7a0147df78dd155d49661
     CHECKSUM: 02f0db1efb39c8e2508832a0175319f0ce08a80f
     FILES:
       - "../../../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.h"
@@ -483,9 +421,7 @@ CACHE_KEYS:
       - EXGoogleSignIn (8.2.1)
   EXHaptics:
     BUILD_SETTINGS_CHECKSUM:
-      EXHaptics:
-        :debug: 5aee71f996d35f06fb071c5534724376
-        :release: 5aee71f996d35f06fb071c5534724376
+      EXHaptics: 5aee71f996d35f06fb071c5534724376
     CHECKSUM: 5428b344a216ca5d9df6ca8f65720b2a1ad9f109
     FILES:
       - "../../../../packages/expo-haptics/ios/EXHaptics/EXHapticsModule.h"
@@ -495,9 +431,7 @@ CACHE_KEYS:
       - EXHaptics (8.2.1)
   EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
-      EXImageLoader:
-        :debug: 60ddff274f896a625ac97e1724d1c754
-        :release: 60ddff274f896a625ac97e1724d1c754
+      EXImageLoader: 60ddff274f896a625ac97e1724d1c754
     CHECKSUM: 02ca02c9cd5cc8a97b423207a73a791e0a86bea5
     FILES:
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
@@ -507,9 +441,7 @@ CACHE_KEYS:
       - EXImageLoader (1.1.1)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
-      EXImageManipulator:
-        :debug: 0fb2c3a3ddfc438c9bc1af0da1473ddc
-        :release: 0fb2c3a3ddfc438c9bc1af0da1473ddc
+      EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc
     CHECKSUM: fbc0fff59cd398ebec3f3e9bedd4451375de2d5f
     FILES:
       - "../../../../packages/expo-image-manipulator/ios/EXImageManipulator/EXImageManipulatorModule.h"
@@ -519,9 +451,7 @@ CACHE_KEYS:
       - EXImageManipulator (8.2.1)
   EXImagePicker:
     BUILD_SETTINGS_CHECKSUM:
-      EXImagePicker:
-        :debug: d527769f4e804c5ea2f09deb41a716e1
-        :release: d527769f4e804c5ea2f09deb41a716e1
+      EXImagePicker: d527769f4e804c5ea2f09deb41a716e1
     CHECKSUM: f5eb978a3b2f268f47eb567008018de512f36557
     FILES:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
@@ -535,9 +465,7 @@ CACHE_KEYS:
       - EXImagePicker (8.3.0)
   EXInAppPurchases:
     BUILD_SETTINGS_CHECKSUM:
-      EXInAppPurchases:
-        :debug: 9de76cf78759ab4168540e85ecee8b86
-        :release: 9de76cf78759ab4168540e85ecee8b86
+      EXInAppPurchases: 9de76cf78759ab4168540e85ecee8b86
     CHECKSUM: f20d1ae0f899ef5f868c95033da6656282a41e68
     FILES:
       - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.h"
@@ -547,9 +475,7 @@ CACHE_KEYS:
       - EXInAppPurchases (8.2.1)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
-      EXKeepAwake:
-        :debug: ff09e99980f1b1b84c118d7d2037e232
-        :release: ff09e99980f1b1b84c118d7d2037e232
+      EXKeepAwake: ff09e99980f1b1b84c118d7d2037e232
     CHECKSUM: 8b0f68242f036b971f9f8976341823cbe6f50812
     FILES:
       - "../../../../packages/expo-keep-awake/ios/EXKeepAwake/EXKeepAwake.h"
@@ -559,9 +485,7 @@ CACHE_KEYS:
       - EXKeepAwake (8.2.1)
   EXLinearGradient:
     BUILD_SETTINGS_CHECKSUM:
-      EXLinearGradient:
-        :debug: 3a91d0299158d0ef6f765c4d34b59b79
-        :release: 3a91d0299158d0ef6f765c4d34b59b79
+      EXLinearGradient: 3a91d0299158d0ef6f765c4d34b59b79
     CHECKSUM: 663bf3b9009a96567e98498016e40422631be81d
     FILES:
       - "../../../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.h"
@@ -575,9 +499,7 @@ CACHE_KEYS:
       - EXLinearGradient (8.2.1)
   EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
-      EXLocalAuthentication:
-        :debug: 5e28c7ec1bad6a0570a9cbc373438c44
-        :release: 5e28c7ec1bad6a0570a9cbc373438c44
+      EXLocalAuthentication: 5e28c7ec1bad6a0570a9cbc373438c44
     CHECKSUM: 9a91ae13eec74d90404a9845a1f5486a48af2a94
     FILES:
       - "../../../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h"
@@ -587,9 +509,7 @@ CACHE_KEYS:
       - EXLocalAuthentication (9.1.1)
   EXLocalization:
     BUILD_SETTINGS_CHECKSUM:
-      EXLocalization:
-        :debug: 8513c3f384ef74b702b8d41adb5ed780
-        :release: 8513c3f384ef74b702b8d41adb5ed780
+      EXLocalization: 8513c3f384ef74b702b8d41adb5ed780
     CHECKSUM: b5bcfc925ed83123b585d46d3bd54d7b7118f307
     FILES:
       - "../../../../packages/expo-localization/ios/EXLocalization/EXLocalization.h"
@@ -599,9 +519,7 @@ CACHE_KEYS:
       - EXLocalization (8.2.1)
   EXLocation:
     BUILD_SETTINGS_CHECKSUM:
-      EXLocation:
-        :debug: 2cdf527b8fd9660760dea76fb7930f4a
-        :release: 2cdf527b8fd9660760dea76fb7930f4a
+      EXLocation: 2cdf527b8fd9660760dea76fb7930f4a
     CHECKSUM: e93020e255f52a1cc031e0f45b0a24eb20fc4b55
     FILES:
       - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
@@ -619,9 +537,7 @@ CACHE_KEYS:
       - EXLocation (8.2.1)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
-      EXMailComposer:
-        :debug: dde34d492aa6e58f5e36c7f4824e2b42
-        :release: dde34d492aa6e58f5e36c7f4824e2b42
+      EXMailComposer: dde34d492aa6e58f5e36c7f4824e2b42
     CHECKSUM: a7e2a9f6ad73718dc1ec0bb786200dbc9376e2c2
     FILES:
       - "../../../../packages/expo-mail-composer/ios/EXMailComposer/EXMailComposer.h"
@@ -631,9 +547,7 @@ CACHE_KEYS:
       - EXMailComposer (8.2.1)
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      EXMediaLibrary:
-        :debug: 7544d673700f034419a0fff210a72e00
-        :release: 7544d673700f034419a0fff210a72e00
+      EXMediaLibrary: 7544d673700f034419a0fff210a72e00
     CHECKSUM: 267cf1daca04a4d71d20c5be0b82701fe6056a08
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
@@ -649,9 +563,7 @@ CACHE_KEYS:
       - EXMediaLibrary (8.2.1)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      EXNetwork:
-        :debug: 1bd35e8c2b02e38f824935482ef7c92c
-        :release: 1bd35e8c2b02e38f824935482ef7c92c
+      EXNetwork: 1bd35e8c2b02e38f824935482ef7c92c
     CHECKSUM: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
     FILES:
       - "../../../../packages/expo-network/ios/EXNetwork/EXNetwork.h"
@@ -661,9 +573,7 @@ CACHE_KEYS:
       - EXNetwork (2.2.1)
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
-      EXNotifications:
-        :debug: 1a9a6dea23cce102abe0ca9c4863027b
-        :release: 1a9a6dea23cce102abe0ca9c4863027b
+      EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
     CHECKSUM: 4066720495cdd6366d0178f853a93671d9ea11c6
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
@@ -707,9 +617,7 @@ CACHE_KEYS:
       - EXNotifications (0.3.3)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
-      EXPermissions:
-        :debug: 042b0d307d74f9ba36a7183b44cd74a0
-        :release: 042b0d307d74f9ba36a7183b44cd74a0
+      EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
     CHECKSUM: 80ac3acbdb145930079810fe5b08c022b3428aa8
     FILES:
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
@@ -721,9 +629,7 @@ CACHE_KEYS:
       - EXPermissions (9.0.1)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
-      expo-image:
-        :debug: f337cc450e34c1ef80ab385c7986ca7a
-        :release: f337cc450e34c1ef80ab385c7986ca7a
+      expo-image: f337cc450e34c1ef80ab385c7986ca7a
     CHECKSUM: 36f53fe2845e4bb74021f69192a752db29766897
     FILES:
       - "../../../../packages/expo-image/ios/EXImageTypes.h"
@@ -738,9 +644,7 @@ CACHE_KEYS:
       - expo-image (1.0.0-alpha.0)
   EXPrint:
     BUILD_SETTINGS_CHECKSUM:
-      EXPrint:
-        :debug: f73e095f89524fa02c72b0692bb1f272
-        :release: f73e095f89524fa02c72b0692bb1f272
+      EXPrint: f73e095f89524fa02c72b0692bb1f272
     CHECKSUM: ba38c9f67a2d046d6160f6d4308af18f584a5039
     FILES:
       - "../../../../packages/expo-print/ios/EXPrint/EXPrint.h"
@@ -756,9 +660,7 @@ CACHE_KEYS:
       - EXPrint (9.0.1)
   EXRandom:
     BUILD_SETTINGS_CHECKSUM:
-      EXRandom:
-        :debug: ff6c0d51873fcc617a9b0822d664f413
-        :release: ff6c0d51873fcc617a9b0822d664f413
+      EXRandom: ff6c0d51873fcc617a9b0822d664f413
     CHECKSUM: a375fb6bed8a0919a795766b8d5218b1200538b7
     FILES:
       - "../../../../packages/expo-random/ios/EXRandom/EXRandom.h"
@@ -768,9 +670,7 @@ CACHE_KEYS:
       - EXRandom (8.2.1)
   EXScreenCapture:
     BUILD_SETTINGS_CHECKSUM:
-      EXScreenCapture:
-        :debug: 2cf4d30c60c6bea2892b7e500db91630
-        :release: 2cf4d30c60c6bea2892b7e500db91630
+      EXScreenCapture: 2cf4d30c60c6bea2892b7e500db91630
     CHECKSUM: ed9b1813758bf0057fc3780043bfa4dc0956a9b5
     FILES:
       - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.h"
@@ -780,9 +680,7 @@ CACHE_KEYS:
       - EXScreenCapture (1.0.1)
   EXScreenOrientation:
     BUILD_SETTINGS_CHECKSUM:
-      EXScreenOrientation:
-        :debug: 3c73a834a11a633a938e51ef46ac08a1
-        :release: 3c73a834a11a633a938e51ef46ac08a1
+      EXScreenOrientation: 3c73a834a11a633a938e51ef46ac08a1
     CHECKSUM: c9cfb33eaff7ce83330c5238eba523d027b9eb53
     FILES:
       - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
@@ -798,9 +696,7 @@ CACHE_KEYS:
       - EXScreenOrientation (1.1.1)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
-      EXSecureStore:
-        :debug: 10a623412aef75951df791abc0f7f5ba
-        :release: 10a623412aef75951df791abc0f7f5ba
+      EXSecureStore: 10a623412aef75951df791abc0f7f5ba
     CHECKSUM: 908934a8b02301997fee88e3f4c05eea4e2a9ffb
     FILES:
       - "../../../../packages/expo-secure-store/ios/EXSecureStore/EXSecureStore.h"
@@ -810,9 +706,7 @@ CACHE_KEYS:
       - EXSecureStore (9.0.1)
   EXSegment:
     BUILD_SETTINGS_CHECKSUM:
-      EXSegment:
-        :debug: 8eebb5a12fba89d199dea131ac094a2f
-        :release: 8eebb5a12fba89d199dea131ac094a2f
+      EXSegment: 8eebb5a12fba89d199dea131ac094a2f
     CHECKSUM: 7f9fd99f88f5b1ff06d323a153873d2105d390f4
     FILES:
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
@@ -822,9 +716,7 @@ CACHE_KEYS:
       - EXSegment (8.2.1)
   EXSensors:
     BUILD_SETTINGS_CHECKSUM:
-      EXSensors:
-        :debug: b9da911a0b1aa9882d008d47807201fe
-        :release: b9da911a0b1aa9882d008d47807201fe
+      EXSensors: b9da911a0b1aa9882d008d47807201fe
     CHECKSUM: 761f6bd03eb13ff7dfffe955de7edce3b73306c4
     FILES:
       - "../../../../packages/expo-sensors/ios/EXSensors/EXSensorsManager.h"
@@ -850,9 +742,7 @@ CACHE_KEYS:
       - EXSensors (9.0.1)
   EXSharing:
     BUILD_SETTINGS_CHECKSUM:
-      EXSharing:
-        :debug: c563a8e9ae6ce8eb1e03cbf09cd1066d
-        :release: c563a8e9ae6ce8eb1e03cbf09cd1066d
+      EXSharing: c563a8e9ae6ce8eb1e03cbf09cd1066d
     CHECKSUM: 90a28fe9d4187d124d491788d96d204b30448b8f
     FILES:
       - "../../../../packages/expo-sharing/ios/EXSharing/EXSharingModule.h"
@@ -862,9 +752,7 @@ CACHE_KEYS:
       - EXSharing (8.2.1)
   EXSMS:
     BUILD_SETTINGS_CHECKSUM:
-      EXSMS:
-        :debug: 066e893c0c23fbe834b31de7cff3751d
-        :release: 066e893c0c23fbe834b31de7cff3751d
+      EXSMS: 066e893c0c23fbe834b31de7cff3751d
     CHECKSUM: 93b2aafc8aca983cecf5905cf03ac80a678c61d9
     FILES:
       - "../../../../packages/expo-sms/ios/EXSMS/EXSMSModule.h"
@@ -874,9 +762,7 @@ CACHE_KEYS:
       - EXSMS (8.2.1)
   EXSpeech:
     BUILD_SETTINGS_CHECKSUM:
-      EXSpeech:
-        :debug: 28301c7a07a54228912d6be99e633981
-        :release: 28301c7a07a54228912d6be99e633981
+      EXSpeech: 28301c7a07a54228912d6be99e633981
     CHECKSUM: 9917a04a410a42904f1507a2e06234a91aff1c6d
     FILES:
       - "../../../../packages/expo-speech/ios/EXSpeech/EXSpeech.h"
@@ -886,9 +772,7 @@ CACHE_KEYS:
       - EXSpeech (8.2.1)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
-      EXSQLite:
-        :debug: acb84ade2d15e9630e8da4bbb7418d6f
-        :release: acb84ade2d15e9630e8da4bbb7418d6f
+      EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 64611c1b369c0f1e9cae4e551d0aa4478a58cadf
     FILES:
       - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
@@ -898,9 +782,7 @@ CACHE_KEYS:
       - EXSQLite (8.2.1)
   EXStoreReview:
     BUILD_SETTINGS_CHECKSUM:
-      EXStoreReview:
-        :debug: 75d89d81f1fecae17930ce470b32f1ec
-        :release: 75d89d81f1fecae17930ce470b32f1ec
+      EXStoreReview: 75d89d81f1fecae17930ce470b32f1ec
     CHECKSUM: 2b9bdb91b3ed4319b4f6a4cb4647ba48a6ab67c8
     FILES:
       - "../../../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.h"
@@ -910,9 +792,7 @@ CACHE_KEYS:
       - EXStoreReview (2.1.2)
   EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
-      EXTaskManager:
-        :debug: c89b8cc024ffb647f0baaef50ace5ac4
-        :release: c89b8cc024ffb647f0baaef50ace5ac4
+      EXTaskManager: c89b8cc024ffb647f0baaef50ace5ac4
     CHECKSUM: 019344613fa2ad14a85e5b6c2699707eee35a62d
     FILES:
       - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
@@ -930,9 +810,7 @@ CACHE_KEYS:
       - EXTaskManager (8.3.0)
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
-      EXWebBrowser:
-        :debug: 8a03493ab01357acaad4113c212a979d
-        :release: 8a03493ab01357acaad4113c212a979d
+      EXWebBrowser: 8a03493ab01357acaad4113c212a979d
     CHECKSUM: d37a5ffdea1b65947352bc001dd9f732463725d4
     FILES:
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
@@ -942,9 +820,7 @@ CACHE_KEYS:
       - EXWebBrowser (8.3.1)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
-      FBLazyVector:
-        :debug: db36a67e420fa1be73e35e9a4f9553c4
-        :release: db36a67e420fa1be73e35e9a4f9553c4
+      FBLazyVector: db36a67e420fa1be73e35e9a4f9553c4
     CHECKSUM: 4aab18c93cd9546e4bfed752b4084585eca8b245
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyIterator.h"
@@ -954,9 +830,7 @@ CACHE_KEYS:
       - FBLazyVector (0.62.2)
   FBReactNativeSpec:
     BUILD_SETTINGS_CHECKSUM:
-      FBReactNativeSpec:
-        :debug: 895df4cff1b7bc5e00a0951c5c563369
-        :release: 895df4cff1b7bc5e00a0951c5c563369
+      FBReactNativeSpec: 895df4cff1b7bc5e00a0951c5c563369
     CHECKSUM: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
@@ -966,9 +840,7 @@ CACHE_KEYS:
       - FBReactNativeSpec (0.62.2)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
-      FBSDKCoreKit:
-        :debug: 60d69dde3e50d94f5f39949c424b03c5
-        :release: 60d69dde3e50d94f5f39949c424b03c5
+      FBSDKCoreKit: 60d69dde3e50d94f5f39949c424b03c5
     CHECKSUM: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
     PROJECT_NAME: FBSDKCoreKit
     SPECS:
@@ -977,9 +849,7 @@ CACHE_KEYS:
       - FBSDKCoreKit/Core (5.8.0)
   FBSDKLoginKit:
     BUILD_SETTINGS_CHECKSUM:
-      FBSDKLoginKit:
-        :debug: 0df82783c4955cafdce54ee3f9243823
-        :release: 0df82783c4955cafdce54ee3f9243823
+      FBSDKLoginKit: 0df82783c4955cafdce54ee3f9243823
     CHECKSUM: 1b0cf04df0370b37404213157b060d6666ede814
     PROJECT_NAME: FBSDKLoginKit
     SPECS:
@@ -987,9 +857,7 @@ CACHE_KEYS:
       - FBSDKLoginKit/Login (5.8.0)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
-      Firebase:
-        :debug: 043d6ce04946d5de6f1a25bee76f328d
-        :release: 043d6ce04946d5de6f1a25bee76f328d
+      Firebase: 043d6ce04946d5de6f1a25bee76f328d
     CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
     PROJECT_NAME: Firebase
     SPECS:
@@ -997,54 +865,42 @@ CACHE_KEYS:
       - Firebase/CoreOnly (6.14.0)
   FirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseAnalytics:
-        :debug: d3b8372472720ab5e91b3a3adc59720a
-        :release: d3b8372472720ab5e91b3a3adc59720a
+      FirebaseAnalytics: d3b8372472720ab5e91b3a3adc59720a
     CHECKSUM: f68b9f3f1241385129ae0a83b63627fc420c05e5
     PROJECT_NAME: FirebaseAnalytics
     SPECS:
       - FirebaseAnalytics (6.1.7)
   FirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseCore:
-        :debug: 9e46d904547d9ac25ab4b4514fc0a2f7
-        :release: 9e46d904547d9ac25ab4b4514fc0a2f7
+      FirebaseCore: 9e46d904547d9ac25ab4b4514fc0a2f7
     CHECKSUM: 632e05cc5e1199d9147122c16d92305eb04c34bd
     PROJECT_NAME: FirebaseCore
     SPECS:
       - FirebaseCore (6.5.0)
   FirebaseCoreDiagnostics:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseCoreDiagnostics:
-        :debug: d94bfb53514b8d2ac93bd041c0ca0e12
-        :release: d94bfb53514b8d2ac93bd041c0ca0e12
+      FirebaseCoreDiagnostics: d94bfb53514b8d2ac93bd041c0ca0e12
     CHECKSUM: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
     PROJECT_NAME: FirebaseCoreDiagnostics
     SPECS:
       - FirebaseCoreDiagnostics (1.1.2)
   FirebaseCoreDiagnosticsInterop:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseCoreDiagnosticsInterop:
-        :debug: 156db52ee23ec56ad2ede89ad1ee8a2b
-        :release: 156db52ee23ec56ad2ede89ad1ee8a2b
+      FirebaseCoreDiagnosticsInterop: 156db52ee23ec56ad2ede89ad1ee8a2b
     CHECKSUM: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
     PROJECT_NAME: FirebaseCoreDiagnosticsInterop
     SPECS:
       - FirebaseCoreDiagnosticsInterop (1.1.0)
   FirebaseInstanceID:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseInstanceID:
-        :debug: c417e45eb1ce3ddd5681ade464f26b8e
-        :release: c417e45eb1ce3ddd5681ade464f26b8e
+      FirebaseInstanceID: c417e45eb1ce3ddd5681ade464f26b8e
     CHECKSUM: ce993a3c3670a8f5d47ce371ac5d143c560608c5
     PROJECT_NAME: FirebaseInstanceID
     SPECS:
       - FirebaseInstanceID (4.2.8)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
-      Folly:
-        :debug: 6929e5198d305a2496bf017ba64d131c
-        :release: 6929e5198d305a2496bf017ba64d131c
+      Folly: 6929e5198d305a2496bf017ba64d131c
     CHECKSUM: 30e7936e1c45c08d884aa59369ed951a8e68cf51
     PROJECT_NAME: Folly
     SPECS:
@@ -1052,54 +908,42 @@ CACHE_KEYS:
       - Folly/Default (2018.10.22.00)
   glog:
     BUILD_SETTINGS_CHECKSUM:
-      glog:
-        :debug: 092f9229debf28ff43a16fd11331f793
-        :release: 092f9229debf28ff43a16fd11331f793
+      glog: 092f9229debf28ff43a16fd11331f793
     CHECKSUM: 1f3da668190260b06b429bb211bfbee5cd790c28
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
   GoogleAppMeasurement:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleAppMeasurement:
-        :debug: 8edf625de9a660fae9e528eb6d244601
-        :release: 8edf625de9a660fae9e528eb6d244601
+      GoogleAppMeasurement: 8edf625de9a660fae9e528eb6d244601
     CHECKSUM: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
     PROJECT_NAME: GoogleAppMeasurement
     SPECS:
       - GoogleAppMeasurement (6.1.7)
   GoogleDataTransport:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleDataTransport:
-        :debug: c52a5276024512707683f66e6cfe0966
-        :release: c52a5276024512707683f66e6cfe0966
+      GoogleDataTransport: c52a5276024512707683f66e6cfe0966
     CHECKSUM: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
     PROJECT_NAME: GoogleDataTransport
     SPECS:
       - GoogleDataTransport (3.2.0)
   GoogleDataTransportCCTSupport:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleDataTransportCCTSupport:
-        :debug: 1974efffec58f9b1b16d714da50b2d51
-        :release: 1974efffec58f9b1b16d714da50b2d51
+      GoogleDataTransportCCTSupport: 1974efffec58f9b1b16d714da50b2d51
     CHECKSUM: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
     PROJECT_NAME: GoogleDataTransportCCTSupport
     SPECS:
       - GoogleDataTransportCCTSupport (1.2.3)
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleSignIn:
-        :debug: a0153e525df9a663a947ee922d9629b2
-        :release: a0153e525df9a663a947ee922d9629b2
+      GoogleSignIn: a0153e525df9a663a947ee922d9629b2
     CHECKSUM: 7137d297ddc022a7e0aa4619c86d72c909fa7213
     PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.2)
   GoogleUtilities:
     BUILD_SETTINGS_CHECKSUM:
-      GoogleUtilities:
-        :debug: c7dbbc462e97d6f959d7b7bdd3d67f38
-        :release: c7dbbc462e97d6f959d7b7bdd3d67f38
+      GoogleUtilities: c7dbbc462e97d6f959d7b7bdd3d67f38
     CHECKSUM: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
     PROJECT_NAME: GoogleUtilities
     SPECS:
@@ -1113,18 +957,14 @@ CACHE_KEYS:
       - GoogleUtilities/UserDefaults (6.4.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
-      GTMAppAuth:
-        :debug: 4318abd6a13d458bbfc857da0ff65b96
-        :release: 4318abd6a13d458bbfc857da0ff65b96
+      GTMAppAuth: 4318abd6a13d458bbfc857da0ff65b96
     CHECKSUM: 4deac854479704f348309e7b66189e604cf5e01e
     PROJECT_NAME: GTMAppAuth
     SPECS:
       - GTMAppAuth (1.0.0)
   GTMSessionFetcher:
     BUILD_SETTINGS_CHECKSUM:
-      GTMSessionFetcher:
-        :debug: d9c89823d2516fe6150cc01204ef77f0
-        :release: d9c89823d2516fe6150cc01204ef77f0
+      GTMSessionFetcher: d9c89823d2516fe6150cc01204ef77f0
     CHECKSUM: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
     PROJECT_NAME: GTMSessionFetcher
     SPECS:
@@ -1133,9 +973,7 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   nanopb:
     BUILD_SETTINGS_CHECKSUM:
-      nanopb:
-        :debug: 576bb45f6f1262a9f9a409f37f3694b7
-        :release: 576bb45f6f1262a9f9a409f37f3694b7
+      nanopb: 576bb45f6f1262a9f9a409f37f3694b7
     CHECKSUM: 18003b5e52dab79db540fe93fe9579f399bd1ccd
     PROJECT_NAME: nanopb
     SPECS:
@@ -1146,22 +984,13 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 885c99e83d25c5f5ad3e45d56860a3e5
       Release: 885c99e83d25c5f5ad3e45d56860a3e5
-    FILES:
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der"
-      - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
-      - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 63790a801d67f210f62f4b618716ba86
       Release: 63790a801d67f210f62f4b618716ba86
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
-      RCTRequired:
-        :debug: 4dfdb65505e509cfb5f433fb54943666
-        :release: 4dfdb65505e509cfb5f433fb54943666
+      RCTRequired: 4dfdb65505e509cfb5f433fb54943666
     CHECKSUM: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/RCTRequired/RCTRequired/RCTRequired.h"
@@ -1170,9 +999,7 @@ CACHE_KEYS:
       - RCTRequired (0.62.2)
   RCTTypeSafety:
     BUILD_SETTINGS_CHECKSUM:
-      RCTTypeSafety:
-        :debug: 8a0adbad4fe3071f46cd7712e0335fef
-        :release: 8a0adbad4fe3071f46cd7712e0335fef
+      RCTTypeSafety: 8a0adbad4fe3071f46cd7712e0335fef
     CHECKSUM: 93006131180074cffa227a1075802c89a49dd4ce
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTConvertHelpers.h"
@@ -1184,9 +1011,7 @@ CACHE_KEYS:
       - RCTTypeSafety (0.62.2)
   React:
     BUILD_SETTINGS_CHECKSUM:
-      React:
-        :debug: 22c9371deac04d1f56681952bb8a2bcf
-        :release: 22c9371deac04d1f56681952bb8a2bcf
+      React: 22c9371deac04d1f56681952bb8a2bcf
     CHECKSUM: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
     FILES:
       - "../../../../react-native-lab/react-native/LICENSE"
@@ -1198,9 +1023,7 @@ CACHE_KEYS:
       - React (0.62.2)
   React-Core:
     BUILD_SETTINGS_CHECKSUM:
-      React-Core:
-        :debug: feb0c957ea4911c9b8ead6b93443deda
-        :release: feb0c957ea4911c9b8ead6b93443deda
+      React-Core: feb0c957ea4911c9b8ead6b93443deda
     CHECKSUM: b12bffb3f567fdf99510acb716ef1abd426e0e05
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobManager.h"
@@ -1594,9 +1417,7 @@ CACHE_KEYS:
       - React-Core/RCTWebSocket (0.62.2)
   React-CoreModules:
     BUILD_SETTINGS_CHECKSUM:
-      React-CoreModules:
-        :debug: 4cf562417086d33366b9c036c07a4a4d
-        :release: 4cf562417086d33366b9c036c07a4a4d
+      React-CoreModules: 4cf562417086d33366b9c036c07a4a4d
     CHECKSUM: 4a9b87bbe669d6c3173c0132c3328e3b000783d0
     FILES:
       - "../../../../react-native-lab/react-native/React/CoreModules/CoreModulesPlugins.mm"
@@ -1629,9 +1450,7 @@ CACHE_KEYS:
       - React-CoreModules (0.62.2)
   React-cxxreact:
     BUILD_SETTINGS_CHECKSUM:
-      React-cxxreact:
-        :debug: 3e83cb09172a4e6d4d8e4c515b41354a
-        :release: 3e83cb09172a4e6d4d8e4c515b41354a
+      React-cxxreact: 3e83cb09172a4e6d4d8e4c515b41354a
     CHECKSUM: e65f9c2ba0ac5be946f53548c1aaaee5873a8103
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/CxxModule.h"
@@ -1672,9 +1491,7 @@ CACHE_KEYS:
       - React-cxxreact (0.62.2)
   React-jsi:
     BUILD_SETTINGS_CHECKSUM:
-      React-jsi:
-        :debug: 7436312a0162aaf956e82cb50e540389
-        :release: 7436312a0162aaf956e82cb50e540389
+      React-jsi: 7436312a0162aaf956e82cb50e540389
     CHECKSUM: b6dc94a6a12ff98e8877287a0b7620d365201161
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/jsi/JSCRuntime.cpp"
@@ -1696,9 +1513,7 @@ CACHE_KEYS:
       - React-jsi/Default (0.62.2)
   React-jsiexecutor:
     BUILD_SETTINGS_CHECKSUM:
-      React-jsiexecutor:
-        :debug: 7ca7679c2cf21fe925a2637926fede3c
-        :release: 7ca7679c2cf21fe925a2637926fede3c
+      React-jsiexecutor: 7ca7679c2cf21fe925a2637926fede3c
     CHECKSUM: 1540d1c01bb493ae3124ed83351b1b6a155db7da
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.cpp"
@@ -1710,9 +1525,7 @@ CACHE_KEYS:
       - React-jsiexecutor (0.62.2)
   React-jsinspector:
     BUILD_SETTINGS_CHECKSUM:
-      React-jsinspector:
-        :debug: 9e0b7df27a53899ab5df9729e2b35bc8
-        :release: 9e0b7df27a53899ab5df9729e2b35bc8
+      React-jsinspector: 9e0b7df27a53899ab5df9729e2b35bc8
     CHECKSUM: 512e560d0e985d0e8c479a54a4e5c147a9c83493
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/jsinspector/InspectorInterfaces.cpp"
@@ -1722,9 +1535,7 @@ CACHE_KEYS:
       - React-jsinspector (0.62.2)
   react-native-appearance:
     BUILD_SETTINGS_CHECKSUM:
-      react-native-appearance:
-        :debug: 5f01449716d27c8aced1a3ff8dc55301
-        :release: 5f01449716d27c8aced1a3ff8dc55301
+      react-native-appearance: 5f01449716d27c8aced1a3ff8dc55301
     CHECKSUM: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
     FILES:
       - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
@@ -1740,9 +1551,7 @@ CACHE_KEYS:
       - react-native-appearance (0.3.4)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
-      react-native-safe-area-context:
-        :debug: 71dcb769da78260074adb01e3fcad0bb
-        :release: 71dcb769da78260074adb01e3fcad0bb
+      react-native-safe-area-context: 71dcb769da78260074adb01e3fcad0bb
     CHECKSUM: b11a34881faac509cad5578726c98161ad4d275c
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.h"
@@ -1770,9 +1579,7 @@ CACHE_KEYS:
       - react-native-safe-area-context (3.0.2)
   react-native-segmented-control:
     BUILD_SETTINGS_CHECKSUM:
-      react-native-segmented-control:
-        :debug: 20fafd243e368fe6c0831976de96de6a
-        :release: 20fafd243e368fe6c0831976de96de6a
+      react-native-segmented-control: 20fafd243e368fe6c0831976de96de6a
     CHECKSUM: d7c444e5cc5f526da766f8ff24346898b7ac7be5
     FILES:
       - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControl.h"
@@ -1786,9 +1593,7 @@ CACHE_KEYS:
       - react-native-segmented-control (1.6.1)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTActionSheet:
-        :debug: 276113c6ba9fa3379009c09681629083
-        :release: 276113c6ba9fa3379009c09681629083
+      React-RCTActionSheet: 276113c6ba9fa3379009c09681629083
     CHECKSUM: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
     FILES:
       []
@@ -1797,9 +1602,7 @@ CACHE_KEYS:
       - React-RCTActionSheet (0.62.2)
   React-RCTAnimation:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTAnimation:
-        :debug: 44bc42ce29097922b8c9d19983c7203f
-        :release: 44bc42ce29097922b8c9d19983c7203f
+      React-RCTAnimation: 44bc42ce29097922b8c9d19983c7203f
     CHECKSUM: 49ab98b1c1ff4445148b72a3d61554138565bad0
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTDecayAnimation.m"
@@ -1828,9 +1631,7 @@ CACHE_KEYS:
       - React-RCTAnimation (0.62.2)
   React-RCTBlob:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTBlob:
-        :debug: 2cf0e8c1f9388678862414d1857ff066
-        :release: 2cf0e8c1f9388678862414d1857ff066
+      React-RCTBlob: 2cf0e8c1f9388678862414d1857ff066
     CHECKSUM: a332773f0ebc413a0ce85942a55b064471587a71
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobCollector.mm"
@@ -1842,9 +1643,7 @@ CACHE_KEYS:
       - React-RCTBlob (0.62.2)
   React-RCTImage:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTImage:
-        :debug: 5a0ae2d0d774f021aeb7fa2517b6d683
-        :release: 5a0ae2d0d774f021aeb7fa2517b6d683
+      React-RCTImage: 5a0ae2d0d774f021aeb7fa2517b6d683
     CHECKSUM: e70be9b9c74fe4e42d0005f42cace7981c994ac3
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Image/RCTAnimatedImage.m"
@@ -1867,9 +1666,7 @@ CACHE_KEYS:
       - React-RCTImage (0.62.2)
   React-RCTLinking:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTLinking:
-        :debug: 949fde36e967ab00d64f57319054c129
-        :release: 949fde36e967ab00d64f57319054c129
+      React-RCTLinking: 949fde36e967ab00d64f57319054c129
     CHECKSUM: c1b9739a88d56ecbec23b7f63650e44672ab2ad2
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingManager.mm"
@@ -1879,9 +1676,7 @@ CACHE_KEYS:
       - React-RCTLinking (0.62.2)
   React-RCTNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTNetwork:
-        :debug: 22dabe76315923d1a7a4e773dcb086e5
-        :release: 22dabe76315923d1a7a4e773dcb086e5
+      React-RCTNetwork: 22dabe76315923d1a7a4e773dcb086e5
     CHECKSUM: 73138b6f45e5a2768ad93f3d57873c2a18d14b44
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.mm"
@@ -1895,9 +1690,7 @@ CACHE_KEYS:
       - React-RCTNetwork (0.62.2)
   React-RCTSettings:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTSettings:
-        :debug: b372f03d54db33b21e48fe7eeb9363e3
-        :release: b372f03d54db33b21e48fe7eeb9363e3
+      React-RCTSettings: b372f03d54db33b21e48fe7eeb9363e3
     CHECKSUM: 6e3738a87e21b39a8cb08d627e68c44acf1e325a
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Settings/RCTSettingsManager.mm"
@@ -1907,9 +1700,7 @@ CACHE_KEYS:
       - React-RCTSettings (0.62.2)
   React-RCTText:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTText:
-        :debug: 49d361dee6690473d91fff966e656ea6
-        :release: 49d361dee6690473d91fff966e656ea6
+      React-RCTText: 49d361dee6690473d91fff966e656ea6
     CHECKSUM: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h"
@@ -1974,9 +1765,7 @@ CACHE_KEYS:
       - React-RCTText (0.62.2)
   React-RCTVibration:
     BUILD_SETTINGS_CHECKSUM:
-      React-RCTVibration:
-        :debug: 8e20bc19385dbcf1da526f4fed00ff82
-        :release: 8e20bc19385dbcf1da526f4fed00ff82
+      React-RCTVibration: 8e20bc19385dbcf1da526f4fed00ff82
     CHECKSUM: 4356114dbcba4ce66991096e51a66e61eda51256
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Vibration/RCTVibration.mm"
@@ -1986,9 +1775,7 @@ CACHE_KEYS:
       - React-RCTVibration (0.62.2)
   ReactCommon:
     BUILD_SETTINGS_CHECKSUM:
-      ReactCommon:
-        :debug: 4285cbdef4cd7d93c65d683980be8ce4
-        :release: 4285cbdef4cd7d93c65d683980be8ce4
+      ReactCommon: 4285cbdef4cd7d93c65d683980be8ce4
     CHECKSUM: ed4e11d27609d571e7eee8b65548efc191116eb3
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/callinvoker/ReactCommon/BridgeJSCallInvoker.cpp"
@@ -2016,9 +1803,7 @@ CACHE_KEYS:
       - ReactCommon/turbomodule/core (0.62.2)
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
-      RNGestureHandler:
-        :debug: 9f3ad592b5e12c633653050d34cb6e0a
-        :release: 9f3ad592b5e12c633653050d34cb6e0a
+      RNGestureHandler: 9f3ad592b5e12c633653050d34cb6e0a
     CHECKSUM: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
     FILES:
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.h"
@@ -2060,9 +1845,7 @@ CACHE_KEYS:
       - RNGestureHandler (1.6.1)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
-      RNReanimated:
-        :debug: 68e7eafcf32ad30177482012aa6f3b0a
-        :release: 68e7eafcf32ad30177482012aa6f3b0a
+      RNReanimated: 68e7eafcf32ad30177482012aa6f3b0a
     CHECKSUM: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
     FILES:
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.h"
@@ -2127,9 +1910,7 @@ CACHE_KEYS:
       - RNReanimated (1.9.0)
   RNScreens:
     BUILD_SETTINGS_CHECKSUM:
-      RNScreens:
-        :debug: 1efbeb0b8a12684d4f38f31496c6e780
-        :release: 1efbeb0b8a12684d4f38f31496c6e780
+      RNScreens: 1efbeb0b8a12684d4f38f31496c6e780
     CHECKSUM: 62211832af51e0aebcf6e8c36bcf7dd65592f244
     FILES:
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
@@ -2147,9 +1928,7 @@ CACHE_KEYS:
       - RNScreens (2.8.0)
   SDWebImage:
     BUILD_SETTINGS_CHECKSUM:
-      SDWebImage:
-        :debug: 77937f139d5c03d5c73744a96408a279
-        :release: 77937f139d5c03d5c73744a96408a279
+      SDWebImage: 77937f139d5c03d5c73744a96408a279
     CHECKSUM: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
     PROJECT_NAME: SDWebImage
     SPECS:
@@ -2157,9 +1936,7 @@ CACHE_KEYS:
       - SDWebImage/Core (5.6.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
-      UMAppLoader:
-        :debug: 0019ffa67746bf7027b41c8c38d61f4a
-        :release: 0019ffa67746bf7027b41c8c38d61f4a
+      UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
     CHECKSUM: 61049c8d55590b74e9ae1d5429bf68d96b4a2528
     FILES:
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
@@ -2171,9 +1948,7 @@ CACHE_KEYS:
       - UMAppLoader (1.2.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMBarCodeScannerInterface:
-        :debug: 74cd9571c892f4fe55699a83cb16a492
-        :release: 74cd9571c892f4fe55699a83cb16a492
+      UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492
     CHECKSUM: e5e4c87797d3d01214e25cd1618866caf5d4f17f
     FILES:
       - "../../../../packages/unimodules-barcode-scanner-interface/ios/UMBarCodeScannerInterface/UMBarCodeScannerInterface.h"
@@ -2183,9 +1958,7 @@ CACHE_KEYS:
       - UMBarCodeScannerInterface (5.2.1)
   UMCameraInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMCameraInterface:
-        :debug: effaf0f67d49b90d839af697e14b7a28
-        :release: effaf0f67d49b90d839af697e14b7a28
+      UMCameraInterface: effaf0f67d49b90d839af697e14b7a28
     CHECKSUM: 415ac060034edecacdbbaa739c223e3f276e0056
     FILES:
       - "../../../../packages/unimodules-camera-interface/ios/UMCameraInterface/UMCameraInterface.h"
@@ -2194,9 +1967,7 @@ CACHE_KEYS:
       - UMCameraInterface (5.2.1)
   UMConstantsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMConstantsInterface:
-        :debug: 741e62cea0ffe6165a2a2d772d480e96
-        :release: 741e62cea0ffe6165a2a2d772d480e96
+      UMConstantsInterface: 741e62cea0ffe6165a2a2d772d480e96
     CHECKSUM: 1a52f2d884c95e8829439da13e36b7669a1a8fb4
     FILES:
       - "../../../../packages/unimodules-constants-interface/ios/UMConstantsInterface/UMConstantsInterface.h"
@@ -2205,9 +1976,7 @@ CACHE_KEYS:
       - UMConstantsInterface (5.2.1)
   UMCore:
     BUILD_SETTINGS_CHECKSUM:
-      UMCore:
-        :debug: 725599ebffd932f0853dea43e0c4795a
-        :release: 725599ebffd932f0853dea43e0c4795a
+      UMCore: 725599ebffd932f0853dea43e0c4795a
     CHECKSUM: d98083b522b08c0a8ba3992bc263c624ae5d887c
     FILES:
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
@@ -2246,9 +2015,7 @@ CACHE_KEYS:
       - UMCore (5.3.0)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMFileSystemInterface:
-        :debug: 40e923e384350cb686bb78a72ff6f87a
-        :release: 40e923e384350cb686bb78a72ff6f87a
+      UMFileSystemInterface: 40e923e384350cb686bb78a72ff6f87a
     CHECKSUM: 303d696ede28102a7e11d111808bd2ed2c5eb62f
     FILES:
       - "../../../../packages/unimodules-file-system-interface/ios/UMFileSystemInterface/UMFilePermissionModuleInterface.h"
@@ -2258,9 +2025,7 @@ CACHE_KEYS:
       - UMFileSystemInterface (5.2.1)
   UMFontInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMFontInterface:
-        :debug: 02cb9ef9adc4d52db44a7a35411f1c57
-        :release: 02cb9ef9adc4d52db44a7a35411f1c57
+      UMFontInterface: 02cb9ef9adc4d52db44a7a35411f1c57
     CHECKSUM: 6edf1ee8bc55d2030766f8cf0a7b20a5d5a913b0
     FILES:
       - "../../../../packages/unimodules-font-interface/ios/UMFontInterface/UMFontManagerInterface.h"
@@ -2272,9 +2037,7 @@ CACHE_KEYS:
       - UMFontInterface (5.2.1)
   UMImageLoaderInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMImageLoaderInterface:
-        :debug: ff9889dc88a10647ddb8acd665f90888
-        :release: ff9889dc88a10647ddb8acd665f90888
+      UMImageLoaderInterface: ff9889dc88a10647ddb8acd665f90888
     CHECKSUM: 9cdbf3bab6a513bddd88505cb2340fe02d6a11c0
     FILES:
       - "../../../../packages/unimodules-image-loader-interface/ios/UMImageLoaderInterface/UMImageLoaderInterface.h"
@@ -2283,9 +2046,7 @@ CACHE_KEYS:
       - UMImageLoaderInterface (5.2.1)
   UMPermissionsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMPermissionsInterface:
-        :debug: 446c60e848aba904b1e6bf9316182e96
-        :release: 446c60e848aba904b1e6bf9316182e96
+      UMPermissionsInterface: 446c60e848aba904b1e6bf9316182e96
     CHECKSUM: 019170ad655f464e3f8d23d2a8bcbda2e645cde4
     FILES:
       - "../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsInterface.h"
@@ -2297,9 +2058,7 @@ CACHE_KEYS:
       - UMPermissionsInterface (5.2.1)
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
-      UMReactNativeAdapter:
-        :debug: 9a1679f8f5495d30dc2e9331a5747d06
-        :release: 9a1679f8f5495d30dc2e9331a5747d06
+      UMReactNativeAdapter: 9a1679f8f5495d30dc2e9331a5747d06
     CHECKSUM: 538efe92e781b5d7678cf95b34c46f2d0989a557
     FILES:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
@@ -2326,9 +2085,7 @@ CACHE_KEYS:
       - UMReactNativeAdapter (5.4.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMSensorsInterface:
-        :debug: edab35b62745c17864e65b8dd2612597
-        :release: edab35b62745c17864e65b8dd2612597
+      UMSensorsInterface: edab35b62745c17864e65b8dd2612597
     CHECKSUM: cb5bf31d52c4349f0ff9e3c049bbe4df0d80d383
     FILES:
       - "../../../../packages/unimodules-sensors-interface/ios/UMSensorsInterface/UMAccelerometerInterface.h"
@@ -2342,9 +2099,7 @@ CACHE_KEYS:
       - UMSensorsInterface (5.2.1)
   UMTaskManagerInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMTaskManagerInterface:
-        :debug: 7659aca9cac609731d0f1bd954e77065
-        :release: 7659aca9cac609731d0f1bd954e77065
+      UMTaskManagerInterface: 7659aca9cac609731d0f1bd954e77065
     CHECKSUM: 80653f25c55d9e6d79d6a0a65589fa213feaee11
     FILES:
       - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskConsumerInterface.h"
@@ -2357,9 +2112,7 @@ CACHE_KEYS:
       - UMTaskManagerInterface (5.2.1)
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
-      Yoga:
-        :debug: f57cbbb163028b3f2ccfba8f48bd3133
-        :release: f57cbbb163028b3f2ccfba8f48bd3133
+      Yoga: f57cbbb163028b3f2ccfba8f48bd3133
     CHECKSUM: 3ebccbdd559724312790e7742142d062476b698e
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/BitUtils.h"
@@ -2397,9 +2150,7 @@ CACHE_KEYS:
       - Yoga (1.14.0)
   ZXingObjC:
     BUILD_SETTINGS_CHECKSUM:
-      ZXingObjC:
-        :debug: d3ecdae7b9cd1c5943e115b6207f0009
-        :release: d3ecdae7b9cd1c5943e115b6207f0009
+      ZXingObjC: d3ecdae7b9cd1c5943e115b6207f0009
     CHECKSUM: fdbb269f25dd2032da343e06f10224d62f537bdb
     PROJECT_NAME: ZXingObjC
     SPECS:
@@ -2407,6 +2158,3 @@ CACHE_KEYS:
       - ZXingObjC/OneD (3.6.5)
       - ZXingObjC/PDF417 (3.6.5)
 OBJECT_VERSION: 46
-PLUGINS:
-  cocoapods-stats:
-    {}

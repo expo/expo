@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		033CE66682B8FAFD35090D3192C3B967 /* RNCAppearanceProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B9DFB4F327BFE20261BFEE0E0722C0D5 /* RNCAppearanceProviderManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		137D11BF3C0556D52CE9D71CCFB0B25A /* RNCAppearanceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = DC57110C5FF7359B591E8CBB556F401D /* RNCAppearanceProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		36FF4040E00CD70A3C7924CA03CE87C0 /* RNCAppearance.h in Headers */ = {isa = PBXBuildFile; fileRef = 796499E17394C43C0760C1635F51B919 /* RNCAppearance.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4C187F80A5C0080050C9DE80EE22DD0F /* RNCAppearanceProviderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4F2C854DCD1A024BAFFDECBCD3C5BD /* RNCAppearanceProviderManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		92927620FEDAE36B6DFA3C6FF3D26C8D /* RNCAppearanceProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A3DE776964F9A4EDAC2048C0EFCC039 /* RNCAppearanceProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CF34B47B261DD340CF9FFAA2D5BEE362 /* RNCAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = D2CE290AC5629681DDA309FFB042B0DA /* RNCAppearance.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DE4B9D8FE59AFF059239EB1DE0F59516 /* react-native-appearance-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1063F614B384FA25BC30EA589ED2981C /* react-native-appearance-dummy.m */; };
+		033CE66682B8FAFD35090D3192C3B967 /* RNCAppearanceProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F6EAC73819365627BF399D969C2A49 /* RNCAppearanceProviderManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		137D11BF3C0556D52CE9D71CCFB0B25A /* RNCAppearanceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = B67D56174C3411B36A01898A2E4A6D1E /* RNCAppearanceProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		36FF4040E00CD70A3C7924CA03CE87C0 /* RNCAppearance.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DD17A99FA0EFE7CD5D34E4F2515D5BF /* RNCAppearance.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4C187F80A5C0080050C9DE80EE22DD0F /* RNCAppearanceProviderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DCEEE61E6454E2F625D2E4C7BF39BECA /* RNCAppearanceProviderManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		92927620FEDAE36B6DFA3C6FF3D26C8D /* RNCAppearanceProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = E42AF0B157D31AB7A61E9EA22DEDB7F7 /* RNCAppearanceProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CF34B47B261DD340CF9FFAA2D5BEE362 /* RNCAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = 46D40F81583ECF2CB3F78E27ECF1ABCE /* RNCAppearance.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DE4B9D8FE59AFF059239EB1DE0F59516 /* react-native-appearance-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 33104D3F2E819479A00B834D6218FE58 /* react-native-appearance-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,21 +27,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1063F614B384FA25BC30EA589ED2981C /* react-native-appearance-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-appearance-dummy.m"; sourceTree = "<group>"; };
-		10E602DB4A0D68C5912D6DD64CB730C7 /* react-native-appearance.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-appearance.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		129F5A59B98C4C3F9AB9EE64465FB40E /* react-native-appearance-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-appearance-prefix.pch"; sourceTree = "<group>"; };
 		1E87F611B8EA724ED25B90E3390957E8 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		3A3DE776964F9A4EDAC2048C0EFCC039 /* RNCAppearanceProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCAppearanceProvider.h; path = ios/Appearance/RNCAppearanceProvider.h; sourceTree = "<group>"; };
-		481428C833E3DC8F854BD0DA2D04851F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
-		4B4F2C854DCD1A024BAFFDECBCD3C5BD /* RNCAppearanceProviderManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCAppearanceProviderManager.h; path = ios/Appearance/RNCAppearanceProviderManager.h; sourceTree = "<group>"; };
+		33104D3F2E819479A00B834D6218FE58 /* react-native-appearance-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-appearance-dummy.m"; sourceTree = "<group>"; };
+		46D40F81583ECF2CB3F78E27ECF1ABCE /* RNCAppearance.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCAppearance.m; path = ios/Appearance/RNCAppearance.m; sourceTree = "<group>"; };
 		5716CC843C4B6EDAD9C80CAB074D5D50 /* libreact-native-appearance.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libreact-native-appearance.a"; path = "libreact-native-appearance.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		796499E17394C43C0760C1635F51B919 /* RNCAppearance.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCAppearance.h; path = ios/Appearance/RNCAppearance.h; sourceTree = "<group>"; };
-		9278A6BD9D4BF63483E8ACC294D6660A /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
-		AB814A3A2BC0D4D37514FBF4C61874C5 /* react-native-appearance-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-appearance-prefix.pch"; sourceTree = "<group>"; };
-		B9DFB4F327BFE20261BFEE0E0722C0D5 /* RNCAppearanceProviderManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCAppearanceProviderManager.m; path = ios/Appearance/RNCAppearanceProviderManager.m; sourceTree = "<group>"; };
-		D08578AF62DFC00B7C5B2B4A42C02D32 /* react-native-appearance.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-appearance.release.xcconfig"; sourceTree = "<group>"; };
-		D2CE290AC5629681DDA309FFB042B0DA /* RNCAppearance.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCAppearance.m; path = ios/Appearance/RNCAppearance.m; sourceTree = "<group>"; };
-		DC57110C5FF7359B591E8CBB556F401D /* RNCAppearanceProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCAppearanceProvider.m; path = ios/Appearance/RNCAppearanceProvider.m; sourceTree = "<group>"; };
-		F8BBDFDE78207250E64DC302913354D2 /* react-native-appearance.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-appearance.debug.xcconfig"; sourceTree = "<group>"; };
+		7DD17A99FA0EFE7CD5D34E4F2515D5BF /* RNCAppearance.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCAppearance.h; path = ios/Appearance/RNCAppearance.h; sourceTree = "<group>"; };
+		89E68939D74C49322804E9254A83DE18 /* react-native-appearance.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-appearance.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		8BE210F40CBDFF0CB6485DE0716041D0 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		9A8DF7A18E6B935C963EE8FEAFFA8098 /* react-native-appearance.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-appearance.xcconfig"; sourceTree = "<group>"; };
+		9C1A623C018974B3E4581040D61861E0 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		B67D56174C3411B36A01898A2E4A6D1E /* RNCAppearanceProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCAppearanceProvider.m; path = ios/Appearance/RNCAppearanceProvider.m; sourceTree = "<group>"; };
+		C1F6EAC73819365627BF399D969C2A49 /* RNCAppearanceProviderManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCAppearanceProviderManager.m; path = ios/Appearance/RNCAppearanceProviderManager.m; sourceTree = "<group>"; };
+		DCEEE61E6454E2F625D2E4C7BF39BECA /* RNCAppearanceProviderManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCAppearanceProviderManager.h; path = ios/Appearance/RNCAppearanceProviderManager.h; sourceTree = "<group>"; };
+		E42AF0B157D31AB7A61E9EA22DEDB7F7 /* RNCAppearanceProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCAppearanceProvider.h; path = ios/Appearance/RNCAppearanceProvider.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,26 +54,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0CCF35E65DEDA2D6FDDE6DA6FF3F6651 /* Support Files */ = {
+		468782AEB22FCE9764DA6D6219C3689B /* react-native-appearance */ = {
 			isa = PBXGroup;
 			children = (
-				1063F614B384FA25BC30EA589ED2981C /* react-native-appearance-dummy.m */,
-				AB814A3A2BC0D4D37514FBF4C61874C5 /* react-native-appearance-prefix.pch */,
-				F8BBDFDE78207250E64DC302913354D2 /* react-native-appearance.debug.xcconfig */,
-				D08578AF62DFC00B7C5B2B4A42C02D32 /* react-native-appearance.release.xcconfig */,
+				7DD17A99FA0EFE7CD5D34E4F2515D5BF /* RNCAppearance.h */,
+				46D40F81583ECF2CB3F78E27ECF1ABCE /* RNCAppearance.m */,
+				E42AF0B157D31AB7A61E9EA22DEDB7F7 /* RNCAppearanceProvider.h */,
+				B67D56174C3411B36A01898A2E4A6D1E /* RNCAppearanceProvider.m */,
+				DCEEE61E6454E2F625D2E4C7BF39BECA /* RNCAppearanceProviderManager.h */,
+				C1F6EAC73819365627BF399D969C2A49 /* RNCAppearanceProviderManager.m */,
+				DC84C416A00ED6A06DD8A18D4B4B8B4B /* Pod */,
+				FFD89E1B56A73E64DEB4E576B3B98164 /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../apps/bare-expo/ios/Pods/Target Support Files/react-native-appearance";
-			sourceTree = "<group>";
-		};
-		414112DAB88ED452A81EFDB060ECFEE7 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				481428C833E3DC8F854BD0DA2D04851F /* LICENSE */,
-				10E602DB4A0D68C5912D6DD64CB730C7 /* react-native-appearance.podspec */,
-				9278A6BD9D4BF63483E8ACC294D6660A /* README.md */,
-			);
-			name = Pod;
+			name = "react-native-appearance";
+			path = "../../../../node_modules/react-native-appearance";
 			sourceTree = "<group>";
 		};
 		50DB0BD1CB4A30512CB163CD1ACCB44A /* Frameworks */ = {
@@ -92,29 +85,13 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		A5AA7A7B04C1E75909EB7B7B3004B4D4 /* react-native-appearance */ = {
-			isa = PBXGroup;
-			children = (
-				796499E17394C43C0760C1635F51B919 /* RNCAppearance.h */,
-				D2CE290AC5629681DDA309FFB042B0DA /* RNCAppearance.m */,
-				3A3DE776964F9A4EDAC2048C0EFCC039 /* RNCAppearanceProvider.h */,
-				DC57110C5FF7359B591E8CBB556F401D /* RNCAppearanceProvider.m */,
-				4B4F2C854DCD1A024BAFFDECBCD3C5BD /* RNCAppearanceProviderManager.h */,
-				B9DFB4F327BFE20261BFEE0E0722C0D5 /* RNCAppearanceProviderManager.m */,
-				414112DAB88ED452A81EFDB060ECFEE7 /* Pod */,
-				0CCF35E65DEDA2D6FDDE6DA6FF3F6651 /* Support Files */,
-			);
-			name = "react-native-appearance";
-			path = "../../../../node_modules/react-native-appearance";
-			sourceTree = "<group>";
-		};
 		B67D86231527A848F0CD925C84DCAB5B = {
 			isa = PBXGroup;
 			children = (
 				8EE0EA5E47B1AD78BA6522BA456BF521 /* Dependencies */,
 				50DB0BD1CB4A30512CB163CD1ACCB44A /* Frameworks */,
 				C3ECC1A293C17DF9583B4450A9B92233 /* Products */,
-				A5AA7A7B04C1E75909EB7B7B3004B4D4 /* react-native-appearance */,
+				468782AEB22FCE9764DA6D6219C3689B /* react-native-appearance */,
 			);
 			sourceTree = "<group>";
 		};
@@ -124,6 +101,27 @@
 				5716CC843C4B6EDAD9C80CAB074D5D50 /* libreact-native-appearance.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		DC84C416A00ED6A06DD8A18D4B4B8B4B /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				8BE210F40CBDFF0CB6485DE0716041D0 /* LICENSE */,
+				89E68939D74C49322804E9254A83DE18 /* react-native-appearance.podspec */,
+				9C1A623C018974B3E4581040D61861E0 /* README.md */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		FFD89E1B56A73E64DEB4E576B3B98164 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				9A8DF7A18E6B935C963EE8FEAFFA8098 /* react-native-appearance.xcconfig */,
+				33104D3F2E819479A00B834D6218FE58 /* react-native-appearance-dummy.m */,
+				129F5A59B98C4C3F9AB9EE64465FB40E /* react-native-appearance-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/react-native-appearance";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -339,9 +337,9 @@
 			};
 			name = Release;
 		};
-		9316C916F3F56FB36C66D379C4206DCE /* Release */ = {
+		6812E4A012E6856024322CE4AD484735 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D08578AF62DFC00B7C5B2B4A42C02D32 /* react-native-appearance.release.xcconfig */;
+			baseConfigurationReference = 9A8DF7A18E6B935C963EE8FEAFFA8098 /* react-native-appearance.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -364,9 +362,9 @@
 			};
 			name = Release;
 		};
-		C1062580E1D7FEEB48C6E82176F6EAE9 /* Debug */ = {
+		89436B4A56C1AE97D04999BA4F63D614 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8BBDFDE78207250E64DC302913354D2 /* react-native-appearance.debug.xcconfig */;
+			baseConfigurationReference = 9A8DF7A18E6B935C963EE8FEAFFA8098 /* react-native-appearance.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -394,8 +392,8 @@
 		8A5EB7A5CE061FED89157A4C9C01DE39 /* Build configuration list for PBXNativeTarget "react-native-appearance" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C1062580E1D7FEEB48C6E82176F6EAE9 /* Debug */,
-				9316C916F3F56FB36C66D379C4206DCE /* Release */,
+				89436B4A56C1AE97D04999BA4F63D614 /* Debug */,
+				6812E4A012E6856024322CE4AD484735 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

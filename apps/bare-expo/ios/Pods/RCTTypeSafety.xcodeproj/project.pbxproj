@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		07839EE7BF321F22255789834CB49BCA /* RCTTypeSafety-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FA3065AE0AFAEAD0020EC2686EAD755 /* RCTTypeSafety-dummy.m */; };
-		4FF9DED591D9D7D8B20E388757A013ED /* RCTConvertHelpers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FF17A266FD1209C9536B9FD62521C4D /* RCTConvertHelpers.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7402101721ED2FAE1386B817040D316A /* RCTTypedModuleConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = FD71B84970A73D65554505EC3B2C8813 /* RCTTypedModuleConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		94D259046EBD2192DF458A2316836C11 /* RCTConvertHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 471677C27116930BA4A878768ACDEED2 /* RCTConvertHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B815FD2CD6C97207B6AB5111D94F9968 /* RCTTypedModuleConstants.mm in Sources */ = {isa = PBXBuildFile; fileRef = F6D08E8799EEFC7B06A9CAAC1EE8AD2F /* RCTTypedModuleConstants.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		07839EE7BF321F22255789834CB49BCA /* RCTTypeSafety-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A1A4A122DE86B31B5D444B0BA86025D /* RCTTypeSafety-dummy.m */; };
+		4FF9DED591D9D7D8B20E388757A013ED /* RCTConvertHelpers.mm in Sources */ = {isa = PBXBuildFile; fileRef = F4A66CAFA1AFEEA8EC6F0CA841FDA003 /* RCTConvertHelpers.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7402101721ED2FAE1386B817040D316A /* RCTTypedModuleConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = BB69955E076A5530BB2EDA01FBBE7650 /* RCTTypedModuleConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		94D259046EBD2192DF458A2316836C11 /* RCTConvertHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 28FD48887FFA9245C3B19C88A693B1AE /* RCTConvertHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B815FD2CD6C97207B6AB5111D94F9968 /* RCTTypedModuleConstants.mm in Sources */ = {isa = PBXBuildFile; fileRef = A31EBBA5B83F625380266E0F18692E25 /* RCTTypedModuleConstants.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,20 +46,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1A1A4A122DE86B31B5D444B0BA86025D /* RCTTypeSafety-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RCTTypeSafety-dummy.m"; sourceTree = "<group>"; };
 		1E1FA085DCE6B12DC08468B1F56BFA23 /* FBLazyVector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBLazyVector; path = FBLazyVector.xcodeproj; sourceTree = "<group>"; };
-		4340827A437418B551450015EA58DC40 /* RCTTypeSafety.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTTypeSafety.release.xcconfig; sourceTree = "<group>"; };
-		471677C27116930BA4A878768ACDEED2 /* RCTConvertHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTConvertHelpers.h; sourceTree = "<group>"; };
-		4FA3065AE0AFAEAD0020EC2686EAD755 /* RCTTypeSafety-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RCTTypeSafety-dummy.m"; sourceTree = "<group>"; };
+		28FD48887FFA9245C3B19C88A693B1AE /* RCTConvertHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTConvertHelpers.h; sourceTree = "<group>"; };
+		3DBB3FF3217EC5F54443AD6F550E2C38 /* RCTTypeSafety-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTTypeSafety-prefix.pch"; sourceTree = "<group>"; };
+		505B80C20C89650272ADF65E1EE43E65 /* RCTTypeSafety.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RCTTypeSafety.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		5BD86BE09B7BCB3FF5F253FF0F8C57E9 /* libRCTTypeSafety.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRCTTypeSafety.a; path = libRCTTypeSafety.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		71217326F34DBC7C5956ABC1E7B023EA /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		7FE104E43C0D70739C3E073355414149 /* RCTTypeSafety-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTTypeSafety-prefix.pch"; sourceTree = "<group>"; };
-		9FF17A266FD1209C9536B9FD62521C4D /* RCTConvertHelpers.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTConvertHelpers.mm; sourceTree = "<group>"; };
+		952ABFBF77E2F3A53FD79993742A33C3 /* RCTTypeSafety.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTTypeSafety.xcconfig; sourceTree = "<group>"; };
+		A31EBBA5B83F625380266E0F18692E25 /* RCTTypedModuleConstants.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTypedModuleConstants.mm; sourceTree = "<group>"; };
 		B9675F2F4D9BBBE48CC6AAB81E79C5D9 /* RCTRequired */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTRequired; path = RCTRequired.xcodeproj; sourceTree = "<group>"; };
-		CB4D8AAAEAA92A3EB2B9BFA948A68AE6 /* RCTTypeSafety.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTTypeSafety.debug.xcconfig; sourceTree = "<group>"; };
-		F05AB3FFF5472174C627779EC45D04BF /* RCTTypeSafety.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RCTTypeSafety.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BB69955E076A5530BB2EDA01FBBE7650 /* RCTTypedModuleConstants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTypedModuleConstants.h; sourceTree = "<group>"; };
 		F097AEE3B0E05553B9B4C4010CFCFC44 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
-		F6D08E8799EEFC7B06A9CAAC1EE8AD2F /* RCTTypedModuleConstants.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTypedModuleConstants.mm; sourceTree = "<group>"; };
-		FD71B84970A73D65554505EC3B2C8813 /* RCTTypedModuleConstants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTypedModuleConstants.h; sourceTree = "<group>"; };
+		F4A66CAFA1AFEEA8EC6F0CA841FDA003 /* RCTConvertHelpers.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTConvertHelpers.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,28 +72,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2B5EF664AB8B58D8DBC11894A69161E3 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				952ABFBF77E2F3A53FD79993742A33C3 /* RCTTypeSafety.xcconfig */,
+				1A1A4A122DE86B31B5D444B0BA86025D /* RCTTypeSafety-dummy.m */,
+				3DBB3FF3217EC5F54443AD6F550E2C38 /* RCTTypeSafety-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../../apps/bare-expo/ios/Pods/Target Support Files/RCTTypeSafety";
+			sourceTree = "<group>";
+		};
 		43383C22666ECE950624C7998E3FCE6F = {
 			isa = PBXGroup;
 			children = (
 				6A682297E7D1E4B9C9EB5CD5BF94762E /* Dependencies */,
 				674A9563B2151ACD17FF0A22BFA6777B /* Frameworks */,
 				882EE28BF009357B3D70CCB30DD60B7D /* Products */,
-				5B852F10A82F7541F2D37B2191CDD4E2 /* RCTTypeSafety */,
+				8ABD723CAC6E266656A3DE8147FA5E8F /* RCTTypeSafety */,
 			);
-			sourceTree = "<group>";
-		};
-		5B852F10A82F7541F2D37B2191CDD4E2 /* RCTTypeSafety */ = {
-			isa = PBXGroup;
-			children = (
-				471677C27116930BA4A878768ACDEED2 /* RCTConvertHelpers.h */,
-				9FF17A266FD1209C9536B9FD62521C4D /* RCTConvertHelpers.mm */,
-				FD71B84970A73D65554505EC3B2C8813 /* RCTTypedModuleConstants.h */,
-				F6D08E8799EEFC7B06A9CAAC1EE8AD2F /* RCTTypedModuleConstants.mm */,
-				C72FD138E82327BC96484AB8CB7DBB0A /* Pod */,
-				B4D2BE711BC0CAAE86F0D190960C6291 /* Support Files */,
-			);
-			name = RCTTypeSafety;
-			path = "../../../../react-native-lab/react-native/Libraries/TypeSafety";
 			sourceTree = "<group>";
 		};
 		674A9563B2151ACD17FF0A22BFA6777B /* Frameworks */ = {
@@ -115,6 +111,14 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		6C2A162753CDB1278442717327CE6868 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				505B80C20C89650272ADF65E1EE43E65 /* RCTTypeSafety.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		882EE28BF009357B3D70CCB30DD60B7D /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -123,24 +127,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B4D2BE711BC0CAAE86F0D190960C6291 /* Support Files */ = {
+		8ABD723CAC6E266656A3DE8147FA5E8F /* RCTTypeSafety */ = {
 			isa = PBXGroup;
 			children = (
-				4FA3065AE0AFAEAD0020EC2686EAD755 /* RCTTypeSafety-dummy.m */,
-				7FE104E43C0D70739C3E073355414149 /* RCTTypeSafety-prefix.pch */,
-				CB4D8AAAEAA92A3EB2B9BFA948A68AE6 /* RCTTypeSafety.debug.xcconfig */,
-				4340827A437418B551450015EA58DC40 /* RCTTypeSafety.release.xcconfig */,
+				28FD48887FFA9245C3B19C88A693B1AE /* RCTConvertHelpers.h */,
+				F4A66CAFA1AFEEA8EC6F0CA841FDA003 /* RCTConvertHelpers.mm */,
+				BB69955E076A5530BB2EDA01FBBE7650 /* RCTTypedModuleConstants.h */,
+				A31EBBA5B83F625380266E0F18692E25 /* RCTTypedModuleConstants.mm */,
+				6C2A162753CDB1278442717327CE6868 /* Pod */,
+				2B5EF664AB8B58D8DBC11894A69161E3 /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../../../apps/bare-expo/ios/Pods/Target Support Files/RCTTypeSafety";
-			sourceTree = "<group>";
-		};
-		C72FD138E82327BC96484AB8CB7DBB0A /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				F05AB3FFF5472174C627779EC45D04BF /* RCTTypeSafety.podspec */,
-			);
-			name = Pod;
+			name = RCTTypeSafety;
+			path = "../../../../react-native-lab/react-native/Libraries/TypeSafety";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -317,33 +315,9 @@
 			};
 			name = Release;
 		};
-		784FEF7F73D82E9C309C847C32D14926 /* Debug */ = {
+		9E3CC357E79790BB98619E1718E5D673 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CB4D8AAAEAA92A3EB2B9BFA948A68AE6 /* RCTTypeSafety.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RCTTypeSafety/RCTTypeSafety-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTTypeSafety;
-				PRODUCT_NAME = RCTTypeSafety;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		89585813611AAD24CC36BB6355C0ED72 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4340827A437418B551450015EA58DC40 /* RCTTypeSafety.release.xcconfig */;
+			baseConfigurationReference = 952ABFBF77E2F3A53FD79993742A33C3 /* RCTTypeSafety.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -365,6 +339,30 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		C88EC2911CE744F9A16E9261E11277F4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 952ABFBF77E2F3A53FD79993742A33C3 /* RCTTypeSafety.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RCTTypeSafety/RCTTypeSafety-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTTypeSafety;
+				PRODUCT_NAME = RCTTypeSafety;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		E20C554616936D99F3EA66AA4073C9FA /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -445,8 +443,8 @@
 		D80997530F283A1BF6F1BC6F7937B1E7 /* Build configuration list for PBXNativeTarget "RCTTypeSafety" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				784FEF7F73D82E9C309C847C32D14926 /* Debug */,
-				89585813611AAD24CC36BB6355C0ED72 /* Release */,
+				C88EC2911CE744F9A16E9261E11277F4 /* Debug */,
+				9E3CC357E79790BB98619E1718E5D673 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

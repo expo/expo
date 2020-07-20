@@ -39,7 +39,7 @@ PODS:
   - EXBrightness (8.2.1):
     - UMCore
     - UMPermissionsInterface
-  - EXCalendar (8.2.1):
+  - EXCalendar (8.2.2):
     - UMCore
     - UMPermissionsInterface
   - EXCellular (2.2.1):
@@ -884,7 +884,7 @@ SPEC CHECKSUMS:
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
   EXBlur: b622dc0f8a8fe74f05fb437cfb1c5ee16259dab1
   EXBrightness: e02018c74baedcb51825cd91e16886973c81d029
-  EXCalendar: 9157be548211a7b283535d5a5cf7c6843d26108b
+  EXCalendar: 593d0dce6a42d7aea0000b9bb90f3d8e051053f5
   EXCellular: b571e997db382446d6a5145932d738d694f63949
   EXConstants: f907b3b6ce16e20d1750f22af1e095e924574bcb
   EXContacts: 9ecc819adfb7690ed90ebcaf93d23ac84fe957f1
@@ -993,4 +993,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5e336c4046a5cf7924b429b07035b2e33d122cdd
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.8.4
