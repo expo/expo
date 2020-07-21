@@ -89,7 +89,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _finishObserver = nil;
     _playbackStalledObserver = nil;
     _statusUpdateCallback = nil;
-    _observers = [[NSMapTable alloc]init];
+    _observers = [NSMapTable new];
   
     // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
