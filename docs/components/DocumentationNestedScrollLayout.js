@@ -190,15 +190,12 @@ export default class DocumentationNestedScrollLayout extends React.Component {
       <div className={STYLES_CONTAINER}>
         <div className={STYLES_HEADER}>{this.props.header}</div>
         <div className={STYLES_CONTENT}>
-          {!this.props.isMenuActive ? (
-            <div className={STYLES_LEFT}>
-              <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
-                {this.props.sidebar}
-              </ScrollContainer>
-            </div>
-          ) : (
-            undefined
-          )}
+          <div className={STYLES_LEFT}>
+            <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
+              {this.props.sidebar}
+            </ScrollContainer>
+          </div>
+
           <div className={STYLES_RIGHT}>
             <ScrollContainer>{this.props.children}</ScrollContainer>
           </div>
