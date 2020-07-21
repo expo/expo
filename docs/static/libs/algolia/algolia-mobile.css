@@ -13,8 +13,8 @@
 
   .ds-dropdown-menu {
     left: -16px !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 100vw !important;
     box-shadow: none !important;
   }
 
