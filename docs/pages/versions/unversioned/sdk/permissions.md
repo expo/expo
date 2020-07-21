@@ -18,17 +18,17 @@ Please read the [permissions on iOS](#permissions-on-ios) and [permissions on An
 
 ### Permissions on iOS
 
-To request and use permissions on iOS, you have to describe why the permissions are required. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [`app.json` file](../../workflow/configuration/#ios). When using the bare workflow, you have to edit the `info.plist` file directly.
+To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [`app.json` file](../../workflow/configuration/#ios). When using the bare workflow, you have to edit the `info.plist` file directly.
 
-See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property you need to define for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property, or you need for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
 
 > **Note:** apps using permissions without descriptions _may be rejected from the App Store_. (see the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios))
 
 ### Permissions on Android
 
-On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [`app.json` file](../workflow/configuration/#android). In the bare workflow, they have to be defined in your `AndroidManifest.xml`. 
+On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [`app.json` file](../workflow/configuration/#android). In the bare workflow, they have to be defined in your `AndroidManifest.xml`.
 
-> Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically. 
+> Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically.
 
 To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../workflow/configuration/#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. If you leave this property out, all permissions will be included in your app. When using the bare workflow, you have to [blacklist permissions in your `AndroidManifest.xml`](#excluding-android-permissions-in-bare-workflow) manually.
 
@@ -50,7 +50,7 @@ On web permissions like the `Camera` and `Location` can only be requested from a
 
 Often you want to be able to test what happens when a user rejects a permission, to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions in development, you may need to uninstall and reinstall the Expo client app. In the simulator this is as easy as deleting the app, and `expo-cli` will automatically install it again next time you launch the project.
 
-### Usage in bare workflow
+### Permissions and required packages on iOS
 
 `expo-permissions` includes the shared infrastructure for handling system permissions. On iOS, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
 
@@ -110,7 +110,7 @@ Get or ask permission for protected functionality within the app. This returns t
 
 #### Returns
 
-- **permission (_[PermissionsResponse](#permissions-response)|undefined_)** -- An object with information about the permissions, including status, expiration, and scope (if applicable).
+- **permission (_[PermissionsResponse](#permissionresponse)|undefined_)** -- An object with information about the permissions, including status, expiration, and scope (if applicable).
 - **askPermission (_() => void_)** -- A callback to ask the user for permission.
 - **getPermission (_() => void_)** -- A callback to get the permission status without interacting with the user.
 
@@ -147,7 +147,7 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Returns
 
-A `Promise` with a [`PermissionResponse`](#permissions-response) object.
+A `Promise` resolving to a [`PermissionResponse`](#permissionresponse) object -- an object describing the current state of the permissions.
 
 #### Example
 
