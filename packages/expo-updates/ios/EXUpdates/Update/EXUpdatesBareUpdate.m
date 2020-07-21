@@ -69,6 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
   update.keep = YES;
   update.assets = processedAssets;
 
+  if ([update.runtimeVersion containsString:@","]) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Should not be initializing EXUpdatesBareUpdate in an environment with multiple runtime versions."
+                                 userInfo:@{}];
+  }
+
   return update;
 }
 

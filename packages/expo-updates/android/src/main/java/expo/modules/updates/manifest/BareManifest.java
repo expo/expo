@@ -53,6 +53,10 @@ public class BareManifest implements Manifest {
     JSONObject metadata = manifestJson.optJSONObject("metadata");
     JSONArray assets = manifestJson.optJSONArray("assets");
 
+    if (runtimeVersion.contains(",")) {
+      throw new AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.");
+    }
+
     return new BareManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, assets);
   }
 
