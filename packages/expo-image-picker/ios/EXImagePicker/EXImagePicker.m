@@ -223,8 +223,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
   image = [self fixOrientation:image];
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
-    NSValue* rectVal = [info objectForKey:UIImagePickerControllerCropRect];
-    CGRect rect = rectVal.CGRectValue;
+    CGRect rect = ((NSValue *) [info objectForKey:UIImagePickerControllerCropRect]).CGRectValue;
       
     CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
     image = [UIImage imageWithCGImage:imageRef
