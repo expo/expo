@@ -7,24 +7,26 @@
     margin-bottom: 0px;
   }
 
-  .algolia-autocomplete.algolia-autocomplete-left {
-    left: 0px !important;
+  .algolia-autocomplete.algolia-autocomplete-right .ds-dropdown-menu {
+    left: -16px !important;
   }
 
   .ds-dropdown-menu {
-    max-width: calc(100vw - 16px) !important;
-    min-width: calc(100vw - 16px) !important;
+    left: -16px !important;
+    max-width: 100vw !important;
+    min-width: 100vw !important;
+    box-shadow: none !important;
   }
 
   .algolia-autocomplete [class^='ds-dataset-'] {
     max-width: 100vw !important;
     min-width: 100vw !important;
-    left: -16px !important;
-    margin-top: 8px !important;
+    margin-top: 1px !important;
     border-style: hidden !important;
     border-radius: 0px !important;
     box-shadow: none !important;
   }
+
   .ds-dropdown-menu:before {
     display: none !important;
   }
@@ -42,17 +44,5 @@
   /* neccessary to prevent mobile Safari from zooming in */
   .algolia-autocomplete .searchbox__input {
     font-size: 16px;
-  }
-}
-
-/* !important tags, box-shadow are needed for desktop, but make overwritting difficult, so moved out of algolia.min.css */
-@media (min-width: 748px) {
-  .algolia-autocomplete.algolia-autocomplete-left .ds-dropdown-menu {
-    left: 0 !important;
-  }
-
-  .algolia-autocomplete .ds-dropdown-menu {
-    left: inherit !important;
-    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 2px 3px 0 rgba(0, 0, 0, 0.1);
   }
 }
