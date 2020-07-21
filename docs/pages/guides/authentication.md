@@ -998,7 +998,7 @@ export default function App() {
       scopes: ['openid', 'profile'],
 
       // Optionally should the user be prompted to select or switch accounts
-      prompt: Prompt.SelectAccount,
+      prompt: 'select_account',
 
       // Optional
       extraParams: {
