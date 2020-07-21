@@ -222,7 +222,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
                 </Button>
               )}
               <Button style={styles.button} onPress={this.onAccuracyChange}>
-                Accuracy: {Location.Accuracy[this.state.accuracy]}
+                {`Accuracy: ${Location.Accuracy[this.state.accuracy]}`}
               </Button>
             </View>
             <View style={styles.buttonsColumn}>

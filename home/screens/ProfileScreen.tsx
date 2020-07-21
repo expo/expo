@@ -1,7 +1,6 @@
-/* @flow */
 import * as React from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { withNavigation } from 'react-navigation';
+import { NavigationInjectedProps, withNavigation } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Ionicons } from '../components/Icons';
@@ -14,7 +13,7 @@ import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 
-export default function ProfileScreen({ navigation, ...props }) {
+export default function ProfileScreen({ navigation, ...props }: NavigationInjectedProps) {
   // TODO(Bacon): This might not be needed, check during TS migration.
   const dispatch = useDispatch();
   const { isAuthenticated, username } = useSelector(
@@ -45,11 +44,22 @@ ProfileScreen.navigationOptions = ({ navigation, theme }) => {
   return {
     title: navigation.getParam('username', 'Profile'),
     headerRight: () =>
-      navigation.getParam('username') ? <OptionsButton /> : <UserSettingsButton theme={theme} />,
+      navigation.getParam('username') ? (
+        <OptionsButton />
+      ) : (
+        <ConnectedUserSettingsButton theme={theme} />
+      ),
   };
 };
 
-class ProfileView extends React.Component {
+class ProfileView extends React.Component<
+  {
+    username: string;
+    dispatch: (action: any) => void;
+    isAuthenticated: boolean;
+  } & NavigationInjectedProps,
+  { isOwnProfile: boolean }
+> {
   constructor(props) {
     super(props);
 
@@ -89,39 +99,35 @@ class ProfileView extends React.Component {
       return <ProfileUnauthenticated />;
     } else if (this.state.isOwnProfile) {
       return <MyProfileContainer {...this.props} isOwnProfile={this.state.isOwnProfile} />;
-    } else {
-      return <OtherProfileContainer {...this.props} isOwnProfile={this.state.isOwnProfile} />;
     }
+
+    return <OtherProfileContainer {...this.props} isOwnProfile={this.state.isOwnProfile} />;
   }
 }
 
-@onlyIfAuthenticated
-@withNavigation
-class UserSettingsButton extends React.Component {
-  render() {
-    return (
-      <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-        {Platform.select({
-          ios: (
-            <Text style={{ fontSize: 17, color: Colors[this.props.theme].tintColor }}>Options</Text>
-          ),
-          android: (
-            <Ionicons
-              name="md-settings"
-              size={27}
-              lightColor={Colors.light.text}
-              darkColor={Colors.dark.text}
-            />
-          ),
-        })}
-      </TouchableOpacity>
-    );
-  }
-
-  _handlePress = () => {
-    this.props.navigation.navigate('UserSettings');
+function UserSettingsButton(props: { theme: string } & NavigationInjectedProps) {
+  const onPress = () => {
+    props.navigation.navigate('UserSettings');
   };
+
+  return (
+    <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
+      {Platform.select({
+        ios: <Text style={{ fontSize: 17, color: Colors[props.theme].tintColor }}>Options</Text>,
+        android: (
+          <Ionicons
+            name="md-settings"
+            size={27}
+            lightColor={Colors.light.text}
+            darkColor={Colors.dark.text}
+          />
+        ),
+      })}
+    </TouchableOpacity>
+  );
 }
+
+const ConnectedUserSettingsButton = onlyIfAuthenticated(withNavigation(UserSettingsButton));
 
 const styles = StyleSheet.create({
   loadingContainer: {
