@@ -47,13 +47,17 @@ function CustomDrawerContent({
 
 export default function MainTabbedNavigator(props: any) {
   const { width } = useWindowDimensions();
-
   const { left } = useSafeArea();
   const isMobile = width <= 640;
   const isTablet = !isMobile && width <= 960;
   const isLargeScreen = !isTablet && !isMobile;
-  // Use a tab bar on all except web desktop
-  if (isMobile) {
+
+  // Use a tab bar on all except web desktop.
+  // NOTE(brentvatne): if you navigate to an example screen and then resize your
+  // browser such that the navigator changes from tab to drawer or drawer to tab
+  // then it will reset to the list because the navigator has changed and the state
+  // of its children will be reset.
+  if (Platform.OS !== 'web' || isMobile) {
     return (
       <Tab.Navigator
         shifting
