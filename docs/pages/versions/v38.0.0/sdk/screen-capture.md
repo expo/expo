@@ -62,14 +62,14 @@ export default class KeepAwakeExample extends React.Component {
 
   _activate = () => {
     /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
-    preventScreenCaptureAsync();
-    /* @end */
+    preventScreenCaptureAsync(); /* @end */
+
   };
 
   _deactivate = () => {
     /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
-    allowScreenCaptureAsync();
-    /* @end */
+    allowScreenCaptureAsync(); /* @end */
+
   };
 }
 ```
