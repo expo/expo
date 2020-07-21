@@ -46,7 +46,7 @@ export default props => {
     <div className={STYLES_CONTAINER}>
       <div className={STYLES_HEADER}>{props.header}</div>
       <div className={STYLES_CONTENT}>
-        {!props.isMenuActive ? <div className={STYLES_LEFT}>{props.sidebar}</div> : undefined}
+        <div className={STYLES_LEFT}>{props.sidebar}</div>
         <div className={STYLES_RIGHT}>{props.children}</div>
       </div>
     </div>

@@ -21,23 +21,18 @@ const STYLES_INPUT = css`
 
   .searchbox__input,
   input {
-    font-family: ${Constants.fontFamilies.book};
+    -webkit-appearance: none;
     color: ${Constants.colors.black80};
     box-sizing: border-box;
     width: 38vw;
+    max-width: ${Constants.breakpoints.mobileStrictValue - 32}px;
     font-size: 16px;
-    line-height: 16px;
-    padding: 2px 36px 0 36px;
+    padding: 1px 36px 0 36px;
     border-radius: 2px;
     height: 40px;
     outline: 0;
     border: 1px solid ${Constants.colors.border};
     background-color: ${Constants.expoColors.gray[200]};
-  }
-
-  input::placeholder,
-  input::value {
-    transform: translateY(0.5px);
   }
 
   .svg-icons {
@@ -100,11 +95,17 @@ const STYLES_INPUT_MOBILE = css`
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 `;
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
+  constructor(props) {
+    super(props);
+    this.searchRef = React.createRef();
+  }
+
   state = {
     isFocused: false,
   };
@@ -114,6 +115,12 @@ class AlgoliaSearch extends React.Component {
     var routes = url.split('/');
     routes[routes.length - 1] = routes[routes.length - 1].replace('.html', '');
     return routes.join('/');
+  }
+
+  focusSearchInput() {
+    if (this.searchRef.current) {
+      this.searchRef.current.focus();
+    }
   }
 
   componentDidMount() {
@@ -171,16 +178,22 @@ class AlgoliaSearch extends React.Component {
       },
     });
 
-    // add keyboard shortcut
-    this.hotshot = new Hotshot({
-      combos: [
-        {
-          keyCodes: [191], // open search by pressing / key
-          callback: () =>
-            setTimeout(() => document.getElementById('algolia-search-box').focus(), 16),
-        },
-      ],
-    });
+    // add keyboard shortcut for desktop
+    if (this.props.hiddenOnMobile) {
+      this.hotshot = new Hotshot({
+        combos: [
+          {
+            keyCodes: [191], // open search by pressing / key
+            callback: () => setTimeout(() => this.focusSearchInput(), 0),
+          },
+        ],
+      });
+    }
+
+    if (!this.props.hiddenOnMobile) {
+      //auto-focuses on mobile
+      this.focusSearchInput();
+    }
   }
 
   render() {
@@ -189,7 +202,7 @@ class AlgoliaSearch extends React.Component {
         className={`${STYLES_INPUT} ${!this.props.hiddenOnMobile && STYLES_INPUT_MOBILE}`}
         style={this.props.style}>
         <div className="search">
-          <img src={'/static/images/header/search.svg'} />
+          <img src="/static/images/header/search.svg" />
         </div>
 
         <input
@@ -201,18 +214,18 @@ class AlgoliaSearch extends React.Component {
           autoComplete="off"
           spellCheck="false"
           dir="auto"
-          onClick={this.props.onStartMobileSearchText}
+          ref={this.searchRef}
         />
 
         {this.props.hiddenOnMobile ? (
           <div
             className="shortcut-hint"
             style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
-            <img src={'/static/images/header/slash.svg'} />
+            <img src="/static/images/header/slash.svg" />
           </div>
         ) : (
-          <span className="close-search" onClick={this.props.onHideSearch}>
-            <img src={'/static/images/header/x.svg'} />
+          <span className="close-search" onClick={this.props.onToggleSearch}>
+            <img src="/static/images/header/x.svg" />
           </span>
         )}
       </div>
