@@ -1,21 +1,15 @@
 import { Asset } from 'expo-asset';
-import { Video } from 'expo-av';
+import { Video, AVPlaybackStatus, VideoFullscreenUpdateEvent } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from './Player';
 
 interface State {
-  isLoaded: boolean;
-  isLooping: boolean;
-  isPlaying: boolean;
   errorMessage?: string;
-  positionMillis: number;
-  durationMillis: number;
-  rate: number;
-  shouldCorrectPitch: boolean;
   useNativeControls: boolean;
   resizeMode: any;
+  status: AVPlaybackStatus;
 }
 
 export default class VideoPlayer extends React.Component<
@@ -35,15 +29,11 @@ export default class VideoPlayer extends React.Component<
   State
 > {
   readonly state: State = {
-    isLoaded: false,
-    isLooping: false,
-    isPlaying: false,
-    positionMillis: 0,
-    durationMillis: 0,
-    rate: 1,
-    shouldCorrectPitch: false,
     useNativeControls: false,
     resizeMode: Video.RESIZE_MODE_CONTAIN,
+    status: {
+      isLoaded: false,
+    },
   };
 
   _video?: Video;
@@ -52,9 +42,10 @@ export default class VideoPlayer extends React.Component<
 
   _handleVideoMount = (ref: Video) => (this._video = ref);
 
-  _handlePlaybackStatusUpdate = (status: any) => this.setState(status);
+  _handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => this.setState({ status });
 
-  _handleFullScreenUpdate = (event: any) => console.log('onFullscreenUpdate', event);
+  _handleFullScreenUpdate = (event: VideoFullscreenUpdateEvent) =>
+    console.log('onFullscreenUpdate', event);
 
   _playAsync = async () => this._video!.playAsync();
 
@@ -91,10 +82,19 @@ export default class VideoPlayer extends React.Component<
   );
 
   render() {
+    const { status } = this.state;
     return (
       <Player
         style={this.props.style}
-        {...this.state}
+        errorMessage={this.state.errorMessage}
+        isLoaded={status.isLoaded}
+        isLooping={status.isLoaded ? status.isLooping : false}
+        rate={status.isLoaded ? status.rate : 1}
+        positionMillis={status.isLoaded ? status.positionMillis : 0}
+        durationMillis={status.isLoaded ? status.durationMillis || 0 : 0}
+        shouldCorrectPitch={status.isLoaded ? status.shouldCorrectPitch : false}
+        isPlaying={status.isLoaded ? status.isPlaying : false}
+        isMuted={status.isLoaded ? status.isMuted : false}
         playAsync={this._playAsync}
         pauseAsync={this._pauseAsync}
         setPositionAsync={this._setPositionAsync}
