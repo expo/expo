@@ -192,7 +192,7 @@ export default class GeofencingScreen extends React.Component {
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>
               <Button style={styles.button} onPress={this.shiftRegionRadius}>
-                Radius: {this.state.newRegionRadius}m
+                {`Radius: ${this.state.newRegionRadius}m`}
               </Button>
             </View>
             <View style={styles.buttonsColumn}>
