@@ -221,7 +221,7 @@ async function getSavedRegions() {
   return task ? task.options.regions : [];
 }
 
-if (Platform.OS !== 'android' && !TaskManager.isTaskDefined(GEOFENCING_TASK)) {
+if (Platform.OS !== 'android') {
   TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
     const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
     const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${region.longitude} and radius: ${region.radius}m`;
