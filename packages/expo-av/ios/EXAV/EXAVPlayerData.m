@@ -40,7 +40,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, strong) id <NSObject> finishObserver;
 @property (nonatomic, strong) id <NSObject> playbackStalledObserver;
 @property (nonatomic, strong) NSMapTable<NSObject *, NSMutableSet<NSString *> *> *observers;
-@property (nonatomic, assign) NSInteger observerCount;
 
 @property (nonatomic, strong) NSNumber *progressUpdateIntervalMillis;
 @property (nonatomic, assign) CMTime currentPosition;
@@ -91,7 +90,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _playbackStalledObserver = nil;
     _statusUpdateCallback = nil;
     _observers = [[NSMapTable alloc]init];
-    _observerCount = 0;
   
     // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
@@ -527,7 +525,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
   if (![set containsObject:path]) {
     [set addObject:path];
-    NSLog(@"addObserver, count: %li", ++_observerCount);
     [object addObserver:self forKeyPath:path options:0 context:nil];
   }
 }
@@ -541,7 +538,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       if (!set.count) {
         [_observers removeObjectForKey:object];
       }
-      NSLog(@"removeObserver, count: %li", --_observerCount);
       [object removeObserver:self forKeyPath:path];
     }
   }
