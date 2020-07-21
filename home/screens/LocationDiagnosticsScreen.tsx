@@ -1,5 +1,4 @@
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -12,6 +11,7 @@ import MapView from 'react-native-maps';
 import Button from '../components/PrimaryButton';
 import Colors from '../constants/Colors';
 
+// import { useFocusEffect } from '@react-navigation/native';
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
 
@@ -52,7 +52,6 @@ type State = Pick<Location.LocationTaskOptions, 'showsBackgroundLocationIndicato
   accuracy: Location.Accuracy;
   isTracking: boolean;
   savedLocations: any[];
-  initialRegion: Region | null;
 };
 
 const initialState: State = {
@@ -60,7 +59,6 @@ const initialState: State = {
   savedLocations: [],
   activityType: null,
   accuracy: Location.Accuracy.High,
-  initialRegion: null,
   showsBackgroundLocationIndicator: false,
 };
 
@@ -111,18 +109,29 @@ BackgroundLocationMapScreen.navigationOptions = {
 function BackgroundLocationMapView({ isBackgroundLocationAvailable }) {
   const mapViewRef = React.useRef<MapView>(null);
   const [state, dispatch] = React.useReducer(reducer, initialState);
+  const [initialRegion, setInitialRegion] = React.useState<Region | undefined>(undefined);
 
-  const onFocus = React.useCallback(() => {
+  React.useEffect(() => {
     let subscription: EventSubscription | null = null;
     let isMounted = true;
     (async () => {
       const { coords } = await Location.getCurrentPositionAsync();
+      if (isMounted)
+        setInitialRegion({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          latitudeDelta: 0.004,
+          longitudeDelta: 0.002,
+        });
+    })();
+
+    (async () => {
       const isTracking = await Location.hasStartedLocationUpdatesAsync(LOCATION_UPDATES_TASK);
       const task = (await TaskManager.getRegisteredTasksAsync()).find(
         ({ taskName }) => taskName === LOCATION_UPDATES_TASK
       );
       const savedLocations = await getSavedLocations();
-
+      console.log('savedLocations: ', savedLocations);
       subscription = locationEventsEmitter.addListener('update', (savedLocations: any) => {
         if (isMounted) dispatch({ savedLocations });
       });
@@ -139,12 +148,6 @@ function BackgroundLocationMapView({ isBackgroundLocationAvailable }) {
         showsBackgroundLocationIndicator: task?.options.showsBackgroundLocationIndicator,
         activityType: task?.options.activityType ?? null,
         savedLocations,
-        initialRegion: {
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-          latitudeDelta: 0.004,
-          longitudeDelta: 0.002,
-        },
       });
     })();
 
@@ -154,19 +157,17 @@ function BackgroundLocationMapView({ isBackgroundLocationAvailable }) {
         subscription.remove();
       }
     };
-  }, [state.accuracy]);
-
-  useFocusEffect(onFocus);
+  }, []);
 
   const startLocationUpdates = React.useCallback(
     async (acc = state.accuracy) => {
       await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {
         accuracy: acc,
         showsBackgroundLocationIndicator: state.showsBackgroundLocationIndicator,
-        // activityType: state.activityType ?? undefined,
-        // pausesUpdatesAutomatically: state.activityType != null,
-        // deferredUpdatesInterval: 60 * 1000, // 1 minute
-        // deferredUpdatesDistance: 100, // 100 meters
+        activityType: state.activityType ?? undefined,
+        pausesUpdatesAutomatically: state.activityType != null,
+        deferredUpdatesInterval: 60 * 1000, // 1 minute
+        deferredUpdatesDistance: 100, // 100 meters
         // foregroundService: {
         //   notificationTitle: 'expo-location-demo',
         //   notificationBody: 'Background location is running...',
@@ -282,16 +283,12 @@ function BackgroundLocationMapView({ isBackgroundLocationAvailable }) {
     );
   }, [state.savedLocations]);
 
-  if (!state.initialRegion) {
-    return null;
-  }
-
   return (
     <View style={styles.screen}>
       <MapView
         ref={mapViewRef}
+        initialRegion={initialRegion}
         style={styles.mapView}
-        initialRegion={state.initialRegion}
         showsUserLocation>
         {renderPolyline()}
       </MapView>
@@ -310,7 +307,7 @@ function BackgroundLocationMapView({ isBackgroundLocationAvailable }) {
                 </View>
               </Button>
             )}
-            {Platform.OS === 'android' ? null : (
+            {Platform.OS === 'ios' && (
               <Button style={styles.button} onPress={toggleActivityType}>
                 {state.activityType
                   ? `Activity type: ${Location.ActivityType[state.activityType]}`
@@ -322,9 +319,7 @@ function BackgroundLocationMapView({ isBackgroundLocationAvailable }) {
             }`}</Button>
           </View>
           <View style={styles.buttonsColumn}>
-            <Button style={styles.button} onPress={onCenterMap}>
-              <MaterialIcons name="my-location" size={20} color="white" />
-            </Button>
+            <MyLocationButton onPress={onCenterMap} />
           </View>
         </View>
 
@@ -343,6 +338,14 @@ function BackgroundLocationMapView({ isBackgroundLocationAvailable }) {
   );
 }
 
+function MyLocationButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Button style={styles.button} onPress={onPress}>
+      <MaterialIcons name="my-location" size={20} color="white" />
+    </Button>
+  );
+}
+
 async function getSavedLocations() {
   try {
     const item = await AsyncStorage.getItem(STORAGE_KEY);
@@ -352,7 +355,7 @@ async function getSavedLocations() {
   }
 }
 
-if (Platform.OS !== 'android') {
+if (Platform.OS !== 'android' && !TaskManager.isTaskDefined(LOCATION_UPDATES_TASK)) {
   TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }: any) => {
     if (locations && locations.length > 0) {
       const savedLocations = await getSavedLocations();

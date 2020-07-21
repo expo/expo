@@ -1,13 +1,13 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+// import { useFocusEffect } from '@react-navigation/native';
 import { Notifications } from 'expo';
 import { BlurView } from 'expo-blur';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
-import React from 'react';
-import { NativeSyntheticEvent, Platform, StyleSheet, Text, View } from 'react-native';
-import MapView from 'react-native-maps';
+import * as React from 'react';
+import { NativeSyntheticEvent, Platform, StyleSheet, Text, View, Linking } from 'react-native';
+import MapView, { Circle } from 'react-native-maps';
 
 import Button from '../components/PrimaryButton';
 
@@ -97,13 +97,20 @@ function reducer(
 export default function GeofencingScreen(props) {
   const [permission] = Permissions.usePermissions(Permissions.LOCATION, { ask: true });
 
-  if (!permission) {
+  if (!permission?.granted) {
     return (
-      <View style={styles.screen}>
+      <View style={[styles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
         <Text style={styles.errorText}>
           Location permissions are required in order to use this feature. You can manually enable
           them at any time in the "Location Services" section of the Settings app.
         </Text>
+        <Button
+          style={styles.button}
+          onPress={() => {
+            Linking.openSettings();
+          }}>
+          Open Settings
+        </Button>
       </View>
     );
   }
@@ -144,10 +151,13 @@ function GeofencingView() {
         });
       }
     })();
-    return () => (isActive = false);
+    return () => {
+      isActive = false;
+    };
   }, []);
 
-  useFocusEffect(onFocus);
+  React.useEffect(onFocus, []);
+  // useFocusEffect(onFocus);
 
   const toggleGeofencing = React.useCallback(async () => {
     if (state.isGeofencing) {
@@ -190,10 +200,9 @@ function GeofencingView() {
   };
 
   const renderRegions = React.useCallback(() => {
-    return state.geofencingRegions.map(region => {
+    return state.geofencingRegions.map((region, i) => {
       return (
-        // @ts-ignore
-        <MapView.Circle
+        <Circle
           key={region.identifier}
           center={region}
           radius={region.radius}
@@ -202,7 +211,7 @@ function GeofencingView() {
         />
       );
     });
-  }, [state.geofencingRegions]);
+  }, [state.geofencingRegions.map(({ identifier }) => identifier).join('__')]);
 
   if (!state.initialRegion) {
     return null;
@@ -232,6 +241,21 @@ function GeofencingView() {
                 'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'}
           </Text>
         </BlurView>
+
+        <View style={styles.buttons} pointerEvents="box-none">
+          <View style={styles.topButtons}>
+            <View style={styles.buttonsColumn}>
+              <Button style={styles.button} onPress={shiftRegionRadius}>
+                {`Radius: ${state.newRegionRadius}m`}
+              </Button>
+            </View>
+            <View style={styles.buttonsColumn}>
+              <Button style={styles.button} onPress={centerMap}>
+                <MaterialIcons name="my-location" size={20} color="white" />
+              </Button>
+            </View>
+          </View>
+        </View>
       </View>
 
       <MapView
@@ -243,22 +267,19 @@ function GeofencingView() {
         {renderRegions()}
       </MapView>
 
-      <View style={styles.buttons} pointerEvents="box-none">
-        <View style={styles.topButtons}>
-          <View style={styles.buttonsColumn}>
-            <Button style={styles.button} onPress={shiftRegionRadius}>
-              Radius: {state.newRegionRadius}m
-            </Button>
-          </View>
-          <View style={styles.buttonsColumn}>
-            <Button style={styles.button} onPress={centerMap}>
-              <MaterialIcons name="my-location" size={20} color="white" />
-            </Button>
-          </View>
-        </View>
-
+      <View
+        pointerEvents="box-none"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
         <View style={styles.bottomButtons}>
           <Button
+            disabled={!canToggle}
             style={[styles.button, canToggle ? null : styles.disabledButton]}
             onPress={toggleGeofencing}>
             {getGeofencingButtonContent()}
@@ -309,12 +330,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    padding: 10,
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
   },
   topButtons: {
     flexDirection: 'row',
@@ -330,8 +345,8 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: 5,
+    marginVertical: 8,
     paddingHorizontal: 10,
-    marginVertical: 5,
   },
   disabledButton: {
     backgroundColor: 'gray',
@@ -343,7 +358,7 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   heading: {
-    backgroundColor: 'rgba(255, 255, 0, 0.1)',
+    padding: 8,
     position: 'absolute',
     top: 0,
     right: 0,
@@ -353,6 +368,7 @@ const styles = StyleSheet.create({
   blurView: {
     flex: 1,
     padding: 5,
+    borderRadius: 4,
   },
   headingText: {
     textAlign: 'center',

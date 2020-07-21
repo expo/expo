@@ -10,15 +10,30 @@ import {
 } from 'react-native';
 import Colors from '../constants/Colors';
 
+type TouchableNativeFeedbackProps = React.ComponentProps<typeof TouchableNativeFeedback>['style'];
 // eslint-disable-next-line no-unused-vars
-export default function PrimaryButton({ children, isLoading, plain, style, textStyle, ...props }) {
+export default function PrimaryButton({
+  children,
+  isLoading,
+  plain,
+  style,
+  ...props
+}: TouchableNativeFeedbackProps & {
+  children: any;
+  isLoading?: boolean;
+  plain?: boolean;
+}) {
   return (
     <TouchableNativeFeedback
       fallback={TouchableOpacity}
       {...props}
       activeOpacity={isLoading ? 1 : 0.5}
       style={[plain ? styles.plainButton : styles.button, style]}>
-      <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
+      {typeof children === 'string' ? (
+        <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
+      ) : (
+        children
+      )}
       {isLoading && (
         <View style={styles.activityIndicatorContainer}>
           <ActivityIndicator color="#fff" />

@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from 'react-navigation';
 import * as React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
@@ -33,7 +33,7 @@ function ShadowButton(props: { onPress: () => void; children: any }) {
       }}>
       <Animated.View
         style={{
-          backgroundColor: theme.dark ? Colors.dark.cardBackground : '#fff',
+          backgroundColor: theme === 'dark' ? Colors.dark.cardBackground : '#fff',
           padding: 15,
           borderRadius: 10,
           shadowOffset: { width: 0, height: 0 },
