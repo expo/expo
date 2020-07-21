@@ -332,7 +332,7 @@ final class MediaLibraryUtils {
 
   static void getExifLocation(ExifInterface exifInterface, Bundle asset) {
     double[] latLong = exifInterface.getLatLong();
-    if(latLong == null) {
+    if (latLong == null) {
       asset.putParcelable("location", null);
       return;
     }
