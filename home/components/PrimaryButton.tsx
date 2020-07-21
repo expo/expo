@@ -29,11 +29,8 @@ export default function PrimaryButton({
       {...props}
       activeOpacity={isLoading ? 1 : 0.5}
       style={[plain ? styles.plainButton : styles.button, style]}>
-      {typeof children === 'string' ? (
-        <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
-      ) : (
-        children
-      )}
+      <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
+
       {isLoading && (
         <View style={styles.activityIndicatorContainer}>
           <ActivityIndicator color="#fff" />

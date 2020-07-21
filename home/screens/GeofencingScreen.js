@@ -192,7 +192,7 @@ export default class GeofencingScreen extends React.Component {
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>
               <Button style={styles.button} onPress={this.shiftRegionRadius}>
-                Radius: {this.state.newRegionRadius}m
+                {`Radius: ${this.state.newRegionRadius}m`}
               </Button>
             </View>
             <View style={styles.buttonsColumn}>
@@ -221,7 +221,7 @@ async function getSavedRegions() {
   return task ? task.options.regions : [];
 }
 
-if (Platform.OS !== 'android') {
+if (Platform.OS !== 'android' && !TaskManager.isTaskDefined(GEOFENCING_TASK)) {
   TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
     const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
     const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${region.longitude} and radius: ${region.radius}m`;
