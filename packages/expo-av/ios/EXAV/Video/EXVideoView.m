@@ -150,6 +150,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   EXVideoPlayerViewController *controller = [[EXVideoPlayerViewController alloc] init];
   [controller setShowsPlaybackControls:_useNativeControls];
   [controller setRctDelegate:self];
+  [controller setDelegate:self];
   [controller.view setFrame:self.bounds];
   [controller setPlayer:_data.player];
   [controller addObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
@@ -199,7 +200,11 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       if (strongSelf && strongSelf.playerViewController) {
         [strongSelf.playerViewController.view removeFromSuperview];
         [strongSelf.playerViewController removeObserver:strongSelf forKeyPath:EXVideoReadyForDisplayKeyPath];
-        [strongSelf.playerViewController removeObserver:strongSelf forKeyPath:EXVideoBoundsKeyPath];
+        if (@available(iOS 12, *)) {
+          // EXVideoBounds monitoring is only used as a fallback on iOS 11 or lower
+        } else {
+          [strongSelf.playerViewController removeObserver:strongSelf forKeyPath:EXVideoBoundsKeyPath];
+        }
         strongSelf.playerViewController = nil;
       }
     };
@@ -238,11 +243,12 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                              @"status": [_data getStatus]});
       }
     }
-  } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
     
+    // On iOS 11 or lower, use video-bounds monitoring to detect changes in the full-screen
+    // mode due to activating native controls
+  } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
     CGRect viewBounds = [change[@"new"] CGRectValue];
     CGRect screen = [[UIScreen mainScreen] bounds];
-    
     if (viewBounds.size.height != screen.size.height && viewBounds.size.width != screen.size.width && _fullscreenPlayerPresented && !_fullscreenPlayerViewController) {
       // Fullscreen player is being dismissed
       _fullscreenPlayerPresented = NO;
@@ -499,11 +505,15 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       }
       if (!strongSelf.playerViewController && strongSelf.data) {
         strongSelf.playerViewController = [strongSelf _createNewPlayerViewController];
-        // We're listening for changes to `videoBounds`, because it seems
-        // to be the easiest way to detect fullscreen changes triggered by the native video button.
-        // See https://stackoverflow.com/questions/36323259/detect-video-playing-full-screen-in-portrait-or-landscape/36388184#36388184
-        // and https://github.com/expo/expo/issues/1566
-        [strongSelf.playerViewController addObserver:self forKeyPath:EXVideoBoundsKeyPath options:NSKeyValueObservingOptionNew context:nil];
+        if (@available(iOS 12, *)) {
+          // On iOS 12 or higher, use the AVPlayerViewControllerDelegate full-screen delegate methods:
+          // https://stackoverflow.com/a/58809976/3785358
+        } else {
+          // On iOS 11 or earlier, fallback to listening for changes to `videoBounds`.
+          // See https://stackoverflow.com/questions/36323259/detect-video-playing-full-screen-in-portrait-or-landscape/36388184#36388184
+          // and https://github.com/expo/expo/issues/1566
+          [strongSelf.playerViewController addObserver:self forKeyPath:EXVideoBoundsKeyPath options:NSKeyValueObservingOptionNew context:nil];
+        }
         // Resize mode must be set before layer is added
         // to prevent video from being animated when `resizeMode` is `cover`
         [strongSelf _updateNativeResizeMode];
@@ -632,6 +642,28 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     _presentingViewController = nil;
     [self _removeFullscreenPlayerViewController];
     [self setUseNativeControls:_useNativeControls];
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
+  }
+}
+
+#pragma mark - AVVideoPlayerViewControllerDelegate
+
+- (void)playerViewController:(AVPlayerViewController *)playerViewController
+willBeginFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  if (playerViewController == _playerViewController) {
+    _fullscreenPlayerPresented = YES;
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
+  }
+}
+
+- (void)playerViewController:(AVPlayerViewController *)playerViewController
+willEndFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  if (playerViewController == _playerViewController) {
+    _fullscreenPlayerPresented = NO;
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
     [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
   }
 }
