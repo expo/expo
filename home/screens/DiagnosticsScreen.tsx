@@ -1,25 +1,22 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import BouncingShadowButton from '../components/BouncingShadowButton';
 import ScrollView from '../components/NavigationScrollView';
 import { StyledText } from '../components/Text';
-import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
 
 export default function DiagnosticsScreen({ navigation }) {
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.light.greyBackground }}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
-        <AudioDiagnostic navigation={navigation} />
-        {Environment.IsIOSRestrictedBuild ? (
-          <ForegroundLocationDiagnostic navigation={navigation} />
-        ) : (
-          <BackgroundLocationDiagnostic navigation={navigation} />
-        )}
-        <GeofencingDiagnostic navigation={navigation} />
-      </ScrollView>
-    </View>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
+      <AudioDiagnostic navigation={navigation} />
+      {Environment.IsIOSRestrictedBuild ? (
+        <ForegroundLocationDiagnostic navigation={navigation} />
+      ) : (
+        <BackgroundLocationDiagnostic navigation={navigation} />
+      )}
+      <GeofencingDiagnostic navigation={navigation} />
+    </ScrollView>
   );
 }
 
