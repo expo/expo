@@ -52,7 +52,9 @@ export default class VideoPlayer extends React.Component<
 
   _handleVideoMount = (ref: Video) => (this._video = ref);
 
-  _updateStateToStatus = (status: any) => this.setState(status);
+  _handlePlaybackStatusUpdate = (status: any) => this.setState(status);
+
+  _handleFullScreenUpdate = (event: any) => console.log('onFullscreenUpdate', event);
 
   _playAsync = async () => this._video!.playAsync();
 
@@ -83,7 +85,8 @@ export default class VideoPlayer extends React.Component<
       onError={this._handleError}
       style={{ height: 300 }}
       progressUpdateIntervalMillis={100}
-      onPlaybackStatusUpdate={this._updateStateToStatus}
+      onPlaybackStatusUpdate={this._handlePlaybackStatusUpdate}
+      onFullscreenUpdate={this._handleFullScreenUpdate}
     />
   );
 

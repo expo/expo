@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix audio recording after reload. ([#9283](https://github.com/expo/expo/pull/9283) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Fix fullscreen events not emitted on iOS. ([#9323](https://github.com/expo/expo/pull/9323) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ## 8.3.0 — 2020-07-08
 
