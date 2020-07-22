@@ -51,6 +51,8 @@ export default class VideoPlayer extends React.Component<
 
   _pauseAsync = async () => this._video!.pauseAsync();
 
+  _replayAsync = async () => this._video!.replayAsync();
+
   _setPositionAsync = async (position: number) => this._video!.setPositionAsync(position);
 
   _setIsLoopingAsync = async (isLooping: boolean) => this._video!.setIsLoopingAsync(isLooping);
@@ -97,6 +99,7 @@ export default class VideoPlayer extends React.Component<
         isMuted={status.isLoaded ? status.isMuted : false}
         playAsync={this._playAsync}
         pauseAsync={this._pauseAsync}
+        replayAsync={this._replayAsync}
         setPositionAsync={this._setPositionAsync}
         setIsLoopingAsync={this._setIsLoopingAsync}
         setIsMutedAsync={this._setIsMutedAsync}
