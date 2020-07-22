@@ -56,7 +56,7 @@ public class CropImageExporter implements ImageExporter {
       try {
         out.close();
       } catch (IOException e) {
-        // We have already resolve promise.
+        // We have already resolved promise.
         e.printStackTrace();
       }
 

@@ -209,16 +209,6 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     startActivityOnResult(libraryIntent, ImagePickerConstance.REQUEST_LAUNCH_IMAGE_LIBRARY, promise);
   }
 
-  @ExpoMethod
-  public void startObserving(Promise promise) {
-    promise.resolve(null);
-  }
-
-  @ExpoMethod
-  public void stopObserving(Promise promise) {
-    promise.resolve(null);
-  }
-
   public void startCropIntent(Uri uri, String type, int requestCode) throws IOException {
     String extension = ".jpg";
     Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
