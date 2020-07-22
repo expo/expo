@@ -496,7 +496,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   } else if ([_player.items count] > 1) {
     // There is an item ahead of the current item in the queue, so we can just advance to it (it should be seeked to 0)
     // and start to play with `setStatus`.
-    [self _removeObserversForPlayerItem:_player.currentItem];
     [_player advanceToNextItem];
     [self setStatus:status resolver:resolve rejecter:reject];
   } else {
@@ -546,11 +545,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 - (void)_removeObservers
 {
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-  
-  for (AVPlayerItem *item in _items) {
-    [self _removeObserversForPlayerItem:item];
-  }
-  
+  [self _removeObserversForPlayerItems];
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverRateKeyPath];
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverCurrentItemKeyPath];
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverTimeControlStatusPath];
@@ -561,6 +556,13 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   if (_timeObserver) {
     [_player removeTimeObserver:_timeObserver];
     _timeObserver = nil;
+  }
+}
+
+- (void)_removeObserversForPlayerItems
+{
+  for (AVPlayerItem *item in _items) {
+    [self _removeObserversForPlayerItem:item];
   }
 }
 
@@ -762,6 +764,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
             strongSelf.replayResolve = nil;
           }
         } else if ([keyPath isEqualToString:EXAVPlayerDataObserverCurrentItemKeyPath]) {
+          [strongSelf _removeObserversForPlayerItems];
           [strongSelf _addObserversForPlayerItem:change[NSKeyValueChangeNewKey]];
           // Treadmill pattern, see: https://developer.apple.com/videos/play/wwdc2016/503/
           AVPlayerItem *removedPlayerItem = change[NSKeyValueChangeOldKey];
