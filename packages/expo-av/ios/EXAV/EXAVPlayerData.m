@@ -525,7 +525,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
   if (![set containsObject:path]) {
     [set addObject:path];
-    [object addObserver:self forKeyPath:path options:0 context:nil];
+    [object addObserver:self forKeyPath:path options:options context:nil];
   }
 }
 
