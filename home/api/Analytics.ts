@@ -5,8 +5,7 @@ import Environment from '../utils/Environment';
 import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
 
 let isInitialized = false;
-const { manifest } = Constants;
-const apiKey = manifest.extra && manifest.extra.amplitudeApiKey;
+const apiKey = Constants.manifest?.extra?.amplitudeApiKey;
 
 export const events = {
   USER_LOGGED_IN: 'USER_LOGGED_IN',
@@ -23,8 +22,10 @@ export const events = {
   USER_UPDATED_SETTINGS: 'USER_UPDATED_SETTINGS',
 };
 
+const canUseAmplitude = Environment.isProduction && apiKey;
+
 export function initialize(): void {
-  if (isInitialized || !Environment.isProduction || !apiKey) {
+  if (isInitialized || !canUseAmplitude) {
     return;
   }
 
@@ -36,6 +37,7 @@ export function identify(id: string | null, options?: TrackingOptions) {
   initialize();
   const properties = normalizeTrackingOptions(options);
 
+  if (!canUseAmplitude) return;
   if (id) {
     Amplitude.setUserId(id);
     if (properties) {
@@ -49,6 +51,8 @@ export function identify(id: string | null, options?: TrackingOptions) {
 export function track(event: string, options?: TrackingOptions): void {
   initialize();
   const properties = normalizeTrackingOptions(options);
+
+  if (!canUseAmplitude) return;
 
   if (properties) {
     Amplitude.logEventWithProperties(event, properties);
