@@ -78,6 +78,7 @@ const sections = [
       'Routing & Navigation',
       'Authentication',
       'App Icons',
+      'Webhooks',
       'Create a Splash Screen',
       'Configuring the Status Bar',
       'Configuring OTA Updates',
