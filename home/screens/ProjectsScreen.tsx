@@ -50,16 +50,11 @@ export default function ProjectsScreen(props: NavigationProps) {
   React.useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
       setFocused(true);
-      // The screen is focused
-      // Call any action
     });
     const unsubscribeBlur = props.navigation.addListener('blur', () => {
       setFocused(false);
-      // The screen is focused
-      // Call any action
     });
 
-    // Return the function to unsubscribe from the event so it gets removed on unmount
     return () => {
       unsubscribe();
       unsubscribeBlur();

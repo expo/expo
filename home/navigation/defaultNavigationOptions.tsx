@@ -5,10 +5,6 @@ import Colors from '../constants/Colors';
 
 export default (theme: string): StackNavigationOptions => {
   return {
-    // headerTintColor: Platform.select({
-    //   ios: Colors.light.tintColor,
-    //   android: Colors[theme].text,
-    // }),
     headerStyle: {
       borderBottomColor: Colors[theme].cardSeparator,
       elevation: 0,
