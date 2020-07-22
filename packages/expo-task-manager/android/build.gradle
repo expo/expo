@@ -39,7 +39,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 20
     versionName "8.4.0"
   }
@@ -56,8 +56,8 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
-            "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
-            "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
+      "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
 }
 
 dependencies {
@@ -70,5 +70,5 @@ dependencies {
   api "androidx.core:core:1.0.0"
 }
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
