@@ -106,6 +106,12 @@ That's all you need to do. The `versions` directory is listed on server start to
 
 Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `navigation.js`.
 
+#### Syncing app.json / app.config.js with the schema
+
+To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema. 
+
+If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync 39` (or relevant version number) or `yarn run schema-sync unversioned`.  
+
 #### Importing from the React Native docs
 
 You can import the React Native docs in an automated way into these docs.
