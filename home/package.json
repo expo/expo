@@ -61,7 +61,6 @@
     "react-native-reanimated": "~1.9.0",
     "react-native-safe-area-context": "3.0.2",
     "react-native-screens": "~2.9.0",
-    "react-navigation": "4.1.0-alpha.1",
     "react-redux": "^7.2.0",
     "reanimated-bottom-sheet": "^1.0.0-alpha.18",
     "redux": "^4.0.5",

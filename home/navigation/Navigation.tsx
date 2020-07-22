@@ -155,8 +155,16 @@ function DiagnosticsStackScreen() {
         component={AudioDiagnosticsScreen}
         options={{ title: 'Audio Diagnostics' }}
       />
-      <DiagnosticsStack.Screen name="Location" component={LocationDiagnosticsScreen} />
-      <DiagnosticsStack.Screen name="Geofencing" component={GeofencingScreen} />
+      <DiagnosticsStack.Screen
+        name="Location"
+        component={LocationDiagnosticsScreen}
+        options={{ title: 'Location Diagnostics' }}
+      />
+      <DiagnosticsStack.Screen
+        name="Geofencing"
+        component={GeofencingScreen}
+        options={{ title: 'Geofencing' }}
+      />
     </DiagnosticsStack.Navigator>
   );
 }
