@@ -1,8 +1,8 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
+import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
-import { Themed } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
@@ -13,7 +13,6 @@ import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
 import NoProjectsOpen from '../components/NoProjectsOpen';
 import NoProjectTools from '../components/NoProjectTools';
-import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import ProjectListItem from '../components/ProjectListItem';
 import ProjectTools from '../components/ProjectTools';
 import RefreshControl from '../components/RefreshControl';
@@ -44,7 +43,7 @@ type State = {
   isRefreshing: boolean;
 };
 
-type NavigationProps = StackScreenProps<{ Projects: any; QRCode: {} }, 'Projects'>;
+type NavigationProps = StackScreenProps<AllStackRoutes, 'Projects'>;
 
 export default function ProjectsScreen(props: NavigationProps) {
   const [isFocused, setFocused] = React.useState(true);
@@ -166,7 +165,6 @@ class ProjectsView extends React.Component<Props, State> {
           {this._renderRecentHistory()}
           {this._renderConstants()}
         </ScrollView>
-        <Themed.StatusBar />
       </View>
     );
   }

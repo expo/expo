@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { ThemeColors } from 'react-navigation';
+
 const tintColor = '#4e9bde';
 const darkTintColor = '#1a74b3';
 
@@ -36,7 +36,7 @@ export default {
     darkTintColor: tintColor,
     navBackgroundColor: '#000',
     navBorderBottom: '#000',
-    sectionLabelBackgroundColor: ThemeColors.dark.bodyContent,
+    sectionLabelBackgroundColor: '#2a2a2a',
     sectionLabelText: '#fff',
     bodyBackground: '#000',
     cardBackground: '#1c1c1e',

@@ -2,17 +2,18 @@ import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { DarkTheme, DefaultTheme, NavigationContainer, useTheme } from '@react-navigation/native';
+import { NavigationContainer, useTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-// import { createNativeStackNavigator } from 'react-native-screens/native-stack';
-// import { enableScreens } from 'react-native-screens';
 
 import CloseButton from '../components/CloseButton';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
+import OptionsButton from '../components/OptionsButton';
+import UserSettingsButton from '../components/UserSettingsButton';
 import Colors from '../constants/Colors';
+import * as Themes from '../constants/Themes';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
@@ -28,8 +29,6 @@ import SnacksForUserScreen from '../screens/SnacksForUserScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
 import defaultNavigationOptions from './defaultNavigationOptions';
-import OptionsButton from '../components/OptionsButton';
-import UserSettingsButton from '../components/UserSettingsButton';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator();
@@ -168,11 +167,8 @@ const MaterialBottomTab = createMaterialBottomTabNavigator();
 
 const RootStack = createStackNavigator();
 
-import * as Themes from '../constants/Themes';
-
 export default (props: { theme: string }) => (
   <NavigationContainer theme={Themes[props.theme]}>
-    {/* <NavigationContainer {...props}> */}
     <RootStack.Navigator initialRouteName="Tabs" mode="modal">
       <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
         {() => {

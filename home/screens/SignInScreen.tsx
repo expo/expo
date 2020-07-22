@@ -1,4 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
+import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Platform, StyleSheet, TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +15,7 @@ import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
-type NavigationProps = StackScreenProps<any, 'SignIn'>;
+type NavigationProps = StackScreenProps<AllStackRoutes, 'SignIn'>;
 
 export default function SignInScreen(props: NavigationProps) {
   const session = useSelector(data => data.session);

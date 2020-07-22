@@ -1,26 +1,19 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
+import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Ionicons } from '../components/Icons';
-import OptionsButton from '../components/OptionsButton';
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
-import Colors from '../constants/Colors';
 import MyProfileContainer from '../containers/MyProfileContainer';
 import OtherProfileContainer from '../containers/OtherProfileContainer';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
-import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 
-type Links = {
-  Profile: { username?: string };
-};
-
-type Props = StackScreenProps<Links, 'Profile'>;
-
-export default function ProfileScreen({ navigation, ...props }: Props) {
+export default function ProfileScreen({
+  navigation,
+  ...props
+}: StackScreenProps<AllStackRoutes, 'Profile'>) {
   // TODO(Bacon): This might not be needed, check during TS migration.
   const dispatch = useDispatch();
   const { isAuthenticated, username } = useSelector(
@@ -52,7 +45,7 @@ class ProfileView extends React.Component<
     username: string;
     dispatch: (action: any) => void;
     isAuthenticated: boolean;
-  } & StackScreenProps<{ Profile: { username?: string } }, 'Profile'>,
+  } & StackScreenProps<AllStackRoutes, 'Profile'>,
   { isOwnProfile: boolean | null }
 > {
   constructor(props) {
