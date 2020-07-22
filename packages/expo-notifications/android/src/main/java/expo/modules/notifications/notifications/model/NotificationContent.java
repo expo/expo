@@ -31,6 +31,7 @@ public class NotificationContent implements Parcelable, Serializable {
   private NotificationPriority mPriority;
   private Number mColor;
   private boolean mAutoDismiss;
+  private boolean mSticky;
 
   protected NotificationContent() {
   }
@@ -104,6 +105,10 @@ public class NotificationContent implements Parcelable, Serializable {
     return mAutoDismiss;
   }
 
+  public boolean isSticky() {
+    return mSticky;
+  }
+
   @Override
   public int describeContents() {
     return 0;
@@ -129,6 +134,7 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readSerializable();
     mAutoDismiss = in.readByte() == 1;
+    mSticky = in.readByte() == 1;
   }
 
   @Override
@@ -145,6 +151,7 @@ public class NotificationContent implements Parcelable, Serializable {
     dest.writeSerializable(mPriority != null ? mPriority.getNativeValue() : null);
     dest.writeSerializable(mColor);
     dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
+    dest.writeByte((byte) (mSticky ? 1 : 0));
   }
 
   //                                           EXPONOTIFCONTENT02
@@ -170,6 +177,7 @@ public class NotificationContent implements Parcelable, Serializable {
     out.writeObject(mPriority != null ? mPriority.getNativeValue() : null);
     out.writeObject(mColor);
     out.writeByte(mAutoDismiss ? 1 : 0);
+    out.writeByte(mSticky ? 1 : 0);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -210,6 +218,7 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readObject();
     mAutoDismiss = in.readByte() == 1;
+    mSticky = in.readByte() == 1;
   }
 
   private void readObjectNoData() throws ObjectStreamException {
@@ -228,6 +237,7 @@ public class NotificationContent implements Parcelable, Serializable {
     private NotificationPriority mPriority;
     private Number mColor;
     private boolean mAutoDismiss;
+    private boolean mSticky;
 
     public Builder() {
       useDefaultSound();
@@ -298,6 +308,11 @@ public class NotificationContent implements Parcelable, Serializable {
       return this;
     }
 
+    public Builder setSticky(boolean sticky) {
+      mSticky = sticky;
+      return this;
+    }
+
     public NotificationContent build() {
       NotificationContent content = new NotificationContent();
       content.mTitle = mTitle;
@@ -312,6 +327,7 @@ public class NotificationContent implements Parcelable, Serializable {
       content.mPriority = mPriority;
       content.mColor = mColor;
       content.mAutoDismiss = mAutoDismiss;
+      content.mSticky = mSticky;
       return content;
     }
   }
