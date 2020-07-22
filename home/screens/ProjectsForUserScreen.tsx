@@ -2,18 +2,17 @@ import * as React from 'react';
 
 import MyProjectsListContainer from '../containers/MyProjectsListContainer';
 import OtherUserProjectListContainer from '../containers/OtherUserProjectListContainer';
+import { StackScreenProps } from '@react-navigation/stack';
 
-export default function ProjectsForUserScreen({ navigation }: { navigation: any }) {
-  const username = navigation.getParam('username');
-  const belongsToCurrentUser = navigation.getParam('belongsToCurrentUser', false);
+type Links = { ProjectsForUser: { username: string; belongsToCurrentUser?: boolean } };
+
+export default function ProjectsForUserScreen({
+  route,
+}: StackScreenProps<Links, 'ProjectsForUser'>) {
+  const { username, belongsToCurrentUser = false } = route.params ?? {};
 
   if (belongsToCurrentUser) {
     return <MyProjectsListContainer belongsToCurrentUser />;
-  } else {
-    return <OtherUserProjectListContainer username={username} />;
   }
+  return <OtherUserProjectListContainer username={username} />;
 }
-
-ProjectsForUserScreen.navigationOptions = {
-  title: 'Projects',
-};

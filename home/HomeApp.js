@@ -6,7 +6,7 @@ import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Assets as StackAssets } from 'react-navigation-stack';
+import { Assets as StackAssets } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 import url from 'url';
 

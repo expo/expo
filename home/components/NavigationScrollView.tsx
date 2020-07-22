@@ -1,5 +1,6 @@
+import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { useTheme, ScrollView } from 'react-navigation';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import Colors from '../constants/Colors';
 
@@ -13,12 +14,13 @@ interface StyledScrollViewProps extends ScrollViewProps {
 
 function useThemeBackgroundColor(props: StyledScrollViewProps, colorName: ThemedColors) {
   const theme = useTheme();
-  const colorFromProps = props[`${theme}BackgroundColor`];
+  const themeName = theme.dark ? 'dark' : 'light';
+  const colorFromProps = props[`${themeName}BackgroundColor`];
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return Colors[themeName][colorName];
   }
 }
 

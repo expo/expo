@@ -1,13 +1,8 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
-import {
-  NavigationFocusInjectedProps,
-  Themed,
-  withNavigation,
-  withNavigationFocus,
-  NavigationInjectedProps,
-} from 'react-navigation';
+import { Themed } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
@@ -16,8 +11,8 @@ import Connectivity from '../api/Connectivity';
 import DevIndicator from '../components/DevIndicator';
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
-import NoProjectTools from '../components/NoProjectTools';
 import NoProjectsOpen from '../components/NoProjectsOpen';
+import NoProjectTools from '../components/NoProjectTools';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import ProjectListItem from '../components/ProjectListItem';
 import ProjectTools from '../components/ProjectTools';
@@ -26,8 +21,8 @@ import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import HistoryActions from '../redux/HistoryActions';
 import { DevSession, HistoryList } from '../types';
-import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+import Environment from '../utils/Environment';
 import getSnackId from '../utils/getSnackId';
 
 const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
@@ -35,8 +30,9 @@ const PROJECT_UPDATE_INTERVAL = 10000;
 
 const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
-type Props = NavigationFocusInjectedProps & {
+type Props = NavigationProps & {
   dispatch: (data: any) => any;
+  isFocused: boolean;
   recentHistory: HistoryList;
   allHistory: HistoryList;
   isAuthenticated: boolean;
@@ -48,7 +44,29 @@ type State = {
   isRefreshing: boolean;
 };
 
-export default function ProjectsScreen(props: NavigationInjectedProps) {
+type NavigationProps = StackScreenProps<{ Projects: any; QRCode: {} }, 'Projects'>;
+
+export default function ProjectsScreen(props: NavigationProps) {
+  const [isFocused, setFocused] = React.useState(true);
+  React.useEffect(() => {
+    const unsubscribe = props.navigation.addListener('focus', () => {
+      setFocused(true);
+      // The screen is focused
+      // Call any action
+    });
+    const unsubscribeBlur = props.navigation.addListener('blur', () => {
+      setFocused(false);
+      // The screen is focused
+      // Call any action
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return () => {
+      unsubscribe();
+      unsubscribeBlur();
+    };
+  }, [props.navigation]);
+
   const dispatch = useDispatch();
   const { recentHistory, allHistory, isAuthenticated } = useSelector(
     React.useCallback(data => {
@@ -64,6 +82,7 @@ export default function ProjectsScreen(props: NavigationInjectedProps) {
   return (
     <ProjectsView
       {...props}
+      isFocused={isFocused}
       dispatch={dispatch}
       recentHistory={recentHistory}
       allHistory={allHistory}
@@ -72,17 +91,6 @@ export default function ProjectsScreen(props: NavigationInjectedProps) {
   );
 }
 
-ProjectsScreen.navigationOptions = {
-  title: 'Projects',
-  ...Platform.select({
-    ios: {
-      headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
-    },
-  }),
-};
-
-@withNavigationFocus
-@withNavigation
 class ProjectsView extends React.Component<Props, State> {
   private _projectPolling?: number;
 

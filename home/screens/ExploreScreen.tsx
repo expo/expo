@@ -1,5 +1,5 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { NavigationInjectedProps } from 'react-navigation';
 import { useSelector } from 'react-redux';
 
 import { StyledView } from '../components/Views';
@@ -7,7 +7,9 @@ import Colors from '../constants/Colors';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 
-export default function ExploreScreen({ navigation }: NavigationInjectedProps) {
+type Links = { Profile: { username: string } };
+
+export default function ExploreScreen({ navigation }: StackScreenProps<Links, 'Profile'>) {
   const isAuthenticated = useSelector(data => isUserAuthenticated(data.session));
 
   const onUsernamePressed = React.useCallback(
@@ -30,7 +32,3 @@ export default function ExploreScreen({ navigation }: NavigationInjectedProps) {
     </StyledView>
   );
 }
-
-ExploreScreen.navigationOptions = {
-  title: 'Explore',
-};

@@ -1,6 +1,7 @@
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationInjectedProps, withNavigation } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Ionicons } from '../components/Icons';
@@ -13,7 +14,13 @@ import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 
-export default function ProfileScreen({ navigation, ...props }: NavigationInjectedProps) {
+type Links = {
+  Profile: { username?: string };
+};
+
+type Props = StackScreenProps<Links, 'Profile'>;
+
+export default function ProfileScreen({ navigation, ...props }: Props) {
   // TODO(Bacon): This might not be needed, check during TS migration.
   const dispatch = useDispatch();
   const { isAuthenticated, username } = useSelector(
@@ -22,7 +29,7 @@ export default function ProfileScreen({ navigation, ...props }: NavigationInject
         const isAuthenticated = isUserAuthenticated(data.session);
         return {
           isAuthenticated,
-          username: navigation.getParam('username'),
+          username: props.route.params?.username,
         };
       },
       [navigation]
@@ -40,25 +47,13 @@ export default function ProfileScreen({ navigation, ...props }: NavigationInject
   );
 }
 
-ProfileScreen.navigationOptions = ({ navigation, theme }) => {
-  return {
-    title: navigation.getParam('username', 'Profile'),
-    headerRight: () =>
-      navigation.getParam('username') ? (
-        <OptionsButton />
-      ) : (
-        <ConnectedUserSettingsButton theme={theme} />
-      ),
-  };
-};
-
 class ProfileView extends React.Component<
   {
     username: string;
     dispatch: (action: any) => void;
     isAuthenticated: boolean;
-  } & NavigationInjectedProps,
-  { isOwnProfile: boolean }
+  } & StackScreenProps<{ Profile: { username?: string } }, 'Profile'>,
+  { isOwnProfile: boolean | null }
 > {
   constructor(props) {
     super(props);
@@ -66,7 +61,7 @@ class ProfileView extends React.Component<
     this.state = {
       // NOTE: An empty username prop means to display the viewer's profile. We use null to
       // indicate we don't yet know if this is the viewer's own profile.
-      isOwnProfile: !props.navigation.getParam('username') ? true : null,
+      isOwnProfile: !props.route.params?.username ? true : null,
     };
   }
 
@@ -104,30 +99,6 @@ class ProfileView extends React.Component<
     return <OtherProfileContainer {...this.props} isOwnProfile={this.state.isOwnProfile} />;
   }
 }
-
-function UserSettingsButton(props: { theme: string } & NavigationInjectedProps) {
-  const onPress = () => {
-    props.navigation.navigate('UserSettings');
-  };
-
-  return (
-    <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-      {Platform.select({
-        ios: <Text style={{ fontSize: 17, color: Colors[props.theme].tintColor }}>Options</Text>,
-        android: (
-          <Ionicons
-            name="md-settings"
-            size={27}
-            lightColor={Colors.light.text}
-            darkColor={Colors.dark.text}
-          />
-        ),
-      })}
-    </TouchableOpacity>
-  );
-}
-
-const ConnectedUserSettingsButton = onlyIfAuthenticated(withNavigation(UserSettingsButton));
 
 const styles = StyleSheet.create({
   loadingContainer: {

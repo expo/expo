@@ -101,10 +101,6 @@ export default function BarCodeScreen(props) {
   );
 }
 
-BarCodeScreen.navigationOptions = {
-  headerShown: false,
-};
-
 function Hint({ children }: { children: string }) {
   return (
     <BlurView style={styles.hint} intensity={100} tint="dark">

@@ -2,18 +2,16 @@ import * as React from 'react';
 
 import MySnacksListContainer from '../containers/MySnacksListContainer';
 import OtherUserSnackListContainer from '../containers/OtherUserSnackListContainer';
+import { StackScreenProps } from '@react-navigation/stack';
 
-export default function SnacksForUserScreen({ navigation }: { navigation: any }) {
-  const username = navigation.getParam('username');
-  const belongsToCurrentUser = navigation.getParam('belongsToCurrentUser', false);
+type Links = { SnacksForUser: { username: string; belongsToCurrentUser?: boolean } };
+
+export default function SnacksForUserScreen({ route }: StackScreenProps<Links, 'SnacksForUser'>) {
+  const { username, belongsToCurrentUser = false } = route.params ?? {};
 
   if (belongsToCurrentUser) {
     return <MySnacksListContainer belongsToCurrentUser />;
-  } else {
-    return <OtherUserSnackListContainer username={username} />;
   }
-}
 
-SnacksForUserScreen.navigationOptions = {
-  title: 'Snacks',
-};
+  return <OtherUserSnackListContainer username={username} />;
+}

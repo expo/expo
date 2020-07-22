@@ -2,15 +2,32 @@
 
 import React from 'react';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
-import { ThemeContext } from 'react-navigation';
 
 import Colors from '../constants/Colors';
+import { useTheme } from '@react-navigation/native';
 
-export class FormInput extends React.Component {
-  static contextType = ThemeContext;
+const FormInputWrapper = React.forwardRef((props, ref) => {
+  const theme = useTheme();
+  const inputRef = React.useRef(null);
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      focus() {
+        inputRef.current?.focus();
+      },
+      blur() {
+        inputRef.current?.blur();
+      },
+    }),
+    [inputRef]
+  );
 
-  constructor(props, context) {
-    super(props, context);
+  return <FormInput {...props} theme={theme.dark ? 'dark' : 'light'} ref={inputRef} />;
+});
+
+class FormInput extends React.Component {
+  constructor(props) {
+    super(props);
 
     this.state = {
       isFocused: false,
@@ -50,21 +67,21 @@ export class FormInput extends React.Component {
           underlineColorAndroid={
             this.state.isFocused
               ? Colors.light.tintColor
-              : this.context === 'light'
+              : this.props.theme === 'light'
               ? 'rgba(46, 59, 76, 0.10)'
               : '#888'
           }
           {...props}
           placeholder={this.props.label}
-          placeholderTextColor={this.context === 'light' ? 'rgba(36, 44, 58, 0.4)' : '#ccc'}
-          style={[styles.textInput, this.context === 'dark' && { color: '#fff' }, style]}
+          placeholderTextColor={this.props.theme === 'light' ? 'rgba(36, 44, 58, 0.4)' : '#ccc'}
+          style={[styles.textInput, this.props.theme === 'dark' && { color: '#fff' }, style]}
         />
         <Animated.View style={[styles.floatingLabel, this._getAnimatedLabelStyles()]}>
           <Text
             style={[
               styles.floatingLabelText,
               {
-                color: this.context === 'light' ? 'rgba(0, 0, 0, 0.38)' : '#fff',
+                color: this.props.theme === 'light' ? 'rgba(0, 0, 0, 0.38)' : '#fff',
               },
             ]}>
             {this.props.label}
@@ -136,7 +153,7 @@ export class FormInput extends React.Component {
 }
 
 export default class Form extends React.Component {
-  static Input = FormInput;
+  static Input = FormInputWrapper;
 
   render() {
     return (
