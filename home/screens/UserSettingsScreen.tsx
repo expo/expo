@@ -114,7 +114,11 @@ function SignOutItem() {
     requestAnimationFrame(navigation.goBack);
   }, [dispatch, navigation]);
 
-  return <ListItem style={styles.marginTop} title="Sign Out" onPress={onPress} last />;
+  return (
+    <View style={styles.marginTop}>
+      <ListItem title="Sign Out" onPress={onPress} last />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
