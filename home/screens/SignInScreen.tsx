@@ -84,7 +84,7 @@ class SignInView extends React.Component<Props, State> {
           <Form.Input
             autoCapitalize="none"
             autoCorrect={false}
-            autoFocus={Platform.OS !== 'ios'}
+            autoFocus
             textContentType="username"
             keyboardType="email-address"
             label="E-mail or username"
