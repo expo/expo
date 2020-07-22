@@ -11,17 +11,18 @@ import Connectivity from '../api/Connectivity';
 import DevIndicator from '../components/DevIndicator';
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
-import NoProjectsOpen from '../components/NoProjectsOpen';
 import NoProjectTools from '../components/NoProjectTools';
+import NoProjectsOpen from '../components/NoProjectsOpen';
 import ProjectListItem from '../components/ProjectListItem';
 import ProjectTools from '../components/ProjectTools';
+import ThemedStatusBar from '../components/ThemedStatusBar';
 import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import HistoryActions from '../redux/HistoryActions';
 import { DevSession, HistoryList } from '../types';
-import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Environment from '../utils/Environment';
+import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
 
 const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
@@ -104,7 +105,8 @@ class ProjectsView extends React.Component<Props, State> {
     // that it has been registered regardless of whether we have been on the project
     // screen in the home app
     addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
-      this.props.navigation.showModal('QRCode');
+      // @ts-ignore
+      this.props.navigation.navigate('QRCode');
       return { success: true };
     });
   }
@@ -160,6 +162,7 @@ class ProjectsView extends React.Component<Props, State> {
           {this._renderRecentHistory()}
           {this._renderConstants()}
         </ScrollView>
+        <ThemedStatusBar />
       </View>
     );
   }
