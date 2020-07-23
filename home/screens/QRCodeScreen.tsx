@@ -3,10 +3,10 @@ import { Camera } from 'expo-camera';
 import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import QRFooterButton from '../components/QRFooterButton';
 import QRIndicator from '../components/QRIndicator';
-import isIPhoneX from '../utils/isIPhoneX';
 
 type State = {
   isVisible: boolean;
@@ -75,6 +75,8 @@ export default function BarCodeScreen(props) {
     setLit(isLit => !isLit);
   }, []);
 
+  const { top, bottom } = useSafeArea();
+
   return (
     <View style={styles.container}>
       {state.isVisible ? (
@@ -85,13 +87,13 @@ export default function BarCodeScreen(props) {
         />
       ) : null}
 
-      <View style={styles.header}>
+      <View style={[styles.header, { top: 40 + top }]}>
         <Hint>Scan an Expo QR code</Hint>
       </View>
 
       <QRIndicator />
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { bottom: 30 + bottom }]}>
         <QRFooterButton onPress={onFlashToggle} isActive={isLit} iconName="ios-flashlight" />
         <QRFooterButton onPress={onCancel} iconName="ios-close" iconSize={48} />
       </View>
@@ -100,10 +102,6 @@ export default function BarCodeScreen(props) {
     </View>
   );
 }
-
-BarCodeScreen.navigationOptions = {
-  headerShown: false,
-};
 
 function Hint({ children }: { children: string }) {
   return (
@@ -129,7 +127,6 @@ const styles = StyleSheet.create({
   },
   header: {
     position: 'absolute',
-    top: isIPhoneX ? 80 : 40,
     left: 0,
     right: 0,
     alignItems: 'center',
@@ -143,7 +140,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: isIPhoneX ? 80 : 30,
     left: 0,
     right: 0,
     alignItems: 'center',

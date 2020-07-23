@@ -1,13 +1,15 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import { NavigationInjectedProps, withNavigation } from 'react-navigation';
 
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 import ListItem from './ListItem';
 
-type Props = React.ComponentProps<typeof ListItem> & NavigationInjectedProps;
+type Props = React.ComponentProps<typeof ListItem>;
 
-function QRCodeButton({ navigation, ...props }: Props) {
+function QRCodeButton(props: Props) {
+  const navigation = useNavigation();
+
   const handlePressAsync = async () => {
     if (await requestCameraPermissionsAsync()) {
       navigation.navigate('QRCode');
@@ -26,4 +28,4 @@ function QRCodeButton({ navigation, ...props }: Props) {
   );
 }
 
-export default withNavigation(QRCodeButton);
+export default QRCodeButton;

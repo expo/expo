@@ -6,8 +6,8 @@ import { EventEmitter } from 'fbemitter';
 import React from 'react';
 import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
-import { NavigationEvents } from 'react-navigation';
 
+import NavigationEvents from '../components/NavigationEvents';
 import Button from '../components/PrimaryButton';
 import Colors from '../constants/Colors';
 
@@ -17,10 +17,6 @@ const LOCATION_UPDATES_TASK = 'location-updates';
 const locationEventsEmitter = new EventEmitter();
 
 export default class LocationDiagnosticsScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Location Diagnostics',
-  };
-
   mapViewRef = React.createRef();
 
   state = {

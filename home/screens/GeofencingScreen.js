@@ -6,18 +6,14 @@ import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
-import { NavigationEvents } from 'react-navigation';
 
+import NavigationEvents from '../components/NavigationEvents';
 import Button from '../components/PrimaryButton';
 
 const GEOFENCING_TASK = 'geofencing';
 const REGION_RADIUSES = [30, 50, 75, 100, 150, 200];
 
 export default class GeofencingScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Geofencing',
-  };
-
   mapViewRef = React.createRef();
 
   state = {
