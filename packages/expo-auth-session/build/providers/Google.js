@@ -89,7 +89,7 @@ function invariantClientId(idName, value) {
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes then the response will be fulfilled.
  *
- *  - TODO: Put Getting started guide URL here
+ * - [Get Started](https://docs.expo.io/guides/authentication/#google)
  *
  * @param config
  * @param discovery
