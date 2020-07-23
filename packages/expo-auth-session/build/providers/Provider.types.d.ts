@@ -1,7 +1,7 @@
 import { AuthRequestConfig } from '../AuthSession';
 export interface ProviderAuthRequestConfig extends AuthRequestConfig {
     /**
-     * TODO
+     * When `true`, the service will allow the user to switch between accounts (if possible). Defaults to `false`.
      */
     selectAccount?: boolean;
     /**
@@ -11,10 +11,3 @@ export interface ProviderAuthRequestConfig extends AuthRequestConfig {
      */
     language?: string;
 }
-export declare type ProviderUser = {
-    name: string;
-    email: string;
-    id: string;
-    picture: string;
-    providerData: Record<string, any>;
-};

@@ -84,7 +84,7 @@ function shouldUseProxy(): boolean {
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes then the response will be fulfilled.
  *
- *  - TODO: Put Getting started guide URL here
+ * - TODO: Put Getting started guide URL here
  *
  * @param config
  * @param discovery

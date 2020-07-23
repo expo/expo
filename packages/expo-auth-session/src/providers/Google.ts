@@ -1,6 +1,5 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
@@ -27,7 +26,6 @@ const settings = {
   ],
 };
 
-// Updated Jun 22, 2020
 export const discovery: DiscoveryDocument = {
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
   tokenEndpoint: 'https://oauth2.googleapis.com/token',
