@@ -1083,7 +1083,7 @@ export default function App() {
       clientId: 'Your-Web-Client-ID.apps.googleusercontent.com',
       /* @end */
       /* @info Request that the server returns an <code>id_token</code>, which Firebase expects. */
-      responseType: ResponseType.Token,
+      responseType: ResponseType.IdToken,
       /* @end */
     },
   );
