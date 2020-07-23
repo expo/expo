@@ -186,7 +186,6 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     const { state, error = errorCode } = params;
 
     let parsedError: AuthError | null = null;
-    let authentication: TokenResponse | null = null;
     if (state !== this.state) {
       // This is a non-standard error
       parsedError = new AuthError({
@@ -197,16 +196,12 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     } else if (error) {
       parsedError = new AuthError({ error, ...params });
     }
-    if (params.access_token) {
-      authentication = TokenResponse.fromQueryParams(params);
-    }
 
     return {
       type: parsedError ? 'error' : 'success',
       error: parsedError,
       url,
       params,
-      authentication,
       // Return errorCode for legacy
       errorCode,
     };

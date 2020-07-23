@@ -1,4 +1,4 @@
-import { AuthRequest, AuthRequestPromptOptions, AuthSessionResult, DiscoveryDocument, AuthSessionRedirectUriOptions } from '../AuthSession';
+import { AuthRequest, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
 import { TokenResponse } from '../TokenRequest';
 import { ProviderAuthRequestConfig, ProviderUser } from './Provider.types';
 export declare const discovery: DiscoveryDocument;

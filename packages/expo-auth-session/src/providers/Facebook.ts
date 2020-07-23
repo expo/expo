@@ -1,20 +1,19 @@
-import { useEffect, useState } from 'react';
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
   AuthRequest,
   AuthRequestPromptOptions,
+  AuthSessionRedirectUriOptions,
   AuthSessionResult,
   DiscoveryDocument,
-  ResponseType,
   makeRedirectUri,
-  AuthSessionRedirectUriOptions,
+  ResponseType,
 } from '../AuthSession';
 import { requestAsync } from '../Fetch';
-import { AccessTokenRequest, TokenResponse } from '../TokenRequest';
+import { TokenResponse } from '../TokenRequest';
 import { ProviderAuthRequestConfig, ProviderUser } from './Provider.types';
-import { Platform } from 'react-native';
-import Constants from 'expo-constants';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },
@@ -82,14 +81,6 @@ function shouldUseProxy(): boolean {
   });
 }
 
-function invariantClientId(idName: string, value: any) {
-  if (typeof value === 'undefined')
-    // TODO(Bacon): Add learn more
-    throw new Error(
-      `Client Id property \`${idName}\` must be defined to use Google auth on this platform.`
-    );
-}
-
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -110,16 +101,6 @@ export function useAuthRequest(
 ] {
   const useProxy = redirectUriOptions.useProxy ?? shouldUseProxy();
 
-  const propertyName = useProxy
-    ? 'expoClientId'
-    : Platform.select({
-        ios: 'iosClientId',
-        android: 'androidClientId',
-        default: 'webClientId',
-      });
-  config.clientId = config[propertyName as any] ?? config.clientId;
-  invariantClientId(propertyName, config.clientId);
-
   if (typeof config.redirectUri === 'undefined') {
     config.redirectUri = makeRedirectUri({
       native: `fb${config.clientId}://authorize`,
@@ -134,58 +115,13 @@ export function useAuthRequest(
     discovery,
     FacebookAuthRequest
   );
+
   const [result, promptAsync] = useAuthRequestResult(request, discovery, {
     windowFeatures: settings.windowFeatures,
     useProxy,
   });
-  const [fullResult, setFullResult] = useState<AuthSessionResult | null>(null);
-  useEffect(() => {
-    let isMounted = true;
-    if (
-      !fullResult &&
-      config.clientSecret &&
-      request?.responseType === ResponseType.Code &&
-      result?.type === 'success'
-    ) {
-      // TODO: This doesn't work
-      const exchangeRequest = new AccessTokenRequest({
-        clientId: config.clientId!,
-        clientSecret: config.clientSecret,
-        redirectUri: config.redirectUri!,
-        scopes: config.scopes,
-        code: result.params.code,
-        extraParams: {
-          // @ts-ignore: allow for instances where PKCE is disabled
-          code_verifier: request.codeVerifier,
-        },
-      });
-      exchangeRequest.performAsync(discovery).then(authentication => {
-        if (isMounted) {
-          setFullResult({
-            ...result,
-            authentication,
-          });
-        }
-      });
-    } else {
-      setFullResult(result);
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    config.clientId,
-    config.clientSecret,
-    config.redirectUri,
-    config.scopes?.join(','),
-    request?.codeVerifier,
-    request?.responseType,
-    config.responseType,
-    result,
-    fullResult,
-  ]);
 
-  return [request, fullResult, promptAsync];
+  return [request, result, promptAsync];
 }
 
 /**

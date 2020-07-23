@@ -1,9 +1,8 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
-import { useAuthRequest, TokenTypeHint } from 'expo-auth-session';
-import * as GoogleAuthSession from 'expo-auth-session/build/providers/Google';
-import * as FacebookAuthSession from 'expo-auth-session/build/providers/Facebook';
-import * as SpotifyAuthSession from 'expo-auth-session/build/providers/Spotify';
+import { useAuthRequest } from 'expo-auth-session';
+import * as GoogleAuthSession from 'expo-auth-session/providers/Google';
+import * as FacebookAuthSession from 'expo-auth-session/providers/Facebook';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
@@ -109,7 +108,7 @@ function Google({ prompt, usePKCE }: any) {
     {
       expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
       clientId: `${getGUID()}.apps.googleusercontent.com`,
-      // selectAccount: true,
+      selectAccount: !!prompt,
       // language: 'fr',
       // responseType: AuthSession.ResponseType.Token,
       responseType: AuthSession.ResponseType.IdToken,
@@ -125,7 +124,6 @@ function Google({ prompt, usePKCE }: any) {
   return (
     <AuthSection
       request={request}
-      tokenResponse={result?.authentication}
       title="google"
       result={result}
       promptAsync={() => promptAsync()}
@@ -394,6 +392,7 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
     {
       clientId: '145668956753819',
       usePKCE,
+      selectAccount: !!prompt,
       // responseType: AuthSession.ResponseType.Token,
       // redirectUri,
       // scopes: ['user_likes'],
@@ -410,7 +409,6 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
   return (
     <AuthSection
       title="facebook"
-      tokenResponse={result?.authentication}
       request={request}
       result={result}
       promptAsync={() => promptAsync()}
@@ -454,20 +452,28 @@ function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
 // Works on all platforms
 function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
-  const [request, result, promptAsync] = SpotifyAuthSession.useAuthRequest({
-    clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
-    responseType: AuthSession.ResponseType.Code,
-    redirectUri,
-    // selectAccount: true,
-    // language: 'fr',
-    // scopes: ['playlist-modify-public', 'user-read-private'],
-  });
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
+      redirectUri,
+      scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
+      usePKCE,
+      extraParams: {
+        show_dialog: 'false',
+      },
+      prompt,
+    },
+    // discovery
+    {
+      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+      tokenEndpoint: 'https://accounts.spotify.com/api/token',
+    }
+  );
 
   return (
     <AuthSection
       title="spotify"
       request={request}
-      tokenResponse={result?.authentication}
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}

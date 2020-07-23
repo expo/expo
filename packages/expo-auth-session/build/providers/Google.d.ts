@@ -8,10 +8,51 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      * If the user has approved access for this app in the past then auth may return without any further interaction.
      */
     loginHint?: string;
-    webClientId?: string;
-    iosClientId?: string;
-    androidClientId?: string;
+    /**
+     * Proxy client ID for use in the Expo client on iOS and Android.
+     *
+     * This Google Client ID must be setup as follows:
+     *
+     * - **Application Type**: Web Application
+     * - **URIs**: https://auth.expo.io
+     * - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
+     */
     expoClientId?: string;
+    /**
+     * Expo web client ID for use in the browser.
+     *
+     * This Google Client ID must be setup as follows:
+     *
+     * - **Application Type**: Web Application
+     * - **URIs**: https://yourwebsite.com | https://localhost:19006
+     * - **Authorized redirect URIs**: https://yourwebsite.com | https://localhost:19006
+     */
+    webClientId?: string;
+    /**
+     * iOS native client ID for use in standalone, bare-workflow, and custom clients.
+     *
+     * This Google Client ID must be setup as follows:
+     *
+     * - **Application Type**: iOS Application
+     * - **Bundle ID**: Must match the value of `ios.bundleIdentifier` in your `app.json`.
+     * - Your app needs to conform to the URI scheme matching your bundle identifier.
+     *   - **Standalone**: Automatically added, do nothing.
+     *   - **Bare-workflow**: Run `npx uri-scheme add <your bundle id> --ios`
+     */
+    iosClientId?: string;
+    /**
+     * Android native client ID for use in standalone, bare-workflow, and custom clients.
+     *
+     * This Google Client ID must be setup as follows:
+     *
+     * - **Application Type**: Android Application
+     * - **Package name**: Must match the value of `android.package` in your `app.json`.
+     * - **Signing-certificate fingerprint**: Run `openssl rand -base64 32 | openssl sha1 -c` for the results.
+     * - Your app needs to conform to the URI scheme matching your android package.
+     *   - **Standalone**: Automatically added, do nothing.
+     *   - **Bare-workflow**: Run `npx uri-scheme add <your android package> --android`
+     */
+    androidClientId?: string;
 }
 declare class GoogleAuthRequest extends AuthRequest {
     nonce?: string;

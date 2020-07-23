@@ -6,7 +6,6 @@ import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
-import { TokenResponse } from './TokenRequest';
 const sessionUrlProvider = getSessionUrlProvider();
 let _authLock = false;
 /**
@@ -124,7 +123,6 @@ export class AuthRequest {
         const { params, errorCode } = QueryParams.getQueryParams(url);
         const { state, error = errorCode } = params;
         let parsedError = null;
-        let authentication = null;
         if (state !== this.state) {
             // This is a non-standard error
             parsedError = new AuthError({
@@ -135,15 +133,11 @@ export class AuthRequest {
         else if (error) {
             parsedError = new AuthError({ error, ...params });
         }
-        if (params.access_token) {
-            authentication = TokenResponse.fromQueryParams(params);
-        }
         return {
             type: parsedError ? 'error' : 'success',
             error: parsedError,
             url,
             params,
-            authentication,
             // Return errorCode for legacy
             errorCode,
         };

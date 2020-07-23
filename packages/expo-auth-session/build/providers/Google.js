@@ -1,10 +1,9 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
-import { AccessTokenRequest, fetchUserInfoAsync as _fetchUserInfoAsync, } from '../TokenRequest';
+import { fetchUserInfoAsync as _fetchUserInfoAsync, } from '../TokenRequest';
 const settings = {
     windowFeatures: { width: 515, height: 680 },
     minimumScopes: [
@@ -120,51 +119,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         useProxy,
         windowFeatures: settings.windowFeatures,
     });
-    const [fullResult, setFullResult] = useState(null);
-    useEffect(() => {
-        let isMounted = true;
-        if (!fullResult &&
-            config.clientSecret &&
-            request?.responseType === ResponseType.Code &&
-            result?.type === 'success') {
-            const exchangeRequest = new AccessTokenRequest({
-                clientId: config.clientId,
-                clientSecret: config.clientSecret,
-                redirectUri: config.redirectUri,
-                scopes: config.scopes,
-                code: result.params.code,
-                extraParams: {
-                    // @ts-ignore: allow for instances where PKCE is disabled
-                    code_verifier: request.codeVerifier,
-                },
-            });
-            exchangeRequest.performAsync(discovery).then(authentication => {
-                if (isMounted) {
-                    setFullResult({
-                        ...result,
-                        authentication,
-                    });
-                }
-            });
-        }
-        else {
-            setFullResult(result);
-        }
-        return () => {
-            isMounted = false;
-        };
-    }, [
-        config.clientId,
-        config.clientSecret,
-        config.redirectUri,
-        config.scopes?.join(','),
-        request?.codeVerifier,
-        request?.responseType,
-        config.responseType,
-        result,
-        fullResult,
-    ]);
-    return [request, fullResult, promptAsync];
+    return [request, result, promptAsync];
 }
 /**
  * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).

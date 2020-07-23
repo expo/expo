@@ -47,10 +47,53 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    */
   loginHint?: string;
 
-  webClientId?: string;
-  iosClientId?: string;
-  androidClientId?: string;
+  /**
+   * Proxy client ID for use in the Expo client on iOS and Android.
+   *
+   * This Google Client ID must be setup as follows:
+   *
+   * - **Application Type**: Web Application
+   * - **URIs**: https://auth.expo.io
+   * - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
+   */
   expoClientId?: string;
+
+  /**
+   * Expo web client ID for use in the browser.
+   *
+   * This Google Client ID must be setup as follows:
+   *
+   * - **Application Type**: Web Application
+   * - **URIs**: https://yourwebsite.com | https://localhost:19006
+   * - **Authorized redirect URIs**: https://yourwebsite.com | https://localhost:19006
+   */
+  webClientId?: string;
+
+  /**
+   * iOS native client ID for use in standalone, bare-workflow, and custom clients.
+   *
+   * This Google Client ID must be setup as follows:
+   *
+   * - **Application Type**: iOS Application
+   * - **Bundle ID**: Must match the value of `ios.bundleIdentifier` in your `app.json`.
+   * - Your app needs to conform to the URI scheme matching your bundle identifier.
+   *   - **Standalone**: Automatically added, do nothing.
+   *   - **Bare-workflow**: Run `npx uri-scheme add <your bundle id> --ios`
+   */
+  iosClientId?: string;
+  /**
+   * Android native client ID for use in standalone, bare-workflow, and custom clients.
+   *
+   * This Google Client ID must be setup as follows:
+   *
+   * - **Application Type**: Android Application
+   * - **Package name**: Must match the value of `android.package` in your `app.json`.
+   * - **Signing-certificate fingerprint**: Run `openssl rand -base64 32 | openssl sha1 -c` for the results.
+   * - Your app needs to conform to the URI scheme matching your android package.
+   *   - **Standalone**: Automatically added, do nothing.
+   *   - **Bare-workflow**: Run `npx uri-scheme add <your android package> --android`
+   */
+  androidClientId?: string;
 }
 
 function applyRequiredScopes(scopes: string[] = []): string[] {
@@ -179,57 +222,13 @@ export function useAuthRequest(
     discovery,
     GoogleAuthRequest
   );
+
   const [result, promptAsync] = useAuthRequestResult(request, discovery, {
     useProxy,
     windowFeatures: settings.windowFeatures,
   });
-  const [fullResult, setFullResult] = useState<AuthSessionResult | null>(null);
-  useEffect(() => {
-    let isMounted = true;
-    if (
-      !fullResult &&
-      config.clientSecret &&
-      request?.responseType === ResponseType.Code &&
-      result?.type === 'success'
-    ) {
-      const exchangeRequest = new AccessTokenRequest({
-        clientId: config.clientId!,
-        clientSecret: config.clientSecret,
-        redirectUri: config.redirectUri!,
-        scopes: config.scopes,
-        code: result.params.code,
-        extraParams: {
-          // @ts-ignore: allow for instances where PKCE is disabled
-          code_verifier: request.codeVerifier,
-        },
-      });
-      exchangeRequest.performAsync(discovery).then(authentication => {
-        if (isMounted) {
-          setFullResult({
-            ...result,
-            authentication,
-          });
-        }
-      });
-    } else {
-      setFullResult(result);
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    config.clientId,
-    config.clientSecret,
-    config.redirectUri,
-    config.scopes?.join(','),
-    request?.codeVerifier,
-    request?.responseType,
-    config.responseType,
-    result,
-    fullResult,
-  ]);
 
-  return [request, fullResult, promptAsync];
+  return [request, result, promptAsync];
 }
 
 /**
