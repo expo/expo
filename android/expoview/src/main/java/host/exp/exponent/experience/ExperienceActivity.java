@@ -355,6 +355,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void onEvent(BaseExperienceActivity.ExperienceContentLoaded event) {
+    super.onEvent(event);
     mLoadingProgressPopupController.hide();
   }
 
