@@ -1,12 +1,11 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Assets as StackAssets } from '@react-navigation/stack';
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
-import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import React from 'react';
-import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Assets as StackAssets } from 'react-navigation-stack';
+import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import url from 'url';
 
@@ -109,24 +108,11 @@ class App extends React.Component {
 
     const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
 
-    // Android below API 23 (Android 6.0) does not support 'dark-content' barStyle:
-    // - statusBar shouldn't be translucent
-    // - backgroundColor should be a color that would make status bar icons be visible
-    const translucent = !(Platform.OS === 'android' && Device.platformApiLevel < 23);
-    const statusBarBackgroundColor =
-      theme === 'dark' ? '#000000' : translucent ? '#ffffff' : '#00000088';
-
     return (
       <View style={[styles.container, { backgroundColor }]}>
         <ActionSheetProvider>
           <Navigation theme={theme} />
         </ActionSheetProvider>
-
-        <StatusBar
-          translucent={translucent}
-          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
-          backgroundColor={statusBarBackgroundColor}
-        />
       </View>
     );
   }

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
 import AuthApi from '../api/AuthApi';
-import CloseButton from '../components/CloseButton';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import { StyledScrollView as ScrollView } from '../components/Views';
@@ -19,11 +18,6 @@ export default function SignUpScreen({ navigation }) {
   const dispatch = useDispatch();
   return <SignUpView dispatch={dispatch} session={session} navigation={navigation} />;
 }
-
-SignUpScreen.navigationOptions = {
-  title: 'Sign Up',
-  headerLeft: () => <CloseButton />,
-};
 
 class SignUpView extends React.Component {
   state = DEBUG

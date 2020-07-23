@@ -1,5 +1,3 @@
-// @flow
-
 import url from 'url';
 
 const FriendlyUrls = {
@@ -25,7 +23,7 @@ const FriendlyUrls = {
 
     const protocol = components.protocol ? components.protocol : '';
     const commonProtocols = ['exp:', 'exps:', 'http:', 'https:'];
-    if (commonProtocols.indexOf(components.protocol) !== -1) {
+    if (components.protocol && commonProtocols.includes(components.protocol)) {
       // Remove the scheme and slashes
       return url.format(components).substr(protocol.length + 2);
     }

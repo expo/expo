@@ -1,15 +1,13 @@
 /* @flow */
-
+import { useNavigation, useTheme } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { useTheme, withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import ProjectCard from './ProjectCard';
 import ProjectListItem from './ProjectListItem';
 
-@withNavigation
 class ProjectList extends React.PureComponent {
   state = {
     isReady: false,
@@ -63,7 +61,7 @@ class ProjectList extends React.PureComponent {
         style={[
           { flex: 1 },
           !this.props.belongsToCurrentUser && styles.largeProjectCardList,
-          { backgroundColor: theme === 'dark' ? '#000' : Colors.light.greyBackground },
+          { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
         ]}
         renderScrollComponent={props => {
           // note(brent): renderScrollComponent is passed on to
@@ -145,8 +143,9 @@ class ProjectList extends React.PureComponent {
 
 export default props => {
   const theme = useTheme();
+  const navigation = useNavigation();
 
-  return <ProjectList {...props} theme={theme} />;
+  return <ProjectList {...props} navigation={navigation} theme={theme} />;
 };
 
 const styles = StyleSheet.create({

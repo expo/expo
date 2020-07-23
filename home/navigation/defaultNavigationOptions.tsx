@@ -1,17 +1,12 @@
-/* @flow */
-
+import { StackNavigationOptions } from '@react-navigation/stack';
 import { Platform, StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
 
-export default ({ theme }) => {
+export default (theme: string): StackNavigationOptions => {
   return {
-    headerTintColor: Platform.select({
-      ios: Colors.light.tintColor,
-      android: Colors[theme].text,
-    }),
     headerStyle: {
-      borderBottomColor: Colors[theme].navBorderBottom,
+      borderBottomColor: Colors[theme].cardSeparator,
       elevation: 0,
       backgroundColor: Colors[theme].navBackgroundColor,
       borderBottomWidth: StyleSheet.hairlineWidth,
