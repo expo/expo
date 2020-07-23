@@ -104,7 +104,6 @@ export function useAuthRequest(
       native: `fb${config.clientId}://authorize`,
       useProxy,
       ...redirectUriOptions,
-      // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
     });
   }
 

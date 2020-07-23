@@ -511,6 +511,38 @@ Access token type [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
 
 `'bearer' | 'mac'`
 
+## Providers
+
+AuthSession has built-in support for some popular providers to make usage as easy as possible. These allow you to skip repetitive things like defining endpoints and abstract common features like `language` and `selectAccount`.
+
+### Google
+
+```tsx
+import * as Google from 'expo-auth-session/providers/Google';
+```
+
+- See the guide for more info on usage: [Google Authentication](/guides/authentication#google).
+- Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
+- Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
+- Automatically uses the proxy in Expo client because native auth is not supported due to custom build time configuration.
+- Defaults to using the bundle ID and package name for the native URI redirect instead of the reverse client ID.
+- Disables PKCE for implicit and id-token based auth responses.
+- On web, the popup is presented with the dimensions `{ width: 515, height: 680 }`
+
+### Facebook
+
+```tsx
+import * as Facebook from 'expo-auth-session/providers/Facebook';
+```
+
+- See the guide for more info on usage: [Facebook Authentication](/guides/authentication#facebook).
+- Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
+- Uses `display=popup` for better UI results.
+- Automatically uses the proxy in Expo client because native auth is not supported due to custom build time configuration.
+- The URI redirect must be added to your `app.config.js` or `app.json` as `facebookScheme: 'fb<YOUR FBID>'`.
+- Disables PKCE for implicit auth response.
+- On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`
+
 ## Usage in the bare React Native app
 
 In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
