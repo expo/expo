@@ -136,7 +136,7 @@ Gets the last known position of the device. It's considered to be faster than `g
 
 #### Returns
 
-Returns a promise resolving to an object representing [LocationObject](#locationobject) type or `null` if it's not available or doesn't match given requirements such as maximum age or required accuracy.
+Returns a promise resolving to an object of type [LocationObject](#locationobject) or `null` if it's not available or doesn't match given requirements such as maximum age or required accuracy.
 
 ### `Location.getCurrentPositionAsync(options)`
 
@@ -421,7 +421,7 @@ A promise resolving to boolean value indicating whether the geofencing task is s
 `LocationPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional platform-specific fields:
 
 - **ios (_object_)**
-  - **scope (_string_)** — The scope of granted permission. Indicates when it's possible to use location, possible values are: `whenInUse`, `always`.
+  - **scope (_string_)** — The scope of granted permission. Indicates when it's possible to use location, possible values are: `whenInUse`, `always` or `none`.
 - **android (_object_)**
   - **scope (_string_)** — On Android it indicates the type of location provider with possible values: `fine`, `coarse`, `none`.
 
@@ -463,7 +463,7 @@ Object of type `LocationRegion` includes following fields:
 - **magHeading (_number_)** — Measure of magnetic north in degrees.
 - **trueHeading (_number_)** — Measure of true north in degrees (needs location permissions, will return -1 if not given).
 - **accuracy (_number_)** — Level of callibration of compass.
-  - **3**: high accuracy, **2**: medium accuracy, **1**: low accuracy, 0: none
+  - **3**: high accuracy, **2**: medium accuracy, **1**: low accuracy, **0**: none
   - Reference for iOS: **3**: < 20 degrees uncertainty, **2**: < 35 degrees, **1**: < 50 degrees, **0**: > 50 degrees
 
 ## Enums

@@ -194,7 +194,7 @@ export type LocationSubscription = {
 };
 
 export type PermissionDetailsLocationIOS = {
-  scope: 'whenInUse' | 'always';
+  scope: 'whenInUse' | 'always' | 'none';
 };
 
 export type PermissionDetailsLocationAndroid = {
