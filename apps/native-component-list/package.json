@@ -81,7 +81,7 @@
     "processing-js": "^1.6.6",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "0.63.0",
+    "react-native": "0.63.2",
     "react-native-branch": "4.2.1",
     "react-native-is-iphonex": "^1.0.1",
     "react-native-maps": "0.27.1",
