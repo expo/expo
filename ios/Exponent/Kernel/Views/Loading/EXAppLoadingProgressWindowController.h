@@ -9,6 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface EXAppLoadingProgressWindowController : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithEnabled:(BOOL)enabled;
+
 - (void)show;
 - (void)hide;
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress;

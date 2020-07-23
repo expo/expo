@@ -55,9 +55,10 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Controller for handling all messages from bundler/fetcher.
  * It shows another UIWindow with text and percentage progress.
- * Present only in managed workflow.
+ * Enabled only in managed workflow or home when in development mode.
+ * It should appear once manifest is fetched.
  */
-@property (nonatomic, strong, nullable) EXAppLoadingProgressWindowController *appLoadingProgressWindowController;
+@property (nonatomic, strong, nonnull) EXAppLoadingProgressWindowController *appLoadingProgressWindowController;
 
 @end
 
@@ -72,6 +73,13 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appRecord = record;
     _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
+
+    BOOL loadingProgressEnabled = ![EXEnvironment sharedEnvironment].isDetached;
+    if (![EXEnvironment sharedEnvironment].isDebugXCodeScheme) {
+      // home app should show loading progress only in debug mode (development)
+      loadingProgressEnabled &= record != [EXKernel sharedInstance].appRegistry.homeAppRecord;
+    }
+    _appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:loadingProgressEnabled];
   }
   return self;
 }
@@ -85,12 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  
-  if (![EXEnvironment sharedEnvironment].isDetached
-      && _appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    // managed workflow only
-    _appLoadingProgressWindowController = [EXAppLoadingProgressWindowController new];
-  }
 
   self.view.backgroundColor = [UIColor whiteColor];
   _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
@@ -275,13 +277,12 @@ NS_ASSUME_NONNULL_BEGIN
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
   [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  [self.appLoadingProgressWindowController show];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
-  if (self.appLoadingProgressWindowController) {
-    [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
-  }
+  [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
@@ -563,7 +564,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (isLoading) {
       self.loadingView.hidden = NO;
       [self.view bringSubviewToFront:self.loadingView];
-      [self.appLoadingProgressWindowController show];
     } else {
       self.loadingView.hidden = YES;
       [self.appLoadingProgressWindowController hide];

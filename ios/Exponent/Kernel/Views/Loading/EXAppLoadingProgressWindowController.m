@@ -5,6 +5,7 @@
 
 @interface EXAppLoadingProgressWindowController ()
 
+@property (nonatomic, assign) BOOL enabled;
 @property (nonatomic, strong) UIWindow *window;
 @property (nonatomic, strong) UILabel *textLabel;
 
@@ -12,15 +13,38 @@
 
 @implementation EXAppLoadingProgressWindowController
 
+- (instancetype)initWithEnabled:(BOOL)enabled
+{
+  if (self = [super init]) {
+    _enabled = enabled;
+  }
+  return self;
+}
+
 - (void)show
 {
+  if (!_enabled) {
+    return;
+  }
+  
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
     if (!self.window) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
       
-      self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0, screenSize.height - 36, screenSize.width, 36)];
+      if (@available(iOS 11.0, *)) {
+        UIWindow *window = UMSharedApplication().keyWindow;
+        self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
+                                                                 screenSize.height - 30 - window.safeAreaInsets.bottom,
+                                                                 screenSize.width,
+                                                                 36)];
+      } else {
+        self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
+                                                                 screenSize.height - 36,
+                                                                 screenSize.width,
+                                                                 36)];
+      }
       self.window.windowLevel = UIWindowLevelStatusBar + 1;
       // set a root VC so rotation is supported
       self.window.rootViewController = [UIViewController new];
@@ -49,11 +73,19 @@
 
 - (void)hide
 {
+  if (!_enabled) {
+    return;
+  }
+
   self.window.hidden = YES;
 }
 
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress
 {
+  if (!_enabled) {
+    return;
+  }
+  
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
