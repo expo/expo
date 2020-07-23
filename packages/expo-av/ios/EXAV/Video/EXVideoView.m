@@ -628,7 +628,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)videoPlayerViewControllerWillDismiss:(AVPlayerViewController *)playerViewController
 {
-  if (_fullscreenPlayerViewController == playerViewController && _fullscreenPlayerPresented) {
+  if (_fullscreenPlayerViewController == playerViewController && _fullscreenPlayerPresented && !_fullscreenPlayerIsDismissing) {
     _fullscreenPlayerIsDismissing = YES;
     [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
   }
