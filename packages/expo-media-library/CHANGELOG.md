@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `getAssetsAsync()` and `getAssetInfoAsync()` location issues on Android Q. ([#9315](https://github.com/expo/expo/pull/9315) by [@barthap](https://github.com/barthap))
+
 ## 8.3.0 — 2020-07-02
 
 ### 🐛 Bug fixes
