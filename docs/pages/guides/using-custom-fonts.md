@@ -2,7 +2,6 @@
 title: Using Custom Fonts
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
 import SnackInline from '~/components/plugins/SnackInline';
 
 Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. And since each
@@ -44,7 +43,42 @@ export default function App() {
 
 To create a new project including this example, run `npx create-react-native-app --template with-custom-font` in your terminal.
 
-<SnackEmbed snackId="@ijzerenhein/custom-font-example" />
+
+<SnackInline
+  label="Custom Font"
+  dependencies={['expo-font']}
+  files={{
+    'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
+  }}>
+
+```js
+import React from 'react';
+import { Text, View } from 'react-native';
+import { AppLoading } from 'expo';
+import { useFonts } from 'expo-font';
+
+export default props => {
+  let [fontsLoaded] = useFonts({
+    'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  } else {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>
+          Inter Black
+        </Text>
+        <Text style={{ fontSize: 40 }}>Platform Default</Text>
+      </View>
+    );
+  }
+};
+
+```
+
+</SnackInline>
 
 When you load it on your device, you should see something like this:
 
@@ -164,4 +198,57 @@ export default props => {
 
 If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. What is happening under the hood is that your fonts are being loaded using `Font.loadAysnc` from the [`expo-font` library](/versions/latest/sdk/font). You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 
-<SnackEmbed snackId="@ijzerenhein/font.loadasync-example" />
+<SnackInline
+  label="Font loadAsync"
+  dependencies={['expo-font']}
+  files={{
+    'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
+  }}>
+
+```js
+import React from 'react';
+import { Text, View, StyleSheet } from 'react-native';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+
+let customFonts = {
+  'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+  'Inter-SemiBoldItalic':
+    'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
+};
+
+export default class App extends React.Component {
+  state = {
+    fontsLoaded: false,
+  };
+
+  async _loadFontsAsync() {
+    await Font.loadAsync(customFonts);
+    this.setState({ fontsLoaded: true });
+  }
+
+  componentDidMount() {
+    this._loadFontsAsync();
+  }
+
+  render() {
+    if (this.state.fontsLoaded) {
+      return (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Platform Default</Text>
+          <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
+          <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>
+            Inter SemiBoldItalic
+          </Text>
+        </View>
+      );
+    } else {
+      return <AppLoading />;
+    }
+  }
+}
+
+```
+
+</SnackInline>
