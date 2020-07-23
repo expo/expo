@@ -170,7 +170,7 @@ export declare type LocationSubscription = {
     remove: () => void;
 };
 export declare type PermissionDetailsLocationIOS = {
-    scope: 'whenInUse' | 'always';
+    scope: 'whenInUse' | 'always' | 'none';
 };
 export declare type PermissionDetailsLocationAndroid = {
     scope: 'fine' | 'coarse' | 'none';
