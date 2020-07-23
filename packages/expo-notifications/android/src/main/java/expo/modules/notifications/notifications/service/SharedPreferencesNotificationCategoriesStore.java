@@ -78,7 +78,7 @@ public class SharedPreferencesNotificationCategoriesStore {
    *
    * @param notificationCategory Notification category
    * @throws IOException Thrown if there is an error while serializing the category
-   * @return Return the category that was just created, or null if it couldn't be created.
+   * @return The category that was just created, or null if it couldn't be created.
    */
   public NotificationCategory saveNotificationCategory(NotificationCategory notificationCategory) throws IOException {
     boolean successful = mSharedPreferences.edit()
@@ -110,7 +110,7 @@ public class SharedPreferencesNotificationCategoriesStore {
    *
    * @param editor     Editor to commit changes onto
    * @param identifier Category identifier
-   * @return Returns a reference to the same Editor object, so you can
+   * @return A reference to the same Editor object, so you can
    * chain put calls together.
    */
   private SharedPreferences.Editor removeNotificationCategory(SharedPreferences.Editor editor, String identifier) {

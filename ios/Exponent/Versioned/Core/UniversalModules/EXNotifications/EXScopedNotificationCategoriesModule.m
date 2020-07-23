@@ -18,12 +18,12 @@
   return self;
 }
 
-- (void)getNotificationCategoriesAsyncWithResolver: (UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+- (void)getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
     for (UNNotificationCategory *category in categories) {
-      if ([category.identifier hasPrefix:self->_experienceId] ) {
+      if ([category.identifier hasPrefix:self->_experienceId]) {
         [existingCategories addObject:[self serializeCategory:category]];
       }
     }
@@ -32,16 +32,18 @@
 }
 
 - (void)setNotificationCategoryWithCategoryId:(NSString *)categoryId
-                                        actions:(NSArray *)actions
-                                        options:(NSDictionary *)options
-                                        resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+                                      actions:(NSArray *)actions
+                                      options:(NSDictionary *)options
+                                      resolve:(UMPromiseResolveBlock)resolve 
+                                       reject:(UMPromiseRejectBlock)reject
 {
   NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, categoryId];
   [super setNotificationCategoryWithCategoryId:scopedCategoryIdentifier actions:actions options:options resolve:resolve reject:reject];
 }
 
 - (void)deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+                                         resolve:(UMPromiseResolveBlock)resolve 
+                                          reject:(UMPromiseRejectBlock)reject
 {
   NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, categoryId];
   [super deleteNotificationCategoryWithCategoryId:scopedCategoryIdentifier resolve:resolve reject:reject];

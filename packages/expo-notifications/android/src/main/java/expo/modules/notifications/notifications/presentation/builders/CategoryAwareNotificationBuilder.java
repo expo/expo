@@ -47,7 +47,7 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
       }
       for (NotificationAction action : actions) {
         if (action instanceof TextInputNotificationAction) {
-          builder.addAction(buildTextInputAction((TextInputNotificationAction)action));
+          builder.addAction(buildTextInputAction((TextInputNotificationAction) action));
         } else {
           builder.addAction(buildButtonAction(action));
         }

@@ -5,13 +5,15 @@
 
 @interface EXNotificationCategoriesModule : UMExportedModule <EXNotificationsDelegate>
 
-- (void)getNotificationCategoriesAsyncWithResolver: (UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+- (void)getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
 - (void)setNotificationCategoryWithCategoryId:(NSString *)categoryId
-                 actions:(NSArray *)actions
-                 options:(NSDictionary *)options
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+                                      actions:(NSArray *)actions
+                                     options:(NSDictionary *)options
+                                     resolve:(UMPromiseResolveBlock)resolve 
+                                      reject:(UMPromiseRejectBlock)reject;
 - (void)deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+                                         resolve:(UMPromiseResolveBlock)resolve 
+                                          reject:(UMPromiseRejectBlock)reject;
 - (NSMutableDictionary *)serializeCategoryOptions:(UNNotificationCategory *)category;
 - (NSMutableArray *)serializeActions:(NSArray<UNNotificationAction *>*)actions;
 - (NSMutableDictionary *)serializeActionOptions:(NSUInteger)options;
