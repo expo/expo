@@ -1,6 +1,5 @@
-import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionResult, DiscoveryDocument, AuthSessionRedirectUriOptions } from '../AuthSession';
-import { TokenResponse } from '../TokenRequest';
-import { ProviderAuthRequestConfig, ProviderUser } from './Provider.types';
+import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
+import { ProviderAuthRequestConfig } from './Provider.types';
 export declare const discovery: DiscoveryDocument;
 export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
     /**
@@ -73,13 +72,4 @@ declare class GoogleAuthRequest extends AuthRequest {
  * @param discovery
  */
 export declare function useAuthRequest(config?: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
-/**
- * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
- *
- * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
- *
- * @param config The `accessToken` for a user, returned from a code exchange or auth request.
- * @param discovery The `userInfoEndpoint` for a provider.
- */
-export declare function fetchUserInfoAsync(response: Pick<TokenResponse, 'accessToken'>): Promise<ProviderUser>;
 export {};

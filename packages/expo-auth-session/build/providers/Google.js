@@ -3,7 +3,6 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
-import { fetchUserInfoAsync as _fetchUserInfoAsync, } from '../TokenRequest';
 const settings = {
     windowFeatures: { width: 515, height: 680 },
     minimumScopes: [
@@ -120,24 +119,5 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         windowFeatures: settings.windowFeatures,
     });
     return [request, result, promptAsync];
-}
-/**
- * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
- *
- * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
- *
- * @param config The `accessToken` for a user, returned from a code exchange or auth request.
- * @param discovery The `userInfoEndpoint` for a provider.
- */
-export async function fetchUserInfoAsync(response) {
-    const providerData = await _fetchUserInfoAsync(response, discovery);
-    const user = {
-        name: providerData.name,
-        email: providerData.email,
-        id: providerData.id,
-        picture: providerData.picture,
-        providerData,
-    };
-    return user;
 }
 //# sourceMappingURL=Google.js.map
