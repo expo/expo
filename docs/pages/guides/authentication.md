@@ -433,9 +433,6 @@ export default function App() {
 
 [c-facebook]: https://developers.facebook.com/
 
-> You can use the [`expo-facebook`](/versions/latest/sdk/facebook) to authenticate via the Facebook app, however this functionality is limited.
-
-- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
 - Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
   - **Standalone:**
     - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
@@ -443,10 +440,10 @@ export default function App() {
   - **Bare:**
     - Run `npx uri-scheme add fb<YOUR FBID>`
     - Rebuild with `yarn ios` & `yarn android`
-- You can still test auth in the client by using the Expo proxy `useProxy`
 - The `native` redirect URI **must** be formatted like `fbYOUR_NUMERIC_ID://authorize`
   - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
+- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
@@ -457,42 +454,17 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
+import * as Facebook from 'expo-auth-session/providers/Facebook';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'email', 'user_likes'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        useProxy,
-        // For usage in bare and standalone
-        // Use your FBID here. The path MUST be `authorize`.
-        native: 'fb111111111111://authorize',
-      }),
-      extraParams: {
-        // Use `popup` on web for a better experience
-        display: Platform.select({ web: 'popup' }),
-        // Optionally you can use this to rerequest declined permissions
-        auth_type: 'rerequest',
-      },
-    },
-    discovery
-  );
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
+    clientId: '<YOUR FBID>',
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
@@ -510,11 +482,8 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({
-          /* @end */
-          useProxy,
-          windowFeatures: { width: 700, height: 600 },
-        });
+        promptAsync();
+        /* @end */
       }}
     />
   );
@@ -532,45 +501,21 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
+import * as Facebook from 'expo-auth-session/providers/Facebook';
+import { ResponseType } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'email', 'user_likes'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        useProxy,
-        // For usage in bare and standalone
-        // Use your FBID here. The path MUST be `authorize`.
-        native: 'fb111111111111://authorize',
-      }),
-      extraParams: {
-        // Use `popup` on web for a better experience
-        display: Platform.select({ web: 'popup' }),
-        // Optionally you can use this to rerequest declined permissions
-        auth_type: 'rerequest',
-      },
-    },
-    discovery
-  );
+  const [request, response, promptAsync] = useAuthRequest({
+    /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+    responseType: ResponseType.Token,
+    /* @end */
+    clientId: '<YOUR FBID>',
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
@@ -588,11 +533,8 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({
-          /* @end */
-          useProxy,
-          windowFeatures: { width: 700, height: 600 },
-        });
+        promptAsync();
+        /* @end */
       }}
     />
   );
@@ -605,7 +547,6 @@ export default function App() {
 
 <ImplicitTab>
 
-- It's important that you request at least the `['public_profile', 'email']` scopes, otherwise Firebase won't display the user info correctly in the auth panel.
 - Be sure to setup Facebook auth as described above, this is basically identical.
 - 🔥 Create a new Firebase project
 - Enable Facebook auth, save the project.
@@ -615,9 +556,10 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import * as Facebook from 'expo-auth-session/providers/Facebook';
+import { ResponseType } from 'expo-auth-session';
 import firebase from 'firebase';
-import { Button, Platform } from 'react-native';
+import { Button } from 'react-native';
 
 // Initialize Firebase
 if (!firebase.apps.length) {
@@ -630,38 +572,13 @@ if (!firebase.apps.length) {
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'email', 'user_likes'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        useProxy,
-        // For usage in bare and standalone
-        // Use your FBID here. The path MUST be `authorize`.
-        native: 'fb111111111111://authorize',
-      }),
-      extraParams: {
-        // Use `popup` on web for a better experience
-        display: Platform.select({ web: 'popup' }),
-        // Optionally you can use this to rerequest declined permissions
-        auth_type: 'rerequest',
-      },
-    },
-    discovery
-  );
+  const [request, response, promptAsync] = useAuthRequest({
+    /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+    responseType: ResponseType.Token,
+    /* @end */
+    clientId: '<YOUR FBID>',
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
@@ -685,11 +602,8 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({
-          /* @end */
-          useProxy,
-          windowFeatures: { width: 700, height: 600 },
-        });
+        promptAsync();
+        /* @end */
       }}
     />
   );
