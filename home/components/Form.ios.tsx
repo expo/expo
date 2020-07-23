@@ -72,7 +72,7 @@ function GradientOverlay({ left }: { left: number }) {
       end={[1, 0]}
       style={{
         position: 'absolute',
-        left: left,
+        left,
         right: 0,
         top: 0,
         bottom: 0,

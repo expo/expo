@@ -1,6 +1,6 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { Animated, InteractionManager, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 

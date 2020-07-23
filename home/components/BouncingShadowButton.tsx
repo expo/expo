@@ -1,7 +1,7 @@
+import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
-import { useTheme } from '@react-navigation/native';
 
 import Colors from '../constants/Colors';
 

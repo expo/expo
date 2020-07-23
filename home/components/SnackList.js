@@ -63,7 +63,7 @@ export default function SnackList({ data, loadMoreAsync, belongsToCurrentUser })
     } catch (e) {
       console.log({ e });
     } finally {
-      this._isMounted && setLoadingMore(false);
+      setLoadingMore(false);
     }
   };
 

@@ -1,33 +1,14 @@
-export type ExploreAndSearchRoute = {};
-export type ProjectsForUserRoute = { username: string; belongsToCurrentUser?: boolean };
-export type SnacksForUserRoute = { username: string; belongsToCurrentUser?: boolean };
-export type ProfileRoute = { username?: string };
-export type UserSettingsRoute = {};
-export type ProjectsRoute = {};
-
-export type ExploreStackRoutes = Pick<
-  AllStackRoutes,
-  'ExploreAndSearch' | 'Profile' | 'ProjectsForUser' | 'SnacksForUser'
->;
-
-export type ProfileStackRoutes = Pick<
-  AllStackRoutes,
-  'Profile' | 'UserSettings' | 'ProjectsForUser' | 'SnacksForUser'
->;
-
-export type ModalStackRoutes = {
-  SignIn: {};
-  SignUp: {};
-  QRCode: {};
+type ModalStackRoutes = {
+  SignIn: object;
+  SignUp: object;
+  QRCode: object;
 };
 
 export type AllStackRoutes = {
-  Projects: ProjectsRoute;
-  Profile: ProfileRoute;
-  UserSettings: UserSettingsRoute;
-  ExploreAndSearch: ExploreAndSearchRoute;
-  ProjectsForUser: ProjectsForUserRoute;
-  SnacksForUser: SnacksForUserRoute;
+  Projects: object;
+  Profile: { username?: string };
+  UserSettings: object;
+  ExploreAndSearch: object;
+  ProjectsForUser: { username: string; belongsToCurrentUser?: boolean };
+  SnacksForUser: { username: string; belongsToCurrentUser?: boolean };
 } & ModalStackRoutes;
-
-export type Links = {};

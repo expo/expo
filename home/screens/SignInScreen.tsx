@@ -1,7 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { Platform, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
