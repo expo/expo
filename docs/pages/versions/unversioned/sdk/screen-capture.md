@@ -31,7 +31,7 @@ import { usePreventScreenCapture } from 'expo-screen-capture';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default function KeepAwakeExample {
+export default function ScreenCaptureExample {
   /* @info As long as this component is mounted, the screen cannot captured */
   usePreventScreenCapture();
   /* @end */
@@ -50,7 +50,7 @@ import { preventScreenCaptureAsync, allowScreenCaptureAsync } from 'expo-screen-
 import React from 'react';
 import { Button, View } from 'react-native';
 
-export default class KeepAwakeExample extends React.Component {
+export default class ScreenCaptureExample extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -77,7 +77,11 @@ export default class KeepAwakeExample extends React.Component {
 ## API
 
 ```js
-import KeepAwake from 'expo-screen-capture';
+import {
+  usePreventScreenCapture,
+  preventScreenCaptureAsync,
+  allowScreenCaptureAsync
+} from 'expo-screen-capture';
 ```
 
 <TableOfContentSection title='Methods' contents={['usePreventScreenCapture()', 'preventScreenCaptureAsync()', 'allowScreenCaptureAsync()']} />
