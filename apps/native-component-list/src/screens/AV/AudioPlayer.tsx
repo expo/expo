@@ -80,6 +80,8 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _pauseAsync = async () => this._sound!.pauseAsync();
 
+  _replayAsync = async () => this._sound!.replayAsync();
+
   _setPositionAsync = async (position: number) => this._sound!.setPositionAsync(position);
 
   _setIsLoopingAsync = async (isLooping: boolean) => this._sound!.setIsLoopingAsync(isLooping);
@@ -101,6 +103,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
         style={this.props.style}
         playAsync={this._playAsync}
         pauseAsync={this._pauseAsync}
+        replayAsync={this._replayAsync}
         setPositionAsync={this._setPositionAsync}
         setIsLoopingAsync={this._setIsLoopingAsync}
         setRateAsync={this._setRateAsync}
