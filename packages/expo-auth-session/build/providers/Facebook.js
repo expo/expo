@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
-import { AuthRequest, ResponseType, } from '../AuthSession';
+import { AuthRequest, ResponseType, makeRedirectUri, } from '../AuthSession';
 import { requestAsync } from '../Fetch';
 import { AccessTokenRequest } from '../TokenRequest';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 const settings = {
     windowFeatures: { width: 700, height: 600 },
     // These are required for Firebase to work properly which is a reasonable default.
@@ -44,6 +46,19 @@ class FacebookAuthRequest extends AuthRequest {
         });
     }
 }
+// Only natively in the Expo client.
+function shouldUseProxy() {
+    return Platform.select({
+        web: false,
+        // Use the proxy in the Expo client.
+        default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
+    });
+}
+function invariantClientId(idName, value) {
+    if (typeof value === 'undefined')
+        // TODO(Bacon): Add learn more
+        throw new Error(`Client Id property \`${idName}\` must be defined to use Google auth on this platform.`);
+}
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -54,13 +69,30 @@ class FacebookAuthRequest extends AuthRequest {
  * @param config
  * @param discovery
  */
-export function useAuthRequest(config) {
+export function useAuthRequest(config = {}, redirectUriOptions = {}) {
+    const useProxy = redirectUriOptions.useProxy ?? shouldUseProxy();
+    const propertyName = useProxy
+        ? 'expoClientId'
+        : Platform.select({
+            ios: 'iosClientId',
+            android: 'androidClientId',
+            default: 'webClientId',
+        });
+    config.clientId = config[propertyName] ?? config.clientId;
+    invariantClientId(propertyName, config.clientId);
+    if (typeof config.redirectUri === 'undefined') {
+        config.redirectUri = makeRedirectUri({
+            native: `fb${config.clientId}://authorize`,
+            useProxy,
+            ...redirectUriOptions,
+        });
+    }
     const request = useLoadedAuthRequest(config, discovery, FacebookAuthRequest);
     const [result, promptAsync] = useAuthRequestResult(request, discovery, {
         windowFeatures: settings.windowFeatures,
+        useProxy,
     });
     const [fullResult, setFullResult] = useState(null);
-    // TODO add user info
     useEffect(() => {
         let isMounted = true;
         if (!fullResult &&

@@ -1,8 +1,12 @@
-import { AuthRequest, AuthRequestPromptOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
+import { AuthRequest, AuthRequestPromptOptions, AuthSessionResult, DiscoveryDocument, AuthSessionRedirectUriOptions } from '../AuthSession';
 import { TokenResponse } from '../TokenRequest';
 import { ProviderAuthRequestConfig, ProviderUser } from './Provider.types';
 export declare const discovery: DiscoveryDocument;
 export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
+    webClientId?: string;
+    iosClientId?: string;
+    androidClientId?: string;
+    expoClientId?: string;
 }
 declare class FacebookAuthRequest extends AuthRequest {
     constructor({ language, selectAccount, extraParams, clientSecret, ...config }: FacebookAuthRequestConfig);
@@ -17,7 +21,7 @@ declare class FacebookAuthRequest extends AuthRequest {
  * @param config
  * @param discovery
  */
-export declare function useAuthRequest(config: FacebookAuthRequestConfig): [FacebookAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export declare function useAuthRequest(config?: Partial<FacebookAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [FacebookAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
 /**
  * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
  *

@@ -66,7 +66,6 @@ export function useAuthRequestResult(request, discovery, customOptions = {}) {
                 ...windowFeatures,
             },
         };
-        console.log('input options', inputOptions);
         const result = await request?.promptAsync(discovery, inputOptions);
         setResult(result);
         return result;

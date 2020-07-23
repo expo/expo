@@ -104,41 +104,31 @@ function AuthSessionProviders(props: {
   );
 }
 
-function Google({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = React.useMemo(
-    () =>
-      AuthSession.makeRedirectUri({
-        path: 'redirect',
-        preferLocalhost: true,
-        useProxy,
-        native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
-      }),
-    [useProxy]
+function Google({ prompt, usePKCE }: any) {
+  const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest(
+    {
+      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
+      clientId: `${getGUID()}.apps.googleusercontent.com`,
+      // selectAccount: true,
+      // language: 'fr',
+      // responseType: AuthSession.ResponseType.Token,
+      responseType: AuthSession.ResponseType.IdToken,
+      // clientSecret: '',
+      usePKCE,
+    },
+    {
+      path: 'redirect',
+      preferLocalhost: true,
+    }
   );
-
-  const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest({
-    selectAccount: true,
-    language: 'fr',
-    // responseType: AuthSession.ResponseType.Code,
-    responseType: AuthSession.ResponseType.Token,
-    // responseType: AuthSession.ResponseType.IdToken,
-    // clientSecret: '',
-    clientId: useProxy
-      ? '29635966244-bc5tjrdacdaktqorhinsbtda80tchl7n.apps.googleusercontent.com'
-      : getGUID(),
-    redirectUri,
-    usePKCE,
-  });
 
   return (
     <AuthSection
-      disabled={!useProxy && isInClient}
       request={request}
       tokenResponse={result?.authentication}
       title="google"
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 515, height: 680 } })}
-      useProxy={useProxy}
+      promptAsync={() => promptAsync()}
     />
   );
 }
@@ -400,32 +390,30 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
 }
 
 function Facebook({ usePKCE, prompt, useProxy }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: `fb145668956753819://authorize`,
-  });
-
-  const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest({
-    clientId: '145668956753819',
-    redirectUri,
-    scopes: ['user_likes'],
-    usePKCE,
-    selectAccount: true,
-    language: 'fr',
-  });
+  const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
+    {
+      clientId: '145668956753819',
+      usePKCE,
+      // responseType: AuthSession.ResponseType.Token,
+      // redirectUri,
+      // scopes: ['user_likes'],
+      // selectAccount: true,
+      // language: 'fr',
+    },
+    {
+      path: 'redirect',
+      preferLocalhost: true,
+    }
+  );
   // Add fetch user example
 
   return (
     <AuthSection
       title="facebook"
-      disabled={isInClient && !useProxy}
       tokenResponse={result?.authentication}
       request={request}
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 700, height: 600 } })}
-      useProxy={useProxy}
+      promptAsync={() => promptAsync()}
     />
   );
 }
@@ -470,18 +458,9 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
     clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
     responseType: AuthSession.ResponseType.Code,
     redirectUri,
-    // usePKCE,
-    clientSecret: '0b3247166fe7462c8994b1e538804c21',
     // selectAccount: true,
     // language: 'fr',
     // scopes: ['playlist-modify-public', 'user-read-private'],
-  });
-
-  SpotifyAuthSession.fetchUserInfoAsync({
-    accessToken:
-      'BQD_LZordhy5qRJpwFB4V7YC8Fe5-vYKP_8AC-4sAh4Em7L7jyxBtJkdwg3-fBjaOL-1aSl0hFIy5aiybZ74JarUD78KJA0B1riSAjUkvbKYdBu9DnC50iarHoz22DkgP5W_WuGDfJIG1PzeG61Kst-u',
-  }).then(user => {
-    console.log('USER: ', user);
   });
 
   return (

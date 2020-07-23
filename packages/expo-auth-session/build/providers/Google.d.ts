@@ -1,4 +1,4 @@
-import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
+import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionResult, DiscoveryDocument, AuthSessionRedirectUriOptions } from '../AuthSession';
 import { TokenResponse } from '../TokenRequest';
 import { ProviderAuthRequestConfig, ProviderUser } from './Provider.types';
 export declare const discovery: DiscoveryDocument;
@@ -8,6 +8,10 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      * If the user has approved access for this app in the past then auth may return without any further interaction.
      */
     loginHint?: string;
+    webClientId?: string;
+    iosClientId?: string;
+    androidClientId?: string;
+    expoClientId?: string;
 }
 declare class GoogleAuthRequest extends AuthRequest {
     nonce?: string;
@@ -27,7 +31,7 @@ declare class GoogleAuthRequest extends AuthRequest {
  * @param config
  * @param discovery
  */
-export declare function useAuthRequest(config: GoogleAuthRequestConfig): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export declare function useAuthRequest(config?: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
 /**
  * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
  *

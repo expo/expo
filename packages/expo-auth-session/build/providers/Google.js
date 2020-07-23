@@ -1,6 +1,9 @@
+import * as Application from 'expo-application';
+import Constants from 'expo-constants';
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
-import { AuthRequest, generateHexStringAsync, Prompt, ResponseType, } from '../AuthSession';
+import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
 import { AccessTokenRequest, fetchUserInfoAsync as _fetchUserInfoAsync, } from '../TokenRequest';
 const settings = {
     windowFeatures: { width: 515, height: 680 },
@@ -36,7 +39,7 @@ class GoogleAuthRequest extends AuthRequest {
             inputParams.prompt = Prompt.SelectAccount;
         // Apply the default scopes
         const scopes = applyRequiredScopes(config.scopes);
-        const isImplicit = config.responseType === ResponseType.Token;
+        const isImplicit = config.responseType === ResponseType.Token || config.responseType === ResponseType.IdToken;
         if (isImplicit) {
             // PKCE must be disabled in implicit mode.
             config.usePKCE = false;
@@ -71,6 +74,19 @@ class GoogleAuthRequest extends AuthRequest {
         };
     }
 }
+// Only natively in the Expo client.
+function shouldUseProxy() {
+    return Platform.select({
+        web: false,
+        // Use the proxy in the Expo client.
+        default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
+    });
+}
+function invariantClientId(idName, value) {
+    if (typeof value === 'undefined')
+        // TODO(Bacon): Add learn more
+        throw new Error(`Client Id property \`${idName}\` must be defined to use Google auth on this platform.`);
+}
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -81,14 +97,30 @@ class GoogleAuthRequest extends AuthRequest {
  * @param config
  * @param discovery
  */
-export function useAuthRequest(config) {
+export function useAuthRequest(config = {}, redirectUriOptions = {}) {
+    const useProxy = redirectUriOptions.useProxy ?? shouldUseProxy();
+    const propertyName = useProxy
+        ? 'expoClientId'
+        : Platform.select({
+            ios: 'iosClientId',
+            android: 'androidClientId',
+            default: 'webClientId',
+        });
+    config.clientId = config[propertyName] ?? config.clientId;
+    invariantClientId(propertyName, config.clientId);
+    if (typeof config.redirectUri === 'undefined') {
+        config.redirectUri = makeRedirectUri({
+            native: `${Application.applicationId}:/oauthredirect`,
+            useProxy,
+            ...redirectUriOptions,
+        });
+    }
     const request = useLoadedAuthRequest(config, discovery, GoogleAuthRequest);
     const [result, promptAsync] = useAuthRequestResult(request, discovery, {
+        useProxy,
         windowFeatures: settings.windowFeatures,
     });
     const [fullResult, setFullResult] = useState(null);
-    // TODO: warn if running in the expo client and not using proxy
-    // TODO add user info
     useEffect(() => {
         let isMounted = true;
         if (!fullResult &&

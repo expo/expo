@@ -1,4 +1,7 @@
+import * as Application from 'expo-application';
+import Constants from 'expo-constants';
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
@@ -8,8 +11,10 @@ import {
   AuthSessionResult,
   DiscoveryDocument,
   generateHexStringAsync,
+  makeRedirectUri,
   Prompt,
   ResponseType,
+  AuthSessionRedirectUriOptions,
 } from '../AuthSession';
 import {
   AccessTokenRequest,
@@ -41,6 +46,11 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    * If the user has approved access for this app in the past then auth may return without any further interaction.
    */
   loginHint?: string;
+
+  webClientId?: string;
+  iosClientId?: string;
+  androidClientId?: string;
+  expoClientId?: string;
 }
 
 function applyRequiredScopes(scopes: string[] = []): string[] {
@@ -70,7 +80,8 @@ class GoogleAuthRequest extends AuthRequest {
 
     // Apply the default scopes
     const scopes = applyRequiredScopes(config.scopes);
-    const isImplicit = config.responseType === ResponseType.Token;
+    const isImplicit =
+      config.responseType === ResponseType.Token || config.responseType === ResponseType.IdToken;
     if (isImplicit) {
       // PKCE must be disabled in implicit mode.
       config.usePKCE = false;
@@ -107,6 +118,23 @@ class GoogleAuthRequest extends AuthRequest {
   }
 }
 
+// Only natively in the Expo client.
+function shouldUseProxy(): boolean {
+  return Platform.select({
+    web: false,
+    // Use the proxy in the Expo client.
+    default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
+  });
+}
+
+function invariantClientId(idName: string, value: any) {
+  if (typeof value === 'undefined')
+    // TODO(Bacon): Add learn more
+    throw new Error(
+      `Client Id property \`${idName}\` must be defined to use Google auth on this platform.`
+    );
+}
+
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -118,19 +146,44 @@ class GoogleAuthRequest extends AuthRequest {
  * @param discovery
  */
 export function useAuthRequest(
-  config: GoogleAuthRequestConfig
+  config: Partial<GoogleAuthRequestConfig> = {},
+  redirectUriOptions: Partial<AuthSessionRedirectUriOptions> = {}
 ): [
   GoogleAuthRequest | null,
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const request = useLoadedAuthRequest(config, discovery, GoogleAuthRequest);
+  const useProxy = redirectUriOptions.useProxy ?? shouldUseProxy();
+
+  const propertyName = useProxy
+    ? 'expoClientId'
+    : Platform.select({
+        ios: 'iosClientId',
+        android: 'androidClientId',
+        default: 'webClientId',
+      });
+  config.clientId = config[propertyName as any] ?? config.clientId;
+  invariantClientId(propertyName, config.clientId);
+
+  if (typeof config.redirectUri === 'undefined') {
+    config.redirectUri = makeRedirectUri({
+      native: `${Application.applicationId}:/oauthredirect`,
+      useProxy,
+      ...redirectUriOptions,
+      // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
+    });
+  }
+
+  const request = useLoadedAuthRequest(
+    config as GoogleAuthRequestConfig,
+    discovery,
+    GoogleAuthRequest
+  );
   const [result, promptAsync] = useAuthRequestResult(request, discovery, {
+    useProxy,
     windowFeatures: settings.windowFeatures,
   });
   const [fullResult, setFullResult] = useState<AuthSessionResult | null>(null);
-  // TODO: warn if running in the expo client and not using proxy
-  // TODO add user info
   useEffect(() => {
     let isMounted = true;
     if (
@@ -140,9 +193,9 @@ export function useAuthRequest(
       result?.type === 'success'
     ) {
       const exchangeRequest = new AccessTokenRequest({
-        clientId: config.clientId,
+        clientId: config.clientId!,
         clientSecret: config.clientSecret,
-        redirectUri: config.redirectUri,
+        redirectUri: config.redirectUri!,
         scopes: config.scopes,
         code: result.params.code,
         extraParams: {

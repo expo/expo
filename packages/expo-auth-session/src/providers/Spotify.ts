@@ -109,8 +109,6 @@ export function useAuthRequest(
       request?.responseType === ResponseType.Code &&
       result?.type === 'success'
     ) {
-      console.log('try: ', fullResult, config.clientSecret, request?.responseType, result?.type);
-
       const exchangeRequest = new AccessTokenRequest({
         clientId: config.clientId,
         clientSecret: config.clientSecret,
@@ -122,20 +120,14 @@ export function useAuthRequest(
           code_verifier: request.codeVerifier,
         },
       });
-      exchangeRequest
-        .performAsync(discovery)
-        .then(authentication => {
-          console.log('SUCCESS', authentication);
-          if (isMounted) {
-            setFullResult({
-              ...result,
-              authentication,
-            });
-          }
-        })
-        .catch(error => {
-          console.log('FAILED', error);
-        });
+      exchangeRequest.performAsync(discovery).then(authentication => {
+        if (isMounted) {
+          setFullResult({
+            ...result,
+            authentication,
+          });
+        }
+      });
     } else {
       setFullResult(result);
     }
