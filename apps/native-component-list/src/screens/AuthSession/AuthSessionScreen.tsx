@@ -1,6 +1,9 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
 import { useAuthRequest, TokenTypeHint } from 'expo-auth-session';
+import * as GoogleAuthSession from 'expo-auth-session/build/providers/Google';
+import * as FacebookAuthSession from 'expo-auth-session/build/providers/Facebook';
+import * as SpotifyAuthSession from 'expo-auth-session/build/providers/Spotify';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
@@ -102,85 +105,36 @@ function AuthSessionProviders(props: {
 }
 
 function Google({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
-  });
-
-  const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
-
-  const [request, result, promptAsync] = useAuthRequest(
-    {
-      clientId: useProxy
-        ? '29635966244-bc5tjrdacdaktqorhinsbtda80tchl7n.apps.googleusercontent.com'
-        : getGUID(),
-      redirectUri,
-      prompt,
-      scopes: ['profile', 'email', 'openid'],
-      usePKCE,
-    },
-    discovery
+  const redirectUri = React.useMemo(
+    () =>
+      AuthSession.makeRedirectUri({
+        path: 'redirect',
+        preferLocalhost: true,
+        useProxy,
+        native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
+      }),
+    [useProxy]
   );
 
-  const [access, setAccess] = React.useState<null | AuthSession.TokenResponse>(null);
-  const clientSecret = '';
-  // Code exchange test
-  React.useEffect(() => {
-    if (!clientSecret || access || !request || !discovery || result?.type !== 'success') {
-      return;
-    }
-
-    if (result.params.code) {
-      AuthSession.exchangeCodeAsync(
-        {
-          clientId: request.clientId,
-          clientSecret: request.clientSecret ?? clientSecret,
-          redirectUri: request.redirectUri,
-          scopes: request.scopes,
-          code: result.params.code,
-          extraParams: {
-            // @ts-ignore: allow for instances where PKCE is disabled
-            code_verifier: request.codeVerifier,
-          },
-        },
-        discovery
-      ).then(token => {
-        setAccess(token);
-      });
-    } else if (result.params.access_token) {
-      setAccess(AuthSession.TokenResponse.fromQueryParams(result.params));
-    } else {
-      console.warn('unexpected response: ', result);
-    }
-  }, [access, result, discovery, request]);
-
-  // Revocation test
-  React.useEffect(() => {
-    if (!request || !access || !discovery) return;
-
-    console.log('Revoking: ', access);
-
-    AuthSession.revokeAsync(
-      {
-        token: access.accessToken,
-        // tokenTypeHint: TokenTypeHint.AccessToken,
-        // clientId: request?.clientId,
-        // clientSecret: request?.clientSecret,
-        // scopes: request.scopes,
-      },
-      discovery
-    ).then(result => {
-      console.log('Revoked', result);
-    });
-  }, [request, access, discovery]);
+  const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest({
+    selectAccount: true,
+    language: 'fr',
+    // responseType: AuthSession.ResponseType.Code,
+    responseType: AuthSession.ResponseType.Token,
+    // responseType: AuthSession.ResponseType.IdToken,
+    // clientSecret: '',
+    clientId: useProxy
+      ? '29635966244-bc5tjrdacdaktqorhinsbtda80tchl7n.apps.googleusercontent.com'
+      : getGUID(),
+    redirectUri,
+    usePKCE,
+  });
 
   return (
     <AuthSection
       disabled={!useProxy && isInClient}
       request={request}
-      tokenResponse={access}
+      tokenResponse={result?.authentication}
       title="google"
       result={result}
       promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 515, height: 680 } })}
@@ -453,30 +407,21 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
     native: `fb145668956753819://authorize`,
   });
 
-  const [request, result, promptAsync] = useAuthRequest(
-    {
-      clientId: '145668956753819',
-      redirectUri,
-      scopes: ['public_profile', 'user_likes'],
-      usePKCE,
-      prompt,
-      extraParams: {
-        display: 'popup',
-        // Rerequest decliened permissions, to test this,
-        // add "email" to the scopes and try again (be sure not to allow email permission).
-        auth_type: 'rerequest',
-      },
-    },
-    {
-      authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-      tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-    }
-  );
+  const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest({
+    clientId: '145668956753819',
+    redirectUri,
+    scopes: ['user_likes'],
+    usePKCE,
+    selectAccount: true,
+    language: 'fr',
+  });
+  // Add fetch user example
 
   return (
     <AuthSection
       title="facebook"
       disabled={isInClient && !useProxy}
+      tokenResponse={result?.authentication}
       request={request}
       result={result}
       promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 700, height: 600 } })}
@@ -521,28 +466,29 @@ function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
 // Works on all platforms
 function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
-  const [request, result, promptAsync] = useAuthRequest(
-    {
-      clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
-      redirectUri,
-      scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
-      usePKCE,
-      extraParams: {
-        show_dialog: 'false',
-      },
-      prompt,
-    },
-    // discovery
-    {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
-    }
-  );
+  const [request, result, promptAsync] = SpotifyAuthSession.useAuthRequest({
+    clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
+    responseType: AuthSession.ResponseType.Code,
+    redirectUri,
+    // usePKCE,
+    clientSecret: '0b3247166fe7462c8994b1e538804c21',
+    // selectAccount: true,
+    // language: 'fr',
+    // scopes: ['playlist-modify-public', 'user-read-private'],
+  });
+
+  SpotifyAuthSession.fetchUserInfoAsync({
+    accessToken:
+      'BQD_LZordhy5qRJpwFB4V7YC8Fe5-vYKP_8AC-4sAh4Em7L7jyxBtJkdwg3-fBjaOL-1aSl0hFIy5aiybZ74JarUD78KJA0B1riSAjUkvbKYdBu9DnC50iarHoz22DkgP5W_WuGDfJIG1PzeG61Kst-u',
+  }).then(user => {
+    console.log('USER: ', user);
+  });
 
   return (
     <AuthSection
       title="spotify"
       request={request}
+      tokenResponse={result?.authentication}
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}

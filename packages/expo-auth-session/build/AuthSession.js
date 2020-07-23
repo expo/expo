@@ -54,6 +54,7 @@ export async function startAsync(options) {
         type: errorCode ? 'error' : 'success',
         params,
         errorCode,
+        authentication: null,
         url: result.url,
     };
 }
@@ -132,7 +133,7 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     }
     return result;
 }
-export * from './AuthRequestHooks';
+export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
 export { AuthError, TokenError } from './Errors';
 export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
 export { 
