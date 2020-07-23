@@ -1,6 +1,7 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { useMemo } from 'react';
 
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
@@ -189,29 +190,66 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const useProxy = redirectUriOptions.useProxy ?? shouldUseProxy();
+  const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
+    redirectUriOptions.useProxy,
+  ]);
 
-  const propertyName = useProxy
-    ? 'expoClientId'
-    : Platform.select({
-        ios: 'iosClientId',
-        android: 'androidClientId',
-        default: 'webClientId',
-      });
-  config.clientId = config[propertyName as any] ?? config.clientId;
-  invariantClientId(propertyName, config.clientId);
+  const clientId = useMemo((): string => {
+    const propertyName = useProxy
+      ? 'expoClientId'
+      : Platform.select({
+          ios: 'iosClientId',
+          android: 'androidClientId',
+          default: 'webClientId',
+        });
 
-  if (typeof config.redirectUri === 'undefined') {
-    config.redirectUri = makeRedirectUri({
+    const clientId = config[propertyName as any] ?? config.clientId;
+    invariantClientId(propertyName, clientId);
+    return clientId;
+  }, [
+    useProxy,
+    config.expoClientId,
+    config.iosClientId,
+    config.androidClientId,
+    config.webClientId,
+    config.clientId,
+  ]);
+
+  const redirectUri = useMemo((): string => {
+    if (typeof config.redirectUri !== 'undefined') {
+      return config.redirectUri;
+    }
+
+    return makeRedirectUri({
       native: `${Application.applicationId}:/oauthredirect`,
       useProxy,
       ...redirectUriOptions,
       // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
     });
-  }
+  }, [useProxy, config.redirectUri, redirectUriOptions]);
+
+  const extraParams = useMemo((): GoogleAuthRequestConfig['extraParams'] => {
+    const output = config.extraParams ? { ...config.extraParams } : {};
+
+    if (config.language) {
+      output.hl = output.language;
+    }
+    if (config.loginHint) {
+      output.login_hint = output.loginHint;
+    }
+    if (config.selectAccount) {
+      output.prompt = Prompt.SelectAccount;
+    }
+    return output;
+  }, [config.extraParams, config.language, config.loginHint, config.selectAccount]);
 
   const request = useLoadedAuthRequest(
-    config as GoogleAuthRequestConfig,
+    {
+      ...config,
+      extraParams,
+      clientId,
+      redirectUri,
+    },
     discovery,
     GoogleAuthRequest
   );

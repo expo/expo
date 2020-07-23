@@ -1,6 +1,7 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { useMemo } from 'react';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
 const settings = {
@@ -95,24 +96,57 @@ function invariantClientId(idName, value) {
  * @param discovery
  */
 export function useAuthRequest(config = {}, redirectUriOptions = {}) {
-    const useProxy = redirectUriOptions.useProxy ?? shouldUseProxy();
-    const propertyName = useProxy
-        ? 'expoClientId'
-        : Platform.select({
-            ios: 'iosClientId',
-            android: 'androidClientId',
-            default: 'webClientId',
-        });
-    config.clientId = config[propertyName] ?? config.clientId;
-    invariantClientId(propertyName, config.clientId);
-    if (typeof config.redirectUri === 'undefined') {
-        config.redirectUri = makeRedirectUri({
+    const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
+        redirectUriOptions.useProxy,
+    ]);
+    const clientId = useMemo(() => {
+        const propertyName = useProxy
+            ? 'expoClientId'
+            : Platform.select({
+                ios: 'iosClientId',
+                android: 'androidClientId',
+                default: 'webClientId',
+            });
+        const clientId = config[propertyName] ?? config.clientId;
+        invariantClientId(propertyName, clientId);
+        return clientId;
+    }, [
+        useProxy,
+        config.expoClientId,
+        config.iosClientId,
+        config.androidClientId,
+        config.webClientId,
+        config.clientId,
+    ]);
+    const redirectUri = useMemo(() => {
+        if (typeof config.redirectUri !== 'undefined') {
+            return config.redirectUri;
+        }
+        return makeRedirectUri({
             native: `${Application.applicationId}:/oauthredirect`,
             useProxy,
             ...redirectUriOptions,
         });
-    }
-    const request = useLoadedAuthRequest(config, discovery, GoogleAuthRequest);
+    }, [useProxy, config.redirectUri, redirectUriOptions]);
+    const extraParams = useMemo(() => {
+        const output = config.extraParams ? { ...config.extraParams } : {};
+        if (config.language) {
+            output.hl = output.language;
+        }
+        if (config.loginHint) {
+            output.login_hint = output.loginHint;
+        }
+        if (config.selectAccount) {
+            output.prompt = Prompt.SelectAccount;
+        }
+        return output;
+    }, [config.extraParams, config.language, config.loginHint, config.selectAccount]);
+    const request = useLoadedAuthRequest({
+        ...config,
+        extraParams,
+        clientId,
+        redirectUri,
+    }, discovery, GoogleAuthRequest);
     const [result, promptAsync] = useAuthRequestResult(request, discovery, {
         useProxy,
         windowFeatures: settings.windowFeatures,

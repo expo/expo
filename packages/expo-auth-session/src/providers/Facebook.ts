@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-
+import { useMemo } from 'react';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
   AuthRequest,
@@ -12,6 +12,8 @@ import {
   ResponseType,
 } from '../AuthSession';
 import { ProviderAuthRequestConfig } from './Provider.types';
+import { AuthRequestConfig } from '../AuthRequest.types';
+import { generateHexStringAsync } from '../PKCE';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },
@@ -39,6 +41,8 @@ function applyRequiredScopes(scopes: string[] = []): string[] {
 }
 
 class FacebookAuthRequest extends AuthRequest {
+  nonce?: string;
+
   constructor({
     language,
     selectAccount,
@@ -50,8 +54,12 @@ class FacebookAuthRequest extends AuthRequest {
       display: 'popup',
       ...extraParams,
     };
-    if (language) inputParams.locale = language;
-    if (selectAccount && !inputParams.auth_type) inputParams.auth_type = 'reauthenticate';
+    if (language) {
+      inputParams.locale = language;
+    }
+    if (selectAccount && typeof inputParams.auth_type === 'undefined') {
+      inputParams.auth_type = 'reauthorize';
+    }
 
     // Apply the default scopes
     const scopes = applyRequiredScopes(config.scopes);
@@ -67,6 +75,23 @@ class FacebookAuthRequest extends AuthRequest {
       scopes,
       extraParams: inputParams,
     });
+  }
+
+  /**
+   * Load and return a valid auth request based on the input config.
+   */
+  async getAuthRequestConfigAsync(): Promise<AuthRequestConfig> {
+    const { extraParams = {}, ...config } = await super.getAuthRequestConfigAsync();
+    if (!extraParams.nonce && !this.nonce) {
+      if (!this.nonce) {
+        this.nonce = await generateHexStringAsync(16);
+      }
+      extraParams.auth_nonce = this.nonce;
+    }
+    return {
+      ...config,
+      extraParams,
+    };
   }
 }
 
@@ -97,18 +122,59 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const useProxy = redirectUriOptions.useProxy ?? shouldUseProxy();
+  const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
+    redirectUriOptions.useProxy,
+  ]);
 
-  if (typeof config.redirectUri === 'undefined') {
-    config.redirectUri = makeRedirectUri({
-      native: `fb${config.clientId}://authorize`,
+  const clientId = useMemo((): string => {
+    const propertyName = useProxy
+      ? 'expoClientId'
+      : Platform.select({
+          ios: 'iosClientId',
+          android: 'androidClientId',
+          default: 'webClientId',
+        });
+    return config[propertyName as any] ?? config.clientId;
+  }, [
+    useProxy,
+    config.expoClientId,
+    config.iosClientId,
+    config.androidClientId,
+    config.webClientId,
+    config.clientId,
+  ]);
+
+  const redirectUri = useMemo((): string => {
+    if (typeof config.redirectUri !== 'undefined') {
+      return config.redirectUri;
+    }
+
+    return makeRedirectUri({
+      native: `fb${clientId}://authorize`,
       useProxy,
       ...redirectUriOptions,
     });
-  }
+  }, [useProxy, clientId, config.redirectUri, redirectUriOptions]);
+
+  const extraParams = useMemo((): FacebookAuthRequestConfig['extraParams'] => {
+    const output = config.extraParams ? { ...config.extraParams } : {};
+
+    if (config.language) {
+      output.locale = config.language;
+    }
+    if (config.selectAccount) {
+      output.auth_type = 'reauthorize';
+    }
+    return output;
+  }, [config.extraParams, config.language, config.selectAccount]);
 
   const request = useLoadedAuthRequest(
-    config as FacebookAuthRequestConfig,
+    {
+      ...config,
+      extraParams,
+      clientId,
+      redirectUri,
+    },
     discovery,
     FacebookAuthRequest
   );

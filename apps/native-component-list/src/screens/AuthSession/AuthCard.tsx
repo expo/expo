@@ -152,6 +152,7 @@ export default function AuthCard({
   name,
   disabled,
   status = '',
+  url,
   onPress,
 }: {
   name: string;
@@ -182,6 +183,17 @@ export default function AuthCard({
               color: 'white',
             }}>
             {subtitle}
+          </Text>
+        )}
+        {url && (
+          <Text
+            style={{
+              opacity: 0.9,
+              marginTop: 2,
+              fontSize: 14,
+              color: 'white',
+            }}>
+            {url}
           </Text>
         )}
       </View>
