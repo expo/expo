@@ -2,6 +2,7 @@ package expo.modules.notifications.notifications;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -172,7 +173,7 @@ public class NotificationSerializer {
     return bundle;
   }
 
-  public static Bundle toBundle(NotificationCategory category) {
+  public static Bundle toBundle(@NonNull NotificationCategory category) {
     Bundle serializedCategory = new Bundle();
     serializedCategory.putString("identifier", category.getIdentifier());
     serializedCategory.putParcelableArrayList("actions", toBundleList(category.getActions()));

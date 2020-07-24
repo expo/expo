@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,6 +52,9 @@ public class NotificationCategory implements Parcelable, Serializable {
   }
 
   public List<NotificationAction> getActions() {
+    if (mActions == null) {
+      return Collections.emptyList();
+    }
     return mActions;
   }
 

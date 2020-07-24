@@ -22,7 +22,7 @@ import expo.modules.notifications.notifications.model.TextInputNotificationRespo
 public class TextInputNotificationResponseReceiver extends NotificationResponseReceiver {
   public static final String USER_TEXT_RESPONSE = "userTextResponse";
 
-  public static PendingIntent getActionIntent(Context context, TextInputNotificationAction action, Notification notification) {
+  public static PendingIntent getActionIntent(Context context, @NonNull TextInputNotificationAction action, @NonNull Notification notification) {
     Intent intent = new Intent(context, TextInputNotificationResponseReceiver.class);
     // By setting different data we make sure that intents with different actions
     // are different to the system.
@@ -33,7 +33,7 @@ public class TextInputNotificationResponseReceiver extends NotificationResponseR
   }
 
   @Override
-  public void onReceive(Context context, Intent intent) {
+  public void onReceive(Context context, @NonNull Intent intent) {
     TextInputNotificationResponse response = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY);
     response.setUserText(getMessageText(intent));
     if (intent.getBooleanExtra(ACTION_FOREGROUNDS_APP, true)) {
@@ -68,7 +68,7 @@ public class TextInputNotificationResponseReceiver extends NotificationResponseR
    * @return Given request marshalled to a byte array or null if the process failed.
    */
   @Nullable
-  private byte[] marshallTextInputNotificationResponse(TextInputNotificationResponse notificationResponse) {
+  private byte[] marshallTextInputNotificationResponse(@NonNull TextInputNotificationResponse notificationResponse) {
     try {
       Parcel parcel = Parcel.obtain();
       notificationResponse.writeToParcel(parcel, 0);

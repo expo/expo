@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 
 import java.io.ByteArrayInputStream;
@@ -80,7 +82,7 @@ public class SharedPreferencesNotificationCategoriesStore {
    * @throws IOException Thrown if there is an error while serializing the category
    * @return The category that was just created, or null if it couldn't be created.
    */
-  public NotificationCategory saveNotificationCategory(NotificationCategory notificationCategory) throws IOException {
+  public NotificationCategory saveNotificationCategory(@NonNull NotificationCategory notificationCategory) throws IOException {
     boolean successful = mSharedPreferences.edit()
         .putString(preferencesNotificationCategoryKey(notificationCategory.getIdentifier()), serializeNotificationCategory(notificationCategory))
         .commit();

@@ -2,6 +2,7 @@ package host.exp.exponent.notifications;
 
 import android.content.Context;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -13,12 +14,11 @@ import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
-import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
 import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
 
-public class ScopedCategoryAwareNotificationBuilder extends CategoryAwareNotificationBuilder {
+public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificationBuilder {
   
-  public ScopedCategoryAwareNotificationBuilder(Context context, SharedPreferencesNotificationCategoriesStore store) {
+  public ScopedCategoryAwareNotificationBuilder(Context context, @NonNull SharedPreferencesNotificationCategoriesStore store) {
     super(context, store);
   }
 

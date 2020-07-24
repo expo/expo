@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.universal.notifications;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import androidx.annotation.NonNull;
 
 import org.unimodules.core.Promise;
 
@@ -20,13 +21,9 @@ import host.exp.exponent.kernel.ExperienceId;
 public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCategoriesModule {
   private String mExperienceIdString;
 
-  public ScopedExpoNotificationCategoriesModule(Context context, ExperienceId experienceId) {
+  public ScopedExpoNotificationCategoriesModule(Context context, @NonNull ExperienceId experienceId) {
     super(context);
-    if (experienceId == null) {
-      mExperienceIdString = null;
-    } else {
-      mExperienceIdString = experienceId.get();
-    }
+    mExperienceIdString = experienceId.get();
   }
   
   @Override
@@ -58,7 +55,7 @@ public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCate
     super.deleteNotificationCategoryAsync(scopedCategoryIdentifier, promise);
   }
 
-  protected ArrayList<Bundle> serializeScopedCategories(Collection<NotificationCategory> categories) {
+  protected ArrayList<Bundle> serializeScopedCategories(@NonNull Collection<NotificationCategory> categories) {
     ArrayList<Bundle> serializedCategories = new ArrayList<>();
     for (NotificationCategory category : categories) {
       if (category.getIdentifier().startsWith(mExperienceIdString + "-")) {
