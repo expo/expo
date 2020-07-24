@@ -1,15 +1,15 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <UserNotifications/UserNotifications.h>
+#import <EXNotifications/EXNotificationSerializer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXNotificationSerializer : NSObject
+@interface EXScopedNotificationSerializer : EXNotificationSerializer
 
++ (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response;
 + (NSDictionary *)serializedNotification:(UNNotification *)notification;
 + (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)notificationRequest;
-+ (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)notificationResponse;
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content isRemote:(BOOL)isRemote;
 
 @end
 
