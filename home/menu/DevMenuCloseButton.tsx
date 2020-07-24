@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React from 'react';
+import { useTheme } from '@react-navigation/native';
+import * as React from 'react';
 import {
   Platform,
   StyleSheet,
@@ -7,7 +8,6 @@ import {
   View,
 } from 'react-native';
 import { TouchableHighlight as TouchableHighlightGH } from 'react-native-gesture-handler';
-import { ThemeContext } from 'react-navigation';
 
 type Props = {
   style: any;
@@ -19,33 +19,31 @@ const TouchableHighlight = Platform.OS === 'android' ? TouchableHighlightGH : To
 
 const HIT_SLOP = { top: 15, bottom: 15, left: 15, right: 15 };
 
-class DevMenuCloseButton extends React.PureComponent<Props, any> {
-  static contextType = ThemeContext;
-
-  onPress = () => {
-    if (this.props.onPress) {
-      this.props.onPress();
+function DevMenuCloseButton(props: Props) {
+  const onPress = () => {
+    if (props.onPress) {
+      props.onPress();
     }
   };
 
-  render() {
-    return (
-      <View style={this.props.style}>
-        <TouchableHighlight
-          style={styles.closeButton}
-          onPress={this.onPress}
-          underlayColor={this.context === 'light' ? '#eee' : '#333'}
-          hitSlop={HIT_SLOP}>
-          <MaterialCommunityIcons
-            name="close"
-            size={20}
-            color="#2F9BE4"
-            style={styles.closeButtonIcon}
-          />
-        </TouchableHighlight>
-      </View>
-    );
-  }
+  const theme = useTheme();
+
+  return (
+    <View style={props.style}>
+      <TouchableHighlight
+        style={styles.closeButton}
+        onPress={onPress}
+        underlayColor={theme.dark ? '#333' : '#eee'}
+        hitSlop={HIT_SLOP}>
+        <MaterialCommunityIcons
+          name="close"
+          size={20}
+          color="#2F9BE4"
+          style={styles.closeButtonIcon}
+        />
+      </TouchableHighlight>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

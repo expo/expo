@@ -1,7 +1,7 @@
+import { useTheme } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { useTheme } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import SnackListItem from './SnackListItem';
@@ -42,7 +42,7 @@ export default function SnackList({ data, loadMoreAsync, belongsToCurrentUser })
         style={[
           { flex: 1 },
           !belongsToCurrentUser && styles.largeProjectCardList,
-          { backgroundColor: theme === 'dark' ? '#000' : Colors.light.greyBackground },
+          { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
         ]}
         canLoadMore={_canLoadMore()}
         onLoadMoreAsync={_handleLoadMoreAsync}
@@ -63,7 +63,7 @@ export default function SnackList({ data, loadMoreAsync, belongsToCurrentUser })
     } catch (e) {
       console.log({ e });
     } finally {
-      this._isMounted && setLoadingMore(false);
+      setLoadingMore(false);
     }
   };
 

@@ -2,12 +2,13 @@ import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedbac
 import * as React from 'react';
 import {
   ActivityIndicator,
-  TouchableOpacity,
   Platform,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
+
 import Colors from '../constants/Colors';
 
 type TouchableNativeFeedbackProps = React.ComponentProps<typeof TouchableNativeFeedback>['style'];

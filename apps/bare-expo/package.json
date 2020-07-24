@@ -42,6 +42,7 @@
     "expo-ads-facebook",
     "expo-ads-admob",
     "expo-apple-authentication",
+    "expo-updates",
     "expo-splash-screen",
     "expo-module-template"
   ],

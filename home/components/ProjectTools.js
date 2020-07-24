@@ -6,9 +6,9 @@ import React from 'react';
 import { AppState, Clipboard, View } from 'react-native';
 
 import Environment from '../utils/Environment';
+import UrlUtils from '../utils/UrlUtils';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
 import QRCodeButton from './QRCodeButton';
-import UrlUtils from '../utils/UrlUtils';
 
 const CLIPBOARD_POLL_INTERVAL = 2000;
 

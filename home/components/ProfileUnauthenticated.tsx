@@ -1,12 +1,13 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { withNavigation } from 'react-navigation';
 
 import ScrollView from './NavigationScrollView';
 import PrimaryButton from './PrimaryButton';
 import { StyledText } from './Text';
 
-function ProfileUnauthenticated({ navigation }) {
+export default function ProfileUnauthenticated() {
+  const navigation = useNavigation();
   const _handleSignInPress = () => {
     navigation.navigate('SignIn');
   };
@@ -43,8 +44,6 @@ function ProfileUnauthenticated({ navigation }) {
     </ScrollView>
   );
 }
-
-export default withNavigation(ProfileUnauthenticated);
 
 const styles = StyleSheet.create({
   container: {

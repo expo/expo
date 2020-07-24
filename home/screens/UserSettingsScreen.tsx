@@ -1,6 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { NavigationInjectedProps } from 'react-navigation';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ListItem from '../components/ListItem';
@@ -12,7 +12,7 @@ import SettingsActions from '../redux/SettingsActions';
 
 type PreferredAppearance = 'light' | 'dark' | 'no-preference';
 
-export default function UserSettingsScreen({ navigation }: NavigationInjectedProps) {
+export default function UserSettingsScreen() {
   return (
     <ScrollView
       style={styles.container}
@@ -20,14 +20,10 @@ export default function UserSettingsScreen({ navigation }: NavigationInjectedPro
       keyboardDismissMode="on-drag">
       <AppearanceItem />
       {Platform.OS === 'ios' && <MenuGestureItem />}
-      <SignOutItem navigation={navigation} />
+      <SignOutItem />
     </ScrollView>
   );
 }
-
-UserSettingsScreen.navigationOptions = {
-  title: 'Options',
-};
 
 function AppearanceItem() {
   const dispatch = useDispatch();
@@ -109,15 +105,20 @@ function MenuGestureItem() {
   );
 }
 
-function SignOutItem({ navigation }: NavigationInjectedProps) {
+function SignOutItem() {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const onPress = React.useCallback(() => {
     dispatch(SessionActions.signOut());
-    requestAnimationFrame(navigation.pop);
+    requestAnimationFrame(navigation.goBack);
   }, [dispatch, navigation]);
 
-  return <ListItem style={styles.marginTop} title="Sign Out" onPress={onPress} last />;
+  return (
+    <View style={styles.marginTop}>
+      <ListItem title="Sign Out" onPress={onPress} last />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

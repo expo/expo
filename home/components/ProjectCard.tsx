@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import {
   Image,
@@ -10,13 +11,12 @@ import {
   View,
 } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
-import { withNavigation } from 'react-navigation';
 
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
 import UrlUtils from '../utils/UrlUtils';
 
-function ProjectCard({
+export default function ProjectCard({
   onPressUsername,
   style,
   description,
@@ -24,8 +24,8 @@ function ProjectCard({
   projectUrl,
   projectName,
   username,
-  navigation,
 }) {
+  const navigation = useNavigation();
   const _maybeRenderIcon = () => {
     if (iconUrl) {
       return (
@@ -107,8 +107,6 @@ function ProjectCard({
     </View>
   );
 }
-
-export default withNavigation(ProjectCard);
 
 const styles = StyleSheet.create({
   container: {

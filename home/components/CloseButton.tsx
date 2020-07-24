@@ -1,15 +1,17 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
-import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import { Ionicons } from './Icons';
 
 const slop = Platform.select({ ios: 15, default: 10 });
 
-function CloseButton({ navigation }) {
+function CloseButton() {
+  const navigation = useNavigation();
+
   const handlePress = () => {
-    navigation.goBack(null);
+    navigation.goBack();
   };
 
   return (
@@ -27,7 +29,7 @@ function CloseButton({ navigation }) {
   );
 }
 
-export default withNavigation(CloseButton);
+export default CloseButton;
 
 const styles = StyleSheet.create({
   buttonContainer: {

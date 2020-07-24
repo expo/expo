@@ -1030,6 +1030,7 @@ export interface NotificationContentInput {
   data?: { [key: string]: unknown };
   badge?: number;
   sound?: boolean | string;
+
   // Android-specific fields
   // See https://developer.android.com/reference/android/app/Notification.html#fields
   // for more information on specific fields.
@@ -1046,6 +1047,11 @@ export interface NotificationContentInput {
   // - https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean),
   // - https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification.FIELDS.sticky
   autoDismiss?: boolean;
+  // If set to true, the notification cannot be dismissed by swipe. This setting defaults
+  // to false if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
+  // See: https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean)
+  sticky?: boolean;
+
   // iOS-specific fields
   // See https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent?language=objc
   // for more information on specific fields.
