@@ -1,0 +1,12 @@
+{
+  "name": "DevClientTest",
+  "displayName": "DevClientTest",
+  "expo": {
+    "name": "DevClientTest",
+    "slug": "DevClientTest",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
