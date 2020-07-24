@@ -79,7 +79,7 @@ const STYLES_HEADER = css`
 
 const SHOW_SEARCH_AND_MENU = css`
   @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
-    top: 0px !important;
+    top: 0px;
   }
 `;
 
@@ -92,7 +92,10 @@ const STYLES_CONTENT = css`
   width: 100%;
   height: 100%;
   min-height: 25%;
-  position: relative;
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    height: auto;
+  }
 `;
 
 const STYLES_LEFT = css`
