@@ -67,10 +67,20 @@ const STYLES_CONTAINER = css`
 `;
 
 const STYLES_HEADER = css`
-  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   background: #fff;
   flex-shrink: 0;
   width: 100%;
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    position: sticky;
+    top: -57px;
+    z-index: 3;
+  }
+`;
+
+const SHOW_SEARCH_AND_MENU = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    top: 0px !important;
+  }
 `;
 
 const STYLES_CONTENT = css`
@@ -82,10 +92,7 @@ const STYLES_CONTENT = css`
   width: 100%;
   height: 100%;
   min-height: 25%;
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    height: auto;
-  }
+  position: relative;
 `;
 
 const STYLES_LEFT = css`
@@ -186,9 +193,17 @@ export default class DocumentationNestedScrollLayout extends React.Component {
   };
 
   render() {
+    if (this.props.isMenuActive) {
+      window.scrollTo(0, 0);
+    }
     return (
       <div className={STYLES_CONTAINER}>
-        <div className={STYLES_HEADER}>{this.props.header}</div>
+        <div
+          className={`${STYLES_HEADER} ${(this.props.isMobileSearchActive ||
+            this.props.isMenuActive) &&
+            SHOW_SEARCH_AND_MENU}`}>
+          {this.props.header}
+        </div>
         <div className={STYLES_CONTENT}>
           <div className={STYLES_LEFT}>
             <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
