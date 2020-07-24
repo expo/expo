@@ -218,6 +218,23 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
       });
 
+      t.it('changes the source', async () => {
+        await mountAndWaitFor(<Video style={style} source={videoRemoteSource} />);
+        await mountAndWaitFor(<Video style={style} source={redirectingVideoRemoteSource} />);
+      });
+
+      t.it('changes the source and enables native-controls', async () => {
+        await mountAndWaitFor(<Video style={style} source={videoRemoteSource} />);
+        await mountAndWaitFor(
+          <Video style={style} source={redirectingVideoRemoteSource} useNativeControls />
+        );
+      });
+
+      t.it('changes the source and disables native-controls', async () => {
+        await mountAndWaitFor(<Video style={style} source={videoRemoteSource} useNativeControls />);
+        await mountAndWaitFor(<Video style={style} source={redirectingVideoRemoteSource} />);
+      });
+
       // These two are flaky on iOS, sometimes they pass, sometimes they timeout.
       t.it(
         'calls onError when given image source',
