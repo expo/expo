@@ -1225,8 +1225,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: cff7043fdb7cce5acd71115887a48c59
-      Release: cff7043fdb7cce5acd71115887a48c59
+      Debug: 12edeb2e0ce946fa37ed8284ec516720
+      Release: 12edeb2e0ce946fa37ed8284ec516720
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
@@ -1237,8 +1237,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 57ed23c1c40c68980aac4dffa2cc0c35
-      Release: 57ed23c1c40c68980aac4dffa2cc0c35
+      Debug: c4f97e91406dd2192f11f3430ae3cd1d
+      Release: c4f97e91406dd2192f11f3430ae3cd1d
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
