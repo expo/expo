@@ -6,29 +6,33 @@ import { StyleProp, ViewStyle } from 'react-native';
 import Player from './Player';
 
 interface State {
+  sourceIndex: number;
   errorMessage?: string;
   useNativeControls: boolean;
   resizeMode: any;
   status: AVPlaybackStatus;
 }
 
+type VideoPlayerSource =
+  | number
+  | {
+      uri: string;
+      overrideFileExtensionAndroid?: string;
+      headers?: {
+        [fieldName: string]: string;
+      };
+    }
+  | Asset;
+
 export default class VideoPlayer extends React.Component<
   {
     style?: StyleProp<ViewStyle>;
-    source?:
-      | number
-      | {
-          uri: string;
-          overrideFileExtensionAndroid?: string;
-          headers?: {
-            [fieldName: string]: string;
-          };
-        }
-      | Asset;
+    sources: VideoPlayerSource[];
   },
   State
 > {
   readonly state: State = {
+    sourceIndex: 0,
     useNativeControls: false,
     resizeMode: Video.RESIZE_MODE_CONTAIN,
     status: {
@@ -69,11 +73,17 @@ export default class VideoPlayer extends React.Component<
 
   _openFullscreen = () => this._video!.presentFullscreenPlayer();
 
+  _changeSource = () => {
+    this.setState(state => ({
+      sourceIndex: (state.sourceIndex + 1) % this.props.sources.length,
+    }));
+  };
+
   _renderVideo = () => (
     <Video
       useNativeControls={this.state.useNativeControls}
       ref={this._handleVideoMount}
-      source={this.props.source}
+      source={this.props.sources[this.state.sourceIndex]}
       resizeMode={this.state.resizeMode}
       onError={this._handleError}
       style={{ height: 300 }}
@@ -133,6 +143,12 @@ export default class VideoPlayer extends React.Component<
             iconName: 'resize',
             title: 'Open fullscreen',
             onPress: this._openFullscreen,
+            active: false,
+          },
+          {
+            iconName: 'skip-forward',
+            title: 'Change source',
+            onPress: this._changeSource,
             active: false,
           },
         ]}
