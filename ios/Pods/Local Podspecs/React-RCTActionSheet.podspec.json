@@ -1,6 +1,6 @@
 {
   "name": "React-RCTActionSheet",
-  "version": "0.63.0",
+  "version": "0.63.2",
   "summary": "An API for displaying iOS action sheets and share sheets.",
   "homepage": "https://reactnative.dev/",
   "documentation_url": "https://reactnative.dev/docs/actionsheetios",
@@ -12,7 +12,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.63.0"
+    "tag": "v0.63.2"
   },
   "source_files": "*.{m}",
   "preserve_paths": [
@@ -23,7 +23,7 @@
   "header_dir": "RCTActionSheet",
   "dependencies": {
     "React-Core/RCTActionSheetHeaders": [
-      "0.63.0"
+      "0.63.2"
     ]
   }
 }
