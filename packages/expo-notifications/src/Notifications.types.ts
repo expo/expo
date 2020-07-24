@@ -212,6 +212,7 @@ export interface NotificationContentInput {
    */
   color?: string;
   autoDismiss?: boolean;
+  sticky?: boolean;
   attachments?: {
     url: string;
     identifier?: string;
