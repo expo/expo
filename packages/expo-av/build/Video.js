@@ -213,7 +213,7 @@ let Video = /** @class */ (() => {
             // Replace selected native props
             // @ts-ignore: TypeScript thinks "children" is not in the list of props
             const nativeProps = {
-                ...omit(this.props, 'source', 'onPlaybackStatusUpdate', 'usePoster', 'posterSource', ...Object.keys(status)),
+                ...omit(this.props, 'source', 'onPlaybackStatusUpdate', 'usePoster', 'posterSource', 'posterStyle', ...Object.keys(status)),
                 style: StyleSheet.flatten([_STYLES.base, this.props.style]),
                 source,
                 resizeMode: nativeResizeMode,
