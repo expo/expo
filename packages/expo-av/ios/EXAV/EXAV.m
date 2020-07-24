@@ -46,7 +46,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) int soundDictionaryKeyCount;
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, EXAVPlayerData *> *soundDictionary;
 @property (nonatomic, assign) BOOL isBeingObserved;
-@property (nonatomic, strong) NSMutableSet <NSObject<EXAVObject> *> *videoSet;
+@property (nonatomic, strong) NSHashTable <NSObject<EXAVObject> *> *videoSet;
 
 @property (nonatomic, strong) NSString *audioRecorderFilename;
 @property (nonatomic, strong) NSDictionary *audioRecorderSettings;
@@ -79,7 +79,7 @@ UM_EXPORT_MODULE(ExponentAV);
     _soundDictionaryKeyCount = 0;
     _soundDictionary = [NSMutableDictionary new];
     _isBeingObserved = NO;
-    _videoSet = [NSMutableSet new];
+    _videoSet = [NSHashTable weakObjectsHashTable];
     
     _audioRecorderFilename = nil;
     _audioRecorderSettings = nil;
