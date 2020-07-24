@@ -396,9 +396,9 @@ UM_EXPORT_MODULE(ExponentAV);
   EXAVPlayerData *data = _soundDictionary[key];
   if (data) {
     [data pauseImmediately];
+    _soundDictionary[key] = nil;
     [self demoteAudioSessionIfPossible];
   }
-  _soundDictionary[key] = nil;
 }
 
 #pragma mark - Internal video playback helper method
