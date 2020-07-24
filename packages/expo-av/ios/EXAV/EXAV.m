@@ -275,7 +275,7 @@ UM_EXPORT_MODULE(ExponentAV);
   if (!_audioIsEnabled) {
     return UMErrorWithMessage(@"Expo Audio is disabled, so the audio session could not be activated.");
   }
-  if (_isBackgrounded && ![_kernelAudioSessionManagerDelegate isActiveForModule:self]) {
+  if (_isBackgrounded && !_staysActiveInBackground && ![_kernelAudioSessionManagerDelegate isActiveForModule:self]) {
     return UMErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
   }
   
