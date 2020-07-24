@@ -1,12 +1,12 @@
+import { StackScreenProps } from '@react-navigation/stack';
+import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { Platform, StyleSheet, TextInput } from 'react-native';
-import { NavigationInjectedProps } from 'react-navigation';
+import { StyleSheet, TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
 import ApolloClient from '../api/ApolloClient';
 import AuthApi from '../api/AuthApi';
-import CloseButton from '../components/CloseButton';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import { StyledScrollView as ScrollView } from '../components/Views';
@@ -15,18 +15,22 @@ import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
-export default function SignInScreen({ navigation }) {
+type NavigationProps = StackScreenProps<AllStackRoutes, 'SignIn'>;
+
+export default function SignInScreen(props: NavigationProps) {
   const session = useSelector(data => data.session);
   const dispatch = useDispatch();
-  return <SignInView dispatch={dispatch} session={session} navigation={navigation} />;
+  return (
+    <SignInView
+      dispatch={dispatch}
+      session={session}
+      navigation={props.navigation}
+      route={props.route}
+    />
+  );
 }
 
-SignInScreen.navigationOptions = {
-  title: 'Sign In',
-  headerLeft: () => <CloseButton />,
-};
-
-type Props = NavigationInjectedProps & {
+type Props = NavigationProps & {
   dispatch: (action: any) => void;
   session: { sessionSecret?: string };
 };
@@ -80,7 +84,7 @@ class SignInView extends React.Component<Props, State> {
           <Form.Input
             autoCapitalize="none"
             autoCorrect={false}
-            autoFocus={Platform.OS !== 'ios'}
+            autoFocus
             textContentType="username"
             keyboardType="email-address"
             label="E-mail or username"
@@ -103,7 +107,6 @@ class SignInView extends React.Component<Props, State> {
             value={this.state.password}
           />
         </Form>
-
         <PrimaryButton
           isLoading={this.state.isLoading}
           style={{ margin: 20 }}

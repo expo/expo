@@ -1,14 +1,14 @@
 /* @flow */
-
+import { useTheme } from '@react-navigation/native';
 import dedent from 'dedent';
 import React from 'react';
-import { ActivityIndicator, Platform, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { useTheme, FlatList } from 'react-navigation';
 
-import FeatureFlags from '../FeatureFlags';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import FeatureFlags from '../FeatureFlags';
 import PrimaryButton from './PrimaryButton';
 import ProjectCard from './ProjectCard';
 import SectionHeader from './SectionHeader';
@@ -98,7 +98,7 @@ class ExploreTab extends React.Component {
         renderItem={this._renderItem}
         style={[
           styles.container,
-          { backgroundColor: theme === 'dark' ? '#000' : Colors.light.greyBackground },
+          { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
         ]}
         keyExtractor={item => item.id}
         contentContainerStyle={{ paddingBottom: 5 }}

@@ -1,7 +1,7 @@
+import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
-import { useTheme } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
@@ -28,7 +28,7 @@ export default function BouncingShadowButton({ onPress, children }: Props) {
       <Animated.View
         style={[
           {
-            backgroundColor: theme === 'dark' ? Colors.dark.cardBackground : '#fff',
+            backgroundColor: theme.dark ? Colors.dark.cardBackground : '#fff',
             transform: [{ scale }],
           },
           styles.view,

@@ -94,10 +94,6 @@ export default function AudioDiagnosticsScreen() {
   );
 }
 
-AudioDiagnosticsScreen.navigationOptions = {
-  title: 'Audio Diagnostics',
-};
-
 type AudioOptionSwitchProps = {
   title: string;
   disabled?: boolean;

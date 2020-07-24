@@ -1,6 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Linking, Share, StyleSheet, Text, View } from 'react-native';
-import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
@@ -13,15 +13,8 @@ type Props = React.ComponentProps<typeof ListItem> & {
   username?: string;
 };
 
-function ProjectListItem({
-  navigation,
-  releaseChannel,
-  unlisted,
-  username,
-  subtitle,
-  url,
-  ...props
-}: Props) {
+function ProjectListItem({ releaseChannel, unlisted, username, subtitle, url, ...props }: Props) {
+  const navigation = useNavigation();
   const renderRightContent = (): React.ReactNode => {
     return (
       <View style={styles.rightContentContainer}>
@@ -125,4 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(ProjectListItem);
+export default ProjectListItem;
