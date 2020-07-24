@@ -1,0 +1,17 @@
+{
+  "name": "DevClientBundle",
+  "displayName": "DevClientBundle",
+  "expo": {
+    "name": "DevClientBundle",
+    "slug": "DevClientBundle",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
