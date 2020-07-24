@@ -7,7 +7,9 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
+**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
+
+<img src="/static/images/sdk/file-system/file-system-diagram.png" style={{maxWidth: 850, maxHeight: 600, marginBottom:"5em", display: "block", marginLeft: "auto", marginRight: "auto"}} />
 
 <PlatformsSection android emulator ios simulator />
 
@@ -88,6 +90,8 @@ import * as FileSystem from 'expo-file-system';
 <TableOfContentSection title='Constants' contents={['FileSystem.EncodingType', 'FileSystem.FileSystemSessionType', 'FileSystem.FileSystemUploadOptions']} />
 
 <TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.readDirectoryAsync(fileUri)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.uploadAsync(url, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
+
+### [Supported URI schemes](#supported-uri-schemes-1)
 
 ## Directories
 
@@ -256,7 +260,7 @@ Move a file or directory to a new location.
 
 ### `FileSystem.copyAsync(options)`
 
-Create a copy of a file or directory. Directories are recursively copied with all of their contents.
+Create a copy of a file or directory. Directories are recursively copied with all of their contents. It can be also used to copy content shared by other apps to local filesystem.
 
 #### Arguments
 
@@ -526,3 +530,21 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
 #
+
+## Supported URI schemes
+
+| Method name               | Android                                                                                                          | iOS                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `getInfoAsync`            | `file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***                                                 | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
+| `readAsStringAsync`       | `file://`,<br/>`asset://`                                                                                        | `file://`                                                                                       |
+| `writeAsStringAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
+| `deleteAsync`             | `file://`                                                                                                        | `file://`                                                                                       |
+| `moveAsync`               | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                                        | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
+| `copyAsync`               | Source:<br/>`file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
+| `makeDirectoryAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
+| `readDirectoryAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
+| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                        | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
+| `uploadAsync`             | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                         | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
+| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                        | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |  |
+
+**\***On Android _no scheme_ defaults to a bundled resource.
