@@ -7651,7 +7651,7 @@ CACHE_KEYS:
       EXAV:
         :debug: ce127c23292472b7f4826cd92eb35fbb
         :release: ce127c23292472b7f4826cd92eb35fbb
-    CHECKSUM: 9a5ff571128707309aa0376171f0903d49410352
+    CHECKSUM: e9c3a5e6fc4137ddb65a7d5810efc95261365ee2
     FILES:
       - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -7671,7 +7671,7 @@ CACHE_KEYS:
       - "../../packages/expo-av/ios/EXAV/Video/EXVideoView.m"
     PROJECT_NAME: EXAV
     SPECS:
-      - EXAV (8.3.0)
+      - EXAV (8.4.0)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
       EXBackgroundFetch:
@@ -8676,7 +8676,7 @@ CACHE_KEYS:
       FirebaseMLVisionFaceModel:
         :debug: be561dec23d92ce53122582403370726
         :release: be561dec23d92ce53122582403370726
-    CHECKSUM: d6ba42000f263df52187aee936262bc2002b3389
+    CHECKSUM: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
     PROJECT_NAME: FirebaseMLVisionFaceModel
     SPECS:
       - FirebaseMLVisionFaceModel (0.19.0)

@@ -1534,7 +1534,7 @@ PODS:
     - UMCore
   - EXApplication (2.2.1):
     - UMCore
-  - EXAV (8.3.0):
+  - EXAV (8.4.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -3637,7 +3637,7 @@ SPEC CHECKSUMS:
   EXAppAuth: 98c853968adeec68008887a0cb475efb2656f196
   EXAppleAuthentication: 5b3da71bada29e2423d8ea27e5538ef0d75aba62
   EXApplication: d7ccb60c33fa4d506967ff6adde42a0f872d69ad
-  EXAV: 9a5ff571128707309aa0376171f0903d49410352
+  EXAV: e9c3a5e6fc4137ddb65a7d5810efc95261365ee2
   EXBackgroundFetch: b773f1114c5ecbfa79daf228854184e307f9f760
   EXBarCodeScanner: 02c41a2bb7c0747dc96a96ee30b0aa80a0fc4168
   EXBattery: 367aef7eba65f488587610564224952411f1b48b
@@ -3704,7 +3704,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
   FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
   FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
-  FirebaseMLVisionFaceModel: d6ba42000f263df52187aee936262bc2002b3389
+  FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875

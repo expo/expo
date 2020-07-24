@@ -17,7 +17,7 @@
     "expo-analytics-segment": "~8.2.1",
     "expo-application": "~2.2.1",
     "expo-asset": "~8.1.7",
-    "expo-av": "~8.3.0",
+    "expo-av": "~8.4.0",
     "expo-barcode-scanner": "~8.2.1",
     "expo-brightness": "~8.2.1",
     "expo-calendar": "~8.3.0",
