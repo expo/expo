@@ -12,12 +12,12 @@ export const name = 'Video';
 const imageRemoteSource = { uri: 'http://via.placeholder.com/350x150' };
 const videoRemoteSource = { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
 const redirectingVideoRemoteSource = { uri: 'http://bit.ly/2mcW40Q' };
-let webmSource = require('../assets/unsupported_bunny.webm');
-let imageSource = require('../assets/black-128x256.png');
 const mp4Source = require('../assets/big_buck_bunny.mp4');
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 let source = null; // Local URI of the downloaded default source is set in a beforeAll callback.
+let imageSource = null;
+let webmSource = null;
 
 const style = { width: 200, height: 200 };
 
@@ -28,11 +28,11 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       await mp4Asset.downloadAsync();
       source = { uri: mp4Asset.localUri };
 
-      const imageAsset = Asset.fromModule(imageSource);
+      const imageAsset = Asset.fromModule(require('../assets/black-128x256.png'));
       await imageAsset.downloadAsync();
       imageSource = { uri: imageAsset.localUri };
 
-      const webmAsset = Asset.fromModule(webmSource);
+      const webmAsset = Asset.fromModule(require('../assets/unsupported_bunny.webm'));
       await webmAsset.downloadAsync();
       webmSource = { uri: webmAsset.localUri };
     });
