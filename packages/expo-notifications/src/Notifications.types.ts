@@ -129,22 +129,28 @@ export type NotificationTrigger =
   | DailyNotificationTrigger
   | UnknownNotificationTrigger;
 
-export type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
-  repeats?: boolean;
+export type ChannelAwareTriggerInput = {
+  channelId?: string;
 };
-export interface TimeIntervalTriggerInput {
+
+export type CalendarTriggerInput = ChannelAwareTriggerInput &
+  NativeCalendarTriggerInput['value'] & {
+    repeats?: boolean;
+  };
+export interface TimeIntervalTriggerInput extends ChannelAwareTriggerInput {
   repeats?: boolean;
   seconds: number;
 }
-export interface DailyTriggerInput {
+export interface DailyTriggerInput extends ChannelAwareTriggerInput {
   hour: number;
   minute: number;
   repeats: true;
 }
-export type DateTriggerInput = Date | number;
+export type DateTriggerInput = Date | number | ({ date: Date | number } & ChannelAwareTriggerInput);
 
 export type NotificationTriggerInput =
   | null
+  | ChannelAwareTriggerInput
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput

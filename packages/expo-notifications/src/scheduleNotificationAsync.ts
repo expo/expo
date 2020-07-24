@@ -9,6 +9,8 @@ import {
   DailyTriggerInput,
   CalendarTriggerInput,
   TimeIntervalTriggerInput,
+  DateTriggerInput,
+  ChannelAwareTriggerInput,
 } from './Notifications.types';
 
 export default async function scheduleNotificationAsync(
@@ -36,10 +38,8 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
     );
   }
 
-  if (userFacingTrigger instanceof Date) {
-    return { type: 'date', timestamp: userFacingTrigger.getTime() };
-  } else if (typeof userFacingTrigger === 'number') {
-    return { type: 'date', timestamp: userFacingTrigger };
+  if (isDateTrigger(userFacingTrigger)) {
+    return parseDateTrigger(userFacingTrigger);
   } else if (isDailyTriggerInput(userFacingTrigger)) {
     const hour = userFacingTrigger.hour;
     const minute = userFacingTrigger.minute;
@@ -54,6 +54,7 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
     }
     return {
       type: 'daily',
+      channelId: userFacingTrigger.channelId,
       hour,
       minute,
     };
@@ -64,13 +65,47 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
   } else if ('seconds' in userFacingTrigger) {
     return {
       type: 'timeInterval',
+      channelId: userFacingTrigger.channelId,
       seconds: userFacingTrigger.seconds,
       repeats: userFacingTrigger.repeats ?? false,
     };
-  } else {
+  } else if (isCalendarTrigger(userFacingTrigger)) {
     const { repeats, ...calendarTrigger } = userFacingTrigger;
     return { type: 'calendar', value: calendarTrigger, repeats };
+  } else {
+    // @ts-ignore Type '"channel"' is not assignable to type '"daily"'.ts(2322)
+    return { type: 'channel', channelId: userFacingTrigger.channelId };
   }
+}
+
+function isCalendarTrigger(
+  trigger: CalendarTriggerInput | ChannelAwareTriggerInput
+): trigger is CalendarTriggerInput {
+  return 'repeats' in trigger;
+}
+
+function isDateTrigger(
+  trigger: DateTriggerInput | DailyTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput
+): trigger is DateTriggerInput {
+  return (
+    trigger instanceof Date ||
+    typeof trigger === 'number' ||
+    (typeof trigger === 'object' && trigger['date'])
+  );
+}
+
+function parseDateTrigger(trigger: DateTriggerInput): NativeNotificationTriggerInput {
+  if (trigger instanceof Date || typeof trigger === 'number') {
+    return { type: 'date', timestamp: toTimestamp(trigger) };
+  }
+  return { type: 'date', timestamp: toTimestamp(trigger.date), channelId: trigger.channelId };
+}
+
+function toTimestamp(date: number | Date) {
+  if (date instanceof Date) {
+    return date.getTime();
+  }
+  return date;
 }
 
 function isDailyTriggerInput(

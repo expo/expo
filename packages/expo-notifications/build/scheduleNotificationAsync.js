@@ -14,11 +14,8 @@ function parseTrigger(userFacingTrigger) {
     if (userFacingTrigger === undefined) {
         throw new TypeError('Encountered an `undefined` notification trigger. If you want to trigger the notification immediately, pass in an explicit `null` value.');
     }
-    if (userFacingTrigger instanceof Date) {
-        return { type: 'date', timestamp: userFacingTrigger.getTime() };
-    }
-    else if (typeof userFacingTrigger === 'number') {
-        return { type: 'date', timestamp: userFacingTrigger };
+    if (isDateTrigger(userFacingTrigger)) {
+        return parseDateTrigger(userFacingTrigger);
     }
     else if (isDailyTriggerInput(userFacingTrigger)) {
         const hour = userFacingTrigger.hour;
@@ -34,6 +31,7 @@ function parseTrigger(userFacingTrigger) {
         }
         return {
             type: 'daily',
+            channelId: userFacingTrigger.channelId,
             hour,
             minute,
         };
@@ -44,14 +42,39 @@ function parseTrigger(userFacingTrigger) {
     else if ('seconds' in userFacingTrigger) {
         return {
             type: 'timeInterval',
+            channelId: userFacingTrigger.channelId,
             seconds: userFacingTrigger.seconds,
             repeats: userFacingTrigger.repeats ?? false,
         };
     }
-    else {
+    else if (isCalendarTrigger(userFacingTrigger)) {
         const { repeats, ...calendarTrigger } = userFacingTrigger;
         return { type: 'calendar', value: calendarTrigger, repeats };
     }
+    else {
+        // @ts-ignore Type '"channel"' is not assignable to type '"daily"'.ts(2322)
+        return { type: 'channel', channelId: userFacingTrigger.channelId };
+    }
+}
+function isCalendarTrigger(trigger) {
+    return 'repeats' in trigger;
+}
+function isDateTrigger(trigger) {
+    return (trigger instanceof Date ||
+        typeof trigger === 'number' ||
+        (typeof trigger === 'object' && trigger['date']));
+}
+function parseDateTrigger(trigger) {
+    if (trigger instanceof Date || typeof trigger === 'number') {
+        return { type: 'date', timestamp: toTimestamp(trigger) };
+    }
+    return { type: 'date', timestamp: toTimestamp(trigger.date), channelId: trigger.channelId };
+}
+function toTimestamp(date) {
+    if (date instanceof Date) {
+        return date.getTime();
+    }
+    return date;
 }
 function isDailyTriggerInput(trigger) {
     return (Object.keys(trigger).length === 3 &&

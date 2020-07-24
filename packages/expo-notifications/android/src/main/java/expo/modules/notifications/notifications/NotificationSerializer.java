@@ -1,5 +1,6 @@
 package expo.modules.notifications.notifications;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import org.json.JSONArray;
@@ -20,6 +21,8 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
+
+import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
@@ -120,7 +123,7 @@ public class NotificationSerializer {
     }
   }
 
-  private static List toList(JSONArray array) {
+  private static List<Object> toList(JSONArray array) {
     List<Object> result = new ArrayList<>(array.length());
     for (int i = 0; i < array.length(); i++) {
       if (array.isNull(i)) {
@@ -159,6 +162,16 @@ public class NotificationSerializer {
     } else {
       bundle.putString("type", "unknown");
     }
+    bundle.putString("channelId", getChannelId(trigger));
+
     return bundle;
+  }
+
+  @Nullable
+  private static String getChannelId(NotificationTrigger trigger) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return trigger.getNotificationChannel();
+    }
+    return null;
   }
 }
