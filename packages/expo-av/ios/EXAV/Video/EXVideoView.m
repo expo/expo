@@ -620,7 +620,6 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)removeFromSuperview
 {
   [self _removePlayer];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [super removeFromSuperview];
 }
 
@@ -730,7 +729,6 @@ willEndFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransi
 - (void)dealloc
 {
   [_exAV unregisterVideoForAudioLifecycle:self];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_data pauseImmediately];
   [_exAV demoteAudioSessionIfPossible];
 }
