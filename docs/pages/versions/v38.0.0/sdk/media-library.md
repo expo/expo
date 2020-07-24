@@ -51,7 +51,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). On **iOS** this method requires `CAMERA_ROLL` permission.
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
