@@ -15129,15 +15129,6 @@ react-native-webview@9.4.0:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-navigation-material-bottom-tabs@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/react-navigation-material-bottom-tabs/-/react-navigation-material-bottom-tabs-1.1.1.tgz#17e12719958c1d6770b3138789608f54d5cb7f57"
-  integrity sha512-1+F+DZXMoKCN9uewAnOvXCROA693ThS5vTnYRufpAAiZPooLVEAfWyQCNuQIWY0BQIT56/NJJuGC+rIKj/YoAA==
-  dependencies:
-    hoist-non-react-statics "^2.5.0"
-    prop-types "^15.6.0"
-    react-navigation-tabs "~1.2.0"
-
 react-navigation-shared-element@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-navigation-shared-element/-/react-navigation-shared-element-3.0.0.tgz#3dfa6a71f138e4ceb457a91aea3ef2a8ab2a6a32"
