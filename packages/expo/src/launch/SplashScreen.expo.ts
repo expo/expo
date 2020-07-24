@@ -2,14 +2,14 @@ import { NativeModules } from 'react-native';
 
 const { ExponentSplashScreen: SplashScreen = {} } = NativeModules;
 
-export function preventAutoHide(): void {
-  if (SplashScreen.preventAutoHide) {
-    SplashScreen.preventAutoHide();
+export function preventAutoHideAsync(): void {
+  if (SplashScreen.preventAutoHideAsync) {
+    SplashScreen.preventAutoHideAsync();
   }
 }
 
-export function hide(): void {
-  if (SplashScreen.hide) {
-    SplashScreen.hide();
+export function hideAsync(): void {
+  if (SplashScreen.hideAsync) {
+    SplashScreen.hideAsync();
   }
 }

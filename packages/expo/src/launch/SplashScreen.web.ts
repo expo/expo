@@ -1,2 +1,2 @@
-export function preventAutoHide(): void {}
-export function hide(): void {}
+export function preventAutoHideAsync(): void {}
+export function hideAsync(): void {}

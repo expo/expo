@@ -1,2 +1,2 @@
-export declare function preventAutoHide(): void;
-export declare function hide(): void;
+export declare function preventAutoHideAsync(): void;
+export declare function hideAsync(): void;
