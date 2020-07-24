@@ -3,6 +3,7 @@ package expo.modules.imagepicker.tasks
 import android.content.ContentResolver
 import android.net.Uri
 import android.os.AsyncTask
+import expo.modules.imagepicker.fileproviders.FileProvider
 import org.unimodules.core.Promise
 import java.io.File
 
@@ -11,5 +12,5 @@ import java.io.File
  */
 abstract class ImagePickerResultTask(protected val promise: Promise,
                                      protected val uri: Uri,
-                                     protected var contentResolver: ContentResolver,
-                                     protected var cacheDir: File) : AsyncTask<Void?, Void?, Void?>()
+                                     protected val contentResolver: ContentResolver,
+                                     protected val fileProvider: FileProvider) : AsyncTask<Void?, Void?, Void?>()

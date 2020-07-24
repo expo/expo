@@ -5,8 +5,8 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import expo.modules.imagepicker.ImagePickerConstants
+import expo.modules.imagepicker.fileproviders.FileProvider
 import org.unimodules.core.Promise
-import org.unimodules.core.utilities.FileUtilities.generateOutputPath
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -14,15 +14,16 @@ import java.io.IOException
 class VideoResultTask(promise: Promise,
                       uri: Uri,
                       contentResolver: ContentResolver,
-                      cacheDir: File,
-                      private val mMediaMetadataRetriever: MediaMetadataRetriever) : ImagePickerResultTask(promise, uri, contentResolver, cacheDir) {
+                      fileProvider: FileProvider,
+                      private val mMediaMetadataRetriever: MediaMetadataRetriever)
+  : ImagePickerResultTask(promise, uri, contentResolver, fileProvider) {
 
   override fun doInBackground(vararg params: Void?): Void? {
     try {
-      val path = generateOutputPath(cacheDir, "ImagePicker", ".mp4")
-      saveVideo(path)
+      val outputFile = fileProvider.generateFile()
+      saveVideo(outputFile)
       val response = Bundle().apply {
-        putString("uri", Uri.fromFile(File(path)).toString())
+        putString("uri", outputFile.toURI().toString())
         putBoolean("cancelled", false)
         putString("type", "video")
         putInt("width", mMediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH).toInt())
@@ -42,9 +43,9 @@ class VideoResultTask(promise: Promise,
   }
 
   @Throws(IOException::class)
-  private fun saveVideo(path: String) {
+  private fun saveVideo(outputFile: File) {
     contentResolver.openInputStream(uri)?.use { input ->
-      FileOutputStream(path).use { out ->
+      FileOutputStream(outputFile).use { out ->
         val buffer = ByteArray(4096)
         var bytesRead: Int
         while (input.read(buffer).also { bytesRead = it } > 0) {

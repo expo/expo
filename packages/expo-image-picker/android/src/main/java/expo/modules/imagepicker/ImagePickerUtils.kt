@@ -3,6 +3,7 @@ package expo.modules.imagepicker
 import android.app.Application
 import android.content.ContentResolver
 import android.net.Uri
+import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import org.unimodules.core.utilities.FileUtilities.generateOutputPath
@@ -33,12 +34,10 @@ fun createOutputFile(cacheDir: File, extension: String): File? {
 }
 
 fun getType(contentResolver: ContentResolver, uri: Uri): String? {
-  var type = contentResolver.getType(uri)
-  // previous method sometimes returns null
-  if (type == null) {
-    type = getTypeFromFileUrl(uri.toString())
+  return contentResolver.getType(uri).ifNull {
+    // previous method sometimes returns null
+    getTypeFromFileUrl(uri.toString())
   }
-  return type
 }
 
 fun contentUriFromFile(file: File, application: Application): Uri {
@@ -53,3 +52,14 @@ fun contentUriFromFile(file: File, application: Application): Uri {
 fun uriFromFile(file: File): Uri = Uri.fromFile(file)
 
 fun uriFromFilePath(path: String) = uriFromFile(File(path))
+
+fun deduceExtension(type: String): String = when {
+  type.contains("png") -> ".png"
+  type.contains("gif") -> ".gif"
+  type.contains("bmp") -> ".bmp"
+  !type.contains("jpeg") -> {
+    Log.w(ImagePickerConstants.TAG, "Image type not supported. Falling back to JPEG instead.")
+    ".jpg"
+  }
+  else -> ".jpg"
+}

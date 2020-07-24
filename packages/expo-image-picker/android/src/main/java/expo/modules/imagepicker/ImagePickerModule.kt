@@ -16,7 +16,8 @@ import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.CropImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.RawImageExporter
-import expo.modules.imagepicker.tasks.CropResultTask
+import expo.modules.imagepicker.fileproviders.CacheFileProvider
+import expo.modules.imagepicker.fileproviders.CropFileProvider
 import expo.modules.imagepicker.tasks.ImageResultTask
 import expo.modules.imagepicker.tasks.VideoResultTask
 import org.unimodules.core.ExportedModule
@@ -237,7 +238,7 @@ class ImagePickerModule(private val mContext: Context,
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
       val result = CropImage.getActivityResult(intent)
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
-      CropResultTask(promise, result.uri, contentResolver, mContext.cacheDir, pickerOptions.isExif, exporter).execute()
+      ImageResultTask(promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isExif, exporter).execute()
       return
     }
 
@@ -266,14 +267,15 @@ class ImagePickerModule(private val mContext: Context,
         CompressionImageExporter(mImageLoader, pickerOptions.quality, pickerOptions.isBase64)
       }
 
-      ImageResultTask(promise, uri, contentResolver, mContext.cacheDir, pickerOptions.isExif, type, exporter).execute()
+
+      ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter).execute()
       return
     }
 
     val metadataRetriever = MediaMetadataRetriever().apply {
       setDataSource(mContext, uri)
     }
-    VideoResultTask(promise, uri, contentResolver, mContext.cacheDir, metadataRetriever).execute()
+    VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever).execute()
   }
 
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
@@ -298,4 +300,6 @@ class ImagePickerModule(private val mContext: Context,
   }
 
   override fun onNewIntent(intent: Intent) = Unit
+
+
 }
