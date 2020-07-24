@@ -48,6 +48,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     NotificationContent content = getNotificationContent();
 
     builder.setAutoCancel(content.isAutoDismiss());
+    builder.setOngoing(content.isSticky());
 
     builder.setContentTitle(content.getTitle());
     builder.setContentText(content.getText());

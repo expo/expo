@@ -268,6 +268,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
         // using deprecated field
         .setSound(notification.sound)
         .setAutoDismiss((notification.flags & android.app.Notification.FLAG_AUTO_CANCEL) != 0)
+        .setSticky((notification.flags & android.app.Notification.FLAG_ONGOING_EVENT) != 0)
         .setBody(fromBundle(notification.extras))
         .build();
       NotificationRequest request = new NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null);
