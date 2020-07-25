@@ -34,7 +34,7 @@ NetInfo.fetch().then(state => {
 Or, if you'd rather subscribe to updates about the network state (which then allows you to run code/perform actions anytime the network state changes) use:
 
 ```js
-const unsubscribe = NetInfo.addEventListener(state => {
+const subscribe = NetInfo.addEventListener(state => {
   console.log('Connection type', state.type);
   console.log('Is connected?', state.isConnected);
 });
