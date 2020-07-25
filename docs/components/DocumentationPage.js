@@ -81,13 +81,9 @@ export default class DocumentationPage extends React.Component {
 
   _handleSetVersion = version => {
     this._version = version;
-    let newPath = '/versions/' + version;
+    const newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
-    // TODO: Find what's stripping trailing slashes from these
-    if (version.startsWith('v')) {
-      newPath += '/';
-    }
-
+    // note: we can do this without validating, the error page redirect back to versioned root
     Router.push(newPath + '/');
   };
 
@@ -178,7 +174,6 @@ export default class DocumentationPage extends React.Component {
 
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
-    const version = this._getVersion();
     const routes = this._getRoutes();
 
     const headerElement = (
