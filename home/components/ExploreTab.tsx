@@ -1,7 +1,6 @@
-/* @flow */
-import { useTheme } from '@react-navigation/native';
+import { useTheme, Theme } from '@react-navigation/native';
 import dedent from 'dedent';
-import React from 'react';
+import * as React from 'react';
 import { ActivityIndicator, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
@@ -10,7 +9,7 @@ import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import FeatureFlags from '../FeatureFlags';
 import PrimaryButton from './PrimaryButton';
-import ProjectCard from './ProjectCard';
+import ProjectCard, { PressUsernameHandler } from './ProjectCard';
 import SectionHeader from './SectionHeader';
 import { StyledText } from './Text';
 
@@ -24,7 +23,33 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as quickly as possible.
 `;
 
-class ExploreTab extends React.Component {
+type AppItem = {
+  id: string;
+  packageUsername: string;
+  fullName: string;
+  iconUrl: string;
+  name: string;
+  description: string;
+};
+
+type Data = {
+  apps: AppItem[];
+  refetch: () => Promise<any>;
+  loading: boolean;
+  error?: { message: string };
+};
+
+type Props = {
+  data: Data;
+  loadMoreAsync: boolean;
+  listTitle: string;
+  theme: Theme;
+  onPressUsername: PressUsernameHandler;
+};
+
+type State = { isRefetching: boolean };
+
+class ExploreTab extends React.Component<Props, State> {
   state = {
     isRefetching: false,
   };
@@ -112,13 +137,13 @@ class ExploreTab extends React.Component {
     return listTitle ? <SectionHeader title={listTitle} /> : <View />;
   };
 
-  _renderItem = ({ item: app, index }: { item: Object, index: number }) => {
+  _renderItem = ({ item: app, index }: { item: AppItem; index: number }) => {
     return (
       <ProjectCard
         key={index.toString()}
         id={app.id}
         iconUrl={app.iconUrl}
-        projectName={app.name}
+        name={app.name}
         projectUrl={app.fullName}
         username={app.packageUsername}
         description={app.description}

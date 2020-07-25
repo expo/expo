@@ -126,7 +126,7 @@ class ProjectList extends React.PureComponent {
           style={styles.largeProjectCard}
           id={app.id}
           iconUrl={app.iconUrl}
-          projectName={app.name}
+          name={app.name}
           projectUrl={app.fullName}
           username={app.packageUsername}
           description={app.description}
