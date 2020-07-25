@@ -6,7 +6,7 @@ import React from 'react';
 import { AppState, Clipboard, View } from 'react-native';
 
 import Environment from '../utils/Environment';
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
 import QRCodeButton from './QRCodeButton';
 

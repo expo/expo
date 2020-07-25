@@ -14,7 +14,7 @@ import FadeIn from 'react-native-fade-in-image';
 
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 
 export default function ProjectCard({
   onPressUsername,
