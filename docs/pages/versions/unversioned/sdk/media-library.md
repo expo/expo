@@ -230,6 +230,7 @@ Subscribes for updates in user's media library.
 - **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
+  - **updatedAssets (_array_)** -- Array of [assets](#assets) that have updated from the library, or the asset has completed downloading from network (iCloud in iOS)
 
 #### Returns
 
