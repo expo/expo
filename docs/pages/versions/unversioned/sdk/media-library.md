@@ -25,7 +25,7 @@ In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
 import * as MediaLibrary from 'expo-media-library';
 ```
 
-<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
+<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset, options)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
 
 <TableOfContentSection title='Types' contents={['Asset', 'Album']} />
 
@@ -101,13 +101,15 @@ A promise that resolves to an object that contains following keys:
 - **hasNextPage (_boolean_)** -- Whether there are more assets to fetch.
 - **totalCount (_number_)** -- Estimated total number of assets that match the query.
 
-### `MediaLibrary.getAssetInfoAsync(asset)`
+### `MediaLibrary.getAssetInfoAsync(asset, options)`
 
 Provides more informations about an asset, including GPS location, local URI and EXIF metadata.
 
 #### Arguments
 
 - **asset (_string_ | _Asset_)** -- [Asset](#asset) or its ID.
+- **options (_object_)**
+  - **shouldDownloadFromNetwork (_boolean_)** -- Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets. Defaults to true.
 
 #### Returns
 
@@ -259,8 +261,11 @@ Removes all listeners.
 | exif \*          | _object_  | both      | EXIF metadata associated with the image                                                                       |                                                                                                      |
 | orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
 | isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite                                                                       | `true`, `false`                                                                                      |
+| isNetworkAsset \*\*| _boolean_ | iOS       | Whether the asset is stored on the network (iCloud on iOS)| `true`, `false`
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method
+
+> \*\* This field is available only if flag `shouldDownloadFromNetwork` is set to `false`
 
 ### `Album`
 

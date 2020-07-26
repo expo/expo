@@ -36,7 +36,16 @@ export declare type AssetInfo = Asset & {
     location?: Location;
     exif?: object;
     isFavorite?: boolean;
+    isNetworkAsset?: boolean;
 };
+export interface AssetInfoQueryOptions {
+    shouldDownloadFromNetwork?: boolean;
+}
+export interface AssetChangeEvent {
+    insertedAssets: Asset[];
+    deletedAssets: Asset[];
+    updatedAssets: Asset[];
+}
 export declare type Location = {
     latitude: number;
     longitude: number;
@@ -81,7 +90,7 @@ export declare function saveToLibraryAsync(localUri: string): Promise<void>;
 export declare function addAssetsToAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;
 export declare function removeAssetsFromAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef): Promise<any>;
 export declare function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promise<any>;
-export declare function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo>;
+export declare function getAssetInfoAsync(asset: AssetRef, options?: AssetInfoQueryOptions): Promise<AssetInfo>;
 export declare function getAlbumsAsync({ includeSmartAlbums }?: AlbumsOptions): Promise<Album[]>;
 export declare function getAlbumAsync(title: string): Promise<Album>;
 export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean): Promise<Album>;

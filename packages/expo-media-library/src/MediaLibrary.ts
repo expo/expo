@@ -53,7 +53,18 @@ export type AssetInfo = Asset & {
   location?: Location;
   exif?: object;
   isFavorite?: boolean; //iOS only
+  isNetworkAsset?: boolean; //iOS only
 };
+
+export interface AssetInfoQueryOptions {
+  shouldDownloadFromNetwork?: boolean;
+}
+
+export interface AssetChangeEvent {
+  insertedAssets: Asset[];
+  deletedAssets: Asset[];
+  updatedAssets: Asset[];
+}
 
 export type Location = {
   latitude: number;
@@ -243,7 +254,10 @@ export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef) {
   return await MediaLibrary.deleteAssetsAsync(assetIds);
 }
 
-export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
+export async function getAssetInfoAsync(
+  asset: AssetRef,
+  options?: AssetInfoQueryOptions
+): Promise<AssetInfo> {
   if (!MediaLibrary.getAssetInfoAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
   }
@@ -252,7 +266,7 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
 
   checkAssetIds([assetId]);
 
-  const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+  const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId, options ?? {});
 
   if (Array.isArray(assetInfo)) {
     // Android returns an array with asset info, we need to pick the first item
