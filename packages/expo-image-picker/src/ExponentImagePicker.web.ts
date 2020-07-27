@@ -1,6 +1,5 @@
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-import uuidv4 from 'uuid/v4';
-
+import { v4 } from 'uuid';	
 import {
   ImagePickerResult,
   MediaTypeOptions,
@@ -82,7 +81,7 @@ function openFileBrowserAsync({
   input.style.display = 'none';
   input.setAttribute('type', 'file');
   input.setAttribute('accept', mediaTypeFormat);
-  input.setAttribute('id', uuidv4());
+  input.setAttribute('id', v4());
   if (allowsMultipleSelection) {
     input.setAttribute('multiple', 'multiple');
   }
