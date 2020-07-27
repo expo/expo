@@ -23,14 +23,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3B1AFCC13605A916A42BB250769E1213 /* PBXContainerItemProxy */ = {
+		7BC19FB4FE02745066267C92C77F4C0D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 86E23A4A3429B717FD66214D1F89693A /* UMFontInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7F4112A673122B6D50845D9BC1D9AFDB;
 			remoteInfo = UMFontInterface;
 		};
-		C41650F0F686B533E551E37D8715AEF3 /* PBXContainerItemProxy */ = {
+		CF5B25D05E9E488FF569B6EACC9AEE6A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 34704263A4A835CC7A8F6261B9436524 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -188,8 +188,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				416926C45D1A30E9C80041E4B021DB39 /* PBXTargetDependency */,
-				B3DA527564EC6DB33F59699BFD77175E /* PBXTargetDependency */,
+				080D01937A06150432F2F94D390FF3D1 /* PBXTargetDependency */,
+				D8D702BD29A70CB7015D2A49DF84BA3D /* PBXTargetDependency */,
 			);
 			name = EXFont;
 			productName = EXFont;
@@ -249,15 +249,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		416926C45D1A30E9C80041E4B021DB39 /* PBXTargetDependency */ = {
+		080D01937A06150432F2F94D390FF3D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = C41650F0F686B533E551E37D8715AEF3 /* PBXContainerItemProxy */;
+			targetProxy = CF5B25D05E9E488FF569B6EACC9AEE6A /* PBXContainerItemProxy */;
 		};
-		B3DA527564EC6DB33F59699BFD77175E /* PBXTargetDependency */ = {
+		D8D702BD29A70CB7015D2A49DF84BA3D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFontInterface;
-			targetProxy = 3B1AFCC13605A916A42BB250769E1213 /* PBXContainerItemProxy */;
+			targetProxy = 7BC19FB4FE02745066267C92C77F4C0D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

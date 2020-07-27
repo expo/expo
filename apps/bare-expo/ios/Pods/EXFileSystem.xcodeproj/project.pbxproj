@@ -35,14 +35,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4E2874EDEC2DD12B1AF193FB84E85FAE /* PBXContainerItemProxy */ = {
+		3FE2540FDA550A00A48C864B0292118F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DB7A5E0774C81BF237989A168F72473D /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		F3F3BA51951185FC93A12E558EFE8177 /* PBXContainerItemProxy */ = {
+		93C05E76529645D58F3BC65748BB2746 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B7D868FD99FE988CFE1D77E6BA3CAF6A /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
@@ -230,8 +230,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				99EF7C5AF79EAAE22213B91EB5FBC005 /* PBXTargetDependency */,
-				627F0E1F1365549F012E500732BE438C /* PBXTargetDependency */,
+				1E0817E8280551C46161CE569DB6DBE8 /* PBXTargetDependency */,
+				361C10F830DD1B10AD9C9859CDFA2FEB /* PBXTargetDependency */,
 			);
 			name = EXFileSystem;
 			productName = EXFileSystem;
@@ -297,15 +297,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		627F0E1F1365549F012E500732BE438C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = F3F3BA51951185FC93A12E558EFE8177 /* PBXContainerItemProxy */;
-		};
-		99EF7C5AF79EAAE22213B91EB5FBC005 /* PBXTargetDependency */ = {
+		1E0817E8280551C46161CE569DB6DBE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 4E2874EDEC2DD12B1AF193FB84E85FAE /* PBXContainerItemProxy */;
+			targetProxy = 3FE2540FDA550A00A48C864B0292118F /* PBXContainerItemProxy */;
+		};
+		361C10F830DD1B10AD9C9859CDFA2FEB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = 93C05E76529645D58F3BC65748BB2746 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

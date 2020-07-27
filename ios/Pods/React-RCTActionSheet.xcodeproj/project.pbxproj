@@ -9,18 +9,18 @@
 /* Begin PBXAggregateTarget section */
 		2B622CBAFD85AC413ED6306FD8B71B00 /* React-RCTActionSheet */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = CD85073308E5CBA83E15F675A9CCD54C /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */;
+			buildConfigurationList = CD6D48342AC7045B05606F6E9543FD36 /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */;
 			buildPhases = (
 			);
 			dependencies = (
-				3122F01328F02FF6DF0BA9AC97E1E74D /* PBXTargetDependency */,
+				BE81A179EADDAC2DAA441B439CE613E5 /* PBXTargetDependency */,
 			);
 			name = "React-RCTActionSheet";
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		0A81D7D11951C925EB696B0475FE64CB /* PBXContainerItemProxy */ = {
+		D84B5A1F4C4E153FED74A6AC850AB84F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FCF084C4B4379E37652B4620EE24359B /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -130,10 +130,10 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		3122F01328F02FF6DF0BA9AC97E1E74D /* PBXTargetDependency */ = {
+		BE81A179EADDAC2DAA441B439CE613E5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 0A81D7D11951C925EB696B0475FE64CB /* PBXContainerItemProxy */;
+			targetProxy = D84B5A1F4C4E153FED74A6AC850AB84F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -262,7 +262,7 @@
 			};
 			name = Debug;
 		};
-		B4D24C46DD08DF20EF5E91B6263C0A62 /* Debug */ = {
+		57336190DC39676254F46864E6D68DE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 73E3AB8064623265CE12D7CA65792C9A /* React-RCTActionSheet.debug.xcconfig */;
 			buildSettings = {
@@ -282,7 +282,7 @@
 			};
 			name = Debug;
 		};
-		D27B62A8C20FA131BF92D193FBA290D6 /* Release */ = {
+		CD759DC03C480AD73069E9B8159CDDA5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B8A016861367BBA275A643181863AFB2 /* React-RCTActionSheet.release.xcconfig */;
 			buildSettings = {
@@ -306,11 +306,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CD85073308E5CBA83E15F675A9CCD54C /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */ = {
+		CD6D48342AC7045B05606F6E9543FD36 /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B4D24C46DD08DF20EF5E91B6263C0A62 /* Debug */,
-				D27B62A8C20FA131BF92D193FBA290D6 /* Release */,
+				57336190DC39676254F46864E6D68DE4 /* Debug */,
+				CD759DC03C480AD73069E9B8159CDDA5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

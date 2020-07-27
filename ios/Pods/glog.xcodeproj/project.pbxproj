@@ -191,6 +191,31 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		466036C08CCACF8FA955698EE4B3974C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1D3DC17FF5113D782F2363C6C2F23A4 /* glog.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/glog/glog-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = glog;
+				PRODUCT_NAME = glog;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		55D3C855AAE9A8E19DAEC2706C446F33 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -315,31 +340,7 @@
 			};
 			name = Debug;
 		};
-		DAF78D98684472F924BEC34CE1B33C0C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F1D3DC17FF5113D782F2363C6C2F23A4 /* glog.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/glog/glog-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = glog;
-				PRODUCT_NAME = glog;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		ED51B2B0D48F4DA0819B78566308C0DA /* Debug */ = {
+		BABCA04F4F123F335F9345DC52A6BE48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9724009EF45F1984C9699EB7DD0BA040 /* glog.debug.xcconfig */;
 			buildSettings = {
@@ -358,6 +359,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -377,8 +379,8 @@
 		94A4D74B3E689F2C159B9AEDFA754BCF /* Build configuration list for PBXNativeTarget "glog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				ED51B2B0D48F4DA0819B78566308C0DA /* Debug */,
-				DAF78D98684472F924BEC34CE1B33C0C /* Release */,
+				BABCA04F4F123F335F9345DC52A6BE48 /* Debug */,
+				466036C08CCACF8FA955698EE4B3974C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

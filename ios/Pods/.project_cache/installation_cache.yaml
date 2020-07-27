@@ -8239,9 +8239,9 @@ CACHE_KEYS:
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
       EXMediaLibrary:
-        :debug: 6e5794f84885cb414f6e6f91e6923492
-        :release: 6e5794f84885cb414f6e6f91e6923492
-    CHECKSUM: bf749aeca17e781733d9fe2d8063b4bf2c106e1f
+        :debug: 184fe62dba3fecadb085abc9343b63dc
+        :release: 184fe62dba3fecadb085abc9343b63dc
+    CHECKSUM: 73b7e171c26e828dfadf1fd270a4498cc1902a72
     FILES:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"

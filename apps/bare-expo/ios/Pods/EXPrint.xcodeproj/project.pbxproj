@@ -19,14 +19,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		BEE038725EC2A0DE63E53827E9428F2A /* PBXContainerItemProxy */ = {
+		5675B1925DEA543B1AC0E3D387BFD27B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 207E86D566133B58D7119C07F305E304 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		D3FC4E74DAE6F504A748D5E53E9C1A5E /* PBXContainerItemProxy */ = {
+		5B6FCDBE96F925D97F96AEE0A65E66D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B6896CB12863AF0CEC6C87AB6BE55A1D /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -165,8 +165,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				339A6AB61BAA2E4A79ED4FDB00D6303D /* PBXTargetDependency */,
-				280D284826F8AF7A10B72650A6E15532 /* PBXTargetDependency */,
+				07E4D3345AAC81177E0EDF33F1BE6BC5 /* PBXTargetDependency */,
+				02BE79E726B0BEF0A3B6005035E3745E /* PBXTargetDependency */,
 			);
 			name = EXPrint;
 			productName = EXPrint;
@@ -224,15 +224,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		280D284826F8AF7A10B72650A6E15532 /* PBXTargetDependency */ = {
+		02BE79E726B0BEF0A3B6005035E3745E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = BEE038725EC2A0DE63E53827E9428F2A /* PBXContainerItemProxy */;
+			targetProxy = 5675B1925DEA543B1AC0E3D387BFD27B /* PBXContainerItemProxy */;
 		};
-		339A6AB61BAA2E4A79ED4FDB00D6303D /* PBXTargetDependency */ = {
+		07E4D3345AAC81177E0EDF33F1BE6BC5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D3FC4E74DAE6F504A748D5E53E9C1A5E /* PBXContainerItemProxy */;
+			targetProxy = 5B6FCDBE96F925D97F96AEE0A65E66D2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
