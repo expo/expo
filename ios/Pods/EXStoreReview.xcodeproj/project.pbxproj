@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		33E040235601D0A2705777F87F2AB592 /* Debug */ = {
+		6D379AE7886FB7598B4FFBCD4EADAE25 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ADA4DAD7C20776CD202445029B76C2F8 /* EXStoreReview.debug.xcconfig */;
 			buildSettings = {
@@ -215,9 +215,36 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		8EC98083759DA6C4C17AC9DB12001201 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A476086232797DA5254D3EEDA4BB4EEA /* EXStoreReview.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXStoreReview/EXStoreReview-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXStoreReview;
+				PRODUCT_NAME = EXStoreReview;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		9816D7BA794D7416F5C1F6094139153E /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -343,31 +370,6 @@
 			};
 			name = Debug;
 		};
-		F96E296D86A5CA9BC33102B08FB7586D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A476086232797DA5254D3EEDA4BB4EEA /* EXStoreReview.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXStoreReview/EXStoreReview-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXStoreReview;
-				PRODUCT_NAME = EXStoreReview;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -383,8 +385,8 @@
 		4008F4A8FAB4437D128D364015B25B45 /* Build configuration list for PBXNativeTarget "EXStoreReview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				33E040235601D0A2705777F87F2AB592 /* Debug */,
-				F96E296D86A5CA9BC33102B08FB7586D /* Release */,
+				6D379AE7886FB7598B4FFBCD4EADAE25 /* Debug */,
+				8EC98083759DA6C4C17AC9DB12001201 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
