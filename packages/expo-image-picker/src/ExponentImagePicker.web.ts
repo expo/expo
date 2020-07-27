@@ -109,10 +109,7 @@ function openFileBrowserAsync({
   });
 }
 
-
-
 async function readFile(targetFile: Blob): Promise<ImagePickerResult> {
-
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => {
@@ -120,38 +117,28 @@ async function readFile(targetFile: Blob): Promise<ImagePickerResult> {
     };
     reader.onload = ({ target }) => {
       const uri = (target as any).result;
+      const returnRaw = () => resolve({
+        cancelled: false,
+        uri,
+        width: 0,
+        height: 0,
+      });
 
-      const returnRaw = () => {
-        resolve({
-          cancelled: false,
-          uri,
-          width: 0,
-          height: 0,
-        });
-      };
       if (typeof target?.result === 'string') {
         const image = new Image();
         image.src = target.result;
-        image.onload = function () {
-          resolve({
-            cancelled: false,
-            uri,
-            width: image.naturalWidth ?? image.width,
-            height: image.naturalHeight ?? image.height,
-          });
-        };
-        image.onerror = () => {
-          returnRaw();
-        };
+        image.onload = () => resolve({
+          cancelled: false,
+          uri,
+          width: image.naturalWidth ?? image.width,
+          height: image.naturalHeight ?? image.height,
+        });
+        image.onerror = () => returnRaw();
       } else {
         returnRaw();
       }
     };
+
     reader.readAsDataURL(targetFile);
-
   })
-
 }
-
-
-
