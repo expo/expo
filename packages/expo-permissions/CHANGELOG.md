@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 9.1.0 — 2020-07-27
+
+### 🎉 New features
+
 - Add `usePermissions` hook to simplify permission handling. ([#8788](https://github.com/expo/expo/pull/8788) by [@bycedric](https://github.com/bycedric))
 
 ### 🐛 Bug fixes
