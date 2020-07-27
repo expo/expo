@@ -55,21 +55,6 @@ android {
     versionCode 25
     versionName "8.3.1"
   }
-
-  flavorDimensions "exposcope"
-
-  productFlavors {
-
-    bare {
-      dimension "exposcope"
-    }
-
-    expoview {
-      dimension "exposcope"
-    }
-
-  }
-
   lintOptions {
     abortOnError false
   }
