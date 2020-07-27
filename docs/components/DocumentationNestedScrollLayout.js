@@ -70,6 +70,11 @@ const STYLES_HEADER = css`
   background: #fff;
   flex-shrink: 0;
   width: 100%;
+
+  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  }
+
   @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
     position: sticky;
     top: -57px;

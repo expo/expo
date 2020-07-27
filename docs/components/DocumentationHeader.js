@@ -61,9 +61,11 @@ const STYLES_NAV = css`
   height: 60px;
   width: auto;
   max-width: 1440px;
-
   box-sizing: unset;
-  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  }
 `;
 
 const STYLES_MOBILE_NAV = css`
