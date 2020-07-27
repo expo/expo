@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import expo.modules.notifications.ScopedNotificationRequest;
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -22,6 +21,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.channels.ScopedNotificationsChannelManager;
 import host.exp.exponent.notifications.channels.ScopedNotificationsGroupManager;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.R;

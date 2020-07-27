@@ -78,10 +78,6 @@ android {
     versionCode 1
     versionName "1.0"
 
-//    /* WHEN_VERSIONING_REMOVE_FROM_HERE
-    missingDimensionStrategy 'exposcope', 'expoview'
-//    WHEN_VERSIONING_REMOVE_FROM_HERE */
-
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -154,7 +150,6 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
       target       : 'react-native',
-      skipExposcope: true,
       exclude      : [
         'expo-module-template',
         'expo-bluetooth',
@@ -174,7 +169,6 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
-      skipExposcope: true,
       exclude      : [
           'expo-module-template',
           'expo-bluetooth',

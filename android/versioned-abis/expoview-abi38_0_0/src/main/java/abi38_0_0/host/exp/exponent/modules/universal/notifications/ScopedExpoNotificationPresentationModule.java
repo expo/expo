@@ -10,7 +10,6 @@ import java.util.Collection;
 import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
 import abi38_0_0.expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
 import abi38_0_0.org.unimodules.core.Promise;
-import expo.modules.notifications.ScopedNotificationRequest;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
@@ -18,6 +17,7 @@ import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
 public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPresentationModule {
   private final ExperienceId mExperienceId;

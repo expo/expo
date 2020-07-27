@@ -22,9 +22,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
-import expo.modules.notifications.ExpoNotificationsReconstructor;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -181,7 +181,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   }
 
   protected NotificationsHelper createNotificationHelper() {
-    return new NotificationsHelper(this, new ExpoNotificationsReconstructor());
+    return new NotificationsHelper(this, NotificationsReconstructor.create(this));
   }
 
   /**

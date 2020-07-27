@@ -1,4 +1,4 @@
-package expo.modules.notifications;
+package host.exp.exponent.notifications.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

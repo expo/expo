@@ -12,10 +12,10 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import expo.modules.notifications.ExpoNotificationsReconstructor;
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -28,7 +28,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   public ExpoNotificationPresentationModule(Context context) {
     super(context);
-    mNotificationsHelper = new NotificationsHelper(context, new ExpoNotificationsReconstructor());
+    mNotificationsHelper = new NotificationsHelper(context, NotificationsReconstructor.create(context));
   }
 
   protected NotificationsHelper getNotificationsHelper() {

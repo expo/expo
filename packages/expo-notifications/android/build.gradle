@@ -54,21 +54,6 @@ android {
     versionName '0.4.0'
   }
 
-  flavorDimensions "exposcope"
-
-  productFlavors {
-
-    bare {
-      isDefault true
-      dimension "exposcope"
-    }
-
-    expoview {
-      dimension "exposcope"
-    }
-
-  }
-
   lintOptions {
     abortOnError false
   }

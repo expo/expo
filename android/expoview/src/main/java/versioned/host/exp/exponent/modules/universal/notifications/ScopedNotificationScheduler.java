@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import expo.modules.notifications.ScopedNotificationRequest;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.NotificationContent;
@@ -19,6 +18,7 @@ import expo.modules.notifications.notifications.scheduling.NotificationScheduler
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
   private final ExperienceId mExperienceId;
