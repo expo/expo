@@ -26,7 +26,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   if ([EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_experienceId]) {
-    [self.eventEmitter sendEventWithName:onDidReceiveNotification body:[EXScopedNotificationSerializer serializedNotificationResponse:response]];
+    [self.eventEmitter sendEventWithName:onDidReceiveNotificationResponse body:[EXScopedNotificationSerializer serializedNotificationResponse:response]];
   }
   
   completionHandler();
@@ -35,7 +35,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
   if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_experienceId]) {
-    [self.eventEmitter sendEventWithName:onDidReceiveNotificationResponse body:[EXScopedNotificationSerializer serializedNotification:notification]];
+    [self.eventEmitter sendEventWithName:onDidReceiveNotification body:[EXScopedNotificationSerializer serializedNotification:notification]];
   }
   
   completionHandler(UNNotificationPresentationOptionNone);
