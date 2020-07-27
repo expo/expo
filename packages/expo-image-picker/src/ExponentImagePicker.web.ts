@@ -93,7 +93,7 @@ function openFileBrowserAsync({
   return new Promise((resolve, reject) => {
     input.addEventListener('change', async () => {
       if (input.files) {
-        if (allowsMultipleSelection === false) {
+        if (!allowsMultipleSelection) {
           const result = await readFile(input.files[0])
           resolve(result)
         } else {
