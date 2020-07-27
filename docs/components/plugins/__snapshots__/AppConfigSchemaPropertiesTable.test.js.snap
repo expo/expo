@@ -77,7 +77,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -161,7 +161,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -256,7 +256,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -341,7 +341,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -416,7 +416,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -501,7 +501,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -602,7 +602,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -677,7 +677,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
@@ -686,7 +686,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             <strong
               class="css-utowyr"
             >
-              (array, object)
+              (array || object)
             </strong>
           </div>
         </td>
@@ -751,7 +751,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-12joc8l"
+          class="css-1arns64"
         >
           <div
             class="css-100y9e2 "
