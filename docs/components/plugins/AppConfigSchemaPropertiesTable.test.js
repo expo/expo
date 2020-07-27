@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import AppConfigSchemaPropertiesTable, {
   formatSchema,
   createDescription,
+  _getType,
 } from './AppConfigSchemaPropertiesTable';
 import { SluggerContext } from '~/components/page-higher-order/withSlugger';
 import GithubSlugger from 'github-slugger';
@@ -104,46 +105,47 @@ describe('AppConfigSchemaPropertiesTable', () => {
 
 describe('formatSchema', () => {
   const formattedSchema = formatSchema(Object.entries(testSchema));
-  test('name is property level 0', () => {
-    expect(formattedSchema[0].level).toBe(0);
+  test('name is property nestingLevel 0', () => {
+    expect(formattedSchema[0].nestingLevel).toBe(0);
   });
-  test('androidNavigationBar is property level 0', () => {
-    expect(formattedSchema[1].level).toBe(0);
+  test('androidNavigationBar is property nestingLevel 0', () => {
+    expect(formattedSchema[1].nestingLevel).toBe(0);
   });
-  test('visible is subproperty level 1', () => {
-    expect(formattedSchema[2].level).toBe(1);
+  test('visible is subproperty nestingLevel 1', () => {
+    expect(formattedSchema[2].nestingLevel).toBe(1);
   });
-  test('visible has type "enum"', () => {
-    expect(formattedSchema[2].type).toBe('enum');
+  test('always is subproperty nestingLevel 2', () => {
+    expect(formattedSchema[3].nestingLevel).toBe(2);
   });
-  test('always is subproperty level 2', () => {
-    expect(formattedSchema[3].level).toBe(2);
+  test('backgroundColor is subproperty nestingLevel 1', () => {
+    expect(formattedSchema[4].nestingLevel).toBe(1);
   });
-  test('backgroundColor is subproperty level 1', () => {
-    expect(formattedSchema[4].level).toBe(1);
+  test('intentFilters is property nestingLevel 0', () => {
+    expect(formattedSchema[5].nestingLevel).toBe(0);
   });
-  test('intentFilters is property level 0', () => {
-    expect(formattedSchema[5].level).toBe(0);
+  test('autoVerify is subproperty nestingLevel 1', () => {
+    expect(formattedSchema[6].nestingLevel).toBe(1);
   });
-  test('autoVerify is subproperty level 1', () => {
-    expect(formattedSchema[6].level).toBe(1);
+  test('data is subproperty nestingLevel 1', () => {
+    expect(formattedSchema[7].nestingLevel).toBe(1);
   });
-  test('data is subproperty level 1', () => {
-    expect(formattedSchema[7].level).toBe(1);
-  });
-  test('host is subproperty level 2', () => {
-    expect(formattedSchema[8].level).toBe(2);
+  test('host is subproperty nestingLevel 2', () => {
+    expect(formattedSchema[8].nestingLevel).toBe(2);
   });
 });
 
 describe('createDescription', () => {
-  test('exampleString, bareWorkflow are both added correctly to intentFilters', () => {
+  test('bareWorkflow, exampleString are both added correctly to intentFilters', () => {
     const intentFiltersObject = Object.entries(testSchema)[2];
     const intentFiltersObjectValue = intentFiltersObject[1];
     const result = createDescription(intentFiltersObject);
 
     expect(result).toBe(
-      `${intentFiltersObjectValue.description}\n\n>${intentFiltersObjectValue.exampleString}\n\n>**Bare workflow**: ${intentFiltersObjectValue.meta.bareWorkflow}`
+      `**(${_getType(intentFiltersObjectValue)})** - ${
+        intentFiltersObjectValue.description
+      }<bareworkflowDetails>${
+        intentFiltersObjectValue.meta.bareWorkflow
+      }</bareworkflowDetails>\n\n>${intentFiltersObjectValue.exampleString}`
     );
   });
 
@@ -154,7 +156,9 @@ describe('createDescription', () => {
     const result = createDescription(backgroundColorObject);
 
     expect(result).toBe(
-      `${backgroundColorObjectValue.description}\n\n${backgroundColorObjectValue.meta.regexHuman}`
+      `**(${_getType(backgroundColorObjectValue)})** - ${
+        backgroundColorObjectValue.description
+      }\n\n${backgroundColorObjectValue.meta.regexHuman}`
     );
   });
 
@@ -165,7 +169,9 @@ describe('createDescription', () => {
     const result = createDescription(visibleObject);
 
     expect(result).toBe(
-      `${visibleObjectValue.description}\n>**ExpoKit**: ${visibleObjectValue.meta.expoKit}`
+      `**(${_getType(visibleObjectValue)})** - ${visibleObjectValue.description}<expokitDetails>${
+        visibleObjectValue.meta.expoKit
+      }</expokitDetails>`
     );
   });
 
@@ -175,7 +181,9 @@ describe('createDescription', () => {
     const result = createDescription(nameObject);
 
     expect(result).toBe(
-      `${nameObjectValue.description}\n>**Bare workflow**: ${nameObjectValue.meta.bareWorkflow}`
+      `**(${_getType(nameObjectValue)})** - ${nameObjectValue.description}<bareworkflowDetails>${
+        nameObjectValue.meta.bareWorkflow
+      }</bareworkflowDetails>`
     );
   });
 
@@ -185,7 +193,13 @@ describe('createDescription', () => {
     const result = createDescription(androidNavigationBarObject);
 
     expect(result).toBe(
-      `${androidNavigationBarObjectValue.description}\n>**ExpoKit**: ${androidNavigationBarObjectValue.meta.expoKit}\n\n>**Bare workflow**: ${androidNavigationBarObjectValue.meta.bareWorkflow}`
+      `**(${_getType(androidNavigationBarObjectValue)})** - ${
+        androidNavigationBarObjectValue.description
+      }<expokitDetails>${
+        androidNavigationBarObjectValue.meta.expoKit
+      }</expokitDetails><bareworkflowDetails>${
+        androidNavigationBarObjectValue.meta.bareWorkflow
+      }</bareworkflowDetails>`
     );
   });
 });
