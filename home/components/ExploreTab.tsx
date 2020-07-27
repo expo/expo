@@ -1,5 +1,7 @@
-import { useTheme, Theme } from '@react-navigation/native';
+import { useQuery } from '@apollo/react-hooks';
+import { useTheme } from '@react-navigation/native';
 import dedent from 'dedent';
+import gql from 'graphql-tag';
 import * as React from 'react';
 import { ActivityIndicator, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
@@ -33,40 +35,116 @@ type AppItem = {
 };
 
 type Data = {
-  apps: AppItem[];
+  readonly apps: AppItem[];
   refetch: () => Promise<any>;
   loading: boolean;
   error?: { message: string };
 };
 
 type Props = {
-  data: Data;
+  filter: string;
+  // data: Data;
   loadMoreAsync: boolean;
   listTitle: string;
-  theme: Theme;
   onPressUsername: PressUsernameHandler;
 };
 
-type State = { isRefetching: boolean };
+function Loading() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+      <ActivityIndicator color={Colors.light.tintColor} />
+    </View>
+  );
+}
 
-class ExploreTab extends React.Component<Props, State> {
-  state = {
-    isRefetching: false,
-  };
-
-  render() {
-    if (this.props.data.loading || (this.state.isRefetching && !this.props.data.apps)) {
-      return this._renderLoading();
-    } else if (this.props.data.error && !this.props.data.apps) {
-      return this._renderError();
-    } else {
-      return this._renderContent();
+const PublicAppsQuery = gql`
+  query Home_FindPublicApps($limit: Int, $offset: Int, $filter: AppsFilter!) {
+    app {
+      all(limit: $limit, offset: $offset, sort: RECENTLY_PUBLISHED, filter: $filter) {
+        id
+        fullName
+        name
+        iconUrl
+        packageName
+        packageUsername
+        description
+        lastPublishedTime
+      }
     }
   }
+`;
 
-  _renderError() {
+function useExploreTabGQL(props: { filter: string }) {
+  const query = useQuery(PublicAppsQuery, {
+    fetchPolicy: 'network-only',
+    variables: {
+      filter: props.filter,
+      limit: 10,
+      offset: 0,
+    },
+  });
+
+  return {
+    ...query,
+    data: {
+      ...query.data,
+      apps: query?.data?.app?.all ?? null,
+    },
+    loadMoreAsync() {
+      return query?.fetchMore({
+        variables: {
+          ...(props.filter ? { filter: props.filter } : {}),
+          limit: 10,
+          offset: query.data.apps?.length,
+        },
+        updateQuery: (previousData: any, { fetchMoreResult }) => {
+          const previousApps = previousData.app && previousData.app.all;
+          if (!fetchMoreResult?.data) {
+            return previousData;
+          }
+          return { ...previousData, apps: [...previousApps, ...fetchMoreResult.data.app.all] };
+        },
+      });
+    },
+  };
+}
+
+export default function ExploreTab(props: Props) {
+  const { loading, error, refetch, data } = useExploreTabGQL({ filter: props.filter });
+
+  const theme = useTheme();
+  const [isRefetching, setRefetching] = React.useState(false);
+
+  // Content
+  const extraOptions = React.useMemo<Partial<React.ComponentProps<typeof FlatList>>>(() => {
+    if (!FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS) {
+      return {};
+    }
+    return {
+      renderScrollComponent: props => <InfiniteScrollView {...props} />,
+      canLoadMore: true,
+      onLoadMoreAsync: props.loadMoreAsync,
+    };
+  }, [props.loadMoreAsync]);
+
+  if (loading || (isRefetching && !data.apps)) {
+    return <Loading />;
+  } else if (error && !data.apps) {
+    // Error
     // NOTE(brentvatne): sorry for this
-    const isConnectionError = this.props.data?.error?.message?.includes('No connection available');
+    const isConnectionError = error.message.includes('No connection available');
+
+    const refetchDataAsync = async () => {
+      try {
+        setRefetching(true);
+        await refetch();
+      } catch (e) {
+        console.log({ e });
+        // Error!
+      } finally {
+        setRefetching(false);
+      }
+    };
 
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
@@ -77,67 +155,18 @@ class ExploreTab extends React.Component<Props, State> {
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
         </StyledText>
 
-        <PrimaryButton plain onPress={this._refetchDataAsync} fallback={TouchableOpacity}>
+        <PrimaryButton plain onPress={refetchDataAsync} fallback={TouchableOpacity}>
           Try again
         </PrimaryButton>
       </View>
     );
   }
 
-  _refetchDataAsync = async () => {
-    try {
-      this.setState({ isRefetching: true });
-      await this.props.data.refetch();
-    } catch (e) {
-      console.log({ e });
-      // Error!
-    } finally {
-      this.setState({ isRefetching: false });
-    }
+  const renderHeader = () => {
+    return props.listTitle ? <SectionHeader title={props.listTitle} /> : <View />;
   };
 
-  _renderLoading() {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <ActivityIndicator color={Colors.light.tintColor} />
-      </View>
-    );
-  }
-
-  _renderContent() {
-    let extraOptions = {};
-    const { theme } = this.props;
-
-    if (FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS) {
-      extraOptions = {
-        renderScrollComponent: props => <InfiniteScrollView {...props} />,
-        canLoadMore: true,
-        onLoadMoreAsync: this.props.loadMoreAsync,
-      };
-    }
-
-    return (
-      <FlatList
-        data={this.props.data.apps}
-        ListHeaderComponent={this._renderHeader}
-        renderItem={this._renderItem}
-        style={[
-          styles.container,
-          { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
-        ]}
-        keyExtractor={item => item.id}
-        contentContainerStyle={{ paddingBottom: 5 }}
-        {...extraOptions}
-      />
-    );
-  }
-
-  _renderHeader = () => {
-    const { listTitle } = this.props;
-    return listTitle ? <SectionHeader title={listTitle} /> : <View />;
-  };
-
-  _renderItem = ({ item: app, index }: { item: AppItem; index: number }) => {
+  const renderItem = ({ item: app, index }: { item: AppItem; index: number }) => {
     return (
       <ProjectCard
         key={index.toString()}
@@ -147,18 +176,27 @@ class ExploreTab extends React.Component<Props, State> {
         projectUrl={app.fullName}
         username={app.packageUsername}
         description={app.description}
-        onPressUsername={this.props.onPressUsername}
+        onPressUsername={props.onPressUsername}
         style={{ marginBottom: 10 }}
       />
     );
   };
+
+  return (
+    <FlatList<AppItem>
+      data={data.apps!}
+      ListHeaderComponent={renderHeader}
+      renderItem={renderItem}
+      style={[
+        styles.container,
+        { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
+      ]}
+      keyExtractor={item => item.id}
+      contentContainerStyle={{ paddingBottom: 5 }}
+      {...extraOptions}
+    />
+  );
 }
-
-export default props => {
-  const theme = useTheme();
-
-  return <ExploreTab {...props} theme={theme} />;
-};
 
 const styles = StyleSheet.create({
   container: {

@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 
 import { StyledView } from '../components/Views';
 import Colors from '../constants/Colors';
-import ExploreTabContainer from '../containers/ExploreTabContainer';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
+import ExploreTab from '../components/ExploreTab';
 
 export default function ExploreScreen({
   navigation,
@@ -25,7 +25,7 @@ export default function ExploreScreen({
       style={{ flex: 1 }}
       darkBackgroundColor="#000"
       lightBackgroundColor={Colors.light.greyBackground}>
-      <ExploreTabContainer
+      <ExploreTab
         filter="FEATURED"
         key={isAuthenticated ? 'authenticated' : 'guest'}
         onPressUsername={onUsernamePressed}

@@ -1,5 +1,6 @@
 import ApolloClient from 'apollo-boost';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+// import { ApolloCache, InMemoryCache } from '@apollo/client/cache';
 
 import Store from '../redux/Store';
 import Connectivity from './Connectivity';
