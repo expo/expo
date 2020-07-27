@@ -405,13 +405,13 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
   
   PHAsset *asset = [EXMediaLibrary _getAssetById:assetId];
     
-  NSNumber* shouldDownloadFromNetwork = [options valueForKey:EXMediaLibraryShouldDownloadFromNetworkKey] ? : @1;
+  BOOL shouldDownloadFromNetwork = [[options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] boolValue] ?: @YES;
   
   if (asset) {
     NSMutableDictionary *result = [EXMediaLibrary _exportAssetInfo:asset];
     if (asset.mediaType == PHAssetMediaTypeImage) {
       PHContentEditingInputRequestOptions *options = [PHContentEditingInputRequestOptions new];
-      options.networkAccessAllowed = [shouldDownloadFromNetwork boolValue];
+      options.networkAccessAllowed = shouldDownloadFromNetwork;
 
       [asset requestContentEditingInputWithOptions:options
                                  completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
@@ -425,7 +425,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
       }];
     } else {
       PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-      options.networkAccessAllowed = [shouldDownloadFromNetwork boolValue];
+      options.networkAccessAllowed = shouldDownloadFromNetwork;
 
       [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                       options:options
