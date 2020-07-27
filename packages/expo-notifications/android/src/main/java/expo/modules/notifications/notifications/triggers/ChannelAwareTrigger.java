@@ -2,10 +2,12 @@ package expo.modules.notifications.notifications.triggers;
 
 import android.os.Parcel;
 
+import java.io.Serializable;
+
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
-public class ChannelAwareTrigger implements NotificationTrigger {
+public class ChannelAwareTrigger implements NotificationTrigger, Serializable {
   @Nullable
   private String mChannelId;
 

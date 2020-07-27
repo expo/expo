@@ -46,6 +46,7 @@ In order to be able to receive push notifications on the device:
 In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
 
 The notification icon and the default color can be customized.
+
 - **To customize the icon**:
 
   You can customize two icons: the default and the large one. See [the Android documentation](https://developer.android.com/guide/topics/ui/notifiers/notifications#Templates) for more details. The steps for them are very similar. The only difference is the tag in the second step.
@@ -66,18 +67,19 @@ The notification icon and the default color can be customized.
     </application>
   </manifest>
   ```
+
 - **To customize the default color of the notification**:
   1. you will need a color resource added to the native project's resources. Some information on how to do this can be found in [the official Android guide](https://developer.android.com/guide/topics/resources/more-resources#Color). The most simple and fail-safe instructions would be to:
-      1. ensure that there is a file under `android/app/src/main/res/values/colors.xml` (if there is none, create it)
-      2. ensure that it's a valid resources XML file (it should start with a `<?xml version="1.0" encoding="utf-8"?>` declaration and have a root node of `<resources>`)
-      3. inside the `<resources>` node add a `<color>` node with an arbitrary name (like `notification_icon_color`) containing the color in HEX format inside, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/res/values/colors.xml#L3).
-      4. in the end your `colors.xml` should look more or less like this:
-          ```java
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-            <color name="notification_icon_color">#4630EB</color>
-          </resources>
-          ```
+     1. ensure that there is a file under `android/app/src/main/res/values/colors.xml` (if there is none, create it)
+     2. ensure that it's a valid resources XML file (it should start with a `<?xml version="1.0" encoding="utf-8"?>` declaration and have a root node of `<resources>`)
+     3. inside the `<resources>` node add a `<color>` node with an arbitrary name (like `notification_icon_color`) containing the color in HEX format inside, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/res/values/colors.xml#L3).
+     4. in the end your `colors.xml` should look more or less like this:
+        ```java
+        <?xml version="1.0" encoding="utf-8"?>
+        <resources>
+          <color name="notification_icon_color">#4630EB</color>
+        </resources>
+        ```
   2. now, when the color is added to the project, we need to configure `expo-notifications` to use it when it displays a notification — head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_color"` inside the `<application>` node referencing the custom icon with `@color/<notification_icon_color_name>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L47-L49).
   3. In the end your `AndroidManifest.xml` should look more or less like this:
   ```xml
@@ -701,7 +703,7 @@ async function scheduleAndCancel() {
     content: {
       title: 'Hey!',
     },
-    trigger: { seconds: 5, repeats: true }
+    trigger: { seconds: 5, repeats: true },
   });
   await Notifications.cancelScheduledNotificationAsync(identifier);
 }
@@ -1227,10 +1229,21 @@ A type representing possible triggers with which you can schedule notifications.
 ```ts
 export type NotificationTriggerInput =
   | null
+  | ChannelAwareTriggerInput
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | CalendarTriggerInput;
+```
+
+### `ChannelAwareTriggerInput`
+
+A trigger that will cause the notification to be delivered immediately.
+
+```ts
+export type ChannelAwareTriggerInput = {
+  channelId: string;
+};
 ```
 
 ### `DateTriggerInput`
@@ -1238,7 +1251,7 @@ export type NotificationTriggerInput =
 A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
 
 ```ts
-export type DateTriggerInput = Date | number;
+export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
 ```
 
 ### `TimeIntervalTriggerInput`
@@ -1247,6 +1260,7 @@ A trigger that will cause the notification to be delivered once or many times (d
 
 ```ts
 export interface TimeIntervalTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   seconds: number;
 }
@@ -1258,6 +1272,7 @@ A trigger that will cause the notification to be delivered once per day.
 
 ```ts
 export interface DailyTriggerInput {
+  channelId?: string;
   hour: number;
   minute: number;
   repeats: true;
@@ -1272,6 +1287,7 @@ A trigger that will cause the notification to be delivered once or many times wh
 
 ```ts
 export interface CalendarTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   timezone?: string;
 

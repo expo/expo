@@ -1014,6 +1014,7 @@ export async function test(t) {
           if (Platform.OS === 'android') {
             t.expect(result[0].trigger).toEqual({
               type: 'daily',
+              channelId: null,
               ...trigger,
             });
           } else if (Platform.OS === 'ios') {

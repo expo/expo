@@ -130,23 +130,25 @@ export type NotificationTrigger =
   | UnknownNotificationTrigger;
 
 export type ChannelAwareTriggerInput = {
-  channelId?: string;
+  channelId: string;
 };
 
-export type CalendarTriggerInput = ChannelAwareTriggerInput &
-  NativeCalendarTriggerInput['value'] & {
-    repeats?: boolean;
-  };
-export interface TimeIntervalTriggerInput extends ChannelAwareTriggerInput {
+export type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+  channelId?: string;
+  repeats?: boolean;
+};
+export interface TimeIntervalTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   seconds: number;
 }
-export interface DailyTriggerInput extends ChannelAwareTriggerInput {
+export interface DailyTriggerInput {
+  channelId?: string;
   hour: number;
   minute: number;
   repeats: true;
 }
-export type DateTriggerInput = Date | number | ({ date: Date | number } & ChannelAwareTriggerInput);
+export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
 
 export type NotificationTriggerInput =
   | null

@@ -84,10 +84,15 @@ function isDailyTriggerInput(trigger) {
         trigger.repeats === true);
 }
 function isSecondsPropertyMisusedInCalendarTriggerInput(trigger) {
+    const { channelId, ...triggerWithoutChannelId } = trigger;
     return (
     // eg. { seconds: ..., repeats: ..., hour: ... }
-    ('seconds' in trigger && 'repeats' in trigger && Object.keys(trigger).length > 2) ||
+    ('seconds' in triggerWithoutChannelId &&
+        'repeats' in triggerWithoutChannelId &&
+        Object.keys(triggerWithoutChannelId).length > 2) ||
         // eg. { seconds: ..., hour: ... }
-        ('seconds' in trigger && !('repeats' in trigger) && Object.keys(trigger).length > 1));
+        ('seconds' in triggerWithoutChannelId &&
+            !('repeats' in triggerWithoutChannelId) &&
+            Object.keys(triggerWithoutChannelId).length > 1));
 }
 //# sourceMappingURL=scheduleNotificationAsync.js.map

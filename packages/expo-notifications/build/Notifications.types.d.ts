@@ -114,23 +114,27 @@ export interface UnknownNotificationTrigger {
 }
 export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | UnknownNotificationTrigger;
 export declare type ChannelAwareTriggerInput = {
-    channelId?: string;
+    channelId: string;
 };
-export declare type CalendarTriggerInput = ChannelAwareTriggerInput & NativeCalendarTriggerInput['value'] & {
+export declare type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+    channelId?: string;
     repeats?: boolean;
 };
-export interface TimeIntervalTriggerInput extends ChannelAwareTriggerInput {
+export interface TimeIntervalTriggerInput {
+    channelId?: string;
     repeats?: boolean;
     seconds: number;
 }
-export interface DailyTriggerInput extends ChannelAwareTriggerInput {
+export interface DailyTriggerInput {
+    channelId?: string;
     hour: number;
     minute: number;
     repeats: true;
 }
-export declare type DateTriggerInput = Date | number | ({
+export declare type DateTriggerInput = Date | number | {
+    channelId?: string;
     date: Date | number;
-} & ChannelAwareTriggerInput);
+};
 export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
