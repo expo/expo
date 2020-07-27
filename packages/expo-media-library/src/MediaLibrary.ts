@@ -372,7 +372,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
   return await MediaLibrary.getAssetsAsync(options);
 }
 
-export function addListener(listener: () => void): Subscription {
+export function addListener(listener: (event: AssetChangeEvent) => void): Subscription {
   const subscription = eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
   return subscription;
 }
