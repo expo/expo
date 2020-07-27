@@ -37,12 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSDictionary *serializedContent = [super serializedNotificationContent:content isRemote:isRemote];
   NSMutableDictionary *serializedContentMutable = [serializedContent mutableCopy];
-  serializedContentMutable[@"categoryIdentifier"] = content.categoryIdentifier ? [self addCategoryIdentifierPrefix: content.categoryIdentifier userInfo:content.userInfo] : [NSNull null];
+  serializedContentMutable[@"categoryIdentifier"] = content.categoryIdentifier ? [self removeCategoryIdentifierPrefix: content.categoryIdentifier userInfo:content.userInfo] : [NSNull null];
 
   return [serializedContentMutable copy];
 }
 
-+ (NSString *)addCategoryIdentifierPrefix:(NSString *)identifier userInfo:(NSDictionary *)userInfo
++ (NSString *)removeCategoryIdentifierPrefix:(NSString *)identifier userInfo:(NSDictionary *)userInfo
 {
   NSString *experienceId = userInfo[@"experienceId"] ?: [NSNull null];
   if (experienceId) {
