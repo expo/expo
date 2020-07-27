@@ -1,5 +1,5 @@
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-import { v4 } from 'uuid';	
+import { v4 } from 'uuid';
 import {
   ImagePickerResult,
   MediaTypeOptions,
@@ -91,27 +91,16 @@ function openFileBrowserAsync({
   document.body.appendChild(input);
 
   return new Promise((resolve, reject) => {
-    input.addEventListener('change', async () => {
+    input.addEventListener('change', () => {
       if (input.files) {
-        if (allowsMultipleSelection === false) {
-          const result = await readFile(input.files[0])
-          resolve(result)
+        if (!allowsMultipleSelection) {
+          resolve(readFile(input.files[0]))
         } else {
-          const list: ImagePickerResult[] = []
-          for (let i = 0; i < input.files.length; i++) {
-            list.push(await readFile(input.files[i]))
-
-          }
-          resolve(list)
-
-
-
+          resolve(Promise.all(Array.from(input.files).map(readFile)));
         }
-
       } else {
         resolve({ cancelled: true });
       }
-
       document.body.removeChild(input);
     });
 
