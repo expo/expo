@@ -106,7 +106,7 @@ A helper that wraps `Asset.fromModule(module).downloadAsync` for convenience.
 
 #### Arguments
 
-- **modules (_Array\<number\>|number_)** -- An array of `require('path/to/file')`. Can also be just one module without an Array.
+- **modules (_Array\<number\> | number | Array\<string\> | string_)** -- An array of `require('path/to/file')` or external network URLs. Can also be just one module or URL without an Array.
 
 #### Returns
 
@@ -120,11 +120,11 @@ const [{ localUri }] = await Asset.loadAsync(require('./assets/snack-icon.png'))
 
 ### `Asset.fromModule(module)`
 
-Returns the [`Asset`](#asset) instance representing an asset given its module
+Returns the [`Asset`](#asset) instance representing an asset given its module or URL
 
 #### Arguments
 
-- **module (_number_)** -- The value of `require('path/to/file')` for the asset
+- **module (_number|string_)** -- The value of `require('path/to/file')` for the asset or external network URL
 
 #### Returns
 

@@ -1,14 +1,12 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Assets as StackAssets } from '@react-navigation/stack';
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
-import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import React from 'react';
-import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Appearance } from 'react-native-appearance';
-import { Assets as StackAssets } from 'react-navigation-stack';
-import { connect } from 'react-redux';
+import { Linking, Platform, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import url from 'url';
 
 import Navigation from './navigation/Navigation';
@@ -22,19 +20,9 @@ import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
 
-@connect(data => App.getDataProps(data))
-export default class App extends React.Component {
-  static getDataProps(data) {
-    const { settings } = data;
-
-    return {
-      preferredAppearance: settings.preferredAppearance,
-    };
-  }
-
+class App extends React.Component {
   state = {
     isReady: false,
-    colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
@@ -120,27 +108,27 @@ export default class App extends React.Component {
 
     const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
 
-    // Android below API 23 (Android 6.0) does not support 'dark-content' barStyle:
-    // - statusBar shouldn't be translucent
-    // - backgroundColor should be a color that would make status bar icons be visible
-    const translucent = !(Platform.OS === 'android' && Device.platformApiLevel < 23);
-    const statusBarBackgroundColor =
-      theme === 'dark' ? '#000000' : translucent ? '#ffffff' : '#00000088';
-
     return (
       <View style={[styles.container, { backgroundColor }]}>
         <ActionSheetProvider>
           <Navigation theme={theme} />
         </ActionSheetProvider>
-
-        <StatusBar
-          translucent={translucent}
-          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
-          backgroundColor={statusBarBackgroundColor}
-        />
       </View>
     );
   }
+}
+
+export default function HomeApp({
+  colorScheme,
+  // note(bacon): Any props passed to the initial component.
+  // TODO(bacon): Add types for { exp: {}, rootTag: number }
+  ...startupProps
+}) {
+  const preferredAppearance = useSelector(data => data.settings.preferredAppearance);
+
+  return (
+    <App {...startupProps} preferredAppearance={preferredAppearance} colorScheme={colorScheme} />
+  );
 }
 
 const styles = StyleSheet.create({

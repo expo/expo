@@ -29,6 +29,7 @@ interface Props {
   // Functions
   playAsync: () => void;
   pauseAsync: () => void;
+  replayAsync: () => void;
   setRateAsync: (rate: number, shouldCorrectPitch: boolean) => void;
   setIsMutedAsync: (isMuted: boolean) => void;
   setPositionAsync: (position: number) => Promise<any>;
@@ -198,6 +199,12 @@ export default class Player extends React.Component<Props, State> {
             title: 'Mute',
             onPress: this._toggleIsMuted,
             active: this.props.isMuted,
+          })}
+          {this._renderAuxiliaryButton({
+            iconName: 'refresh',
+            title: 'Replay',
+            onPress: this.props.replayAsync,
+            active: false,
           })}
         </View>
         <View style={[styles.container, styles.buttonsContainer]}>

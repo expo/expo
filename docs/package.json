@@ -50,6 +50,7 @@
     "http-server": "^0.12.3",
     "jest": "26.1.0",
     "prettier": "^1.18.2",
-    "puppeteer": "^3.3.0"
+    "puppeteer": "^3.3.0",
+    "semver": "^7.3.2"
   }
 }

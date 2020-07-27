@@ -33,6 +33,7 @@ public class NotificationContent implements Parcelable, Serializable {
   private Number mColor;
   private boolean mAutoDismiss;
   private String mCategoryId;
+  private boolean mSticky;
 
   protected NotificationContent() {
   }
@@ -109,6 +110,10 @@ public class NotificationContent implements Parcelable, Serializable {
   public String getCategoryId() {
     return mCategoryId;
   }
+  
+  public boolean isSticky() {
+    return mSticky;
+  }
 
   @Override
   public int describeContents() {
@@ -136,6 +141,7 @@ public class NotificationContent implements Parcelable, Serializable {
     mColor = (Number) in.readSerializable();
     mAutoDismiss = in.readByte() == 1;
     mCategoryId = in.readString();
+    mSticky = in.readByte() == 1;
   }
 
   @Override
@@ -153,6 +159,7 @@ public class NotificationContent implements Parcelable, Serializable {
     dest.writeSerializable(mColor);
     dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
     dest.writeString(mCategoryId);
+    dest.writeByte((byte) (mSticky ? 1 : 0));
   }
 
   //                                           EXPONOTIFCONTENT02
@@ -179,6 +186,7 @@ public class NotificationContent implements Parcelable, Serializable {
     out.writeObject(mColor);
     out.writeByte(mAutoDismiss ? 1 : 0);
     out.writeObject(mCategoryId != null ? mCategoryId.toString() : null);
+    out.writeByte(mSticky ? 1 : 0);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -225,6 +233,7 @@ public class NotificationContent implements Parcelable, Serializable {
     } else {
       mCategoryId = new String(categoryIdString);
     }
+    mSticky = in.readByte() == 1;
   }
 
   private void readObjectNoData() throws ObjectStreamException {
@@ -244,6 +253,7 @@ public class NotificationContent implements Parcelable, Serializable {
     private Number mColor;
     private boolean mAutoDismiss;
     private String mCategoryId;
+    private boolean mSticky;
 
     public Builder() {
       useDefaultSound();
@@ -318,6 +328,11 @@ public class NotificationContent implements Parcelable, Serializable {
       mCategoryId = categoryId;
       return this;
     }
+    
+    public Builder setSticky(boolean sticky) {
+      mSticky = sticky;
+      return this;
+    }
 
     public NotificationContent build() {
       NotificationContent content = new NotificationContent();
@@ -334,6 +349,7 @@ public class NotificationContent implements Parcelable, Serializable {
       content.mColor = mColor;
       content.mAutoDismiss = mAutoDismiss;
       content.mCategoryId = mCategoryId;
+      content.mSticky = mSticky;
       return content;
     }
   }

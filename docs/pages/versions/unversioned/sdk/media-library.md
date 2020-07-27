@@ -39,7 +39,7 @@ Asks the user to grant permissions for accessing media in user's media library. 
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.getPermissionsAsync()`
 
@@ -47,11 +47,11 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
@@ -68,7 +68,9 @@ An object representing an [asset](#asset).
 
 ### `MediaLibrary.saveToLibraryAsync(localUri)`
 
-Saves the file at given `localUri` to the user's media library. On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
+
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
 
 #### Arguments
 
@@ -239,6 +241,15 @@ Removes all listeners.
 
 ## Types
 
+### `MediaLibrary.CameraRollPermissionResponse`
+
+`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+
+- `scope` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+  - `all` if the user granted your app access to the whole photo library
+  - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+  - `none` if user denied or hasn't yet granted the permission
+
 ### `Asset`
 
 | Field name       | Type      | Platforms | Description                                                                                                   | Possible values                                                                                      |
@@ -251,7 +262,7 @@ Removes all listeners.
 | height           | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
 | creationTime     | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
 | modificationTime | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
-| duration         | _number_  | both      | Duration of the video or audio asset                                                                          |                                                                                                      |
+| duration         | _number_  | both      | Duration of the video or audio asset in seconds                                                               |                                                                                                      |
 | mediaSubtypes    | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
 | albumId          | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
 | localUri \*      | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |

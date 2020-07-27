@@ -1,9 +1,7 @@
-import {
-  Ionicons as DefaultIonicons,
-  MaterialIcons as DefaultMaterialIcons,
-} from '@expo/vector-icons';
+import DefaultIonicons from '@expo/vector-icons/build/Ionicons';
+import DefaultMaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { useTheme } from 'react-navigation';
 
 type Props = {
   name: string;
@@ -18,7 +16,7 @@ export const Ionicons = (props: Props) => {
   const darkColor = props.darkColor || '#fff';
   const lightColor = props.lightColor || '#ccc';
 
-  return <DefaultIonicons color={theme === 'dark' ? darkColor : lightColor} {...props} />;
+  return <DefaultIonicons color={theme.dark ? darkColor : lightColor} {...props} />;
 };
 
 export const MaterialIcons = (props: Props) => {
@@ -26,5 +24,5 @@ export const MaterialIcons = (props: Props) => {
   const darkColor = props.darkColor || '#fff';
   const lightColor = props.lightColor || '#ccc';
 
-  return <DefaultMaterialIcons color={theme === 'dark' ? darkColor : lightColor} {...props} />;
+  return <DefaultMaterialIcons color={theme.dark ? darkColor : lightColor} {...props} />;
 };

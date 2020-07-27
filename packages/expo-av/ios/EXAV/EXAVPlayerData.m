@@ -39,6 +39,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, strong) id <NSObject> timeObserver;
 @property (nonatomic, strong) id <NSObject> finishObserver;
 @property (nonatomic, strong) id <NSObject> playbackStalledObserver;
+@property (nonatomic, strong) NSMapTable<NSObject *, NSMutableSet<NSString *> *> *observers;
 
 @property (nonatomic, strong) NSNumber *progressUpdateIntervalMillis;
 @property (nonatomic, assign) CMTime currentPosition;
@@ -88,6 +89,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _finishObserver = nil;
     _playbackStalledObserver = nil;
     _statusUpdateCallback = nil;
+    _observers = [NSMapTable new];
   
     // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
@@ -129,8 +131,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       strongSelf.items = @[firstplayerItem, secondPlayerItem, thirdPlayerItem];
       strongSelf.player = [AVQueuePlayer queuePlayerWithItems:@[firstplayerItem, secondPlayerItem, thirdPlayerItem]];
       if (strongSelf.player) {
-        [strongSelf.player addObserver:strongSelf forKeyPath:EXAVPlayerDataObserverStatusKeyPath options:0 context:nil];
-        [strongSelf.player.currentItem addObserver:strongSelf forKeyPath:EXAVPlayerDataObserverStatusKeyPath options:0 context:nil];
+        [strongSelf _addObserver:strongSelf.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+        [strongSelf _addObserver:strongSelf.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
       } else {
         NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
         if (strongSelf.loadFinishBlock) {
@@ -494,7 +496,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   } else if ([_player.items count] > 1) {
     // There is an item ahead of the current item in the queue, so we can just advance to it (it should be seeked to 0)
     // and start to play with `setStatus`.
-    [self _removeObserversForPlayerItem:_player.currentItem];
     [_player advanceToNextItem];
     [self setStatus:status resolver:resolve rejecter:reject];
   } else {
@@ -509,23 +510,42 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 #pragma mark - Observers
 
+- (void)_addObserver:(NSObject *)object forKeyPath:(NSString *)path
+{
+  [self _addObserver:object forKeyPath:path options:0];
+}
+
+- (void)_addObserver:(NSObject *)object forKeyPath:(NSString *)path options:(NSKeyValueObservingOptions)options
+{
+  NSMutableSet<NSString *> *set = [_observers objectForKey:object];
+  if (set == nil) {
+    set = [NSMutableSet set];
+    [_observers setObject:set forKey:object];
+  }
+  if (![set containsObject:path]) {
+    [set addObject:path];
+    [object addObserver:self forKeyPath:path options:options context:nil];
+  }
+}
+
 - (void)_tryRemoveObserver:(NSObject *)object forKeyPath:(NSString *)path
 {
-  @try {
-    [object removeObserver:self forKeyPath:path];
-  } @catch (NSException *exception) {
-    // no-op
+  NSMutableSet<NSString *> *set = [_observers objectForKey:object];
+  if (set) {
+    if ([set containsObject:path]) {
+      [set removeObject:path];
+      if (!set.count) {
+        [_observers removeObjectForKey:object];
+      }
+      [object removeObserver:self forKeyPath:path];
+    }
   }
 }
 
 - (void)_removeObservers
 {
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-  
-  for (AVPlayerItem *item in _items) {
-    [self _removeObserversForPlayerItem:item];
-  }
-  
+  [self _removeObserversForPlayerItems];
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverRateKeyPath];
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverCurrentItemKeyPath];
   [self _tryRemoveObserver:_player forKeyPath:EXAVPlayerDataObserverTimeControlStatusPath];
@@ -536,6 +556,13 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   if (_timeObserver) {
     [_player removeTimeObserver:_timeObserver];
     _timeObserver = nil;
+  }
+}
+
+- (void)_removeObserversForPlayerItems
+{
+  for (AVPlayerItem *item in _items) {
+    [self _removeObserversForPlayerItem:item];
   }
 }
 
@@ -602,11 +629,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                                                  object:[_player currentItem]
                                                   queue:nil
                                              usingBlock:playbackStalledObserverBlock];
-  [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
-  [playerItem addObserver:self forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath options:0 context:nil];
-  
-  [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-  [playerItem addObserver:self forKeyPath:EXAVPlayerDataObserverStatusKeyPath options:0 context:nil];
+  [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
+  [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
 }
 
 - (void)_updateTimeObserver
@@ -643,14 +667,12 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   [self _removeObservers];
   [self _updateTimeObserver];
 
-  [_player addObserver:self forKeyPath:EXAVPlayerDataObserverRateKeyPath options:0 context:nil];
+  [self _addObserver:_player forKeyPath:EXAVPlayerDataObserverRateKeyPath];
   NSUInteger currentItemObservationOptions = NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew;
-  [_player addObserver:self forKeyPath:EXAVPlayerDataObserverCurrentItemKeyPath options:currentItemObservationOptions context:nil];
-  [_player addObserver:self forKeyPath:EXAVPlayerDataObserverTimeControlStatusPath options:0 context:nil]; // Only available after iOS 10
+  [self _addObserver:_player forKeyPath:EXAVPlayerDataObserverCurrentItemKeyPath options:currentItemObservationOptions];
+  [self _addObserver:_player forKeyPath:EXAVPlayerDataObserverTimeControlStatusPath]; // Only available after iOS 10
   [self _addObserversForPlayerItem:_player.currentItem];
 }
-
-
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
@@ -742,6 +764,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
             strongSelf.replayResolve = nil;
           }
         } else if ([keyPath isEqualToString:EXAVPlayerDataObserverCurrentItemKeyPath]) {
+          [strongSelf _removeObserversForPlayerItems];
           [strongSelf _addObserversForPlayerItem:change[NSKeyValueChangeNewKey]];
           // Treadmill pattern, see: https://developer.apple.com/videos/play/wwdc2016/503/
           AVPlayerItem *removedPlayerItem = change[NSKeyValueChangeOldKey];

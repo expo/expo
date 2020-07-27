@@ -95,7 +95,8 @@ export function getTestModules() {
       require('./tests/Contacts'),
       // require('./tests/SVG'),
       require('./tests/Localization'),
-      optionalRequire(() => require('./tests/NewNotifications'))
+      optionalRequire(() => require('./tests/NewNotifications')),
+      LocationTestScreen
     );
 
     if (browserSupportsWebGL()) {

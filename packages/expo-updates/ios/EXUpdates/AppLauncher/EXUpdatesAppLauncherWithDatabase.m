@@ -69,7 +69,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       NSMutableArray<EXUpdatesUpdate *>*filteredLaunchableUpdates = [NSMutableArray new];
       for (EXUpdatesUpdate *update in launchableUpdates) {
         if (update.status == EXUpdatesUpdateStatusEmbedded) {
-          if (![update.updateId isEqual:embeddedManifest.updateId]) {
+          if (embeddedManifest && ![update.updateId isEqual:embeddedManifest.updateId]) {
             continue;
           }
         }
@@ -272,7 +272,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 - (EXUpdatesFileDownloader *)downloader
 {
   if (!_downloader) {
-    _downloader = [[EXUpdatesFileDownloader alloc] init];
+    _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_config];
   }
   return _downloader;
 }

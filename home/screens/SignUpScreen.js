@@ -1,12 +1,10 @@
 /* @flow */
-
-import React from 'react';
+import * as React from 'react';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
 import AuthApi from '../api/AuthApi';
-import CloseButton from '../components/CloseButton';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import { StyledScrollView as ScrollView } from '../components/Views';
@@ -15,19 +13,13 @@ import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
-@connect(data => SignUpScreen.getDataProps(data))
-export default class SignUpScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Sign Up',
-    headerLeft: () => <CloseButton />,
-  };
+export default function SignUpScreen({ navigation }) {
+  const session = useSelector(data => data.session);
+  const dispatch = useDispatch();
+  return <SignUpView dispatch={dispatch} session={session} navigation={navigation} />;
+}
 
-  static getDataProps(data) {
-    return {
-      session: data.session,
-    };
-  }
-
+class SignUpView extends React.Component {
   state = DEBUG
     ? {
         keyboardHeight: 0,
@@ -100,6 +92,7 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="words"
             keyboardType="default"
+            textContentType="givenName"
             label="First name"
             returnKeyType="next"
           />
@@ -113,6 +106,7 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="words"
             keyboardType="default"
+            textContentType="familyName"
             label="Last name"
             returnKeyType="next"
           />
@@ -125,6 +119,7 @@ export default class SignUpScreen extends React.Component {
             value={this.state.username}
             autoCorrect={false}
             autoCapitalize="none"
+            textContentType="username"
             keyboardType="default"
             label="Username"
             returnKeyType="next"
@@ -137,6 +132,7 @@ export default class SignUpScreen extends React.Component {
             onChangeText={value => this._updateValue('email', value)}
             autoCorrect={false}
             autoCapitalize="none"
+            textContentType="emailAddress"
             value={this.state.email}
             keyboardType="email-address"
             label="E-mail address"
@@ -152,6 +148,7 @@ export default class SignUpScreen extends React.Component {
             autoCorrect={false}
             autoCapitalize="none"
             label="Password"
+            textContentType="newPassword"
             returnKeyType="next"
             secureTextEntry
           />
@@ -165,6 +162,7 @@ export default class SignUpScreen extends React.Component {
             hideBottomBorder
             autoCorrect={false}
             autoCapitalize="none"
+            textContentType="password"
             label="Repeat your password"
             returnKeyType="done"
             secureTextEntry

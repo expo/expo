@@ -91,6 +91,7 @@ public class NotificationSerializer {
     if (content.getCategoryId() != null) {
       serializedContent.putString("categoryIdentifier", content.getCategoryId());
     }
+    serializedContent.putBoolean("sticky", content.isSticky());
     return serializedContent;
   }
 

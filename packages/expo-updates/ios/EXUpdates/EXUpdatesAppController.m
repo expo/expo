@@ -62,12 +62,12 @@ static NSString * const kEXUpdatesConfigPlistName = @"Expo";
 
 - (void)setConfiguration:(NSDictionary *)configuration
 {
-  if (!_updatesDirectory) {
+  if (_updatesDirectory) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"EXUpdatesAppController:setConfiguration should not be called after start"
                                  userInfo:@{}];
   }
-  _config = [EXUpdatesConfig configWithDictionary:configuration];
+  [_config loadConfigFromDictionary:configuration];
   _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
 }
 

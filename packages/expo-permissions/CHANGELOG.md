@@ -6,12 +6,21 @@
 
 ### 🎉 New features
 
+- Added support for the limited `CAMERA_ROLL` permission on iOS 14. ([#9423](https://github.com/expo/expo/pull/9423) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+## 9.1.0 — 2020-07-27
+
+### 🎉 New features
+
 - Add `usePermissions` hook to simplify permission handling. ([#8788](https://github.com/expo/expo/pull/8788) by [@bycedric](https://github.com/bycedric))
 
 ### 🐛 Bug fixes
 
 - Ensure browser globals `DeviceMotionEvent` and `DeviceOrientationEvent` exist before attempting to read from them. ([#9236](https://github.com/expo/expo/pull/9236) by [@evanbacon](https://github.com/evanbacon))
 - Fixed `askAsync` rejecting with `permission cannot be null or empty` in the bare workflow. ([#8910](https://github.com/expo/expo/pull/8910) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `getPermissionsAsync` returning incorrect status in the Expo Client app on iOS. ([#9060](https://github.com/expo/expo/pull/9060) by [@lukmccall](https://github.com/lukmccall))
 - Remove require cycle for `usePermissions` hook. ([#9219](https://github.com/expo/expo/pull/9219) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.0.1 — 2020-05-29

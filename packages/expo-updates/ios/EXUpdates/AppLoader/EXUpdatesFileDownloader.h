@@ -11,7 +11,9 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
 
 @interface EXUpdatesFileDownloader : NSObject
 
-- (instancetype)initWithURLSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration;
+- (instancetype)initWithUpdatesConfig:(EXUpdatesConfig *)updatesConfig;
+- (instancetype)initWithUpdatesConfig:(EXUpdatesConfig *)updatesConfig
+              URLSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration;
 
 - (void)downloadDataFromURL:(NSURL *)url
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
@@ -23,8 +25,7 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 - (void)downloadManifestFromURL:(NSURL *)url
-                     withConfig:(EXUpdatesConfig *)config
-                       database:(EXUpdatesDatabase *)database
+                   withDatabase:(EXUpdatesDatabase *)database
                  cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;

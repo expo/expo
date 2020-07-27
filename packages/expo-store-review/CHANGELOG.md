@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 2.1.3 — 2020-07-27
+
+### 🐛 Bug fixes
+
 - [store-review] Fix doc blocks. ([#8714](https://github.com/expo/expo/pull/8714) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.1.2 — 2020-05-29

@@ -88,15 +88,15 @@ const styles = StyleSheet.create({
 import * as Location from 'expo-location';
 ```
 
-<TableOfContentSection title='Methods' contents={['Location.hasServicesEnabledAsync()', 'Location.requestPermissionsAsync()', 'Location.getPermissionsAsync()', 'Location.getLastKnownPositionAsync()', 'Location.getCurrentPositionAsync(options)', 'Location.watchPositionAsync(options, callback)', 'Location.getProviderStatusAsync()', 'Location.enableNetworkProviderAsync()', 'Location.getHeadingAsync()', 'Location.watchHeadingAsync(callback)', 'Location.geocodeAsync(address)', 'Location.reverseGeocodeAsync(location)', 'Location.setApiKey(apiKey)', 'Location.installWebGeolocationPolyfill()']} />
+<TableOfContentSection title='Methods' contents={['Location.hasServicesEnabledAsync()', 'Location.requestPermissionsAsync()', 'Location.getPermissionsAsync()', 'Location.getLastKnownPositionAsync(options)', 'Location.getCurrentPositionAsync(options)', 'Location.watchPositionAsync(options, callback)', 'Location.getProviderStatusAsync()', 'Location.enableNetworkProviderAsync()', 'Location.getHeadingAsync()', 'Location.watchHeadingAsync(callback)', 'Location.geocodeAsync(address)', 'Location.reverseGeocodeAsync(location)', 'Location.setApiKey(apiKey)', 'Location.installWebGeolocationPolyfill()']} />
 
 <TableOfContentSection title='Background Location Methods' contents={['Location.startLocationUpdatesAsync(taskName, options)', 'Location.stopLocationUpdatesAsync(taskName)', 'Location.hasStartedLocationUpdatesAsync(taskName)']} />
 
 <TableOfContentSection title='Geofencing Methods' contents={['Location.startGeofencingAsync(taskName, regions)', 'Location.stopGeofencingAsync(taskName)', 'Location.hasStartedGeofencingAsync(taskName)']} />
 
-<TableOfContentSection title='Types' contents={['Location', 'LocationRegion', 'PermissionDetailsLocationIOS', 'PermissionDetailsLocationAndroid']} />
+<TableOfContentSection title='Types' contents={['LocationPermissionResponse', 'LocationObject', 'LocationProviderStatus', 'LocationHeadingObject', 'LocationRegion']} />
 
-<TableOfContentSection title='Enums' contents={['Location.Accuracy', 'Location.ActivityType', 'Location.GeofencingEventType', 'Location.GeofencingRegionState']} />
+<TableOfContentSection title='Enums' contents={['LocationAccuracy', 'LocationActivityType', 'LocationGeofencingEventType', 'LocationGeofencingRegionState']} />
 
 ## Methods
 
@@ -114,7 +114,7 @@ Asks the user to grant permissions for location. Alias for `Permissions.askAsync
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+A promise that resolves to an object of type [LocationPermissionResponse](#locationpermissionresponse).
 
 ### `Location.getPermissionsAsync()`
 
@@ -122,32 +122,36 @@ Checks user's permissions for accessing location. Alias for `Permissions.getAsyn
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+A promise that resolves to an object of type [LocationPermissionResponse](#locationpermissionresponse).
 
-### `Location.getLastKnownPositionAsync()`
+### `Location.getLastKnownPositionAsync(options)`
 
-Get the last known position of the device.
-
-#### Returns
-
-Returns a promise resolving to an object representing [Location](#type-location) type.
-
-### `Location.getCurrentPositionAsync(options)`
-
-Get the current position of the device.
-
-> **Note:** calling it on iOS causes the location manager to obtain a location fix which may take several seconds. Consider using [Location.getLastKnownPositionAsync](#locationgetlastknownpositionasync) if you expect to get a quick response and high accuracy is not required.
+Gets the last known position of the device. It's considered to be faster than `getCurrentPositionAsync` as it doesn't request for the current location, but keep in mind the returned location may not be up-to-date.
 
 #### Arguments
 
-- **options (_object_)** -- A map of options:
-  - **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
-  - **maximumAge (_number_)** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
-  - **timeout (_number_)** -- (Android only). Specifies the duration of time in milliseconds to wait before timing out the location request.
+- **options (_object_)** — A map of options:
+  - **maxAge (_number_)** — A number of miliseconds after which the last known location starts to be invalid and thus `null` is returned.
+  - **requiredAccuracy (_number_)** — The maximum radius of uncertainty for the location, measured in meters. If the last known location's accuracy radius is bigger (less accurate) then `null` is returned.
 
 #### Returns
 
-Returns a promise resolving to an object representing [Location](#type-location) type.
+Returns a promise resolving to an object of type [LocationObject](#locationobject) or `null` if it's not available or doesn't match given requirements such as maximum age or required accuracy.
+
+### `Location.getCurrentPositionAsync(options)`
+
+Requests for one-time delivery of the user's current location. Depending on given `accuracy` option it may take some time to resolve, especially when you're inside a building.
+
+> **Note:** Calling it causes the location manager to obtain a location fix which may take several seconds. Consider using [Location.getLastKnownPositionAsync](#locationgetlastknownpositionasyncoptions) if you expect to get a quick response and high accuracy is not required.
+
+#### Arguments
+
+- **options (_object_)** — A map of options:
+  - **accuracy : [LocationAccuracy](#locationaccuracy)** — Location manager accuracy. Pass one of [LocationAccuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+
+#### Returns
+
+Returns a promise resolving to an object of type [LocationObject](#locationobject).
 
 ### `Location.watchPositionAsync(options, callback)`
 
@@ -155,16 +159,14 @@ Subscribe to location updates from the device. Please note that updates will onl
 
 #### Arguments
 
-- **options (_object_)** -- A map of options:
+- **options (_object_)** — A map of options:
 
-  - **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
-  - **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds.
-  - **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters.
-  - **mayShowUserSettingsDialog (_boolean_)** -- Specifies whether to ask the user to turn on improved accuracy location mode which uses Wi-Fi, cell networks and GPS sensor. The dialog can be shown only when the location mode is set to **Device only**. Defaults to `true`. (**Android only**)
+  - **accuracy : [LocationAccuracy](#locationaccuracy)** — Location manager accuracy. Pass one of [LocationAccuracy](#locationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+  - **timeInterval (_number_)** — Minimum time to wait between each update in milliseconds.
+  - **distanceInterval (_number_)** — Receive updates only when the location has changed by at least this distance in meters.
+  - **mayShowUserSettingsDialog (_boolean_)** — (**Android only**) Specifies whether to ask the user to turn on improved accuracy location mode which uses Wi-Fi, cell networks and GPS sensor. The dialog can be shown only when the location mode is set to **Device only**. Defaults to `true`.
 
-- **callback (_function_)** --
-
-  This function is called on each location update. It is passed exactly one parameter: an object representing [Location](#type-location) type.
+- **callback (_function_)** -- This function is called on each location update. It receives an object of type [LocationObject](#locationobject) as the first argument.
 
 #### Returns
 
@@ -178,12 +180,7 @@ Check status of location providers.
 
 #### Returns
 
-Returns a promise resolving to an object with the following fields:
-
-- **locationServicesEnabled (_boolean_)** -- Whether location services are enabled. See [Location.hasServicesEnabledAsync](#locationhasservicesenabledasync) for a more convenient solution to get this value.
-- **gpsAvailable (_boolean_)** (android only) -- If the GPS provider is available, if yes, location data will be from GPS.
-- **networkAvailable (_boolean_)** (android only) -- If the network provider is available, if yes, location data will be from cellular network.
-- **passiveAvailable (_boolean_)** (android only) -- If the passive provider is available, if yes, location data will be determined passively.
+Returns a promise resolving to an object of type [LocationProviderStatus](#locationproviderstatus).
 
 ### `Location.enableNetworkProviderAsync()`
 
@@ -199,13 +196,7 @@ Gets the current heading information from the device
 
 #### Returns
 
-Object with:
-
-- **magHeading (_number_)** — measure of magnetic north in degrees
-- **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
-- **accuracy (_number_)** — level of callibration of compass.
-  - 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
-  - Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
+A promise resolving to an object of type [LocationHeadingObject](#locationheadingobject).
 
 ### `Location.watchHeadingAsync(callback)`
 
@@ -213,21 +204,13 @@ Subscribe to compass updates from the device.
 
 #### Arguments
 
-- **callback (_function_)** --
-
-  This function is called on each compass update. It is passed exactly one parameter: an object with the following fields:
-
-  - **magHeading (_number_)** — measure of magnetic north in degrees
-  - **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
-  - **accuracy (_number_)** — level of callibration of compass.
-    - 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
-    - Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
+- **callback (_function_)** -- This function is called on each compass update. It receives an object of type [LocationHeadingObject](#locationheadingobject) as the first argument.
 
 #### Returns
 
 Returns a promise resolving to a subscription object, which has one field:
 
-- **remove (function)** — Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
+- **remove (_function_)** — Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
 
 ### `Location.geocodeAsync(address)`
 
@@ -301,7 +284,7 @@ Registers for receiving location updates that can also come when the app is in t
 
 - **taskName (_string_)** -- Name of the task receiving location updates.
 - **options (_object_)** -- An object of options passed to the location manager.
-  - **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+  - **accuracy : [LocationAccuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [LocationAccuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
   - **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds. Default value depends on `accuracy` option. (**Android only**)
   - **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters. Default value may depend on `accuracy` option.
   - **deferredUpdatesInterval (_number_)** -- Minimum time interval in miliseconds that must pass since last reported location before all later locations are reported in a batched update. Defaults to `0`.
@@ -312,7 +295,7 @@ Registers for receiving location updates that can also come when the app is in t
     - **notificationBody (_string_)** -- Subtitle of the foreground service notification. _required_
     - **notificationColor (_string_)** -- Color of the foreground service notification. Accepts `#RRGGBB` and `#AARRGGBB` hex formats. _optional_
   - **pausesUpdatesAutomatically (_boolean_)** -- A boolean value indicating whether the location manager can pause location updates to improve battery life without sacrificing location data. When this option is set to `true`, the location manager pauses updates (and powers down the appropriate hardware) at times when the location data is unlikely to change. You can help the determination of when to pause location updates by assigning a value to the `activityType` property. Defaults to `false`. (**iOS only**)
-  - **activityType : [Location.ActivityType](#locationactivitytype)** -- The type of user activity associated with the location updates. See [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620567-activitytype) for more details. Defaults to `Location.ActivityType.Other`. (**iOS only**)
+  - **activityType : [LocationActivityType](#locationactivitytype)** -- The type of user activity associated with the location updates. See [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620567-activitytype) for more details. Defaults to `LocationActivityType.Other`. (**iOS only**)
 
 > Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 
@@ -324,7 +307,7 @@ A promise resolving once the task with location updates is registered.
 
 Background location task will be receiving following data:
 
-- **locations : [Location](#type-location)[]** - An array of the new locations.
+- **locations : [LocationObject](#locationobject)[]** - An array of the new locations.
 
 ```javascript
 import * as TaskManager from 'expo-task-manager';
@@ -389,11 +372,11 @@ A promise resolving as soon as the task is registered.
 
 Geofencing task will be receiving following data:
 
-- **eventType : [Location.GeofencingEventType](#locationgeofencingeventtype)** -- Indicates the reason for calling the task, which can be triggered by entering or exiting the region. See [Location.GeofencingEventType](#locationgeofencingeventtype).
-- **region : [LocationRegion](#type-location-region)** -- Object containing details about updated region. See [LocationRegion](#type-region) for more details.
+- **eventType : [LocationGeofencingEventType](#locationgeofencingeventtype)** -- Indicates the reason for calling the task, which can be triggered by entering or exiting the region. See [LocationGeofencingEventType](#locationgeofencingeventtype).
+- **region : [LocationRegion](#locationregion)** -- Object containing details about updated region. See [LocationRegion](#locationregion) for more details.
 
 ```javascript
-import * as Location from 'expo-location';
+import { LocationGeofencingEventType } from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 
 TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { eventType, region }, error }) => {
@@ -401,9 +384,9 @@ TaskManager.defineTask(YOUR_TASK_NAME, ({ data: { eventType, region }, error }) 
     // check `error.message` for more details.
     return;
   }
-  if (eventType === Location.GeofencingEventType.Enter) {
+  if (eventType === LocationGeofencingEventType.Enter) {
     console.log("You've entered region:", region);
-  } else if (eventType === Location.GeofencingEventType.Exit) {
+  } else if (eventType === LocationGeofencingEventType.Exit) {
     console.log("You've left region:", region);
   }
 });
@@ -433,19 +416,37 @@ A promise resolving to boolean value indicating whether the geofencing task is s
 
 ## Types
 
-### `Location`
+### `LocationPermissionResponse`
 
-Object of type `Location` contains following keys:
+`LocationPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional platform-specific fields:
 
-- **coords (_object_)** -- The coordinates of the position, with the following fields:
-  - **latitude (_number_)** -- The latitude in degrees.
-  - **longitude (_number_)** -- The longitude in degrees.
-  - **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
-  - **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
-  - **altitudeAccuracy (_number_)** -- The accuracy of the altitude value, in meters (iOS only).
-  - **heading (_number_)** -- Horizontal direction of travel of this device, measured in degrees starting at due north and continuing clockwise around the compass. Thus, north is 0 degrees, east is 90 degrees, south is 180 degrees, and so on.
-  - **speed (_number_)** -- The instantaneous speed of the device in meters per second.
-- **timestamp (_number_)** -- The time at which this position information was obtained, in milliseconds since epoch.
+- **ios (_object_)**
+  - **scope (_string_)** — The scope of granted permission. Indicates when it's possible to use location, possible values are: `whenInUse`, `always` or `none`.
+- **android (_object_)**
+  - **scope (_string_)** — On Android it indicates the type of location provider with possible values: `fine`, `coarse`, `none`.
+
+### `LocationObject`
+
+Object of type `LocationObject` contains following keys:
+
+- **coords (_object_)** — The coordinates of the position, with the following fields:
+  - **latitude (_number_)** — The latitude in degrees.
+  - **longitude (_number_)** — The longitude in degrees.
+  - **altitude (_number_ | _null_)** — The altitude in meters above the WGS 84 reference ellipsoid. Can be `null` on Web if it's not available.
+  - **accuracy (_number_ | _null_)** — The radius of uncertainty for the location, measured in meters. Can be `null` on Web if it's not available.
+  - **altitudeAccuracy (_number_ | _null_)** — The accuracy of the altitude value, in meters. Can be `null` on Web if it's not available.
+  - **heading (_number_ | _null_)** — Horizontal direction of travel of this device, measured in degrees starting at due north and continuing clockwise around the compass. Thus, north is 0 degrees, east is 90 degrees, south is 180 degrees, and so on. Can be `null` on Web if it's not available.
+  - **speed (_number_ | _null_)** — The instantaneous speed of the device in meters per second. Can be `null` on Web if it's not available.
+- **timestamp (_number_)** — The time at which this position information was obtained, in milliseconds since epoch.
+
+### `LocationProviderStatus`
+
+Object of type `LocationProviderStatus` contains following keys:
+
+- **locationServicesEnabled (_boolean_)** -- Whether location services are enabled. See [Location.hasServicesEnabledAsync](#locationhasservicesenabledasync) for a more convenient solution to get this value.
+- **gpsAvailable (_boolean_)** -- (**Android only**) Whether the GPS provider is available. If `true` the location data will come from GPS, especially for requests with high accuracy.
+- **networkAvailable (_boolean_)** -- (**Android only**) Whether the network provider is available. If `true` the location data will come from cellular network, especially for requests with low accuracy.
+- **passiveAvailable (_boolean_)** -- (**Android only**) Whether the passive provider is available. If `true` the location data will be determined passively.
 
 ### `LocationRegion`
 
@@ -455,34 +456,30 @@ Object of type `LocationRegion` includes following fields:
 - **latitude (_number_)** -- The latitude in degress of region's center point.
 - **longitude (_number_)** -- The longitude in degress of region's center point.
 - **radius (_number_)** -- The radius measured in meters that defines the region's outer boundary.
-- **state : [Location.GeofencingRegionState](#locationgeofencingregionstate)** -- One of [Location.GeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
+- **state : [LocationGeofencingRegionState](#locationgeofencingregionstate)** -- One of [LocationGeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
 
-### `PermissionDetailsLocationIOS`
+### `LocationHeadingObject`
 
-Object of type `PermissionDetailsLocationIOS` contains only one field:
-
-- **scope** (_string_) - The scope of granted permission, which indicates when it's possible to use location. Possible values: `whenInUse`, `always`.
-
-### `PermissionDetailsLocationAndroid`
-
-Object of type `PermissionDetailsLocationAndroid` contains only one field:
-
-- **scope** (_string_) - The scope of granted permission, which indicates the type of location provider. Possible values: `fine`, `coarse`, `none`.
+- **magHeading (_number_)** — Measure of magnetic north in degrees.
+- **trueHeading (_number_)** — Measure of true north in degrees (needs location permissions, will return -1 if not given).
+- **accuracy (_number_)** — Level of callibration of compass.
+  - **3**: high accuracy, **2**: medium accuracy, **1**: low accuracy, **0**: none
+  - Reference for iOS: **3**: < 20 degrees uncertainty, **2**: < 35 degrees, **1**: < 50 degrees, **0**: > 50 degrees
 
 ## Enums
 
-### `Location.Accuracy`
+### `LocationAccuracy`
 
 | Accuracy                     | Value | Description                                                                                   |
-| ---------------------------- | ----- | --------------------------------------------------------------------------------------------- |
-| `Accuracy.Lowest`            | 1     | Accurate to the nearest three kilometers.                                                     |
-| `Accuracy.Low`               | 2     | Accurate to the nearest kilometer.                                                            |
-| `Accuracy.Balanced`          | 3     | Accurate to within one hundred meters.                                                        |
-| `Accuracy.High`              | 4     | Accurate to within ten meters of the desired target.                                          |
-| `Accuracy.Highest`           | 5     | The best level of accuracy available.                                                         |
-| `Accuracy.BestForNavigation` | 6     | The highest possible accuracy that uses additional sensor data to facilitate navigation apps. |
+| ---------------------------- | :---: | --------------------------------------------------------------------------------------------- |
+| `Accuracy.Lowest`            |   1   | Accurate to the nearest three kilometers.                                                     |
+| `Accuracy.Low`               |   2   | Accurate to the nearest kilometer.                                                            |
+| `Accuracy.Balanced`          |   3   | Accurate to within one hundred meters.                                                        |
+| `Accuracy.High`              |   4   | Accurate to within ten meters of the desired target.                                          |
+| `Accuracy.Highest`           |   5   | The best level of accuracy available.                                                         |
+| `Accuracy.BestForNavigation` |   6   | The highest possible accuracy that uses additional sensor data to facilitate navigation apps. |
 
-### `Location.ActivityType`
+### `LocationActivityType`
 
 | ActivityType                        | Value | Description                                                                                                           |
 | ----------------------------------- | :---: | --------------------------------------------------------------------------------------------------------------------- |
@@ -492,19 +489,19 @@ Object of type `PermissionDetailsLocationAndroid` contains only one field:
 | `ActivityType.OtherNavigation`      |   4   | Activity type for movements for other types of vehicular navigation that are not automobile related.                  |
 | `ActivityType.Airborne`             |   5   | Intended for airborne activities. **Available since iOS 12.0, fall backs to `ActivityType.Other` otherwise.**         |
 
-### `Location.GeofencingEventType`
+### `LocationGeofencingEventType`
 
 | Event type                  | Value | Description                                        |
-| --------------------------- | ----- | -------------------------------------------------- |
-| `GeofencingEventType.Enter` | 1     | Emitted when the device entered observed region.   |
-| `GeofencingEventType.Exit`  | 2     | Occurs as soon as the device left observed region. |
+| --------------------------- | :---: | -------------------------------------------------- |
+| `GeofencingEventType.Enter` |   1   | Emitted when the device entered observed region.   |
+| `GeofencingEventType.Exit`  |   2   | Occurs as soon as the device left observed region. |
 
-### `Location.GeofencingRegionState`
+### `LocationGeofencingRegionState`
 
 | Region state                    | Value | Description                                     |
-| ------------------------------- | ----- | ----------------------------------------------- |
-| `GeofencingRegionState.Inside`  | 1     | Indicates that the device is inside the region. |
-| `GeofencingRegionState.Outside` | 2     | Inverse of inside state.                        |
+| ------------------------------- | :---: | ----------------------------------------------- |
+| `GeofencingRegionState.Inside`  |   1   | Indicates that the device is inside the region. |
+| `GeofencingRegionState.Outside` |   2   | Inverse of inside state.                        |
 
 ## Enabling Emulator Location
 

@@ -119,6 +119,16 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   }
 }
 
+- (void)_removeData
+{
+  if (_data) {
+    [_data pauseImmediately];
+    [_data setStatusUpdateCallback:nil];
+    [_exAV demoteAudioSessionIfPossible];
+    _data = nil;
+  }
+}
+
 - (void)_removePlayer
 {
   if (_requestedFullscreenChangeRejecter) {
@@ -129,15 +139,19 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     _requestedFullscreenChange = NO;
   }
 
-  if (_data) {
-    [_data pauseImmediately];
-    [_data setStatusUpdateCallback:nil];
-    [_exAV demoteAudioSessionIfPossible];
-    [self _removeFullscreenPlayerViewController];
-    [self _removePlayerLayer];
-    [self _removePlayerViewController];
-    _data = nil;
-  }
+  // Any ViewController/layer updates need to be
+  // executed on the main UI thread.
+  __weak EXVideoView *weakSelf = self;
+  void (^block)(void) = ^ {
+    __strong EXVideoView *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf _removeFullscreenPlayerViewController];
+      [strongSelf _removePlayerLayer];
+      [strongSelf _removePlayerViewController];
+    }
+  };
+  _playerHasLoaded = NO;
+  [UMUtilities performSynchronouslyOnMainThread:block];
 }
 
 #pragma mark - _playerViewController / _playerLayer management
@@ -150,6 +164,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   EXVideoPlayerViewController *controller = [[EXVideoPlayerViewController alloc] init];
   [controller setShowsPlaybackControls:_useNativeControls];
   [controller setRctDelegate:self];
+  [controller setDelegate:self];
   [controller.view setFrame:self.bounds];
   [controller setPlayer:_data.player];
   [controller addObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
@@ -193,18 +208,14 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)_removePlayerViewController
 {
   if (_playerViewController) {
-    __weak EXVideoView *weakSelf = self;
-    void (^block)(void) = ^ {
-      __strong EXVideoView *strongSelf = weakSelf;
-      if (strongSelf && strongSelf.playerViewController) {
-        [strongSelf.playerViewController.view removeFromSuperview];
-        [strongSelf.playerViewController removeObserver:strongSelf forKeyPath:EXVideoReadyForDisplayKeyPath];
-        [strongSelf.playerViewController removeObserver:strongSelf forKeyPath:EXVideoBoundsKeyPath];
-        strongSelf.playerViewController = nil;
-      }
-    };
-
-    [UMUtilities performSynchronouslyOnMainThread:block];
+    [_playerViewController.view removeFromSuperview];
+    [_playerViewController removeObserver:self forKeyPath:EXVideoReadyForDisplayKeyPath];
+    if (@available(iOS 12, *)) {
+      // EXVideoBounds monitoring is only used as a fallback on iOS 11 or lower
+    } else {
+      [_playerViewController removeObserver:self forKeyPath:EXVideoBoundsKeyPath];
+    }
+    _playerViewController = nil;
   }
 }
 
@@ -238,11 +249,12 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                              @"status": [_data getStatus]});
       }
     }
-  } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
     
+    // On iOS 11 or lower, use video-bounds monitoring to detect changes in the full-screen
+    // mode due to activating native controls
+  } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
     CGRect viewBounds = [change[@"new"] CGRectValue];
     CGRect screen = [[UIScreen mainScreen] bounds];
-    
     if (viewBounds.size.height != screen.size.height && viewBounds.size.width != screen.size.width && _fullscreenPlayerPresented && !_fullscreenPlayerViewController) {
       // Fullscreen player is being dismissed
       _fullscreenPlayerPresented = NO;
@@ -270,8 +282,10 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 {
   if (_data) {
     [_statusToSet addEntriesFromDictionary:[_data getStatus]];
-    [self _removePlayer];
+    [self _removeData];
   }
+    
+  [self _removePlayer];
   
   if (initialStatus) {
     [_statusToSet addEntriesFromDictionary:initialStatus];
@@ -299,6 +313,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   void (^errorCallback)(NSString *) = ^(NSString *error) {
     __strong EXVideoView *strongSelf = weakSelf;
     if (strongSelf) {
+      [strongSelf _removeData];
       [strongSelf _removePlayer];
       [strongSelf _callErrorCallback:error];
     }
@@ -315,6 +330,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                                  resolve(successStatus);
                                }
                              } else if (strongSelf) {
+                               [strongSelf _removeData];
                                [strongSelf _removePlayer];
                                if (reject) {
                                  reject(@"E_VIDEO_NOTCREATED", error, UMErrorWithMessage(error));
@@ -468,8 +484,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     dispatch_async(_exAV.methodQueue, ^{
       __strong EXVideoView *strongSelf = weakSelf;
       if (strongSelf) {
-        [strongSelf setSource:source withStatus:nil resolver:nil rejecter:nil];
         strongSelf.lastSetSource = source;
+        [strongSelf setSource:source withStatus:nil resolver:nil rejecter:nil];
       }
     });
   }
@@ -486,30 +502,37 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)setUseNativeControls:(BOOL)useNativeControls
 {
   _useNativeControls = useNativeControls;
-  if (_data == nil) {
+  if (!_playerHasLoaded) {
     return;
   }
   
   __weak EXVideoView *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     __strong EXVideoView *strongSelf = weakSelf;
-    if (strongSelf && strongSelf.useNativeControls) {
+    if (!strongSelf || !strongSelf.playerHasLoaded) {
+      return;
+    }
+    if (strongSelf.useNativeControls) {
       if (strongSelf.playerLayer) {
         [strongSelf _removePlayerLayer];
       }
       if (!strongSelf.playerViewController && strongSelf.data) {
         strongSelf.playerViewController = [strongSelf _createNewPlayerViewController];
-        // We're listening for changes to `videoBounds`, because it seems
-        // to be the easiest way to detect fullscreen changes triggered by the native video button.
-        // See https://stackoverflow.com/questions/36323259/detect-video-playing-full-screen-in-portrait-or-landscape/36388184#36388184
-        // and https://github.com/expo/expo/issues/1566
-        [strongSelf.playerViewController addObserver:self forKeyPath:EXVideoBoundsKeyPath options:NSKeyValueObservingOptionNew context:nil];
+        if (@available(iOS 12, *)) {
+          // On iOS 12 or higher, use the AVPlayerViewControllerDelegate full-screen delegate methods:
+          // https://stackoverflow.com/a/58809976/3785358
+        } else {
+          // On iOS 11 or earlier, fallback to listening for changes to `videoBounds`.
+          // See https://stackoverflow.com/questions/36323259/detect-video-playing-full-screen-in-portrait-or-landscape/36388184#36388184
+          // and https://github.com/expo/expo/issues/1566
+          [strongSelf.playerViewController addObserver:self forKeyPath:EXVideoBoundsKeyPath options:NSKeyValueObservingOptionNew context:nil];
+        }
         // Resize mode must be set before layer is added
         // to prevent video from being animated when `resizeMode` is `cover`
         [strongSelf _updateNativeResizeMode];
         [strongSelf addSubview:strongSelf.playerViewController.view];
       }
-    } else if (strongSelf) {
+    } else {
       if (strongSelf.playerViewController) {
         [strongSelf _removePlayerViewController];
       }
@@ -609,8 +632,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)removeFromSuperview
 {
+  [self _removeData];
   [self _removePlayer];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [super removeFromSuperview];
 }
 
@@ -618,7 +641,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)videoPlayerViewControllerWillDismiss:(AVPlayerViewController *)playerViewController
 {
-  if (_fullscreenPlayerViewController == playerViewController && _fullscreenPlayerPresented) {
+  if (_fullscreenPlayerViewController == playerViewController && _fullscreenPlayerPresented && !_fullscreenPlayerIsDismissing) {
     _fullscreenPlayerIsDismissing = YES;
     [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
   }
@@ -632,6 +655,28 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     _presentingViewController = nil;
     [self _removeFullscreenPlayerViewController];
     [self setUseNativeControls:_useNativeControls];
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
+  }
+}
+
+#pragma mark - AVVideoPlayerViewControllerDelegate
+
+- (void)playerViewController:(AVPlayerViewController *)playerViewController
+willBeginFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  if (playerViewController == _playerViewController) {
+    _fullscreenPlayerPresented = YES;
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
+  }
+}
+
+- (void)playerViewController:(AVPlayerViewController *)playerViewController
+willEndFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  if (playerViewController == _playerViewController) {
+    _fullscreenPlayerPresented = NO;
+    [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
     [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
   }
 }
@@ -677,8 +722,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     if (_onLoadStart) {
       _onLoadStart(nil);
     }
-    [self _removePlayerLayer];
-    [self _removePlayerViewController];
+    [self _removePlayer];
     
     __weak __typeof__(self) weakSelf = self;
     [_data handleMediaServicesReset:^{
@@ -698,7 +742,6 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)dealloc
 {
   [_exAV unregisterVideoForAudioLifecycle:self];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_data pauseImmediately];
   [_exAV demoteAudioSessionIfPossible];
 }

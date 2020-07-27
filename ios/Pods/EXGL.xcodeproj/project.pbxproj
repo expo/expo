@@ -353,7 +353,7 @@
 			};
 			name = Debug;
 		};
-		26698EAA3CD5EE56163BD01A31B45792 /* Debug */ = {
+		55FE5C144FD92628077E17CED96597DD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 554EAEEB05AF97F52EA237CFEEB0E89B /* EXGL.debug.xcconfig */;
 			buildSettings = {
@@ -373,6 +373,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -437,7 +438,7 @@
 			};
 			name = Release;
 		};
-		F0D04D9EF28EBD87B883C0060323AD39 /* Release */ = {
+		A4C5C063D6F59BF126AB5F7D64A0A596 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BCA08C11F10BB62CCBEE2AA018634CC1 /* EXGL.release.xcconfig */;
 			buildSettings = {
@@ -457,6 +458,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -468,8 +470,8 @@
 		9F77B89B96F71A9EC31279D4781B353F /* Build configuration list for PBXNativeTarget "EXGL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				26698EAA3CD5EE56163BD01A31B45792 /* Debug */,
-				F0D04D9EF28EBD87B883C0060323AD39 /* Release */,
+				55FE5C144FD92628077E17CED96597DD /* Debug */,
+				A4C5C063D6F59BF126AB5F7D64A0A596 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

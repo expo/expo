@@ -21,7 +21,7 @@ Users with Publish access to an account will be able to create new
 releases with `expo publish` as well as create new platform builds with
 `expo build:android` or `expo build:ios`
 
-You will need to add an [`owner` key](../../workflow/configuration/#owner)
+You will need to add an [`owner` key](/versions/latest/config/app/#owner)
 to your app.json to take advantage of the Publish permission.
 
 ### View
