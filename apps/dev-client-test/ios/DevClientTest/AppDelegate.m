@@ -26,13 +26,14 @@
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.launchOptions = launchOptions;
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  #ifdef DEBUG
-    [self initializeReactNativeApp];
-  #else
-    EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
-    controller.delegate = self;
-    [controller startAndShowLaunchScreen:self.window];
-  #endif
+#ifdef DEBUG
+  EXDevelopmentClientController *controller = [EXDevelopmentClientController sharedInstance];
+  [controller startWithWindow:self.window delegate:self launchOptions:launchOptions];
+#else
+  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
+  controller.delegate = self;
+  [controller startAndShowLaunchScreen:self.window];
+#endif
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
@@ -66,7 +67,7 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
  #ifdef DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  return [[EXDevelopmentClientController sharedInstance] sourceUrl];
  #else
   return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
  #endif
@@ -76,6 +77,12 @@
   appController.bridge = [self initializeReactNativeApp];
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService showSplashScreenFor:self.window.rootViewController];
+}
+
+- (void)developmentClientController:(EXDevelopmentClientController *)developmentClientController
+                didStartWithSuccess:(BOOL)success
+{
+  developmentClientController.appBridge = [self initializeReactNativeApp];
 }
 
 @end

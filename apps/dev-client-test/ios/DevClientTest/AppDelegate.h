@@ -5,6 +5,8 @@
 
 #import <UMCore/UMAppDelegateWrapper.h>
 
-@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate>
+#import <EXDevelopmentClient.h>
+
+@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate, EXDevelopmentClientControllerDelegate>
 
 @end

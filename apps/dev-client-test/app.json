@@ -4,7 +4,8 @@
   "expo": {
     "name": "DevClientTest",
     "slug": "DevClientTest",
-    "version": "1.0.0",
+    "sdkVersion": "UNVERSIONED",
+    "version": "UNVERSIONED",
     "assetBundlePatterns": [
       "**/*"
     ]

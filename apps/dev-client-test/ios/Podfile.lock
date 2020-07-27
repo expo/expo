@@ -134,6 +134,8 @@ PODS:
   - EXPermissions (9.0.1):
     - UMCore
     - UMPermissionsInterface
+  - expo-development-client (1.0.0):
+    - React
   - EXPrint (9.0.1):
     - UMCore
     - UMFileSystemInterface
@@ -583,6 +585,7 @@ DEPENDENCIES:
   - EXNetwork (from `../../../packages/expo-network/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
+  - expo-development-client (from `../../../packages/expo-development-client`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -754,6 +757,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../../../packages/expo-permissions/ios"
+  expo-development-client:
+    :path: "../../../packages/expo-development-client"
   EXPrint:
     :path: "../../../packages/expo-print/ios"
   EXRandom:
@@ -916,6 +921,7 @@ SPEC CHECKSUMS:
   EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
   EXNotifications: f0f89e5ba8ef5ad7568b9f1e65031a6f40fbd313
   EXPermissions: 80ac3acbdb145930079810fe5b08c022b3428aa8
+  expo-development-client: 545ee610b499fe17bbd100c1d2d6bdccedc4eddc
   EXPrint: ba38c9f67a2d046d6160f6d4308af18f584a5039
   EXRandom: a375fb6bed8a0919a795766b8d5218b1200538b7
   EXScreenCapture: ed9b1813758bf0057fc3780043bfa4dc0956a9b5

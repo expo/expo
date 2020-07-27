@@ -55,5 +55,7 @@
 	<false/>
   <key>UIStatusBarStyle</key>
   <string>UIStatusBarStyleDefault</string>
+  <key>NSCameraUsageDescription</key>
+  <string>Allow dev-client-test to use the camera</string>
 </dict>
 </plist>

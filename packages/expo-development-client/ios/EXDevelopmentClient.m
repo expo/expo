@@ -2,6 +2,8 @@
 
 #import <REact/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+#import <React/RCTDevMenu.h>
+#import <React/RCTAsyncLocalStorage.h>
 
 #import <EDUMModuleRegistryAdapter.h>
 
@@ -101,7 +103,10 @@ EXDevelopmentClientBundleSourceCreate(NSURL *url, NSData *data, int64_t length) 
   NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
   // You can inject any extra modules that you would like here, more information at:
   // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
-  return extraModules;
+  return [extraModules arrayByAddingObjectsFromArray:@[
+    [[RCTDevMenu alloc] init],
+    [[RCTAsyncLocalStorage alloc] init],
+  ]];
 }
 
 #ifdef DEV_LAUNCHER_URL
