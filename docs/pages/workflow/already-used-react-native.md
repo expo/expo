@@ -22,9 +22,9 @@ Managed Expo projects also offer OTA (Over The Air) updates and a push notificat
 
 There's no need re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](/workflow/publishing/#limitations).
 
-Expo offers a shared configuration file we call a manifest. Typically you'd update your Xcode plist or Android Studio xml files to handle changes. For example, if you want to lock screen orientation, change your icon, customize your splash screen or add/remove permissions you'd do this within `app.json` once and it would apply to both.
+Expo offers a shared configuration file we call a _manifest_.
 
-- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json`. [See the guide here](/workflow/configuration/).
+- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json` and it will apply to both iOS and Android. [See the guide here](/workflow/configuration/).
 
 In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo client [(available on the App / Play Store)](https://expo.io). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
 
