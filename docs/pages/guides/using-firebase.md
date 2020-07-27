@@ -201,7 +201,7 @@ function storeHighScore(user, score) {
 
 ## Using Expo with Firestore
 
-[Firestore](https://firebase.google.com/docs/firestore/) is the successor to Firebase Realtime Database.
+[Firestore](https://firebase.google.com/docs/firestore/) is a second database service in Firebase, the other being Realtime Database.  Each have their advantages, and sometimes applications will end up using both.  See [the comparison chart](https://firebase.google.com/docs/firestore/rtdb-vs-firestore) and [take the survey](https://firebase.google.com/docs/firestore/rtdb-vs-firestore#key_considerations).
 
 Here's one way to implement a data update using Firestore:
 
