@@ -1,92 +1,67 @@
+require 'json'
+
+install! 'cocoapods',
+         :generate_multiple_pod_projects => true,
+         :incremental_installation => true
+source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+inhibit_all_warnings!
 
-def add_flipper_pods!(versions = {})
-  versions['Flipper'] ||= '~> 0.33.1'
-  versions['DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.1'
-  versions['Flipper-Glog'] ||= '0.3.6'
-  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.0'
+# Get the package.json for the excluded modules
+package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-  pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
+# [Custom] Add target the root modules in the workspace
+modules_path = '../../../node_modules'
 
-  # List all transitive dependencies for FlipperKit pods
-  # to avoid them being linked in Release builds
-  pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
-  pod 'Flipper-DoubleConversion', versions['DoubleConversion'], :configuration => 'Debug'
-  pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
-  pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
-  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
-  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
-  pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
-end
-
-# Post Install processing for Flipper
-def flipper_post_install(installer)
-  installer.pods_project.targets.each do |target|
-    if target.name == 'YogaKit'
-      target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '4.1'
-      end
-    end
-  end
-end
+# Import the auto-linking packages
+require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
+require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
 
 target 'DevClientTest' do
-  # Pods for DevClientTest
-  pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
-  pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
-  pod 'React', :path => '../node_modules/react-native/'
-  pod 'React-Core', :path => '../node_modules/react-native/'
-  pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules'
-  pod 'React-Core/DevSupport', :path => '../node_modules/react-native/'
-  pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
-  pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'
-  pod 'React-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'
-  pod 'React-RCTImage', :path => '../node_modules/react-native/Libraries/Image'
-  pod 'React-RCTLinking', :path => '../node_modules/react-native/Libraries/LinkingIOS'
-  pod 'React-RCTNetwork', :path => '../node_modules/react-native/Libraries/Network'
-  pod 'React-RCTSettings', :path => '../node_modules/react-native/Libraries/Settings'
-  pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text'
-  pod 'React-RCTVibration', :path => '../node_modules/react-native/Libraries/Vibration'
-  pod 'React-Core/RCTWebSocket', :path => '../node_modules/react-native/'
+  # [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
+  # expected (you may get `'React/<File>.h' file not found` when building)
+  rnPrefix = '../../../react-native-lab/react-native'
 
-  pod 'React-cxxreact', :path => '../node_modules/react-native/ReactCommon/cxxreact'
-  pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
-  pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
-  pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
-  pod 'ReactCommon/callinvoker', :path => "../node_modules/react-native/ReactCommon"
-  pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
-  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
+  pod 'FBLazyVector', :path => "#{rnPrefix}/Libraries/FBLazyVector"
+  pod 'FBReactNativeSpec', :path => "#{rnPrefix}/Libraries/FBReactNativeSpec"
+  pod 'RCTRequired', :path => "#{rnPrefix}/Libraries/RCTRequired"
+  pod 'RCTTypeSafety', :path => "#{rnPrefix}/Libraries/TypeSafety"
+  pod 'React', :path => "#{rnPrefix}/"
+  pod 'React-Core', :path => "#{rnPrefix}/"
+  pod 'React-CoreModules', :path => "#{rnPrefix}/React/CoreModules"
+  pod 'React-Core/DevSupport', :path => "#{rnPrefix}/"
+  pod 'React-RCTActionSheet', :path => "#{rnPrefix}/Libraries/ActionSheetIOS"
+  pod 'React-RCTAnimation', :path => "#{rnPrefix}/Libraries/NativeAnimation"
+  pod 'React-RCTBlob', :path => "#{rnPrefix}/Libraries/Blob"
+  pod 'React-RCTImage', :path => "#{rnPrefix}/Libraries/Image"
+  pod 'React-RCTLinking', :path => "#{rnPrefix}/Libraries/LinkingIOS"
+  pod 'React-RCTNetwork', :path => "#{rnPrefix}/Libraries/Network"
+  pod 'React-RCTSettings', :path => "#{rnPrefix}/Libraries/Settings"
+  pod 'React-RCTText', :path => "#{rnPrefix}/Libraries/Text"
+  pod 'React-RCTVibration', :path => "#{rnPrefix}/Libraries/Vibration"
+  pod 'React-Core/RCTWebSocket', :path => "#{rnPrefix}/"
 
-  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+  pod 'React-cxxreact', :path => "#{rnPrefix}/ReactCommon/cxxreact"
+  pod 'React-jsi', :path => "#{rnPrefix}/ReactCommon/jsi"
+  pod 'React-jsiexecutor', :path => "#{rnPrefix}/ReactCommon/jsiexecutor"
+  pod 'React-jsinspector', :path => "#{rnPrefix}/ReactCommon/jsinspector"
+  pod 'ReactCommon/callinvoker', :path => "#{rnPrefix}/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "#{rnPrefix}/ReactCommon"
+  pod 'Yoga', :path => "#{rnPrefix}/ReactCommon/yoga", :modular_headers => true
 
-  use_unimodules!
+  pod 'DoubleConversion', :podspec => "#{rnPrefix}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', :podspec => "#{rnPrefix}/third-party-podspecs/glog.podspec"
+  pod 'Folly', :podspec => "#{rnPrefix}/third-party-podspecs/Folly.podspec"
+
+  # Auto-linking
+  use_unimodules!(
+    {
+      modules_paths: %w[../../../packages], # [Custom] Prevent the bundling of template code and stripe
+      exclude: package['excludedUnimodules'],
+      flags: { inhibit_warnings: false }
+    }
+  )
+
+  # react-native-cli auto-linking
   use_native_modules!
-
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable these next few lines.
-  add_flipper_pods!
-  post_install do |installer|
-    flipper_post_install(installer)
-  end
 end

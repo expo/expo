@@ -7,6 +7,17 @@
     "start": "react-native start",
     "test": "jest"
   },
+  "excludedUnimodules": [
+    "expo-branch",
+    "expo-camera",
+    "expo-face-detector",
+    "unimodules-face-detector-interface",
+    "expo-payments-stripe",
+    "expo-ads-facebook",
+    "expo-ads-admob",
+    "expo-apple-authentication",
+    "expo-module-template"
+  ],
   "dependencies": {
     "expo": "~38.0.1",
     "expo-splash-screen": "~0.4.0",
@@ -19,6 +30,7 @@
     "react-native-reanimated": "~1.9.0",
     "react-native-screens": "~2.9.0",
     "react-native-unimodules": "~0.10.0",
+    "@react-native-community/async-storage": "~1.11.0",
     "react-native-web": "~0.11.7"
   },
   "devDependencies": {
