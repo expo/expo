@@ -1,5 +1,6 @@
-import { PermissionResponse as UMPermissionResponse } from 'unimodules-permissions-interface';
-export declare type PermissionResponse = UMPermissionResponse & {
+import { PermissionResponse } from 'unimodules-permissions-interface';
+export { PermissionResponse as CameraPermissionResponse };
+export declare type CameraRollPermissionResponse = PermissionResponse & {
     scope?: 'all' | 'limited' | 'none';
 };
 export declare enum MediaTypeOptions {

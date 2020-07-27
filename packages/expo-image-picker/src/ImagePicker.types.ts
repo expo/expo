@@ -1,6 +1,8 @@
-import { PermissionResponse as UMPermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'unimodules-permissions-interface';
 
-export type PermissionResponse = UMPermissionResponse & {
+export { PermissionResponse as CameraPermissionResponse };
+
+export type CameraRollPermissionResponse = PermissionResponse & {
   // iOS only
   scope?: 'all' | 'limited' | 'none';
 };
