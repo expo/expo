@@ -39,7 +39,7 @@ Asks the user to grant permissions for accessing media in user's media library. 
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.getPermissionsAsync()`
 
@@ -47,7 +47,7 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
@@ -70,7 +70,7 @@ An object representing an [asset](#asset).
 
 Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
 
-On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key. 
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
 
 #### Arguments
 
@@ -240,6 +240,15 @@ An EventSubscription object that you can call `remove()` on when you would like 
 Removes all listeners.
 
 ## Types
+
+### `MediaLibrary.CameraRollPermissionResponse`
+
+`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+
+- `scope` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+  - `all` if the user granted your app access to the whole photo library
+  - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+  - `none` if user denied or hasn't yet granted the permission
 
 ### `Asset`
 
