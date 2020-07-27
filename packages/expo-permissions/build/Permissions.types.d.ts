@@ -7,6 +7,7 @@ export interface PermissionMap {
     [permissionType: string]: PermissionInfo;
 }
 export interface PermissionInfo extends UMPermissionResponse {
+    scope?: 'all' | 'limited' | 'none';
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
 }

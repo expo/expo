@@ -1,10 +1,19 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import {
+  PermissionResponse as UMPermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'unimodules-permissions-interface';
 
 import MediaLibrary from './ExponentMediaLibrary';
 
 const eventEmitter = new EventEmitter(MediaLibrary);
+
+export type PermissionResponse = UMPermissionResponse & {
+  // iOS only
+  scope?: 'all' | 'limited' | 'none';
+};
 
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export type SortByKey =
@@ -95,10 +104,10 @@ export type PagedInfo<T> = {
   totalCount: number;
 };
 
-export { PermissionStatus, PermissionResponse };
-
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
+
+export { PermissionStatus, PermissionExpiration };
 
 function arrayize(item: any): any[] {
   if (Array.isArray(item)) {

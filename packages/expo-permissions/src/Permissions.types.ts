@@ -26,6 +26,8 @@ export interface PermissionMap {
 }
 
 export interface PermissionInfo extends UMPermissionResponse {
+  // iOS only - Permission.CAMERA_ROLL
+  scope?: 'all' | 'limited' | 'none';
   ios?: PermissionDetailsLocationIOS;
   android?: PermissionDetailsLocationAndroid;
 }
