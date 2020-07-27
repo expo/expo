@@ -1,3 +1,7 @@
+import { PermissionResponse as UMPermissionResponse } from 'unimodules-permissions-interface';
+export declare type PermissionResponse = UMPermissionResponse & {
+    scope?: 'all' | 'limited' | 'none';
+};
 export declare enum MediaTypeOptions {
     All = "All",
     Videos = "Videos",

@@ -1,12 +1,9 @@
 import { UnavailabilityError } from '@unimodules/core';
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-} from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 
 import ExponentImagePicker from './ExponentImagePicker';
 import {
+  PermissionResponse,
   ImagePickerResult,
   MediaTypeOptions,
   ImagePickerOptions,

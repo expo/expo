@@ -1,5 +1,5 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
-import { ImagePickerResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset } from './ImagePicker.types';
+import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import { PermissionResponse, ImagePickerResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset } from './ImagePicker.types';
 export declare function getCameraPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getCameraRollPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestCameraPermissionsAsync(): Promise<PermissionResponse>;
