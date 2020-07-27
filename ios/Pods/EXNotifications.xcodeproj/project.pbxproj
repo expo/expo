@@ -502,9 +502,9 @@
 			};
 			name = Debug;
 		};
-		AF0AD68ADEB3585059ED04CEFDF5FC11 /* Release */ = {
+		87E2BC7F9BEA0EBEADEF891A460EC780 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4F55A3B3F814F7BC27CA3D3D2B432083 /* EXNotifications.release.xcconfig */;
+			baseConfigurationReference = 652A256024FEDA329D47D5E4277C2B43 /* EXNotifications.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -524,9 +524,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		C713B0E6DDE114F062471662491E7F99 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -588,9 +587,9 @@
 			};
 			name = Release;
 		};
-		D60B514AABC24955D4424F634517967A /* Debug */ = {
+		E0648026E952A1FCF9269E72385F41B6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 713873EE2B72CE4D56FD1CE35D40E7D2 /* EXNotifications.debug.xcconfig */;
+			baseConfigurationReference = DCC46601122F68C8ACB1F42524A7ED42 /* EXNotifications.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -610,8 +609,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -619,8 +619,8 @@
 		0BCCC96C01E86AD48E1768A943EB60EC /* Build configuration list for PBXNativeTarget "EXNotifications" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D60B514AABC24955D4424F634517967A /* Debug */,
-				AF0AD68ADEB3585059ED04CEFDF5FC11 /* Release */,
+				87E2BC7F9BEA0EBEADEF891A460EC780 /* Debug */,
+				E0648026E952A1FCF9269E72385F41B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
