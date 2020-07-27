@@ -23,6 +23,8 @@ On Android, this module requires permissions to interact with the filesystem and
 
 ## Example Usage
 
+#### Downloading files
+
 ```javascript
 const callback = downloadProgress => {
   const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
@@ -77,6 +79,41 @@ try {
 } catch (e) {
   console.error(e);
 }
+```
+
+#### Using external assets
+
+```ts
+const getContactImageBase64 = async () => {
+  const { status } = await Contacts.requestPermissionsAsync();
+  if (status === 'granted') {
+    try {
+      const { data: contacts } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.Image],
+      });
+
+      // find first contact with image
+      const firstContactImage = contacts.find(c => c.image != null);
+      const imageUri = firstContactImage.image.uri;
+
+      // copy image into your app's filesystem
+      const tempUri = FileSystem.cacheDirectory + 'temp_img';
+      await FileSystem.copyAsync({ from: imageUri, to: tempUri });
+
+      // get base64 string
+      const result = await FileSystem.readAsStringAsync(tempUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      console.log(result);
+
+      // delete temporary file
+      await FileSystem.deleteAsync(tempUri);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+};
 ```
 
 ## API
@@ -172,11 +209,11 @@ app.listen(3000, () => {
 
 ### `FileSystem.getInfoAsync(fileUri, options)`
 
-Get metadata information about a file or directory.
+Get metadata information about a file, directory or external content/asset.
 
 #### Arguments
 
-- **fileUri (_string_)** -- `file://` URI to the file or directory, or a URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos).
+- **fileUri (_string_)** -- URI to the file or directory. It may be e.g. URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
 
 - **options (_object_)** -- A map of options:
 
@@ -266,7 +303,7 @@ Create a copy of a file or directory. Directories are recursively copied with al
 
 - **options (_object_)** -- A map of options:
 
-  - **from (_string_)** -- `file://` URI to the file or directory to copy, or a URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos).
+  - **from (_string_)** -- URI to the asset, file or directory to copy. It can be e.g. URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
 
   - **to (_string_)** -- The `file://` URI to the new copy to create.
 
