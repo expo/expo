@@ -294,8 +294,8 @@ const ROOT = [
   'Regulatory Compliance',
   'Assorted Guides',
   'Essentials',
-  'Expo SDK',
   'Configuration Files',
+  'Expo SDK',
   'React Native',
   'ExpoKit',
 ];
