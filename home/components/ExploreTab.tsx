@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { useTheme } from '@react-navigation/native';
 import dedent from 'dedent';
 import gql from 'graphql-tag';
