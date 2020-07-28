@@ -1,8 +1,8 @@
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
-import { _getCurrentWatchId } from './LocationSubscribers';
 import { setGoogleApiKey } from './LocationGoogleGeocoding';
+import { _getCurrentWatchId } from './LocationSubscribers';
 export declare function getProviderStatusAsync(): Promise<LocationProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
 /**

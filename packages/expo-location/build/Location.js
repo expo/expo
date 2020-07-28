@@ -3,8 +3,8 @@ import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
-import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
 import { setGoogleApiKey, googleGeocodeAsync, googleReverseGeocodeAsync, } from './LocationGoogleGeocoding';
+import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
 export async function getProviderStatusAsync() {
     return ExpoLocation.getProviderStatusAsync();
 }

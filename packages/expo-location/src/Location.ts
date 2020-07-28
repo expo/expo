@@ -23,12 +23,12 @@ import {
   LocationGeocodingOptions,
 } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
-import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
 import {
   setGoogleApiKey,
   googleGeocodeAsync,
   googleReverseGeocodeAsync,
 } from './LocationGoogleGeocoding';
+import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
 
 export async function getProviderStatusAsync(): Promise<LocationProviderStatus> {
   return ExpoLocation.getProviderStatusAsync();
