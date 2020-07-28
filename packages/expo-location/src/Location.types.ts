@@ -164,6 +164,17 @@ export type LocationHeadingObject = {
 export type LocationHeadingCallback = (location: LocationHeadingObject) => any;
 
 /**
+ * An object of options for forward and reverse geocoding.
+ */
+export type LocationGeocodingOptions = {
+  /**
+   * Whether to force using Google Maps API instead of the native implementation.
+   * Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
+   */
+  useGoogleMaps?: boolean;
+};
+
+/**
  * Type representing a result of `geocodeAsync`.
  */
 export type LocationGeocodedLocation = {
