@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Add camera and camera roll permissions on Android. ([#9230](https://github.com/expo/expo/pull/9230) by [@bycedric](https://github.com/bycedric))
+- Added camera and external storage permissions declarations to `AndroidManifest.xml` on Android. ([#9230](https://github.com/expo/expo/pull/9230) by [@bycedric](https://github.com/bycedric))
 
 ### 🎉 New features
 
