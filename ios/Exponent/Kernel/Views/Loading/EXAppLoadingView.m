@@ -1,6 +1,5 @@
 #import "EXAppLoadingView.h"
 #import "EXAppLoadingCancelView.h"
-#import "EXAppLoadingProgressView.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
@@ -24,7 +23,6 @@
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicatorFromNib;
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, assign) BOOL usesSplashFromNSBundle;
-@property (nonatomic, strong) EXAppLoadingProgressView *vProgress;
 @property (nonatomic, strong) RCTImageView *vBackgroundImage;
 @property (nonatomic, strong) EXAppLoadingCancelView *vCancel;
 
@@ -47,11 +45,6 @@
   _loadingView.frame = self.bounds;
   _vBackgroundImage.frame = self.bounds;
   
-  CGFloat progressHeight = 36.0f;
-  if (@available(iOS 11.0, *)) {
-    progressHeight += self.safeAreaInsets.bottom;
-  }
-  _vProgress.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
   if (!_usesSplashFromNSBundle && !_manifest && _vCancel) {
     CGFloat vCancelY = CGRectGetMidY(self.bounds) - 64.0f;
     _vCancel.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
@@ -62,12 +55,6 @@
 {
   _manifest = manifest;
   [self _updateViewsWithManifest];
-}
-
-- (void)updateStatusWithProgress:(EXLoadingProgress *)progress
-{
-  [_vProgress updateStatusWithProgress:progress];
-  _vProgress.hidden = !(progress.total.floatValue > 0.0f);
 }
 
 #pragma mark - internal
@@ -106,9 +93,6 @@
       [self addSubview:_vCancel];
     }
   }
-  _vProgress = [[EXAppLoadingProgressView alloc] init];
-  _vProgress.hidden = YES;
-  [self addSubview:_vProgress];
   [self setNeedsLayout];
   [self setNeedsDisplay];
 }
@@ -180,7 +164,6 @@
   }
   
   _loadingView.backgroundColor = backgroundColor;
-  [self bringSubviewToFront:_vProgress];
 }
 
 - (BOOL)_isCancelAvailable
