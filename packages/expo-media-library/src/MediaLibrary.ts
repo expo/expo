@@ -56,7 +56,7 @@ export type AssetInfo = Asset & {
   isNetworkAsset?: boolean; //iOS only
 };
 
-export type MediaLibraryAssetInfoQueryOptions {
+export type MediaLibraryAssetInfoQueryOptions = {
   shouldDownloadFromNetwork?: boolean;
 }
 
