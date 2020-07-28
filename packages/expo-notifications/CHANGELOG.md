@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for channels to local notifications. ([#9385](https://github.com/expo/expo/pull/9385) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ## 0.5.0 — 2020-07-27
