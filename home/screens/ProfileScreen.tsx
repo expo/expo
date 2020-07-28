@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
-import { OtherProfile, MyProfile } from '../components/Profile';
+import { OtherProfile, MyProfile } from '../containers/Profile';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 
@@ -22,7 +22,7 @@ export default function ProfileScreen({
           username: props.route.params?.username,
         };
       },
-      [navigation]
+      [props.route]
     )
   );
 

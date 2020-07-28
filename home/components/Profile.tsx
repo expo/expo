@@ -1,3 +1,4 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
@@ -6,20 +7,21 @@ import FadeIn from 'react-native-fade-in-image';
 
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
+import { Project } from '../components/ProjectList';
 import ProjectListItem from '../components/ProjectListItem';
 import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
+import { Snack } from '../components/SnackList';
 import { StyledText } from '../components/Text';
 import { StyledView } from '../components/Views';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
 import PrimaryButton from './PrimaryButton';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SnackListItem from './SnackListItem';
-import { StackScreenProps } from '@react-navigation/stack';
-import { AllStackRoutes } from '../navigation/Navigation.types';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -34,119 +36,12 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
-import gql from 'graphql-tag';
-import { flowRight } from 'lodash';
-
-import { graphql } from 'react-apollo';
-
-import SessionActions from '../redux/SessionActions';
-
-const OtherUserProfileQuery = gql`
-  query Home_UserByUsername($username: String!) {
-    user {
-      byUsername(username: $username) {
-        id
-        username
-        firstName
-        lastName
-        email
-        profilePhoto
-        isLegacy
-        appCount
-        apps(limit: 15, offset: 0) {
-          id
-          fullName
-          name
-          iconUrl
-          packageName
-          packageUsername
-          description
-          lastPublishedTime
-        }
-        snacks(limit: 15, offset: 0) {
-          name
-          description
-          fullName
-          slug
-        }
-      }
-    }
-  }
-`;
-
-import { useQuery } from '@apollo/react-hooks';
-
-const MyProfileQuery = gql`
-  query Home_MyProfile {
-    me {
-      id
-      appCount
-      email
-      firstName
-      isLegacy
-      lastName
-      profilePhoto
-      username
-      apps(limit: 15, offset: 0) {
-        id
-        description
-        fullName
-        iconUrl
-        lastPublishedTime
-        name
-        packageName
-        privacy
-      }
-      snacks(limit: 15, offset: 0) {
-        name
-        description
-        fullName
-        slug
-      }
-    }
-  }
-`;
-
-function useMyProfileGQL() {
-  const query = useQuery(MyProfileQuery, {
-    fetchPolicy: 'cache-and-network',
-  });
-
-  return {
-    ...query,
-    data: {
-      ...query.data,
-      user: query.data?.me,
-    },
-  };
-}
-
-function useOtherProfileGQL({ username }: Pick<SharedProps, 'username'>) {
-  const query = useQuery(OtherUserProfileQuery, {
-    fetchPolicy: 'network-only',
-    variables: {
-      username: username ? username.replace('@', '') : '',
-    },
-  });
-
-  return {
-    ...query,
-    data: {
-      ...query.data,
-      user: query.data?.user ? query.data.user?.byUsername : null,
-    },
-  };
-}
-
-import { useDispatch, useSelector } from 'react-redux';
-
-type SharedProps = {
+export type ProfileViewProps = {
   isOwnProfile: boolean;
   username: string;
   isAuthenticated: boolean;
 } & StackScreenProps<AllStackRoutes, 'Profile'>;
 
-// todo
 type QueryProps = {
   loading: boolean;
   error?: Error;
@@ -154,28 +49,22 @@ type QueryProps = {
   data: any;
 };
 
-export function MyProfile(props: SharedProps) {
-  const dispatch = useDispatch();
-  const query = useMyProfileGQL();
-  const { loading, error, data } = query;
+export type Profile = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  profilePhoto: string;
+  isLegacy: boolean;
+  appCount: number;
+  apps: Project[];
+  snacks: Snack[];
+};
 
-  // We verify that the viewer is logged in when we receive data from the server; if the viewer
-  // isn't logged in, we clear our locally stored credentials
-  React.useEffect(() => {
-    if (!loading && !error && !data.user) {
-      dispatch(SessionActions.signOut());
-    }
-  }, [loading, error, data.user]);
+type Props = ProfileViewProps & QueryProps;
 
-  return <Profile {...props} {...query} />;
-}
-
-export function OtherProfile(props: SharedProps) {
-  const query = useOtherProfileGQL(props);
-  return <Profile {...props} {...query} />;
-}
-
-function Profile({
+export default function ProfileView({
   username,
   navigation,
   isOwnProfile,
@@ -183,11 +72,12 @@ function Profile({
   error,
   refetch,
   data,
-}: SharedProps & QueryProps) {
-  const [isRefetching, setRefreshing] = React.useState(false);
+}: Props) {
+  const [isRefreshing, setRefreshing] = React.useState(false);
   const mounted = React.useRef<boolean | null>(true);
 
   React.useEffect(() => {
+    mounted.current = true;
     return () => {
       mounted.current = false;
     };
@@ -203,13 +93,12 @@ function Profile({
   }, [error]);
 
   const _handleRefreshAsync = async () => {
-    if (isRefetching) {
+    if (isRefreshing) {
       return;
     }
-
     try {
       setRefreshing(true);
-      refetch({ fetchPolicy: 'network-only' });
+      await refetch({ fetchPolicy: 'network-only' });
     } catch (e) {
       // TODO(brentvatne): Put this into Sentry
       console.log({ e });
@@ -225,35 +114,17 @@ function Profile({
     }
   };
 
-  const _renderError = () => {
-    // NOTE(brentvatne): sorry for this
-    const isConnectionError = error?.message?.includes('No connection available');
+  // NOTE(brentvatne): investigate why `user` is null when there
+  // is an error, even if it loaded before. This seems undesirable,
+  // can it be avoided with apollo-client?
 
+  if (error && !data.user) {
     return (
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <StyledText
-          style={SharedStyles.noticeDescriptionText}
-          lightColor="rgba(36, 44, 58, 0.7)"
-          darkColor="#ccc">
-          {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
-        </StyledText>
-
-        <PrimaryButton plain onPress={_handleRefreshAsync} fallback={TouchableOpacity}>
-          Try again
-        </PrimaryButton>
-
-        {isRefetching && (
-          <View style={{ marginTop: 20 }}>
-            <ActivityIndicator color={Colors.light.tintColor} />
-          </View>
-        )}
-      </ScrollView>
+      <ProfileError error={error} isRefetching={isRefreshing} onRefresh={_handleRefreshAsync} />
     );
-  };
+  }
 
-  function _renderLoading() {
+  if (loading && !data.user) {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator color={Colors.light.tintColor} />
@@ -261,40 +132,73 @@ function Profile({
     );
   }
 
-  const _renderHeader = () => {
-    if (!data.user) {
-      return;
-    }
+  return (
+    <ScrollView
+      refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={_handleRefreshAsync} />}
+      contentContainerStyle={{ paddingBottom: 20 }}
+      style={styles.container}>
+      {data.user && (
+        <>
+          <ProfileHeader data={data} />
+          <ProfileProjectsSection
+            data={data}
+            isOwnProfile={isOwnProfile}
+            navigation={navigation}
+            username={username}
+          />
+          <ProfileSnacksSection
+            data={data}
+            isOwnProfile={isOwnProfile}
+            navigation={navigation}
+            username={username}
+          />
+        </>
+      )}
+    </ScrollView>
+  );
+}
 
-    if (data.user.isLegacy) {
-      return _renderLegacyHeader();
-    }
+function ProfileError({
+  error,
+  isRefetching,
+  onRefresh,
+}: {
+  error?: Error;
+  isRefetching: boolean;
+  onRefresh: () => void;
+}) {
+  // NOTE(brentvatne): sorry for this
+  const isConnectionError = error?.message?.includes('No connection available');
 
-    const { firstName, lastName, username, profilePhoto } = data.user;
+  return (
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+      <StyledText
+        style={SharedStyles.noticeDescriptionText}
+        lightColor="rgba(36, 44, 58, 0.7)"
+        darkColor="#ccc">
+        {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
+      </StyledText>
 
-    return (
-      <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
-        <View style={styles.headerAvatarContainer}>
-          <FadeIn>
-            <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
-          </FadeIn>
+      <PrimaryButton plain onPress={onRefresh} fallback={TouchableOpacity}>
+        Try again
+      </PrimaryButton>
+
+      {isRefetching && (
+        <View style={{ marginTop: 20 }}>
+          <ActivityIndicator color={Colors.light.tintColor} />
         </View>
-        <StyledText style={styles.headerFullNameText}>
-          {firstName} {lastName}
-        </StyledText>
-        <View style={styles.headerAccountsList}>
-          <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
-            @{username}
-          </StyledText>
-          {_maybeRenderGithubAccount()}
-        </View>
-      </StyledView>
-    );
-  };
+      )}
+    </ScrollView>
+  );
+}
 
-  const _renderLegacyHeader = () => {
-    const { username } = data.user;
+function ProfileHeader({ data }: Pick<Props, 'data'>) {
+  const { firstName, lastName, username, profilePhoto } = data.user;
 
+  if (data.user.isLegacy) {
+    // Legacy Header
     return (
       <View style={styles.header}>
         <View
@@ -305,85 +209,48 @@ function Profile({
         </View>
       </View>
     );
-  };
+  }
 
-  const _renderApps = () => {
-    if (!data.user) {
-      return;
-    }
+  function _maybeRenderGithubAccount() {
+    // ..
+  }
 
-    const { apps, appCount } = data.user;
-    let content;
-
-    if (!apps || !apps.length) {
-      content = <EmptyProfileProjectsNotice isOwnProfile={isOwnProfile} />;
-    } else {
-      const otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
-      content = (
-        <>
-          {take(apps, MAX_APPS_TO_DISPLAY).map(_renderApp)}
-          <SeeAllProjectsButton
-            apps={otherApps}
-            appCount={appCount - MAX_APPS_TO_DISPLAY}
-            onPress={_handlePressProjectList}
-          />
-        </>
-      );
-    }
-
-    return (
-      <View>
-        <SectionHeader title="Published projects" />
-        {content}
+  return (
+    <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
+      <View style={styles.headerAvatarContainer}>
+        <FadeIn>
+          <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
+        </FadeIn>
       </View>
-    );
-  };
-
-  const _renderSnacks = () => {
-    if (!data.user) {
-      return;
-    }
-
-    const { snacks } = data.user;
-    let content;
-
-    if (!snacks || !snacks.length) {
-      content = <EmptyProfileSnacksNotice isOwnProfile={isOwnProfile} />;
-    } else {
-      const otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
-      content = (
-        <>
-          {take(snacks, MAX_SNACKS_TO_DISPLAY).map(_renderSnack)}
-          {otherSnacks.length > 0 && (
-            <ListItem title="See all snacks" onPress={_handlePressSnackList} arrowForward last />
-          )}
-        </>
-      );
-    }
-
-    return (
-      <View>
-        <SectionHeader title="Saved snacks" />
-        {content}
+      <StyledText style={styles.headerFullNameText}>
+        {firstName} {lastName}
+      </StyledText>
+      <View style={styles.headerAccountsList}>
+        <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
+          @{username}
+        </StyledText>
+        {_maybeRenderGithubAccount()}
       </View>
-    );
-  };
+    </StyledView>
+  );
+}
 
-  const _handlePressProjectList = () => {
+function ProfileProjectsSection({
+  data: {
+    user: { apps, appCount },
+  },
+  isOwnProfile,
+  navigation,
+  username,
+}: Pick<Props, 'data' | 'isOwnProfile' | 'navigation' | 'username'>) {
+  const onPressProjectList = () => {
     navigation.navigate('ProjectsForUser', {
       username: username,
       belongsToCurrentUser: isOwnProfile,
     });
   };
 
-  const _handlePressSnackList = () => {
-    navigation.navigate('SnacksForUser', {
-      username: username,
-      belongsToCurrentUser: isOwnProfile,
-    });
-  };
-
-  const _renderApp = (app: any, i: number) => {
+  const renderApp = (app: any, i: number) => {
     return (
       <ProjectListItem
         key={i}
@@ -396,37 +263,72 @@ function Profile({
     );
   };
 
-  const _renderSnack = (snack: any, i: number) => {
+  const renderContents = () => {
+    if (!apps?.length) {
+      return <EmptyProfileProjectsNotice isOwnProfile={isOwnProfile} />;
+    }
+    const otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
+    return (
+      <>
+        {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
+        <SeeAllProjectsButton
+          apps={otherApps}
+          appCount={appCount - MAX_APPS_TO_DISPLAY}
+          onPress={onPressProjectList}
+        />
+      </>
+    );
+  };
+
+  return (
+    <View>
+      <SectionHeader title="Published projects" />
+      {renderContents()}
+    </View>
+  );
+}
+
+function ProfileSnacksSection({
+  data: {
+    user: { snacks },
+  },
+  isOwnProfile,
+  navigation,
+  username,
+}: Pick<Props, 'data' | 'isOwnProfile' | 'navigation' | 'username'>) {
+  const onPressSnackList = () => {
+    navigation.navigate('SnacksForUser', {
+      username: username,
+      belongsToCurrentUser: isOwnProfile,
+    });
+  };
+
+  const renderSnack = (snack: any, i: number) => {
     return (
       <SnackListItem key={i} url={snack.fullName} title={snack.name} subtitle={snack.description} />
     );
   };
 
-  function _maybeRenderGithubAccount() {
-    // ..
-  }
-
-  // NOTE(brentvatne): investigate why `user` is null when there
-  // is an error, even if it loaded before. This seems undesirable,
-  // can it be avoided with apollo-client?
-
-  if (error && !data.user) {
-    return _renderError();
-  }
-
-  if (loading && !data.user) {
-    return _renderLoading();
-  }
+  const renderContents = () => {
+    if (!snacks?.length) {
+      return <EmptyProfileSnacksNotice isOwnProfile={isOwnProfile} />;
+    }
+    const otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
+    return (
+      <>
+        {take(snacks, MAX_SNACKS_TO_DISPLAY).map(renderSnack)}
+        {otherSnacks.length > 0 && (
+          <ListItem title="See all snacks" onPress={onPressSnackList} arrowForward last />
+        )}
+      </>
+    );
+  };
 
   return (
-    <ScrollView
-      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={_handleRefreshAsync} />}
-      contentContainerStyle={{ paddingBottom: 20 }}
-      style={styles.container}>
-      {_renderHeader()}
-      {_renderApps()}
-      {_renderSnacks()}
-    </ScrollView>
+    <View>
+      <SectionHeader title="Saved snacks" />
+      {renderContents()}
+    </View>
   );
 }
 
