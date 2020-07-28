@@ -35,28 +35,4 @@
     android:scaleType="fitCenter"
     android:src="@drawable/big_logo_new_filled"
     android:visibility="gone"/>
-
-  <LinearLayout
-    android:id="@+id/status_bar"
-    android:visibility="gone"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:background="@drawable/loading_status_bar_background"
-    android:layout_alignParentBottom="true">
-    <TextView
-      android:id="@+id/status_text_view"
-      android:textSize="12sp"
-      android:textColor="#a7a7a7"
-      android:layout_weight="1"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"/>
-
-    <TextView
-      android:id="@+id/percentage_text_view"
-      android:textSize="12sp"
-      android:textColor="#a7a7a7"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
-  </LinearLayout>
 </RelativeLayout>

@@ -37,7 +37,7 @@
             <constraints>
                 <constraint firstItem="SMy-jf-0an" firstAttribute="centerY" secondItem="4B2-sF-9ij" secondAttribute="centerY" id="9r7-GO-DuJ"/>
                 <constraint firstItem="I4E-qu-tGV" firstAttribute="centerY" secondItem="OfY-5Y-tS4" secondAttribute="centerY" id="ABT-vJ-Zxd"/>
-                <constraint firstAttribute="bottom" secondItem="4B2-sF-9ij" secondAttribute="bottom" constant="20" id="DJH-Pk-CcM"/>
+                <constraint firstAttribute="bottom" secondItem="4B2-sF-9ij" secondAttribute="bottom" constant="40" id="DJH-Pk-CcM"/>
                 <constraint firstItem="SMy-jf-0an" firstAttribute="leading" secondItem="4B2-sF-9ij" secondAttribute="trailing" constant="8" symbolic="YES" id="ONA-Ny-7Ag"/>
                 <constraint firstItem="4B2-sF-9ij" firstAttribute="centerX" secondItem="I4E-qu-tGV" secondAttribute="centerX" id="aHw-YN-Psh"/>
                 <constraint firstItem="I4E-qu-tGV" firstAttribute="centerX" secondItem="OfY-5Y-tS4" secondAttribute="centerX" id="wLP-aF-2Pt"/>

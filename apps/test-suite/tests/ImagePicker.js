@@ -9,7 +9,7 @@ import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'ImagePicker';
 
-export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, describe, afterAll }) {
+export async function test({ it, beforeAll, expect, jasmine, describe, afterAll }) {
   function testMediaObjectShape(shape, type) {
     expect(shape).toBeDefined();
     expect(typeof shape.cancelled).toBe('boolean');

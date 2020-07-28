@@ -1343,10 +1343,21 @@ A type representing possible triggers with which you can schedule notifications.
 ```ts
 export type NotificationTriggerInput =
   | null
+  | ChannelAwareTriggerInput
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | CalendarTriggerInput;
+```
+
+### `ChannelAwareTriggerInput`
+
+A trigger that will cause the notification to be delivered immediately.
+
+```ts
+export type ChannelAwareTriggerInput = {
+  channelId: string;
+};
 ```
 
 ### `DateTriggerInput`
@@ -1354,7 +1365,7 @@ export type NotificationTriggerInput =
 A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
 
 ```ts
-export type DateTriggerInput = Date | number;
+export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
 ```
 
 ### `TimeIntervalTriggerInput`
@@ -1363,6 +1374,7 @@ A trigger that will cause the notification to be delivered once or many times (d
 
 ```ts
 export interface TimeIntervalTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   seconds: number;
 }
@@ -1374,6 +1386,7 @@ A trigger that will cause the notification to be delivered once per day.
 
 ```ts
 export interface DailyTriggerInput {
+  channelId?: string;
   hour: number;
   minute: number;
   repeats: true;
@@ -1388,6 +1401,7 @@ A trigger that will cause the notification to be delivered once or many times wh
 
 ```ts
 export interface CalendarTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   timezone?: string;
 
