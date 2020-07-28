@@ -188,13 +188,16 @@ export type LocationGeocodedLocation = {
  * Type representing a result of `reverseGeocodeAsync`.
  */
 export type LocationGeocodedAddress = {
-  city: string;
-  street: string;
-  region: string;
-  country: string;
-  postalCode: string;
-  name: string;
+  city: string | null;
+  district: string | null;
+  street: string | null;
+  region: string | null;
+  subregion: string | null;
+  country: string | null;
+  postalCode: string | null;
+  name: string | null;
   isoCountryCode: string | null;
+  timezone: string | null;
 };
 
 /**
