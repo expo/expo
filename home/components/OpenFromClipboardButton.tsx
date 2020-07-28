@@ -3,15 +3,33 @@ import { Clipboard, Keyboard, Linking, Platform } from 'react-native';
 
 import UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';
+import Constants from 'expo-constants';
 
 type Props = {
   isValid: boolean;
   clipboardContents: string;
 };
 
+let message = 'Project URLs on your clipboard will appear here.';
+
+if (Platform.OS === 'ios') {
+  // Polling is disabled on iOS due to the iOS 13 toast.
+  if (Constants.isDevice) {
+    // Add a message about tapping to open if a valid project URL is in the clipboard.
+    message = 'Project URLs on your clipboard can be opened by tapping here.';
+  } else {
+    // Inform the user how to get clipboard contents in the simulator.
+    message = 'Press ⌘+v to move clipboard to simulator. Tap to open.';
+  }
+}
+
 export default class OpenFromClipboardButton extends React.Component<Props> {
   onPress = async () => {
-    const contents = await Clipboard.getString();
+    let contents = await Clipboard.getString();
+    // Maybe trim the string to remove extra whitespace around the URL.
+    if (typeof contents === 'string') {
+      contents = contents.trim();
+    }
     if (UrlUtils.conformsToExpoProtocol(contents)) {
       this.openAppUrl(contents);
     }
@@ -22,17 +40,7 @@ export default class OpenFromClipboardButton extends React.Component<Props> {
 
     // Show info for iOS/Android simulator about how to make clipboard contents available
     if (!isValid) {
-      return (
-        <ListItem
-          onPress={this.onPress}
-          subtitle={
-            Platform.OS === 'ios'
-              ? 'Press ⌘+v to move clipboard to simulator. Tap to open.'
-              : 'Project URLs on your clipboard will appear here.'
-          }
-          last
-        />
-      );
+      return <ListItem onPress={this.onPress} subtitle={message} last />;
     } else {
       return (
         <ListItem
