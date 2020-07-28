@@ -94,7 +94,7 @@ function openFileBrowserAsync({
     input.addEventListener('change', () => {
       if (input.files) {
         if (!allowsMultipleSelection) {
-          resolve(readFile(input.files[0]))
+          resolve(readFile(input.files[0]));
         } else {
           resolve(Promise.all(Array.from(input.files).map(readFile)));
         }
@@ -117,22 +117,24 @@ async function readFile(targetFile: Blob): Promise<ImagePickerResult> {
     };
     reader.onload = ({ target }) => {
       const uri = (target as any).result;
-      const returnRaw = () => resolve({
-        cancelled: false,
-        uri,
-        width: 0,
-        height: 0,
-      });
+      const returnRaw = () =>
+        resolve({
+          cancelled: false,
+          uri,
+          width: 0,
+          height: 0,
+        });
 
       if (typeof target?.result === 'string') {
         const image = new Image();
         image.src = target.result;
-        image.onload = () => resolve({
-          cancelled: false,
-          uri,
-          width: image.naturalWidth ?? image.width,
-          height: image.naturalHeight ?? image.height,
-        });
+        image.onload = () =>
+          resolve({
+            cancelled: false,
+            uri,
+            width: image.naturalWidth ?? image.width,
+            height: image.naturalHeight ?? image.height,
+          });
         image.onerror = () => returnRaw();
       } else {
         returnRaw();
@@ -140,5 +142,5 @@ async function readFile(targetFile: Blob): Promise<ImagePickerResult> {
     };
 
     reader.readAsDataURL(targetFile);
-  })
+  });
 }
