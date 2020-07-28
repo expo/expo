@@ -49,12 +49,11 @@ class ImagePickerModule(private val mContext: Context,
   }
   private val mImageLoader: ImageLoader by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
+  private val mPermissions: Permissions by moduleRegistry()
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryPropertyDelegate.onCreate(moduleRegistry)
   }
-
-  private fun getModuleRegistry() = moduleRegistryPropertyDelegate.moduleRegistry!!
 
   private val experienceActivity: Activity?
     get() = mExperienceActivity.get()
@@ -63,22 +62,22 @@ class ImagePickerModule(private val mContext: Context,
 
   @ExpoMethod
   fun requestCameraRollPermissionsAsync(promise: Promise) {
-    Permissions.askForPermissionsWithPermissionsManager(getModuleRegistry().getModule(Permissions::class.java), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+    Permissions.askForPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
   }
 
   @ExpoMethod
   fun getCameraRollPermissionsAsync(promise: Promise) {
-    Permissions.getPermissionsWithPermissionsManager(getModuleRegistry().getModule(Permissions::class.java), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+    Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
   }
 
   @ExpoMethod
   fun requestCameraPermissionsAsync(promise: Promise) {
-    Permissions.askForPermissionsWithPermissionsManager(getModuleRegistry().getModule(Permissions::class.java), promise, Manifest.permission.CAMERA)
+    Permissions.askForPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.CAMERA)
   }
 
   @ExpoMethod
   fun getCameraPermissionsAsync(promise: Promise) {
-    Permissions.getPermissionsWithPermissionsManager(getModuleRegistry().getModule(Permissions::class.java), promise, Manifest.permission.CAMERA)
+    Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.CAMERA)
   }
 
   // NOTE: Currently not reentrant / doesn't support concurrent requests
@@ -98,11 +97,6 @@ class ImagePickerModule(private val mContext: Context,
       return
     }
 
-    val permissionsModule = getModuleRegistry().getModule(Permissions::class.java).ifNull {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return
-    }
-
     val permissionsResponseHandler = PermissionsResponseListener { permissionsResponse: Map<String, PermissionsResponse> ->
       if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED
         && permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
@@ -112,7 +106,7 @@ class ImagePickerModule(private val mContext: Context,
       }
     }
 
-    permissionsModule.askForPermissions(permissionsResponseHandler, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+    mPermissions.askForPermissions(permissionsResponseHandler, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
   }
 
   private fun launchCameraWithPermissionsGranted(promise: Promise, cameraIntent: Intent, pickerOptions: ImagePickerOptions) {

@@ -10,7 +10,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class CompressionImageExporter(private val mImageLoader: ImageLoader, private val mQuality: Int, private val mBase64: Boolean) : ImageExporter {
+class CompressionImageExporter(private val mImageLoader: ImageLoader,
+                               private val mQuality: Int,
+                               private val mBase64: Boolean) : ImageExporter {
 
   override fun export(source: Uri, output: File, exporterListener: Listener) {
     val imageLoaderHandler = object : ImageLoader.ResultListener {

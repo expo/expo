@@ -10,7 +10,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class RawImageExporter(private val contentResolver: ContentResolver, private val mBase64: Boolean) : ImageExporter {
+class RawImageExporter(private val contentResolver: ContentResolver,
+                       private val mBase64: Boolean) : ImageExporter {
 
   override fun export(source: Uri, output: File, exporterListener: Listener) {
     val base64Stream = if (mBase64) ByteArrayOutputStream() else null

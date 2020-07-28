@@ -2,6 +2,7 @@ package expo.modules.imagepicker.tasks
 
 import android.content.ContentResolver
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
@@ -14,18 +15,18 @@ import org.unimodules.core.Promise
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
-open class ImageResultTask(promise: Promise,
-                           uri: Uri,
-                           contentResolver: ContentResolver,
-                           fileProvider: FileProvider,
-                           private val mExifData: Boolean,
-                           private val mImageExporter: ImageExporter)
-  : ImagePickerResultTask(promise, uri, contentResolver, fileProvider) {
+open class ImageResultTask(private val promise: Promise,
+                           private val uri: Uri,
+                           private val contentResolver: ContentResolver,
+                           private val fileProvider: FileProvider,
+                           private val withExifData: Boolean,
+                           private val imageExporter: ImageExporter)
+  : AsyncTask<Void?, Void?, Void?>() {
 
   override fun doInBackground(vararg params: Void?): Void? {
     try {
       val outputFile = fileProvider.generateFile()
-      val exif: Bundle? = if (mExifData) readExif() else null
+      val exif: Bundle? = if (withExifData) readExif() else null
 
       val imageExporterHandler = object : Listener {
         override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {
@@ -51,7 +52,7 @@ open class ImageResultTask(promise: Promise,
         }
       }
 
-      mImageExporter.export(uri, outputFile, imageExporterHandler)
+      imageExporter.export(uri, outputFile, imageExporterHandler)
     } catch (e: IOException) {
       promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
     }
