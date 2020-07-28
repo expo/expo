@@ -13,6 +13,8 @@ import host.exp.exponent.ActivityResultListener;
 import host.exp.expoview.Exponent;
 
 public class ScopedUIManagerModuleWrapper extends UIManagerModuleWrapper implements ActivityResultListener {
+  // We use `CopyOnWriteArraySet` to make this container thread-safe,
+  // cause `onActivityResult` can be trigger on a different thread during the listener unregistering.
   private CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners = new CopyOnWriteArraySet<>();
 
   public ScopedUIManagerModuleWrapper(ReactContext reactContext) {
