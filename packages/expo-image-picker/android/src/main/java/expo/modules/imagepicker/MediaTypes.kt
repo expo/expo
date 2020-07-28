@@ -1,13 +1,13 @@
 package expo.modules.imagepicker
 
 enum class MediaTypes {
-  IMAGE, VIDEO, ALL;
+  IMAGES, VIDEOS, ALL;
 
   companion object {
     fun fromString(type: String): MediaTypes? {
       return when (type) {
-        "Image" -> IMAGE
-        "Video" -> VIDEO
+        "Images" -> IMAGES
+        "Videos" -> VIDEOS
         "All" -> ALL
         else -> null
       }

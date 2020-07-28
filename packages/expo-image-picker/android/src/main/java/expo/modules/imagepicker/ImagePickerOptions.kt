@@ -32,7 +32,7 @@ data class ImagePickerOptions(val quality: Int,
 
       val isBase64 = options[ImagePickerConstants.OPTION_BASE64] as? Boolean ?: false
       val mediaTypes = MediaTypes.fromString(
-        options[ImagePickerConstants.OPTION_MEDIA_TYPES] as? String ?: "Image"
+        options[ImagePickerConstants.OPTION_MEDIA_TYPES] as? String ?: "Images"
       ).ifNull {
         promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "Unknown media types: ${options[ImagePickerConstants.OPTION_MEDIA_TYPES]}")
         return null

@@ -38,6 +38,7 @@ export default class ImagePickerScreen extends React.Component<object, State> {
       mediaTypes,
       allowsEditing,
       quality: this.state.compressionEnabled ? 0.1 : 1.0,
+      base64: this.state.base64Enabled,
     });
     if (result.cancelled) {
       this.setState({ selection: undefined });

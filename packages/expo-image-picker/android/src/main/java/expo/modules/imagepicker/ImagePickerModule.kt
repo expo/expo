@@ -90,7 +90,7 @@ class ImagePickerModule(private val mContext: Context,
       return
     }
 
-    val intentType = if (pickerOptions.mediaTypes == MediaTypes.VIDEO) MediaStore.ACTION_VIDEO_CAPTURE else MediaStore.ACTION_IMAGE_CAPTURE
+    val intentType = if (pickerOptions.mediaTypes == MediaTypes.VIDEOS) MediaStore.ACTION_VIDEO_CAPTURE else MediaStore.ACTION_IMAGE_CAPTURE
     val cameraIntent = Intent(intentType)
     cameraIntent.resolveActivity(activity.application.packageManager).ifNull {
       promise.reject(IllegalStateException("Error resolving activity"))
@@ -112,7 +112,7 @@ class ImagePickerModule(private val mContext: Context,
   private fun launchCameraWithPermissionsGranted(promise: Promise, cameraIntent: Intent, pickerOptions: ImagePickerOptions) {
     val imageFile = createOutputFile(
       mContext.cacheDir,
-      if (pickerOptions.mediaTypes == MediaTypes.VIDEO) ".mp4" else ".jpg"
+      if (pickerOptions.mediaTypes == MediaTypes.VIDEOS) ".mp4" else ".jpg"
     ).ifNull {
       promise.reject(IOException("Could not create image file."))
       return
@@ -140,8 +140,8 @@ class ImagePickerModule(private val mContext: Context,
 
     val libraryIntent = Intent().apply {
       when (pickerOptions.mediaTypes) {
-        MediaTypes.IMAGE -> type = "image/*"
-        MediaTypes.VIDEO -> type = "video/*"
+        MediaTypes.IMAGES -> type = "image/*"
+        MediaTypes.VIDEOS -> type = "video/*"
         MediaTypes.ALL -> {
           type = "*/*"
           putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
@@ -219,7 +219,7 @@ class ImagePickerModule(private val mContext: Context,
     startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise)
   }
 
-  private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent, pickerOptions: ImagePickerOptions) {
+  private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
     if (resultCode != Activity.RESULT_OK) {
       promise.resolve(Bundle().apply {
         putBoolean("cancelled", true)
@@ -236,7 +236,7 @@ class ImagePickerModule(private val mContext: Context,
       return
     }
 
-    val uri = (if (requestCode == ImagePickerConstants.REQUEST_LAUNCH_CAMERA) mCameraCaptureURI else intent.data)
+    val uri = (if (requestCode == ImagePickerConstants.REQUEST_LAUNCH_CAMERA) mCameraCaptureURI else intent?.data)
       .ifNull {
         promise.reject(ImagePickerConstants.ERR_MISSING_URL, ImagePickerConstants.MISSING_URL_MESSAGE)
         return
@@ -250,7 +250,7 @@ class ImagePickerModule(private val mContext: Context,
     if (type.contains("image")) {
       if (pickerOptions.isAllowsEditing) {
         // if the image is created by camera intent we don't need a new file - it's been already saved
-        val needGenerateFile = requestCode == ImagePickerConstants.REQUEST_LAUNCH_CAMERA
+        val needGenerateFile = requestCode != ImagePickerConstants.REQUEST_LAUNCH_CAMERA
         startCropIntent(promise, uri, type, needGenerateFile, pickerOptions)
         return
       }
@@ -272,7 +272,7 @@ class ImagePickerModule(private val mContext: Context,
     VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever).execute()
   }
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     if (experienceActivity != null
       && activity === experienceActivity
       && mPromise != null
