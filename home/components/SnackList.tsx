@@ -59,16 +59,14 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
     isLoading.current = true;
     setLoadingMore(true);
 
-    (async () => {
-      try {
-        await loadMoreAsync();
-      } catch (e) {
-        console.log({ e });
-      } finally {
-        isLoading.current = false;
-        setLoadingMore(false);
-      }
-    })();
+    try {
+      await loadMoreAsync();
+    } catch (e) {
+      console.log({ e });
+    } finally {
+      isLoading.current = false;
+      setLoadingMore(false);
+    }
   };
 
   const canLoadMore = () => {
