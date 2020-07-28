@@ -2,10 +2,8 @@ import { useQuery } from '@apollo/client';
 import { Project } from 'components/ProjectList';
 import gql from 'graphql-tag';
 import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
 
-import FeatureFlags from '../FeatureFlags';
-import ExploreTab, { ExploreProps } from '../components/ExploreTab';
+import ExploreTab from '../components/ExploreTab';
 
 interface ExploreData {
   app: { all: Project[] };
@@ -82,16 +80,17 @@ function useExploreTabQuery(props: { filter: string }) {
   };
 }
 
-export default function Explore(props: Pick<ExploreVars, 'filter'> & ExploreProps) {
+export default function Explore(props: Pick<ExploreVars, 'filter'>) {
   const query = useExploreTabQuery({
     filter: props.filter,
   });
-  return <ExploreTab {...query} {...props} />;
+  return (
+    <ExploreTab
+      loadMoreAsync={query.loadMoreAsync}
+      refetch={query.refetch}
+      loading={query.loading}
+      error={query.error}
+      data={query.data}
+    />
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios' ? 5 : 10,
-  },
-});

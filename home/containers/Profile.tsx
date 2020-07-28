@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import React from 'react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import ProfileView, { Profile, ProfileViewProps } from '../components/Profile';

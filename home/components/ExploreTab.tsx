@@ -1,11 +1,12 @@
-import { useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import dedent from 'dedent';
 import * as React from 'react';
 import {
-  FlatList,
-  ScrollView,
   ActivityIndicator,
+  FlatList,
   Platform,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -15,8 +16,9 @@ import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import FeatureFlags from '../FeatureFlags';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import PrimaryButton from './PrimaryButton';
-import ProjectCard, { PressUsernameHandler } from './ProjectCard';
+import ProjectCard from './ProjectCard';
 import { Project } from './ProjectList';
 import SectionHeader from './SectionHeader';
 import { StyledText } from './Text';
@@ -31,17 +33,12 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as quickly as possible.
 `;
 
-export type ExploreProps = {
-  listTitle?: string;
-  onPressUsername: PressUsernameHandler;
-};
-
 type QueryProps = {
   loadMoreAsync: () => Promise<unknown>;
   refetch: () => Promise<unknown>;
   loading: boolean;
   error?: Error;
-  data?: { apps: Project[] };
+  data?: { apps?: Project[] };
 };
 
 function Loading() {
@@ -52,12 +49,20 @@ function Loading() {
   );
 }
 
-export default function ExploreTab(props: ExploreProps & QueryProps) {
+export default function ExploreTab(props: QueryProps) {
   const { loading, error, refetch, loadMoreAsync, data } = props;
 
+  const navigation: StackNavigationProp<AllStackRoutes, 'ExploreAndSearch'> = useNavigation();
   const theme = useTheme();
   const [isRefetching, setRefetching] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
+
+  const onPressUsername = React.useCallback(
+    (username: string) => {
+      navigation.push('Profile', { username });
+    },
+    [navigation]
+  );
 
   if (loading || (isRefetching && !data?.apps)) {
     return <Loading />;
@@ -94,10 +99,6 @@ export default function ExploreTab(props: ExploreProps & QueryProps) {
     );
   }
 
-  const renderHeader = () => {
-    return props.listTitle ? <SectionHeader title={props.listTitle} /> : <View />;
-  };
-
   const renderItem = ({ item: app, index }: { item: Project; index: number }) => {
     return (
       <ProjectCard
@@ -108,7 +109,7 @@ export default function ExploreTab(props: ExploreProps & QueryProps) {
         projectUrl={app.fullName}
         username={app.packageUsername}
         description={app.description}
-        onPressUsername={props.onPressUsername}
+        onPressUsername={onPressUsername}
         style={{ marginBottom: 10 }}
       />
     );
@@ -128,7 +129,6 @@ export default function ExploreTab(props: ExploreProps & QueryProps) {
   return (
     <FlatList
       data={data.apps!}
-      ListHeaderComponent={renderHeader}
       renderItem={renderItem}
       style={[
         styles.container,
