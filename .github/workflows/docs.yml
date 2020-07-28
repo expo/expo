@@ -41,14 +41,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache@v2
         with:
-          path: .next
+          path: docs/.next
           key: docs-next-${{ hashFiles('yarn.lock') }}-${{ hashFiles('pages/**') }}
           restore-keys: |
             docs-next-${{ hashFiles('yarn.lock') }}-
             docs-next-
       - uses: actions/cache@v2
         with:
-          path: node_modules/.cache/babel-loader
+          path: docs/node_modules/.cache/babel-loader
           key: docs-babel-${{ hashFiles('yarn.lock') }}-${{ hashFiles('pages/**') }}
           restore-keys: |
             docs-babel-${{ hashFiles('yarn.lock') }}-
