@@ -198,6 +198,11 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 {
   _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+    if (self->_delegate) {
+      dispatch_async(self->_delegateQueue, ^{
+        [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
+      });
+    }
     return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate];
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
@@ -226,6 +231,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
           if (success) {
             if (!self->_hasLaunched) {
               self->_launcher = self->_candidateLauncher;
+              self->_isReadyToLaunch = YES;
               [self _finishWithError:nil];
             }
           } else {
