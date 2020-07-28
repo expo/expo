@@ -347,8 +347,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           source: { uri: hlsStreamUri },
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        t.expect(status.status).toBeDefined();
-        t.expect(status.status.isLoaded).toBe(true);
+        t.expect(status.naturalSize).toBeDefined();
+        t.expect(status.naturalSize.width).toBeDefined();
+        t.expect(status.naturalSize.height).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBeDefined();
       });
     });
 
