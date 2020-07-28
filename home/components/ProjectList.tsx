@@ -1,11 +1,33 @@
 import { useNavigation, useTheme } from '@react-navigation/native';
+import dedent from 'dedent';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
+import SharedStyles from '../constants/SharedStyles';
+import PrimaryButton from './PrimaryButton';
 import ProjectCard from './ProjectCard';
 import ProjectListItem from './ProjectListItem';
+import SectionHeader from './SectionHeader';
+import { StyledText } from './Text';
+
+const NETWORK_ERROR_TEXT = dedent`
+  Your connection appears to be offline.
+  Check back when you have a better connection.
+`;
+
+const SERVER_ERROR_TEXT = dedent`
+  An unexpected server error has occurred.
+  Sorry about this. We will resolve the issue as soon as quickly as possible.
+`;
 
 export type Project = {
   id: string;
@@ -23,10 +45,16 @@ type Props = {
   data: { apps?: Project[]; appCount?: number };
   loadMoreAsync: () => Promise<any>;
   belongsToCurrentUser?: true;
+  listTitle?: string;
+
+  loading: boolean;
+  error?: Error;
+  refetch: () => Promise<unknown>;
 };
 
 export default function LoadingProjectList(props: Props) {
   const [isReady, setReady] = React.useState(false);
+  const isRetrying = React.useRef<null | boolean>(false);
 
   React.useEffect(() => {
     const readyTimer = setTimeout(() => {
@@ -46,13 +74,47 @@ export default function LoadingProjectList(props: Props) {
   }
 
   if (!props.data?.apps?.length) {
+    if (!props.loading && props.error) {
+      // Error
+      // NOTE(brentvatne): sorry for this
+      const isConnectionError = props.error.message.includes('No connection available');
+
+      const refetchDataAsync = async () => {
+        if (isRetrying.current) return;
+        isRetrying.current = true;
+        try {
+          await props.refetch();
+        } catch (e) {
+          console.log({ e });
+          // Error!
+        } finally {
+          isRetrying.current = false;
+        }
+      };
+
+      return (
+        <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+          <StyledText
+            style={SharedStyles.noticeDescriptionText}
+            lightColor="rgba(36, 44, 58, 0.7)"
+            darkColor="#ccc">
+            {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
+          </StyledText>
+
+          <PrimaryButton plain onPress={refetchDataAsync} fallback={TouchableOpacity}>
+            Try again
+          </PrimaryButton>
+        </View>
+      );
+    }
+
     return <View style={{ flex: 1 }} />;
   }
 
   return <ProjectList {...props} />;
 }
 
-function ProjectList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
+function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: Props) {
   const theme = useTheme();
   const navigation = useNavigation();
   const isLoading = React.useRef<null | boolean>(false);
@@ -109,6 +171,10 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
     }
   };
 
+  const renderHeader = () => {
+    return listTitle ? <SectionHeader title={listTitle} /> : <View />;
+  };
+
   const style = React.useMemo(
     () => [
       { flex: 1 },
@@ -125,6 +191,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
         keyExtractor={extractKey}
         renderItem={renderItem}
         style={style}
+        ListHeaderComponent={renderHeader}
         renderScrollComponent={(props: React.ComponentProps<typeof InfiniteScrollView>) => {
           // note(brent): renderScrollComponent is passed on to
           // InfiniteScrollView so it renders itself again and the result is two

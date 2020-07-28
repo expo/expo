@@ -1,9 +1,6 @@
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
-
-import Colors from '../constants/Colors';
 
 import ProjectList, { Project } from '../components/ProjectList';
 
@@ -53,13 +50,16 @@ const MyProjectsQuery = gql`
 `;
 
 function useMyProjectsQuery() {
-  const { data, fetchMore } = useQuery<MyProjectsData, MyProjectsVars>(MyProjectsQuery, {
-    variables: {
-      limit: 15,
-      offset: 0,
-    },
-    fetchPolicy: 'cache-and-network',
-  });
+  const { data, fetchMore, loading, error, refetch } = useQuery<MyProjectsData, MyProjectsVars>(
+    MyProjectsQuery,
+    {
+      variables: {
+        limit: 15,
+        offset: 0,
+      },
+      fetchPolicy: 'cache-and-network',
+    }
+  );
 
   const apps = data?.me?.apps;
   const appCount = data?.me?.appCount;
@@ -92,6 +92,9 @@ function useMyProjectsQuery() {
   }, [fetchMore, apps]);
 
   return {
+    loading,
+    error,
+    refetch,
     data: {
       ...data,
       apps,
@@ -144,7 +147,10 @@ const OtherProjectsQuery = gql`
 `;
 
 function useOtherProjectsQuery({ username }: { username: string }) {
-  const { data, fetchMore } = useQuery<OtherProjectsData, OtherProjectsVars>(OtherProjectsQuery, {
+  const { data, fetchMore, loading, error, refetch } = useQuery<
+    OtherProjectsData,
+    OtherProjectsVars
+  >(OtherProjectsQuery, {
     variables: {
       username: username.replace('@', ''),
       limit: 15,
@@ -188,6 +194,9 @@ function useOtherProjectsQuery({ username }: { username: string }) {
   }, [fetchMore, apps]);
 
   return {
+    loading,
+    error,
+    refetch,
     data: {
       ...data,
       appCount,
@@ -201,14 +210,3 @@ export function OtherProjectsList(props: { username: string }) {
   const query = useOtherProjectsQuery(props);
   return <ProjectList {...props} {...query} />;
 }
-
-const styles = StyleSheet.create({
-  largeProjectCardList: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.light.greyBackground,
-  },
-  largeProjectCard: {
-    marginBottom: 10,
-  },
-});

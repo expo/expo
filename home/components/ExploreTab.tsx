@@ -1,10 +1,15 @@
-import { useQuery } from '@apollo/client';
 import { useTheme } from '@react-navigation/native';
 import dedent from 'dedent';
-import gql from 'graphql-tag';
 import * as React from 'react';
-import { ActivityIndicator, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import {
+  FlatList,
+  ScrollView,
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
@@ -12,6 +17,7 @@ import SharedStyles from '../constants/SharedStyles';
 import FeatureFlags from '../FeatureFlags';
 import PrimaryButton from './PrimaryButton';
 import ProjectCard, { PressUsernameHandler } from './ProjectCard';
+import { Project } from './ProjectList';
 import SectionHeader from './SectionHeader';
 import { StyledText } from './Text';
 
@@ -25,28 +31,17 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as quickly as possible.
 `;
 
-type AppItem = {
-  id: string;
-  packageUsername: string;
-  fullName: string;
-  iconUrl: string;
-  name: string;
-  description: string;
-};
-
-type Data = {
-  readonly apps: AppItem[];
-  refetch: () => Promise<any>;
-  loading: boolean;
-  error?: { message: string };
-};
-
-type Props = {
-  filter: string;
-  // data: Data;
-  loadMoreAsync: boolean;
-  listTitle: string;
+export type ExploreProps = {
+  listTitle?: string;
   onPressUsername: PressUsernameHandler;
+};
+
+type QueryProps = {
+  loadMoreAsync: () => Promise<unknown>;
+  refetch: () => Promise<unknown>;
+  loading: boolean;
+  error?: Error;
+  data?: { apps: Project[] };
 };
 
 function Loading() {
@@ -57,79 +52,16 @@ function Loading() {
   );
 }
 
-const PublicAppsQuery = gql`
-  query Home_FindPublicApps($limit: Int, $offset: Int, $filter: AppsFilter!) {
-    app {
-      all(limit: $limit, offset: $offset, sort: RECENTLY_PUBLISHED, filter: $filter) {
-        id
-        fullName
-        name
-        iconUrl
-        packageName
-        packageUsername
-        description
-        lastPublishedTime
-      }
-    }
-  }
-`;
-
-function useExploreTabGQL(props: { filter: string }) {
-  const query = useQuery(PublicAppsQuery, {
-    fetchPolicy: 'network-only',
-    variables: {
-      filter: props.filter,
-      limit: 10,
-      offset: 0,
-    },
-  });
-
-  return {
-    ...query,
-    data: {
-      ...query.data,
-      apps: query?.data?.app?.all ?? null,
-    },
-    loadMoreAsync() {
-      return query?.fetchMore({
-        variables: {
-          ...(props.filter ? { filter: props.filter } : {}),
-          limit: 10,
-          offset: query.data.apps?.length,
-        },
-        updateQuery: (previousData: any, { fetchMoreResult }) => {
-          const previousApps = previousData.app && previousData.app.all;
-          if (!fetchMoreResult?.data) {
-            return previousData;
-          }
-          return { ...previousData, apps: [...previousApps, ...fetchMoreResult.data.app.all] };
-        },
-      });
-    },
-  };
-}
-
-export default function ExploreTab(props: Props) {
-  const { loading, error, refetch, data } = useExploreTabGQL({ filter: props.filter });
+export default function ExploreTab(props: ExploreProps & QueryProps) {
+  const { loading, error, refetch, loadMoreAsync, data } = props;
 
   const theme = useTheme();
   const [isRefetching, setRefetching] = React.useState(false);
+  const isLoading = React.useRef<null | boolean>(false);
 
-  // Content
-  const extraOptions = React.useMemo<Partial<React.ComponentProps<typeof FlatList>>>(() => {
-    if (!FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS) {
-      return {};
-    }
-    return {
-      renderScrollComponent: props => <InfiniteScrollView {...props} />,
-      canLoadMore: true,
-      onLoadMoreAsync: props.loadMoreAsync,
-    };
-  }, [props.loadMoreAsync]);
-
-  if (loading || (isRefetching && !data.apps)) {
+  if (loading || (isRefetching && !data?.apps)) {
     return <Loading />;
-  } else if (error && !data.apps) {
+  } else if (error && !data?.apps) {
     // Error
     // NOTE(brentvatne): sorry for this
     const isConnectionError = error.message.includes('No connection available');
@@ -166,7 +98,7 @@ export default function ExploreTab(props: Props) {
     return props.listTitle ? <SectionHeader title={props.listTitle} /> : <View />;
   };
 
-  const renderItem = ({ item: app, index }: { item: AppItem; index: number }) => {
+  const renderItem = ({ item: app, index }: { item: Project; index: number }) => {
     return (
       <ProjectCard
         key={index.toString()}
@@ -181,9 +113,20 @@ export default function ExploreTab(props: Props) {
       />
     );
   };
+  const handleLoadMoreAsync = async () => {
+    if (isLoading.current) return;
+    isLoading.current = true;
+    try {
+      await loadMoreAsync();
+    } catch (e) {
+      console.log({ e });
+    } finally {
+      isLoading.current = false;
+    }
+  };
 
   return (
-    <FlatList<AppItem>
+    <FlatList
       data={data.apps!}
       ListHeaderComponent={renderHeader}
       renderItem={renderItem}
@@ -191,9 +134,25 @@ export default function ExploreTab(props: Props) {
         styles.container,
         { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
       ]}
-      keyExtractor={item => item.id}
+      keyExtractor={(item: Project) => item.id}
       contentContainerStyle={{ paddingBottom: 5 }}
-      {...extraOptions}
+      renderScrollComponent={(props: React.ComponentProps<typeof InfiniteScrollView>) => {
+        // note(brent): renderScrollComponent is passed on to
+        // InfiniteScrollView so it renders itself again and the result is two
+        // loading indicators. So we need to detect if we're in
+        // InfiniteScrollView by checking for a prop that is passed in to it,
+        // in this case we'll just check for props.renderLoadingIndicator.
+        // This should be fixed upstream in InfiniteScrollView, so if InfiniteScrollView
+        // is itself the scroll component being rendered it doesn't once again render
+        // the scroll component.
+        if (props.renderLoadingIndicator || !FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS) {
+          return <ScrollView {...props} />;
+        } else {
+          return <InfiniteScrollView {...props} />;
+        }
+      }}
+      onLoadMoreAsync={handleLoadMoreAsync}
+      canLoadMore={!loading && FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS}
     />
   );
 }
