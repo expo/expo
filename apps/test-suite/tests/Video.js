@@ -340,6 +340,16 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.status).toBeDefined();
         t.expect(status.status.isLoaded).toBe(true);
       });
+
+      t.it("gets called for HLS streams", async () => {
+        const props = {
+          style,
+          source: { uri: hlsStreamUri },
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.status).toBeDefined();
+        t.expect(status.status.isLoaded).toBe(true);
+      });
     });
 
     t.describe('Video fullscreen player', () => {
