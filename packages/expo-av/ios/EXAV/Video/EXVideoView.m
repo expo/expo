@@ -106,7 +106,6 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)_updateForNewPlayer
 {
   [self setPlayerHasLoaded:YES];
-  [self _updateNativeResizeMode];
   [self setUseNativeControls:_useNativeControls];
   if (_onLoad) {
     _onLoad([self getStatus]);
