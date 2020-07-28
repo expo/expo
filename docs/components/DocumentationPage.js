@@ -83,7 +83,8 @@ export default class DocumentationPage extends React.Component {
     this._version = version;
     const newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
-    // note: we can do this without validating, the error page redirect back to versioned root
+    // note: we can do this without validating if the page exists or not.
+    // the error page will redirect users to the versioned-index page when a page doesn't exists.
     Router.push(newPath + '/');
   };
 
