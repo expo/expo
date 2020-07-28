@@ -46,6 +46,13 @@ jobs:
           restore-keys: |
             docs-next-${{ hashFiles('yarn.lock') }}-
             docs-next-
+      - uses: actions/cache@v2
+        with:
+          path: node_modules/.cache/babel-loader
+          key: docs-babel-${{ hashFiles('yarn.lock') }}-${{ hashFiles('pages/**') }}
+          restore-keys: |
+            docs-babel-${{ hashFiles('yarn.lock') }}-
+            docs-babel-
       - run: yarn export
         timeout-minutes: 15
       - name: test links
