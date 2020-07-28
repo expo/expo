@@ -57,7 +57,8 @@ function parseTrigger(userFacingTrigger) {
     }
 }
 function isCalendarTrigger(trigger) {
-    return 'repeats' in trigger;
+    const { channelId, ...triggerWithoutChannelId } = trigger;
+    return Object.keys(triggerWithoutChannelId).length > 0;
 }
 function isDateTrigger(trigger) {
     return (trigger instanceof Date ||
