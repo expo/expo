@@ -84,7 +84,7 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.dispatchEvent(event);
     });
 }
-async function readFile(targetFile) {
+function readFile(targetFile) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = () => {
