@@ -59,8 +59,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     serializedContent[@"summaryArgument"] = content.summaryArgument ?: [NSNull null];
     serializedContent[@"summaryArgumentCount"] = @(content.summaryArgumentCount);
   }
-
-  serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ?: [NSNull null];
+  serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ? content.categoryIdentifier : [NSNull null];
   serializedContent[@"threadIdentifier"] = content.threadIdentifier ?: [NSNull null];
   if (@available(iOS 13.0, *)) {
     serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];

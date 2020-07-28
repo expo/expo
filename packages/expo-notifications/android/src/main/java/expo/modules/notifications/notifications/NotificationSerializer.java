@@ -3,6 +3,9 @@ package expo.modules.notifications.notifications;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.unimodules.core.arguments.MapArguments;
@@ -14,12 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationAction;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.model.TextInputNotificationAction;
+import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
@@ -32,6 +38,9 @@ public class NotificationSerializer {
     Bundle serializedResponse = new Bundle();
     serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
     serializedResponse.putBundle("notification", toBundle(response.getNotification()));
+    if (response instanceof TextInputNotificationResponse) {
+      serializedResponse.putString("userText", ((TextInputNotificationResponse) response).getUserText());
+    }
     return serializedResponse;
   }
 
@@ -82,6 +91,9 @@ public class NotificationSerializer {
       serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
+    if (content.getCategoryId() != null) {
+      serializedContent.putString("categoryIdentifier", content.getCategoryId());
+    }
     serializedContent.putBoolean("sticky", content.isSticky());
     return serializedContent;
   }
@@ -167,6 +179,43 @@ public class NotificationSerializer {
     return bundle;
   }
 
+  public static Bundle toBundle(@NonNull NotificationCategory category) {
+    Bundle serializedCategory = new Bundle();
+    serializedCategory.putString("identifier", category.getIdentifier());
+    serializedCategory.putParcelableArrayList("actions", toBundleList(category.getActions()));
+    // Android doesn't support any category options
+    serializedCategory.putBundle("options", new Bundle());
+    return serializedCategory;
+  }
+
+  public static ArrayList<Bundle> toBundleList(List<NotificationAction> actions) {
+    ArrayList<Bundle> result = new ArrayList<Bundle>();
+    for (NotificationAction action : actions) {
+      result.add(toBundle(action));
+    }
+    return result;
+  }
+
+  public static Bundle toBundle(NotificationAction action) {
+    // First we bundle up the options
+    Bundle serializedActionOptions = new Bundle();
+    serializedActionOptions.putBoolean("opensAppToForeground", action.opensAppToForeground());
+
+    Bundle serializedAction = new Bundle();
+    serializedAction.putString("identifier", action.getIdentifier());
+    serializedAction.putString("buttonTitle", action.getTitle());
+    serializedAction.putBundle("options", serializedActionOptions);
+
+    if (action instanceof TextInputNotificationAction) {
+      Bundle serializedTextInputOptions = new Bundle();
+      serializedTextInputOptions.putString("submitButtonTitle", ((TextInputNotificationAction) action).getSubmitButtonTitle());
+      serializedTextInputOptions.putString("placeholder", ((TextInputNotificationAction) action).getPlaceholder());
+      serializedAction.putBundle("textInput", serializedTextInputOptions);
+    }
+
+    return serializedAction;
+  }
+  
   @Nullable
   private static String getChannelId(NotificationTrigger trigger) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

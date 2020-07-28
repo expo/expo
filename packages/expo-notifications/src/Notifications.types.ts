@@ -220,6 +220,7 @@ export interface NotificationContentInput {
    */
   color?: string;
   autoDismiss?: boolean;
+  categoryIdentifier?: string;
   sticky?: boolean;
   attachments?: {
     url: string;
@@ -254,4 +255,33 @@ export interface NotificationBehavior {
   shouldPlaySound: boolean;
   shouldSetBadge: boolean;
   priority?: AndroidNotificationPriority;
+}
+
+export interface NotificationAction {
+  identifier: string;
+  buttonTitle: string;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
+  options?: {
+    isDestructive?: boolean;
+    isAuthenticationRequired?: boolean;
+    opensAppToForeground?: boolean;
+  };
+}
+
+export interface NotificationCategory {
+  identifier: string;
+  actions: NotificationAction[];
+  options?: {
+    previewPlaceholder?: string;
+    intentIdentifiers?: string[];
+    categorySummaryFormat?: string;
+    customDismissAction?: boolean;
+    allowInCarPlay?: boolean;
+    showTitle?: boolean;
+    showSubtitle?: boolean;
+    allowAnnouncement?: boolean;
+  };
 }

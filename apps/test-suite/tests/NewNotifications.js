@@ -597,6 +597,170 @@ export async function test(t) {
       });
     });
 
+    t.describe('Notification Categories', () => {
+      const vanillaButton = {
+        identifier: 'vanillaButton',
+        buttonTitle: 'Plain Option',
+        options: {
+          isDestructive: true,
+          isAuthenticationRequired: true,
+          opensAppToForeground: false,
+        },
+      };
+      const textResponseButton = {
+        identifier: 'textResponseButton',
+        buttonTitle: 'Click to Respond with Text',
+        options: {
+          isDestructive: true,
+          isAuthenticationRequired: true,
+          opensAppToForeground: true,
+        },
+        textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
+      };
+
+      const testCategory1 = {
+        identifier: 'testNotificationCategory1',
+        actions: [vanillaButton],
+        options: {
+          previewPlaceholder: 'preview goes here',
+          customDismissAction: false,
+          allowInCarPlay: false,
+          showTitle: false,
+          showSubtitle: false,
+          allowAnnouncement: false,
+        },
+      };
+      const testCategory2 = {
+        identifier: 'testNotificationCategory2',
+        actions: [vanillaButton, textResponseButton],
+        options: {
+          customDismissAction: false,
+          allowInCarPlay: false,
+          showTitle: true,
+          showSubtitle: true,
+          allowAnnouncement: false,
+        },
+      };
+
+      const allTestCategoryIds = ['testNotificationCategory1', 'testNotificationCategory2'];
+
+      t.describe('getNotificationCategoriesAsync()', () => {
+        t.afterEach(async () => {
+          allTestCategoryIds.forEach(async id => {
+            await Notifications.deleteNotificationCategoryAsync(id);
+          });
+        });
+        t.it('returns an empty array if there are no categories', async () => {
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(0);
+        });
+
+        t.it('returns an array with the just-created categories', async () => {
+          await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+          await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(2);
+        });
+      });
+
+      t.describe('setNotificationCategoriesAsync()', () => {
+        t.afterEach(async () => {
+          allTestCategoryIds.forEach(async id => {
+            await Notifications.deleteNotificationCategoryAsync(id);
+          });
+        });
+        t.it('creates a category with one action successfully', async () => {
+          const resultCategory = await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+
+          t.expect(testCategory1.identifier).toEqual(resultCategory.identifier);
+          testCategory1.actions.forEach((action, i) => {
+            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
+            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
+            t.expect(action.options).toEqual(
+              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            );
+          });
+          t.expect(testCategory1.options).toEqual(
+            t.jasmine.objectContaining(resultCategory.options)
+          );
+        });
+
+        t.it('creates a category with two actions successfully', async () => {
+          const resultCategory = await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+
+          t.expect(testCategory2.identifier).toEqual(resultCategory.identifier);
+          testCategory2.actions.forEach((action, i) => {
+            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
+            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
+            t.expect(action.options).toEqual(
+              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            );
+          });
+          t.expect(testCategory2.options).toEqual(
+            t.jasmine.objectContaining(resultCategory.options)
+          );
+        });
+      });
+
+      t.describe('deleteNotificationCategoriesAsync()', () => {
+        t.afterEach(async () => {
+          allTestCategoryIds.forEach(async id => {
+            await Notifications.deleteNotificationCategoryAsync(id);
+          });
+        });
+        t.it('deleting a category that does not exist returns false', async () => {
+          const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
+          t.expect(
+            await Notifications.deleteNotificationCategoryAsync('nonExistentCategoryId')
+          ).toBe(false);
+          const categoriesAfter = await Notifications.getNotificationCategoriesAsync();
+          t.expect(categoriesAfter.length).toEqual(categoriesBefore.length);
+        });
+
+        t.it('deleting a category that does exist returns true', async () => {
+          await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+          t.expect(
+            await Notifications.deleteNotificationCategoryAsync('testNotificationCategory2')
+          ).toBe(true);
+        });
+
+        t.it('returns an array of length 1 after creating 2 categories & deleting 1', async () => {
+          await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+          await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+          const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
+          await Notifications.deleteNotificationCategoryAsync('testNotificationCategory1');
+          const categoriesAfter = await Notifications.getNotificationCategoriesAsync();
+          t.expect(categoriesBefore.length - 1).toEqual(categoriesAfter.length);
+        });
+      });
+    });
+
     t.describe('getBadgeCountAsync', () => {
       t.it('resolves with an integer', async () => {
         const badgeCount = await Notifications.getBadgeCountAsync();

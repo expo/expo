@@ -24,6 +24,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String BADGE_KEY = "badge";
   private static final String COLOR_KEY = "color";
   private static final String AUTO_DISMISS_KEY = "autoDismiss";
+  private static final String CATEGORY_IDENTIFIER_KEY = "categoryId";
   private static final String STICKY_KEY = "sticky";
 
 
@@ -42,7 +43,9 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
         .setBadgeCount(getBadgeCount(payload))
         .setColor(getColor(payload))
         .setAutoDismiss(getAutoDismiss(payload))
+        .setCategoryId(getCategoryId(payload))
         .setSticky(getSticky(payload));
+
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -177,6 +180,15 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
     return true;
   }
 
+  @Nullable
+  protected String getCategoryId(JSONObject payload) {
+    try {
+      return payload.getString(CATEGORY_IDENTIFIER_KEY);
+    } catch (JSONException e) {
+      return null;
+    }
+  }
+  
   protected boolean getSticky(JSONObject payload) {
     if (payload.has(STICKY_KEY)) {
       try {

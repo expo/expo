@@ -353,6 +353,8 @@
 		F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
+		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
+		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1078,6 +1080,10 @@
 		F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSegmentedControlManager.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
+		FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSerializer.m; sourceTree = "<group>"; };
+		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
+		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
+		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1711,7 +1717,11 @@
 			children = (
 				B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */,
 				B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */,
+				FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */,
+				FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */,
 				B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */,
+				FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */,
+				FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */,
 				B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */,
 				B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */,
 				B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */,
@@ -2746,6 +2756,7 @@
 				B5A473E0204A673E0035C61C /* EXAppLoadingView.m in Sources */,
 				31AD99EA2285B51100F19090 /* AIRGoogleMapCircleManager.m in Sources */,
 				31AD9A422285B53100F19090 /* AIRMapLocalTileOverlay.m in Sources */,
+				FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */,
 				7043DF792283303800272D74 /* RNSVGSolidColorBrush.m in Sources */,
 				7043DF882283303800272D74 /* RNSVGTextPathManager.m in Sources */,
 				7043DF7D2283303800272D74 /* RNSVGEllipseManager.m in Sources */,
@@ -2827,6 +2838,7 @@
 				31AD9A4E2285B53100F19090 /* AIRMapPolyline.m in Sources */,
 				3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */,
 				BBB83C682479C3B50004FF8E /* RNCSafeAreaShadowView.m in Sources */,
+				FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */,
 				31AD99EC2285B51100F19090 /* RCTConvert+GMSMapViewType.m in Sources */,
 				31AD99E42285B51100F19090 /* AIRGoogleMapPolyline.m in Sources */,
 				BB36BC632135C98E00AFFD58 /* RNSScreenContainer.m in Sources */,
