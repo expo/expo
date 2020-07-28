@@ -109,7 +109,7 @@ Provides more informations about an asset, including GPS location, local URI and
 
 - **asset (_string_ | _Asset_)** -- [Asset](#asset) or its ID.
 - **options (_object_)**
-  - **shouldDownloadFromNetwork (_boolean_)** -- Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets. Defaults to true.
+  - **shouldDownloadFromNetwork (_boolean_)** -- Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets. Defaults to `true`.
 
 #### Returns
 
@@ -230,7 +230,7 @@ Subscribes for updates in user's media library.
 - **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
-  - **updatedAssets (_array_)** -- Array of [assets](#assets) that have updated from the library, or the asset has completed downloading from network (iCloud in iOS)
+  - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).
 
 #### Returns
 
