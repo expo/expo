@@ -33,18 +33,14 @@
     if (!self.window) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
       
+      int bottomInsets = 0;
       if (@available(iOS 11.0, *)) {
-        UIWindow *window = UMSharedApplication().keyWindow;
-        self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
-                                                                 screenSize.height - 30 - window.safeAreaInsets.bottom,
-                                                                 screenSize.width,
-                                                                 36)];
-      } else {
-        self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
-                                                                 screenSize.height - 36,
-                                                                 screenSize.width,
-                                                                 36)];
+        bottomInsets = UMSharedApplication().keyWindow.safeAreaInsets.bottom;
       }
+      self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
+                                                               screenSize.height - 36 - bottomInsets,
+                                                               screenSize.width,
+                                                               36)];
       self.window.windowLevel = UIWindowLevelStatusBar + 1;
       // set a root VC so rotation is supported
       self.window.rootViewController = [UIViewController new];
