@@ -109,7 +109,7 @@ function openFileBrowserAsync({
   });
 }
 
-async function readFile(targetFile: Blob): Promise<ImagePickerResult> {
+function readFile(targetFile: Blob): Promise<ImagePickerResult> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => {
