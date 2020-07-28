@@ -56,7 +56,7 @@ export type AssetInfo = Asset & {
   isNetworkAsset?: boolean; //iOS only
 };
 
-export interface AssetInfoQueryOptions {
+export type MediaLibraryAssetInfoQueryOptions {
   shouldDownloadFromNetwork?: boolean;
 }
 
@@ -256,7 +256,7 @@ export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef) {
 
 export async function getAssetInfoAsync(
   asset: AssetRef,
-  options: AssetInfoQueryOptions = { shouldDownloadFromNetwork: true }
+  options: MediaLibraryAssetInfoQueryOptions = { shouldDownloadFromNetwork: true }
 ): Promise<AssetInfo> {
   if (!MediaLibrary.getAssetInfoAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
