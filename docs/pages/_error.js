@@ -93,7 +93,7 @@ export default class Error extends React.Component {
       redirectPath = `https://reactnative.dev/docs/${page}`;
     }
 
-    // Remove versiong from path if the version is still supported, to redirect to the root
+    // Remove version from path if the version is still supported, to redirect to the root
     if (isVersionedPath(redirectPath) && isVersionDocumented(redirectPath)) {
       redirectPath = `/versions/${getVersionFromPath(redirectPath)}/`;
     }
