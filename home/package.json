@@ -7,7 +7,8 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "jest",
-    "lint": "eslint --ext .js,.ts,.tsx,.d.ts ."
+    "lint": "eslint --ext .js,.ts,.tsx,.d.ts .",
+    "report": "npx react-native-bundle-visualizer --entry-file __generated__/AppEntry.js"
   },
   "author": "Expo",
   "license": "MIT",
@@ -26,7 +27,6 @@
     "@react-navigation/stack": "~5.6.1",
     "apollo-boost": "^0.4.4",
     "apollo-cache-inmemory": "^1.6.3",
-    "path-to-regexp": "^1.8.0",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
     "expo": "~38.0.0",
@@ -47,6 +47,7 @@
     "graphql-tag": "^2.10.1",
     "immutable": "^3.8.1",
     "lodash": "^4.17.15",
+    "path-to-regexp": "^1.8.0",
     "prop-types": "^15.6.2",
     "querystring": "^0.2.0",
     "react": "16.11.0",
@@ -71,6 +72,7 @@
   },
   "devDependencies": {
     "jest-expo": "~38.0.0",
+    "react-native-bundle-visualizer": "^2.2.1",
     "uuid": "^3.3.2"
   }
 }
