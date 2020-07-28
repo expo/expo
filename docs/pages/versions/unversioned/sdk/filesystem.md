@@ -81,41 +81,6 @@ try {
 }
 ```
 
-#### Using external assets
-
-```ts
-const getContactImageBase64 = async () => {
-  const { status } = await Contacts.requestPermissionsAsync();
-  if (status === 'granted') {
-    try {
-      const { data: contacts } = await Contacts.getContactsAsync({
-        fields: [Contacts.Fields.Image],
-      });
-
-      // find first contact with image
-      const firstContactImage = contacts.find(c => c.image != null);
-      const imageUri = firstContactImage.image.uri;
-
-      // copy image into your app's filesystem
-      const tempUri = FileSystem.cacheDirectory + 'temp_img';
-      await FileSystem.copyAsync({ from: imageUri, to: tempUri });
-
-      // get base64 string
-      const result = await FileSystem.readAsStringAsync(tempUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      console.log(result);
-
-      // delete temporary file
-      await FileSystem.deleteAsync(tempUri);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-};
-```
-
 ## API
 
 ```js
@@ -569,6 +534,8 @@ Returns a Promise that resolves to a number that specifies the total internal di
 #
 
 ## Supported URI schemes
+
+In this table, you can see what type of URI can be handled by each method. For example, if you have an URI, which begins with `content://`, you cannot use `FileSystem.readAsStringAsync()`, but you can use `FileSystem.copyAsync()` which supports this scheme.
 
 | Method name               | Android                                                                                                          | iOS                                                                                             |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
