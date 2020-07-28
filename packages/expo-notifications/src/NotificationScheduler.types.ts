@@ -13,9 +13,15 @@ export interface NotificationSchedulerModule extends ProxyNativeModule {
   cancelAllScheduledNotificationsAsync?: () => Promise<void>;
 }
 
+export interface ChannelAwareTriggerInput {
+  type: 'channel';
+  channelId?: string;
+}
+
 // ISO8601 calendar pattern-matching
 export interface CalendarTriggerInput {
   type: 'calendar';
+  channelId?: string;
   repeats?: boolean;
   value: {
     timezone?: string;
@@ -36,23 +42,27 @@ export interface CalendarTriggerInput {
 
 export interface TimeIntervalTriggerInput {
   type: 'timeInterval';
+  channelId?: string;
   repeats: boolean;
   seconds: number;
 }
 
 export interface DailyTriggerInput {
   type: 'daily';
+  channelId?: string;
   hour: number;
   minute: number;
 }
 
 export interface DateTriggerInput {
   type: 'date';
+  channelId?: string;
   timestamp: number; // seconds since 1970
 }
 
 export type NotificationTriggerInput =
   | null
+  | ChannelAwareTriggerInput
   | DateTriggerInput
   | CalendarTriggerInput
   | TimeIntervalTriggerInput
