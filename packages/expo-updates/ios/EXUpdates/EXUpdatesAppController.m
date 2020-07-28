@@ -198,6 +198,11 @@ static NSString * const kEXUpdatesConfigPlistName = @"Expo";
 
 # pragma mark - EXUpdatesAppLoaderTaskDelegate
 
+- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(nonnull EXUpdatesUpdate *)update
+{
+  return YES;
+}
+
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
   // do nothing here for now

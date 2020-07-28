@@ -32,7 +32,8 @@ public class LoaderTask {
 
   public interface LoaderTaskCallback {
     void onFailure(Exception e);
-    void onManifestLoaded(Manifest manifest);
+    boolean onCachedUpdateLoaded(UpdateEntity update);
+    void onRemoteManifestLoaded(Manifest manifest);
     void onSuccess(Launcher launcher);
     void onEvent(String eventName, WritableMap params);
   }
@@ -94,6 +95,20 @@ public class LoaderTask {
     }
 
     launchFallbackUpdateFromDisk(context, new Callback() {
+      private void launchRemoteUpdate() {
+        launchRemoteUpdateInBackground(context, new Callback() {
+          @Override
+          public void onFailure(Exception e) {
+            finish(e);
+          }
+
+          @Override
+          public void onSuccess() {
+            finish(null);
+          }
+        });
+      }
+
       @Override
       public void onFailure(Exception e) {
         // An unexpected failure has occurred here, or we are running in an environment with no
@@ -102,6 +117,8 @@ public class LoaderTask {
         // If we are, then we should wait for the task to finish. If not, we need to fail here.
         if (!shouldCheckForUpdate) {
           finish(e);
+        } else {
+          launchRemoteUpdate();
         }
         Log.e(TAG, "Failed to launch embedded or launchable update", e);
       }
@@ -112,22 +129,14 @@ public class LoaderTask {
           mIsReadyToLaunch = true;
           maybeFinish();
         }
+
+        if (shouldCheckForUpdate &&
+            (mLauncher.getLaunchedUpdate() == null ||
+            mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate()))) {
+          launchRemoteUpdate();
+        }
       }
     });
-
-    if (shouldCheckForUpdate) {
-      launchRemoteUpdateInBackground(context, new Callback() {
-        @Override
-        public void onFailure(Exception e) {
-          finish(e);
-        }
-
-        @Override
-        public void onSuccess() {
-          finish(null);
-        }
-      });
-    }
   }
 
   /**
