@@ -48,7 +48,7 @@ export default (program: Command) => {
 
 async function main(options: ActionOptions) {
   const platform = options.platform || (await askForPlatformAsync());
-  const sdkBranchVersion = (await Git.getSDKVersionFromBranchNameAsync()) || '39.0.0';
+  const sdkBranchVersion = (await Git.getSDKVersionFromBranchNameAsync());
 
   if (options.release && !sdkBranchVersion) {
     throw new Error(`Client builds can be released only from the release branch!`);

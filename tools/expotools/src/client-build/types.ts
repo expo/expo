@@ -7,9 +7,9 @@ export type S3Client = aws.S3;
 
 export interface ClientBuilder {
   platform: Platform;
-  getAppPath(): string;
-  getClientUrl(appVersion: string): string;
-  getAppVersionAsync(): Promise<string>;
-  buildAsync(): Promise<void>;
-  uploadBuildAsync(s3Client: S3Client, appVersion: string): Promise<void>;
+  getAppPath: () => string;
+  getClientUrl: (appVersion: string) => string;
+  getAppVersionAsync: () => Promise<string>;
+  buildAsync: () => Promise<void>;
+  uploadBuildAsync: (s3Client: S3Client, appVersion: string) => Promise<void>;
 }
