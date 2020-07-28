@@ -50,6 +50,15 @@ Ensure that there is a `meta-data` element inside the `application` node inside 
 </manifest>
 ```
 
+This package automatically adds the `INTERNET` permission. It's required to interact with Google's service.
+
+```xml
+<manifest>
+  <!-- Added permissions -->
+  <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
