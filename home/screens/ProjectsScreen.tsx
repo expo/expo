@@ -12,7 +12,6 @@ import DevIndicator from '../components/DevIndicator';
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
 import NoProjectsOpen from '../components/NoProjectsOpen';
-import NoProjectTools from '../components/NoProjectTools';
 import ProjectListItem from '../components/ProjectListItem';
 import ProjectTools from '../components/ProjectTools';
 import RefreshControl from '../components/RefreshControl';
@@ -257,14 +256,9 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _renderProjectTools = () => {
-    if (IS_RESTRICTED) {
-      return <NoProjectTools />;
-    } else {
-      // Disable polling the clipboard on iOS because it presents a notification every time the clipboard is read.
-      const pollForUpdates = this.props.isFocused && Platform.OS !== 'ios';
-
-      return <ProjectTools pollForUpdates={pollForUpdates} />;
-    }
+    // Disable polling the clipboard on iOS because it presents a notification every time the clipboard is read.
+    const pollForUpdates = this.props.isFocused && Platform.OS !== 'ios';
+    return <ProjectTools pollForUpdates={pollForUpdates} />;
   };
 
   private _renderRecentHistory = () => {
