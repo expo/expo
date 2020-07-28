@@ -1,7 +1,8 @@
 import { PermissionStatus } from 'unimodules-permissions-interface';
-import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState } from './Location.types';
+import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 import { _getCurrentWatchId } from './LocationSubscribers';
+import { setGoogleApiKey } from './LocationGoogleGeocoding';
 export declare function getProviderStatusAsync(): Promise<LocationProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
 /**
@@ -34,12 +35,14 @@ export declare function getHeadingAsync(): Promise<LocationHeadingObject>;
  * Given callback will be called once the new heading is available.
  */
 export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<LocationSubscription>;
-export declare function geocodeAsync(address: string): Promise<LocationGeocodedLocation[]>;
-export declare function reverseGeocodeAsync(location: {
-    latitude: number;
-    longitude: number;
-}): Promise<LocationGeocodedAddress[]>;
-export declare function setApiKey(apiKey: string): void;
+/**
+ * Geocodes given address to an array of latitude-longitude coordinates.
+ */
+export declare function geocodeAsync(address: string, options?: LocationGeocodingOptions): Promise<LocationGeocodedLocation[]>;
+/**
+ * The opposite behavior of `geocodeAsync` — translates location coordinates to an array of addresses.
+ */
+export declare function reverseGeocodeAsync(location: Pick<LocationGeocodedLocation, 'latitude' | 'longitude'>, options?: LocationGeocodingOptions): Promise<LocationGeocodedAddress[]>;
 /**
  * Gets the current state of location permissions.
  */
@@ -59,7 +62,11 @@ export declare function hasStartedLocationUpdatesAsync(taskName: string): Promis
 export declare function startGeofencingAsync(taskName: string, regions?: LocationRegion[]): Promise<void>;
 export declare function stopGeofencingAsync(taskName: string): Promise<void>;
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
+/**
+ * Deprecated as of SDK39
+ */
+export declare function setApiKey(apiKey: string): void;
 export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, setGoogleApiKey, };
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';

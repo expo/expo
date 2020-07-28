@@ -1,4 +1,4 @@
-import { Platform, CodedError } from '@unimodules/core';
+import { Platform } from '@unimodules/core';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoLocation from './ExpoLocation';
