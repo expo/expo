@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
@@ -9,7 +9,7 @@ import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'ImagePicker';
 
-export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, describe, afterAll }) {
+export async function test({ it, beforeAll, expect, jasmine, describe, afterAll }) {
   function testMediaObjectShape(shape, type) {
     expect(shape).toBeDefined();
     expect(typeof shape.cancelled).toBe('boolean');

@@ -270,7 +270,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   }
 
   /**
-   * Handle notification to schedule. If trigger is null, hands the request immediately to {@link BaseNotificationsService}.
+   * Handle notification to schedule. If trigger is null or isn't {@link SchedulableNotificationTrigger}, hands the request immediately to {@link BaseNotificationsService}.
    *
    * @param context             Context this is being called from
    * @param notificationRequest Notification request

@@ -28,6 +28,12 @@
   }
   userInfo[@"experienceId"] = _experienceId;
   [content setUserInfo:userInfo];
+  
+  if (content.categoryIdentifier) {
+    NSString *categoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, content.categoryIdentifier];
+    [content setCategoryIdentifier:categoryIdentifier];
+  }
+  
   return content;
 }
 

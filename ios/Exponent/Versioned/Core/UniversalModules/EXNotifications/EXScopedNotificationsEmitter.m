@@ -4,6 +4,7 @@
 
 #import "EXScopedNotificationsEmitter.h"
 #import "EXScopedNotificationsUtils.h"
+#import "EXScopedNotificationSerializer.h"
 
 @interface EXScopedNotificationsEmitter ()
 
@@ -25,8 +26,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   if ([EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_experienceId]) {
-    [super userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-    return;
+    [self.eventEmitter sendEventWithName:onDidReceiveNotificationResponse body:[EXScopedNotificationSerializer serializedNotificationResponse:response]];
   }
   
   completionHandler();
@@ -35,8 +35,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
   if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_experienceId]) {
-    [super userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
-    return;
+    [self.eventEmitter sendEventWithName:onDidReceiveNotification body:[EXScopedNotificationSerializer serializedNotification:notification]];
   }
   
   completionHandler(UNNotificationPresentationOptionNone);

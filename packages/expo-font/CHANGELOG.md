@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.2.2 — 2020-07-27
+
+### 🐛 Bug fixes
+
 - Fixed fonts not being loaded in Internet Explorer. ([#8652](https://github.com/expo/expo/pull/8652) by [@d4rky-pl](https://github.com/d4rky-pl))
 
 ## 8.2.1 — 2020-05-29

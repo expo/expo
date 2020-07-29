@@ -7,6 +7,11 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 9.1.0 — 2020-07-27
+
+### 🐛 Bug fixes
+
 - Fix incorrect security attribute applied when using the flag WHEN_UNLOCKED_THIS_DEVICE_ONLY on iOS ([#9264](https://github.com/expo/expo/pull/9264) by [@cjthompson](https://github.com/cjthompson))
 
 ## 9.0.1 — 2020-05-29

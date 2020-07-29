@@ -311,9 +311,9 @@
 			};
 			name = Debug;
 		};
-		716A31150F999825229EAE5222B24B4D /* Debug */ = {
+		289758A5F5A0518892BD13F4E6C7AEA9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3E42322C345669DBECC0481BD8BCE5D6 /* EXImagePicker.debug.xcconfig */;
+			baseConfigurationReference = 838EA30769F4BEA195BAA3A98B38E139 /* EXImagePicker.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -331,9 +331,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		C5FF840C3FC0EEF53F2AA3B6BB6A125F /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -395,9 +397,9 @@
 			};
 			name = Release;
 		};
-		C930250BC428D3F9A203490789A06C43 /* Release */ = {
+		D2A57525E3066C57D0C4FF6EE5FB2124 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 838EA30769F4BEA195BAA3A98B38E139 /* EXImagePicker.release.xcconfig */;
+			baseConfigurationReference = 3E42322C345669DBECC0481BD8BCE5D6 /* EXImagePicker.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -415,10 +417,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -435,8 +437,8 @@
 		77CBC2FBF86106F46B4261B5BFBAC7EF /* Build configuration list for PBXNativeTarget "EXImagePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				716A31150F999825229EAE5222B24B4D /* Debug */,
-				C930250BC428D3F9A203490789A06C43 /* Release */,
+				D2A57525E3066C57D0C4FF6EE5FB2124 /* Debug */,
+				289758A5F5A0518892BD13F4E6C7AEA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed unused and potentionally unsafe call on iOS. ([#9436](https://github.com/expo/expo/pull/9436) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ## 8.4.0 — 2020-07-24
 
 ### 🐛 Bug fixes
