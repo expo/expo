@@ -90,7 +90,7 @@ class GetQueryInfo {
     try {
       mOffset = mInput.containsKey("after") ?
         Integer.parseInt((String) mInput.get("after")) : 0;
-    } catch(NumberFormatException ex) {
+    } catch (NumberFormatException e) {
       mOffset = 0;
     }
     return this;
