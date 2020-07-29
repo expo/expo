@@ -125,3 +125,6 @@ apps/bare-expo/deploy-url.txt
 docs/pages/versions/*/react-native/ADDED_*.md
 docs/pages/versions/*/react-native/REMOVED_*.md
 docs/pages/versions/*/react-native/*.diff
+
+# Home
+/home/dist
