@@ -35,6 +35,8 @@
   [controller startAndShowLaunchScreen:self.window];
 #endif
 
+  DevMenuManager.shared.delegate = self;
+
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
   return YES;
@@ -83,6 +85,10 @@
                 didStartWithSuccess:(BOOL)success
 {
   developmentClientController.appBridge = [self initializeReactNativeApp];
+}
+
+- (id)appBridgeForDevMenuManager:(DevMenuManager *)manager {
+  return EXDevelopmentClientController.sharedInstance.appBridge;
 }
 
 @end

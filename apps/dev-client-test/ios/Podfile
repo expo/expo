@@ -62,6 +62,9 @@ target 'DevClientTest' do
     }
   )
 
+  # Manual linking
+  pod 'EXDevMenu', path: '../../../packages/expo-dev-menu'
+
   # react-native-cli auto-linking
   use_native_modules!
 end

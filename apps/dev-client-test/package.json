@@ -22,6 +22,7 @@
   "dependencies": {
     "@react-native-community/async-storage": "~1.11.0",
     "expo": "~38.0.1",
+    "expo-dev-menu": "0.1.0",
     "expo-development-client": "1.0.0",
     "expo-splash-screen": "~0.4.0",
     "expo-status-bar": "^1.0.0",
