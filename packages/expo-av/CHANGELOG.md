@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.4.1 — 2020-07-29
+
+### 🐛 Bug fixes
+
 - Removed unused and potentionally unsafe call on iOS. ([#9436](https://github.com/expo/expo/pull/9436) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Fix onReadyForDisplay not emitted for HLS streams/m3u8 files on iOS. ([#9443](https://github.com/expo/expo/pull/9443) by [@IjzerenHein](https://github.com/IjzerenHein))
 
