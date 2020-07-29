@@ -1,5 +1,7 @@
 # Expo Documentation
 
+> This is a test to trigger the docs workflow
+
 This is the public documentation for **Expo**, its SDK, client and services.
 
 You can access this documentation online at https://docs.expo.io/. It's built using next.js on top of the https://github.com/zeit/docs codebase.
@@ -108,9 +110,9 @@ Because the navbar is automatically generated from the directory structure, the 
 
 #### Syncing app.json / app.config.js with the schema
 
-To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema. 
+To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
 
-If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync 39` (or relevant version number) or `yarn run schema-sync unversioned`.  
+If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync 39` (or relevant version number) or `yarn run schema-sync unversioned`.
 
 #### Importing from the React Native docs
 
