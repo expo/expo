@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Clipboard, InteractionManager, Linking, View } from 'react-native';
 
 import FeatureFlags from '../FeatureFlags';
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 import useAppState from '../utils/useAppState';
 import ListItem from './ListItem';
 import OpenFromClipboardButton from './OpenFromClipboardButton';

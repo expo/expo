@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Clipboard, Keyboard, Linking, Platform } from 'react-native';
 
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';
 import Constants from 'expo-constants';
 

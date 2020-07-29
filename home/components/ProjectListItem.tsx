@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Linking, Share, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '../constants/Colors';
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';
 
 type Props = React.ComponentProps<typeof ListItem> & {

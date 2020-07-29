@@ -1,9 +1,8 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { AllStackRoutes } from 'navigation/Navigation.types';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import * as React from 'react';
 
-import MySnacksListContainer from '../containers/MySnacksListContainer';
-import OtherUserSnackListContainer from '../containers/OtherUserSnackListContainer';
+import { MySnacksList, OtherSnacksList } from '../containers/SnacksList';
 
 export default function SnacksForUserScreen({
   route,
@@ -11,8 +10,8 @@ export default function SnacksForUserScreen({
   const { username, belongsToCurrentUser = false } = route.params ?? {};
 
   if (belongsToCurrentUser) {
-    return <MySnacksListContainer belongsToCurrentUser />;
+    return <MySnacksList />;
   }
 
-  return <OtherUserSnackListContainer username={username} />;
+  return <OtherSnacksList username={username} />;
 }
