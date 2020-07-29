@@ -405,7 +405,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
   
   PHAsset *asset = [EXMediaLibrary _getAssetById:assetId];
     
-  BOOL shouldDownloadFromNetwork = [[options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] boolValue] ?: @YES;
+  BOOL shouldDownloadFromNetwork = [[options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] boolValue] ?: YES;
   
   if (asset) {
     NSMutableDictionary *result = [EXMediaLibrary _exportAssetInfo:asset];
