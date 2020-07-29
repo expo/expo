@@ -80,7 +80,6 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
 
-
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {

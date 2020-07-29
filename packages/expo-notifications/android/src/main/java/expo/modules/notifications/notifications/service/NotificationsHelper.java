@@ -355,17 +355,6 @@ public class NotificationsHelper {
     return builder.toString();
   }
 
-  protected NotificationRequest reconstructNotificationRequest(Parcel parcel) {
-    return NotificationRequest.CREATOR.createFromParcel(parcel);
-  }
-
-  protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
-    return NotificationsScoper.create(mContext).createBuilderCreator().get(mContext, new SharedPreferencesNotificationCategoriesStore(mContext))
-      .setNotification(notification)
-      .setAllowedBehavior(behavior)
-      .build();
-  }
-
   private Collection<NotificationManager> getListeners() {
     Collection<NotificationManager> listeners = new ArrayList<>();
     for (WeakReference<NotificationManager> reference : sListenersReferences.values()) {
