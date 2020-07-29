@@ -20,6 +20,7 @@
     "@expo/react-native-action-sheet": "^2.1.0",
     "@expo/react-native-touchable-native-feedback-safe": "^1.1.2",
     "@expo/vector-icons": "^10.0.6",
+    "@react-native-community/async-storage": "~1.11.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "5.9.2",
     "@react-navigation/bottom-tabs": "~5.6.1",
