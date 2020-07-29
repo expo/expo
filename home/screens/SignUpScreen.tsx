@@ -1,7 +1,9 @@
-/* @flow */
+import { StackScreenProps } from '@react-navigation/stack';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import * as React from 'react';
-import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useKeyboardHeight } from '../utils/useKeyboardHeight';
 
 import Analytics from '../api/Analytics';
 import AuthApi from '../api/AuthApi';
@@ -13,40 +15,66 @@ import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 
-export default function SignUpScreen({ navigation }) {
+export default function SignUpScreen(props: StackScreenProps<AllStackRoutes, 'SignUp'>) {
   const session = useSelector(data => data.session);
   const dispatch = useDispatch();
-  return <SignUpView dispatch={dispatch} session={session} navigation={navigation} />;
+  // TODO(Bacon): This doesn't seem to be required anymore.
+  const keyboardHeight = useKeyboardHeight();
+  return (
+    <SignUpView {...props} keyboardHeight={keyboardHeight} dispatch={dispatch} session={session} />
+  );
 }
 
-class SignUpView extends React.Component {
-  state = DEBUG
-    ? {
-        keyboardHeight: 0,
-        firstName: 'Brent',
-        lastName: 'Vatne',
-        username: `brentvatne${new Date() - 0}`,
-        email: `brentvatne+${new Date() - 0}@gmail.com`,
-        password: 'pass123!!!1',
-        passwordConfirmation: 'pass123!!!1',
-        isLoading: false,
-      }
-    : {
-        keyboardHeight: 0,
-        firstName: '',
-        lastName: '',
-        username: '',
-        email: '',
-        password: '',
-        passwordConfirmation: '',
-        isLoading: false,
-      };
+type Props = StackScreenProps<AllStackRoutes, 'SignUp'> & {
+  dispatch: (action: any) => void;
+  keyboardHeight: number;
+  session: { sessionSecret?: string };
+};
 
-  _isMounted: boolean;
-  _keyboardDidShowSubscription: { remove: Function };
-  _keyboardDidHideSubscription: { remove: Function };
+type InputState = {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+};
+type State = InputState & {
+  isLoading: boolean;
+};
 
-  componentDidUpdate(prevProps: Object) {
+const initialState: State = DEBUG
+  ? {
+      firstName: 'Brent',
+      lastName: 'Vatne',
+      username: `brentvatne${Date.now() - 0}`,
+      email: `brentvatne+${Date.now() - 0}@gmail.com`,
+      password: 'pass123!!!1',
+      passwordConfirmation: 'pass123!!!1',
+      isLoading: false,
+    }
+  : {
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
+      passwordConfirmation: '',
+      isLoading: false,
+    };
+
+class SignUpView extends React.Component<Props, State> {
+  readonly state: State = initialState;
+
+  private _isMounted?: boolean;
+
+  private lastNameInput?: any;
+  private usernameInput?: any;
+  private emailInput?: any;
+  private passwordInput?: any;
+  private passwordConfirmationInput?: any;
+
+  componentDidUpdate(prevProps: Props) {
     if (this.props.session.sessionSecret && !prevProps.session.sessionSecret) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.pop();
@@ -55,25 +83,10 @@ class SignUpView extends React.Component {
 
   componentDidMount() {
     this._isMounted = true;
-
-    this._keyboardDidShowSubscription = Keyboard.addListener(
-      'keyboardDidShow',
-      ({ endCoordinates }) => {
-        const keyboardHeight = endCoordinates.height;
-        this.setState({ keyboardHeight });
-      }
-    );
-
-    this._keyboardDidHideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      this.setState({ keyboardHeight: 0 });
-    });
   }
 
   componentWillUnmount() {
     this._isMounted = false;
-
-    this._keyboardDidShowSubscription.remove();
-    this._keyboardDidHideSubscription.remove();
   }
 
   render() {
@@ -85,8 +98,8 @@ class SignUpView extends React.Component {
         style={styles.container}>
         <Form>
           <Form.Input
-            onChangeText={value => this._updateValue('firstName', value)}
-            onSubmitEditing={() => this._handleSubmitEditing('firstName')}
+            onChangeText={value => this.updateValue('firstName', value)}
+            onSubmitEditing={() => this.handleSubmitEditing('firstName')}
             value={this.state.firstName}
             autoFocus
             autoCorrect={false}
@@ -98,10 +111,10 @@ class SignUpView extends React.Component {
           />
           <Form.Input
             ref={view => {
-              this._lastNameInput = view;
+              this.lastNameInput = view;
             }}
-            onChangeText={value => this._updateValue('lastName', value)}
-            onSubmitEditing={() => this._handleSubmitEditing('lastName')}
+            onChangeText={value => this.updateValue('lastName', value)}
+            onSubmitEditing={() => this.handleSubmitEditing('lastName')}
             value={this.state.lastName}
             autoCorrect={false}
             autoCapitalize="words"
@@ -112,10 +125,10 @@ class SignUpView extends React.Component {
           />
           <Form.Input
             ref={view => {
-              this._usernameInput = view;
+              this.usernameInput = view;
             }}
-            onChangeText={value => this._updateValue('username', value)}
-            onSubmitEditing={() => this._handleSubmitEditing('username')}
+            onChangeText={value => this.updateValue('username', value)}
+            onSubmitEditing={() => this.handleSubmitEditing('username')}
             value={this.state.username}
             autoCorrect={false}
             autoCapitalize="none"
@@ -126,10 +139,10 @@ class SignUpView extends React.Component {
           />
           <Form.Input
             ref={view => {
-              this._emailInput = view;
+              this.emailInput = view;
             }}
-            onSubmitEditing={() => this._handleSubmitEditing('email')}
-            onChangeText={value => this._updateValue('email', value)}
+            onSubmitEditing={() => this.handleSubmitEditing('email')}
+            onChangeText={value => this.updateValue('email', value)}
             autoCorrect={false}
             autoCapitalize="none"
             textContentType="emailAddress"
@@ -140,24 +153,24 @@ class SignUpView extends React.Component {
           />
           <Form.Input
             ref={view => {
-              this._passwordInput = view;
+              this.passwordInput = view;
             }}
-            onSubmitEditing={() => this._handleSubmitEditing('password')}
-            onChangeText={value => this._updateValue('password', value)}
+            onSubmitEditing={() => this.handleSubmitEditing('password')}
+            onChangeText={value => this.updateValue('password', value)}
             value={this.state.password}
             autoCorrect={false}
             autoCapitalize="none"
             label="Password"
-            textContentType="newPassword"
+            textContentType="password"
             returnKeyType="next"
             secureTextEntry
           />
           <Form.Input
             ref={view => {
-              this._passwordConfirmationInput = view;
+              this.passwordConfirmationInput = view;
             }}
-            onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
-            onChangeText={value => this._updateValue('passwordConfirmation', value)}
+            onSubmitEditing={() => this.handleSubmitEditing('passwordConfirmation')}
+            onChangeText={value => this.updateValue('passwordConfirmation', value)}
             value={this.state.passwordConfirmation}
             hideBottomBorder
             autoCorrect={false}
@@ -171,50 +184,44 @@ class SignUpView extends React.Component {
 
         <PrimaryButton
           style={{ margin: 20 }}
-          onPress={this._handleSubmit}
+          onPress={this.handleSubmit}
           isLoading={this.state.isLoading}>
           Sign Up
         </PrimaryButton>
 
-        <View style={{ height: this.state.keyboardHeight }} />
+        <View style={{ height: this.props.keyboardHeight }} />
       </ScrollView>
     );
   }
 
-  _lastNameInput: any;
-  _usernameInput: any;
-  _emailInput: any;
-  _passwordInput: any;
-  _passwordConfirmationInput: any;
-
-  _handleSubmitEditing = (field: string) => {
+  private handleSubmitEditing = (field: string) => {
     switch (field) {
       case 'firstName':
-        this._lastNameInput.focus();
+        this.lastNameInput.focus();
         break;
       case 'lastName':
-        this._usernameInput.focus();
+        this.usernameInput.focus();
         break;
       case 'username':
-        this._emailInput.focus();
+        this.emailInput.focus();
         break;
       case 'email':
-        this._passwordInput.focus();
+        this.passwordInput.focus();
         break;
       case 'password':
-        this._passwordConfirmationInput.focus();
+        this.passwordConfirmationInput.focus();
         break;
       case 'passwordConfirmation':
-        this._handleSubmit();
+        this.handleSubmit();
         break;
     }
   };
 
-  _updateValue = (key: string, value: string) => {
-    this.setState({ [key]: value });
+  private updateValue = (key: keyof InputState, value: string) => {
+    this.setState({ [key]: value } as InputState);
   };
 
-  _handleSubmit = async () => {
+  private handleSubmit = async () => {
     const { isLoading } = this.state;
 
     if (isLoading) {
@@ -235,13 +242,13 @@ class SignUpView extends React.Component {
         );
       }
     } catch (e) {
-      this._isMounted && this._handleError(e);
+      this._isMounted && this.handleError(e);
     } finally {
       this._isMounted && this.setState({ isLoading: false });
     }
   };
 
-  _handleError = (error: Error) => {
+  private handleError = (error: Error) => {
     const errorMessage = error.message || 'Sorry, something went wrong.';
     alert(errorMessage);
   };
