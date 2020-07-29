@@ -15,6 +15,7 @@ import { modifySdkVersionsAsync, getSdkVersionsAsync } from '../Versions';
 import { ClientBuilder, Platform } from '../client-build/types';
 import IosClientBuilder from '../client-build/IosClientBuilder';
 import AndroidClientBuilder from '../client-build/AndroidClientBuilder';
+import { getNewestSDKVersionAsync } from '../ProjectVersions';
 
 const s3Client = new aws.S3({ region: 'us-east-1' });
 const { yellow, blue, magenta } = chalk;
@@ -48,14 +49,16 @@ export default (program: Command) => {
 
 async function main(options: ActionOptions) {
   const platform = options.platform || (await askForPlatformAsync());
-  const sdkBranchVersion = (await Git.getSDKVersionFromBranchNameAsync());
+  const sdkBranchVersion = await Git.getSDKVersionFromBranchNameAsync();
 
   if (options.release && !sdkBranchVersion) {
     throw new Error(`Client builds can be released only from the release branch!`);
   }
 
   const builder = getBuilderForPlatform(platform);
-  const sdkVersion = sdkBranchVersion || (await askForSdkVersionAsync(platform));
+  const sdkVersion =
+    sdkBranchVersion ||
+    (await askForSdkVersionAsync(platform, await getNewestSDKVersionAsync(platform)));
   const appVersion = await builder.getAppVersionAsync();
 
   await buildOrUseCacheAsync(builder);
