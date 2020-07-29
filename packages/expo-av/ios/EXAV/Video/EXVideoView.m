@@ -238,13 +238,19 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                         @"height": @(height),
                         @"orientation": ((width == tx && height == ty) || (tx == 0 && ty == 0)) ? @"landscape" : @"portrait"};
       } else {
-        naturalSize = nil;
+        
+        // For certain Assets (e.g. AVURLAsset/HSL-streams/m3u8 files), the natural size
+        // cannot be obtained from AVAssetTrack. In these cases fallback to using
+        // the presentationSize from AVPlayerItem.
+        // https://stackoverflow.com/questions/48553686/avfoundation-how-can-you-get-the-video-dimensions-of-a-video-being-streamed-by
+        CGSize presentationSize = _data.player.currentItem.presentationSize;
+        naturalSize = @{@"width": @(presentationSize.width),
+                        @"height": @(presentationSize.height),
+                        @"orientation": @"landscape"};
       }
-      
-      if (naturalSize) {
-        _onReadyForDisplay(@{@"naturalSize": naturalSize,
+
+      _onReadyForDisplay(@{@"naturalSize": naturalSize,
                              @"status": [_data getStatus]});
-      }
     }
     
     // On iOS 11 or lower, use video-bounds monitoring to detect changes in the full-screen
