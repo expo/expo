@@ -3,9 +3,9 @@ import { Notifications } from 'expo';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
-import React from 'react';
+import * as React from 'react';
 import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Circle } from 'react-native-maps';
 
 import NavigationEvents from '../components/NavigationEvents';
 import Button from '../components/PrimaryButton';
@@ -13,10 +13,32 @@ import Button from '../components/PrimaryButton';
 const GEOFENCING_TASK = 'geofencing';
 const REGION_RADIUSES = [30, 50, 75, 100, 150, 200];
 
-export default class GeofencingScreen extends React.Component {
-  mapViewRef = React.createRef();
+type Region = {
+  identifier: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
+};
 
-  state = {
+type State = {
+  isGeofencing: boolean;
+  newRegionRadius: number;
+  geofencingRegions: Region[];
+  initialRegion: {
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+  } | null;
+  error: string | null;
+};
+
+type Props = unknown;
+
+export default class GeofencingScreen extends React.Component<Props, State> {
+  mapViewRef = React.createRef<MapView>();
+
+  readonly state: State = {
     isGeofencing: false,
     newRegionRadius: REGION_RADIUSES[1],
     geofencingRegions: [],
@@ -142,7 +164,7 @@ export default class GeofencingScreen extends React.Component {
 
     return geofencingRegions.map(region => {
       return (
-        <MapView.Circle
+        <Circle
           key={region.identifier}
           center={region}
           radius={region.radius}
@@ -218,7 +240,7 @@ async function getSavedRegions() {
 }
 
 if (Platform.OS !== 'android') {
-  TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
+  TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }: any) => {
     const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
     const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${region.longitude} and radius: ${region.radius}m`;
 
