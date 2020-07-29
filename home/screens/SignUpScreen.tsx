@@ -1,5 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { AllStackRoutes } from 'navigation/Navigation.types';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import * as React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
