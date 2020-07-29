@@ -118,13 +118,21 @@ export default class DocumentationPage extends React.Component {
   };
 
   _isGeneralPath = () => {
-    return !this._isReferencePath() && !this._isGettingStartedPath();
+    return some(navigation.generalDirectories, name =>
+      this.props.url.pathname.startsWith(`/${name}`)
+    );
   };
 
   _isGettingStartedPath = () => {
     return (
       this.props.url.pathname === '/' ||
       some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
+    );
+  };
+
+  _isPreviewPath = () => {
+    return some(navigation.previewDirectories, name =>
+      this.props.url.pathname.startsWith(`/${name}`)
     );
   };
 
@@ -156,10 +164,8 @@ export default class DocumentationPage extends React.Component {
     if (this._isReferencePath()) {
       const version = this._getVersion();
       return navigation.reference[version];
-    } else if (this._isGeneralPath()) {
-      return navigation.general;
-    } else if (this._isGettingStartedPath()) {
-      return navigation.starting;
+    } else {
+      return navigation[this._getActiveTopLevelSection()];
     }
   };
 
@@ -170,6 +176,8 @@ export default class DocumentationPage extends React.Component {
       return 'general';
     } else if (this._isGettingStartedPath()) {
       return 'starting';
+    } else if (this._isPreviewPath()) {
+      return 'preview';
     }
   };
 
@@ -221,7 +229,9 @@ export default class DocumentationPage extends React.Component {
             isReferencePage={this._isReferencePath()}
           />
 
-          {this._version === 'unversioned' && <meta name="robots" content="noindex" />}
+          {(this._version === 'unversioned' || this._isPreviewPath()) && (
+            <meta name="robots" content="noindex" />
+          )}
           {this._version !== 'unversioned' && (
             <link rel="canonical" href={this._getCanonicalUrl()} />
           )}

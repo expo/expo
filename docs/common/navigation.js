@@ -1,9 +1,9 @@
 const packageVersion = require('../package.json').version;
 const prevaledNavigationData = require('./navigation-data');
 
-// Groups of sections
-// - Each section is a top-level folder within the version directory
-// - The groups of sections are expressed only below, there is no representation of them in the filesystem
+// Groups of sections: these groups are exclusively expressed below, there is no
+// representation of them in the filesystem!
+// Groups -> Sections -> Pages
 const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
@@ -18,10 +18,20 @@ const GROUPS = {
   'Expo SDK': ['Expo SDK'],
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
+  Preview: ['Preview'],
+  Build: ['Build'],
 };
 
-// This array provides the ordering for pages within each section
+// This array provides the **ordering** for pages within each section
 const sections = [
+  {
+    name: 'Preview',
+    reference: ['Introduction', 'Support and feedback'],
+  },
+  {
+    name: 'Build',
+    reference: ['Introduction', 'Setup', 'iOS', 'Android'],
+  },
   {
     name: 'Get Started',
     reference: ['Installation', 'Create a new app'],
@@ -371,11 +381,14 @@ const sortedReference = Object.assign(
 
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
+const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
+  previewDirectories: prevaledNavigationData.previewDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
+  preview: sortedPreview,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
 };
