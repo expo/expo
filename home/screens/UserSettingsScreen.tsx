@@ -1,12 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
 import SectionFooter from '../components/SectionFooter';
 import SectionHeader from '../components/SectionHeader';
+import { useDispatch, useSelector } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 import SettingsActions from '../redux/SettingsActions';
 

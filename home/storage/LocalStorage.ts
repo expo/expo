@@ -4,7 +4,7 @@ import { AsyncStorage } from 'react-native';
 import * as Kernel from '../kernel/Kernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 
-type Settings = object;
+type Settings = Record<string, any>;
 
 const Keys = mapValues(
   {

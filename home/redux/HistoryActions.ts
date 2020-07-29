@@ -1,8 +1,9 @@
 import LocalStorage from '../storage/LocalStorage';
+import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
-  loadHistory() {
-    return async dispatch => {
+  loadHistory(): AppThunk {
+    return async (dispatch: AppDispatch) => {
       const history = await LocalStorage.getHistoryAsync();
       return dispatch({
         type: 'loadHistory',
@@ -11,8 +12,8 @@ export default {
     };
   },
 
-  clearHistory() {
-    return async dispatch => {
+  clearHistory(): AppThunk {
+    return async (dispatch: AppDispatch) => {
       await LocalStorage.clearHistoryAsync();
       return dispatch({
         type: 'clearHistory',
@@ -20,8 +21,8 @@ export default {
     };
   },
 
-  addHistoryItem(manifestUrl, manifest) {
-    return async dispatch => {
+  addHistoryItem(manifestUrl: string, manifest: Record<string, any>): AppThunk {
+    return async (dispatch: AppDispatch) => {
       const historyItem = {
         bundleUrl: manifest.bundleUrl,
         manifestUrl,
