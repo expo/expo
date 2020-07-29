@@ -113,8 +113,8 @@
 
     <meta-data
       tools:replace="android:value"
-      android:name="expo.modules.notifications#NotificationsReconstructor"
-      android:value="host.exp.exponent.notifications.model.ScopedNotificationsReconstructor" />
+      android:name="expo.modules.notifications#NotificationsScoper"
+      android:value="host.exp.exponent.notifications.NotificationsScoper" />
   </application>
 
 </manifest>

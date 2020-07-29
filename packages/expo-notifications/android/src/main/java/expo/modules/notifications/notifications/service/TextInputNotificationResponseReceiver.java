@@ -10,7 +10,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.RemoteInput;
-
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
@@ -39,7 +38,7 @@ public class TextInputNotificationResponseReceiver extends NotificationResponseR
     if (intent.getBooleanExtra(ACTION_FOREGROUNDS_APP, true)) {
       openAppToForeground(context, response);
     }
-    BaseNotificationsService.enqueueResponseReceived(context, response);
+    getNotificationsHelper(context).responseReceived(response);
   }
 
   private String getMessageText(Intent intent) {

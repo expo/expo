@@ -34,13 +34,13 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
+import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -272,7 +272,7 @@ public class NotificationsHelper {
   }
 
   protected android.app.Notification getNotification(Context context, Notification notification, NotificationBehavior behavior) {
-    return new CategoryAwareNotificationBuilder(context, mStore)
+    return NotificationsScoper.create(context).createBuilderCreator().get(context, mStore)
       .setNotification(notification)
       .setAllowedBehavior(behavior)
       .build();
@@ -360,7 +360,7 @@ public class NotificationsHelper {
   }
 
   protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
-    return new CategoryAwareNotificationBuilder(mContext, new SharedPreferencesNotificationCategoriesStore(mContext))
+    return NotificationsScoper.create(mContext).createBuilderCreator().get(mContext, new SharedPreferencesNotificationCategoriesStore(mContext))
       .setNotification(notification)
       .setAllowedBehavior(behavior)
       .build();

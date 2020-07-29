@@ -15,7 +15,7 @@ import java.util.Map;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
-import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
+import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.model.NotificationResponse;
@@ -45,7 +45,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
 
   public NotificationsHandler(Context context) {
     super(context);
-    this.mNotificationsHelper = new NotificationsHelper(context, NotificationsReconstructor.create(context));
+    this.mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   @Override

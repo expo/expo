@@ -15,7 +15,7 @@ import java.util.Collection;
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
-import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
+import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -28,7 +28,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   public ExpoNotificationPresentationModule(Context context) {
     super(context);
-    mNotificationsHelper = new NotificationsHelper(context, NotificationsReconstructor.create(context));
+    mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   protected NotificationsHelper getNotificationsHelper() {

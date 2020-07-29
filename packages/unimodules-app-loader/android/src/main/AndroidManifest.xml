@@ -1,10 +1,1 @@
-<manifest package="org.unimodules.apploader"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-
-  <application>
-    <meta-data
-      android:name="expo.modules.notifications#NotificationsReconstructor"
-      android:value="expo.modules.notifications.notifications.model.BareExpoNotificationsReconstructor" />
-  </application>
-
-</manifest>
+<manifest package="org.unimodules.apploader"></manifest>

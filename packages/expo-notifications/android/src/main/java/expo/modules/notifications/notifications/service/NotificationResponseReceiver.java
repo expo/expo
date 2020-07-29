@@ -10,7 +10,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
+import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationResponse;
@@ -50,7 +50,7 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
   }
 
   protected NotificationsHelper getNotificationsHelper(Context context) {
-    return new NotificationsHelper(context, NotificationsReconstructor.create(context));
+    return new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   protected void openAppToForeground(Context context, NotificationResponse notificationResponse) {
