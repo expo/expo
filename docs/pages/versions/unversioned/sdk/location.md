@@ -222,16 +222,18 @@ Geocode an address string to latitiude-longitude location.
 
 #### Arguments
 
-- **address (_string_)** -- A string representing address, eg. "Baker Street London"
+- **address (_string_)** — A string representing address, eg. "Baker Street London"
+- **options (_object_)** — A map of options:
+  - **useGoogleMaps (_boolean_)** — Whether to force using Google Maps API instead of the native implementation. Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
 
 #### Returns
 
 Returns a promise resolving to an array (in most cases its size is 1) of geocoded location objects with the following fields:
 
-- **latitude (_number_)** -- The latitude in degrees.
-- **longitude (_number_)** -- The longitude in degrees.
-- **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
-- **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
+- **latitude (_number_)** — The latitude in degrees.
+- **longitude (_number_)** — The longitude in degrees.
+- **altitude (_number_)** — The altitude in meters above the WGS 84 reference ellipsoid.
+- **accuracy (_number_)** — The radius of uncertainty for the location, measured in meters.
 
 ### `Location.reverseGeocodeAsync(location)`
 
@@ -243,30 +245,34 @@ Reverse geocode a location to postal address.
 
 #### Arguments
 
-- **location (_object_)** -- An object representing a location:
-
-  - **latitude (_number_)** -- The latitude of location to reverse geocode, in degrees.
-  - **longitude (_number_)** -- The longitude of location to reverse geocode, in degrees.
+- **location (_object_)** — An object representing a location:
+  - **latitude (_number_)** — The latitude of location to reverse geocode, in degrees.
+  - **longitude (_number_)** — The longitude of location to reverse geocode, in degrees.
+- **options (_object_)** — A map of options:
+  - **useGoogleMaps (_boolean_)** — Whether to force using Google Maps API instead of the native implementation. Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
 
 #### Returns
 
 Returns a promise resolving to an array (in most cases its size is 1) of address objects with following fields:
 
-- **city (_string_)** -- City name of the address.
-- **street (_string_)** -- Street name of the address.
-- **region (_string_)** -- Region/area name of the address.
-- **postalCode (_string_)** -- Postal code of the address.
-- **country (_string_)** -- Localized country name of the address.
-- **name (_string_)** -- Place name of the address, for example, "Tower Bridge".
-- **isoCountryCode (_string|null_)** -- Localized (iso) country code of the address, if available.
+- **city (_string_ | _null_)** — City name of the address.
+- **district (_string_ | _null_)** — Additional city-level information like district name.
+- **street (_string_ | _null_)** — Street name of the address.
+- **region (_string_ | _null_)** — The state or province associated with the address.
+- **subregion (_string_ | _null_)** — Additional information about administrative area.
+- **postalCode (_string_ | _null_)** — Postal code of the address.
+- **country (_string_ | _null_)** — Localized country name of the address.
+- **name (_string_ | _null_)** — The name of the placemark, for example, "Tower Bridge".
+- **isoCountryCode (_string_ | _null_)** — Localized (iso) country code of the address, if available.
+- **timezone (_string_ | _null_)** — The timezone identifier associated with the address. (**iOS only**)
 
-### `Location.setApiKey(apiKey)`
+### `Location.setGoogleApiKey(apiKey)`
 
-Sets a Google API Key for using Geocoding API. This method can be useful for Android devices that do not have Google Play Services, hence no Geocoder Service. After setting the key using Google's API will be possible.
+Sets a Google API Key for using Google Maps Geocoding API which is used by default on Web platform and can be enabled through `useGoogleMaps` option of `geocodeAsync` and `reverseGeocodeAsync` methods. It might be useful for Android devices that do not have Google Play Services, hence no Geocoder Service.
 
 #### Arguments
 
-- **apiKey (_string_)** -- API key collected from Google Developer site.
+- **apiKey (_string_)** — Google API key obtained from Google API Console. This API key must have `Geocoding API` enabled, otherwise your geocoding requests will be denied.
 
 ### `Location.installWebGeolocationPolyfill()`
 
