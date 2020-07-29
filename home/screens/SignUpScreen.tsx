@@ -1,5 +1,4 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { AllStackRoutes } from '../navigation/Navigation.types';
 import * as React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
@@ -9,6 +8,7 @@ import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import { StyledScrollView as ScrollView } from '../components/Views';
 import Colors from '../constants/Colors';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 import { useKeyboardHeight } from '../utils/useKeyboardHeight';
