@@ -1,24 +1,41 @@
 import { useEffect } from 'react';
 
 import ExpoKeepAwake, { isAvailable } from './ExpoKeepAwake';
+import { KeepAwakeEventType } from './ExpoKeepAwake.types';
 
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
-export function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
+function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
   useEffect(() => {
     activateKeepAwake(tag);
-    return () => deactivateKeepAwake(tag);
+    return () => {
+      deactivateKeepAwake(tag);
+    };
   }, [tag]);
 }
 
-export function activateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
+async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
   if (isAvailable() && ExpoKeepAwake.activate) {
-    ExpoKeepAwake.activate(tag);
+    await ExpoKeepAwake.activate(tag);
   }
 }
 
-export function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
+async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
   if (isAvailable() && ExpoKeepAwake.deactivate) {
-    ExpoKeepAwake.deactivate(tag);
+    await ExpoKeepAwake.deactivate(tag);
   }
 }
+
+function addEventListener(tag: string, listener: (eventType: KeepAwakeEventType) => void) {
+  if (isAvailable() && ExpoKeepAwake.addListener) {
+    ExpoKeepAwake.addListener(tag, listener);
+  }
+}
+
+export {
+  addEventListener,
+  activateKeepAwake,
+  deactivateKeepAwake,
+  useKeepAwake,
+  KeepAwakeEventType,
+};
