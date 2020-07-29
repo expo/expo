@@ -1,5 +1,5 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import mapValues from 'lodash/mapValues';
-import { AsyncStorage } from 'react-native';
 
 import * as Kernel from '../kernel/Kernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
