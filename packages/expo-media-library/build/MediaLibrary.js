@@ -117,13 +117,13 @@ export async function deleteAssetsAsync(assets) {
     checkAssetIds(assetIds);
     return await MediaLibrary.deleteAssetsAsync(assetIds);
 }
-export async function getAssetInfoAsync(asset, options) {
+export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNetwork: true }) {
     if (!MediaLibrary.getAssetInfoAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
     }
     const assetId = getId(asset);
     checkAssetIds([assetId]);
-    const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId, options ?? {});
+    const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId, options);
     if (Array.isArray(assetInfo)) {
         // Android returns an array with asset info, we need to pick the first item
         return assetInfo[0];
