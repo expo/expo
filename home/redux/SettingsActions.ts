@@ -40,7 +40,7 @@ export default {
     };
   },
 
-  setDevMenuSetting(key: string, value: any): AppThunk {
+  setDevMenuSetting(key: keyof DevMenu.DevMenuSettings, value?: boolean): AppThunk {
     return async (dispatch: AppDispatch) => {
       try {
         await DevMenu.setSettingAsync(key, value);

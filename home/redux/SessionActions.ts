@@ -39,7 +39,7 @@ export default {
 
       return dispatch({
         type: 'signOut',
-        // payload: null,
+        payload: null,
       });
     };
   },
