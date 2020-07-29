@@ -67,13 +67,13 @@ export type AssetInfo = Asset & {
 
 export type MediaLibraryAssetInfoQueryOptions = {
   shouldDownloadFromNetwork?: boolean;
-}
+};
 
 export type MediaLibraryAssetChangeEvent = {
   insertedAssets: Asset[];
   deletedAssets: Asset[];
   updatedAssets: Asset[];
-}
+};
 
 export type Location = {
   latitude: number;
