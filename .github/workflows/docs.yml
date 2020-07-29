@@ -39,20 +39,21 @@ jobs:
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/cache@v2
+      - name: Cache Next folder
+        uses: actions/cache@v2
         with:
           path: docs/.next
           key: docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/pages/**') }}
           restore-keys: |
             docs-next-${{ hashFiles('docs/yarn.lock') }}-
             docs-next-
-      - uses: actions/cache@v2
+      - name: Cache Babel folder
+        uses: actions/cache@v2
         with:
           path: docs/node_modules/.cache/babel-loader
-          key: docs-babel-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/pages/**') }}
+          key: docs-babel-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/common/**') }}
           restore-keys: |
-            docs-babel-${{ hashFiles('docs/yarn.lock') }}-
-            docs-babel-
+            docs-babel-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/common/**') }}
       - run: yarn export
         timeout-minutes: 15
       - name: test links
