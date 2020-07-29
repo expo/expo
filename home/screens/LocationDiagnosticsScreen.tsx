@@ -2,10 +2,10 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
-import { EventEmitter } from 'fbemitter';
-import React from 'react';
+import { EventEmitter, EventSubscription } from 'fbemitter';
+import * as React from 'react';
 import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Polyline } from 'react-native-maps';
 
 import NavigationEvents from '../components/NavigationEvents';
 import Button from '../components/PrimaryButton';
@@ -16,10 +16,36 @@ const LOCATION_UPDATES_TASK = 'location-updates';
 
 const locationEventsEmitter = new EventEmitter();
 
-export default class LocationDiagnosticsScreen extends React.Component {
-  mapViewRef = React.createRef();
+type Region = {
+  identifier: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
+};
 
-  state = {
+type State = {
+  isBackgroundLocationAvailable: null | boolean;
+  accuracy: Location.Accuracy;
+  isTracking: boolean;
+  showsBackgroundLocationIndicator: boolean;
+  savedLocations: Region[];
+  initialRegion: {
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+  } | null;
+  error: string | null;
+};
+
+type Props = unknown;
+
+export default class LocationDiagnosticsScreen extends React.Component<Props, State> {
+  mapViewRef = React.createRef<MapView>();
+
+  eventSubscription?: EventSubscription;
+
+  readonly state: State = {
     isBackgroundLocationAvailable: null,
     accuracy: Location.Accuracy.High,
     isTracking: false,
@@ -180,11 +206,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
       return null;
     }
     return (
-      <MapView.Polyline
-        coordinates={savedLocations}
-        strokeWidth={3}
-        strokeColor={Colors.light.tintColor}
-      />
+      <Polyline coordinates={savedLocations} strokeWidth={3} strokeColor={Colors.light.tintColor} />
     );
   }
 
@@ -254,7 +276,7 @@ async function getSavedLocations() {
 }
 
 if (Platform.OS !== 'android') {
-  TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }) => {
+  TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }: any) => {
     if (locations && locations.length > 0) {
       const savedLocations = await getSavedLocations();
       const newLocations = locations.map(({ coords }) => ({
