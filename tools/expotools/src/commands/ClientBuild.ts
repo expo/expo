@@ -1,131 +1,30 @@
 import { Command } from '@expo/commander';
-import spawnAsync from '@expo/spawn-async';
-import { Config, UpdateVersions } from '@expo/xdl';
 import aws from 'aws-sdk';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 
-import { STAGING_API_HOST, EXPO_DIR, IOS_DIR, ANDROID_DIR } from '../Constants';
-import { Platform, iosAppVersionAsync, androidAppVersionAsync } from '../ProjectVersions';
+import { EXPO_DIR } from '../Constants';
 import askForPlatformAsync from '../utils/askForPlatformAsync';
+import askForSdkVersionAsync from '../utils/askForSDKVersionAsync';
+import { link } from '../Formatter';
 import Git from '../Git';
+import logger from '../Logger';
+import { modifySdkVersionsAsync, getSdkVersionsAsync } from '../Versions';
+import { ClientBuilder, Platform } from '../client-build/types';
+import IosClientBuilder from '../client-build/IosClientBuilder';
+import AndroidClientBuilder from '../client-build/AndroidClientBuilder';
+import { getNewestSDKVersionAsync } from '../ProjectVersions';
+
+const s3Client = new aws.S3({ region: 'us-east-1' });
+const { yellow, blue, magenta } = chalk;
 
 type ActionOptions = {
-  platform?: 'ios';
+  platform?: Platform;
   release: boolean;
+  skipUpload: boolean;
 };
-
-async function askToRecreateSimulatorBuildAsync(archivePath: string) {
-  if (process.env.CI) {
-    return false;
-  }
-  const { createNew } = await inquirer.prompt<{ createNew: boolean }>([
-    {
-      type: 'confirm',
-      name: 'createNew',
-      message: `Simulator archive already exists at ${chalk.magenta(
-        path.relative(EXPO_DIR, archivePath)
-      )}. Do you want to create a fresh one?`,
-      default: true,
-    },
-  ]);
-  return createNew;
-}
-
-function getApplicationPathForPlatform(platform: Platform) {
-  switch (platform) {
-    case 'ios': {
-      return path.join(
-        IOS_DIR,
-        'simulator-build',
-        'Build',
-        'Products',
-        'Release-iphonesimulator',
-        'Exponent.app'
-      );
-    }
-    case 'android': {
-      return path.join(ANDROID_DIR, 'app', 'build', 'outputs', 'apk', 'release', 'app-release.apk');
-    }
-    default: {
-      throw new Error(`Platform "${platform}" is not supported yet!`);
-    }
-  }
-}
-
-async function buildAndReleaseClientAsync(
-  platform: Platform,
-  sdkVersion: string | undefined,
-  release: boolean
-) {
-  const appPath = getApplicationPathForPlatform(platform);
-
-  if (!(await fs.pathExists(appPath)) || (await askToRecreateSimulatorBuildAsync(appPath))) {
-    const args =
-      platform === 'ios'
-        ? ['ios', 'create_simulator_build']
-        : ['android', 'build', 'build_type:Release'];
-
-    await spawnAsync('fastlane', args, {
-      cwd: EXPO_DIR,
-      stdio: 'inherit',
-      env: { ...process.env },
-    });
-  } else {
-    console.log(`Using cached build at ${chalk.magenta(path.relative(EXPO_DIR, appPath))}...`);
-  }
-
-  if (sdkVersion && release) {
-    await releaseBuildAsync(platform, appPath, sdkVersion);
-  }
-}
-
-async function releaseBuildAsync(platform: Platform, appPath: string, sdkVersion: string) {
-  const s3 = new aws.S3({ region: 'us-east-1' });
-
-  switch (platform) {
-    case 'ios': {
-      const appVersion = await iosAppVersionAsync();
-      console.log(
-        `Uploading iOS ${chalk.cyan(
-          appVersion
-        )} build and saving its url to staging versions endpoint for SDK ${chalk.cyan(
-          sdkVersion
-        )}...`
-      );
-      return await UpdateVersions.updateIOSSimulatorBuild(s3, appPath, appVersion, sdkVersion);
-    }
-    case 'android': {
-      const appVersion = await androidAppVersionAsync();
-      console.log(
-        `Uploading Android ${chalk.cyan(
-          appVersion
-        )} build and saving its url to staging versions endpoint for SDK ${chalk.cyan(
-          sdkVersion
-        )}...`
-      );
-      return await UpdateVersions.updateAndroidApk(s3, appPath, appVersion, sdkVersion);
-    }
-    default: {
-      throw new Error(`Platform "${platform}" is not supported yet!`);
-    }
-  }
-}
-
-async function action(options: ActionOptions) {
-  Config.api.host = STAGING_API_HOST;
-
-  const platform = options.platform || (await askForPlatformAsync());
-  const sdkVersion = (await Git.getSDKVersionFromBranchNameAsync()) || '20.0.0';
-
-  if (options.release && !sdkVersion) {
-    throw new Error(`Client builds can be released only from the release branch!`);
-  }
-
-  await buildAndReleaseClientAsync(platform, sdkVersion, options.release);
-}
 
 export default (program: Command) => {
   program
@@ -140,5 +39,142 @@ export default (program: Command) => {
       'Whether to upload and release the client build to staging versions endpoint.',
       false
     )
-    .asyncAction(action);
+    .option(
+      '--skip-upload',
+      "Whether to skip the uploading part. Might be useful for debugging and not to unintentionally override production's build.",
+      false
+    )
+    .asyncAction(main);
 };
+
+async function main(options: ActionOptions) {
+  const platform = options.platform || (await askForPlatformAsync());
+  const sdkBranchVersion = await Git.getSDKVersionFromBranchNameAsync();
+
+  if (options.release && !sdkBranchVersion) {
+    throw new Error(`Client builds can be released only from the release branch!`);
+  }
+
+  const builder = getBuilderForPlatform(platform);
+  const sdkVersion =
+    sdkBranchVersion ||
+    (await askForSdkVersionAsync(platform, await getNewestSDKVersionAsync(platform)));
+  const appVersion = await builder.getAppVersionAsync();
+
+  await buildOrUseCacheAsync(builder);
+
+  if (sdkVersion && !options.skipUpload) {
+    await uploadAsync(builder, sdkVersion, appVersion);
+  }
+  if (sdkVersion && options.release) {
+    await releaseAsync(builder, sdkVersion, appVersion);
+  }
+}
+
+function getBuilderForPlatform(platform: Platform): ClientBuilder {
+  switch (platform) {
+    case 'ios':
+      return new IosClientBuilder();
+    case 'android':
+      return new AndroidClientBuilder();
+    default: {
+      throw new Error(`Platform "${platform}" is not supported yet!`);
+    }
+  }
+}
+
+async function askToRecreateSimulatorBuildAsync(): Promise<boolean> {
+  if (process.env.CI) {
+    return false;
+  }
+  const { createNew } = await inquirer.prompt<{ createNew: boolean }>([
+    {
+      type: 'confirm',
+      name: 'createNew',
+      message: 'Do you want to create a fresh one?',
+      default: true,
+    },
+  ]);
+  return createNew;
+}
+
+async function askToOverrideBuildAsync(): Promise<boolean> {
+  if (process.env.CI) {
+    return true;
+  }
+  const { override } = await inquirer.prompt<{ override: boolean }>([
+    {
+      type: 'confirm',
+      name: 'override',
+      message: 'Do you want to override it?',
+      default: true,
+    },
+  ]);
+  return override;
+}
+
+async function buildOrUseCacheAsync(builder: ClientBuilder): Promise<void> {
+  const appPath = builder.getAppPath();
+
+  // Build directory already exists, we could reuse that one — especially useful on the CI.
+  if (await fs.pathExists(appPath)) {
+    const relativeAppPath = path.relative(EXPO_DIR, appPath);
+    logger.info(`Client build already exists at ${magenta.bold(relativeAppPath)}`);
+
+    if (!(await askToRecreateSimulatorBuildAsync())) {
+      logger.info('Skipped building the app, using cached build instead...');
+      return;
+    }
+  }
+  await builder.buildAsync();
+}
+
+async function uploadAsync(
+  builder: ClientBuilder,
+  sdkVersion: string,
+  appVersion: string
+): Promise<void> {
+  const sdkVersions = await getSdkVersionsAsync(sdkVersion);
+
+  // Target app url already defined in versions endpoint.
+  // We make this check to reduce the risk of unintentional overrides.
+  if (sdkVersions?.[`${builder.platform}ClientUrl`] === builder.getClientUrl(appVersion)) {
+    logger.info(`Build ${yellow.bold(appVersion)} is already defined in versions endpoint.`);
+    logger.info('The new build would be uploaded onto the same URL.');
+
+    if (!(await askToOverrideBuildAsync())) {
+      logger.warn('Refused overriding the build, exiting the proces...');
+      process.exit(0);
+      return;
+    }
+  }
+  logger.info(`Uploading ${yellow.bold(appVersion)} build`);
+
+  await builder.uploadBuildAsync(s3Client, appVersion);
+}
+
+async function releaseAsync(
+  builder: ClientBuilder,
+  sdkVersion: string,
+  appVersion: string
+): Promise<void> {
+  const clientUrl = builder.getClientUrl(appVersion);
+
+  logger.info(
+    `Updating versions endpoint with client url ${blue.bold(link(clientUrl, clientUrl))}`
+  );
+
+  await updateClientUrlAndVersionAsync(builder, sdkVersion, appVersion);
+}
+
+async function updateClientUrlAndVersionAsync(
+  builder: ClientBuilder,
+  sdkVersion: string,
+  appVersion: string
+) {
+  await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
+    sdkVersions[`${builder.platform}ClientUrl`] = builder.getClientUrl(appVersion);
+    sdkVersions[`${builder.platform}ClientVersion`] = appVersion;
+    return sdkVersions;
+  });
+}

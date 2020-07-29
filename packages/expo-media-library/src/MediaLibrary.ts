@@ -62,6 +62,17 @@ export type AssetInfo = Asset & {
   location?: Location;
   exif?: object;
   isFavorite?: boolean; //iOS only
+  isNetworkAsset?: boolean; //iOS only
+};
+
+export type MediaLibraryAssetInfoQueryOptions = {
+  shouldDownloadFromNetwork?: boolean;
+};
+
+export type MediaLibraryAssetChangeEvent = {
+  insertedAssets: Asset[];
+  deletedAssets: Asset[];
+  updatedAssets: Asset[];
 };
 
 export type Location = {
@@ -252,7 +263,10 @@ export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef) {
   return await MediaLibrary.deleteAssetsAsync(assetIds);
 }
 
-export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
+export async function getAssetInfoAsync(
+  asset: AssetRef,
+  options: MediaLibraryAssetInfoQueryOptions = { shouldDownloadFromNetwork: true }
+): Promise<AssetInfo> {
   if (!MediaLibrary.getAssetInfoAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
   }
@@ -261,7 +275,7 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
 
   checkAssetIds([assetId]);
 
-  const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+  const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId, options);
 
   if (Array.isArray(assetInfo)) {
     // Android returns an array with asset info, we need to pick the first item
@@ -367,7 +381,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
   return await MediaLibrary.getAssetsAsync(options);
 }
 
-export function addListener(listener: () => void): Subscription {
+export function addListener(listener: (event: MediaLibraryAssetChangeEvent) => void): Subscription {
   const subscription = eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
   return subscription;
 }
