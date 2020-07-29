@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { ColorSchemeName } from 'react-native-appearance';
 
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
@@ -9,8 +10,6 @@ import SectionHeader from '../components/SectionHeader';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 import SettingsActions from '../redux/SettingsActions';
-
-type PreferredAppearance = 'light' | 'dark' | 'no-preference';
 
 export default function UserSettingsScreen() {
   return (
@@ -30,7 +29,7 @@ function AppearanceItem() {
   const preferredAppearance = useSelector(data => data.settings.preferredAppearance);
 
   const onSelectAppearance = React.useCallback(
-    (preferredAppearance: PreferredAppearance) => {
+    (preferredAppearance: ColorSchemeName) => {
       dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
     },
     [dispatch]

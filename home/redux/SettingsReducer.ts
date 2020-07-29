@@ -3,7 +3,10 @@ import { ColorSchemeName } from 'react-native-appearance';
 
 export type SettingsObject = {
   preferredAppearance: null | ColorSchemeName;
-  devMenuSettings: null | { [key: string]: any }; // todo
+  devMenuSettings: null | {
+    motionGestureEnabled?: boolean;
+    touchGestureEnabled?: boolean;
+  };
 };
 
 export type SettingsType = Record<SettingsObject>;
@@ -31,7 +34,10 @@ export default (state: SettingsType, action: SettingsActions): SettingsType => {
     }
     case 'setDevMenuSettings': {
       const devMenuSettings = state.get('devMenuSettings');
-      return state.set('devMenuSettings', { ...devMenuSettings, ...action.payload });
+      return state.set('devMenuSettings', {
+        ...devMenuSettings,
+        ...action.payload,
+      });
     }
     default:
       return state || new SettingsState();
