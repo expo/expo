@@ -1,11 +1,10 @@
-import React from 'react';
 import { ApolloProvider } from '@apollo/client';
-
+import React from 'react';
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import HomeApp from './HomeApp';
 import ApolloClient from './api/ApolloClient';
+import HomeApp from './HomeApp';
 import Store from './redux/Store';
 
 import './menu/DevMenuApp';

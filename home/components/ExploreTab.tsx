@@ -20,7 +20,6 @@ import { AllStackRoutes } from '../navigation/Navigation.types';
 import PrimaryButton from './PrimaryButton';
 import ProjectCard from './ProjectCard';
 import { Project } from './ProjectList';
-import SectionHeader from './SectionHeader';
 import { StyledText } from './Text';
 
 const NETWORK_ERROR_TEXT = dedent`
