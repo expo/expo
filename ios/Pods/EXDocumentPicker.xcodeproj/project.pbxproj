@@ -213,7 +213,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1D565D1F86B1C403FFF4A3D05CD7A8EB /* Release */ = {
+		753322D7A66ABAEFC3FBB945C8D95623 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 978105D098D76A8E2010EE69A10707E3 /* EXDocumentPicker.release.xcconfig */;
 			buildSettings = {
@@ -233,6 +233,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -362,7 +363,7 @@
 			};
 			name = Release;
 		};
-		FEC49BA35C27C5D69EFD967B5FC816FC /* Debug */ = {
+		DC13D480985031212A8E25D42F0954D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2FEE416D0F767C8240FA4002BF7FAAA1 /* EXDocumentPicker.debug.xcconfig */;
 			buildSettings = {
@@ -382,6 +383,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -392,8 +394,8 @@
 		E7071EA3AFBA5E62BDEF63B15D9D4CE9 /* Build configuration list for PBXNativeTarget "EXDocumentPicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FEC49BA35C27C5D69EFD967B5FC816FC /* Debug */,
-				1D565D1F86B1C403FFF4A3D05CD7A8EB /* Release */,
+				DC13D480985031212A8E25D42F0954D5 /* Debug */,
+				753322D7A66ABAEFC3FBB945C8D95623 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

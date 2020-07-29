@@ -17,6 +17,7 @@
             android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter android:order="-1">
                 <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
+                <action android:name="expo.modules.notifications.CATEGORY_EVENT" />
             </intent-filter>
         </service>
 
@@ -40,6 +41,10 @@
 
         <receiver
             android:name=".notifications.service.NotificationResponseReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".notifications.service.TextInputNotificationResponseReceiver"
             android:enabled="true"
             android:exported="false" />
     </application>

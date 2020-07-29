@@ -21,6 +21,7 @@ import expo.modules.notifications.notifications.channels.AndroidXNotificationsCh
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
+import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.permissions.NotificationPermissionsModule;
 import expo.modules.notifications.tokens.PushTokenManager;
@@ -39,7 +40,8 @@ public class NotificationsPackage extends BasePackage {
         new NotificationPermissionsModule(context),
         new NotificationChannelManagerModule(context),
         new ExpoNotificationPresentationModule(context),
-        new NotificationChannelGroupManagerModule(context)
+        new NotificationChannelGroupManagerModule(context),
+        new ExpoNotificationCategoriesModule(context)
     );
   }
 

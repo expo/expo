@@ -2,8 +2,7 @@
 
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationsUtils.h"
-
-#import <EXNotifications/EXNotificationSerializer.h>
+#import "EXScopedNotificationSerializer.h"
 
 @interface EXScopedNotificationPresentationModule ()
 
@@ -27,7 +26,7 @@
   NSMutableArray *serializedNotifications = [NSMutableArray new];
   for (UNNotification *notification in notifications) {
     if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_experienceId]) {
-      [serializedNotifications addObject:[EXNotificationSerializer serializedNotification:notification]];
+      [serializedNotifications addObject:[EXScopedNotificationSerializer serializedNotification:notification]];
     }
   }
   return serializedNotifications;

@@ -6,9 +6,6 @@
 
 #import <UMCore/UMEventEmitterService.h>
 
-static NSString * const onDidReceiveNotification = @"onDidReceiveNotification";
-static NSString * const onDidReceiveNotificationResponse = @"onDidReceiveNotificationResponse";
-
 @interface EXNotificationsEmitter ()
 
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;

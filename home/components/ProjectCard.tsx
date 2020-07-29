@@ -14,7 +14,20 @@ import FadeIn from 'react-native-fade-in-image';
 
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
+
+export type PressUsernameHandler = (username: string) => void;
+
+type Props = {
+  onPressUsername: PressUsernameHandler;
+  style: any;
+  description: string;
+  iconUrl: string;
+  projectUrl: string;
+  name: string;
+  username: string;
+  id: string;
+};
 
 export default function ProjectCard({
   onPressUsername,
@@ -22,9 +35,9 @@ export default function ProjectCard({
   description,
   iconUrl,
   projectUrl,
-  projectName,
+  name,
   username,
-}) {
+}: Props) {
   const navigation = useNavigation();
   const _maybeRenderIcon = () => {
     if (iconUrl) {
@@ -43,7 +56,7 @@ export default function ProjectCard({
   const _handleLongPressProject = () => {
     const url = UrlUtils.normalizeUrl(projectUrl);
     Share.share({
-      title: projectName,
+      title: name,
       message: url,
       url,
     });
@@ -80,7 +93,7 @@ export default function ProjectCard({
           <View style={styles.iconContainer}>{_maybeRenderIcon()}</View>
           <View style={styles.infoContainer}>
             <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-              {projectName}
+              {name}
             </StyledText>
             <View style={styles.projectExtraInfoContainer}>
               <StyledText
