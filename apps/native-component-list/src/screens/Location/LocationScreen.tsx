@@ -1,49 +1,10 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
 import React from 'react';
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  PixelRatio,
-} from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
+import SimpleActionDemo from '../../components/SimpleActionDemo';
 import ListButton from '../../components/ListButton';
-import MonoText from '../../components/MonoText';
-import Colors from '../../constants/Colors';
-
-type SimpleActionDemo = {
-  title: string;
-  action: (setValue: (value: any) => any) => any;
-};
-
-function SimpleActionDemo(props: SimpleActionDemo) {
-  const [loading, setLoading] = React.useState(false);
-  const [value, setValue] = React.useState(undefined);
-
-  const runAction = React.useCallback(async () => {
-    setLoading(true);
-    setValue(await props.action(setValue));
-    setLoading(false);
-  }, [props.action]);
-
-  return (
-    <View style={styles.demoContainer}>
-      <TouchableOpacity onPress={runAction}>
-        <View style={styles.demoHeaderContainer}>
-          <Text style={styles.demoHeader}>{props.title}</Text>
-          {loading && <ActivityIndicator style={styles.demoActivityIndicator} size={10} />}
-        </View>
-      </TouchableOpacity>
-      <View style={{ opacity: loading ? 0.4 : 1.0 }}>
-        {value !== undefined && <MonoText>{JSON.stringify(value, null, 2)}</MonoText>}
-      </View>
-    </View>
-  );
-}
 
 type Subscription = { remove: () => any };
 type SubscriptionDemoProps = {
@@ -152,24 +113,5 @@ export default class LocationScreen extends React.Component<{
 const styles = StyleSheet.create({
   scrollView: {
     paddingTop: 10,
-  },
-  demoContainer: {
-    paddingHorizontal: 10,
-    borderColor: Colors.border,
-    borderBottomWidth: 1.0 / PixelRatio.get(),
-  },
-  demoHeaderContainer: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-  },
-  demoHeader: {
-    fontWeight: 'bold',
-    color: Colors.tintColor,
-  },
-  demoActivityIndicator: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingRight: 10,
   },
 });
