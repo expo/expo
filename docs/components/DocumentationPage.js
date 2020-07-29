@@ -175,6 +175,10 @@ export default class DocumentationPage extends React.Component {
 
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
+
+    // note: we should probably not keep this version property outside of react.
+    // right now, it's used in non-deterministic ways and depending on variable states.
+    const version = this._getVersion();
     const routes = this._getRoutes();
 
     const headerElement = (
