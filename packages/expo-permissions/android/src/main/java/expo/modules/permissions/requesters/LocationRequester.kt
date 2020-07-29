@@ -17,8 +17,7 @@ import org.unimodules.interfaces.permissions.PermissionsStatus
 
 class LocationRequester : PermissionRequester {
   override fun getAndroidPermissions(): List<String> =
-    if (
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       listOf(
         Manifest.permission.ACCESS_BACKGROUND_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -57,10 +56,16 @@ class LocationRequester : PermissionRequester {
       scope =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           val accessBackgroundLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-          if (accessBackgroundLocation.status == PermissionsStatus.GRANTED) SCOPE_ALWAYS else SCOPE_IN_USE
+          if (accessBackgroundLocation.status == PermissionsStatus.GRANTED) {
+            SCOPE_ALWAYS
+          } else {
+            SCOPE_IN_USE
+          }
         } else if (accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED) {
           SCOPE_ALWAYS
-        } else SCOPE_NONE
+        } else {
+          SCOPE_NONE
+        }
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
       putBoolean(CAN_ASK_AGAIN_KEY, canAskAgain)
       putBoolean(GRANTED_KEY, isGranted)
