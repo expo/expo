@@ -31,7 +31,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('docs/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
@@ -42,9 +42,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .next
-          key: docs-next-${{ hashFiles('yarn.lock') }}-${{ hashFiles('pages/**') }}
+          key: docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/pages/**') }}
           restore-keys: |
-            docs-next-${{ hashFiles('yarn.lock') }}-
+            docs-next-${{ hashFiles('docs/yarn.lock') }}-
             docs-next-
       - run: yarn export
         timeout-minutes: 15
