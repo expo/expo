@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `getAssetsAsync` crashes when given invalid `after` value on Android. ([#9466](https://github.com/expo/expo/pull/9466) by [@barthap](https://github.com/barthap))
+
 ## 8.4.0 — 2020-07-27
 
 ### 🐛 Bug fixes
