@@ -23,7 +23,7 @@
     "@zeit/next-css": "^1.0.1",
     "babel-plugin-module-resolver": "3.1.1",
     "babel-plugin-preval": "^3.0.1",
-    "cross-env": "^5.2.0",
+    "cross-env": "^7.0.2",
     "docsearch.js": "^2.5.2",
     "emotion": "^9.2.9",
     "emotion-server": "^9.2.9",
