@@ -1,4 +1,4 @@
-import { List, IRecord, Record } from 'immutable';
+import { List, Record } from 'immutable';
 
 type HistoryItemType = Record<{
   url: null | string;
@@ -8,7 +8,7 @@ type HistoryItemType = Record<{
   time: null | number;
 }>;
 
-const HistoryItem = IRecord({
+const HistoryItem = Record({
   url: null,
   bundleUrl: null,
   manifestUrl: null,
@@ -22,7 +22,7 @@ type HistoryObject = {
 
 export type HistoryType = Record<HistoryObject>;
 
-const HistoryState = IRecord<HistoryObject>({
+const HistoryState = Record<HistoryObject>({
   history: List(),
 });
 

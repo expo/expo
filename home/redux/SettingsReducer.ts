@@ -1,4 +1,4 @@
-import { IRecord, Record } from 'immutable';
+import { Record } from 'immutable';
 import { ColorSchemeName } from 'react-native-appearance';
 
 export type SettingsObject = {
@@ -16,7 +16,7 @@ type SettingsActions =
   | { type: 'setPreferredAppearance'; payload: Pick<SettingsObject, 'preferredAppearance'> }
   | { type: 'setDevMenuSettings'; payload: SettingsObject['devMenuSettings'] };
 
-const SettingsState = IRecord<SettingsObject>({
+const SettingsState = Record<SettingsObject>({
   preferredAppearance: 'no-preference',
   devMenuSettings: null,
 });

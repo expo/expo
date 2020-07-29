@@ -1,4 +1,4 @@
-import { IRecord, Record } from 'immutable';
+import { Record } from 'immutable';
 
 export type SessionObject = {
   sessionSecret: string | null;
@@ -6,7 +6,7 @@ export type SessionObject = {
 
 export type SessionType = Record<SessionObject>;
 
-const SessionState = IRecord<SessionObject>({
+const SessionState = Record<SessionObject>({
   sessionSecret: null,
 });
 
