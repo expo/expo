@@ -1,19 +1,20 @@
 package expo.modules.medialibrary;
 
-import android.content.Context;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
-import androidx.exifinterface.media.ExifInterface;
 import android.text.TextUtils;
-import android.net.Uri;
 import android.util.Log;
+
+import org.unimodules.core.Promise;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.Promise;
+import androidx.exifinterface.media.ExifInterface;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
