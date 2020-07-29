@@ -76,10 +76,9 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
     return;
   }
 
-  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] init];
+  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
   [fileDownloader downloadManifestFromURL:_updatesService.config.updateUrl
-                               withConfig:_updatesService.config
-                                 database:_updatesService.database
+                             withDatabase:_updatesService.database
                            cacheDirectory:_updatesService.directory
                              successBlock:^(EXUpdatesUpdate *update) {
     EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;

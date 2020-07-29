@@ -6,7 +6,15 @@
 
 ### 🎉 New features
 
+- Added support for the limited `CAMERA_ROLL` permission on iOS 14. ([#9423](https://github.com/expo/expo/pull/9423) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
+
+## 8.4.0 — 2020-07-27
+
+### 🐛 Bug fixes
+
+- Fixed downsizing cropped image, when `allowsEditing` was `true`. ([#9316](https://github.com/expo/expo/pull/9316) by [@barthap](https://github.com/barthap))
 
 ## 8.3.0 — 2020-05-29
 

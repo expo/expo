@@ -1,13 +1,9 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
+import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { AppState, Alert, Clipboard, Platform, StyleSheet, View } from 'react-native';
-import {
-  withNavigationFocus,
-  withNavigation,
-  Themed,
-  NavigationFocusInjectedProps,
-} from 'react-navigation';
-import { connect } from 'react-redux';
+import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
@@ -15,18 +11,17 @@ import Connectivity from '../api/Connectivity';
 import DevIndicator from '../components/DevIndicator';
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
-import NoProjectTools from '../components/NoProjectTools';
 import NoProjectsOpen from '../components/NoProjectsOpen';
-import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import ProjectListItem from '../components/ProjectListItem';
 import ProjectTools from '../components/ProjectTools';
 import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
+import ThemedStatusBar from '../components/ThemedStatusBar';
 import HistoryActions from '../redux/HistoryActions';
-import { DevSession, StoreData, HistoryList } from '../types';
-import Environment from '../utils/Environment';
+import { DevSession, HistoryList } from '../types';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+import Environment from '../utils/Environment';
 import getSnackId from '../utils/getSnackId';
 
 const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
@@ -34,8 +29,9 @@ const PROJECT_UPDATE_INTERVAL = 10000;
 
 const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
-type Props = NavigationFocusInjectedProps & {
-  dispatch: (any) => any;
+type Props = NavigationProps & {
+  dispatch: (data: any) => any;
+  isFocused: boolean;
   recentHistory: HistoryList;
   allHistory: HistoryList;
   isAuthenticated: boolean;
@@ -47,30 +43,50 @@ type State = {
   isRefreshing: boolean;
 };
 
-@withNavigationFocus
-@withNavigation
-@connect(data => ProjectsScreen.getDataProps(data))
-export default class ProjectsScreen extends React.Component<Props, State> {
-  private _projectPolling?: number;
+type NavigationProps = StackScreenProps<AllStackRoutes, 'Projects'>;
 
-  static navigationOptions = {
-    title: 'Projects',
-    ...Platform.select({
-      ios: {
-        headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
-      },
-    }),
-  };
+export default function ProjectsScreen(props: NavigationProps) {
+  const [isFocused, setFocused] = React.useState(true);
+  React.useEffect(() => {
+    const unsubscribe = props.navigation.addListener('focus', () => {
+      setFocused(true);
+    });
+    const unsubscribeBlur = props.navigation.addListener('blur', () => {
+      setFocused(false);
+    });
 
-  static getDataProps(data: StoreData) {
-    const { history } = data.history;
-
-    return {
-      recentHistory: history.take(10),
-      allHistory: history,
-      isAuthenticated: data.session?.sessionSecret,
+    return () => {
+      unsubscribe();
+      unsubscribeBlur();
     };
-  }
+  }, [props.navigation]);
+
+  const dispatch = useDispatch();
+  const { recentHistory, allHistory, isAuthenticated } = useSelector(
+    React.useCallback(data => {
+      const { history } = data.history;
+
+      return {
+        recentHistory: history.take(10),
+        allHistory: history,
+        isAuthenticated: data.session?.sessionSecret,
+      };
+    }, [])
+  );
+  return (
+    <ProjectsView
+      {...props}
+      isFocused={isFocused}
+      dispatch={dispatch}
+      recentHistory={recentHistory}
+      allHistory={allHistory}
+      isAuthenticated={isAuthenticated}
+    />
+  );
+}
+
+class ProjectsView extends React.Component<Props, State> {
+  private _projectPolling?: number;
 
   state: State = {
     projects: [],
@@ -88,7 +104,8 @@ export default class ProjectsScreen extends React.Component<Props, State> {
     // that it has been registered regardless of whether we have been on the project
     // screen in the home app
     addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
-      this.props.navigation.showModal('QRCode');
+      // @ts-ignore
+      this.props.navigation.navigate('QRCode');
       return { success: true };
     });
   }
@@ -129,7 +146,7 @@ export default class ProjectsScreen extends React.Component<Props, State> {
             leftContent={
               <DevIndicator
                 style={styles.devIndicator}
-                isActive={projects && projects.length}
+                isActive={projects && !!projects.length}
                 isNetworkAvailable={isNetworkAvailable}
               />
             }
@@ -144,7 +161,7 @@ export default class ProjectsScreen extends React.Component<Props, State> {
           {this._renderRecentHistory()}
           {this._renderConstants()}
         </ScrollView>
-        <Themed.StatusBar />
+        <ThemedStatusBar />
       </View>
     );
   }
@@ -239,11 +256,9 @@ export default class ProjectsScreen extends React.Component<Props, State> {
   };
 
   private _renderProjectTools = () => {
-    if (IS_RESTRICTED) {
-      return <NoProjectTools />;
-    } else {
-      return <ProjectTools pollForUpdates={this.props.isFocused} />;
-    }
+    // Disable polling the clipboard on iOS because it presents a notification every time the clipboard is read.
+    const pollForUpdates = this.props.isFocused && Platform.OS !== 'ios';
+    return <ProjectTools pollForUpdates={pollForUpdates} />;
   };
 
   private _renderRecentHistory = () => {

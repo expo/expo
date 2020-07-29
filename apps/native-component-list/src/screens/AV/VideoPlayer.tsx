@@ -1,49 +1,43 @@
 import { Asset } from 'expo-asset';
-import { Video } from 'expo-av';
+import { Video, AVPlaybackStatus, VideoFullscreenUpdateEvent } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from './Player';
 
 interface State {
-  isLoaded: boolean;
-  isLooping: boolean;
-  isPlaying: boolean;
+  sourceIndex: number;
   errorMessage?: string;
-  positionMillis: number;
-  durationMillis: number;
-  rate: number;
-  shouldCorrectPitch: boolean;
   useNativeControls: boolean;
   resizeMode: any;
+  status: AVPlaybackStatus;
 }
+
+type VideoPlayerSource =
+  | number
+  | {
+      uri: string;
+      overrideFileExtensionAndroid?: string;
+      headers?: {
+        [fieldName: string]: string;
+      };
+    }
+  | Asset;
 
 export default class VideoPlayer extends React.Component<
   {
     style?: StyleProp<ViewStyle>;
-    source?:
-      | number
-      | {
-          uri: string;
-          overrideFileExtensionAndroid?: string;
-          headers?: {
-            [fieldName: string]: string;
-          };
-        }
-      | Asset;
+    sources: VideoPlayerSource[];
   },
   State
 > {
   readonly state: State = {
-    isLoaded: false,
-    isLooping: false,
-    isPlaying: false,
-    positionMillis: 0,
-    durationMillis: 0,
-    rate: 1,
-    shouldCorrectPitch: false,
+    sourceIndex: 0,
     useNativeControls: false,
     resizeMode: Video.RESIZE_MODE_CONTAIN,
+    status: {
+      isLoaded: false,
+    },
   };
 
   _video?: Video;
@@ -52,11 +46,16 @@ export default class VideoPlayer extends React.Component<
 
   _handleVideoMount = (ref: Video) => (this._video = ref);
 
-  _updateStateToStatus = (status: any) => this.setState(status);
+  _handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => this.setState({ status });
+
+  _handleFullScreenUpdate = (event: VideoFullscreenUpdateEvent) =>
+    console.log('onFullscreenUpdate', event);
 
   _playAsync = async () => this._video!.playAsync();
 
   _pauseAsync = async () => this._video!.pauseAsync();
+
+  _replayAsync = async () => this._video!.replayAsync();
 
   _setPositionAsync = async (position: number) => this._video!.setPositionAsync(position);
 
@@ -74,26 +73,43 @@ export default class VideoPlayer extends React.Component<
 
   _openFullscreen = () => this._video!.presentFullscreenPlayer();
 
+  _changeSource = () => {
+    this.setState(state => ({
+      sourceIndex: (state.sourceIndex + 1) % this.props.sources.length,
+    }));
+  };
+
   _renderVideo = () => (
     <Video
       useNativeControls={this.state.useNativeControls}
       ref={this._handleVideoMount}
-      source={this.props.source}
+      source={this.props.sources[this.state.sourceIndex]}
       resizeMode={this.state.resizeMode}
       onError={this._handleError}
       style={{ height: 300 }}
       progressUpdateIntervalMillis={100}
-      onPlaybackStatusUpdate={this._updateStateToStatus}
+      onPlaybackStatusUpdate={this._handlePlaybackStatusUpdate}
+      onFullscreenUpdate={this._handleFullScreenUpdate}
     />
   );
 
   render() {
+    const { status } = this.state;
     return (
       <Player
         style={this.props.style}
-        {...this.state}
+        errorMessage={this.state.errorMessage}
+        isLoaded={status.isLoaded}
+        isLooping={status.isLoaded ? status.isLooping : false}
+        rate={status.isLoaded ? status.rate : 1}
+        positionMillis={status.isLoaded ? status.positionMillis : 0}
+        durationMillis={status.isLoaded ? status.durationMillis || 0 : 0}
+        shouldCorrectPitch={status.isLoaded ? status.shouldCorrectPitch : false}
+        isPlaying={status.isLoaded ? status.isPlaying : false}
+        isMuted={status.isLoaded ? status.isMuted : false}
         playAsync={this._playAsync}
         pauseAsync={this._pauseAsync}
+        replayAsync={this._replayAsync}
         setPositionAsync={this._setPositionAsync}
         setIsLoopingAsync={this._setIsLoopingAsync}
         setIsMutedAsync={this._setIsMutedAsync}
@@ -127,6 +143,12 @@ export default class VideoPlayer extends React.Component<
             iconName: 'resize',
             title: 'Open fullscreen',
             onPress: this._openFullscreen,
+            active: false,
+          },
+          {
+            iconName: 'skip-forward',
+            title: 'Change source',
+            onPress: this._changeSource,
             active: false,
           },
         ]}

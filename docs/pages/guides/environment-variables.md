@@ -88,7 +88,7 @@ A dotenv file is a file with all environment variables, and their value, within 
 
 #### From `app.config.js`
 
-Below you can see the dynamic manifest using this `dotenv` library. It imports the `/config` module to automatically load the `.env` and merge it with `process.env`. You can also use it without merging it to `process.env`, [read more about that here]((https://github.com/motdotla/dotenv#config)).
+Below you can see the dynamic manifest using this `dotenv` library. It imports the `/config` module to automatically load the `.env` and merge it with `process.env`. You can also use it without merging it to `process.env`, [read more about that here](https://github.com/motdotla/dotenv#config).
 
 ```js
 import 'dotenv/config';

@@ -1,5 +1,8 @@
 import { Subscription } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse as UMPermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+export declare type PermissionResponse = UMPermissionResponse & {
+    scope?: 'all' | 'limited' | 'none';
+};
 export declare type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export declare type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
 export declare type SortByValue = [SortByKey, boolean] | SortByKey;
@@ -69,9 +72,9 @@ export declare type PagedInfo<T> = {
     hasNextPage: boolean;
     totalCount: number;
 };
-export { PermissionStatus, PermissionResponse };
 export declare type AssetRef = Asset | string;
 export declare type AlbumRef = Album | string;
+export { PermissionStatus, PermissionExpiration };
 export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;

@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import expo.modules.updates.UpdatesConfiguration;
-import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
@@ -23,6 +22,7 @@ public class NewManifest implements Manifest {
   private static String TAG = Manifest.class.getSimpleName();
 
   private UUID mId;
+  private String mScopeKey;
   private Date mCommitTime;
   private String mRuntimeVersion;
   private JSONObject mMetadata;
@@ -30,12 +30,18 @@ public class NewManifest implements Manifest {
   private JSONArray mAssets;
 
   private JSONObject mManifestJson;
-  private Uri mManifestUrl;
 
-  private NewManifest(JSONObject manifestJson, Uri manifestUrl, UUID id, Date commitTime, String runtimeVersion, JSONObject metadata, Uri bundleUrl, JSONArray assets) {
+  private NewManifest(JSONObject manifestJson,
+                      UUID id,
+                      String scopeKey,
+                      Date commitTime,
+                      String runtimeVersion,
+                      JSONObject metadata,
+                      Uri bundleUrl,
+                      JSONArray assets) {
     mManifestJson = manifestJson;
-    mManifestUrl = manifestUrl;
     mId = id;
+    mScopeKey = scopeKey;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
     mMetadata = metadata;
@@ -51,7 +57,7 @@ public class NewManifest implements Manifest {
     Uri bundleUrl = Uri.parse(manifestJson.getString("bundleUrl"));
     JSONArray assets = manifestJson.optJSONArray("assets");
 
-    return new NewManifest(manifestJson, configuration.getUpdateUrl(), id, commitTime, runtimeVersion, metadata, bundleUrl, assets);
+    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, bundleUrl, assets);
   }
 
   public JSONObject getRawManifestJson() {
@@ -59,8 +65,7 @@ public class NewManifest implements Manifest {
   }
 
   public UpdateEntity getUpdateEntity() {
-    String projectIdentifier = mManifestUrl.toString();
-    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, projectIdentifier);
+    UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey);
     if (mMetadata != null) {
       updateEntity.metadata = mMetadata;
     }

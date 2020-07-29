@@ -17,7 +17,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label='Basic Crypto usage' templateId='crypto' dependencies={['expo-crypto']}>
+<SnackInline label='Basic Crypto usage' dependencies={['expo-crypto']}>
 
 ```js
 import React, { useEffect } from 'react';
@@ -34,7 +34,7 @@ export default function App() {
       console.log('Digest: ', digest);
       /* Some crypto operation... */
     }
-    runCrypto()
+    runCrypto();
   }, []);
 
   return (

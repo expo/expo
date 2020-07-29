@@ -27,6 +27,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String BADGE_KEY = "badge";
   private static final String COLOR_KEY = "color";
   private static final String AUTO_DISMISS_KEY = "autoDismiss";
+  private static final String CATEGORY_IDENTIFIER_KEY = "categoryIdentifier";
+  private static final String STICKY_KEY = "sticky";
 
   private SoundResolver mSoundResolver;
 
@@ -42,7 +44,10 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
       .setPriority(getPriority(payload))
       .setBadgeCount(getBadgeCount(payload))
       .setColor(getColor(payload))
-      .setAutoDismiss(getAutoDismiss(payload));
+      .setAutoDismiss(getAutoDismiss(payload))
+      .setCategoryId(getCategoryId(payload))
+      .setSticky(getSticky(payload));
+
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -130,5 +135,15 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   protected boolean getAutoDismiss(ReadableArguments payload) {
     // TODO(sjchmiela): the default value should be determined by NotificationContent.Builder
     return payload.getBoolean(AUTO_DISMISS_KEY, true);
+  }
+
+  @Nullable
+  protected String getCategoryId(ReadableArguments payload) {
+    return payload.getString(CATEGORY_IDENTIFIER_KEY, null);
+  }
+
+  protected boolean getSticky(ReadableArguments payload) {
+    // TODO: the default value should be determined by NotificationContent.Builder
+    return payload.getBoolean(STICKY_KEY, false);
   }
 }

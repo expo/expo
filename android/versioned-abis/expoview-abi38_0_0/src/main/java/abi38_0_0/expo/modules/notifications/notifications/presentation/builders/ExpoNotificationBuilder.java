@@ -15,6 +15,7 @@ import abi38_0_0.expo.modules.notifications.notifications.interfaces.Notificatio
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
+import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 
@@ -102,7 +103,8 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     requestExtras.putByteArray(EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY, marshallNotificationRequest(getNotification().getNotificationRequest()));
     builder.addExtras(requestExtras);
 
-    builder.setContentIntent(getActionIntent(getContext(), DEFAULT_ACTION_IDENTIFIER, getNotification()));
+    NotificationAction defaultAction = new NotificationAction(DEFAULT_ACTION_IDENTIFIER, null, true);
+    builder.setContentIntent(getActionIntent(getContext(), defaultAction, getNotification()));
 
     return builder;
   }

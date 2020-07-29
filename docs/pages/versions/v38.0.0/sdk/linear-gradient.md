@@ -34,8 +34,8 @@ export default class FacebookButton extends React.Component {
           justifyContent: 'center',
           backgroundColor: 'orange',
         }}>
-        // Background Linear Gradient
         <LinearGradient
+          // Background Linear Gradient
           colors={['rgba(0,0,0,0.8)', 'transparent']}
           style={{
             position: 'absolute',
@@ -45,8 +45,8 @@ export default class FacebookButton extends React.Component {
             height: 300,
           }}
         />
-        // Button Linear Gradient
         <LinearGradient
+          // Button Linear Gradient
           colors={['#4c669f', '#3b5998', '#192f6a']}
           style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
           <Text

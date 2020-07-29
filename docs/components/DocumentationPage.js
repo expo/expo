@@ -28,8 +28,20 @@ const STYLES_DOCUMENT = css`
     border-bottom: 0px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
     padding: 20px 16px 48px 16px;
+  }
+`;
+
+const HIDDEN_ON_MOBILE = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    display: none;
+  }
+`;
+
+const HIDDEN_ON_DESKTOP = css`
+  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+    display: none;
   }
 `;
 
@@ -62,7 +74,7 @@ export default class DocumentationPage extends React.Component {
   }
 
   _handleResize = () => {
-    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileStrictValue) {
       window.scrollTo(0, 0);
     }
   };
@@ -83,11 +95,24 @@ export default class DocumentationPage extends React.Component {
     this.setState({
       isMenuActive: true,
     });
+    this._handleHideSearch();
   };
 
   _handleHideMenu = () => {
     this.setState({
       isMenuActive: false,
+    });
+  };
+
+  _handleToggleSearch = () => {
+    this.setState(prevState => ({
+      isMobileSearchActive: !prevState.isMobileSearchActive,
+    }));
+  };
+
+  _handleHideSearch = () => {
+    this.setState({
+      isMobileSearchActive: false,
     });
   };
 
@@ -162,10 +187,12 @@ export default class DocumentationPage extends React.Component {
         pathname={this.props.url.pathname}
         version={this._version}
         isMenuActive={this.state.isMenuActive}
+        isMobileSearchActive={this.state.isMobileSearchActive}
         isAlogiaSearchHidden={this.state.isMenuActive}
         onSetVersion={this._handleSetVersion}
         onShowMenu={this._handleShowMenu}
         onHideMenu={this._handleHideMenu}
+        onToggleSearch={this._handleToggleSearch}
       />
     );
 
@@ -186,6 +213,7 @@ export default class DocumentationPage extends React.Component {
         header={headerElement}
         sidebar={sidebarElement}
         isMenuActive={this.state.isMenuActive}
+        isMobileSearchActive={this.state.isMobileSearchActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           <AlgoliaDocsearchMeta
@@ -212,14 +240,29 @@ export default class DocumentationPage extends React.Component {
             />
           </div>
         ) : (
-          <DocumentationSidebar
-            url={this.props.url}
-            asPath={this.props.asPath}
-            routes={routes}
-            version={this._version}
-            onSetVersion={this._handleSetVersion}
-            isVersionSelectorHidden={!this._isReferencePath()}
-          />
+          <div>
+            <div className={`${STYLES_DOCUMENT} ${HIDDEN_ON_MOBILE}`}>
+              <H1>{this.props.title}</H1>
+              <DocumentationPageContext.Provider value={{ version: this._version }}>
+                {this.props.children}
+              </DocumentationPageContext.Provider>
+              <DocumentationFooter
+                title={this.props.title}
+                asPath={this.props.asPath}
+                sourceCodeUrl={this.props.sourceCodeUrl}
+              />
+            </div>
+            <div className={HIDDEN_ON_DESKTOP}>
+              <DocumentationSidebar
+                url={this.props.url}
+                asPath={this.props.asPath}
+                routes={routes}
+                version={this._version}
+                onSetVersion={this._handleSetVersion}
+                isVersionSelectorHidden={!this._isReferencePath()}
+              />
+            </div>
+          </div>
         )}
       </DocumentationNestedScrollLayout>
     );

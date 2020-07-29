@@ -14,6 +14,7 @@ import android.util.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,9 +36,11 @@ import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -54,6 +57,7 @@ public class NotificationsHelper {
   public static final int EXCEPTION_OCCURRED_CODE = -1;
   public static final String EXCEPTION_KEY = "exception";
   public static final String NOTIFICATIONS_KEY = "notifications";
+  public static final String CATEGORIES_KEY = "categories";
 
   public static final String INTERNAL_IDENTIFIER_SCHEME = "expo-notifications";
   public static final String INTERNAL_IDENTIFIER_AUTHORITY = "foreign_notifications";
@@ -64,6 +68,7 @@ public class NotificationsHelper {
 
   private Context mContext;
   private NotificationsReconstructor mNotificationsReconstructor;
+  private SharedPreferencesNotificationCategoriesStore mStore;
 
   /**
    * A weak map of listeners -> reference. Used to check quickly whether given listener
@@ -87,6 +92,7 @@ public class NotificationsHelper {
         mIsAppInForeground = false;
       }
     });
+    mStore = new SharedPreferencesNotificationCategoriesStore(context);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(observer.get());
   }
 
@@ -266,10 +272,28 @@ public class NotificationsHelper {
   }
 
   protected android.app.Notification getNotification(Context context, Notification notification, NotificationBehavior behavior) {
-    return new ExpoNotificationBuilder(context)
+    return new CategoryAwareNotificationBuilder(context, mStore)
       .setNotification(notification)
       .setAllowedBehavior(behavior)
       .build();
+  }
+
+  public Collection<NotificationCategory> getCategories() {
+    return mStore.getAllNotificationCategories();
+  }
+
+  public NotificationCategory setCategory(NotificationCategory category) {
+    try {
+      return mStore.saveNotificationCategory(category);
+    } catch (IOException e) {
+      Log.e("expo-notifications", String.format("Could not save category \"%s\": %s.", category.getIdentifier(), e.getMessage()));
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public boolean deleteCategory(String identifier) {
+    return mStore.removeNotificationCategory(identifier);
   }
 
   @Nullable
@@ -306,6 +330,7 @@ public class NotificationsHelper {
         // using deprecated field
         .setSound(notification.sound)
         .setAutoDismiss((notification.flags & android.app.Notification.FLAG_AUTO_CANCEL) != 0)
+        .setSticky((notification.flags & android.app.Notification.FLAG_ONGOING_EVENT) != 0)
         .setBody(fromBundle(notification.extras))
         .build();
       NotificationRequest request = new NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null);
@@ -328,6 +353,17 @@ public class NotificationsHelper {
     }
     builder.appendQueryParameter(INTERNAL_IDENTIFIER_ID_KEY, Integer.toString(notification.getId()));
     return builder.toString();
+  }
+
+  protected NotificationRequest reconstructNotificationRequest(Parcel parcel) {
+    return NotificationRequest.CREATOR.createFromParcel(parcel);
+  }
+
+  protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
+    return new CategoryAwareNotificationBuilder(mContext, new SharedPreferencesNotificationCategoriesStore(mContext))
+      .setNotification(notification)
+      .setAllowedBehavior(behavior)
+      .build();
   }
 
   private Collection<NotificationManager> getListeners() {

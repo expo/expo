@@ -24,6 +24,9 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String BADGE_KEY = "badge";
   private static final String COLOR_KEY = "color";
   private static final String AUTO_DISMISS_KEY = "autoDismiss";
+  private static final String CATEGORY_IDENTIFIER_KEY = "categoryId";
+  private static final String STICKY_KEY = "sticky";
+
 
   private SoundResolver mSoundResolver;
 
@@ -39,7 +42,10 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
       .setPriority(getPriority(payload))
       .setBadgeCount(getBadgeCount(payload))
       .setColor(getColor(payload))
-      .setAutoDismiss(getAutoDismiss(payload));
+      .setAutoDismiss(getAutoDismiss(payload))
+      .setCategoryId(getCategoryId(payload))
+      .setSticky(getSticky(payload));
+
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -172,5 +178,26 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
     }
     // TODO(sjchmiela): the default value should be determined by NotificationContent.Builder
     return true;
+  }
+
+  @Nullable
+  protected String getCategoryId(JSONObject payload) {
+    try {
+      return payload.getString(CATEGORY_IDENTIFIER_KEY);
+    } catch (JSONException e) {
+      return null;
+    }
+  }
+
+  protected boolean getSticky(JSONObject payload) {
+    if (payload.has(STICKY_KEY)) {
+      try {
+        return payload.getBoolean(STICKY_KEY);
+      } catch (JSONException e) {
+        Log.e("expo-notifications", "Could not have parsed a boolean sticky value passed in notification, falling back to a default value.");
+      }
+    }
+    // TODO: the default value should be determined by NotificationContent.Builder
+    return false;
   }
 }

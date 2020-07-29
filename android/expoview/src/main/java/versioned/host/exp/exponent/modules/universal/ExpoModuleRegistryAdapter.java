@@ -17,6 +17,7 @@ import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter;
@@ -75,6 +76,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedNotificationsEmitter(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedExpoNotificationCategoriesModule(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
 

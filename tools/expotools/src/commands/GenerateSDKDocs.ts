@@ -56,10 +56,6 @@ async function action(options) {
   const targetSdkDirectory = path.join(SDK_DOCS_DIR, `v${sdk}`);
   const targetExampleDirectory = path.join(STATIC_EXAMPLES_DIR, `v${sdk}`);
 
-  console.log(`\nSetting version ${chalk.red(sdk)} in ${chalk.yellow('package.json')}...`);
-
-  await JsonFile.setAsync(path.join(DOCS_DIR, 'package.json'), 'version', sdk);
-
   if (await fs.pathExists(targetSdkDirectory)) {
     console.log(chalk.magenta(`v${sdk}`), 'directory already exists. Skipping copy operation.');
   } else {
@@ -98,6 +94,9 @@ async function action(options) {
 
     await fs.copy(path.join(STATIC_EXAMPLES_DIR, 'unversioned'), targetExampleDirectory);
   }
+
+  console.log(`\nDocs version ${chalk.red(sdk)} created successfully. By default, it will not be included in the production build.` +
+    `\nWhen the new version is ready to deploy, set version to ${chalk.red(sdk)} in ${chalk.yellow('docs/package.json')}`);
 }
 
 export default (program) => {

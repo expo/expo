@@ -1,53 +1,21 @@
 const fs = require('fs');
-const http = require('http');
 const path = require('path');
 const uuid = require('uuid/v4');
 
+const fetchAssetManifestAsync = require('./fetchAssetManifestAsync');
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
 const platform = process.argv[2];
-const packagerUrl = process.argv[3];
+const projectRoot = process.argv[3];
 const destinationDir = process.argv[4];
 
 (async function() {
-  let assetsJson;
-  try {
-    assetsJson = await new Promise(function(resolve, reject) {
-      const req = http.get(packagerUrl, function(res) {
-        if (res.statusCode !== 200) {
-          reject(new Error('Request to packager server failed: ' + res.statusCode));
-          res.resume();
-          return;
-        }
-
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', function(chunk) {
-          rawData += chunk;
-        });
-        res.on('end', function() {
-          resolve(rawData);
-        });
-      });
-
-      req.on('error', function(error) {
-        reject(error);
-      });
-
-      req.end();
-    });
-  } catch (e) {
-    throw new Error(
-      `Failed to connect to the packager server. If you did not start this build by running 'react-native run-android', you can start the packager manually by running 'react-native start' in the project directory. (Error: ${e.message})`
-    );
-  }
-
   let assets;
   try {
-    assets = JSON.parse(assetsJson);
+    assets = await fetchAssetManifestAsync(platform, projectRoot);
   } catch (e) {
     throw new Error(
-      "Error parsing assets JSON from React Native packager. Ensure you've followed all expo-updates installation steps correctly. " +
+      "Error loading assets JSON from Metro. Ensure you've followed all expo-updates installation steps correctly. " +
         e.message
     );
   }

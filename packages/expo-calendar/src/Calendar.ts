@@ -140,7 +140,7 @@ export enum MonthOfTheYear {
 export type RecurrenceRule = {
   frequency: string; // Frequency
   interval?: number;
-  endDate?: string;
+  endDate?: string | Date;
   occurrence?: number;
 
   daysOfTheWeek?: { dayOfTheWeek: DayOfTheWeek; weekNumber?: number }[];
@@ -702,7 +702,10 @@ function stringifyIfDate(date: any): any {
 function stringifyDateValues(obj: object): object {
   return Object.keys(obj).reduce((acc, key) => {
     const value = obj[key];
-    if (typeof value === 'object' && !(value instanceof Date)) {
+    if (value != null && typeof value === 'object' && !(value instanceof Date)) {
+      if (Array.isArray(value)) {
+        return { ...acc, [key]: value.map(stringifyDateValues) };
+      }
       return { ...acc, [key]: stringifyDateValues(value) };
     }
     acc[key] = stringifyIfDate(value);

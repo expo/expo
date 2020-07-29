@@ -56,9 +56,9 @@ final class MediaLibraryUtils {
     public File apply(File src, File dir, Context context) throws IOException {
       File newFile = safeMoveFile(src, dir);
       context.getContentResolver().delete(
-          EXTERNAL_CONTENT,
-          Media.DATA + "=?",
-          new String[]{src.getPath()});
+        EXTERNAL_CONTENT,
+        Media.DATA + "=?",
+        new String[]{src.getPath()});
       return newFile;
     }
   };
@@ -104,11 +104,11 @@ final class MediaLibraryUtils {
   static void queryAssetInfo(Context context, final String selection, final String[] selectionArgs, boolean fullInfo, Promise promise) {
     ContentResolver contentResolver = context.getContentResolver();
     try (Cursor asset = contentResolver.query(
-        EXTERNAL_CONTENT,
-        ASSET_PROJECTION,
-        selection,
-        selectionArgs,
-        null
+      EXTERNAL_CONTENT,
+      ASSET_PROJECTION,
+      selection,
+      selectionArgs,
+      null
     )) {
       if (asset == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.");
@@ -127,7 +127,7 @@ final class MediaLibraryUtils {
       }
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
+        "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
       promise.reject(ERROR_IO_EXCEPTION, "Could not read file or parse EXIF tags", e);
     }
@@ -137,8 +137,6 @@ final class MediaLibraryUtils {
     final int idIndex = cursor.getColumnIndex(Media._ID);
     final int filenameIndex = cursor.getColumnIndex(Media.DISPLAY_NAME);
     final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
-    final int latitudeIndex = cursor.getColumnIndex(Media.LATITUDE);
-    final int longitudeIndex = cursor.getColumnIndex(Media.LONGITUDE);
     final int creationDateIndex = cursor.getColumnIndex(Media.DATE_TAKEN);
     final int modificationDateIndex = cursor.getColumnIndex(Media.DATE_MODIFIED);
     final int durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION);
@@ -175,22 +173,10 @@ final class MediaLibraryUtils {
       if (fullInfo) {
         if (exifInterface != null) {
           getExifFullInfo(exifInterface, asset);
+          getExifLocation(exifInterface, asset);
         }
 
         asset.putString("localUri", localUri);
-
-        double latitude = cursor.getDouble(latitudeIndex);
-        double longitude = cursor.getDouble(longitudeIndex);
-
-        // we want location to be null if it's not available
-        if (latitude != 0.0 || longitude != 0.0) {
-          Bundle location = new Bundle();
-          location.putDouble("latitude", latitude);
-          location.putDouble("longitude", longitude);
-          asset.putParcelable("location", location);
-        } else {
-          asset.putParcelable("location", null);
-        }
       }
       cursor.moveToNext();
       response.add(asset);
@@ -280,9 +266,9 @@ final class MediaLibraryUtils {
       );
       if (
         exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 ||
-        exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
-        exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
-        exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
+          exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
+          exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
+          exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
       ) {
         orientation = 90;
       }
@@ -344,6 +330,19 @@ final class MediaLibraryUtils {
     response.putParcelable("exif", exifMap);
   }
 
+  static void getExifLocation(ExifInterface exifInterface, Bundle asset) {
+    double[] latLong = exifInterface.getLatLong();
+    if (latLong == null) {
+      asset.putParcelable("location", null);
+      return;
+    }
+
+    Bundle location = new Bundle();
+    location.putDouble("latitude", latLong[0]);
+    location.putDouble("longitude", latLong[1]);
+    asset.putParcelable("location", location);
+  }
+
   static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
     final String countColumn = "COUNT(*)";
@@ -352,11 +351,11 @@ final class MediaLibraryUtils {
     final String group = Media.BUCKET_DISPLAY_NAME;
 
     try (Cursor albums = context.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        projection,
-        selectionWithGroupBy,
-        selectionArgs,
-        group)) {
+      EXTERNAL_CONTENT,
+      projection,
+      selectionWithGroupBy,
+      selectionArgs,
+      group)) {
 
       if (albums == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.");
@@ -376,18 +375,18 @@ final class MediaLibraryUtils {
       promise.resolve(result);
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
+        "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
     }
   }
 
   static void deleteAssets(Context context, String selection, String[] selectionArgs, Promise promise) {
     final String[] projection = {Media.DATA};
     try (Cursor filesToDelete = context.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        projection,
-        selection,
-        selectionArgs,
-        null)) {
+      EXTERNAL_CONTENT,
+      projection,
+      selection,
+      selectionArgs,
+      null)) {
       if (filesToDelete == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.");
       } else {
@@ -396,9 +395,9 @@ final class MediaLibraryUtils {
           File file = new File(filePath);
           if (file.delete()) {
             context.getContentResolver().delete(
-                EXTERNAL_CONTENT,
-                Media.DATA + " = \"" + filePath + "\"",
-                null);
+              EXTERNAL_CONTENT,
+              Media.DATA + " = \"" + filePath + "\"",
+              null);
           } else {
             promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
             return;
@@ -408,7 +407,7 @@ final class MediaLibraryUtils {
       }
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_SAVE_PERMISSION,
-          "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
+        "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
     }
   }
 
@@ -425,11 +424,11 @@ final class MediaLibraryUtils {
     final String selection = MediaStore.Images.Media._ID + " IN ( " + getInPart(assetsId) + " )";
 
     try (Cursor assets = context.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        path,
-        selection,
-        assetsId,
-        null
+      EXTERNAL_CONTENT,
+      path,
+      selection,
+      assetsId,
+      null
     )) {
 
       if (assets == null) {

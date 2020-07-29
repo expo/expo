@@ -1,6 +1,7 @@
 {
   "name": "jest-expo-enzyme",
   "version": "1.0.2",
+  "description": "A Jest preset that enables you to test your universal Expo & React elements with the Enzyme testing library.",
   "license": "MIT",
   "main": "build/index.js",
   "types": "build/index.d.ts",

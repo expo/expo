@@ -7,18 +7,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesSelectionPolicyNewest ()
 
-@property (nonatomic, strong) NSString *runtimeVersion;
+@property (nonatomic, strong) NSArray<NSString *> *runtimeVersions;
 
 @end
 
 @implementation EXUpdatesSelectionPolicyNewest
 
-- (instancetype)initWithRuntimeVersion:(NSString *)runtimeVersion
+- (instancetype)initWithRuntimeVersions:(NSArray<NSString *> *)runtimeVersions
 {
   if (self = [super init]) {
-    _runtimeVersion = runtimeVersion;
+    _runtimeVersions = runtimeVersions;
   }
   return self;
+}
+
+- (instancetype)initWithRuntimeVersion:(NSString *)runtimeVersion
+{
+  return [self initWithRuntimeVersions:@[runtimeVersion]];
 }
 
 - (nullable EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<EXUpdatesUpdate *> *)updates
@@ -26,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesUpdate *runnableUpdate;
   NSDate *runnableUpdateCommitTime;
   for (EXUpdatesUpdate *update in updates) {
-    if (![_runtimeVersion isEqualToString:update.runtimeVersion]) {
+    if (![_runtimeVersions containsObject:update.runtimeVersion]) {
       continue;
     }
     NSDate *commitTime = update.commitTime;

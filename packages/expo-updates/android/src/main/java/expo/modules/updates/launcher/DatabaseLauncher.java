@@ -73,7 +73,7 @@ public class DatabaseLauncher implements Launcher {
     mLaunchedUpdate = getLaunchableUpdate(database, context);
 
     if (mLaunchedUpdate == null) {
-      mCallback.onFailure(new Exception("No launchable update was found"));
+      mCallback.onFailure(new Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle."));
       return;
     }
 
@@ -124,7 +124,7 @@ public class DatabaseLauncher implements Launcher {
   }
 
   public UpdateEntity getLaunchableUpdate(UpdatesDatabase database, Context context) {
-    List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdates();
+    List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(mConfiguration.getScopeKey());
 
     // We can only run an update marked as embedded if it's actually the update embedded in the
     // current binary. We might have an older update from a previous binary still listed as
@@ -133,7 +133,7 @@ public class DatabaseLauncher implements Launcher {
     ArrayList<UpdateEntity> filteredLaunchableUpdates = new ArrayList<>();
     for (UpdateEntity update : launchableUpdates) {
       if (update.status == UpdateStatus.EMBEDDED) {
-        if (!embeddedManifest.getUpdateEntity().id.equals(update.id)) {
+        if (embeddedManifest != null && !embeddedManifest.getUpdateEntity().id.equals(update.id)) {
           continue;
         }
       }
@@ -177,7 +177,7 @@ public class DatabaseLauncher implements Launcher {
     if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       mAssetsToDownload++;
-      FileDownloader.downloadAsset(asset, mUpdatesDirectory, context, new FileDownloader.AssetDownloadCallback() {
+      FileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to load asset from disk or network", e);

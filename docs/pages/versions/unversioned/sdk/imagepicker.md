@@ -91,7 +91,7 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
 ### `ImagePicker.requestCameraRollPermissionsAsync()`
 
@@ -99,7 +99,7 @@ Asks the user to grant permissions for accessing user's photo. Alias for `Permis
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
@@ -107,7 +107,7 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
 ### `ImagePicker.getCameraRollPermissionsAsync()`
 
@@ -115,7 +115,7 @@ Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
@@ -209,3 +209,18 @@ The `exif` field is included if the `exif` option is truthy, and is an object co
 | `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
 | `VideoExportPreset.HEVC_1920x1080` | 9     | 1920 x 1080           | HEVC                        | AAC                         |
 | `VideoExportPreset.HEVC_3840x2160` | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+
+## Types
+
+### `ImagePicker.CameraRollPermissionResponse`
+
+`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+
+- `scope` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+  - `all` if the user granted your app access to the whole photo library
+  - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+  - `none` if user denied or hasn't yet granted the permission
+
+### `ImagePicker.CameraPermissionResponse`
+
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.

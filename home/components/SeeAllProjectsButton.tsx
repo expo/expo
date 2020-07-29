@@ -35,15 +35,16 @@ export default class SeeAllProjectsButton extends React.Component<Props> {
         title="See all projects"
         rightContent={
           <View style={styles.appIconContainer}>
-            {take(apps, maxIconCount).map((app, i) =>
-              app.iconUrl ? (
+            {take(apps, maxIconCount).map((app, i) => {
+              const image = app.iconUrl
+                ? { uri: app.iconUrl }
+                : require('../assets/placeholder-app-icon.png');
+              return (
                 <FadeIn key={i} placeholderColor="#eee">
-                  <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
+                  <Image source={image} style={styles.appIcon} />
                 </FadeIn>
-              ) : (
-                <View key={i} style={styles.appIconPlaceholder} />
-              )
-            )}
+              );
+            })}
 
             {otherAppCount > 0 && (
               <View style={styles.projectsNumberContainer}>

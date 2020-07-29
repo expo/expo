@@ -220,13 +220,17 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 {
   NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
   NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
-  UIImage *image;
-  if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
-    image = [info objectForKey:UIImagePickerControllerEditedImage];
-  } else {
-    image = [info objectForKey:UIImagePickerControllerOriginalImage];
-  }
+  UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
   image = [self fixOrientation:image];
+  if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
+    CGRect rect = ((NSValue *) [info objectForKey:UIImagePickerControllerCropRect]).CGRectValue;
+      
+    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
+    image = [UIImage imageWithCGImage:imageRef
+                                scale:image.scale
+                          orientation:image.imageOrientation];
+    CGImageRelease(imageRef);
+  }
   response[@"type"] = @"image";
   response[@"width"] = @(image.size.width);
   response[@"height"] = @(image.size.height);

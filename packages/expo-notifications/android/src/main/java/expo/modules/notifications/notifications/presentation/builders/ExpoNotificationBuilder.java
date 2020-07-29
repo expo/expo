@@ -15,8 +15,10 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
+import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 
@@ -48,6 +50,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     NotificationContent content = getNotificationContent();
 
     builder.setAutoCancel(content.isAutoDismiss());
+    builder.setOngoing(content.isSticky());
 
     builder.setContentTitle(content.getTitle());
     builder.setContentText(content.getText());
@@ -105,8 +108,9 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     // so we go around it by marshalling and unmarshalling the object ourselves.
     requestExtras.putByteArray(EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY, marshallNotificationRequest(getNotification().getNotificationRequest()));
     builder.addExtras(requestExtras);
-
-    builder.setContentIntent(getActionIntent(getContext(), DEFAULT_ACTION_IDENTIFIER, getNotification()));
+    
+    NotificationAction defaultAction = new NotificationAction(DEFAULT_ACTION_IDENTIFIER, null, true);
+    builder.setContentIntent(getActionIntent(getContext(), defaultAction, getNotification()));
 
     return builder;
   }

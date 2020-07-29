@@ -20,7 +20,7 @@ If you don't have an Android device available to test with, we recommend using t
 
 - On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` or `~/.bashrc.`, by adding a line like `export PATH=/Users/myuser/Library/Android/sdk/platform-tools:$PATH`
 
-> Note that later versions of macOS, such as Catalina, use `zsh` instead of `bash`, so you will update `.zsh_profile` or `.zshrc` instead.
+> Note that later versions of macOS, such as Catalina, use `zsh` instead of `bash`, so you will update `.zprofile` or `.zshrc` instead.
 
 - Make sure that you can run `adb` from your terminal.
 
