@@ -10,4 +10,4 @@ import { RootState } from './Store.types';
 
 export const useSelector: TypedUseSelectorHook<RootState> = useUntypedSelector;
 
-export const useDispatch: ThunkDispatch<RootState, any, AnyAction> = useUntypedDispatch;
+export const useDispatch = (): ThunkDispatch<RootState, any, AnyAction> => useUntypedDispatch();
