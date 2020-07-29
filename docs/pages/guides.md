@@ -2,6 +2,8 @@
 title: Guides to get things done
 ---
 
+Edit to test the hash
+
 In the ['Get Started'](/) section we walk through how you can [install Expo tools](../../get-started/installation/), [create your first app](../../get-started/create-a-new-app/), [guide you through a tutorial](../../tutorial/planning/), and give you a [conceptual overview](../../introduction/managed-vs-bare/) of what working with Expo tools looks like, the limitations, and common questions folks have.
 
 The guides section of the documentation is oriented towards getting things done: we explain how to use certain tools and how to perform tasks that you may encounter while building your app. The guides are split up into two main sections: managed workflow and bare workflow.
