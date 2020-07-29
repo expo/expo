@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import ExpoKeepAwake from './ExpoKeepAwake';
+import ExpoKeepAwake, { isAvailable } from './ExpoKeepAwake';
 
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
@@ -12,9 +12,13 @@ export function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
 }
 
 export function activateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
-  if (ExpoKeepAwake.activate) ExpoKeepAwake.activate(tag);
+  if (isAvailable() && ExpoKeepAwake.activate) {
+    ExpoKeepAwake.activate(tag);
+  }
 }
 
 export function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
-  if (ExpoKeepAwake.deactivate) ExpoKeepAwake.deactivate(tag);
+  if (isAvailable() && ExpoKeepAwake.deactivate) {
+    ExpoKeepAwake.deactivate(tag);
+  }
 }
