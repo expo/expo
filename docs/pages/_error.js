@@ -95,7 +95,7 @@ export default class Error extends React.Component {
 
     // Remove version from path if the version is still supported, to redirect to the root
     if (isVersionedPath(redirectPath) && isVersionDocumented(redirectPath)) {
-      redirectPath = `/versions/${getVersionFromPath(redirectPath)}/`;
+      redirectPath = `/versions/${getVersionFromPath(redirectPath)}/#missing`;
     }
 
     if (redirectPath !== pathname) {
@@ -113,7 +113,11 @@ export default class Error extends React.Component {
       // Let people actually read the carefully crafted message and absorb the
       // cool emoji selection, they can just click through if they want speed
       setTimeout(() => {
-        window.location = `${this.state.redirectPath}?redirected`;
+        if (!this.state.redirectPath.includes('#')) {
+          window.location = `${this.state.redirectPath}?redirected`;
+        } else {
+          window.location = this.state.redirectPath;
+        }
       }, 1200);
     }
   }

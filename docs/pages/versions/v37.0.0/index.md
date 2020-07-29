@@ -2,7 +2,10 @@
 title: API Reference
 ---
 
+import MissingVersionPageNotification from '~/components/plugins/MissingVersionPageNotification';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
+
+<MissingVersionPageNotification showForHash="missing" />
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
 
