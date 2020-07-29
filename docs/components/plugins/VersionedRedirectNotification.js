@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
 
@@ -8,11 +9,14 @@ const CONTAINER_STYLE = css`
   line-height: 1.5rem;
 `;
 
-export default function MissingVersionPageNotification({ showForHash }) {
+export default function VersionedRedirectNotification({ showForQuery = 'redirected' }) {
+  const router = useRouter();
   const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
-    setVisible(showForHash === getHash());
+    if (router.query) {
+      setVisible(router.query.hasOwnProperty(showForQuery));
+    }
   }, []);
 
   if (visible) {
@@ -25,9 +29,4 @@ export default function MissingVersionPageNotification({ showForHash }) {
   }
 
   return null;
-}
-
-function getHash() {
-  const { hash } = window.location;
-  return hash ? hash.replace('#', '') : null;
 }
