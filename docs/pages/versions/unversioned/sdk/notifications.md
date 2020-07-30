@@ -48,6 +48,8 @@ Open your `app.json` and add the following inside of the "expo" field:
 }
 ```
 
+On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
+
 ## API
 
 ```js

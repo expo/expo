@@ -45,6 +45,8 @@ In order to be able to receive push notifications on the device:
 
 In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
 
+This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
+
 The notification icon and the default color can be customized.
 
 - **To customize the icon**:
