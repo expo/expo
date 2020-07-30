@@ -45,8 +45,6 @@ export async function launchCameraAsync(
   return await ExponentImagePicker.launchCameraAsync(options);
 }
 
-
-
 export {
   MediaTypeOptions,
   ImagePickerOptions,

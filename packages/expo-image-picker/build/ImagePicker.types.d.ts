@@ -1,3 +1,8 @@
+import { PermissionResponse } from 'unimodules-permissions-interface';
+export { PermissionResponse as CameraPermissionResponse };
+export declare type CameraRollPermissionResponse = PermissionResponse & {
+    scope?: 'all' | 'limited' | 'none';
+};
 export declare enum MediaTypeOptions {
     All = "All",
     Videos = "Videos",

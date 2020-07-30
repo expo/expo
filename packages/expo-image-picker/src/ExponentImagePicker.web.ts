@@ -6,7 +6,6 @@ import {
   MediaTypeOptions,
   OpenFileBrowserOptions,
   ImagePickerOptions,
-  Expand,
   ImagePickerMultipleResult,
   ImageInfo,
 } from './ImagePicker.types';
