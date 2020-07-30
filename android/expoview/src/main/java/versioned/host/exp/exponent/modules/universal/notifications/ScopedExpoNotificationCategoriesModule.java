@@ -27,7 +27,11 @@ public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCate
   @Override
   public void getNotificationCategoriesAsync(final Promise promise) {
     Collection<NotificationCategory> categories = getNotificationsHelper().getCategories();
-    promise.resolve(serializeScopedCategories(categories));
+    if (categories != null) {
+      promise.resolve(serializeScopedCategories(categories));
+    } else {
+      promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.");
+    }
   }
 
   @Override
