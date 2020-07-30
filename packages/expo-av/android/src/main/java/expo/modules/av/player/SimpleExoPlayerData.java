@@ -343,7 +343,7 @@ class SimpleExoPlayerData extends PlayerData
       final LoadCompletionListener listener = mLoadCompletionListener;
       mLoadCompletionListener = null;
       listener.onLoadError(error.toString());
-    } else {
+    } else if (mErrorListener != null) {
       mErrorListener.onError("Player error: " + error.getMessage());
     }
     release();
