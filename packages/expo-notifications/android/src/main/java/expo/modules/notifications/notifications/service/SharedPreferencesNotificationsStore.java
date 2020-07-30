@@ -81,8 +81,8 @@ public class SharedPreferencesNotificationsStore {
    */
   public void saveNotificationRequest(NotificationRequest notificationRequest) throws IOException {
     mSharedPreferences.edit()
-        .putString(preferencesNotificationRequestKey(notificationRequest.getIdentifier()), serializeNotificationRequest(notificationRequest))
-        .apply();
+      .putString(preferencesNotificationRequestKey(notificationRequest.getIdentifier()), serializeNotificationRequest(notificationRequest))
+      .apply();
   }
 
   /**

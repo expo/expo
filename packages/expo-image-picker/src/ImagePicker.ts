@@ -1,12 +1,10 @@
 import { UnavailabilityError } from '@unimodules/core';
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-} from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 
 import ExponentImagePicker from './ExponentImagePicker';
 import {
+  CameraPermissionResponse,
+  CameraRollPermissionResponse,
   ImagePickerResult,
   MediaTypeOptions,
   ImagePickerOptions,
@@ -18,19 +16,19 @@ import {
   WEB_launchImageLibraryAsync
 } from './ExponentImagePicker.web'
 
-export async function getCameraPermissionsAsync(): Promise<PermissionResponse> {
+export async function getCameraPermissionsAsync(): Promise<CameraPermissionResponse> {
   return ExponentImagePicker.getCameraPermissionsAsync();
 }
 
-export async function getCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+export async function getCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse> {
   return ExponentImagePicker.getCameraRollPermissionsAsync();
 }
 
-export async function requestCameraPermissionsAsync(): Promise<PermissionResponse> {
+export async function requestCameraPermissionsAsync(): Promise<CameraPermissionResponse> {
   return ExponentImagePicker.requestCameraPermissionsAsync();
 }
 
-export async function requestCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+export async function requestCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse> {
   return ExponentImagePicker.requestCameraRollPermissionsAsync();
 }
 
@@ -71,7 +69,8 @@ export {
   ImagePickerOptions,
   ImagePickerResult,
   VideoExportPreset,
-  PermissionResponse,
+  CameraPermissionResponse,
+  CameraRollPermissionResponse,
   PermissionStatus,
   PermissionExpiration,
 };

@@ -1,6 +1,6 @@
-export type PreferredAppearance = 'no-preference' | 'dark' | 'light';
+import { ColorSchemeName } from 'react-native-appearance';
 
 export type Settings = {
-  preferredAppearance: PreferredAppearance;
-  devMenuSettings?: any; // TODO
+  preferredAppearance: ColorSchemeName;
+  devMenuSettings?: { [key: string]: any };
 };

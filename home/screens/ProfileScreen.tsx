@@ -2,11 +2,10 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
-import MyProfileContainer from '../containers/MyProfileContainer';
-import OtherProfileContainer from '../containers/OtherProfileContainer';
+import { OtherProfile, MyProfile } from '../containers/Profile';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 
@@ -14,8 +13,6 @@ export default function ProfileScreen({
   navigation,
   ...props
 }: StackScreenProps<AllStackRoutes, 'Profile'>) {
-  // TODO(Bacon): This might not be needed, check during TS migration.
-  const dispatch = useDispatch();
   const { isAuthenticated, username } = useSelector(
     React.useCallback(
       data => {
@@ -25,14 +22,13 @@ export default function ProfileScreen({
           username: props.route.params?.username,
         };
       },
-      [navigation]
+      [props.route]
     )
   );
 
   return (
     <ProfileView
       {...props}
-      dispatch={dispatch}
       isAuthenticated={isAuthenticated}
       username={username}
       navigation={navigation}
@@ -43,7 +39,6 @@ export default function ProfileScreen({
 class ProfileView extends React.Component<
   {
     username: string;
-    dispatch: (action: any) => void;
     isAuthenticated: boolean;
   } & StackScreenProps<AllStackRoutes, 'Profile'>,
   { isOwnProfile: boolean | null }
@@ -86,10 +81,10 @@ class ProfileView extends React.Component<
     } else if (!this.props.isAuthenticated && this.state.isOwnProfile) {
       return <ProfileUnauthenticated />;
     } else if (this.state.isOwnProfile) {
-      return <MyProfileContainer {...this.props} isOwnProfile={this.state.isOwnProfile} />;
+      return <MyProfile {...this.props} isOwnProfile={this.state.isOwnProfile} />;
     }
 
-    return <OtherProfileContainer {...this.props} isOwnProfile={this.state.isOwnProfile} />;
+    return <OtherProfile {...this.props} isOwnProfile={this.state.isOwnProfile} />;
   }
 }
 

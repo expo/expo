@@ -14,21 +14,32 @@
 - (NSDictionary *)getPermissions
 {
   UMPermissionStatus status;
+  NSString *scope;
   PHAuthorizationStatus permissions = [PHPhotoLibrary authorizationStatus];
   switch (permissions) {
-    case PHAuthorizationStatusAuthorized:
-      status = UMPermissionStatusGranted;
-      break;
-    case PHAuthorizationStatusDenied:
-    case PHAuthorizationStatusRestricted:
-      status = UMPermissionStatusDenied;
-      break;
-    case PHAuthorizationStatusNotDetermined:
-      status = UMPermissionStatusUndetermined;
-      break;
+     case PHAuthorizationStatusAuthorized:
+       status = UMPermissionStatusGranted;
+       scope = @"all";
+       break;
+#ifdef __IPHONE_14_0
+     case PHAuthorizationStatusLimited:
+       status = UMPermissionStatusGranted;
+       scope = @"limited";
+       break;
+#endif
+     case PHAuthorizationStatusDenied:
+     case PHAuthorizationStatusRestricted:
+       status = UMPermissionStatusDenied;
+       scope = @"none";
+       break;
+     case PHAuthorizationStatusNotDetermined:
+       status = UMPermissionStatusUndetermined;
+       scope = @"none";
+       break;
   }
   return @{
     @"status": @(status),
+    @"scope": scope,
     @"granted": @(status == UMPermissionStatusGranted)
   };
 }

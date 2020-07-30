@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import React from 'react';
 
-import navigation from '~/common/navigation';
+import { VERSIONS } from '~/common/versions';
 
 const REDIRECT_SUFFIX = '?redirected';
 
@@ -91,6 +91,11 @@ export default class Error extends React.Component {
       const pathParts = redirectPath.split('/');
       const page = pathParts[pathParts.length - 2];
       redirectPath = `https://reactnative.dev/docs/${page}`;
+    }
+
+    // Remove version from path if the version is still supported, to redirect to the root
+    if (isVersionedPath(redirectPath) && isVersionDocumented(redirectPath)) {
+      redirectPath = `/versions/${getVersionFromPath(redirectPath)}/`;
     }
 
     if (redirectPath !== pathname) {
@@ -190,19 +195,18 @@ export default class Error extends React.Component {
   };
 }
 
+function getVersionFromPath(path) {
+  const pathParts = path.split(/\//);
+  //  eg: ["", "versions", "v32.0.0", ""]
+  return pathParts[2];
+}
+
 // Filter unversioned and latest out, so we end up with v34, etc.
-const supportedVersions = Object.keys(navigation).filter(v => v.match(/^v/));
+const supportedVersions = VERSIONS.filter(v => v.match(/^v/));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path) {
-  const pathParts = path.split(/\//);
-  //  eg: ["", "versions", "v32.0.0", ""]
-  const version = pathParts[2];
-  if (supportedVersions.includes(version)) {
-    return true;
-  } else {
-    return false;
-  }
+  return supportedVersions.includes(getVersionFromPath(path));
 }
 
 function pathIncludesHtmlExtension(path) {

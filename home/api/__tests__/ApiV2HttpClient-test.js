@@ -7,7 +7,7 @@ jest.mock('react-native', () => {
   ReactNative.NativeModules.ExponentKernel.sdkVersions = '12.0.0,11.0.0';
   return ReactNative;
 });
-
+jest.mock('@react-native-community/async-storage', () => ({}));
 jest.mock('../../redux/Store');
 
 let originalFetch;

@@ -8,6 +8,17 @@
 
 ### 🐛 Bug fixes
 
+## 8.5.0 — 2020-07-29
+
+### 🎉 New features
+
+- Added `options` to `getAssetInfoAsync()`, which allows specifying whether to download the asset from network in iOS. ([#9405](https://github.com/expo/expo/pull/9405) by [@jarvisluong](https://github.com/jarvisluong))
+- Added support for the limited `CAMERA_ROLL` permission on iOS 14. ([#9423](https://github.com/expo/expo/pull/9423) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fixed `getAssetsAsync` crashes when given invalid `after` value on Android. ([#9466](https://github.com/expo/expo/pull/9466) by [@barthap](https://github.com/barthap))
+
 ## 8.4.0 — 2020-07-27
 
 ### 🐛 Bug fixes

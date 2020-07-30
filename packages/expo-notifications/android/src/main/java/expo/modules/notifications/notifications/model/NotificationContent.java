@@ -12,6 +12,7 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 import androidx.annotation.Nullable;
+
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 
 /**
@@ -31,6 +32,7 @@ public class NotificationContent implements Parcelable, Serializable {
   private NotificationPriority mPriority;
   private Number mColor;
   private boolean mAutoDismiss;
+  private String mCategoryId;
   private boolean mSticky;
 
   protected NotificationContent() {
@@ -105,6 +107,10 @@ public class NotificationContent implements Parcelable, Serializable {
     return mAutoDismiss;
   }
 
+  public String getCategoryId() {
+    return mCategoryId;
+  }
+  
   public boolean isSticky() {
     return mSticky;
   }
@@ -134,6 +140,7 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readSerializable();
     mAutoDismiss = in.readByte() == 1;
+    mCategoryId = in.readString();
     mSticky = in.readByte() == 1;
   }
 
@@ -151,6 +158,7 @@ public class NotificationContent implements Parcelable, Serializable {
     dest.writeSerializable(mPriority != null ? mPriority.getNativeValue() : null);
     dest.writeSerializable(mColor);
     dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
+    dest.writeString(mCategoryId);
     dest.writeByte((byte) (mSticky ? 1 : 0));
   }
 
@@ -177,6 +185,7 @@ public class NotificationContent implements Parcelable, Serializable {
     out.writeObject(mPriority != null ? mPriority.getNativeValue() : null);
     out.writeObject(mColor);
     out.writeByte(mAutoDismiss ? 1 : 0);
+    out.writeObject(mCategoryId != null ? mCategoryId.toString() : null);
     out.writeByte(mSticky ? 1 : 0);
   }
 
@@ -218,6 +227,12 @@ public class NotificationContent implements Parcelable, Serializable {
     }
     mColor = (Number) in.readObject();
     mAutoDismiss = in.readByte() == 1;
+    String categoryIdString = (String) in.readObject();
+    if (categoryIdString == null) {
+      mCategoryId = null;
+    } else {
+      mCategoryId = new String(categoryIdString);
+    }
     mSticky = in.readByte() == 1;
   }
 
@@ -237,6 +252,7 @@ public class NotificationContent implements Parcelable, Serializable {
     private NotificationPriority mPriority;
     private Number mColor;
     private boolean mAutoDismiss;
+    private String mCategoryId;
     private boolean mSticky;
 
     public Builder() {
@@ -308,6 +324,11 @@ public class NotificationContent implements Parcelable, Serializable {
       return this;
     }
 
+    public Builder setCategoryId(String categoryId) {
+      mCategoryId = categoryId;
+      return this;
+    }
+    
     public Builder setSticky(boolean sticky) {
       mSticky = sticky;
       return this;
@@ -327,6 +348,7 @@ public class NotificationContent implements Parcelable, Serializable {
       content.mPriority = mPriority;
       content.mColor = mColor;
       content.mAutoDismiss = mAutoDismiss;
+      content.mCategoryId = mCategoryId;
       content.mSticky = mSticky;
       return content;
     }

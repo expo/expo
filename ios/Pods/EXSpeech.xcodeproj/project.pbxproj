@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		09FC7FC4A8FBBEB7065ED238E3565C94 /* Debug */ = {
+		54CC226C003BA385D77575C1C48C00E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 58E4D754ABEC87912C9E6F356AFA808F /* EXSpeech.debug.xcconfig */;
 			buildSettings = {
@@ -215,11 +215,12 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		19DE2DB68427365ADBA50D4EDB81D9B3 /* Release */ = {
+		70EA1DECD612782E0FD8FA0C06749FEA /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1AD3C68B8DCAB3A3210F403C12627B85 /* EXSpeech.release.xcconfig */;
 			buildSettings = {
@@ -239,6 +240,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -383,8 +385,8 @@
 		DF15A136AAE224BEC2FE63F0D1238C10 /* Build configuration list for PBXNativeTarget "EXSpeech" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				09FC7FC4A8FBBEB7065ED238E3565C94 /* Debug */,
-				19DE2DB68427365ADBA50D4EDB81D9B3 /* Release */,
+				54CC226C003BA385D77575C1C48C00E3 /* Debug */,
+				70EA1DECD612782E0FD8FA0C06749FEA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

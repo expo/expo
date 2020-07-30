@@ -98,7 +98,7 @@ CACHE_KEYS:
       EXAV:
         :debug: 145c0531e2c7438e612f4f31e07db048
         :release: 145c0531e2c7438e612f4f31e07db048
-    CHECKSUM: e9c3a5e6fc4137ddb65a7d5810efc95261365ee2
+    CHECKSUM: 21a356a369d2995eea564ed16c8b1e10958785e4
     FILES:
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -118,7 +118,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-av/ios/EXAV/Video/EXVideoView.m"
     PROJECT_NAME: EXAV
     SPECS:
-      - EXAV (8.4.0)
+      - EXAV (8.4.1)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
       EXBackgroundFetch:
@@ -564,7 +564,7 @@ CACHE_KEYS:
       EXLinearGradient:
         :debug: 3a91d0299158d0ef6f765c4d34b59b79
         :release: 3a91d0299158d0ef6f765c4d34b59b79
-    CHECKSUM: 663bf3b9009a96567e98498016e40422631be81d
+    CHECKSUM: fd56f6e9fca133329f190d75bfa28dc57ed7a1dc
     FILES:
       - "../../../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.h"
       - "../../../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.m"
@@ -574,7 +574,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradientManager.m"
     PROJECT_NAME: EXLinearGradient
     SPECS:
-      - EXLinearGradient (8.2.1)
+      - EXLinearGradient (8.2.2)
   EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalAuthentication:
@@ -636,7 +636,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: 7544d673700f034419a0fff210a72e00
         :release: 7544d673700f034419a0fff210a72e00
-    CHECKSUM: 73b7e171c26e828dfadf1fd270a4498cc1902a72
+    CHECKSUM: bf749aeca17e781733d9fe2d8063b4bf2c106e1f
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -648,7 +648,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (8.4.0)
+      - EXMediaLibrary (8.5.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork:
@@ -666,7 +666,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 1a9a6dea23cce102abe0ca9c4863027b
         :release: 1a9a6dea23cce102abe0ca9c4863027b
-    CHECKSUM: 0d1babd8461104be3657ba89e164c3b629431072
+    CHECKSUM: ff56c1dda5d77f3212005bd66c57f306423b905c
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -674,6 +674,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXBadgeModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Categories/EXNotificationCategoriesModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Categories/EXNotificationCategoriesModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.h"
@@ -706,7 +708,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.5.0)
+      - EXNotifications (0.6.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
@@ -883,25 +885,25 @@ CACHE_KEYS:
       EXSpeech:
         :debug: 28301c7a07a54228912d6be99e633981
         :release: 28301c7a07a54228912d6be99e633981
-    CHECKSUM: 9917a04a410a42904f1507a2e06234a91aff1c6d
+    CHECKSUM: 688c85808df422fda01ea6ecedf54009da2db2fe
     FILES:
       - "../../../../packages/expo-speech/ios/EXSpeech/EXSpeech.h"
       - "../../../../packages/expo-speech/ios/EXSpeech/EXSpeech.m"
     PROJECT_NAME: EXSpeech
     SPECS:
-      - EXSpeech (8.2.1)
+      - EXSpeech (8.3.0)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
         :debug: acb84ade2d15e9630e8da4bbb7418d6f
         :release: acb84ade2d15e9630e8da4bbb7418d6f
-    CHECKSUM: 64611c1b369c0f1e9cae4e551d0aa4478a58cadf
+    CHECKSUM: 601f14b74257682303afe30eda34620afec27807
     FILES:
       - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
       - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
-      - EXSQLite (8.2.1)
+      - EXSQLite (8.3.0)
   EXStoreReview:
     BUILD_SETTINGS_CHECKSUM:
       EXStoreReview:
@@ -951,13 +953,13 @@ CACHE_KEYS:
       EXWebBrowser:
         :debug: 8a03493ab01357acaad4113c212a979d
         :release: 8a03493ab01357acaad4113c212a979d
-    CHECKSUM: d37a5ffdea1b65947352bc001dd9f732463725d4
+    CHECKSUM: 9ff6477661a885eba99ba77f5039e5ad01fd1dc8
     FILES:
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
     PROJECT_NAME: EXWebBrowser
     SPECS:
-      - EXWebBrowser (8.3.1)
+      - EXWebBrowser (8.4.0)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector:
