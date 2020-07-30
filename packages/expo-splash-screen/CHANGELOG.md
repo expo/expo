@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Bump dependency on @expo/configure-splash-screen to transitively bump logkitty version pulled in through @react-native-community/cli-platform-android.
 - Fixed crash adding `splashScreenView` to parent when it was already added on Android. ([#9451](https://github.com/expo/expo/pull/9451) by [@RodolfoGS](https://github.com/RodolfoGS))
 
 ## 0.4.0 — 2020-07-16
