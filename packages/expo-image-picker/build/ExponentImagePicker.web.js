@@ -66,13 +66,21 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
     }
     document.body.appendChild(input);
     return new Promise((resolve, reject) => {
-        input.addEventListener('change', () => {
+        input.addEventListener('change', async () => {
             if (input.files) {
                 if (!allowsMultipleSelection) {
-                    resolve(readFile(input.files[0]));
+                    const img = await readFile(input.files[0]);
+                    resolve({
+                        cancelled: false,
+                        ...img,
+                    });
                 }
                 else {
-                    resolve(Promise.all(Array.from(input.files).map(readFile)));
+                    const imgs = await Promise.all(Array.from(input.files).map(readFile));
+                    resolve({
+                        cancelled: false,
+                        selected: imgs,
+                    });
                 }
             }
             else {
@@ -84,6 +92,15 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.dispatchEvent(event);
     });
 }
+// We need this to make sure that call `WEB_launchImageLibraryAsync()` without any arguments will compile
+// and here we add function body
+export async function WEB_launchImageLibraryAsync({ allowsMultipleSelection = false, mediaTypes = MediaTypeOptions.Images, }) {
+    // here goes logic which should return `ImagePickerResult` or `ImagePickerMultipleResult`
+    return openFileBrowserAsync({
+        mediaTypes,
+        allowsMultipleSelection,
+    });
+}
 function readFile(targetFile) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -93,7 +110,6 @@ function readFile(targetFile) {
         reader.onload = ({ target }) => {
             const uri = target.result;
             const returnRaw = () => resolve({
-                cancelled: false,
                 uri,
                 width: 0,
                 height: 0,
@@ -102,7 +118,6 @@ function readFile(targetFile) {
                 const image = new Image();
                 image.src = target.result;
                 image.onload = () => resolve({
-                    cancelled: false,
                     uri,
                     width: image.naturalWidth ?? image.width,
                     height: image.naturalHeight ?? image.height,

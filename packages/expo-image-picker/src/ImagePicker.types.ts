@@ -30,7 +30,7 @@ export type ImageInfo = {
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 // I think we should add diffrent type if we return multiple images/videos
 // For example, it could look like this:
-export type ImagePickerMultipleResult = { cancelled: true } | ({ cancelled: false; selected: ImageInfo[]});
+export type ImagePickerMultipleResult = { cancelled: true } | ({ cancelled: false; selected: ImageInfo[] });
 
 
 export type ImagePickerOptions = {

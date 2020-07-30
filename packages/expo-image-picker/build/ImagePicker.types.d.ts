@@ -31,6 +31,12 @@ export declare type ImagePickerResult = {
 } | ({
     cancelled: false;
 } & ImageInfo);
+export declare type ImagePickerMultipleResult = {
+    cancelled: true;
+} | ({
+    cancelled: false;
+    selected: ImageInfo[];
+});
 export declare type ImagePickerOptions = {
     allowsEditing?: boolean;
     aspect?: [number, number];
@@ -45,4 +51,8 @@ export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
     capture?: boolean;
     allowsMultipleSelection: boolean;
+};
+export declare type Primitive = string | number | boolean | bigint | symbol | null | undefined;
+export declare type Expand<T> = T extends Primitive ? T : {
+    [K in keyof T]: T[K];
 };

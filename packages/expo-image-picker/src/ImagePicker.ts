@@ -11,7 +11,12 @@ import {
   MediaTypeOptions,
   ImagePickerOptions,
   VideoExportPreset,
+  Expand,
+  ImagePickerMultipleResult,
 } from './ImagePicker.types';
+import {
+  WEB_launchImageLibraryAsync
+} from './ExponentImagePicker.web'
 
 export async function getCameraPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentImagePicker.getCameraPermissionsAsync();
@@ -45,6 +50,20 @@ export async function launchCameraAsync(
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
   return await ExponentImagePicker.launchCameraAsync(options);
+}
+
+export async function launchImageLibraryAsync(
+  options: ImagePickerOptions & { allowsMultipleSelection?: false }
+): Promise<Expand<ImagePickerResult>>;
+
+export async function launchImageLibraryAsync(
+  options: ImagePickerOptions & { allowsMultipleSelection: true }
+): Promise<Expand<ImagePickerMultipleResult>>;
+
+export async function launchImageLibraryAsync(
+  options: ImagePickerOptions = {}
+): Promise<Expand<ImagePickerResult> | Expand<ImagePickerMultipleResult>> {
+  return WEB_launchImageLibraryAsync(options);
 }
 
 export {

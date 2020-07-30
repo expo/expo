@@ -1,10 +1,14 @@
+import { ImageInfo } from './ImagePicker.types';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { v4 } from 'uuid';
+
 import {
   ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
   ImagePickerOptions,
+  Expand,
+  ImagePickerMultipleResult,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -21,7 +25,7 @@ export default {
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult | ImagePickerResult[]> {
+  }: ImagePickerOptions): Promise<ImagePickerResult | ImagePickerMultipleResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -31,7 +35,7 @@ export default {
   async launchCameraAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult | ImagePickerResult[]> {
+  }: ImagePickerOptions): Promise<ImagePickerResult | ImagePickerMultipleResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -74,7 +78,7 @@ function openFileBrowserAsync({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
-}: OpenFileBrowserOptions): Promise<ImagePickerResult | ImagePickerResult[]> {
+}: OpenFileBrowserOptions): Promise<ImagePickerResult | ImagePickerMultipleResult> {
   const mediaTypeFormat = MediaTypeInput[mediaTypes];
 
   const input = document.createElement('input');
@@ -91,12 +95,20 @@ function openFileBrowserAsync({
   document.body.appendChild(input);
 
   return new Promise((resolve, reject) => {
-    input.addEventListener('change', () => {
+    input.addEventListener('change', async () => {
       if (input.files) {
         if (!allowsMultipleSelection) {
-          resolve(readFile(input.files[0]));
+          const img: ImageInfo = await readFile(input.files[0]);
+          resolve({
+            cancelled: false,
+            ...img,
+          });
         } else {
-          resolve(Promise.all(Array.from(input.files).map(readFile)));
+          const imgs: ImageInfo[] = await Promise.all(Array.from(input.files).map(readFile));
+          resolve({
+            cancelled: false,
+            selected: imgs,
+          });
         }
       } else {
         resolve({ cancelled: true });
@@ -109,7 +121,34 @@ function openFileBrowserAsync({
   });
 }
 
-function readFile(targetFile: Blob): Promise<ImagePickerResult> {
+// In ExponentImagePicker.web.ts
+// we can returns diffrent types, base on the parameter value
+
+export async function WEB_launchImageLibraryAsync({
+  allowsMultipleSelection,
+}: ImagePickerOptions & { allowsMultipleSelection?: false }): Promise<Expand<ImagePickerResult>>;
+
+export async function WEB_launchImageLibraryAsync({
+  allowsMultipleSelection,
+}: ImagePickerOptions & { allowsMultipleSelection: true }): Promise<
+  Expand<ImagePickerMultipleResult>
+>;
+
+// We need this to make sure that call `WEB_launchImageLibraryAsync()` without any arguments will compile
+
+// and here we add function body
+export async function WEB_launchImageLibraryAsync({
+  allowsMultipleSelection = false,
+  mediaTypes = MediaTypeOptions.Images,
+}: ImagePickerOptions): Promise<Expand<ImagePickerResult> | Expand<ImagePickerMultipleResult>> {
+  // here goes logic which should return `ImagePickerResult` or `ImagePickerMultipleResult`
+  return openFileBrowserAsync({
+    mediaTypes,
+    allowsMultipleSelection,
+  });
+}
+
+function readFile(targetFile: Blob): Promise<ImageInfo> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => {
@@ -119,7 +158,6 @@ function readFile(targetFile: Blob): Promise<ImagePickerResult> {
       const uri = (target as any).result;
       const returnRaw = () =>
         resolve({
-          cancelled: false,
           uri,
           width: 0,
           height: 0,
@@ -130,7 +168,6 @@ function readFile(targetFile: Blob): Promise<ImagePickerResult> {
         image.src = target.result;
         image.onload = () =>
           resolve({
-            cancelled: false,
             uri,
             width: image.naturalWidth ?? image.width,
             height: image.naturalHeight ?? image.height,
