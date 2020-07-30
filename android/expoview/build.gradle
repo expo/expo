@@ -155,7 +155,8 @@ dependencies {
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-updates',
-        'expo-splash-screen'
+        'expo-splash-screen',
+        'expo-gl-cpp-legacy'
       ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */

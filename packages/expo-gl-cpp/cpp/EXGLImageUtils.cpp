@@ -5,6 +5,9 @@
 
 namespace jsi = facebook::jsi;
 
+namespace expo {
+namespace gl_cpp {
+
 GLuint bytesPerPixel(GLenum type, GLenum format) {
   int bytesPerComponent = 0;
   switch (type) {
@@ -132,4 +135,6 @@ std::shared_ptr<uint8_t> loadImage(
         });
   }
   return std::shared_ptr<uint8_t>(nullptr);
+}
+}
 }

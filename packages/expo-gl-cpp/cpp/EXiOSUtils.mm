@@ -1,5 +1,8 @@
 #include <EXGL_CPP/EXPlatformUtils.h>
 
+namespace expo {
+namespace gl_cpp {
+
 void EXiOSLog(const char *msg, ...) {
   va_list args;
   va_start(args, msg);
@@ -15,4 +18,6 @@ EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion() {
     version.minorVersion,
     version.patchVersion,
   };
+}
+}
 }

@@ -1,5 +1,8 @@
 #include "EXGLContext.h"
 
+namespace expo {
+namespace gl_cpp {
+
 static std::unordered_map<UEXGLContextId, EXGLContext *> EXGLContextMap;
 static std::mutex EXGLContextMapMutex;
 static UEXGLContextId EXGLContextNextId = 1;
@@ -136,4 +139,6 @@ jsi::Value EXGLContext::exglDeleteObject(
 }
 jsi::Value EXGLContext::exglUnimplemented(std::string name) {
   throw std::runtime_error("EXGL: " + name + "() isn't implemented yet!");
+}
+}
 }

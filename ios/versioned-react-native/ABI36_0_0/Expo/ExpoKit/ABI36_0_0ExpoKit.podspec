@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI36_0_0EXFileSystem"
     ss.dependency         "ABI36_0_0EXFont"
     ss.dependency         "ABI36_0_0EXGL"
-    ss.dependency         "EXGL_CPP"
+    ss.dependency         "EXGL_CPP_LEGACY"
     ss.dependency         "ABI36_0_0EXGoogleSignIn"
     ss.dependency         "ABI36_0_0EXHaptics"
     ss.dependency         "ABI36_0_0EXImageManipulator"

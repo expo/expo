@@ -6,11 +6,11 @@
 
 #include "EXGLContext.h"
 
-UEXGLContextId UEXGLContextCreate(JSGlobalContextRef jsCtx) {
+UEXGLContextId UEXGLContextCreate__Legacy(JSGlobalContextRef jsCtx) {
   return EXGLContext::ContextCreate(jsCtx);
 }
 
-void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
+void UEXGLContextSetFlushMethod__Legacy(UEXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->flushOnGLThread = flushMethod;
@@ -18,14 +18,14 @@ void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(voi
 }
 
 #ifdef __APPLE__
-void UEXGLContextSetFlushMethodObjc(UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod) {
-  UEXGLContextSetFlushMethod(exglCtxId, [flushMethod] {
+void UEXGLContextSetFlushMethodObjc__Legacy(UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod) {
+  UEXGLContextSetFlushMethod__Legacy(exglCtxId, [flushMethod] {
     flushMethod();
   });
 }
 #endif
 
-bool UEXGLContextNeedsRedraw(UEXGLContextId exglCtxId) {
+bool UEXGLContextNeedsRedraw__Legacy(UEXGLContextId exglCtxId) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     return exglCtx->needsRedraw;
@@ -33,25 +33,25 @@ bool UEXGLContextNeedsRedraw(UEXGLContextId exglCtxId) {
   return false;
 }
 
-void UEXGLContextDrawEnded(UEXGLContextId exglCtxId) {
+void UEXGLContextDrawEnded__Legacy(UEXGLContextId exglCtxId) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->setNeedsRedraw(false);
   }
 }
 
-void UEXGLContextDestroy(UEXGLContextId exglCtxId) {
+void UEXGLContextDestroy__Legacy(UEXGLContextId exglCtxId) {
   EXGLContext::ContextDestroy(exglCtxId);
 }
 
-void UEXGLContextFlush(UEXGLContextId exglCtxId) {
+void UEXGLContextFlush__Legacy(UEXGLContextId exglCtxId) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->flush();
   }
 }
 
-void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuffer) {
+void UEXGLContextSetDefaultFramebuffer__Legacy(UEXGLContextId exglCtxId, GLint framebuffer) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->setDefaultFramebuffer(framebuffer);
@@ -59,7 +59,7 @@ void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuff
 }
 
 
-UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId) {
+UEXGLObjectId UEXGLContextCreateObject__Legacy(UEXGLContextId exglCtxId) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     return exglCtx->createObject();
@@ -67,21 +67,21 @@ UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId) {
   return 0;
 }
 
-void UEXGLContextDestroyObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) {
+void UEXGLContextDestroyObject__Legacy(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->destroyObject(exglObjId);
   }
 }
 
-void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GLuint glObj) {
+void UEXGLContextMapObject__Legacy(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GLuint glObj) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->mapObject(exglObjId, glObj);
   }
 }
 
-GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) {
+GLuint UEXGLContextGetObject__Legacy(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);
   if (exglCtx) {
     return exglCtx->lookupObject(exglObjId);

@@ -1,11 +1,11 @@
-package expo.modules.gl.cpp;
+package expo.modules.gl.cpp.legacy;
 
 import com.facebook.soloader.SoLoader;
 
 // Java bindings for UEXGL.h interface
 public class EXGL {
   static {
-    SoLoader.loadLibrary("expo-gl");
+    SoLoader.loadLibrary("expo-gl-legacy");
   }
 
   public static native int EXGLContextCreate(long jsCtxPtr); // react-native < 0.59

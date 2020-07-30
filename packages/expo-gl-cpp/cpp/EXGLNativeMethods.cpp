@@ -22,6 +22,9 @@
     return exglUnimplemented(#name); \
   }
 
+namespace expo {
+namespace gl_cpp {
+
 // This listing follows the order in
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext
@@ -1565,4 +1568,6 @@ NATIVE_METHOD(flushEXP) {
   // nothing, it's just a helper so that we can measure how much time some operations take
   addBlockingToNextBatch([&] {});
   return nullptr;
+}
+}
 }
