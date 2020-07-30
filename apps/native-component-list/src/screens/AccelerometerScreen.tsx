@@ -16,12 +16,6 @@ import { Colors } from '../constants';
 const COUNT = 5;
 const ITEM_SIZE = Dimensions.get('window').width / COUNT;
 
-interface State {
-  items: any[];
-  error: string | null;
-  isSetup: boolean;
-}
-
 interface Props {
   numItems: number;
   perspective: number;
