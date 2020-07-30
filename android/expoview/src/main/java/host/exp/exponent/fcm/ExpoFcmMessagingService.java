@@ -17,7 +17,7 @@ import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.PushNotificationHelper;
-import host.exp.exponent.notifications.ScopedNotificationRequest;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 
@@ -97,6 +97,7 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
     } else {
       experienceId = ExperienceId.create(data.get("experienceId"));
     }
-    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceId);
+    String experienceIdString = experienceId == null ? null : experienceId.get();
+    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceIdString);
   }
 }

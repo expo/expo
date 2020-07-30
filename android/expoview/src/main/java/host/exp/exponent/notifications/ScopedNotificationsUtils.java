@@ -7,8 +7,9 @@ import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.services.ScopedExpoNotificationsService;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
 public class ScopedNotificationsUtils {
   private ExponentNotificationManager mExponentNotificationManager;
@@ -25,11 +26,12 @@ public class ScopedNotificationsUtils {
     // expo-notifications notification
     if (notificationRequest instanceof ScopedNotificationRequest) {
       ScopedNotificationRequest scopedNotificationRequest = (ScopedNotificationRequest) notificationRequest;
-      return scopedNotificationRequest.checkIfBelongsToExperience(experienceId);
+      String experienceIdString = experienceId == null ? null : experienceId.get();
+      return scopedNotificationRequest.checkIfBelongsToExperience(experienceIdString);
     }
 
     // legacy or foreign notification
-    Pair<String, Integer> foreignNotification = ScopedExpoNotificationsService.parseNotificationIdentifier(notificationRequest.getIdentifier());
+    Pair<String, Integer> foreignNotification = NotificationsHelper.parseNotificationIdentifier(notificationRequest.getIdentifier());
     if (foreignNotification != null) {
       boolean notificationBelongsToSomeExperience = mExponentNotificationManager.getAllNotificationsIds(foreignNotification.first).contains(foreignNotification.second);
       boolean notificationExperienceIsCurrentExperience = experienceId.get().equals(foreignNotification.first);

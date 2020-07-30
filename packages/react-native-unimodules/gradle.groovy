@@ -221,7 +221,6 @@ ext.addUnimodulesDependencies = { Map customOptions = [:] ->
       target       : 'react-native',
       exclude      : [],
   ] << customOptions
-
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     Object dependency = project.project(':' + unimodule.name)
     project.dependencies.add(options.configuration, dependency)

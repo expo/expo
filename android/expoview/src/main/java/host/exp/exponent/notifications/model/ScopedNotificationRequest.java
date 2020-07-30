@@ -1,25 +1,23 @@
-package host.exp.exponent.notifications;
+package host.exp.exponent.notifications.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import host.exp.exponent.kernel.ExperienceId;
 
 public class ScopedNotificationRequest extends NotificationRequest {
   // We store String instead of ExperienceId, cause ScopedNotificationRequest must be serializable.
   private String mExperienceIdString;
 
-  public ScopedNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger, @Nullable ExperienceId experienceId) {
+  public ScopedNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger, @Nullable String experienceId) {
     super(identifier, content, trigger);
     if (experienceId == null) {
       mExperienceIdString = null;
     } else {
-      mExperienceIdString = experienceId.get();
+      mExperienceIdString = experienceId;
     }
   }
 
@@ -28,11 +26,11 @@ public class ScopedNotificationRequest extends NotificationRequest {
     mExperienceIdString = in.readString();
   }
 
-  boolean checkIfBelongsToExperience(@NonNull ExperienceId experienceId) {
+  public boolean checkIfBelongsToExperience(@Nullable String experienceId) {
     if (mExperienceIdString == null) {
       return true;
     }
-    return mExperienceIdString.equals(experienceId.get());
+    return mExperienceIdString.equals(experienceId);
   }
 
   public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
