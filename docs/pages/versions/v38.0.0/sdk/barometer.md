@@ -22,7 +22,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, Platform } from 'react-native';
 import { Barometer } from 'expo-sensors';
 
 export default function App() {
@@ -57,12 +57,16 @@ export default function App() {
     this._subscription = null;
   };
 
-  const { pressure = 0 } = data;
+  const { pressure = 0, relativeAltitude = 0 } = data;
+
   return (
     <View style={styles.sensor}>
       <Text>Barometer:</Text>
-      <Text>{pressure * 100} Pa</Text>
-
+      <Text>Pressure: {pressure * 100} Pa</Text>
+      <Text>
+        Relative Altitude:{' '}
+        {Platform.OS === 'ios' ? `${relativeAltitude} m` : `Only available on iOS`}
+      </Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={_toggle} style={styles.button}>
           <Text>Toggle</Text>
