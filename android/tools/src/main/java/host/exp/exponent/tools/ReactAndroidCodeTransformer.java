@@ -203,11 +203,11 @@ public class ReactAndroidCodeTransformer {
         // In dev mode call the original methods. Otherwise open Expo error screen
         switch (methodName) {
           case "reportFatalException":
-            return exceptionsManagerModuleHandleException(n, "message", "stack", "id", "true");
+            return exceptionsManagerModuleHandleException(n, "message", "stack", "(int) idDouble", "true");
           case "reportSoftException":
-            return exceptionsManagerModuleHandleException(n, "message", "stack", "id", "false");
+            return exceptionsManagerModuleHandleException(n, "message", "stack", "(int) idDouble", "false");
           case "updateExceptionMessage":
-            return exceptionsManagerModuleHandleException(n, "title", "details", "exceptionId", "false");
+            return exceptionsManagerModuleHandleException(n, "title", "details", "(int) exceptionIdDouble", "false");
         }
 
         return n;
