@@ -79,13 +79,17 @@ export default class DocumentationPage extends React.Component {
     }
   };
 
-  _handleSetVersion = version => {
+  _handleSetVersion = (version) => {
     this._version = version;
-    const newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
+    let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
+
+    if (!newPath.endsWith('/')) {
+      newPath += '/';
+    }
 
     // note: we can do this without validating if the page exists or not.
     // the error page will redirect users to the versioned-index page when a page doesn't exists.
-    Router.push(newPath + '/');
+    Router.push(newPath);
   };
 
   _handleShowMenu = () => {
@@ -102,7 +106,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   _handleToggleSearch = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       isMobileSearchActive: !prevState.isMobileSearchActive,
     }));
   };
@@ -118,7 +122,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   _isGeneralPath = () => {
-    return some(navigation.generalDirectories, name =>
+    return some(navigation.generalDirectories, (name) =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
@@ -126,12 +130,12 @@ export default class DocumentationPage extends React.Component {
   _isGettingStartedPath = () => {
     return (
       this.props.url.pathname === '/' ||
-      some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
+      some(navigation.startingDirectories, (name) => this.props.url.pathname.startsWith(`/${name}`))
     );
   };
 
   _isPreviewPath = () => {
-    return some(navigation.previewDirectories, name =>
+    return some(navigation.previewDirectories, (name) =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
