@@ -16,7 +16,7 @@ export default {
         type: 'loadSettings',
         payload: {
           ...localStorageSettings,
-          preferredAppearance: localStorageSettings.preferredAppearance ?? null,
+          preferredAppearance: localStorageSettings.preferredAppearance ?? 'no-preference',
           devMenuSettings,
         },
       });
