@@ -848,7 +848,7 @@ export async function test(t) {
           t.expect(displayedNotifications).toContain(
             t.jasmine.objectContaining({
               request: t.jasmine.objectContaining({
-                identifier: t.jasmine.stringMatching(/^__expo_foreign_notification__#.*#\d+$/),
+                identifier: t.jasmine.stringMatching(/^expo-notifications:\/\/foreign_notifications/),
                 content: t.jasmine.objectContaining({
                   data: t.jasmine.objectContaining({
                     'android.contains.customView': true,

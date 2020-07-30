@@ -1,51 +1,55 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="expo.modules.notifications">
+  package="expo.modules.notifications">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <application>
-        <service
-            android:name=".FirebaseListenerService"
-            android:exported="false">
-            <intent-filter android:priority="-1">
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".notifications.service.ExpoNotificationsService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE">
-            <intent-filter android:order="-1">
-                <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
-                <action android:name="expo.modules.notifications.CATEGORY_EVENT" />
-            </intent-filter>
-        </service>
+  <application>
+    <service
+      android:name=".FirebaseListenerService"
+      android:exported="false">
+      <intent-filter android:priority="-1">
+        <action android:name="com.google.firebase.MESSAGING_EVENT" />
+      </intent-filter>
+    </service>
+    <service
+      android:name=".notifications.service.ExpoNotificationsService"
+      android:exported="false"
+      android:permission="android.permission.BIND_JOB_SERVICE">
+      <intent-filter android:order="-1">
+        <action android:name="expo.modules.notifications.CATEGORY_EVENT" />
+      </intent-filter>
+    </service>
 
-        <service
-            android:name=".notifications.service.ExpoNotificationSchedulerService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+    <service
+      android:name=".notifications.service.ExpoNotificationSchedulerService"
+      android:exported="false"
+      android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver
-            android:name=".notifications.service.ScheduledAlarmReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="expo.modules.notifications.TRIGGER_EVENT" />
+    <receiver
+      android:name=".notifications.service.ScheduledAlarmReceiver"
+      android:enabled="true"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="expo.modules.notifications.TRIGGER_EVENT" />
 
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+        <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+      </intent-filter>
+    </receiver>
 
-        <receiver
-            android:name=".notifications.service.NotificationResponseReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
-            android:name=".notifications.service.TextInputNotificationResponseReceiver"
-            android:enabled="true"
-            android:exported="false" />
-    </application>
+    <receiver
+      android:name=".notifications.service.NotificationResponseReceiver"
+      android:enabled="true"
+      android:exported="false" />
+    <receiver
+      android:name=".notifications.service.TextInputNotificationResponseReceiver"
+      android:enabled="true"
+      android:exported="false" />
+
+    <meta-data
+      android:name="expo.modules.notifications#NotificationsScoper"
+      android:value="expo.modules.notifications.NotificationsScoper" />
+
+  </application>
 </manifest>

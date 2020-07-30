@@ -4,21 +4,20 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
-import abi38_0_0.org.unimodules.core.Promise;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
 import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
+import abi38_0_0.expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
+import abi38_0_0.org.unimodules.core.Promise;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import abi38_0_0.expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
-import expo.modules.notifications.notifications.service.BaseNotificationsService;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
 public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPresentationModule {
   private final ExperienceId mExperienceId;
@@ -32,7 +31,8 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger) {
-    return new ScopedNotificationRequest(identifier, content, trigger, mExperienceId);
+    String experienceIdString = mExperienceId == null ? null : mExperienceId.get();
+    return new ScopedNotificationRequest(identifier, content, trigger, experienceIdString);
   }
 
   @Override
@@ -49,12 +49,12 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   public void dismissNotificationAsync(String identifier, Promise promise) {
-    BaseNotificationsService.enqueueGetAllPresented(getContext(), new ResultReceiver(null) {
+    getNotificationsHelper().getAllPresented(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        Collection<Notification> notifications = resultData.getParcelableArrayList(BaseNotificationsService.NOTIFICATIONS_KEY);
-        if (resultCode == BaseNotificationsService.SUCCESS_CODE && notifications != null) {
+        Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsHelper.NOTIFICATIONS_KEY);
+        if (resultCode == NotificationsHelper.SUCCESS_CODE && notifications != null) {
           Notification notification = findNotification(notifications, identifier);
           if (notification == null || !mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
             promise.resolve(null);
@@ -63,7 +63,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
           doDismissNotificationAsync(identifier, promise);
         } else {
-          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
         }
       }
@@ -72,12 +72,12 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   public void dismissAllNotificationsAsync(Promise promise) {
-    BaseNotificationsService.enqueueGetAllPresented(getContext(), new ResultReceiver(null) {
+    getNotificationsHelper().getAllPresented(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        Collection<Notification> notifications = resultData.getParcelableArrayList(BaseNotificationsService.NOTIFICATIONS_KEY);
-        if (resultCode == BaseNotificationsService.SUCCESS_CODE && notifications != null) {
+        Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsHelper.NOTIFICATIONS_KEY);
+        if (resultCode == NotificationsHelper.SUCCESS_CODE && notifications != null) {
           ArrayList<String> toDismiss = new ArrayList<>();
           for (Notification notification : notifications) {
             if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
@@ -86,7 +86,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
           }
           dismissSelectedAsync(toDismiss.toArray(new String[0]), promise);
         } else {
-          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
         }
       }
@@ -98,14 +98,14 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
   }
 
   private void dismissSelectedAsync(String[] identifiers, final Promise promise) {
-    BaseNotificationsService.enqueueDismissSelected(getContext(), identifiers, new ResultReceiver(null) {
+    getNotificationsHelper().enqueueDismissSelected(identifiers, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
+        if (resultCode == NotificationsHelper.SUCCESS_CODE) {
           promise.resolve(null);
         } else {
-          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_DISMISSAL_FAILED", "Notifications could not be dismissed.", e);
         }
       }

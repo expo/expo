@@ -33,13 +33,13 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
 
   public NotificationContent.Builder setPayload(JSONObject payload) {
     this.setTitle(getTitle(payload))
-        .setSubtitle(getSubtitle(payload))
-        .setText(getText(payload))
-        .setBody(getBody(payload))
-        .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload))
-        .setColor(getColor(payload))
-        .setAutoDismiss(getAutoDismiss(payload));
+      .setSubtitle(getSubtitle(payload))
+      .setText(getText(payload))
+      .setBody(getBody(payload))
+      .setPriority(getPriority(payload))
+      .setBadgeCount(getBadgeCount(payload))
+      .setColor(getColor(payload))
+      .setAutoDismiss(getAutoDismiss(payload));
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {

@@ -36,15 +36,15 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
 
   public NotificationContent.Builder setPayload(JSONObject payload) {
     this.setTitle(getTitle(payload))
-        .setSubtitle(getSubtitle(payload))
-        .setText(getText(payload))
-        .setBody(getBody(payload))
-        .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload))
-        .setColor(getColor(payload))
-        .setAutoDismiss(getAutoDismiss(payload))
-        .setCategoryId(getCategoryId(payload))
-        .setSticky(getSticky(payload));
+      .setSubtitle(getSubtitle(payload))
+      .setText(getText(payload))
+      .setBody(getBody(payload))
+      .setPriority(getPriority(payload))
+      .setBadgeCount(getBadgeCount(payload))
+      .setColor(getColor(payload))
+      .setAutoDismiss(getAutoDismiss(payload))
+      .setCategoryId(getCategoryId(payload))
+      .setSticky(getSticky(payload));
 
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
@@ -188,7 +188,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
       return null;
     }
   }
-  
+
   protected boolean getSticky(JSONObject payload) {
     if (payload.has(STICKY_KEY)) {
       try {

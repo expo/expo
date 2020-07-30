@@ -38,15 +38,15 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
 
   public NotificationContent.Builder setPayload(ReadableArguments payload) {
     this.setTitle(payload.getString(TITLE_KEY))
-        .setSubtitle(payload.getString(SUBTITLE_KEY))
-        .setText(payload.getString(TEXT_KEY))
-        .setBody(getBody(payload))
-        .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload))
-        .setColor(getColor(payload))
-        .setAutoDismiss(getAutoDismiss(payload))
-        .setCategoryId(getCategoryId(payload))
-        .setSticky(getSticky(payload));
+      .setSubtitle(payload.getString(SUBTITLE_KEY))
+      .setText(payload.getString(TEXT_KEY))
+      .setBody(getBody(payload))
+      .setPriority(getPriority(payload))
+      .setBadgeCount(getBadgeCount(payload))
+      .setColor(getColor(payload))
+      .setAutoDismiss(getAutoDismiss(payload))
+      .setCategoryId(getCategoryId(payload))
+      .setSticky(getSticky(payload));
 
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
@@ -141,7 +141,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   protected String getCategoryId(ReadableArguments payload) {
     return payload.getString(CATEGORY_IDENTIFIER_KEY, null);
   }
-  
+
   protected boolean getSticky(ReadableArguments payload) {
     // TODO: the default value should be determined by NotificationContent.Builder
     return payload.getBoolean(STICKY_KEY, false);

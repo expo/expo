@@ -12,11 +12,12 @@ import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
+import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
-import expo.modules.notifications.notifications.service.BaseNotificationsService;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener;
 
 /**
@@ -82,7 +83,11 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   @Override
   public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
     super.onMessageReceived(remoteMessage);
-    BaseNotificationsService.enqueueReceive(this, createNotification(remoteMessage));
+    createNotificationsHelper().notificationReceived(createNotification(remoteMessage));
+  }
+
+  protected NotificationsHelper createNotificationsHelper() {
+    return new NotificationsHelper(this, NotificationsScoper.create(this).createReconstructor());
   }
 
   protected Notification createNotification(RemoteMessage remoteMessage) {
@@ -103,6 +108,6 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   @Override
   public void onDeletedMessages() {
     super.onDeletedMessages();
-    BaseNotificationsService.enqueueDropped(this);
+    createNotificationsHelper().dropped(null);
   }
 }

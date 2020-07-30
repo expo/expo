@@ -6,13 +6,13 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONObject;
-import abi38_0_0.org.unimodules.core.arguments.ReadableArguments;
 
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
 import abi38_0_0.expo.modules.notifications.notifications.channels.InvalidVibrationPatternException;
+import abi38_0_0.org.unimodules.core.arguments.ReadableArguments;
+import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.model.NotificationContent;
 
@@ -36,13 +36,13 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
 
   public NotificationContent.Builder setPayload(ReadableArguments payload) {
     this.setTitle(payload.getString(TITLE_KEY))
-        .setSubtitle(payload.getString(SUBTITLE_KEY))
-        .setText(payload.getString(TEXT_KEY))
-        .setBody(getBody(payload))
-        .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload))
-        .setColor(getColor(payload))
-        .setAutoDismiss(getAutoDismiss(payload));
+      .setSubtitle(payload.getString(SUBTITLE_KEY))
+      .setText(payload.getString(TEXT_KEY))
+      .setBody(getBody(payload))
+      .setPriority(getPriority(payload))
+      .setBadgeCount(getBadgeCount(payload))
+      .setColor(getColor(payload))
+      .setAutoDismiss(getAutoDismiss(payload));
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {

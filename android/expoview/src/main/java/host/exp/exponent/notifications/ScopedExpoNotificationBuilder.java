@@ -22,6 +22,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.channels.ScopedNotificationsChannelManager;
 import host.exp.exponent.notifications.channels.ScopedNotificationsGroupManager;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.R;
@@ -29,7 +30,6 @@ import host.exp.expoview.R;
 public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuilder {
   @Inject
   ExponentManifest mExponentManifest;
-
   @Nullable
   JSONObject manifest;
 

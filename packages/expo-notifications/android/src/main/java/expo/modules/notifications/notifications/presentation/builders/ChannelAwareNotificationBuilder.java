@@ -16,7 +16,6 @@ import expo.modules.notifications.notifications.channels.managers.AndroidXNotifi
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
 /**
  * A notification builder foundation capable of fetching and/or creating
