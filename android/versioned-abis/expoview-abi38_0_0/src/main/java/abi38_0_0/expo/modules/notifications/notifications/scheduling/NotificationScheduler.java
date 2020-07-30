@@ -6,27 +6,25 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import abi38_0_0.expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
+import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
+import abi38_0_0.expo.modules.notifications.notifications.triggers.DailyTrigger;
+import abi38_0_0.expo.modules.notifications.notifications.triggers.DateTrigger;
+import abi38_0_0.expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 import abi38_0_0.org.unimodules.core.ExportedModule;
 import abi38_0_0.org.unimodules.core.Promise;
 import abi38_0_0.org.unimodules.core.arguments.ReadableArguments;
 import abi38_0_0.org.unimodules.core.errors.InvalidArgumentException;
 import abi38_0_0.org.unimodules.core.interfaces.ExpoMethod;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-
 import androidx.annotation.Nullable;
-import abi38_0_0.expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
-import abi38_0_0.expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
-import abi38_0_0.expo.modules.notifications.notifications.triggers.DailyTrigger;
-import abi38_0_0.expo.modules.notifications.notifications.triggers.DateTrigger;
-import abi38_0_0.expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 
 public class NotificationScheduler extends ExportedModule {
   private final static String EXPORTED_NAME = "ExpoNotificationScheduler";

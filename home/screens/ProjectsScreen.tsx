@@ -3,7 +3,6 @@ import Constants from 'expo-constants';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
@@ -12,7 +11,6 @@ import DevIndicator from '../components/DevIndicator';
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
 import NoProjectsOpen from '../components/NoProjectsOpen';
-import NoProjectTools from '../components/NoProjectTools';
 import ProjectListItem from '../components/ProjectListItem';
 import ProjectTools from '../components/ProjectTools';
 import RefreshControl from '../components/RefreshControl';
@@ -20,6 +18,7 @@ import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import ThemedStatusBar from '../components/ThemedStatusBar';
 import HistoryActions from '../redux/HistoryActions';
+import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Environment from '../utils/Environment';
@@ -257,14 +256,9 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _renderProjectTools = () => {
-    if (IS_RESTRICTED) {
-      return <NoProjectTools />;
-    } else {
-      // Disable polling the clipboard on iOS because it presents a notification every time the clipboard is read.
-      const pollForUpdates = this.props.isFocused && Platform.OS !== 'ios';
-
-      return <ProjectTools pollForUpdates={pollForUpdates} />;
-    }
+    // Disable polling the clipboard on iOS because it presents a notification every time the clipboard is read.
+    const pollForUpdates = this.props.isFocused && Platform.OS !== 'ios';
+    return <ProjectTools pollForUpdates={pollForUpdates} />;
   };
 
   private _renderRecentHistory = () => {

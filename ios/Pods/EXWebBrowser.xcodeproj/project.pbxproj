@@ -259,31 +259,7 @@
 			};
 			name = Debug;
 		};
-		7034E2E9C44E9EFA481693A714433BFB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B023C6BF121E53ED1042A49FA1E066E7 /* EXWebBrowser.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXWebBrowser/EXWebBrowser-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXWebBrowser;
-				PRODUCT_NAME = EXWebBrowser;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		BD2658F8C5B00BCBCA2EDDA12CB22C2B /* Release */ = {
+		B8BAC45E125AA7FC11AD6EF0300C9455 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DCF41D90090CA99C500A5BF039490603 /* EXWebBrowser.release.xcconfig */;
 			buildSettings = {
@@ -303,6 +279,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -368,14 +345,39 @@
 			};
 			name = Release;
 		};
+		DC3D76870AF5DCAB8C2C058CB1542CAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B023C6BF121E53ED1042A49FA1E066E7 /* EXWebBrowser.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXWebBrowser/EXWebBrowser-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXWebBrowser;
+				PRODUCT_NAME = EXWebBrowser;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		67065628492C2FF6554913599AB4670F /* Build configuration list for PBXNativeTarget "EXWebBrowser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7034E2E9C44E9EFA481693A714433BFB /* Debug */,
-				BD2658F8C5B00BCBCA2EDDA12CB22C2B /* Release */,
+				DC3D76870AF5DCAB8C2C058CB1542CAE /* Debug */,
+				B8BAC45E125AA7FC11AD6EF0300C9455 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

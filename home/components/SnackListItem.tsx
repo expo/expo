@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Linking, Share } from 'react-native';
 
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';
 
 type Props = React.ComponentProps<typeof ListItem> & {

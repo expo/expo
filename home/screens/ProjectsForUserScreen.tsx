@@ -2,8 +2,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 
-import MyProjectsListContainer from '../containers/MyProjectsListContainer';
-import OtherUserProjectListContainer from '../containers/OtherUserProjectListContainer';
+import { MyProjectsList, OtherProjectsList } from '../containers/ProjectsList';
 
 export default function ProjectsForUserScreen({
   route,
@@ -11,7 +10,7 @@ export default function ProjectsForUserScreen({
   const { username, belongsToCurrentUser = false } = route.params ?? {};
 
   if (belongsToCurrentUser) {
-    return <MyProjectsListContainer belongsToCurrentUser />;
+    return <MyProjectsList />;
   }
-  return <OtherUserProjectListContainer username={username} />;
+  return <OtherProjectsList username={username} />;
 }

@@ -48,6 +48,7 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
@@ -115,6 +116,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private boolean mIsLoadExperienceAllowedToRun = false;
   private boolean mShouldShowLoadingScreenWithOptimisticManifest = false;
 
+  /**
+   * Controls loadingProgressPopupWindow that is shown above whole activity.
+   */
+  LoadingProgressPopupController mLoadingProgressPopupController;
+
   @Inject
   ExponentManifest mExponentManifest;
 
@@ -124,32 +130,22 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private DevBundleDownloadProgressListener mDevBundleDownloadProgressListener = new DevBundleDownloadProgressListener() {
     @Override
     public void onProgress(final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          updateLoadingProgress(status, done, total);
+      UiThreadUtil.runOnUiThread(() -> {
+        if (!mIsLoading) {
+          showLoadingScreen(mManifest);
         }
+        mLoadingProgressPopupController.updateProgress(status, done, total);
       });
     }
 
     @Override
     public void onSuccess() {
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          checkForReactViews();
-        }
-      });
+      UiThreadUtil.runOnUiThread(() -> checkForReactViews());
     }
 
     @Override
     public void onFailure(Exception error) {
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          stopLoading();
-        }
-      });
+      UiThreadUtil.runOnUiThread(() -> stopLoading());
     }
   };
 
@@ -165,6 +161,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     mIsLoadExperienceAllowedToRun = true;
     mShouldShowLoadingScreenWithOptimisticManifest = true;
+    mLoadingProgressPopupController = new LoadingProgressPopupController(this);
 
     NativeModuleDepsProvider.getInstance().inject(ExperienceActivity.class, this);
     EventBus.getDefault().registerSticky(this);
@@ -357,6 +354,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Analytics.sendTimedEvents(mManifestUrl);
   }
 
+  public void onEvent(BaseExperienceActivity.ExperienceContentLoaded event) {
+    super.onEvent(event);
+    mLoadingProgressPopupController.hide();
+  }
+
   /*
    *
    * Experience Loading
@@ -377,6 +379,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
 
       showLoadingScreen(manifest);
+      mLoadingProgressPopupController.show();
 
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
     });

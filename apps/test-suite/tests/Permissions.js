@@ -131,5 +131,28 @@ export function test(t) {
         t.expect(calendarPermissionKeys).toContain('expires');
       });
     });
+
+    t.describe('of Permissions.CAMERA_ROLL', () => {
+      t.it('has proper shape', async () => {
+        const result = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+        const keys = Object.keys(result);
+        const permissionsKeys = Object.keys(result.permissions);
+
+        // check top-level
+        t.expect(keys).toContain('status');
+        t.expect(keys).toContain('expires');
+        t.expect(keys).toContain('permissions');
+
+        // check component level
+        t.expect(permissionsKeys).toContain(Permissions.CAMERA_ROLL);
+
+        const cameraRollPermissionKeys = Object.keys(result.permissions[Permissions.CAMERA_ROLL]);
+        t.expect(cameraRollPermissionKeys).toContain('status');
+        t.expect(cameraRollPermissionKeys).toContain('expires');
+        if (Platform.OS === 'ios') {
+          t.expect(cameraRollPermissionKeys).toContain('scope');
+        }
+      });
+    });
   });
 }

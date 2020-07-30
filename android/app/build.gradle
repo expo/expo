@@ -22,6 +22,7 @@ android {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
+
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 128
@@ -180,7 +181,9 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 
   // BEGIN_SDK_UNVERSIONED
-  implementation(project(path: ':expoview'))
+  implementation(project(':expoview'))
+
+  implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // END_SDK_UNVERSIONED
 
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE

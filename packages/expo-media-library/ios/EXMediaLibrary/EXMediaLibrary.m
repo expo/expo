@@ -26,6 +26,8 @@ NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
 NSString *const EXMediaLibraryCachesDirectory = @"MediaLibrary";
 
+NSString *const EXMediaLibraryShouldDownloadFromNetworkKey = @"shouldDownloadFromNetwork";
+
 @interface EXMediaLibrary ()
 
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
@@ -393,6 +395,7 @@ UM_EXPORT_METHOD_AS(deleteAlbumsAsync,
   
 UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                     getAssetInfo:(nonnull NSString *)assetId
+                    withOptions:(nonnull NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -401,17 +404,20 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
   }
   
   PHAsset *asset = [EXMediaLibrary _getAssetById:assetId];
+    
+  BOOL shouldDownloadFromNetwork = [[options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] boolValue] ?: YES;
   
   if (asset) {
     NSMutableDictionary *result = [EXMediaLibrary _exportAssetInfo:asset];
     if (asset.mediaType == PHAssetMediaTypeImage) {
       PHContentEditingInputRequestOptions *options = [PHContentEditingInputRequestOptions new];
-      options.networkAccessAllowed = YES;
+      options.networkAccessAllowed = shouldDownloadFromNetwork;
 
       [asset requestContentEditingInputWithOptions:options
                                  completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
         result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
         result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
+        result[@"isNetworkAsset"] = [info objectForKey:PHContentEditingInputResultIsInCloudKey];
         
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;
@@ -419,7 +425,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
       }];
     } else {
       PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-      options.networkAccessAllowed = YES;
+      options.networkAccessAllowed = shouldDownloadFromNetwork;
 
       [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                       options:options
@@ -440,6 +446,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
             [exporter exportAsynchronouslyWithCompletionHandler:^{
                 if (exporter.status == AVAssetExportSessionStatusCompleted) {
                     result[@"localUri"] = videoFileOutputURL.absoluteString;
+                    result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
                     resolve(result);
                 } else if (exporter.status == AVAssetExportSessionStatusFailed) {
                     reject(@"E_EXPORT_FAILED", @"Could not export the requested video.", nil);
@@ -451,6 +458,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
         } else {
             AVURLAsset *urlAsset = (AVURLAsset *)asset;
             result[@"localUri"] = [[urlAsset URL] absoluteString];
+            result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
             resolve(result);
         }
       }];
@@ -605,9 +613,11 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
       if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
         NSMutableArray *insertedAssets = [NSMutableArray new];
         NSMutableArray *deletedAssets = [NSMutableArray new];
+        NSMutableArray *updatedAssets = [NSMutableArray new];
         NSDictionary *body = @{
                                @"insertedAssets": insertedAssets,
                                @"deletedAssets": deletedAssets,
+                               @"updatedAssets": updatedAssets
                                };
         
         for (PHAsset *asset in changeDetails.insertedObjects) {
@@ -615,6 +625,9 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
         }
         for (PHAsset *asset in changeDetails.removedObjects) {
           [deletedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
+        }
+        for (PHAsset *asset in changeDetails.changedObjects) {
+          [updatedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
         }
         
         [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:body];

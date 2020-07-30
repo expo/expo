@@ -25,7 +25,7 @@ In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
 import * as MediaLibrary from 'expo-media-library';
 ```
 
-<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
+<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset, options)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
 
 <TableOfContentSection title='Types' contents={['Asset', 'Album']} />
 
@@ -39,7 +39,7 @@ Asks the user to grant permissions for accessing media in user's media library. 
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.getPermissionsAsync()`
 
@@ -47,7 +47,7 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
@@ -70,7 +70,7 @@ An object representing an [asset](#asset).
 
 Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
 
-On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key. 
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
 
 #### Arguments
 
@@ -103,13 +103,15 @@ A promise that resolves to an object that contains following keys:
 - **hasNextPage (_boolean_)** -- Whether there are more assets to fetch.
 - **totalCount (_number_)** -- Estimated total number of assets that match the query.
 
-### `MediaLibrary.getAssetInfoAsync(asset)`
+### `MediaLibrary.getAssetInfoAsync(asset, options)`
 
 Provides more informations about an asset, including GPS location, local URI and EXIF metadata.
 
 #### Arguments
 
 - **asset (_string_ | _Asset_)** -- [Asset](#asset) or its ID.
+- **options (_object_)**
+  - **shouldDownloadFromNetwork (_boolean_)** -- Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets. Defaults to `true`.
 
 #### Returns
 
@@ -230,6 +232,7 @@ Subscribes for updates in user's media library.
 - **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
+  - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).
 
 #### Returns
 
@@ -240,6 +243,15 @@ An EventSubscription object that you can call `remove()` on when you would like 
 Removes all listeners.
 
 ## Types
+
+### `MediaLibrary.CameraRollPermissionResponse`
+
+`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+
+- `scope` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+  - `all` if the user granted your app access to the whole photo library
+  - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+  - `none` if user denied or hasn't yet granted the permission
 
 ### `Asset`
 
@@ -261,8 +273,11 @@ Removes all listeners.
 | exif \*          | _object_  | both      | EXIF metadata associated with the image                                                                       |                                                                                                      |
 | orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
 | isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite                                                                       | `true`, `false`                                                                                      |
+| isNetworkAsset \*\*| _boolean_ | iOS       | Whether the asset is stored on the network (iCloud on iOS)| `true`, `false`
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method
+
+> \*\* This field is available only if flag `shouldDownloadFromNetwork` is set to `false`
 
 ### `Album`
 

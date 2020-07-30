@@ -59,25 +59,29 @@ const STYLES_NAV = css`
   margin: 0 auto;
   padding: 0 16px;
   height: 60px;
-  width: 100%;
+  width: auto;
   max-width: 1440px;
+  box-sizing: unset;
+
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  }
 `;
 
 const STYLES_MOBILE_NAV = css`
   padding: 0px;
   height: 56px;
-  margin-bottom: 1px;
 
   @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
     display: none;
   }
+`;
 
+const STYLES_STICKY = css`
   @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
-    border-bottom: none;
-  }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
-    border-top: 1px solid ${Constants.expoColors.gray[250]};
+    position: sticky;
+    top: 0px;
+    z-index: 3;
   }
 `;
 
@@ -188,7 +192,7 @@ export default class DocumentationHeader extends React.PureComponent {
 
     return (
       <div>
-        <header className={STYLES_NAV}>
+        <header className={`${STYLES_NAV} ${STYLES_STICKY}`}>
           <div className={STYLES_LEFT}>
             <div className={STYLES_LOGO_CONTAINER}>
               <Link href="/">

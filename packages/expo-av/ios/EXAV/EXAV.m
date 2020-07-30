@@ -603,36 +603,34 @@ UM_EXPORT_METHOD_AS(loadForSound,
                     rejecter:(UMPromiseRejectBlock)loadError)
 {
   NSNumber *key = @(_soundDictionaryKeyCount++);
-
-  __weak __typeof__(self) weakSelf = self;
+  
+  UM_WEAKIFY(self);
   EXAVPlayerData *data = [[EXAVPlayerData alloc] initWithEXAV:self
                                                    withSource:source
                                                    withStatus:status
-                                         withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
-                                           if (success) {
-                                             loadSuccess(@[key, successStatus]);
-                                           } else {
-                                             [weakSelf _removeSoundForKey:key];
-                                             loadError(@"EXAV", error, nil);
-                                           }
-                                         }];
-  data.errorCallback = ^(NSString *error) {
-    __strong __typeof__(self) strongSelf = weakSelf;
-    
-    if (strongSelf) {
-      [strongSelf sendEventWithName:@"ExponentAV.onError" body:@{
-                                                      @"key": key,
-                                                      @"error": error
-                                                      }];
-      [strongSelf _removeSoundForKey:key];
+                                          withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
+    UM_ENSURE_STRONGIFY(self);
+    if (success) {
+      loadSuccess(@[key, successStatus]);
+    } else {
+      [self _removeSoundForKey:key];
+      loadError(@"EXAV", error, nil);
     }
+  }];
+  data.errorCallback = ^(NSString *error) {
+    UM_ENSURE_STRONGIFY(self);
+    [self sendEventWithName:@"ExponentAV.onError" body:@{
+      @"key": key,
+      @"error": error
+    }];
+    [self _removeSoundForKey:key];
   };
   
   data.statusUpdateCallback = ^(NSDictionary *status) {
-    __strong __typeof__(weakSelf) strongSelf = weakSelf;
-    if (strongSelf && strongSelf.isBeingObserved) {
+    UM_ENSURE_STRONGIFY(self);
+    if (self.isBeingObserved) {
       NSDictionary<NSString *, id> *response = @{@"key": key, @"status": status};
-      [strongSelf sendEventWithName:EXDidUpdatePlaybackStatusEventName body:response];
+      [self sendEventWithName:EXDidUpdatePlaybackStatusEventName body:response];
     }
   };
   

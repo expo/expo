@@ -14,29 +14,30 @@ import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
+import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
+import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.channels.ScopedNotificationsChannelManager;
 import host.exp.exponent.notifications.channels.ScopedNotificationsGroupManager;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.R;
 
-public class ScopedExpoNotificationBuilder extends ExpoNotificationBuilder {
+public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuilder {
   @Inject
   ExponentManifest mExponentManifest;
-
   @Nullable
   JSONObject manifest;
 
   @Nullable
   ExperienceId mExperienceId;
 
-  public ScopedExpoNotificationBuilder(Context context) {
-    super(context);
+  public ScopedExpoNotificationBuilder(Context context, SharedPreferencesNotificationCategoriesStore store) {
+    super(context, store);
     NativeModuleDepsProvider.getInstance().inject(ScopedExpoNotificationBuilder.class, this);
   }
 

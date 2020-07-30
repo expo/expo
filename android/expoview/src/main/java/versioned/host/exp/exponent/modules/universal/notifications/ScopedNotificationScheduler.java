@@ -17,8 +17,8 @@ import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
+import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
   private final ExperienceId mExperienceId;
@@ -32,7 +32,8 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
 
   @Override
   protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, NotificationTrigger notificationTrigger) {
-    return new ScopedNotificationRequest(identifier, content, notificationTrigger, mExperienceId);
+    String experienceIdString = mExperienceId == null ? null : mExperienceId.get();
+    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceIdString);
   }
 
   @Override

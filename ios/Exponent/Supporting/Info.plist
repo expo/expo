@@ -16,8 +16,6 @@
 	<string>$(EX_BUNDLE_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleVersion</key>
-	<string>2.16.0</string>
 	<key>CFBundleShortVersionString</key>
 	<string>2.16.0</string>
 	<key>CFBundleSignature</key>
@@ -55,6 +53,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>2.16.0</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
 	<key>FacebookAppID</key>

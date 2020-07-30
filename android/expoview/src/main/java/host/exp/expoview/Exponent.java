@@ -25,6 +25,8 @@ import org.apache.commons.io.output.TeeOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,25 +38,14 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
-
-import host.exp.exponent.notifications.ActionDatabase;
-import host.exp.exponent.notifications.managers.SchedulersDatabase;
-import host.exp.exponent.storage.ExponentDB;
-import okhttp3.CacheControl;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoHandler;
@@ -69,7 +60,15 @@ import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.notifications.ActionDatabase;
+import host.exp.exponent.notifications.managers.SchedulersDatabase;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import okhttp3.CacheControl;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
 
 public class Exponent {
@@ -219,7 +218,7 @@ public class Exponent {
     return mGCMSenderId;
   }
 
-  private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
+  private CopyOnWriteArrayList<ActivityResultListener> mActivityResultListeners = new CopyOnWriteArrayList<>();
 
   public static class InstanceManagerBuilderProperties {
     public Application application;
@@ -239,6 +238,10 @@ public class Exponent {
 
   public void addActivityResultListener(ActivityResultListener listener) {
     mActivityResultListeners.add(listener);
+  }
+
+  public void removeActivityResultListener(ActivityResultListener listener) {
+    mActivityResultListeners.remove(listener);
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -10,14 +10,16 @@ import expo.modules.notifications.notifications.interfaces.SchedulableNotificati
 /**
  * A schedulable trigger representing notification to be scheduled only once at a given moment of time.
  */
-public class DateTrigger implements SchedulableNotificationTrigger {
+public class DateTrigger extends ChannelAwareTrigger implements SchedulableNotificationTrigger {
   private Date mTriggerDate;
 
-  public DateTrigger(long timestamp) {
+  public DateTrigger(long timestamp, @Nullable String channelId) {
+    super(channelId);
     mTriggerDate = new Date(timestamp);
   }
 
   private DateTrigger(Parcel in) {
+    super(in);
     mTriggerDate = new Date(in.readLong());
   }
 
@@ -44,6 +46,7 @@ public class DateTrigger implements SchedulableNotificationTrigger {
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
+    super.writeToParcel(dest, flags);
     dest.writeLong(mTriggerDate.getTime());
   }
 

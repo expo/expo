@@ -38,9 +38,6 @@ public class LoadingView extends RelativeLayout {
   ProgressBar mProgressBar;
   ImageView mImageView;
   ImageView mBackgroundImageView;
-  View mStatusBarView;
-  TextView mStatusTextView;
-  TextView mPercentageTextView;
 
   private Handler mProgressBarHandler = new Handler();
   private boolean mShowIcon = false;
@@ -67,9 +64,6 @@ public class LoadingView extends RelativeLayout {
     mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
     mImageView = (ImageView) findViewById(R.id.image_view);
     mBackgroundImageView = (ImageView) findViewById(R.id.background_image_view);
-    mStatusBarView = findViewById(R.id.status_bar);
-    mStatusTextView = (TextView) findViewById(R.id.status_text_view);
-    mPercentageTextView = (TextView) findViewById(R.id.percentage_text_view);
     setBackgroundColor(Color.WHITE);
     showProgressBar();
   }
@@ -343,15 +337,6 @@ public class LoadingView extends RelativeLayout {
         }
       }
     });
-  }
-
-  public void updateProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total) {
-    mStatusBarView.setVisibility(VISIBLE);
-    mStatusTextView.setText(status != null ? status : "Building JavaScript bundle...");
-    if (done != null && total != null && total > 0) {
-      float percent = ((float)done / (float)total * 100.f);
-      mPercentageTextView.setText(String.format(Locale.getDefault(), "%.2f%%", percent));
-    }
   }
 
   private void showIcon() {

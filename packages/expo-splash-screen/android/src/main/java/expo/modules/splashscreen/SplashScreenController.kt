@@ -30,6 +30,7 @@ class SplashScreenController(
 
   fun showSplashScreen(successCallback: () -> Unit = {}) {
     weakActivity.get()?.runOnUiThread {
+      (splashScreenView.parent as? ViewGroup)?.removeView(splashScreenView)
       contentView.addView(splashScreenView)
       splashScreenShown = true
       successCallback()

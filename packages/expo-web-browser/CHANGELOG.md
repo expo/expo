@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 8.4.0 — 2020-07-29
+
+### 🎉 New features
+
 - Added `locked` state to `openBrowserAsync`. ([#9254](https://github.com/expo/expo/pull/9254) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `secondaryToolbarColor` (Android) flag for `WebBrowser` ([#8615](https://github.com/expo/expo/pull/8615) by [@jdanthinne](https://github.com/jdanthinne)))
 

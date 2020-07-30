@@ -59,7 +59,7 @@ In Android, returns a Promise which will always be resolved with action being `S
 
 #### iOS
 
-- `url` - an URL to share
+- `url` - a URL to share
 
 At least one of URL and message is required.
 
