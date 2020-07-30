@@ -1001,8 +1001,8 @@ SPEC CHECKSUMS:
   EXTaskManager: 556abb392e1b2f3ab3fa7ee81479e95d3fbd65b3
   EXVideoThumbnails: f70bdc5511749f3181028f5000bcb7be203c631d
   EXWebBrowser: 9ff6477661a885eba99ba77f5039e5ad01fd1dc8
-  FBLazyVector: 4aab18c93cd9546e4bfed752b4084585eca8b245
-  FBReactNativeSpec: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
+  FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
+  FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
   FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
   FBSDKLoginKit: 1b0cf04df0370b37404213157b060d6666ede814
   Firebase: 0219bb4782eb1406f1b9b0628a2e625484ce910d
