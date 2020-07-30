@@ -1,4 +1,3 @@
-import { ImageInfo } from './ImagePicker.types';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { v4 } from 'uuid';
 
@@ -9,6 +8,7 @@ import {
   ImagePickerOptions,
   Expand,
   ImagePickerMultipleResult,
+  ImageInfo,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -118,33 +118,6 @@ function openFileBrowserAsync({
 
     const event = new MouseEvent('click');
     input.dispatchEvent(event);
-  });
-}
-
-// In ExponentImagePicker.web.ts
-// we can returns diffrent types, base on the parameter value
-
-export async function WEB_launchImageLibraryAsync({
-  allowsMultipleSelection,
-}: ImagePickerOptions & { allowsMultipleSelection?: false }): Promise<Expand<ImagePickerResult>>;
-
-export async function WEB_launchImageLibraryAsync({
-  allowsMultipleSelection,
-}: ImagePickerOptions & { allowsMultipleSelection: true }): Promise<
-  Expand<ImagePickerMultipleResult>
->;
-
-// We need this to make sure that call `WEB_launchImageLibraryAsync()` without any arguments will compile
-
-// and here we add function body
-export async function WEB_launchImageLibraryAsync({
-  allowsMultipleSelection = false,
-  mediaTypes = MediaTypeOptions.Images,
-}: ImagePickerOptions): Promise<Expand<ImagePickerResult> | Expand<ImagePickerMultipleResult>> {
-  // here goes logic which should return `ImagePickerResult` or `ImagePickerMultipleResult`
-  return openFileBrowserAsync({
-    mediaTypes,
-    allowsMultipleSelection,
   });
 }
 

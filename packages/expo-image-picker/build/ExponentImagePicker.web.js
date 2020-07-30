@@ -92,15 +92,6 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.dispatchEvent(event);
     });
 }
-// We need this to make sure that call `WEB_launchImageLibraryAsync()` without any arguments will compile
-// and here we add function body
-export async function WEB_launchImageLibraryAsync({ allowsMultipleSelection = false, mediaTypes = MediaTypeOptions.Images, }) {
-    // here goes logic which should return `ImagePickerResult` or `ImagePickerMultipleResult`
-    return openFileBrowserAsync({
-        mediaTypes,
-        allowsMultipleSelection,
-    });
-}
 function readFile(targetFile) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
