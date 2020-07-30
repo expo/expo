@@ -34,6 +34,7 @@ import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 import org.unimodules.interfaces.permissions.PermissionsStatus
 import java.io.IOException
+import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 
 class ImagePickerModule(private val mContext: Context,
@@ -127,6 +128,10 @@ class ImagePickerModule(private val mContext: Context,
 
     mPromise = promise
     mPickerOptions = pickerOptions
+
+    if (pickerOptions.videoMaxDuration > 0) {
+      cameraIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, pickerOptions.videoMaxDuration)
+    }
 
     // camera intent needs a content URI but we need a file one
     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUriFromFile(imageFile, activity.application))
@@ -266,10 +271,16 @@ class ImagePickerModule(private val mContext: Context,
       return
     }
 
-    val metadataRetriever = MediaMetadataRetriever().apply {
-      setDataSource(mContext, uri)
+    try {
+      val metadataRetriever = MediaMetadataRetriever().apply {
+        setDataSource(mContext, uri)
+      }
+      VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever).execute()
+    } catch (e: RuntimeException) {
+      e.printStackTrace()
+      promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+      return
     }
-    VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever).execute()
   }
 
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {

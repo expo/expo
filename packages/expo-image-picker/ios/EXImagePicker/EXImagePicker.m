@@ -40,7 +40,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
     self.defaultOptions = @{
                             @"allowsEditing": @NO,
                             @"base64": @NO,
-                            @"videoMaxDuration": @600
+                            @"videoMaxDuration": @0
                             };
     self.shouldRestoreStatusBarVisibility = NO;
   }
