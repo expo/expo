@@ -9,5 +9,5 @@ export interface PermissionResponse {
     expires: PermissionExpiration;
     granted: boolean;
     canAskAgain: boolean;
-    scope: 'whenInUse' | 'always' | 'none';
+    scope?: 'whenInUse' | 'always' | 'none';
 }

@@ -27,7 +27,7 @@ export interface PermissionMap {
 
 export interface PermissionInfo extends UMPermissionResponse {
   // iOS only - Permission.CAMERA_ROLL
-  storageScope?: 'all' | 'limited' | 'none';
+  accessPrivilages?: 'all' | 'limited' | 'none';
   android?: PermissionDetailsLocationAndroid;
 }
 

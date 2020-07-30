@@ -39,7 +39,7 @@
   }
   return @{
     @"status": @(status),
-    @"storageScope": scope,
+    @"accessPrivilages": scope,
     @"granted": @(status == UMPermissionStatusGranted)
   };
 }
