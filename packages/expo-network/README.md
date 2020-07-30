@@ -25,7 +25,7 @@ expo install expo-network
 
 ### Configure for Android
 
-This module requires permissions to access the network and wifi state. The permissions `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE` are added automatically.
+This module requires permissions to access the network and wifi state. The `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE` permissions are added automatically.
 
 ```xml
 <!-- Added permissions -->
