@@ -47,7 +47,7 @@
     "expo-web-browser": "~8.4.0",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
-    "immutable": "^3.8.1",
+    "immutable": "^4.0.0-rc.12",
     "lodash": "^4.17.15",
     "path-to-regexp": "^1.8.0",
     "prop-types": "^15.6.2",

@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from '../redux/Hooks';
 
 import ProfileView, { Profile, ProfileViewProps } from '../components/Profile';
 import SessionActions from '../redux/SessionActions';

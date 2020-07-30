@@ -1,6 +1,6 @@
 import { ApolloProvider } from '@apollo/client';
-import React from 'react';
-import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import * as React from 'react';
+import { AppearanceProvider } from 'react-native-appearance';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import ApolloClient from './api/ApolloClient';
@@ -9,16 +9,14 @@ import Store from './redux/Store';
 
 import './menu/DevMenuApp';
 
-export default (props: any) => {
-  const colorScheme = useColorScheme();
-
+export default function App() {
   return (
     <AppearanceProvider>
       <ReduxProvider store={Store}>
         <ApolloProvider client={ApolloClient}>
-          <HomeApp {...props} colorScheme={colorScheme} />
+          <HomeApp />
         </ApolloProvider>
       </ReduxProvider>
     </AppearanceProvider>
   );
-};
+}

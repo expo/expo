@@ -1,9 +1,12 @@
+import { ColorSchemeName } from 'react-native-appearance';
+
 import * as DevMenu from '../menu/DevMenuModule';
 import LocalStorage from '../storage/LocalStorage';
+import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
-  loadSettings() {
-    return async dispatch => {
+  loadSettings(): AppThunk {
+    return async (dispatch: AppDispatch) => {
       const [localStorageSettings, devMenuSettings] = await Promise.all([
         LocalStorage.getSettingsAsync(),
         DevMenu.getSettingsAsync(),
@@ -13,20 +16,19 @@ export default {
         type: 'loadSettings',
         payload: {
           ...localStorageSettings,
+          preferredAppearance: localStorageSettings.preferredAppearance ?? 'no-preference',
           devMenuSettings,
         },
       });
     };
   },
 
-  setPreferredAppearance(preferredAppearance) {
-    return async dispatch => {
+  setPreferredAppearance(preferredAppearance: ColorSchemeName): AppThunk {
+    return async (dispatch: AppDispatch) => {
       try {
-        await Promise.all([
-          LocalStorage.updateSettingsAsync({
-            preferredAppearance,
-          }),
-        ]);
+        await LocalStorage.updateSettingsAsync({
+          preferredAppearance,
+        });
 
         return dispatch({
           type: 'setPreferredAppearance',
@@ -38,8 +40,8 @@ export default {
     };
   },
 
-  setDevMenuSetting(key, value) {
-    return async dispatch => {
+  setDevMenuSetting(key: keyof DevMenu.DevMenuSettings, value?: boolean): AppThunk {
+    return async (dispatch: AppDispatch) => {
       try {
         await DevMenu.setSettingAsync(key, value);
 
