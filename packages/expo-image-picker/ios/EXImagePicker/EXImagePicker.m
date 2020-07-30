@@ -40,6 +40,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
     self.defaultOptions = @{
                             @"allowsEditing": @NO,
                             @"base64": @NO,
+                            @"videoMaxDuration": @600
                             };
     self.shouldRestoreStatusBarVisibility = NO;
   }
@@ -149,7 +150,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 - (void)launchImagePicker:(EXImagePickerTarget)target
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    self.picker = [[UIImagePickerController alloc] init];
+    self.picker = [UIImagePickerController new];
 
     if (target == EXImagePickerTargetCamera) {
   #if TARGET_IPHONE_SIMULATOR
@@ -168,6 +169,8 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     }
 
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
+
+    self.picker.videoMaximumDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
     
     if (@available(iOS 11.0, *)) {
       self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
