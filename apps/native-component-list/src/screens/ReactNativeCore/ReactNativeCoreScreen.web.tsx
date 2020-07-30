@@ -18,7 +18,9 @@ import { ActivityIndicatorExample } from './ActivityIndicator';
 import { AlertExample } from './Alert';
 import { ButtonExample } from './Button';
 import { CheckBoxExample } from './CheckBox';
+import { ClipboardExample } from './Clipboard';
 import { PickerExample } from './Picker';
+import { PressableExample } from './Pressable';
 import { SliderExample } from './Slider';
 import { StatusBarExample } from './StatusBar';
 import { SwitchExample } from './Switch';
@@ -51,6 +53,8 @@ export default class ReactNativeCoreScreen extends React.Component {
           { title: 'Picker', data: [() => <PickerExample />] },
           { title: 'StatusBar', data: [() => <StatusBarExample />] },
           { title: 'Alert', data: [() => <AlertExample />] },
+          { title: 'Pressable', data: [() => <PressableExample />] },
+          { title: 'Clipboard', data: [() => <ClipboardExample />] },
           { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
           { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
           { title: 'Text', data: [this._renderText] },

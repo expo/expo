@@ -23,7 +23,9 @@ import { ActivityIndicatorExample } from './ActivityIndicator';
 import { AlertExample } from './Alert';
 import { ButtonExample } from './Button';
 import { CheckBoxExample } from './CheckBox';
+import { ClipboardExample } from './Clipboard';
 import { PickerExample } from './Picker';
+import { PressableExample } from './Pressable';
 import { ProgressViewIOSExample } from './ProgressViewIOS';
 import { SliderExample } from './Slider';
 import { StatusBarExample } from './StatusBar';
@@ -55,6 +57,8 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
       { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
       { title: 'WebView', data: [() => <WebViewExample />] },
       { title: 'ProgressViewIOS', data: [() => <ProgressViewIOSExample />] },
+      { title: 'Pressable', data: [() => <PressableExample />] },
+      { title: 'Clipboard', data: [() => <ClipboardExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
       { title: 'ActionSheetIOS', data: [this._renderActionSheet] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
