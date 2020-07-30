@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDResponseTypes.h
+../../../AppAuth/Source/AppAuthCore/OIDResponseTypes.h

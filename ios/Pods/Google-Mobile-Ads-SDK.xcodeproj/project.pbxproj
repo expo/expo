@@ -9,18 +9,18 @@
 /* Begin PBXAggregateTarget section */
 		662B519EDA759B92F78065D8C998C86E /* Google-Mobile-Ads-SDK */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = EBF7575535600B767B27E9749313871E /* Build configuration list for PBXAggregateTarget "Google-Mobile-Ads-SDK" */;
+			buildConfigurationList = EF81E8D4D8FCE64213B0724B0609CFE8 /* Build configuration list for PBXAggregateTarget "Google-Mobile-Ads-SDK" */;
 			buildPhases = (
 			);
 			dependencies = (
-				3B31D572F0F74B935ADB1A10E71B6534 /* PBXTargetDependency */,
+				9E1C53CDAC521169763E896D2A21EC30 /* PBXTargetDependency */,
 			);
 			name = "Google-Mobile-Ads-SDK";
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		199BF4FC87FDE40AAC7E43AE6EE67203 /* PBXContainerItemProxy */ = {
+		C275BABB6CE69F18EBC192BB78F711B0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 04839982BC9F967D7BA77B83F08BC28D /* GoogleAppMeasurement.xcodeproj */;
 			proxyType = 1;
@@ -130,15 +130,15 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		3B31D572F0F74B935ADB1A10E71B6534 /* PBXTargetDependency */ = {
+		9E1C53CDAC521169763E896D2A21EC30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleAppMeasurement;
-			targetProxy = 199BF4FC87FDE40AAC7E43AE6EE67203 /* PBXContainerItemProxy */;
+			targetProxy = C275BABB6CE69F18EBC192BB78F711B0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		02B495EC46BCBC44BC942C26BF88F4A3 /* Release */ = {
+		36970E19A0372874A333696EA0DA24BE /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2F5525614359002DE655ECF69F1C48DE /* Google-Mobile-Ads-SDK.release.xcconfig */;
 			buildSettings = {
@@ -212,7 +212,7 @@
 			};
 			name = Release;
 		};
-		6A1AB055CA5AC7EB576E3BED49529020 /* Debug */ = {
+		AAD505E69BCA197F150DA212A8BBA304 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F3B21D762271B91EB55326721CADBBFF /* Google-Mobile-Ads-SDK.debug.xcconfig */;
 			buildSettings = {
@@ -301,11 +301,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EBF7575535600B767B27E9749313871E /* Build configuration list for PBXAggregateTarget "Google-Mobile-Ads-SDK" */ = {
+		EF81E8D4D8FCE64213B0724B0609CFE8 /* Build configuration list for PBXAggregateTarget "Google-Mobile-Ads-SDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6A1AB055CA5AC7EB576E3BED49529020 /* Debug */,
-				02B495EC46BCBC44BC942C26BF88F4A3 /* Release */,
+				AAD505E69BCA197F150DA212A8BBA304 /* Debug */,
+				36970E19A0372874A333696EA0DA24BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

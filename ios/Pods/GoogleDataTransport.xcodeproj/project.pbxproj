@@ -373,28 +373,6 @@
 			};
 			name = Release;
 		};
-		0F089F00419B9FD527AC37719AAAB665 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5190A5C35995702ADCFF565021C4F153 /* GoogleDataTransport.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = GoogleDataTransport;
-				PRODUCT_NAME = GoogleDataTransport;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		827EBA213EAD636327281EC98024F873 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -459,7 +437,7 @@
 			};
 			name = Debug;
 		};
-		D587F24BB6FBF435EFDCFEA806FA0594 /* Release */ = {
+		E8B9CEB5F2FC9D14F08469E4451F5BF2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7D78968E24218E94E15148A61C4F4C33 /* GoogleDataTransport.release.xcconfig */;
 			buildSettings = {
@@ -477,10 +455,34 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		F7FF57228BC3BB2D7284FD9E6482E48B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5190A5C35995702ADCFF565021C4F153 /* GoogleDataTransport.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = GoogleDataTransport;
+				PRODUCT_NAME = GoogleDataTransport;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -497,8 +499,8 @@
 		E2809D068FF3398AA1C8238FA747FBE7 /* Build configuration list for PBXNativeTarget "GoogleDataTransport" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0F089F00419B9FD527AC37719AAAB665 /* Debug */,
-				D587F24BB6FBF435EFDCFEA806FA0594 /* Release */,
+				F7FF57228BC3BB2D7284FD9E6482E48B /* Debug */,
+				E8B9CEB5F2FC9D14F08469E4451F5BF2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

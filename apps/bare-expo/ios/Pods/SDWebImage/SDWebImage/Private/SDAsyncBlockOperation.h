@@ -11,6 +11,7 @@
 @class SDAsyncBlockOperation;
 typedef void (^SDAsyncBlock)(SDAsyncBlockOperation * __nonnull asyncOperation);
 
+/// A async block operation, success after you call `completer` (not like `NSBlockOperation` which is for sync block, success on return)
 @interface SDAsyncBlockOperation : NSOperation
 
 - (nonnull instancetype)initWithBlock:(nonnull SDAsyncBlock)block;

@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #pragma once
 
 #include <algorithm>
@@ -47,7 +48,7 @@ namespace folly {
  * callback and the hasher to hash the keys can all be supplied by the caller.
  *
  * If at a given state, N1 - N6 are the nodes in MRU to LRU order and hashing
- * to index keys as {(N1,N5)->H1, (N4,N5,N5)->H2, N3->Hi}, the datastructure
+ * to index keys as {(N1,N5)->H1, (N4,N2,N6)->H2, N3->Hi}, the datastructure
  * layout is as below. N1 .. N6 is a list threaded through the hash.
  * Assuming, each the number of nodes hashed to each index key is bounded, the
  * following operations run in constant time.
@@ -122,8 +123,20 @@ class EvictingCacheMap {
                             boost::bidirectional_traversal_tag> {
    public:
     iterator_base() {}
+
     explicit iterator_base(TIterator it)
         : iterator_base::iterator_adaptor_(it) {}
+
+    template <
+        typename V,
+        typename I,
+        std::enable_if_t<
+            std::is_same<V const, Value>::value &&
+                std::is_convertible<I, TIterator>::value,
+            int> = 0>
+    /* implicit */ iterator_base(iterator_base<V, I> const& other)
+        : iterator_base::iterator_adaptor_(other.base()) {}
+
     Value& dereference() const {
       return this->base_reference()->pr;
     }
@@ -181,7 +194,7 @@ class EvictingCacheMap {
    * bad, e.g., the nIndexBuckets_ is still 100 after maxSize is updated to 1M.
    *
    * Calling this function with an arugment of 0 removes the limit on the cache
-   * size and elements are not evicted unless clients explictly call prune.
+   * size and elements are not evicted unless clients explicitly call prune.
    *
    * If you intend to resize dynamically using this, then picking an index size
    * that works well and initializing with corresponding maxSize is the only
@@ -292,14 +305,24 @@ class EvictingCacheMap {
    */
   bool erase(const TKey& key) {
     auto it = findInIndex(key);
-    if (it == index_.end()) {
-      return false;
+    if (it != index_.end()) {
+      erase(const_iterator(lru_.iterator_to(*it)));
+      return true;
     }
-    auto node = &(*it);
+    return false;
+  }
+
+  /**
+   * Erase the key-value pair associated with pos
+   * @param pos iterator to the element to be erased
+   * @return iterator to the following element or end() if pos was the last
+   *     element
+   */
+  iterator erase(const_iterator pos) {
+    auto* node = const_cast<Node*>(&(*pos.base()));
     std::unique_ptr<Node> nptr(node);
-    lru_.erase(lru_.iterator_to(*node));
-    index_.erase(it);
-    return true;
+    index_.erase(index_.iterator_to(*node));
+    return iterator(lru_.erase(pos.base()));
   }
 
   /**
@@ -333,6 +356,31 @@ class EvictingCacheMap {
         prune(clearSize_, pruneHook);
       }
     }
+  }
+
+  /**
+   * Insert a new key-value pair in the dictionary if no element exists for key
+   * @param key key to associate with value
+   * @param value value to associate with the key
+   * @param pruneHook callback to use on eviction (if it occurs).
+   * @return a pair consisting of an iterator to the inserted element (or to the
+   *     element that prevented the insertion) and a bool denoting whether the
+   *     insertion took place.
+   */
+  std::pair<iterator, bool>
+  insert(const TKey& key, TValue value, PruneHookCall pruneHook = nullptr) {
+    auto node = std::make_unique<Node>(key, std::move(value));
+    auto pair = index_.insert(*node);
+    if (pair.second) {
+      lru_.push_front(*node);
+      node.release();
+
+      // no evictions if maxSize_ is 0 i.e. unlimited capacity
+      if (maxSize_ > 0 && size() > maxSize_) {
+        prune(clearSize_, pruneHook);
+      }
+    }
+    return std::make_pair(iterator(lru_.iterator_to(*pair.first)), pair.second);
   }
 
   /**

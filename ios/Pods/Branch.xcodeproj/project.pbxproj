@@ -671,6 +671,31 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		25E70C00E1F90F387BDF8886362E1CA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0A9458F0EB5E504D15416AEB8E633A9 /* Branch.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/Branch/Branch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Branch;
+				PRODUCT_NAME = Branch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		502FAD1B02A5369C9898784C7F2F90EA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -735,53 +760,6 @@
 			};
 			name = Debug;
 		};
-		76A5F88188ADE11303DC9659C499B6CE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C0A9458F0EB5E504D15416AEB8E633A9 /* Branch.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/Branch/Branch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Branch;
-				PRODUCT_NAME = Branch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		BC11C24D23CC93B20AB9E691865F72AD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4FEACA89310E51BF2FFC5708786E36B8 /* Branch.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/Branch/Branch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Branch;
-				PRODUCT_NAME = Branch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		C3261F0D3C0EAF8D8FDBBBA89E594BE9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -842,14 +820,38 @@
 			};
 			name = Release;
 		};
+		C5C59692D426C223A0502411BBFA25B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4FEACA89310E51BF2FFC5708786E36B8 /* Branch.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/Branch/Branch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Branch;
+				PRODUCT_NAME = Branch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		820D74D4DE3E9D530567040EA9A19003 /* Build configuration list for PBXNativeTarget "Branch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC11C24D23CC93B20AB9E691865F72AD /* Debug */,
-				76A5F88188ADE11303DC9659C499B6CE /* Release */,
+				C5C59692D426C223A0502411BBFA25B5 /* Debug */,
+				25E70C00E1F90F387BDF8886362E1CA1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

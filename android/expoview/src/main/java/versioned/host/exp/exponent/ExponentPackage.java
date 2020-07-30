@@ -67,9 +67,6 @@ import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
-import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
-import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
-import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
@@ -172,8 +169,7 @@ public class ExponentPackage implements ReactPackage {
         new URLHandlerModule(reactContext),
         new ShakeModule(reactContext),
         new KeyboardModule(reactContext),
-        new UpdatesModule(reactContext, mExperienceProperties, mManifest),
-        new ExponentIntentModule(reactContext, mExperienceProperties)
+        new UpdatesModule(reactContext, mExperienceProperties, mManifest)
     ));
 
     if (mIsKernel) {
@@ -191,7 +187,6 @@ public class ExponentPackage implements ReactPackage {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
-        nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -230,8 +225,6 @@ public class ExponentPackage implements ReactPackage {
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
-    } else {
-      nativeModules.add(new ExponentUnsignedAsyncStorageModule(reactContext));
     }
 
     return nativeModules;

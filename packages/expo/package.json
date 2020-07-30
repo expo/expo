@@ -98,8 +98,8 @@
     "@types/react-test-renderer": "16.9.0",
     "@types/uuid": "^3.4.7",
     "expo-module-scripts": "~1.2.0",
-    "react": "16.11.0",
-    "react-dom": "16.11.0",
-    "react-native": "0.62.2"
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "0.63.2"
   }
 }

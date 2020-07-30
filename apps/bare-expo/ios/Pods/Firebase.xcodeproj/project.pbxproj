@@ -9,26 +9,26 @@
 /* Begin PBXAggregateTarget section */
 		15B99218A87324F316F0E937B3DAAC8B /* Firebase */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 3DAD215DAE8DEBFD146CBC3E5F77C377 /* Build configuration list for PBXAggregateTarget "Firebase" */;
+			buildConfigurationList = EE5D5CF2272725C026B68F65013F9068 /* Build configuration list for PBXAggregateTarget "Firebase" */;
 			buildPhases = (
 			);
 			dependencies = (
-				12D2216C452A3943EC8DA6E6AA4AC4C7 /* PBXTargetDependency */,
-				E57BBE3A33B3D097D0436CD4910C1726 /* PBXTargetDependency */,
+				0502C3AC9DF214259BC0F8729C2DD1D3 /* PBXTargetDependency */,
+				E755D52DDD3EF8F63B539153906BBD89 /* PBXTargetDependency */,
 			);
 			name = Firebase;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		9568038491790D8C45B5FFC0EA2EC670 /* PBXContainerItemProxy */ = {
+		76C5083149424BC86CE232334E1803C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3FE92FF2BDCB13FDBE87D1F6A16788A3 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
 		};
-		D4BF2D9C431F7CB27AB6420C5A81C517 /* PBXContainerItemProxy */ = {
+		7D1027D735B84DEC8FE9E018A16405A4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8150651C1FF57E29648FF2E70695162C /* FirebaseAnalytics.xcodeproj */;
 			proxyType = 1;
@@ -143,15 +143,15 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		12D2216C452A3943EC8DA6E6AA4AC4C7 /* PBXTargetDependency */ = {
+		0502C3AC9DF214259BC0F8729C2DD1D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseAnalytics;
-			targetProxy = D4BF2D9C431F7CB27AB6420C5A81C517 /* PBXContainerItemProxy */;
+			targetProxy = 7D1027D735B84DEC8FE9E018A16405A4 /* PBXContainerItemProxy */;
 		};
-		E57BBE3A33B3D097D0436CD4910C1726 /* PBXTargetDependency */ = {
+		E755D52DDD3EF8F63B539153906BBD89 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseCore;
-			targetProxy = 9568038491790D8C45B5FFC0EA2EC670 /* PBXContainerItemProxy */;
+			targetProxy = 76C5083149424BC86CE232334E1803C0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -220,7 +220,7 @@
 			};
 			name = Debug;
 		};
-		52AEDB5C2602531332F3B1FD04165365 /* Release */ = {
+		45D0459D4E20E809009E2CDAC745D946 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 530578E780F2D4D0D994449831AD4E07 /* Firebase.release.xcconfig */;
 			buildSettings = {
@@ -233,19 +233,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		C8B04EEAF407887C938DD31035658750 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2697158071AB59F75AEF558051FF326D /* Firebase.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		D030AE60C5D80EBC79AAFB36A35370EC /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -307,6 +294,19 @@
 			};
 			name = Release;
 		};
+		FF0E1FD2BB500E61EB85959ED0E8371A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2697158071AB59F75AEF558051FF326D /* Firebase.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -319,11 +319,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3DAD215DAE8DEBFD146CBC3E5F77C377 /* Build configuration list for PBXAggregateTarget "Firebase" */ = {
+		EE5D5CF2272725C026B68F65013F9068 /* Build configuration list for PBXAggregateTarget "Firebase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C8B04EEAF407887C938DD31035658750 /* Debug */,
-				52AEDB5C2602531332F3B1FD04165365 /* Release */,
+				FF0E1FD2BB500E61EB85959ED0E8371A /* Debug */,
+				45D0459D4E20E809009E2CDAC745D946 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

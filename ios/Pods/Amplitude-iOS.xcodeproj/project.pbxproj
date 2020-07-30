@@ -343,9 +343,9 @@
 			};
 			name = Debug;
 		};
-		613B5D54161207D65D3257D43F852804 /* Debug */ = {
+		380A3EF795CBFA613D3C3509BB9E776F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B4D96B893A360C4D20DD215D632B70A9 /* Amplitude-iOS.debug.xcconfig */;
+			baseConfigurationReference = FD21FC681546BF5DA4C12698EFD0533F /* Amplitude-iOS.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -362,9 +362,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		63C36B632815ADC29647994E28EC3C3E /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -426,9 +428,9 @@
 			};
 			name = Release;
 		};
-		F2063EFD531BA338D0D16E244D8BE8C9 /* Release */ = {
+		84CDAD451E3102585DDFA19337688C91 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD21FC681546BF5DA4C12698EFD0533F /* Amplitude-iOS.release.xcconfig */;
+			baseConfigurationReference = B4D96B893A360C4D20DD215D632B70A9 /* Amplitude-iOS.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -445,10 +447,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -456,8 +458,8 @@
 		66CC86BC7216687252C07325D7AD8AA7 /* Build configuration list for PBXNativeTarget "Amplitude-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				613B5D54161207D65D3257D43F852804 /* Debug */,
-				F2063EFD531BA338D0D16E244D8BE8C9 /* Release */,
+				84CDAD451E3102585DDFA19337688C91 /* Debug */,
+				380A3EF795CBFA613D3C3509BB9E776F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

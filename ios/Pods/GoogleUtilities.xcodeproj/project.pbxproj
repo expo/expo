@@ -411,9 +411,9 @@
 			};
 			name = Debug;
 		};
-		5CD32F6470E802D2AB9A060A244BF35B /* Debug */ = {
+		6131C85172F6B8B2AA027A2A4FC47D51 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 29AC67FDB0AC6A0236BCA0DEF30D8570 /* GoogleUtilities.debug.xcconfig */;
+			baseConfigurationReference = 69512196B0895276174186B4077093EB /* GoogleUtilities.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -430,9 +430,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		7B15C56EDFF339EDE5FF3A92EBE050F5 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -494,9 +496,9 @@
 			};
 			name = Release;
 		};
-		B013092D0004ABE3799B3A06B1FF310D /* Release */ = {
+		8F179A462A0B6637F7F23106227F2A01 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 69512196B0895276174186B4077093EB /* GoogleUtilities.release.xcconfig */;
+			baseConfigurationReference = 29AC67FDB0AC6A0236BCA0DEF30D8570 /* GoogleUtilities.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -513,10 +515,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -524,8 +526,8 @@
 		0314E059BEB7720067E7B53E4B8AC2F1 /* Build configuration list for PBXNativeTarget "GoogleUtilities" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5CD32F6470E802D2AB9A060A244BF35B /* Debug */,
-				B013092D0004ABE3799B3A06B1FF310D /* Release */,
+				8F179A462A0B6637F7F23106227F2A01 /* Debug */,
+				6131C85172F6B8B2AA027A2A4FC47D51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
