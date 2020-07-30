@@ -28,6 +28,10 @@ export type ImageInfo = {
 };
 
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
+// I think we should add diffrent type if we return multiple images/videos
+// For example, it could look like this:
+export type ImagePickerMultipleResult = { cancelled: true } | ({ cancelled: false; selected: ImageInfo[]});
+
 
 export type ImagePickerOptions = {
   allowsEditing?: boolean;
@@ -45,3 +49,8 @@ export type OpenFileBrowserOptions = {
   capture?: boolean;
   allowsMultipleSelection: boolean;
 };
+
+// These hacks allow to expand nested types in type hints
+// see https://stackoverflow.com/questions/60795256/typescript-type-merging
+export type Primitive = string | number | boolean | bigint | symbol | null | undefined;
+export type Expand<T> = T extends Primitive ? T : { [K in keyof T]: T[K] };
