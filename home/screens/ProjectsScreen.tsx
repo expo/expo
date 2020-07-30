@@ -3,7 +3,6 @@ import Constants from 'expo-constants';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import semver from 'semver';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
@@ -19,6 +18,7 @@ import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import ThemedStatusBar from '../components/ThemedStatusBar';
 import HistoryActions from '../redux/HistoryActions';
+import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Environment from '../utils/Environment';

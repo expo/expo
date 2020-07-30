@@ -2,7 +2,6 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Analytics from '../api/Analytics';
 import ApolloClient from '../api/ApolloClient';
@@ -11,6 +10,7 @@ import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import { StyledScrollView as ScrollView } from '../components/Views';
 import Colors from '../constants/Colors';
+import { useDispatch, useSelector } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
