@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added docs about Android permissions and removed old storage permission. ([#9447](https://github.com/expo/expo/pull/9447) by [@bycedric](https://github.com/bycedric))
+
 ## 9.1.0 — 2020-07-27
 
 ### 🐛 Bug fixes
