@@ -1,7 +1,7 @@
 import { Subscription } from '@unimodules/core';
 import { PermissionResponse as UMPermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 export declare type PermissionResponse = UMPermissionResponse & {
-    scope?: 'all' | 'limited' | 'none';
+    accessPrivileges?: 'all' | 'limited' | 'none';
 };
 export declare type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export declare type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';

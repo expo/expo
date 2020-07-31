@@ -1,10 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="expo.modules.location">
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="expo.modules.location">
 
-    <application>
-        <service android:name=".services.LocationTaskService"
-                 android:exported="false" />
-    </application>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+  <application>
+    <service
+      android:name=".services.LocationTaskService"
+      android:exported="false" />
+  </application>
 </manifest>

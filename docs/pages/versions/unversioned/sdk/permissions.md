@@ -227,16 +227,20 @@ The permission type for user-facing notifications. This does **not** register yo
 
 ### `Permissions.LOCATION`
 
-The permission type for location access.
+The permission type for location access. It contains additional field when returning:
+
+### `scope`
+
+Returns whether permission is granted only for location updates when app is in use (`whenInUse`), even when app is backgrounded (`always`) or when permission is not granted (`none`).
+On devices running Android in versions lower than 10, scope value is either `always` or `none` depending on permission being granted. There is no special background location permission on Android 9 and below.
 
 <!-- TODO: Permissions.LOCATION issue (search by this phrase) -->
 
 > **Note:** iOS is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
 > On iOS ask for this permission type individually.
 
-> **Note (iOS):** In Expo client this permission will always ask the user for permission to access location data while the app is in use.
+> **Note (iOS):** In Expo client on iOS this permission will always ask the user for permission to access location data while the app is in use.
 
-> **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { location: { ios } } }` where `ios` which is an object containing: `{ scope: 'whenInUse' | 'always' | 'none' }`
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 >
 > **What location usage descriptions should I provide?** Due to the design of the location permission API on iOS we aren't able to provide you with methods for asking for `whenInUse` or `always` location usage permission specifically. However, you can customize the behavior by providing the following sets of usage descriptions:
@@ -261,7 +265,7 @@ The permission type for reading contacts.
 
 The permission type for reading or writing to the camera roll.
 
-> **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { cameraRoll: { scope } } }` where `scope` can be:
+> **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { cameraRoll: { accessPrivileges } } }` where `accessPrivileges` can be:
 >
 > - `all` if the user granted your app access to the whole photo library
 > - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
