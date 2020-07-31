@@ -144,7 +144,7 @@ export function test(t) {
         t.expect(cameraRollPermissionKeys).toContain('status');
         t.expect(cameraRollPermissionKeys).toContain('expires');
         if (Platform.OS === 'ios') {
-          t.expect(cameraRollPermissionKeys).toContain('accessPrivilages');
+          t.expect(cameraRollPermissionKeys).toContain('accessPrivileges');
         }
       });
     });
