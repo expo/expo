@@ -2,6 +2,10 @@ const { loadAsync } = require('@expo/metro-config');
 const Server = require('metro/src/Server');
 
 async function fetchAssetManifestAsync(platform, projectRoot) {
+  // Project-level babel config does not load unless we change to the
+  // projectRoot before instantiating the server
+  process.chdir(projectRoot)
+
   const config = await loadAsync(projectRoot);
   const server = new Server(config);
 
