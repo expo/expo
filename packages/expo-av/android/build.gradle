@@ -50,7 +50,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 20
     versionName "8.4.1"
   }
@@ -67,7 +67,7 @@ android {
       useJUnitPlatform()
     }
   }
-  
+
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
