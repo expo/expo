@@ -34,6 +34,7 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     }
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
+    #if RCT_DEV
     let remoteDebug = DevMenuExtensions.remoteDebugAction {
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
     }
@@ -58,6 +59,9 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     perfMonitor.isEnabled = { devSettings.isPerfMonitorShown }
 
     return [reload, inspector, remoteDebug, fastRefresh, perfMonitor]
+    #else
+    return [reload, inspector]
+    #endif
   }
 
   // MARK: static helpers
