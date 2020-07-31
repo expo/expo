@@ -67,9 +67,15 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   }
 
   private func jsPackagerHost() -> String? {
+    // Return `nil` if resource doesn't exist in the bundle.
     guard let packagerHostPath = resourcesBundle()?.path(forResource: ".dev-menu-packager-host", ofType: nil) else {
       return nil
     }
-    return try? String(contentsOfFile: packagerHostPath, encoding: String.Encoding.utf8).trimmingCharacters(in: CharacterSet.newlines)
+    // Return `nil` if the content is not a valid URL.
+    guard let content = try? String(contentsOfFile: packagerHostPath, encoding: String.Encoding.utf8).trimmingCharacters(in: CharacterSet.newlines),
+      let url = URL(string: content) else {
+      return nil
+    }
+    return url.absoluteString
   }
 }
