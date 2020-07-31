@@ -106,7 +106,6 @@ export default function ExploreTab(props: QueryProps) {
         iconUrl={app.iconUrl}
         name={app.name}
         projectUrl={app.fullName}
-        username={app.packageUsername}
         description={app.description}
         onPressUsername={onPressUsername}
         style={{ marginBottom: 10 }}

@@ -20,6 +20,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
+import ExperienceScreen from '../screens/ExperienceScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
@@ -250,6 +251,14 @@ export default (props: { theme: string }) => (
         options={{
           headerShown: false,
           // stackPresentation: 'modal',
+        }}
+      />
+      <RootStack.Screen
+        name="Experience"
+        component={ExperienceScreen}
+        options={{
+          title: 'Experience',
+          headerLeft: () => <CloseButton />,
         }}
       />
     </RootStack.Navigator>

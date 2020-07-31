@@ -5,22 +5,54 @@ import { Linking, Share, StyleSheet, Text, View } from 'react-native';
 import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';
+import Environment from '../utils/Environment';
+import { Experience } from './ExperienceView.types';
+import { MaterialIcons } from './Icons';
 
 type Props = React.ComponentProps<typeof ListItem> & {
   url: string;
   unlisted?: boolean;
   releaseChannel?: string;
   username?: string;
+  sdkVersion?: string;
+  experienceInfo?: Pick<Experience, 'username' | 'slug'>;
 };
 
-function ProjectListItem({ releaseChannel, unlisted, username, subtitle, url, ...props }: Props) {
+function ProjectListItem({
+  releaseChannel,
+  unlisted,
+  username,
+  subtitle,
+  url,
+  sdkVersion,
+  ...props
+}: Props) {
   const navigation = useNavigation();
+
+  const isStale = React.useMemo<boolean>(() => {
+    const majorVersionString = sdkVersion?.split('.').shift();
+    if (majorVersionString) {
+      const majorVersion = parseInt(majorVersionString);
+      return majorVersion < Environment.lowestSupportedSdkVersion;
+    }
+    return false;
+  }, [sdkVersion]);
+
   const renderRightContent = (): React.ReactNode => {
     return (
       <View style={styles.rightContentContainer}>
         {/* TODO: revisit this when we support "private" - unlisted is }
         {/* {unlisted && this.renderUnlistedIcon()} */}
         {releaseChannel && renderReleaseChannel(releaseChannel)}
+        {isStale && renderStaleIcon()}
+      </View>
+    );
+  };
+
+  const renderStaleIcon = () => {
+    return (
+      <View style={styles.unlistedContainer}>
+        <MaterialIcons name="block" lightColor={'#000'} darkColor={Colors.light.error} size={18} />
       </View>
     );
   };
@@ -49,7 +81,16 @@ function ProjectListItem({ releaseChannel, unlisted, username, subtitle, url, ..
   };
 
   const handlePress = () => {
+    // Open the project info page when it's stale.
+    if (isStale && props.experienceInfo) {
+      handleInfoPress();
+      return;
+    }
     Linking.openURL(UrlUtils.normalizeUrl(url));
+  };
+
+  const handleInfoPress = () => {
+    navigation.navigate('Experience', props.experienceInfo);
   };
 
   const handleLongPress = () => {

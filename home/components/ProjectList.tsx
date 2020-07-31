@@ -143,6 +143,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
   };
 
   const renderItem = ({ item: app, index }) => {
+    const experienceInfo = { username: app.username || app.packageUsername, slug: app.packageName };
     if (belongsToCurrentUser) {
       return (
         <ProjectListItem
@@ -152,6 +153,8 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
           title={app.name}
           subtitle={app.packageName || app.fullName}
           last={index === currentAppCount - 1}
+          experienceInfo={experienceInfo}
+          sdkVersion={app.sdkVersion}
         />
       );
     } else {
@@ -166,6 +169,8 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
           username={app.packageUsername}
           description={app.description}
           onPressUsername={handlePressUsername}
+          experienceInfo={experienceInfo}
+          sdkVersion={app.sdkVersion}
         />
       );
     }

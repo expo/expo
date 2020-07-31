@@ -15,6 +15,8 @@ import FadeIn from 'react-native-fade-in-image';
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
 import * as UrlUtils from '../utils/UrlUtils';
+import { Experience } from './ExperienceView.types';
+import Environment from '../utils/Environment';
 
 export type PressUsernameHandler = (username: string) => void;
 
@@ -27,6 +29,8 @@ type Props = {
   name: string;
   username: string;
   id: string;
+  sdkVersion?: string;
+  experienceInfo?: Pick<Experience, 'username' | 'slug'>;
 };
 
 export default function ProjectCard({
@@ -37,7 +41,18 @@ export default function ProjectCard({
   projectUrl,
   name,
   username,
+  sdkVersion,
+  experienceInfo,
 }: Props) {
+  const isStale = React.useMemo<boolean>(() => {
+    const majorVersionString = sdkVersion?.split('.').shift();
+    if (majorVersionString) {
+      const majorVersion = parseInt(majorVersionString);
+      return majorVersion < Environment.lowestSupportedSdkVersion;
+    }
+    return false;
+  }, [sdkVersion]);
+
   const navigation = useNavigation();
   const _maybeRenderIcon = () => {
     if (iconUrl) {
@@ -66,6 +81,10 @@ export default function ProjectCard({
     // note(brentvatne): navigation should do this automatically
     Keyboard.dismiss();
 
+    if (isStale && experienceInfo) {
+      navigation.navigate('Experience', experienceInfo);
+      return;
+    }
     const url = UrlUtils.normalizeUrl(projectUrl);
     Linking.openURL(url);
   };
