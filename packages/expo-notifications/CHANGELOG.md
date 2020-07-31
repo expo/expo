@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed case where iOS notification category would not be set on the very first call to `setNotificationCategoryAsync`. ([#9515](https://github.com/expo/expo/pull/9515) by [@cruzach](https://github.com/cruzach))
+
 ## 0.6.0 — 2020-07-29
 
 ### 🎉 New features
