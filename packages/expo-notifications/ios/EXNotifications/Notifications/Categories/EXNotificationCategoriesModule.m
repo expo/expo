@@ -57,7 +57,7 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
                                                          options:categoryOptions];
   }
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
-    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
+    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy] ?: [[NSMutableSet alloc] init];
     for (UNNotificationCategory *category in newCategories) {
       if ([category.identifier isEqualToString:newCategory.identifier]) {
         [newCategories removeObject:category];
