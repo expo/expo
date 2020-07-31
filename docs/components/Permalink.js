@@ -70,7 +70,10 @@ export default withSlugger(props => {
     <Permalink component={component} data-components-heading>
       <div className={STYLES_CONTAINER}>
         <span id={permalinkKey} className={STYLES_CONTAINER_TARGET} />
-        <a href={'#' + permalinkKey} className={`permalink ${STYLES_CONTAINER_ANCHOR}`}>
+        <a
+          style={props.customIconStyle}
+          href={'#' + permalinkKey}
+          className={`permalink ${STYLES_CONTAINER_ANCHOR}`}>
           <PermalinkIcon />
         </a>
         <div className="permalink-child">{children}</div>
