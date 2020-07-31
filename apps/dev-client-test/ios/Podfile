@@ -13,45 +13,51 @@ package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 # [Custom] Add target the root modules in the workspace
 modules_path = '../../../node_modules'
 
+# [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
+# expected (you may get `'React/<File>.h' file not found` when building)
+rnPrefix = '../../../react-native-lab/react-native'
+
 # Import the auto-linking packages
 require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
 require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
+require_relative "#{rnPrefix}/scripts/react_native_pods"
 
 target 'DevClientTest' do
-  # [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
-  # expected (you may get `'React/<File>.h' file not found` when building)
-  rnPrefix = '../../../react-native-lab/react-native'
+  # react-native-cli auto-linking
+  config = use_native_modules!
 
-  pod 'FBLazyVector', :path => "#{rnPrefix}/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "#{rnPrefix}/Libraries/FBReactNativeSpec"
-  pod 'RCTRequired', :path => "#{rnPrefix}/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "#{rnPrefix}/Libraries/TypeSafety"
-  pod 'React', :path => "#{rnPrefix}/"
-  pod 'React-Core', :path => "#{rnPrefix}/"
-  pod 'React-CoreModules', :path => "#{rnPrefix}/React/CoreModules"
-  pod 'React-Core/DevSupport', :path => "#{rnPrefix}/"
-  pod 'React-RCTActionSheet', :path => "#{rnPrefix}/Libraries/ActionSheetIOS"
-  pod 'React-RCTAnimation', :path => "#{rnPrefix}/Libraries/NativeAnimation"
-  pod 'React-RCTBlob', :path => "#{rnPrefix}/Libraries/Blob"
-  pod 'React-RCTImage', :path => "#{rnPrefix}/Libraries/Image"
-  pod 'React-RCTLinking', :path => "#{rnPrefix}/Libraries/LinkingIOS"
-  pod 'React-RCTNetwork', :path => "#{rnPrefix}/Libraries/Network"
-  pod 'React-RCTSettings', :path => "#{rnPrefix}/Libraries/Settings"
-  pod 'React-RCTText', :path => "#{rnPrefix}/Libraries/Text"
-  pod 'React-RCTVibration', :path => "#{rnPrefix}/Libraries/Vibration"
-  pod 'React-Core/RCTWebSocket', :path => "#{rnPrefix}/"
+  use_react_native!(:path => rnPrefix)
 
-  pod 'React-cxxreact', :path => "#{rnPrefix}/ReactCommon/cxxreact"
-  pod 'React-jsi', :path => "#{rnPrefix}/ReactCommon/jsi"
-  pod 'React-jsiexecutor', :path => "#{rnPrefix}/ReactCommon/jsiexecutor"
-  pod 'React-jsinspector', :path => "#{rnPrefix}/ReactCommon/jsinspector"
-  pod 'ReactCommon/callinvoker', :path => "#{rnPrefix}/ReactCommon"
-  pod 'ReactCommon/turbomodule/core', :path => "#{rnPrefix}/ReactCommon"
-  pod 'Yoga', :path => "#{rnPrefix}/ReactCommon/yoga", :modular_headers => true
-
-  pod 'DoubleConversion', :podspec => "#{rnPrefix}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{rnPrefix}/third-party-podspecs/glog.podspec"
-  pod 'Folly', :podspec => "#{rnPrefix}/third-party-podspecs/Folly.podspec"
+  #pod 'FBLazyVector', :path => "#{rnPrefix}/Libraries/FBLazyVector"
+  #pod 'FBReactNativeSpec', :path => "#{rnPrefix}/Libraries/FBReactNativeSpec"
+  #pod 'RCTRequired', :path => "#{rnPrefix}/Libraries/RCTRequired"
+  #pod 'RCTTypeSafety', :path => "#{rnPrefix}/Libraries/TypeSafety"
+  #pod 'React', :path => "#{rnPrefix}/"
+  #pod 'React-Core', :path => "#{rnPrefix}/"
+  #pod 'React-CoreModules', :path => "#{rnPrefix}/React/CoreModules"
+  #pod 'React-Core/DevSupport', :path => "#{rnPrefix}/"
+  #pod 'React-RCTActionSheet', :path => "#{rnPrefix}/Libraries/ActionSheetIOS"
+  #pod 'React-RCTAnimation', :path => "#{rnPrefix}/Libraries/NativeAnimation"
+  #pod 'React-RCTBlob', :path => "#{rnPrefix}/Libraries/Blob"
+  #pod 'React-RCTImage', :path => "#{rnPrefix}/Libraries/Image"
+  #pod 'React-RCTLinking', :path => "#{rnPrefix}/Libraries/LinkingIOS"
+  #pod 'React-RCTNetwork', :path => "#{rnPrefix}/Libraries/Network"
+  #pod 'React-RCTSettings', :path => "#{rnPrefix}/Libraries/Settings"
+  #pod 'React-RCTText', :path => "#{rnPrefix}/Libraries/Text"
+  #pod 'React-RCTVibration', :path => "#{rnPrefix}/Libraries/Vibration"
+  #pod 'React-Core/RCTWebSocket', :path => "#{rnPrefix}/"
+  #
+  #pod 'React-cxxreact', :path => "#{rnPrefix}/ReactCommon/cxxreact"
+  #pod 'React-jsi', :path => "#{rnPrefix}/ReactCommon/jsi"
+  #pod 'React-jsiexecutor', :path => "#{rnPrefix}/ReactCommon/jsiexecutor"
+  #pod 'React-jsinspector', :path => "#{rnPrefix}/ReactCommon/jsinspector"
+  #pod 'ReactCommon/callinvoker', :path => "#{rnPrefix}/ReactCommon"
+  #pod 'ReactCommon/turbomodule/core', :path => "#{rnPrefix}/ReactCommon"
+  #pod 'Yoga', :path => "#{rnPrefix}/ReactCommon/yoga", :modular_headers => true
+  #
+  #pod 'DoubleConversion', :podspec => "#{rnPrefix}/third-party-podspecs/DoubleConversion.podspec"
+  #pod 'glog', :podspec => "#{rnPrefix}/third-party-podspecs/glog.podspec"
+  #pod 'Folly', :podspec => "#{rnPrefix}/third-party-podspecs/Folly.podspec"
 
   # Auto-linking
   use_unimodules!(
