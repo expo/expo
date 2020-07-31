@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="38.0.0" status="integration" publication="20200619171011"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="38.0.0" status="integration" publication="20200731170740"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -245,7 +245,7 @@
     <dependency org="host.exp.exponent" name="expo-battery" rev="2.2.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-branch" rev="2.2.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-brightness" rev="8.2.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-calendar" rev="8.2.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-calendar" rev="8.2.2" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-camera" rev="8.3.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-cellular" rev="2.2.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-constants" rev="9.1.1" conf="compileOnly-&gt;default"/>
@@ -276,7 +276,7 @@
     <dependency org="host.exp.exponent" name="expo-mail-composer" rev="8.2.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-media-library" rev="8.2.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-network" rev="2.2.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-notifications" rev="0.3.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-notifications" rev="0.3.3" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="8.2.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-permissions" rev="9.0.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-print" rev="9.0.1" conf="compileOnly-&gt;default"/>
