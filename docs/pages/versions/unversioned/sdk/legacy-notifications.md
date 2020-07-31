@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Notif
 import SnackInline from '~/components/plugins/SnackInline';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> ⚠️ **This API is deprecated and will be removed in the SDK 39. Please, check [the new notification module](../notifications/).**
+> ⚠️ **This API is deprecated and will be removed in the SDK 40. Please, check [the new notification module](../notifications/).**
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
