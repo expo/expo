@@ -33,7 +33,6 @@ export default function ExperienceHeader(props: {
     <View
       style={{
         marginTop: 144,
-        backgroundColor: Colors[themeName].bodyBackground,
         width: '100%',
         alignItems: 'center',
       }}>
@@ -53,13 +52,15 @@ export default function ExperienceHeader(props: {
         style={{
           marginTop: 24,
           fontWeight: 'bold',
-          fontSize: 24,
-          marginBottom: 8,
+          fontSize: 30,
+          marginBottom: 4,
           color: Colors[themeName].text,
         }}>
         {props.experience.name}
       </Text>
-      <Text onPress={onPressUsername} style={{ color: Colors[themeName].text, opacity: 0.4 }}>
+      <Text
+        onPress={onPressUsername}
+        style={{ fontSize: 16, color: Colors[themeName].text, opacity: 0.4 }}>
         By {props.experience.username}
       </Text>
 

@@ -5,7 +5,7 @@ import { Platform, Share, StyleSheet, Text, TouchableOpacity } from 'react-nativ
 
 import * as UrlUtils from '../utils/UrlUtils';
 
-function ShareProjectButton() {
+function ShareProjectButton(props: Partial<React.ComponentProps<typeof TouchableOpacity>>) {
   const theme = useTheme();
   const route = useRoute();
   const onPress = () => {
@@ -19,9 +19,10 @@ function ShareProjectButton() {
   };
 
   return (
-    <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
+    <TouchableOpacity style={[styles.buttonContainer, props.style]} onPress={onPress}>
       {Platform.select({
-        ios: <Text style={{ fontSize: 17, color: theme.colors.primary }}>Share</Text>,
+        // ios: <Text style={{ fontSize: 17, color: theme.colors.primary }}>Share</Text>,
+        ios: <Ionicons name="ios-share" size={27} color={theme.colors.primary} />,
         android: <Ionicons name="md-share" size={27} color={theme.colors.text} />,
       })}
     </TouchableOpacity>
@@ -35,7 +36,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonContainer: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

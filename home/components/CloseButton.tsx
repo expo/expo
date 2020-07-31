@@ -7,7 +7,7 @@ import { Ionicons } from './Icons';
 
 const slop = Platform.select({ ios: 15, default: 10 });
 
-function CloseButton() {
+function CloseButton(props: Partial<React.ComponentProps<typeof TouchableOpacity>>) {
   const navigation = useNavigation();
 
   const handlePress = () => {
@@ -18,7 +18,7 @@ function CloseButton() {
     <TouchableOpacity
       hitSlop={{ top: slop, left: slop, right: slop, bottom: slop }}
       onPress={handlePress}
-      style={styles.buttonContainer}>
+      style={[styles.buttonContainer, props.style]}>
       <Ionicons
         name={Platform.select({ ios: 'ios-close', default: 'md-close' })}
         size={Platform.select({ ios: 40, default: 28 })}
@@ -33,7 +33,6 @@ export default CloseButton;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingLeft: Platform.select({ ios: 15, default: 22 }),
