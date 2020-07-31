@@ -128,7 +128,7 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
   for (int i = 0; i < _delegates.count; i++) {
     id pointer = [_delegates pointerAtIndex:i];
     if ([pointer respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)] 
-      && ![NSStringFromClass([pointer class])  isEqual: @"EXUserNotificationManager"]) {
+      && ![NSStringFromClass([pointer class]) isEqual: @"EXUserNotificationManager"]) {
       // Remove EXUserNotificationManager check when LegacyNotifications are no longer supported
       responseWillBeHandledByAppropriateDelegate = YES;
       break;
