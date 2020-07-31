@@ -1,6 +1,4 @@
 import { useNavigation } from '@react-navigation/native';
-import { MaterialIcons } from './Icons';
-
 import * as React from 'react';
 import {
   Image,
@@ -13,13 +11,13 @@ import {
   View,
 } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
-import Colors from '../constants/Colors';
 
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
 import * as UrlUtils from '../utils/UrlUtils';
+import { useSDKExpired } from '../utils/useSDKExpired';
 import { Experience } from './ExperienceView.types';
-import Environment from '../utils/Environment';
+import { ExpiredSDK } from './Icons';
 
 export type PressUsernameHandler = (username: string) => void;
 
@@ -47,14 +45,7 @@ export default function ProjectCard({
   sdkVersion,
   experienceInfo,
 }: Props) {
-  const isStale = React.useMemo<boolean>(() => {
-    const majorVersionString = sdkVersion?.split('.').shift();
-    if (majorVersionString) {
-      const majorVersion = parseInt(majorVersionString);
-      return majorVersion < Environment.lowestSupportedSdkVersion;
-    }
-    return false;
-  }, [sdkVersion]);
+  const isExpired = useSDKExpired(sdkVersion);
 
   const navigation = useNavigation();
   const _maybeRenderIcon = () => {
@@ -66,9 +57,8 @@ export default function ProjectCard({
           </FadeIn>
         </View>
       );
-    } else {
-      return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
     }
+    return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
   };
 
   const _handleLongPressProject = () => {
@@ -88,7 +78,7 @@ export default function ProjectCard({
     // note(brentvatne): navigation should do this automatically
     Keyboard.dismiss();
 
-    if (isStale && experienceInfo) {
+    if (isExpired && experienceInfo) {
       navigation.navigate('Experience', experienceInfo);
       return;
     }
@@ -135,14 +125,9 @@ export default function ProjectCard({
               </View>
             </View>
           </View>
-          {isStale && (
-            <View style={styles.unlistedContainer}>
-              <MaterialIcons
-                name="block"
-                lightColor={'#000'}
-                darkColor={Colors.light.error}
-                size={18}
-              />
+          {isExpired && (
+            <View style={styles.expiredIconContainer}>
+              <ExpiredSDK size={24} />
             </View>
           )}
         </View>
@@ -171,7 +156,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  unlistedContainer: {
+  expiredIconContainer: {
     marginRight: 12,
     flexDirection: 'row',
     alignItems: 'center',

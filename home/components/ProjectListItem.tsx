@@ -2,11 +2,10 @@ import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 
-import Colors from '../constants/Colors';
-import Environment from '../utils/Environment';
 import * as UrlUtils from '../utils/UrlUtils';
+import { useSDKExpired } from '../utils/useSDKExpired';
 import { Experience } from './ExperienceView.types';
-import { MaterialIcons } from './Icons';
+import { ExpiredSDK } from './Icons';
 import ListItem from './ListItem';
 
 type Props = React.ComponentProps<typeof ListItem> & {
@@ -19,7 +18,7 @@ type Props = React.ComponentProps<typeof ListItem> & {
 };
 
 function ProjectListItem({
-  releaseChannel,
+  releaseChannel = 'pr-123',
   unlisted,
   username,
   subtitle,
@@ -28,69 +27,34 @@ function ProjectListItem({
   ...props
 }: Props) {
   const navigation = useNavigation();
+  const isExpired = useSDKExpired(sdkVersion);
 
-  const isStale = React.useMemo<boolean>(() => {
-    const majorVersionString = sdkVersion?.split('.').shift();
-    if (majorVersionString) {
-      const majorVersion = parseInt(majorVersionString);
-      return majorVersion < Environment.lowestSupportedSdkVersion;
-    }
-    return false;
-  }, [sdkVersion]);
-
-  const renderRightContent = (): React.ReactNode => {
+  const renderRightContent = React.useCallback((): React.ReactNode => {
     return (
       <View style={styles.rightContentContainer}>
-        {/* TODO: revisit this when we support "private" - unlisted is }
-        {/* {unlisted && this.renderUnlistedIcon()} */}
-        {releaseChannel && renderReleaseChannel(releaseChannel)}
-        {isStale && renderStaleIcon()}
+        {releaseChannel && (
+          <View style={styles.releaseChannelContainer}>
+            <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
+              {releaseChannel}
+            </Text>
+          </View>
+        )}
+        {isExpired && (
+          <View style={styles.expiredIconContainer}>
+            <ExpiredSDK size={24} />
+          </View>
+        )}
       </View>
     );
-  };
-
-  const renderStaleIcon = () => {
-    return (
-      <View style={styles.unlistedContainer}>
-        <MaterialIcons name="block" lightColor={'#000'} darkColor={Colors.light.error} size={18} />
-      </View>
-    );
-  };
-
-  /*
-  const renderUnlistedIcon = () => {
-    return (
-      <View style={styles.unlistedContainer}>
-        <View style={styles.unlistedIconContainer}>
-          <Ionicons name="ios-eye-off" size={15} lightColor="rgba(36, 44, 58, 0.3)" />
-        </View>
-        <Text style={styles.unlistedText}>Unlisted</Text>
-      </View>
-    );
-  };
-  */
-
-  const renderReleaseChannel = (releaseChannel: string) => {
-    return (
-      <View style={styles.releaseChannelContainer}>
-        <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
-          {releaseChannel}
-        </Text>
-      </View>
-    );
-  };
+  }, [isExpired, releaseChannel]);
 
   const handlePress = () => {
     // Open the project info page when it's stale.
-    if (isStale && props.experienceInfo) {
-      handleInfoPress();
+    if (isExpired && props.experienceInfo) {
+      handleLongPress();
       return;
     }
     Linking.openURL(UrlUtils.normalizeUrl(url));
-  };
-
-  const handleInfoPress = () => {
-    navigation.navigate('Experience', props.experienceInfo);
   };
 
   const handleLongPress = () => {
@@ -118,25 +82,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  unlistedContainer: {
-    marginEnd: 5,
-    marginStart: 5,
+  expiredIconContainer: {
+    marginRight: 4,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  unlistedBullet: {
-    width: 3.5,
-    height: 3.5,
-    borderRadius: 3.5 / 2,
-    marginHorizontal: 6,
-  },
-  unlistedIconContainer: {
-    flexDirection: 'row',
-  },
-  unlistedText: {
-    marginLeft: 3,
-    color: Colors.light.greyText,
-    fontSize: 13,
   },
   releaseChannelContainer: {
     marginEnd: 5,
