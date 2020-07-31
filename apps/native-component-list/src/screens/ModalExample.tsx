@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
-import Touchable from 'react-native-platform-touchable';
 
+import Button from '../components/Button';
 import { Colors, Layout } from '../constants';
 
 interface State {
@@ -36,33 +36,33 @@ export default class ModalExample extends React.Component<object, State> {
           <View style={styles.modalContainer}>
             <View>
               <Text>Hello World!</Text>
-              <Touchable
+              <Button
                 style={styles.button}
                 onPress={() => {
                   this.setState({ modalVisible: false });
-                }}>
-                <Text style={styles.buttonText}>Hide Modal</Text>
-              </Touchable>
+                }}
+                title="Hide Modal"
+              />
             </View>
           </View>
         </Modal>
-        <Touchable
+        <Button
           style={styles.button}
           onPress={() => {
             this.setState({ modalVisible: true, animationType: 'slide' });
-          }}>
-          <Text style={styles.buttonText}>Show modal (slide)</Text>
-        </Touchable>
+          }}
+          title="Show modal (slide)"
+        />
 
         {Layout.isSmallDevice && <View style={{ marginBottom: 10 }} />}
 
-        <Touchable
+        <Button
           style={styles.button}
           onPress={() => {
             this.setState({ modalVisible: true, animationType: 'fade' });
-          }}>
-          <Text style={styles.buttonText}>Show modal (fade)</Text>
-        </Touchable>
+          }}
+          title="Show modal (fade)"
+        />
       </View>
     );
   }
@@ -85,7 +85,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 3,
-    backgroundColor: Colors.tintColor,
     marginRight: 10,
   },
   buttonText: {
