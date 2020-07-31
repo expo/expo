@@ -9,13 +9,19 @@ import Colors from '../constants/Colors';
 import { Experience } from './ExperienceView.types';
 import { Ionicons, Privacy } from './Icons';
 import { StyledText } from './Text';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ExperienceHeader(props: {
   themeName: ColorSchemeName;
   experience: Experience;
 }) {
+  const navigation = useNavigation();
   const onPress = () => {
     Linking.openURL(`exp://exp.host/${props.experience.fullName}`);
+  };
+  const onPressUsername = () => {
+    navigation.goBack();
+    navigation.navigate('Profile', { username: props.experience.username });
   };
   const { themeName } = props;
   const storeUrl = Platform.select({
@@ -53,7 +59,7 @@ export default function ExperienceHeader(props: {
         }}>
         {props.experience.name}
       </Text>
-      <Text style={{ color: Colors[themeName].text, opacity: 0.4 }}>
+      <Text onPress={onPressUsername} style={{ color: Colors[themeName].text, opacity: 0.4 }}>
         By {props.experience.username}
       </Text>
 

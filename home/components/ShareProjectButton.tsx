@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { useNavigation, useRoute, useTheme } from '@react-navigation/native';
+import { useRoute, useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, Share, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
@@ -7,10 +7,9 @@ import * as UrlUtils from '../utils/UrlUtils';
 
 function ShareProjectButton() {
   const theme = useTheme();
-  const navigation = useNavigation();
   const route = useRoute();
   const onPress = () => {
-    const url = `https://expo.io/@${route.params.username}/${route.params.slug}`;
+    const url = `exp://exp.host/@${route.params.username}/${route.params.slug}`;
     const message = UrlUtils.normalizeUrl(url);
     Share.share({
       title: url,

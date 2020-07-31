@@ -1,4 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
+import { MaterialIcons } from './Icons';
+
 import * as React from 'react';
 import {
   Image,
@@ -11,6 +13,7 @@ import {
   View,
 } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
+import Colors from '../constants/Colors';
 
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
@@ -69,6 +72,10 @@ export default function ProjectCard({
   };
 
   const _handleLongPressProject = () => {
+    if (experienceInfo) {
+      navigation.navigate('Experience', experienceInfo);
+      return;
+    }
     const url = UrlUtils.normalizeUrl(projectUrl);
     Share.share({
       title: name,
@@ -108,24 +115,36 @@ export default function ProjectCard({
         onLongPress={_handleLongPressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7">
-        <View style={styles.header}>
-          <View style={styles.iconContainer}>{_maybeRenderIcon()}</View>
-          <View style={styles.infoContainer}>
-            <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-              {name}
-            </StyledText>
-            <View style={styles.projectExtraInfoContainer}>
-              <StyledText
-                lightColor="rgba(36, 44, 58, 0.4)"
-                darkColor="#ccc"
-                onPress={_handlePressUsername}
-                style={styles.projectExtraInfoText}
-                ellipsizeMode="tail"
-                numberOfLines={1}>
-                {username}
+        <View style={[styles.header, { justifyContent: 'space-between' }]}>
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>{_maybeRenderIcon()}</View>
+            <View style={styles.infoContainer}>
+              <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {name}
               </StyledText>
+              <View style={styles.projectExtraInfoContainer}>
+                <StyledText
+                  lightColor="rgba(36, 44, 58, 0.4)"
+                  darkColor="#ccc"
+                  onPress={_handlePressUsername}
+                  style={styles.projectExtraInfoText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}>
+                  {username}
+                </StyledText>
+              </View>
             </View>
           </View>
+          {isStale && (
+            <View style={styles.unlistedContainer}>
+              <MaterialIcons
+                name="block"
+                lightColor={'#000'}
+                darkColor={Colors.light.error}
+                size={18}
+              />
+            </View>
+          )}
         </View>
         <View style={styles.body}>
           <StyledText
@@ -151,6 +170,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  unlistedContainer: {
+    marginRight: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   body: {
     paddingLeft: 15,
