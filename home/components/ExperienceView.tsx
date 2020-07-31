@@ -1,5 +1,5 @@
 import { A, Code } from '@expo/html-elements';
-import { useTheme } from '@react-navigation/native';
+import { useTheme, useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,6 +11,7 @@ import ExperienceHeader from './ExperienceHeader';
 import { Experience, Viewer } from './ExperienceView.types';
 import { StyledText } from './Text';
 import { StyledView } from './Views';
+import * as Strings from '../utils/Strings';
 
 type Props = {
   experience?: Experience;
@@ -52,48 +53,49 @@ export default function ExperienceView({ experience }: Props) {
   const isSnack = experience.username === 'snack';
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <StyledView>
-        <ColorBanner __typename={experience.__typename} icon={experience.icon}>
-          <ExperienceHeader themeName={themeName} experience={experience} />
-        </ColorBanner>
-        <ExperienceDescription description={experience.description} />
-        {!isSupported && (
-          <ExpoSDKOutdated fullName={experience.fullName} sdkVersion={experience.sdkVersion} />
-        )}
-        {isSnack && <ExperienceSnack username={experience.username} slug={experience.slug} />}
-      </StyledView>
+    <ScrollView style={{ flex: 1, backgroundColor: Colors[themeName].bodyBackground }}>
+      <ColorBanner __typename={experience.__typename} icon={experience.icon}>
+        <ExperienceHeader themeName={themeName} experience={experience} />
+      </ColorBanner>
+      <ExperienceDescription description={experience.description} />
+      {!isSupported && (
+        <ExpoSDKOutdated fullName={experience.fullName} sdkVersion={experience.sdkVersion} />
+      )}
+      {isSnack && <ExperienceSnack username={experience.username} slug={experience.slug} />}
     </ScrollView>
   );
 }
 
 function ExperienceDescription(props: Pick<Experience, 'description'>) {
-  let description: any = props.description;
+  const description: any = React.useMemo(() => {
+    if (!props.description) {
+      return (
+        <>
+          This project has no description, the author can add one by updating their{' '}
+          <Code
+            style={{ backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 4, paddingHorizontal: 1 }}>
+            app.config.js
+          </Code>{' '}
+          in the project's directory.
+        </>
+      );
+    }
 
-  if (!description) {
-    description = (
-      <>
-        This project has no description, the author can add one by updating their{' '}
-        <Code style={{ backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 4, paddingHorizontal: 1 }}>
-          app.config.js
-        </Code>{' '}
-        in the project's directory.
-      </>
-    );
-  }
+    return Strings.mutateStringWithLinkComponents(props.description);
+  }, [props.description]);
   return (
-    <View style={{ padding: 16 }}>
+    <StyledView style={styles.container}>
       <StyledText style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 8 }}>
         About this project
       </StyledText>
       <StyledText>{description}</StyledText>
-    </View>
+    </StyledView>
   );
 }
 
 function ExpoSDKOutdated(props: Pick<Experience, 'fullName' | 'sdkVersion'>) {
   return (
-    <StyledView style={[styles.container, { marginBottom: 24 }]}>
+    <StyledView style={styles.container}>
       <StyledText style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 16 }}>
         This project needs an update
       </StyledText>
@@ -171,7 +173,9 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   container: {
-    width: '100%',
+    flex: 1,
+    marginHorizontal: 16,
+    marginVertical: 8,
     padding: 16,
   },
 });

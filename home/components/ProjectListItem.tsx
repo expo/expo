@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import { Linking, Share, StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '../constants/Colors';
-import * as UrlUtils from '../utils/UrlUtils';
-import ListItem from './ListItem';
 import Environment from '../utils/Environment';
+import * as UrlUtils from '../utils/UrlUtils';
 import { Experience } from './ExperienceView.types';
 import { MaterialIcons } from './Icons';
+import ListItem from './ListItem';
 
 type Props = React.ComponentProps<typeof ListItem> & {
   url: string;
@@ -94,12 +94,7 @@ function ProjectListItem({
   };
 
   const handleLongPress = () => {
-    const message = UrlUtils.normalizeUrl(url);
-    Share.share({
-      title: url,
-      message,
-      url: message,
-    });
+    navigation.navigate('Experience', props.experienceInfo);
   };
 
   const handlePressUsername = () => {

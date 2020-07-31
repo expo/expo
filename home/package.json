@@ -64,6 +64,7 @@
     "react-native-safe-area-context": "3.0.2",
     "react-native-screens": "~2.9.0",
     "react-redux": "^7.2.0",
+    "react-string-replace": "^0.4.4",
     "reanimated-bottom-sheet": "^1.0.0-alpha.18",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",

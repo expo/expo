@@ -9,10 +9,12 @@ import { Platform, StyleSheet } from 'react-native';
 import CloseButton from '../components/CloseButton';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
+import ShareProjectButton from '../components/ShareProjectButton';
 import UserSettingsButton from '../components/UserSettingsButton';
 import * as Themes from '../constants/Themes';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import ExperienceScreen from '../screens/ExperienceScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
@@ -20,7 +22,6 @@ import ProfileScreen from '../screens/ProfileScreen';
 import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
-import ExperienceScreen from '../screens/ExperienceScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
@@ -259,6 +260,7 @@ export default (props: { theme: string }) => (
         options={{
           title: 'Experience',
           headerLeft: () => <CloseButton />,
+          headerRight: () => <ShareProjectButton />,
         }}
       />
     </RootStack.Navigator>

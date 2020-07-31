@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { Image, Text, View, Linking, Platform } from 'react-native';
+import { Image, Linking, Platform, Text, View } from 'react-native';
+import { ColorSchemeName } from 'react-native-appearance';
+import FadeIn from 'react-native-fade-in-image';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import semver from 'semver';
 
 import Colors from '../constants/Colors';
-import { Privacy, Ionicons } from './Icons';
 import { Experience } from './ExperienceView.types';
-import { ColorSchemeName } from 'react-native-appearance';
+import { Ionicons, Privacy } from './Icons';
 import { StyledText } from './Text';
 
 export default function ExperienceHeader(props: {
@@ -21,9 +22,6 @@ export default function ExperienceHeader(props: {
     android: props.experience.playStoreUrl,
     ios: props.experience.appStoreUrl,
   });
-
-  // props.experience.githubUrl = 'somn';
-  props.experience.githubUrl = 'somn';
 
   return (
     <View
@@ -120,25 +118,26 @@ function HeaderButton({ title, iconName, value, onPress }) {
     </TouchableOpacity>
   );
 }
-
 function ExperienceIcon({ source, size, isPrivate, onPress }: any) {
   return (
     <TouchableOpacity
       style={{
         borderRadius: 12,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: 'rgba(58, 40, 204, 0.06)',
       }}
       onPress={onPress}>
-      <Image
-        source={{ uri: source }}
-        style={{
-          width: size,
-          height: size,
-        }}
-      />
-      {isPrivate && <Privacy size={24} style={{ position: 'absolute', right: 4, bottom: 4 }} />}
+      <FadeIn placeholderColor="#eee">
+        <>
+          <Image
+            source={source ? { uri: source } : require('../assets/placeholder-app-icon.png')}
+            style={{
+              width: size,
+              height: size,
+            }}
+          />
+          {isPrivate && <Privacy size={24} style={{ position: 'absolute', right: 4, bottom: 4 }} />}
+        </>
+      </FadeIn>
     </TouchableOpacity>
   );
 }
