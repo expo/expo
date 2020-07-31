@@ -8,4 +8,8 @@ HOST_FILE='./assets/.dev-menu-packager-host'
 touch $HOST_FILE
 echo $PACKAGER_HOST > $HOST_FILE
 
+# Ignore any changes made to this file. The packager host should stay local
+# but it cannot just be gitignored — it must be committed and published.
+git update-index --skip-worktree $HOST_FILE
+
 react-native start --port $PACKAGER_PORT

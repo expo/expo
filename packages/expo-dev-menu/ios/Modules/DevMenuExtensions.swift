@@ -34,7 +34,7 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     }
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
-    #if RCT_DEV
+    #if DEBUG
     let remoteDebug = DevMenuExtensions.remoteDebugAction {
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
     }
