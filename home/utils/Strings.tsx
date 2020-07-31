@@ -46,15 +46,22 @@ const matchHrefToLinkComponents = (match, key) => {
   );
 };
 
-export const mutateStringWithLinkComponents = (text, options) => {
-  text = stringReplace(text, HREF_REGULAR_EXPRESSION, matchHrefToLinkComponents);
-  text = stringReplace(text, HASHTAG_REGULAR_EXPRESSION, matchHashtagToLinkComponents);
+export const mutateStringWithLinkComponents = (
+  text: string,
+  options?: { twitter?: boolean }
+): React.ReactNodeArray => {
+  let outputText = stringReplace(text, HREF_REGULAR_EXPRESSION, matchHrefToLinkComponents);
+  outputText = stringReplace(outputText, HASHTAG_REGULAR_EXPRESSION, matchHashtagToLinkComponents);
 
-  if (options && options.twitter) {
-    text = stringReplace(text, MENTIONS_REGULAR_EXPRESSION, matchTwitterToLinkComponents);
+  if (options?.twitter) {
+    outputText = stringReplace(
+      outputText,
+      MENTIONS_REGULAR_EXPRESSION,
+      matchTwitterToLinkComponents
+    );
   } else {
-    text = stringReplace(text, MENTIONS_REGULAR_EXPRESSION, matchExpoToLinkComponents);
+    outputText = stringReplace(outputText, MENTIONS_REGULAR_EXPRESSION, matchExpoToLinkComponents);
   }
 
-  return text;
+  return outputText;
 };

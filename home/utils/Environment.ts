@@ -22,7 +22,7 @@ if (SupportedExpoSdks.length > 0) {
 }
 
 const supportedSdksString = `SDK${
-  SupportedExpoSdks.length === 1 ? ': ' : 's: '
+  SupportedExpoSdks.length === 1 ? ':' : 's:'
 } ${SupportedExpoSdks.map(semver.major)
   .sort((a, b) => a - b)
   .join(', ')}`;

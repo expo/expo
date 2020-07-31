@@ -1,21 +1,32 @@
-import { A, Code } from '@expo/html-elements';
-import { useTheme, useNavigation } from '@react-navigation/native';
+import { A } from '@expo/html-elements';
+import { useNavigation, useTheme } from '@react-navigation/native';
+import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View, StatusBar } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import {
+  ActivityIndicator,
+  Image,
+  Linking,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { ColorSchemeName } from 'react-native-appearance';
+import FadeIn from 'react-native-fade-in-image';
+import { ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import semver from 'semver';
+
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
-import { getBackgroundColorFromIMGIX } from '../utils/IconColor';
-import * as UrlUtils from '../utils/UrlUtils';
-import ExperienceHeader from './ExperienceHeader';
-import { Experience, Viewer } from './ExperienceView.types';
-import { StyledText } from './Text';
-import { StyledView } from './Views';
 import * as Strings from '../utils/Strings';
-import ShareProjectButton from './ShareProjectButton';
+import * as UrlUtils from '../utils/UrlUtils';
 import CloseButton from './CloseButton';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import { BlurView } from 'expo-blur';
+import { Experience, Viewer } from './ExperienceView.types';
+import * as Icons from './Icons';
+import ShareProjectButton from './ShareProjectButton';
+import { StyledText } from './Text';
+import { StyledBlurView, StyledView } from './Views';
 
 type Props = {
   experience?: Experience;
@@ -23,9 +34,30 @@ type Props = {
 };
 
 export default function ExperienceView({ experience }: Props) {
+  return (
+    <>
+      <StatusBar barStyle="light-content" />
+      <StyledBlurView style={{ flex: 1 }}>
+        {experience ? (
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 48 }}>
+            <ExperienceContents experience={experience} />
+          </ScrollView>
+        ) : (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" />
+          </View>
+        )}
+        <ModalHeader />
+      </StyledBlurView>
+    </>
+  );
+}
+
+function ExperienceContents({ experience }: any) {
   const theme = useTheme();
+
   const themeName = theme.dark ? 'dark' : 'light';
-  console.log('experience', experience);
+
   const isDeprecated = React.useMemo<boolean>(() => {
     const majorVersionString = experience?.sdkVersion?.split('.').shift();
     if (majorVersionString) {
@@ -35,73 +67,62 @@ export default function ExperienceView({ experience }: Props) {
     return false;
   }, [experience?.sdkVersion]);
 
-  if (!experience) {
-    return (
-      <StyledView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </StyledView>
-    );
-  }
-
   // NOTE: This can be removed if we decide to go through all projects
   // that are unpublished and delete them in our backend.
   if (!experience.published) {
-    return (
-      <ScrollView>
-        <ExperienceUnpublished />
-      </ScrollView>
-    );
+    return <ExperienceUnpublished />;
   }
 
-  const isSupported = !isDeprecated;
   const isSnack = experience.username === 'snack';
 
   return (
-    <BlurView intensity={100} tint={theme.dark ? 'dark' : 'light'} style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1 }}>
-        <StatusBar barStyle="light-content" />
-        {/* <ColorBanner __typename={experience.__typename} icon={experience.icon}> */}
-        <ExperienceHeader themeName={themeName} experience={experience} />
-        {/* </ColorBanner> */}
-        <ExperienceDescription description={experience.description} />
-        {!isSupported && (
-          <ExpoSDKOutdated fullName={experience.fullName} sdkVersion={experience.sdkVersion} />
-        )}
-        {isSnack && <ExperienceSnack username={experience.username} slug={experience.slug} />}
-        <StartButton isSupported={isSupported} themeName={themeName} onPress={() => {}} />
-      </ScrollView>
-      <View
-        pointerEvents="box-none"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <CloseButton />
-        <ShareProjectButton />
-      </View>
-    </BlurView>
+    <>
+      <ExperienceHeader themeName={themeName} {...experience} />
+
+      <ExperienceActions {...experience} />
+      <ExperienceDescription description={experience.description} />
+      {isDeprecated && (
+        <ExpoSDKOutdated fullName={experience.fullName} sdkVersion={experience.sdkVersion} />
+      )}
+      {isSnack && <ExperienceSnack username={experience.username} slug={experience.slug} />}
+      <StartButton isDeprecated={isDeprecated} themeName={themeName} onPress={() => {}} />
+    </>
   );
 }
 
-function StartButton({ onPress, isSupported, themeName }) {
+function ModalHeader() {
+  return (
+    <View
+      pointerEvents="box-none"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      }}>
+      <CloseButton />
+      <ShareProjectButton />
+    </View>
+  );
+}
+
+function StartButton({ onPress, isDeprecated, themeName }) {
   return (
     <TouchableHighlight
       onPress={onPress}
       style={{
         marginHorizontal: 16,
         marginVertical: 8,
-        backgroundColor: isSupported ? Colors[themeName].tintColor : '#43474A',
+        backgroundColor: isDeprecated ? '#43474A' : Colors[themeName].tintColor,
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 12,
         flex: 1,
       }}
-      underlayColor={isSupported ? '#81B7E7' : '#5F6871'}>
+      underlayColor={isDeprecated ? '#5F6871' : '#81B7E7'}>
       <Text
         style={{
           fontWeight: 'bold',
@@ -113,16 +134,196 @@ function StartButton({ onPress, isSupported, themeName }) {
   );
 }
 
+// Actions
+
+function ExperienceActions(
+  props: Pick<Experience, 'sdkVersion' | 'githubUrl' | 'appStoreUrl' | 'playStoreUrl'>
+) {
+  const storeUrl = Platform.select({
+    android: props.playStoreUrl,
+    ios: props.appStoreUrl,
+  });
+  return (
+    <View
+      style={{
+        justifyContent: 'space-around',
+        flexDirection: 'row',
+        flex: 1,
+        height: 72,
+        marginTop: 8,
+        alignItems: 'stretch',
+      }}>
+      {storeUrl && (
+        <ExperienceActionItem
+          title="Published"
+          onPress={() => {
+            // TODO(bacon): app-preview API?
+            Linking.openURL(storeUrl!);
+          }}>
+          <Icons.Store size={28} />
+        </ExperienceActionItem>
+      )}
+
+      <ExperienceActionItem title="SDK Version">
+        <StyledText style={{ fontSize: 30, lineHeight: 30 }}>
+          {semver.major(props.sdkVersion)}
+        </StyledText>
+      </ExperienceActionItem>
+
+      {props.githubUrl && (
+        <ExperienceActionItem
+          title="Repo"
+          onPress={() => {
+            const githubUrl = props.githubUrl!;
+            WebBrowser.openBrowserAsync(githubUrl);
+          }}>
+          <Icons.Github size={30} />
+        </ExperienceActionItem>
+      )}
+    </View>
+  );
+}
+
+function ExperienceActionItem({
+  title,
+  children,
+  onPress,
+}: {
+  title: string;
+  children?: any;
+  onPress?: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      style={{
+        justifyContent: 'space-between',
+        flex: 1,
+        minWidth: '33%',
+        alignItems: 'center',
+        paddingVertical: 12,
+      }}
+      disabled={!onPress}
+      onPress={onPress}>
+      {children}
+      <StyledText
+        style={{
+          opacity: 0.6,
+          fontSize: 10,
+          fontWeight: 'bold',
+          textAlign: 'center',
+          marginTop: 4,
+        }}>
+        {title}
+      </StyledText>
+    </TouchableOpacity>
+  );
+}
+
+// Header
+
+function ExperienceHeader(
+  props: {
+    themeName: ColorSchemeName;
+  } & Pick<Experience, 'fullName' | 'icon' | 'iconUrl' | 'privacy' | 'name' | 'username'>
+) {
+  const onPress = () => {
+    Linking.openURL(`exp://exp.host/${props.fullName}`);
+  };
+  const navigation = useNavigation();
+  const { themeName } = props;
+  const onPressUsername = () => {
+    navigation.goBack();
+    navigation.navigate('Profile', { username: props.username });
+  };
+  return (
+    <View
+      style={{
+        marginTop: 48,
+        width: '100%',
+        alignItems: 'center',
+      }}>
+      <ExperienceIcon
+        source={props.icon ? props.icon.url : props.iconUrl}
+        size={120}
+        onPress={onPress}
+        isPrivate={props.privacy !== 'public'}
+      />
+      <Text
+        onPress={onPress}
+        style={{
+          marginTop: 24,
+          fontWeight: 'bold',
+          fontSize: 30,
+          marginBottom: 4,
+          color: Colors[themeName].text,
+        }}>
+        {props.name}
+      </Text>
+      <Text
+        onPress={onPressUsername}
+        style={{ fontSize: 16, color: Colors[themeName].text, opacity: 0.4 }}>
+        By {props.username}
+      </Text>
+    </View>
+  );
+}
+
+function ExperienceIcon({ source, size, isPrivate, onPress }: any) {
+  return (
+    <TouchableOpacity
+      style={{
+        borderRadius: 12,
+        overflow: 'hidden',
+      }}
+      onPress={onPress}>
+      <FadeIn placeholderColor="#eee">
+        <>
+          <Image
+            source={source ? { uri: source } : require('../assets/placeholder-app-icon.png')}
+            style={{
+              width: size,
+              height: size,
+            }}
+          />
+          {isPrivate && (
+            <Icons.Privacy size={24} style={{ position: 'absolute', right: 4, bottom: 4 }} />
+          )}
+        </>
+      </FadeIn>
+    </TouchableOpacity>
+  );
+}
+
+// Sections
+
+function SectionHeader({ children }: { children: string }) {
+  return (
+    <StyledText style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 12 }}>
+      {children}
+    </StyledText>
+  );
+}
+
 function ExperienceDescription(props: Pick<Experience, 'description'>) {
   const description: any = React.useMemo(() => {
     if (!props.description) {
       return (
         <>
           This project has no description, the author can add one by updating their{' '}
-          <Code
-            style={{ backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 4, paddingHorizontal: 1 }}>
-            app.config.js
-          </Code>{' '}
+          <View
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.1)',
+              borderRadius: 3,
+              marginTop: -2,
+              paddingHorizontal: 2,
+            }}>
+            <Text
+              style={{
+                color: '#975252',
+              }}>
+              app.json
+            </Text>
+          </View>{' '}
           in the project's directory.
         </>
       );
@@ -132,11 +333,9 @@ function ExperienceDescription(props: Pick<Experience, 'description'>) {
   }, [props.description]);
   return (
     <View style={styles.itemMargins}>
-      <StyledText style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 12 }}>
-        About this project
-      </StyledText>
+      <SectionHeader>About this project</SectionHeader>
       <StyledView style={styles.containerShape}>
-        <StyledText>{description}</StyledText>
+        <StyledText style={{ lineHeight: 20 }}>{description}</StyledText>
       </StyledView>
     </View>
   );
@@ -145,9 +344,7 @@ function ExperienceDescription(props: Pick<Experience, 'description'>) {
 function ExpoSDKOutdated(props: Pick<Experience, 'fullName' | 'sdkVersion'>) {
   return (
     <View style={styles.itemMargins}>
-      <StyledText style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>
-        This project needs an update
-      </StyledText>
+      <SectionHeader>This project needs an update</SectionHeader>
       <StyledView style={styles.containerShape}>
         <StyledText>
           This project uses SDK{' '}
@@ -170,9 +367,7 @@ function ExpoSDKOutdated(props: Pick<Experience, 'fullName' | 'sdkVersion'>) {
 function ExperienceUnpublished() {
   return (
     <View style={styles.itemMargins}>
-      <StyledText style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 16 }}>
-        Project Missing
-      </StyledText>
+      <SectionHeader>Project Missing</SectionHeader>
       <StyledView style={styles.containerShape}>
         <StyledText>
           This project is no longer published because the author unpublished it. If you want to open
@@ -186,9 +381,7 @@ function ExperienceUnpublished() {
 function ExperienceSnack(props: Pick<Experience, 'username' | 'slug'>) {
   return (
     <View style={styles.itemMargins}>
-      <StyledText style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>
-        Looking for Snack?
-      </StyledText>
+      <SectionHeader>Looking for Snack?</SectionHeader>
       <StyledView style={styles.containerShape}>
         <StyledText>
           Want to see this snack? Click{' '}
@@ -196,25 +389,6 @@ function ExperienceSnack(props: Pick<Experience, 'username' | 'slug'>) {
         </StyledText>
       </StyledView>
     </View>
-  );
-}
-
-function ColorBanner({
-  __typename,
-  icon,
-  children,
-}: Pick<Experience, '__typename' | 'icon'> & { children: any }) {
-  const isApp = __typename === 'App';
-
-  const backgroundColor: string = React.useMemo(() => {
-    if (isApp) {
-      return getBackgroundColorFromIMGIX({ icon }) ?? 'gray';
-    }
-    return 'gray';
-  }, [isApp, icon]);
-
-  return (
-    <View style={{ backgroundColor: backgroundColor, justifyContent: 'flex-end' }}>{children}</View>
   );
 }
 
