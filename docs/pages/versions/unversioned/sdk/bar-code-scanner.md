@@ -17,6 +17,10 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <InstallSection packageName="expo-barcode-scanner" />
 
+## Configuration
+
+In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](../permissions/#permissionscamera) permission. See the [usage example](#usage) below.
+
 ## Supported formats
 
 | Bar code format | iOS   | Android     |
