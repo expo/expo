@@ -8,6 +8,7 @@ export interface PermissionMap {
 }
 export interface PermissionInfo extends UMPermissionResponse {
     accessPrivilages?: 'all' | 'limited' | 'none';
+    scope?: 'whenInUse' | 'always' | 'none';
     android?: PermissionDetailsLocationAndroid;
 }
 export { PermissionStatus };
