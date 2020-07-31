@@ -1,4 +1,5 @@
 import * as Linking from 'expo-linking';
 import * as Updates from './Updates/Updates';
-export { Updates, Linking };
+import { default as Notifications } from './Notifications/Notifications';
+export { Updates, Linking, Notifications };
 //# sourceMappingURL=deprecated.web.js.map
