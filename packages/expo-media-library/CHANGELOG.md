@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Added external storage permissions declarations to `AndroidManifest.xml` on Android. ([#9231](https://github.com/expo/expo/pull/9231) by [@bycedric](https://github.com/bycedric))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
