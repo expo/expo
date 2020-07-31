@@ -48,7 +48,7 @@
     "@react-navigation/stack": "^5.4.1",
     "expo-font": "~8.2.1",
     "expo-module-scripts": "~1.2.0",
-    "react": "16.11.0",
-    "react-native": "0.62.2"
+    "react": "16.13.1",
+    "react-native": "0.63.2"
   }
 }
