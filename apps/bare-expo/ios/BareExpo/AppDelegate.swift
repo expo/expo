@@ -7,17 +7,15 @@
 //
 
 import Foundation
+import EXDevMenu
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper {
+class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
+  var bridge: RCTBridge?
   
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    
-    ensureReactMethodSwizzlingSetUp()
-
     moduleRegistryAdapter = UMModuleRegistryAdapter(moduleRegistryProvider: UMModuleRegistryProvider())
-    
     window = UIWindow(frame: UIScreen.main.bounds)
 
     if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
@@ -28,7 +26,10 @@ class AppDelegate: UMAppDelegateWrapper {
       
       window?.rootViewController = rootViewController
       window?.makeKeyAndVisible()
+      self.bridge = bridge
     }
+
+    DevMenuManager.shared.delegate = self
 
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
     
@@ -44,26 +45,11 @@ class AppDelegate: UMAppDelegateWrapper {
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     return RCTLinkingManager.application(app, open: url, options: options)
   }
-  
-  // Bring back React method swizzling removed from its Pod
-  // when integrating with Expo client.
-  // https://github.com/expo/react-native/commit/7f2912e8005ea6e81c45935241081153b822b988
-  func ensureReactMethodSwizzlingSetUp() {
-    Dispatch.once {
-      // RCTKeyCommands.m
-      // swizzle UIResponder
-      RCTSwapInstanceMethods(UIResponder.self,
-                             #selector(getter: UIResponder.keyCommands),
-                             Selector(("RCT_keyCommands")))
 
-      // RCTDevMenu.m
-      // We're swizzling here because it's poor form to override methods in a category,
-      // however UIWindow doesn't actually implement motionEnded:withEvent:, so there's
-      // no need to call the original implementation.
-      RCTSwapInstanceMethods(UIWindow.self,
-                             #selector(UIResponder.motionEnded(_:with:)),
-                             Selector(("RCT_motionEnded:withEvent:")))
-    }
+  // MARK: DevMenuDelegateProtocol
+
+  func appBridge(forDevMenuManager manager: DevMenuManager) -> AnyObject? {
+    return self.bridge
   }
 }
 
