@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed notification response listener not triggering in the managed workflow on iOS when app was completely killed ([#9478](https://github.com/expo/expo/pull/9478) by [@cruzach](https://github.com/cruzach))
+
 ## 0.6.0 — 2020-07-29
 
 ### 🎉 New features
