@@ -37,6 +37,7 @@ target 'BareExpo' do
     }
   )
 
+  pod 'EXDevMenu', path: '../../../packages/expo-dev-menu'
   pod 'expo-image', path: '../../../packages/expo-image'
 
   # Fix Google Sign-in
