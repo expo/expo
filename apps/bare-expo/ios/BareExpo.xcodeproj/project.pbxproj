@@ -14,7 +14,6 @@
 		6EACD0A8207D4B44E882DAB9 /* libPods-BareExpo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88C45DD943C52814593043BC /* libPods-BareExpo.a */; };
 		CD59639C247F2EFA0030EECA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD59639B247F2EFA0030EECA /* AppDelegate.swift */; };
 		CD6B041323091F4B002044FF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
-		CD700D5624D3AEE700014B24 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 008F07F21AC5B25A0029DE68 /* main.jsbundle */; };
 		CDDB247C24802C4C00F6E7AC /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDB247B24802C4C00F6E7AC /* Dispatch.swift */; };
 		E1653C7C414D0CD8F87150FE /* libPods-BareExpoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 028439B18A901F7A2CF09BB9 /* libPods-BareExpoTests.a */; };
 /* End PBXBuildFile section */
@@ -260,7 +259,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD700D5624D3AEE700014B24 /* main.jsbundle in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				31B5C869245847DF0086F49B /* notification.wav in Resources */,
