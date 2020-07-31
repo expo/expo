@@ -57,7 +57,7 @@
 /packages/expo-module-scripts                   @ide @bbarthec
 /packages/expo-module-template                  @bbarthec @tsapeta
 /packages/expo-network                          @ide
-/packages/expo-notifications                    @mczernek @sjchmiela
+/packages/expo-notifications                    @cruzach @sjchmiela
 /packages/expo-payments-stripe                  @sjchmiela
 /packages/expo-permissions                      @bbarthec @lukmccall
 /packages/expo-print                            @tsapeta @lukmccall
@@ -75,7 +75,7 @@
 /packages/expo-sqlite                           @sjchmiela @mczernek
 /packages/expo-store-review                     @EvanBacon @tsapeta
 /packages/expo-task-manager                     @tsapeta @mczernek
-/packages/expo-updates                          @esamelson @mczernek
+/packages/expo-updates                          @esamelson
 /packages/expo-video-thumbnails                 @sjchmiela
 /packages/expo-web-browser                      @sjchmiela @mczernek
 /packages/expo-yarn-workspaces                  @ide
