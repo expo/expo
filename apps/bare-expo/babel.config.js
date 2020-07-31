@@ -11,7 +11,9 @@ module.exports = function(api) {
   // We'd like to get rid of `native-component-list` being a part of the final bundle.
   // Otherwise, some tests may fail due to timeouts (bundling takes significantly more time).
   if (process.env.CI || process.env.NO_NCL) {
-    moduleResolverConfig.alias['^native-component-list(/.*)?'] = './moduleResolvers/nullResolver';
+    moduleResolverConfig.alias['^native-component-list(/.*)?'] = require.resolve(
+      './moduleResolvers/nullResolver.js'
+    );
   }
 
   return {
