@@ -164,7 +164,7 @@ If the user cancelled the picking, returns `{ cancelled: true }`.
 Otherwise, this method returns information about the selected media item. When the chosen item is an image, this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`; when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
   - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
   - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-  - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+  - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
   - The `duration` property is the number of milliseconds that the video covers.
 
 ### `ImagePicker.launchCameraAsync(options)`
