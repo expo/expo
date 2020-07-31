@@ -3,6 +3,7 @@ import { Switch } from 'react-native';
 
 import Colors from '../../constants/Colors';
 import { Page, Section } from './CommonViews';
+import { Platform } from '@unimodules/core';
 
 export function SwitchExample() {
   const [value, setValue] = React.useState(true);
@@ -20,9 +21,11 @@ export function SwitchExample() {
       <Section title="Disabled">
         <Switch disabled value={value} />
       </Section>
-      <Section title="Larger">
-        <Switch value={value} onValueChange={setValue} style={{ height: 32, width: 128 }} />
-      </Section>
+      {Platform.OS === 'web' && (
+        <Section title="Larger">
+          <Switch value={value} onValueChange={setValue} style={{ height: 32, width: 128 }} />
+        </Section>
+      )}
     </Page>
   );
 }

@@ -4,6 +4,7 @@ import { CheckBox } from 'react-native';
 import Colors from '../../constants/Colors';
 import { Page, Section } from './CommonViews';
 
+// TODO: Upgrade to @react-native-community/checkbox
 export function CheckBoxExample() {
   const [value, setValue] = React.useState(true);
 

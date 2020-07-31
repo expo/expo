@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Picker } from '@react-native-community/picker';
 
 import { Page, Section } from './CommonViews';
+import { Platform } from '@unimodules/core';
 
 export function PickerExample() {
   // TODO: PickerIOS, Android `mode`, Android `prompt`, iOS `itemStyle`
@@ -10,12 +11,16 @@ export function PickerExample() {
       <Section title="Standard">
         <GenericPicker />
       </Section>
-      <Section title="Disabled">
-        <GenericPicker enabled={false} />
-      </Section>
-      <Section title="Larger">
-        <GenericPicker style={{ height: 32, width: 128 }} />
-      </Section>
+      {Platform.OS !== 'ios' && (
+        <Section title="Disabled">
+          <GenericPicker enabled={false} />
+        </Section>
+      )}
+      {Platform.OS === 'web' && (
+        <Section title="Larger">
+          <GenericPicker style={{ height: 32, width: 128 }} />
+        </Section>
+      )}
     </Page>
   );
 }

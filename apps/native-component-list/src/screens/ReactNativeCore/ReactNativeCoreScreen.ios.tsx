@@ -46,7 +46,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
     super(props);
 
     this.sections = [
-      { title: 'CheckBox', data: [() => <CheckBoxExample />] },
       { title: 'Switch', data: [() => <SwitchExample />] },
       { title: 'Button', data: [() => <ButtonExample />] },
       { title: 'ActivityIndicator', data: [() => <ActivityIndicatorExample />] },
@@ -59,6 +58,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
       { title: 'ProgressViewIOS', data: [() => <ProgressViewIOSExample />] },
       { title: 'Pressable', data: [() => <PressableExample />] },
       { title: 'Clipboard', data: [() => <ClipboardExample />] },
+      { title: 'CheckBox', data: [() => <CheckBoxExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
       { title: 'ActionSheetIOS', data: [this._renderActionSheet] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
