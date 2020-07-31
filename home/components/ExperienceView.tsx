@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { ColorSchemeName } from 'react-native-appearance';
 import FadeIn from 'react-native-fade-in-image';
 import { ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import semver from 'semver';
@@ -20,7 +19,6 @@ import semver from 'semver';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
 import * as Strings from '../utils/Strings';
-import * as UrlUtils from '../utils/UrlUtils';
 import CloseButton from './CloseButton';
 import { Experience, Viewer } from './ExperienceView.types';
 import * as Icons from './Icons';
@@ -53,11 +51,7 @@ export default function ExperienceView({ experience }: Props) {
   );
 }
 
-function ExperienceContents({ experience }: any) {
-  const theme = useTheme();
-
-  const themeName = theme.dark ? 'dark' : 'light';
-
+function ExperienceContents({ experience }: { experience: Experience }) {
   const isDeprecated = React.useMemo<boolean>(() => {
     const majorVersionString = experience?.sdkVersion?.split('.').shift();
     if (majorVersionString) {
@@ -77,15 +71,13 @@ function ExperienceContents({ experience }: any) {
 
   return (
     <>
-      <ExperienceHeader themeName={themeName} {...experience} />
+      <ExperienceHeader {...experience} />
 
       <ExperienceActions {...experience} />
       <ExperienceDescription description={experience.description} />
-      {isDeprecated && (
-        <ExpoSDKOutdated fullName={experience.fullName} sdkVersion={experience.sdkVersion} />
-      )}
+      {isDeprecated && <ExpoSDKOutdated sdkVersion={experience.sdkVersion} />}
       {isSnack && <ExperienceSnack username={experience.username} slug={experience.slug} />}
-      <StartButton isDeprecated={isDeprecated} themeName={themeName} onPress={() => {}} />
+      <StartButton isDeprecated={isDeprecated} onPress={() => {}} />
     </>
   );
 }
@@ -108,7 +100,10 @@ function ModalHeader() {
   );
 }
 
-function StartButton({ onPress, isDeprecated, themeName }) {
+function StartButton({ onPress, isDeprecated }: { onPress: () => void; isDeprecated?: boolean }) {
+  const theme = useTheme();
+  const themeName = theme.dark ? 'dark' : 'light';
+
   return (
     <TouchableHighlight
       onPress={onPress}
@@ -150,7 +145,7 @@ function ExperienceActions(
         flexDirection: 'row',
         flex: 1,
         height: 72,
-        marginTop: 8,
+        marginTop: 0,
         alignItems: 'stretch',
       }}>
       {storeUrl && (
@@ -164,7 +159,7 @@ function ExperienceActions(
         </ExperienceActionItem>
       )}
 
-      <ExperienceActionItem title="SDK Version">
+      <ExperienceActionItem title="SDK version">
         <StyledText style={{ fontSize: 30, lineHeight: 30 }}>
           {semver.major(props.sdkVersion)}
         </StyledText>
@@ -208,8 +203,7 @@ function ExperienceActionItem({
       <StyledText
         style={{
           opacity: 0.6,
-          fontSize: 10,
-          fontWeight: 'bold',
+          fontSize: 14,
           textAlign: 'center',
           marginTop: 4,
         }}>
@@ -222,19 +216,19 @@ function ExperienceActionItem({
 // Header
 
 function ExperienceHeader(
-  props: {
-    themeName: ColorSchemeName;
-  } & Pick<Experience, 'fullName' | 'icon' | 'iconUrl' | 'privacy' | 'name' | 'username'>
+  props: Pick<Experience, 'fullName' | 'icon' | 'iconUrl' | 'privacy' | 'name' | 'username'>
 ) {
+  const navigation = useNavigation();
+
   const onPress = () => {
     Linking.openURL(`exp://exp.host/${props.fullName}`);
   };
-  const navigation = useNavigation();
-  const { themeName } = props;
+
   const onPressUsername = () => {
     navigation.goBack();
     navigation.navigate('Profile', { username: props.username });
   };
+
   return (
     <View
       style={{
@@ -248,22 +242,18 @@ function ExperienceHeader(
         onPress={onPress}
         isPrivate={props.privacy !== 'public'}
       />
-      <Text
-        onPress={onPress}
+      <StyledText
         style={{
           marginTop: 24,
           fontWeight: 'bold',
           fontSize: 30,
           marginBottom: 4,
-          color: Colors[themeName].text,
         }}>
         {props.name}
-      </Text>
-      <Text
-        onPress={onPressUsername}
-        style={{ fontSize: 16, color: Colors[themeName].text, opacity: 0.4 }}>
+      </StyledText>
+      <StyledText onPress={onPressUsername} style={{ fontSize: 16, opacity: 0.6 }}>
         By {props.username}
-      </Text>
+      </StyledText>
     </View>
   );
 }
@@ -298,7 +288,7 @@ function ExperienceIcon({ source, size, isPrivate, onPress }: any) {
 
 function SectionHeader({ children }: { children: string }) {
   return (
-    <StyledText style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 12 }}>
+    <StyledText style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>
       {children}
     </StyledText>
   );
@@ -310,20 +300,12 @@ function ExperienceDescription(props: Pick<Experience, 'description'>) {
       return (
         <>
           This project has no description, the author can add one by updating their{' '}
-          <View
+          <Text
             style={{
-              backgroundColor: 'rgba(0,0,0,0.1)',
-              borderRadius: 3,
-              marginTop: -2,
-              paddingHorizontal: 2,
+              fontWeight: 'bold',
             }}>
-            <Text
-              style={{
-                color: '#975252',
-              }}>
-              app.json
-            </Text>
-          </View>{' '}
+            app.json
+          </Text>{' '}
           in the project's directory.
         </>
       );
@@ -335,13 +317,13 @@ function ExperienceDescription(props: Pick<Experience, 'description'>) {
     <View style={styles.itemMargins}>
       <SectionHeader>About this project</SectionHeader>
       <StyledView style={styles.containerShape}>
-        <StyledText style={{ lineHeight: 20 }}>{description}</StyledText>
+        <StyledText>{description}</StyledText>
       </StyledView>
     </View>
   );
 }
 
-function ExpoSDKOutdated(props: Pick<Experience, 'fullName' | 'sdkVersion'>) {
+function ExpoSDKOutdated(props: Pick<Experience, 'sdkVersion'>) {
   return (
     <View style={styles.itemMargins}>
       <SectionHeader>This project needs an update</SectionHeader>
@@ -350,14 +332,7 @@ function ExpoSDKOutdated(props: Pick<Experience, 'fullName' | 'sdkVersion'>) {
           This project uses SDK{' '}
           <Text style={{ fontWeight: 'bold', color: Colors.light.error }}>v{props.sdkVersion}</Text>
           . Your client supports {Environment.supportedSdksString}. If you want to open this
-          project, the author will need to update the project's SDK version. You can still try{' '}
-          {props.fullName && (
-            <A
-              style={{ fontWeight: 'bold', color: Colors.light.error }}
-              href={UrlUtils.normalizeUrl(props.fullName)}>
-              opening anyways.
-            </A>
-          )}
+          project, the author will need to update the project's SDK version.
         </StyledText>
       </StyledView>
     </View>

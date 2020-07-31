@@ -80,6 +80,16 @@ export function Github({
   );
 }
 
+export function Share({ size, color, ...props }: { color: string; size: number }) {
+  const fill = color;
+  return (
+    <Svg fill={fill} width={size} height={size} viewBox="0 0 24 24" {...props}>
+      <Path d="M4 10a1 1 0 011 1v8a1 1 0 001 1h12a1 1 0 001-1v-8a1 1 0 112 0v8a3 3 0 01-3 3H6a3 3 0 01-3-3v-8a1 1 0 011-1z" />
+      <Path d="M13 4.414V15a1 1 0 11-2 0V4.414L8.707 6.707a1 1 0 01-1.414-1.414l3.994-3.994a1.002 1.002 0 011.426 0l3.994 3.994a1 1 0 01-1.414 1.414L13 4.414z" />
+    </Svg>
+  );
+}
+
 export function Store({
   size,
   darkColor = '#fff',
