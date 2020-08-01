@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,9 +27,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <boost/noncopyable.hpp>
 #include <boost/random.hpp>
-#include <boost/type_traits.hpp>
 #include <glog/logging.h>
 
 #include <folly/Memory.h>
@@ -43,7 +41,7 @@ template <typename ValT, typename NodeT>
 class csl_iterator;
 
 template <typename T>
-class SkipListNode : private boost::noncopyable {
+class SkipListNode {
   enum : uint16_t {
     IS_HEAD_NODE = 1,
     MARKED_FOR_REMOVAL = (1 << 1),
@@ -52,6 +50,9 @@ class SkipListNode : private boost::noncopyable {
 
  public:
   typedef T value_type;
+
+  SkipListNode(const SkipListNode&) = delete;
+  SkipListNode& operator=(const SkipListNode&) = delete;
 
   template <
       typename NodeAlloc,
@@ -81,7 +82,7 @@ class SkipListNode : private boost::noncopyable {
   template <typename NodeAlloc>
   struct DestroyIsNoOp : StrictConjunction<
                              AllocatorHasTrivialDeallocate<NodeAlloc>,
-                             boost::has_trivial_destructor<SkipListNode>> {};
+                             std::is_trivially_destructible<SkipListNode>> {};
 
   // copy the head node to a new head node assuming lock acquired
   SkipListNode* copyHead(SkipListNode* node) {

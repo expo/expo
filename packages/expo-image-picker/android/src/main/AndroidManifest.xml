@@ -1,6 +1,13 @@
 <manifest package="expo.modules.imagepicker"
           xmlns:android="http://schemas.android.com/apk/res/android"
     >
+    <!-- Required for picking images from camera directly -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!-- Required for picking images from camera roll -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application>
         <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
         <provider

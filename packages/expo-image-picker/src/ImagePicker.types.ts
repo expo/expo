@@ -4,7 +4,7 @@ export { PermissionResponse as CameraPermissionResponse };
 
 export type CameraRollPermissionResponse = PermissionResponse & {
   // iOS only
-  scope?: 'all' | 'limited' | 'none';
+  accessPrivileges?: 'all' | 'limited' | 'none';
 };
 
 export enum MediaTypeOptions {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -207,7 +207,7 @@ void for_each_range_impl(index_constant<1>, Sequence&& range, Func& func) {
  */
 template <typename Sequence, typename Func, std::size_t... Indices>
 void for_each_tuple_impl(
-    index_sequence<Indices...>,
+    std::index_sequence<Indices...>,
     Sequence&& seq,
     Func& func) {
   using _ = int[];
@@ -246,7 +246,9 @@ void for_each_tuple_impl(index_constant<2>, Sequence&& seq, Func& func) {
   // optimization over manual template "tail recursion" unrolling
   using size = std::tuple_size<typename std::decay<Sequence>::type>;
   for_each_tuple_impl(
-      make_index_sequence<size::value>{}, std::forward<Sequence>(seq), func);
+      std::make_index_sequence<size::value>{},
+      std::forward<Sequence>(seq),
+      func);
 }
 template <typename Sequence, typename Func>
 void for_each_tuple_impl(index_constant<1>, Sequence&& seq, Func& func) {
@@ -267,14 +269,14 @@ void for_each_tuple_impl(index_constant<1>, Sequence&& seq, Func& func) {
  * range rather than as a tuple
  */
 template <typename Sequence, typename Func>
-static void for_each_impl(TupleTag, Sequence&& range, Func& func) {
+void for_each_impl(TupleTag, Sequence&& range, Func& func) {
   using type = decltype(get_impl<0>(std::declval<Sequence>()));
   using tag = ForEachImplTag<Func, type, void>;
   static_assert(!std::is_same<tag, void>::value, "unknown invocability");
   for_each_tuple_impl(tag{}, std::forward<Sequence>(range), func);
 }
 template <typename Sequence, typename Func>
-static void for_each_impl(RangeTag, Sequence&& range, Func& func) {
+void for_each_impl(RangeTag, Sequence&& range, Func& func) {
   using iter = decltype(adl::adl_begin(std::declval<Sequence>()));
   using type = decltype(*std::declval<iter>());
   using tag = ForEachImplTag<Func, type, iter>;
@@ -311,7 +313,7 @@ decltype(auto) fetch_impl(RangeTag, Sequence&& sequence, Index&& index) {
 } // namespace for_each_detail
 
 template <typename Sequence, typename Func>
-FOLLY_CPP14_CONSTEXPR Func for_each(Sequence&& sequence, Func func) {
+constexpr Func for_each(Sequence&& sequence, Func func) {
   namespace fed = for_each_detail;
   using tag = fed::SequenceTag<Sequence>;
   fed::for_each_impl(tag{}, std::forward<Sequence>(sequence), func);
@@ -319,7 +321,7 @@ FOLLY_CPP14_CONSTEXPR Func for_each(Sequence&& sequence, Func func) {
 }
 
 template <typename Sequence, typename Index>
-FOLLY_CPP14_CONSTEXPR decltype(auto) fetch(Sequence&& sequence, Index&& index) {
+constexpr decltype(auto) fetch(Sequence&& sequence, Index&& index) {
   namespace fed = for_each_detail;
   using tag = fed::SequenceTag<Sequence>;
   return for_each_detail::fetch_impl(

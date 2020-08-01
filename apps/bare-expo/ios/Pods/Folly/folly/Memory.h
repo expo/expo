@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,11 +38,27 @@
 
 namespace folly {
 
-#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600 || \
-    (defined(__ANDROID__) && (__ANDROID_API__ > 16)) ||   \
-    (defined(__APPLE__) &&                                \
-     (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_6 ||    \
-      __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_3_0))
+/// allocateBytes and deallocateBytes work like a checkedMalloc/free pair,
+/// but take advantage of sized deletion when available
+inline void* allocateBytes(size_t n) {
+  return ::operator new(n);
+}
+
+inline void deallocateBytes(void* p, size_t n) {
+#if __cpp_sized_deallocation
+  return ::operator delete(p, n);
+#else
+  (void)n;
+  return ::operator delete(p);
+#endif
+}
+
+#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600 ||   \
+    (defined(__ANDROID__) && (__ANDROID_API__ > 16)) ||     \
+    (defined(__APPLE__) &&                                  \
+     (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_6 ||      \
+      __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_3_0)) || \
+    defined(__FreeBSD__) || defined(__wasm32__)
 
 inline void* aligned_malloc(size_t size, size_t align) {
   // use posix_memalign, but mimic the behaviour of memalign
@@ -387,8 +403,8 @@ class DefaultAlign {
     assert(!(align_ < sizeof(void*)) && bool("bad align: too small"));
     assert(!(align_ & (align_ - 1)) && bool("bad align: not power-of-two"));
   }
-  std::size_t operator()() const noexcept {
-    return align_;
+  std::size_t operator()(std::size_t align) const noexcept {
+    return align_ < align ? align : align_;
   }
 
   friend bool operator==(Self const& a, Self const& b) noexcept {
@@ -407,8 +423,8 @@ class FixedAlign {
   using Self = FixedAlign<Align>;
 
  public:
-  constexpr std::size_t operator()() const noexcept {
-    return Align;
+  constexpr std::size_t operator()(std::size_t align) const noexcept {
+    return Align < align ? align : Align;
   }
 
   friend bool operator==(Self const&, Self const&) noexcept {
@@ -426,7 +442,8 @@ class FixedAlign {
  * aligned_free.
  *
  * Accepts a policy parameter for providing the alignment, which must:
- *   * be invocable as std::size_t() noexcept, returning the alignment
+ *   * be invocable as std::size_t(std::size_t) noexcept
+ *     * taking the type alignment and returning the allocation alignment
  *   * be noexcept-copy-constructible
  *   * have noexcept operator==
  *   * have noexcept operator!=
@@ -448,7 +465,9 @@ class AlignedSysAllocator : private Align {
 
  public:
   static_assert(std::is_nothrow_copy_constructible<Align>::value, "");
-  static_assert(is_nothrow_invocable_r<std::size_t, Align>::value, "");
+  static_assert(
+      is_nothrow_invocable_r<std::size_t, Align, std::size_t>::value,
+      "");
 
   using value_type = T;
 
@@ -458,10 +477,10 @@ class AlignedSysAllocator : private Align {
 
   using Align::Align;
 
-  // TODO: remove this ctor, which is required only by gcc49
+  // TODO: remove this ctor, which is is no longer required as of under gcc7
   template <
       typename S = Align,
-      _t<std::enable_if<std::is_default_constructible<S>::value, int>> = 0>
+      std::enable_if_t<std::is_default_constructible<S>::value, int> = 0>
   constexpr AlignedSysAllocator() noexcept(noexcept(Align())) : Align() {}
 
   template <typename U>
@@ -471,7 +490,8 @@ class AlignedSysAllocator : private Align {
 
   T* allocate(size_t count) {
     using lifted = typename detail::lift_void_to_char<T>::type;
-    auto const p = aligned_malloc(sizeof(lifted) * count, align()());
+    auto const a = align()(alignof(lifted));
+    auto const p = aligned_malloc(sizeof(lifted) * count, a);
     if (!p) {
       if (FOLLY_UNLIKELY(errno != ENOMEM)) {
         std::terminate();
@@ -651,12 +671,12 @@ struct AllocatorHasTrivialDeallocate<CxxAllocatorAdaptor<T, Alloc>>
 namespace detail {
 // note that construct and destroy here are methods, not short names for
 // the constructor and destructor
-FOLLY_CREATE_MEMBER_INVOKE_TRAITS(AllocatorConstruct_, construct);
-FOLLY_CREATE_MEMBER_INVOKE_TRAITS(AllocatorDestroy_, destroy);
+FOLLY_CREATE_MEMBER_INVOKER(AllocatorConstruct_, construct);
+FOLLY_CREATE_MEMBER_INVOKER(AllocatorDestroy_, destroy);
 
 template <typename Void, typename Alloc, typename... Args>
 struct AllocatorCustomizesConstruct_
-    : AllocatorConstruct_::template is_invocable<Alloc, Args...> {};
+    : folly::is_invocable<AllocatorConstruct_, Alloc, Args...> {};
 
 template <typename Alloc, typename... Args>
 struct AllocatorCustomizesConstruct_<
@@ -666,7 +686,7 @@ struct AllocatorCustomizesConstruct_<
 
 template <typename Void, typename Alloc, typename... Args>
 struct AllocatorCustomizesDestroy_
-    : AllocatorDestroy_::template is_invocable<Alloc, Args...> {};
+    : folly::is_invocable<AllocatorDestroy_, Alloc, Args...> {};
 
 template <typename Alloc, typename... Args>
 struct AllocatorCustomizesDestroy_<

@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,25 +17,40 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 #include <folly/Portability.h>
 
 namespace folly {
 
+//  has_extended_alignment
+//
+//  True if it may be presumed that the platform has static extended alignment;
+//  false if it may not be so presumed, even when the platform might actually
+//  have it. Static extended alignment refers to extended alignment of objects
+//  with automatic, static, or thread storage. Whether the there is support for
+//  dynamic extended alignment is a property of the allocator which is used for
+//  each given dynamic allocation.
+//
+//  Currently, very heuristical - only non-mobile 64-bit linux gets the extended
+//  alignment treatment. Theoretically, this could be tuned better.
+constexpr bool has_extended_alignment =
+    kIsLinux && sizeof(void*) >= sizeof(std::uint64_t);
+
 namespace detail {
 
 // Implemented this way because of a bug in Clang for ARMv7, which gives the
 // wrong result for `alignof` a `union` with a field of each scalar type.
-constexpr size_t max_align_(std::size_t a) {
-  return a;
-}
-template <typename... Es>
-constexpr std::size_t max_align_(std::size_t a, std::size_t e, Es... es) {
-  return !(a < e) ? a : max_align_(e, es...);
-}
 template <typename... Ts>
 struct max_align_t_ {
-  static constexpr std::size_t value = max_align_(0u, alignof(Ts)...);
+  static constexpr std::size_t value() {
+    std::size_t const values[] = {0u, alignof(Ts)...};
+    std::size_t r = 0u;
+    for (auto const v : values) {
+      r = r < v ? v : r;
+    }
+    return r;
+  }
 };
 using max_align_v_ = max_align_t_<
     long double,
@@ -87,7 +102,7 @@ using max_align_v_ = max_align_t_<
 // crashes on 32-bit iOS apps that use `double`.
 //
 // Apple's allocation reference: http://bit.ly/malloc-small
-constexpr std::size_t max_align_v = detail::max_align_v_::value;
+constexpr std::size_t max_align_v = detail::max_align_v_::value();
 struct alignas(max_align_v) max_align_t {};
 
 //  Memory locations within the same cache line are subject to destructive
@@ -117,5 +132,13 @@ static_assert(hardware_destructive_interference_size >= max_align_v, "math?");
 //  mimic: std::hardware_constructive_interference_size, C++17
 constexpr std::size_t hardware_constructive_interference_size = 64;
 static_assert(hardware_constructive_interference_size >= max_align_v, "math?");
+
+//  A value corresponding to hardware_constructive_interference_size but which
+//  may be used with alignas, since hardware_constructive_interference_size may
+//  be too large on some platforms to be used with alignas.
+constexpr std::size_t cacheline_align_v = has_extended_alignment
+    ? hardware_constructive_interference_size
+    : max_align_v;
+struct alignas(cacheline_align_v) cacheline_align_t {};
 
 } // namespace folly

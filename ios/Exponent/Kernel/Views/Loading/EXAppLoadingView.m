@@ -65,16 +65,38 @@
   BOOL hasSplashScreen = NO;
   if (_usesSplashFromNSBundle) {
     // Display the launch screen behind the React view so that the React view appears to seamlessly load
-    NSArray *views;
+    NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+    UIView *view;
+    UIStoryboard *storyboard;
     @try {
-      NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-      views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
+      storyboard = [UIStoryboard storyboardWithName:launchScreen bundle:[NSBundle mainBundle]];
     } @catch (NSException *_) {
-      DDLogWarn(@"Expo LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
+      UMLogWarn([NSString stringWithFormat:@"'%@.storyboard' file is missing. Fallbacking to '%@.xib' file.", launchScreen, launchScreen]);
     }
-    if (views) {
-      self.loadingView = views.firstObject;
-      self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    if (storyboard) {
+      @try {
+        UIViewController *viewController = [storyboard instantiateInitialViewController];
+        view = viewController.view;
+      } @catch (NSException *_) {
+        @throw [NSException exceptionWithName:@"ERR_INVALID_SPLASH_SCREEN"
+                                       reason:[NSString stringWithFormat:@"'%@.storyboard' does not contain proper ViewController. Add correct ViewController to your '%@.storyboard' file.", launchScreen, launchScreen]
+                                     userInfo:nil];
+      }
+    } else {
+      NSArray *views;
+      @try {
+        views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
+      } @catch (NSException *_) {
+        UMLogWarn([NSString stringWithFormat:@"Expo %@.xib is missing. Unexpected loading behavior may occur.", launchScreen]);
+      }
+      if (views) {
+        view = views.firstObject;
+        view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+      }
+    }
+    
+    if (view) {
+      self.loadingView = view;
       [self addSubview:self.loadingView];
       
       _loadingIndicatorFromNib = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];

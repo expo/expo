@@ -12,7 +12,7 @@ const eventEmitter = new EventEmitter(MediaLibrary);
 
 export type PermissionResponse = UMPermissionResponse & {
   // iOS only
-  scope?: 'all' | 'limited' | 'none';
+  accessPrivileges?: 'all' | 'limited' | 'none';
 };
 
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';

@@ -3,12 +3,13 @@ import { PDIV, P, Quote } from '~/components/base/paragraph';
 import { UL, OL, LI } from '~/components/base/list';
 import { Code, InlineCode } from '~/components/base/code';
 import { ExternalLink } from '~/components/base/link';
+import { ExpoKitDetails, BareWorkflowDetails } from '~/components/base/details';
 
 import Permalink from '~/components/Permalink';
 
-const createPermalinkedComponent = BaseComponent => {
+const createPermalinkedComponent = (BaseComponent, customIconStyle) => {
   return ({ children }) => (
-    <Permalink>
+    <Permalink customIconStyle={customIconStyle}>
       <BaseComponent>{children}</BaseComponent>
     </Permalink>
   );
@@ -26,3 +27,6 @@ export const code = Code;
 export const inlineCode = InlineCode;
 export const a = ExternalLink;
 export const blockquote = Quote;
+export const expokitDetails = ExpoKitDetails;
+export const bareworkflowDetails = BareWorkflowDetails;
+export const subpropertyAnchor = createPermalinkedComponent(PDIV, { left: -38 });

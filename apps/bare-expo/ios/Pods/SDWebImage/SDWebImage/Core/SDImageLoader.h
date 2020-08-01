@@ -18,7 +18,7 @@ typedef void(^SDImageLoaderCompletedBlock)(UIImage * _Nullable image, NSData * _
 /**
  A `UIImage` instance from `SDWebImageManager` when you specify `SDWebImageRefreshCached` and image cache hit.
  This can be a hint for image loader to load the image from network and refresh the image from remote location if needed. If the image from remote location does not change, you should call the completion with `SDWebImageErrorCacheNotModified` error. (UIImage)
- @note If you don't implement `SDWebImageRefreshCached` support, you do not need to care abot this context option.
+ @note If you don't implement `SDWebImageRefreshCached` support, you do not need to care about this context option.
  */
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextLoaderCachedImage;
 
@@ -53,16 +53,16 @@ FOUNDATION_EXPORT UIImage * _Nullable SDImageLoaderDecodeProgressiveImageData(NS
 #pragma mark - SDImageLoader
 
 /**
- This is the protocol to specify custom image load process. You can create your own class to conform this protocol and use as a image loader to load image from network or any avaiable remote resources defined by yourself.
+ This is the protocol to specify custom image load process. You can create your own class to conform this protocol and use as a image loader to load image from network or any available remote resources defined by yourself.
  If you want to implement custom loader for image download from network or local file, you just need to concentrate on image data download only. After the download finish, call `SDImageLoaderDecodeImageData` or `SDImageLoaderDecodeProgressiveImageData` to use the built-in decoding process and produce image (Remember to call in the global queue). And finally callback the completion block.
- If you directlly get the image instance using some third-party SDKs, such as image directlly from Photos framework. You can process the image data and image instance by yourself without that built-in decoding process. And finally callback the completion block.
+ If you directly get the image instance using some third-party SDKs, such as image directly from Photos framework. You can process the image data and image instance by yourself without that built-in decoding process. And finally callback the completion block.
  @note It's your responsibility to load the image in the desired global queue(to avoid block main queue). We do not dispatch these method call in a global queue but just from the call queue (For `SDWebImageManager`, it typically call from the main queue).
 */
 @protocol SDImageLoader <NSObject>
 
 /**
  Whether current image loader supports to load the provide image URL.
- This will be checked everytime a new image request come for loader. If this return NO, we will mark this image load as failed. If return YES, we will start to call `requestImageWithURL:options:context:progress:completed:`.
+ This will be checked every time a new image request come for loader. If this return NO, we will mark this image load as failed. If return YES, we will start to call `requestImageWithURL:options:context:progress:completed:`.
 
  @param url The image URL to be loaded.
  @return YES to continue download, NO to stop download.
@@ -88,7 +88,7 @@ FOUNDATION_EXPORT UIImage * _Nullable SDImageLoaderDecodeProgressiveImageData(NS
 
 
 /**
- Whether the error from image loader should be marked indded un-recoverable or not.
+ Whether the error from image loader should be marked indeed un-recoverable or not.
  If this return YES, failed URL which does not using `SDWebImageRetryFailed` will be blocked into black list. Else not.
 
  @param url The URL represent the image. Note this may not be a HTTP URL

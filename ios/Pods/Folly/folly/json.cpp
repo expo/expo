@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <folly/json.h>
 
 #include <algorithm>
@@ -21,6 +22,7 @@
 #include <type_traits>
 
 #include <boost/algorithm/string.hpp>
+#include <glog/logging.h>
 
 #include <folly/Conv.h>
 #include <folly/Portability.h>
@@ -35,7 +37,20 @@ namespace folly {
 //////////////////////////////////////////////////////////////////////
 
 namespace json {
+
 namespace {
+
+parse_error make_parse_error(
+    unsigned int line,
+    std::string const& context,
+    std::string const& expected) {
+  return parse_error(to<std::string>(
+      "json parse error on line ",
+      line,
+      !context.empty() ? to<std::string>(" near `", context, '\'') : "",
+      ": ",
+      expected));
+}
 
 struct Printer {
   explicit Printer(
@@ -49,7 +64,7 @@ struct Printer {
       case dynamic::DOUBLE:
         if (!opts_.allow_nan_inf &&
             (std::isnan(v.asDouble()) || std::isinf(v.asDouble()))) {
-          throw std::runtime_error(
+          throw json::parse_error(
               "folly::toJson: JSON object value was a "
               "NaN or INF");
         }
@@ -89,7 +104,7 @@ struct Printer {
  private:
   void printKV(const std::pair<const dynamic, dynamic>& p) const {
     if (!opts_.allow_non_string_keys && !p.first.isString()) {
-      throw std::runtime_error(
+      throw json::parse_error(
           "folly::toJson: JSON object key was not a "
           "string");
     }
@@ -119,16 +134,18 @@ struct Printer {
     newline();
     if (opts_.sort_keys || opts_.sort_keys_by) {
       using ref = std::reference_wrapper<decltype(o.items())::value_type const>;
+      auto sort_keys_by = [&](auto begin, auto end, const auto& comp) {
+        std::sort(begin, end, [&](ref a, ref b) {
+          // Only compare keys.  No ordering among identical keys.
+          return comp(a.get().first, b.get().first);
+        });
+      };
       std::vector<ref> refs(o.items().begin(), o.items().end());
-
-      using SortByRef = FunctionRef<bool(dynamic const&, dynamic const&)>;
-      auto const& sort_keys_by = opts_.sort_keys_by
-          ? SortByRef(opts_.sort_keys_by)
-          : SortByRef(std::less<dynamic>());
-      std::sort(refs.begin(), refs.end(), [&](ref a, ref b) {
-        // Only compare keys.  No ordering among identical keys.
-        return sort_keys_by(a.get().first, b.get().first);
-      });
+      if (opts_.sort_keys_by) {
+        sort_keys_by(refs.begin(), refs.end(), opts_.sort_keys_by);
+      } else {
+        sort_keys_by(refs.begin(), refs.end(), std::less<>());
+      }
       printKVPairs(refs.cbegin(), refs.cend());
     } else {
       printKVPairs(o.items().begin(), o.items().end());
@@ -189,19 +206,6 @@ struct Printer {
 
 //////////////////////////////////////////////////////////////////////
 
-struct FOLLY_EXPORT ParseError : std::runtime_error {
-  explicit ParseError(
-      unsigned int line,
-      std::string const& context,
-      std::string const& expected)
-      : std::runtime_error(to<std::string>(
-            "json parse error on line ",
-            line,
-            !context.empty() ? to<std::string>(" near `", context, '\'') : "",
-            ": ",
-            expected)) {}
-};
-
 // Wraps our input buffer with some helper functions.
 struct Input {
   explicit Input(StringPiece range, json::serialization_opts const* opts)
@@ -214,6 +218,10 @@ struct Input {
 
   char const* begin() const {
     return range_.begin();
+  }
+
+  unsigned getLineNum() const {
+    return lineNum_;
   }
 
   // Parse ahead for as long as the supplied predicate is satisfied,
@@ -249,13 +257,31 @@ struct Input {
   }
 
   void skipWhitespace() {
-    range_ = folly::skipWhitespace(range_);
+    unsigned index = 0;
+    while (true) {
+      while (index < range_.size() && range_[index] == ' ') {
+        index++;
+      }
+      if (index < range_.size()) {
+        if (range_[index] == '\n') {
+          index++;
+          ++lineNum_;
+          continue;
+        }
+        if (range_[index] == '\t' || range_[index] == '\r') {
+          index++;
+          continue;
+        }
+      }
+      break;
+    }
+    range_.advance(index);
     storeCurrent();
   }
 
   void expect(char c) {
     if (**this != c) {
-      throw ParseError(
+      throw json::make_parse_error(
           lineNum_, context(), to<std::string>("expected '", c, '\''));
     }
     ++*this;
@@ -297,7 +323,7 @@ struct Input {
   }
 
   dynamic error(char const* what) const {
-    throw ParseError(lineNum_, context(), what);
+    throw json::make_parse_error(lineNum_, context(), what);
   }
 
   json::serialization_opts const& getOpts() {
@@ -342,11 +368,36 @@ class RecursionGuard {
   Input& in_;
 };
 
-dynamic parseValue(Input& in);
+dynamic parseValue(Input& in, json::metadata_map* map);
 std::string parseString(Input& in);
 dynamic parseNumber(Input& in);
 
-dynamic parseObject(Input& in) {
+template <class K>
+void parseObjectKeyValue(
+    Input& in,
+    dynamic& ret,
+    K&& key,
+    json::metadata_map* map) {
+  auto keyLineNumber = in.getLineNum();
+  in.skipWhitespace();
+  in.expect(':');
+  in.skipWhitespace();
+  K tmp;
+  if (map) {
+    tmp = K(key);
+  }
+  auto valueLineNumber = in.getLineNum();
+  ret.insert(std::forward<K>(key), parseValue(in, map));
+  if (map) {
+    auto val = ret.get_ptr(tmp);
+    // We just inserted it, so it should be there!
+    DCHECK(val != nullptr);
+    map->emplace(
+        val, json::parse_metadata{{{keyLineNumber}}, {{valueLineNumber}}});
+  }
+}
+
+dynamic parseObject(Input& in, json::metadata_map* map) {
   DCHECK_EQ(*in, '{');
   ++in;
 
@@ -364,18 +415,12 @@ dynamic parseObject(Input& in) {
     }
     if (*in == '\"') { // string
       auto key = parseString(in);
-      in.skipWhitespace();
-      in.expect(':');
-      in.skipWhitespace();
-      ret.insert(std::move(key), parseValue(in));
+      parseObjectKeyValue(in, ret, std::move(key), map);
     } else if (!in.getOpts().allow_non_string_keys) {
       in.error("expected string for object key name");
     } else {
-      auto key = parseValue(in);
-      in.skipWhitespace();
-      in.expect(':');
-      in.skipWhitespace();
-      ret.insert(std::move(key), parseValue(in));
+      auto key = parseValue(in, map);
+      parseObjectKeyValue(in, ret, std::move(key), map);
     }
 
     in.skipWhitespace();
@@ -390,7 +435,7 @@ dynamic parseObject(Input& in) {
   return ret;
 }
 
-dynamic parseArray(Input& in) {
+dynamic parseArray(Input& in, json::metadata_map* map) {
   DCHECK_EQ(*in, '[');
   ++in;
 
@@ -402,17 +447,26 @@ dynamic parseArray(Input& in) {
     return ret;
   }
 
+  std::vector<uint32_t> lineNumbers;
   for (;;) {
     if (in.getOpts().allow_trailing_comma && *in == ']') {
       break;
     }
-    ret.push_back(parseValue(in));
+    ret.push_back(parseValue(in, map));
+    if (map) {
+      lineNumbers.push_back(in.getLineNum());
+    }
     in.skipWhitespace();
     if (*in != ',') {
       break;
     }
     ++in;
     in.skipWhitespace();
+  }
+  if (map) {
+    for (size_t i = 0; i < ret.size(); i++) {
+      map->emplace(&ret[i], json::parse_metadata{{{0}}, {{lineNumbers[i]}}});
+    }
   }
   in.expect(']');
 
@@ -492,7 +546,7 @@ std::string decodeUnicodeEscape(Input& in) {
       in.error("expected 4 hex digits");
     }
 
-    uint16_t ret = uint16_t(hexVal(*in) * 4096);
+    auto ret = uint16_t(hexVal(*in) * 4096);
     ++in;
     ret += hexVal(*in) * 256;
     ++in;
@@ -581,14 +635,14 @@ std::string parseString(Input& in) {
   return ret;
 }
 
-dynamic parseValue(Input& in) {
+dynamic parseValue(Input& in, json::metadata_map* map) {
   RecursionGuard guard(in);
 
   in.skipWhitespace();
   // clang-format off
   return
-      *in == '[' ? parseArray(in) :
-      *in == '{' ? parseObject(in) :
+      *in == '[' ? parseArray(in, map) :
+      *in == '{' ? parseObject(in, map) :
       *in == '\"' ? parseString(in) :
       (*in == '-' || (*in >= '0' && *in <= '9')) ? parseNumber(in) :
       in.consume("true") ? true :
@@ -666,7 +720,7 @@ size_t firstEscapableInWord(T s, const serialization_opts& opts) {
           (i == 0 ? uint64_t(-1) << 32 : ~0UL);
       while (bitmap) {
         auto bit = folly::findFirstSet(bitmap);
-        needsEscape |= isChar(offset + bit - 1);
+        needsEscape |= isChar(static_cast<uint8_t>(offset + bit - 1));
         bitmap &= bitmap - 1;
       }
     }
@@ -747,7 +801,7 @@ void escapeStringImpl(
         // checking that utf8 encodings are valid
         char32_t v = utf8ToCodePoint(q, e, opts.skip_invalid_utf8);
         if (opts.skip_invalid_utf8 && v == U'\ufffd') {
-          out.append(u8"\ufffd");
+          out.append(reinterpret_cast<const char*>(u8"\ufffd"));
           p = q;
           continue;
         }
@@ -897,6 +951,29 @@ std::string stripComments(StringPiece jsonC) {
 
 //////////////////////////////////////////////////////////////////////
 
+dynamic parseJsonWithMetadata(StringPiece range, json::metadata_map* map) {
+  return parseJsonWithMetadata(range, json::serialization_opts(), map);
+}
+
+dynamic parseJsonWithMetadata(
+    StringPiece range,
+    json::serialization_opts const& opts,
+    json::metadata_map* map) {
+  json::Input in(range, &opts);
+
+  uint32_t n = in.getLineNum();
+  auto ret = parseValue(in, map);
+  if (map) {
+    map->emplace(&ret, json::parse_metadata{{{0}}, {{n}}});
+  }
+
+  in.skipWhitespace();
+  if (in.size() && *in != '\0') {
+    in.error("parsing didn't consume all input");
+  }
+  return ret;
+}
+
 dynamic parseJson(StringPiece range) {
   return parseJson(range, json::serialization_opts());
 }
@@ -904,7 +981,7 @@ dynamic parseJson(StringPiece range) {
 dynamic parseJson(StringPiece range, json::serialization_opts const& opts) {
   json::Input in(range, &opts);
 
-  auto ret = parseValue(in);
+  auto ret = parseValue(in, nullptr);
   in.skipWhitespace();
   if (in.size() && *in != '\0') {
     in.error("parsing didn't consume all input");
@@ -919,6 +996,7 @@ std::string toJson(dynamic const& dyn) {
 std::string toPrettyJson(dynamic const& dyn) {
   json::serialization_opts opts;
   opts.pretty_formatting = true;
+  opts.sort_keys = true;
   return json::serialize(dyn, opts);
 }
 

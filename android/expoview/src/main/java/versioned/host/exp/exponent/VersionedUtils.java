@@ -23,6 +23,8 @@ public class VersionedUtils {
                 instanceManagerBuilderProperties.expoPackages,
                 instanceManagerBuilderProperties.exponentPackageDelegate,
                 instanceManagerBuilderProperties.singletonModules))
+        .addPackage(ExpoTurboPackage.createWithManifest(
+        instanceManagerBuilderProperties.manifest))
         .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {

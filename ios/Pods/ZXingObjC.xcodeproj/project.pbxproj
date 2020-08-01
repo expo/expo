@@ -1511,7 +1511,30 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		907834174ABDDEDC0BD19C5484C42E99 /* Release */ = {
+		1283556219CA5BC3A89CEE4B39493421 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 32568BEBD9919C103C075EBB24C6FB48 /* ZXingObjC.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ZXingObjC/ZXingObjC-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ZXingObjC;
+				PRODUCT_NAME = ZXingObjC;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		67310BFF0210D603C62EC1BC71D956B3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F46FDFC1736345488E5FB18A4A7167FF /* ZXingObjC.release.xcconfig */;
 			buildSettings = {
@@ -1529,6 +1552,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1598,28 +1622,6 @@
 			};
 			name = Debug;
 		};
-		E2B96C3EAC5CBA9129C99320D3393C65 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 32568BEBD9919C103C075EBB24C6FB48 /* ZXingObjC.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/ZXingObjC/ZXingObjC-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = ZXingObjC;
-				PRODUCT_NAME = ZXingObjC;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		F7A3E34B76616D65E0A606BBC518D597 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1686,8 +1688,8 @@
 		761C800B0C9D100A7387CD9E3F40C059 /* Build configuration list for PBXNativeTarget "ZXingObjC" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E2B96C3EAC5CBA9129C99320D3393C65 /* Debug */,
-				907834174ABDDEDC0BD19C5484C42E99 /* Release */,
+				1283556219CA5BC3A89CEE4B39493421 /* Debug */,
+				67310BFF0210D603C62EC1BC71D956B3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

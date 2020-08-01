@@ -247,7 +247,7 @@
 			};
 			name = Release;
 		};
-		631DCCC97EA17AD231A06B8480E67870 /* Debug */ = {
+		5F60C9FA742AE68AB69A13977ED2EB38 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6F3D40A942E04BEADC28C5CDB0096C42 /* nanopb.debug.xcconfig */;
 			buildSettings = {
@@ -267,6 +267,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -335,7 +336,7 @@
 			};
 			name = Debug;
 		};
-		CDB220CDF2AA16CDD98C0AF4B698A4E0 /* Release */ = {
+		DF161CCBE68969F8FB4CB8E94DF1F4CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 61219783C22C546F23D732E4263AAEA0 /* nanopb.release.xcconfig */;
 			buildSettings = {
@@ -355,6 +356,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -375,8 +377,8 @@
 		CA72EDEFB1993EBFEA956782A96C0DAD /* Build configuration list for PBXNativeTarget "nanopb" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				631DCCC97EA17AD231A06B8480E67870 /* Debug */,
-				CDB220CDF2AA16CDD98C0AF4B698A4E0 /* Release */,
+				5F60C9FA742AE68AB69A13977ED2EB38 /* Debug */,
+				DF161CCBE68969F8FB4CB8E94DF1F4CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

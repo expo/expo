@@ -1,11 +1,11 @@
 /*
- * Copyright 2015-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@
 // SharedMutexReadPriority gives priority to readers,
 // SharedMutexWritePriority gives priority to writers.  SharedMutex is an
 // alias for SharedMutexWritePriority, because writer starvation is more
-// likely than reader starvation for the read-heavy workloads targetted
+// likely than reader starvation for the read-heavy workloads targeted
 // by SharedMutex.
 //
 // In my tests SharedMutex is as good or better than the other
@@ -278,9 +278,9 @@ class SharedMutexImpl {
 
   typedef SharedMutexToken Token;
 
-  class ReadHolder;
-  class UpgradeHolder;
-  class WriteHolder;
+  class FOLLY_NODISCARD ReadHolder;
+  class FOLLY_NODISCARD UpgradeHolder;
+  class FOLLY_NODISCARD WriteHolder;
 
   constexpr SharedMutexImpl() noexcept : state_(0) {}
 
@@ -303,23 +303,53 @@ class SharedMutexImpl {
       cleanupTokenlessSharedDeferred(state);
     }
 
-#ifndef NDEBUG
-    // These asserts check that everybody has released the lock before it
-    // is destroyed.  If you arrive here while debugging that is likely
-    // the problem.  (You could also have general heap corruption.)
+    if (folly::kIsDebug) {
+      // These asserts check that everybody has released the lock before it
+      // is destroyed.  If you arrive here while debugging that is likely
+      // the problem.  (You could also have general heap corruption.)
 
-    // if a futexWait fails to go to sleep because the value has been
-    // changed, we don't necessarily clean up the wait bits, so it is
-    // possible they will be set here in a correct system
-    assert((state & ~(kWaitingAny | kMayDefer | kAnnotationCreated)) == 0);
-    if ((state & kMayDefer) != 0) {
-      for (uint32_t slot = 0; slot < kMaxDeferredReaders; ++slot) {
-        auto slotValue = deferredReader(slot)->load(std::memory_order_relaxed);
-        assert(!slotValueIsThis(slotValue));
+      // if a futexWait fails to go to sleep because the value has been
+      // changed, we don't necessarily clean up the wait bits, so it is
+      // possible they will be set here in a correct system
+      assert((state & ~(kWaitingAny | kMayDefer | kAnnotationCreated)) == 0);
+      if ((state & kMayDefer) != 0) {
+        for (uint32_t slot = 0; slot < kMaxDeferredReaders; ++slot) {
+          auto slotValue =
+              deferredReader(slot)->load(std::memory_order_relaxed);
+          assert(!slotValueIsThis(slotValue));
+          (void)slotValue;
+        }
       }
     }
-#endif
     annotateDestroy();
+  }
+
+  // Checks if an exclusive lock could succeed so that lock elision could be
+  // enabled. Different from the two eligible_for_lock_{upgrade|shared}_elision
+  // functions, this is a conservative check since kMayDefer indicates
+  // "may-existing" deferred readers.
+  bool eligible_for_lock_elision() const {
+    // We rely on the transaction for linearization.  Wait bits are
+    // irrelevant because a successful transaction will be in and out
+    // without affecting the wakeup.  kBegunE is also okay for a similar
+    // reason.
+    auto state = state_.load(std::memory_order_relaxed);
+    return (state & (kHasS | kMayDefer | kHasE | kHasU)) == 0;
+  }
+
+  // Checks if an upgrade lock could succeed so that lock elision could be
+  // enabled.
+  bool eligible_for_lock_upgrade_elision() const {
+    auto state = state_.load(std::memory_order_relaxed);
+    return (state & (kHasE | kHasU)) == 0;
+  }
+
+  // Checks if a shared lock could succeed so that lock elision could be
+  // enabled.
+  bool eligible_for_lock_shared_elision() const {
+    // No need to honor kBegunE because a transaction doesn't block anybody
+    auto state = state_.load(std::memory_order_relaxed);
+    return (state & kHasE) == 0;
   }
 
   void lock() {
@@ -457,9 +487,9 @@ class SharedMutexImpl {
         !tryUnlockSharedDeferred(token.slot_)) {
       unlockSharedInline();
     }
-#ifndef NDEBUG
-    token.type_ = Token::Type::INVALID;
-#endif
+    if (folly::kIsDebug) {
+      token.type_ = Token::Type::INVALID;
+    }
   }
 
   void unlock_and_lock_shared() {
@@ -1299,7 +1329,7 @@ class SharedMutexImpl {
   }
 
  public:
-  class ReadHolder {
+  class FOLLY_NODISCARD ReadHolder {
     ReadHolder() : lock_(nullptr) {}
 
    public:
@@ -1361,7 +1391,7 @@ class SharedMutexImpl {
     SharedMutexToken token_;
   };
 
-  class UpgradeHolder {
+  class FOLLY_NODISCARD UpgradeHolder {
     UpgradeHolder() : lock_(nullptr) {}
 
    public:
@@ -1411,7 +1441,7 @@ class SharedMutexImpl {
     SharedMutexImpl* lock_;
   };
 
-  class WriteHolder {
+  class FOLLY_NODISCARD WriteHolder {
     WriteHolder() : lock_(nullptr) {}
 
    public:

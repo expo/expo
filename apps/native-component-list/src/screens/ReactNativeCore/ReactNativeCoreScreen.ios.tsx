@@ -1,19 +1,12 @@
-import { Picker } from '@react-native-community/picker';
-import Slider from '@react-native-community/slider';
 import * as React from 'react';
 import {
   ActionSheetIOS,
-  ActivityIndicator,
-  Alert,
   Image,
-  ProgressViewIOS,
   RefreshControl,
   ScrollView,
   SectionList,
   SegmentedControlIOS,
-  StatusBar,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   TouchableHighlight,
@@ -22,13 +15,23 @@ import {
   View,
 } from 'react-native';
 import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler';
-import WebView from 'react-native-webview';
-// @ts-ignore
-import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
 import ModalExample from '../ModalExample';
+import { ActivityIndicatorExample } from './ActivityIndicator';
+import { AlertExample } from './Alert';
+import { ButtonExample } from './Button';
+import { CheckBoxExample } from './CheckBox';
+import { ClipboardExample } from './Clipboard';
+import { PickerExample } from './Picker';
+import { PressableExample } from './Pressable';
+import { ProgressViewIOSExample } from './ProgressViewIOS';
+import { SliderExample } from './Slider';
+import { StatusBarExample } from './StatusBar';
+import { SwitchExample } from './Switch';
+import { TouchableBounceExample } from './TouchableBounce';
+import { WebViewExample } from './WebView';
 
 export default class ReactNativeCoreScreen extends React.Component<{}> {
   state = {
@@ -43,23 +46,28 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
     super(props);
 
     this.sections = [
+      { title: 'Switch', data: [() => <SwitchExample />] },
+      { title: 'Button', data: [() => <ButtonExample />] },
+      { title: 'ActivityIndicator', data: [() => <ActivityIndicatorExample />] },
+      { title: 'Slider', data: [() => <SliderExample />] },
+      { title: 'Picker', data: [() => <PickerExample />] },
+      { title: 'StatusBar', data: [() => <StatusBarExample />] },
+      { title: 'Alert', data: [() => <AlertExample />] },
+      { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
+      { title: 'WebView', data: [() => <WebViewExample />] },
+      { title: 'ProgressViewIOS', data: [() => <ProgressViewIOSExample />] },
+      { title: 'Pressable', data: [() => <PressableExample />] },
+      { title: 'Clipboard', data: [() => <ClipboardExample />] },
+      { title: 'CheckBox', data: [() => <CheckBoxExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
       { title: 'ActionSheetIOS', data: [this._renderActionSheet] },
-      { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
-      { title: 'Alert', data: [this._renderAlert] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
       { title: 'Modal', data: [this._renderModal] },
-      { title: 'Picker', data: [this._renderPicker] },
-      { title: 'ProgressView', data: [this._renderProgressView] },
       { title: 'SegmentedControl', data: [this._renderSegmentedControl] },
-      { title: 'Slider', data: [this._renderSlider] },
-      { title: 'StatusBar', data: [this._renderStatusBar] },
-      { title: 'Switch', data: [this._renderSwitch] },
       { title: 'Text', data: [this._renderText] },
       { title: 'TextInput', data: [this._renderTextInput] },
       { title: 'Touchables', data: [this._renderTouchables] },
       // { title: 'View', data: [this._renderView] },
-      { title: 'WebView', data: [this._renderWebView] },
     ];
   }
 
@@ -91,6 +99,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
   };
 
   _scrollToTop = () => {
+    // @ts-ignore
     this._sectionList!.scrollTo({ x: 0, y: 0 });
   };
 
@@ -148,60 +157,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
     );
   };
 
-  _renderActivityIndicator = () => {
-    const Spacer = () => <View style={{ marginRight: 10 }} />;
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <ActivityIndicator size="small" />
-        <Spacer />
-        <ActivityIndicator size="large" />
-        <Spacer />
-        <ActivityIndicator size="small" color={Colors.tintColor} />
-        <Spacer />
-        <ActivityIndicator size="large" color={Colors.tintColor} />
-        <Spacer />
-        <ActivityIndicator size="small" animating={false} hidesWhenStopped={false} />
-        <Spacer />
-        <ActivityIndicator size="large" animating={false} hidesWhenStopped={false} />
-      </View>
-    );
-  };
-
-  _renderAlert = () => {
-    const showPrompt = () => {
-      Alert.prompt('Enter a value', undefined, text => console.log(`You entered ${text}`));
-    };
-
-    const showAlert = () => {
-      Alert.alert('Alert Title', 'My Alert Msg', [
-        {
-          text: 'Ask me later',
-          onPress: () => console.log('Ask me later pressed'),
-        },
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
-    };
-
-    return (
-      <View
-        style={{
-          flexDirection: Layout.isSmallDevice ? 'column' : 'row',
-          padding: 10,
-        }}>
-        <Button onPress={showPrompt}>Prompt for a value</Button>
-
-        {Layout.isSmallDevice && <View style={{ marginBottom: 10 }} />}
-
-        <Button onPress={showAlert}>Give me some options</Button>
-      </View>
-    );
-  };
-
   _renderHorizontalScrollView = () => {
     const imageStyle = {
       width: Layout.window.width,
@@ -229,57 +184,8 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
     );
   };
 
-  _renderPicker = () => {
-    return <PickerExample />;
-  };
-
-  _renderProgressView = () => {
-    return (
-      <View style={{ padding: 10, paddingBottom: 30 }}>
-        <ProgressViewExample initialProgress={0} />
-        <ProgressViewExample progressTintColor="red" initialProgress={0.4} />
-        <ProgressViewExample progressTintColor="orange" initialProgress={0.6} />
-        <ProgressViewExample progressTintColor="yellow" initialProgress={0.8} />
-      </View>
-    );
-  };
-
   _renderSegmentedControl = () => {
     return <SegmentedControlExample />;
-  };
-
-  _renderSlider = () => {
-    return (
-      <View style={{ padding: 10 }}>
-        <SliderExample />
-      </View>
-    );
-  };
-
-  _renderStatusBar = () => {
-    const randomAnimation = () => {
-      return Math.random() > 0.5 ? 'slide' : 'fade';
-    };
-
-    const hide = () => {
-      StatusBar.setHidden(true, randomAnimation());
-    };
-
-    const show = () => {
-      StatusBar.setHidden(false, randomAnimation());
-    };
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Button onPress={hide}>Hide</Button>
-
-        <Button onPress={show}>Show</Button>
-      </View>
-    );
-  };
-
-  _renderSwitch = () => {
-    return <SwitchExample />;
   };
 
   _renderText = () => {
@@ -330,10 +236,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
         <TouchableOpacity style={buttonStyle} onPress={() => {}}>
           <Text style={buttonText}>Opacity!</Text>
         </TouchableOpacity>
-
-        <TouchableBounce style={buttonStyle} onPress={() => {}}>
-          <Text style={buttonText}>Bounce!</Text>
-        </TouchableBounce>
       </View>
     );
   };
@@ -346,27 +248,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
   //   );
   // }
 
-  _renderWebView = () => {
-    return (
-      <WebView
-        style={{ width: Layout.window.width, height: 250 }}
-        source={{
-          html: `
-          <h2>You can always use a WebView if you need to!</h2>
-          <p>
-            <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
-            <input type="text" placeholder="Disagree? why?"></input>
-            <input type="submit">
-          </p>
-          <p>
-            <a href="https://expo.io">expo.io</a>
-          </p>
-        `,
-        }}
-      />
-    );
-  };
-
   _renderItem = ({ item }: { item: () => JSX.Element }) => item();
 
   _renderSectionHeader = ({ section }: any) => (
@@ -374,61 +255,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
       <Text>{section.title}</Text>
     </View>
   );
-}
-
-class PickerExample extends React.Component {
-  state = {
-    language: 'js',
-  };
-
-  render() {
-    return (
-      // @ts-ignore
-      <Picker
-        st
-        selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}>
-        <Picker.Item label="Java" value="java" />
-        <Picker.Item label="JavaScript" value="js" />
-        <Picker.Item label="Objective C" value="objc" />
-        <Picker.Item label="Swift" value="swift" />
-      </Picker>
-    );
-  }
-}
-
-interface ProgressViewExampleProps {
-  progressTintColor?: string;
-  initialProgress: number;
-}
-
-interface ProgressViewExampleState {
-  progress: number;
-}
-
-class ProgressViewExample extends React.Component<
-  ProgressViewExampleProps,
-  ProgressViewExampleState
-> {
-  constructor(props: ProgressViewExampleProps) {
-    super(props);
-
-    this.state = {
-      progress: props.initialProgress,
-    };
-  }
-
-  render() {
-    const progressStyle = { marginTop: 20 };
-
-    return (
-      <ProgressViewIOS
-        style={progressStyle}
-        progressTintColor={this.props.progressTintColor}
-        progress={this.state.progress}
-      />
-    );
-  }
 }
 
 class SegmentedControlExample extends React.Component {
@@ -464,70 +290,6 @@ class SegmentedControlExample extends React.Component {
               selectedIndex: event.nativeEvent.selectedSegmentIndex,
             });
           }}
-        />
-      </View>
-    );
-  }
-}
-
-interface SliderExampleProps {
-  value?: number;
-}
-
-interface SliderExampleState {
-  value: number;
-}
-
-class SliderExample extends React.Component<SliderExampleProps, SliderExampleState> {
-  static defaultProps = {
-    value: 0,
-  };
-
-  constructor(props: SliderExampleProps) {
-    super(props);
-
-    this.state = {
-      value: props.value!,
-    };
-  }
-
-  render() {
-    const textStyle = {
-      color: this.state.value === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.9)',
-      marginBottom: -2,
-    };
-
-    return (
-      <View>
-        <View style={{ padding: 10 }}>
-          <Text style={textStyle}>Value: {this.state.value && +this.state.value.toFixed(3)}</Text>
-        </View>
-
-        <Slider {...this.props} onValueChange={value => this.setState({ value })} />
-
-        <View style={{ marginBottom: 10 }} />
-      </View>
-    );
-  }
-}
-
-class SwitchExample extends React.Component {
-  state = {
-    trueSwitchIsOn: true,
-    falseSwitchIsOn: false,
-  };
-
-  render() {
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Switch
-          onValueChange={value => this.setState({ falseSwitchIsOn: value })}
-          style={{ marginBottom: 10, marginRight: 10 }}
-          value={this.state.falseSwitchIsOn}
-        />
-        <Switch
-          onValueChange={value => this.setState({ trueSwitchIsOn: value })}
-          value={this.state.trueSwitchIsOn}
         />
       </View>
     );

@@ -39,7 +39,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 17
     versionName "5.3.0"

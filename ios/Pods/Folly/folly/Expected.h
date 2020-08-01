@@ -1,11 +1,11 @@
 /*
- * Copyright 2016-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * Like folly::Optional, but can store a value *or* an error.
  *
@@ -37,7 +38,6 @@
 #include <folly/Traits.h>
 #include <folly/Unit.h>
 #include <folly/Utility.h>
-#include <folly/lang/ColdClass.h>
 #include <folly/lang/Exception.h>
 
 #define FOLLY_EXPECTED_ID(X) FB_CONCATENATE(FB_CONCATENATE(Folly, X), __LINE__)
@@ -51,17 +51,6 @@
 #define FOLLY_REQUIRES_TRAILING(...) , FOLLY_REQUIRES_IMPL(__VA_ARGS__)
 
 #define FOLLY_REQUIRES(...) template <FOLLY_REQUIRES_IMPL(__VA_ARGS__)>
-
-/**
- * gcc-4.7 warns about use of uninitialized memory around the use of storage_
- * even though this is explicitly initialized at each point.
- */
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif // __GNUC__
 
 namespace folly {
 
@@ -101,15 +90,8 @@ namespace expected_detail {
 template <typename Value, typename Error>
 struct PromiseReturn;
 
-#ifdef _MSC_VER
-// MSVC 2015 can't handle the StrictConjunction, so we have
-// to use std::conjunction instead.
-template <template <class...> class Trait, class... Ts>
-using StrictAllOf = std::conjunction<Trait<Ts>...>;
-#else
 template <template <class...> class Trait, class... Ts>
 using StrictAllOf = StrictConjunction<Trait<Ts>...>;
-#endif
 
 template <class T>
 using IsCopyable = StrictConjunction<
@@ -230,6 +212,7 @@ struct ExpectedStorage {
       case Which::eError:
         this->assignError(static_cast<Other&&>(that).error());
         break;
+      case Which::eEmpty:
       default:
         this->clear();
         break;
@@ -244,11 +227,6 @@ struct ExpectedStorage {
   Value&& value() && {
     return std::move(value_);
   }
-  // TODO (t17322426): remove when VS2015 support is deprecated
-  // VS2015 static analyzer incorrectly flags these as unreachable in certain
-  // circumstances. VS2017 does not have this problem on the same code.
-  FOLLY_PUSH_WARNING
-  FOLLY_MSVC_DISABLE_WARNING(4702) // unreachable code
   Error& error() & {
     return error_;
   }
@@ -258,7 +236,6 @@ struct ExpectedStorage {
   Error&& error() && {
     return std::move(error_);
   }
-  FOLLY_POP_WARNING
 };
 
 template <class Value, class Error>
@@ -430,6 +407,7 @@ struct ExpectedStorage<Value, Error, StorageType::eUnion>
       case Which::eError:
         this->error().~Error();
         break;
+      case Which::eEmpty:
       default:
         break;
     }
@@ -480,6 +458,7 @@ struct ExpectedStorage<Value, Error, StorageType::eUnion>
       case Which::eError:
         this->assignError(static_cast<Other&&>(that).error());
         break;
+      case Which::eEmpty:
       default:
         this->clear();
         break;
@@ -531,6 +510,7 @@ struct ExpectedStorage<Value, Error, StorageType::ePODStruct> {
       case Which::eError:
         this->assignError(static_cast<Other&&>(that).error());
         break;
+      case Which::eEmpty:
       default:
         this->clear();
         break;
@@ -545,11 +525,6 @@ struct ExpectedStorage<Value, Error, StorageType::ePODStruct> {
   Value&& value() && {
     return std::move(value_);
   }
-  // TODO (t17322426): remove when VS2015 support is deprecated
-  // VS2015 static analyzer incorrectly flags these as unreachable in certain
-  // circumstances. VS2017 does not have this problem on the same code.
-  FOLLY_PUSH_WARNING
-  FOLLY_MSVC_DISABLE_WARNING(4702) // unreachable code
   Error& error() & {
     return error_;
   }
@@ -559,7 +534,6 @@ struct ExpectedStorage<Value, Error, StorageType::ePODStruct> {
   Error&& error() && {
     return std::move(error_);
   }
-  FOLLY_POP_WARNING
 };
 
 namespace expected_detail_ExpectedHelper {
@@ -675,7 +649,7 @@ namespace expected_detail {
  * Expected objects in the error state.
  */
 template <class Error>
-class Unexpected final : ColdClass {
+class Unexpected final {
   template <class E>
   friend class Unexpected;
   template <class V, class E>
@@ -712,8 +686,10 @@ class Unexpected final : ColdClass {
   Unexpected(Unexpected&&) = default;
   Unexpected& operator=(const Unexpected&) = default;
   Unexpected& operator=(Unexpected&&) = default;
-  constexpr /* implicit */ Unexpected(const Error& err) : error_(err) {}
-  constexpr /* implicit */ Unexpected(Error&& err) : error_(std::move(err)) {}
+  FOLLY_COLD constexpr /* implicit */ Unexpected(const Error& err)
+      : error_(err) {}
+  FOLLY_COLD constexpr /* implicit */ Unexpected(Error&& err)
+      : error_(std::move(err)) {}
 
   template <class Other FOLLY_REQUIRES_TRAILING(
       std::is_constructible<Error, Other&&>::value)>
@@ -931,7 +907,7 @@ class Expected final : expected_detail::ExpectedStorage<Value, Error> {
           std::is_constructible<Value, V&&>::value &&
           std::is_constructible<Error, E&&>::value)>
   Expected(Expected<V, E> that) : Base{expected_detail::EmptyTag{}} {
-    *this = std::move(that);
+    this->assign(std::move(that));
   }
 
   FOLLY_REQUIRES(std::is_copy_constructible<Value>::value)
@@ -1424,10 +1400,6 @@ template <class Value, class Error>
 bool operator>(const Value& other, const Expected<Value, Error>&) = delete;
 
 } // namespace folly
-
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
 
 #undef FOLLY_REQUIRES
 #undef FOLLY_REQUIRES_TRAILING

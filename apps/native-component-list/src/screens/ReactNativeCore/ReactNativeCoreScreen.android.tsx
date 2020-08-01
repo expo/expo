@@ -1,38 +1,39 @@
-import { Picker } from '@react-native-community/picker';
-import Slider from '@react-native-community/slider';
-import React from 'react';
+import * as React from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   DrawerLayoutAndroid,
   Image,
-  ProgressBarAndroid,
   RefreshControl,
-  Switch,
-  StatusBar,
-  SectionList,
   ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableHighlight,
   TouchableNativeFeedback,
+  TouchableOpacity,
   View,
-  TouchableOpacityProps,
 } from 'react-native';
-// @ts-ignore
-import WebView from 'react-native-webview';
-// @ts-ignore
-import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler';
 
 import { Colors, Layout } from '../../constants';
 import ModalExample from '../ModalExample';
+import { ActivityIndicatorExample } from './ActivityIndicator';
+import { AlertExample } from './Alert';
+import { ButtonExample } from './Button';
+import { CheckBoxExample } from './CheckBox';
+import { ClipboardExample } from './Clipboard';
+import { PickerExample } from './Picker';
+import { PressableExample } from './Pressable';
+import { ProgressBarAndroidExample } from './ProgressBarAndroid';
+import { SliderExample } from './Slider';
+import { StatusBarExample } from './StatusBar';
+import { SwitchExample } from './Switch';
+import { TouchableBounceExample } from './TouchableBounce';
+import { WebViewExample } from './WebView';
 
 interface State {
   isRefreshing: boolean;
-  timeoutId?: number;
+  timeoutId?: any;
 }
 
 export default class ReactNativeCoreScreen extends React.Component<{}, State> {
@@ -46,21 +47,26 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     super(props);
 
     this.sections = [
+      { title: 'CheckBox', data: [() => <CheckBoxExample />] },
+      { title: 'Switch', data: [() => <SwitchExample />] },
+      { title: 'Button', data: [() => <ButtonExample />] },
+      { title: 'ActivityIndicator', data: [() => <ActivityIndicatorExample />] },
+      { title: 'Slider', data: [() => <SliderExample />] },
+      { title: 'Picker', data: [() => <PickerExample />] },
+      { title: 'StatusBar', data: [() => <StatusBarExample />] },
+      { title: 'Alert', data: [() => <AlertExample />] },
+      { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
+      { title: 'WebView', data: [() => <WebViewExample />] },
+      { title: 'ProgressBarAndroid', data: [() => <ProgressBarAndroidExample />] },
+      { title: 'Pressable', data: [() => <PressableExample />] },
+      { title: 'Clipboard', data: [() => <ClipboardExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
       { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },
-      { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
-      { title: 'Alert', data: [this._renderAlert] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
       { title: 'Modal', data: [this._renderModal] },
-      { title: 'Picker', data: [this._renderPicker] },
-      { title: 'ProgressBar', data: [this._renderProgressBar] },
-      { title: 'Slider', data: [this._renderSlider] },
-      { title: 'StatusBar', data: [this._renderStatusBar] },
-      { title: 'Switch', data: [this._renderSwitch] },
       { title: 'Text', data: [this._renderText] },
       { title: 'TextInput', data: [this._renderTextInput] },
       { title: 'Touchables', data: [this._renderTouchables] },
-      { title: 'WebView', data: [this._renderWebView] },
     ];
   }
 
@@ -148,44 +154,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     );
   };
 
-  _renderActivityIndicator = () => {
-    const Spacer = () => <View style={{ marginRight: 10 }} />;
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <ActivityIndicator size="small" />
-        <Spacer />
-        <ActivityIndicator size="large" />
-        <Spacer />
-        <ActivityIndicator size="small" color="#888" />
-        <Spacer />
-        <ActivityIndicator size="large" color="#888" />
-      </View>
-    );
-  };
-
-  _renderAlert = () => {
-    const showAlert = () => {
-      Alert.alert('Alert Title', 'My Alert Msg', [
-        {
-          text: 'Ask me later',
-          onPress: () => console.log('Ask me later pressed'),
-        },
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
-    };
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Button onPress={showAlert}>Give me some options</Button>
-      </View>
-    );
-  };
-
   _renderHorizontalScrollView = () => {
     const imageStyle = {
       width: Layout.window.width,
@@ -211,51 +179,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         />
       </ScrollView>
     );
-  };
-
-  _renderPicker = () => {
-    return <PickerExample />;
-  };
-
-  _renderProgressBar = () => {
-    return (
-      <View style={{ padding: 10, paddingBottom: 30 }}>
-        <ProgressBarExample initialProgress={0} />
-        <ProgressBarExample progressTintColor="red" initialProgress={0.4} />
-        <ProgressBarExample progressTintColor="orange" initialProgress={0.6} />
-        <ProgressBarExample progressTintColor="yellow" initialProgress={0.8} />
-      </View>
-    );
-  };
-
-  _renderSlider = () => {
-    return <SliderExample />;
-  };
-
-  _renderStatusBar = () => {
-    const randomAnimation = () => {
-      return Math.random() > 0.5 ? 'slide' : 'fade';
-    };
-
-    const hide = () => {
-      StatusBar.setHidden(true, randomAnimation());
-    };
-
-    const show = () => {
-      StatusBar.setHidden(false, randomAnimation());
-    };
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Button onPress={hide}>Hide</Button>
-
-        <Button onPress={show}>Show</Button>
-      </View>
-    );
-  };
-
-  _renderSwitch = () => {
-    return <SwitchExample />;
   };
 
   _renderText = () => {
@@ -318,174 +241,10 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
               <Text style={buttonText}>Native feedback!</Text>
             </View>
           </TouchableNativeFeedback>
-
-          <TouchableBounce style={buttonStyle} onPress={() => {}}>
-            <Text style={buttonText}>Bounce!</Text>
-          </TouchableBounce>
         </View>
       </View>
     );
   };
-
-  _renderWebView = () => {
-    return (
-      // A parent view with overflow: 'hidden' ensures that the other components render properly.
-      // See: https://github.com/facebook/react-native/issues/21939
-      <View style={{ overflow: 'hidden' }}>
-        <WebView
-          style={{ width: Layout.window.width, height: 250 }}
-          source={{
-            html: `
-              <h2>You can always use a WebView if you need to!</h2>
-              <p>
-                <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
-                <input type="text" placeholder="Disagree? why?"></input>
-                <input type="submit">
-              </p>
-              <p>
-                <a href="https://expo.io">expo.io</a>
-              </p>
-          `,
-          }}
-        />
-      </View>
-    );
-  };
-}
-
-class PickerExample extends React.Component {
-  state = {
-    language: 'js',
-  };
-
-  render() {
-    return (
-      <Picker
-        selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}>
-        <Picker.Item label="Java" value="java" />
-        <Picker.Item label="JavaScript" value="js" />
-        <Picker.Item label="Objective C" value="objc" />
-        <Picker.Item label="Swift" value="swift" />
-      </Picker>
-    );
-  }
-}
-
-interface ProgressBarExampleProps {
-  progressTintColor?: string;
-  initialProgress: number;
-}
-
-interface ProgressBarExampleState {
-  progress: number;
-  timeoutId?: number;
-}
-
-class ProgressBarExample extends React.Component<ProgressBarExampleProps, ProgressBarExampleState> {
-  constructor(props: ProgressBarExampleProps) {
-    super(props);
-
-    this.state = {
-      progress: props.initialProgress,
-    };
-  }
-
-  componentDidMount() {
-    this.progressLoop();
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this.state.timeoutId);
-  }
-
-  progressLoop() {
-    const timeout = setTimeout(() => {
-      this.setState({
-        progress: this.state.progress === 1 ? 0 : Math.min(1, this.state.progress + 0.01),
-      });
-
-      this.progressLoop();
-    }, 17 * 2);
-    this.setState({ timeoutId: timeout });
-  }
-
-  render() {
-    const progressStyle = { marginTop: 20 };
-
-    return (
-      <ProgressBarAndroid
-        styleAttr="Horizontal"
-        style={progressStyle}
-        color={this.props.progressTintColor}
-        progress={this.state.progress}
-      />
-    );
-  }
-}
-
-interface SliderExampleProps {
-  value?: number;
-}
-
-interface SliderExampleState {
-  value: number;
-}
-
-class SliderExample extends React.Component<SliderExampleProps, SliderExampleState> {
-  static defaultProps = {
-    value: 0,
-  };
-
-  constructor(props: SliderExampleProps) {
-    super(props);
-
-    this.state = {
-      value: props.value!,
-    };
-  }
-
-  render() {
-    const textStyle = {
-      color: this.state.value === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.9)',
-      marginBottom: -2,
-    };
-
-    return (
-      <View>
-        <View style={{ padding: 10 }}>
-          <Text style={textStyle}>Value: {this.state.value && +this.state.value.toFixed(3)}</Text>
-        </View>
-
-        <Slider {...this.props} onValueChange={value => this.setState({ value })} />
-
-        <View style={{ marginBottom: 10 }} />
-      </View>
-    );
-  }
-}
-
-class SwitchExample extends React.Component {
-  state = {
-    trueSwitchIsOn: true,
-    falseSwitchIsOn: false,
-  };
-
-  render() {
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Switch
-          onValueChange={value => this.setState({ falseSwitchIsOn: value })}
-          style={{ marginRight: 10 }}
-          value={this.state.falseSwitchIsOn}
-        />
-        <Switch
-          onValueChange={value => this.setState({ trueSwitchIsOn: value })}
-          value={this.state.trueSwitchIsOn}
-        />
-      </View>
-    );
-  }
 }
 
 class TextInputExample extends React.Component {
@@ -529,12 +288,6 @@ class TextInputExample extends React.Component {
     );
   }
 }
-
-const Button: React.FunctionComponent<TouchableOpacityProps> = props => (
-  <TouchableOpacity onPress={props.onPress} style={styles.button}>
-    <Text style={styles.buttonText}>{props.children}</Text>
-  </TouchableOpacity>
-);
 
 const styles = StyleSheet.create({
   container: {

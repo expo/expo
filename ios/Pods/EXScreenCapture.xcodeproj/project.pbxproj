@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DBD0676AAD85BC6BA82FE789D58B8ADD /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 85BCAEE9934470CA6BC605236624F961 /* EXScreenCaptureModule.m */; };
-		9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 567CD695713FF6D90AFAE990CD8B2450 /* EXScreenCapture-dummy.m */; };
+		1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 567CD695713FF6D90AFAE990CD8B2450 /* EXScreenCapture-dummy.m */; };
+		241B6E7EEACE71E6598C1DFDC6F05BE6 /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DBD0676AAD85BC6BA82FE789D58B8ADD /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 85BCAEE9934470CA6BC605236624F961 /* EXScreenCaptureModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		440C43D4700AAED026B7E5B3D4ADA776 /* PBXContainerItemProxy */ = {
+		AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 366BC1FED57CB9DA5667253219D52344 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		847A45C7B0886CFF788D46CF030D8E93 /* Frameworks */ = {
+		D6E7E826B51A5F90AD799414502990C3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		5772A878E64659452369D3E2E5104527 /* Headers */ = {
+		A25FEAB4C628F2D2448B4404A8FBEDC5 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */,
+				241B6E7EEACE71E6598C1DFDC6F05BE6 /* EXScreenCaptureModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		41748256BF35CA80D3CE24FFC0C6012B /* EXScreenCapture */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C83C739E6FCF22B84B8EF5C8179FE42B /* Build configuration list for PBXNativeTarget "EXScreenCapture" */;
+			buildConfigurationList = DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */;
 			buildPhases = (
-				5772A878E64659452369D3E2E5104527 /* Headers */,
-				EFBE6C18E8A7693A6149F95B4E939AEC /* Sources */,
-				847A45C7B0886CFF788D46CF030D8E93 /* Frameworks */,
+				A25FEAB4C628F2D2448B4404A8FBEDC5 /* Headers */,
+				14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */,
+				D6E7E826B51A5F90AD799414502990C3 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				3E9284B9DAC32887CF8D1285C547AB81 /* PBXTargetDependency */,
+				D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */,
 			);
 			name = EXScreenCapture;
 			productName = EXScreenCapture;
@@ -175,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		EFBE6C18E8A7693A6149F95B4E939AEC /* Sources */ = {
+		14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */,
-				76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */,
+				1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */,
+				CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3E9284B9DAC32887CF8D1285C547AB81 /* PBXTargetDependency */ = {
+		D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 440C43D4700AAED026B7E5B3D4ADA776 /* PBXContainerItemProxy */;
+			targetProxy = AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -259,30 +259,6 @@
 			};
 			name = Debug;
 		};
-		45390EE778B19ACABE6C180A5C9D4627 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C170970DECAACBC33C40A5D82F6CE552 /* EXScreenCapture.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenCapture;
-				PRODUCT_NAME = EXScreenCapture;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		48CCA6D34DA9D1E56FD16BAF0AABF927 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -343,7 +319,32 @@
 			};
 			name = Release;
 		};
-		5238451F1AD9F6AB4ABB87DA4074B6C0 /* Release */ = {
+		D1525BC2383E744E1A6E339F34B33ACF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C170970DECAACBC33C40A5D82F6CE552 /* EXScreenCapture.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenCapture;
+				PRODUCT_NAME = EXScreenCapture;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E5FFA3AA0944158898422978DAE5FBA7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 951FB58A42C0EB3C0AFFE09B4A6CDCAB /* EXScreenCapture.release.xcconfig */;
 			buildSettings = {
@@ -363,6 +364,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -380,11 +382,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C83C739E6FCF22B84B8EF5C8179FE42B /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
+		DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				45390EE778B19ACABE6C180A5C9D4627 /* Debug */,
-				5238451F1AD9F6AB4ABB87DA4074B6C0 /* Release */,
+				D1525BC2383E744E1A6E339F34B33ACF /* Debug */,
+				E5FFA3AA0944158898422978DAE5FBA7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
