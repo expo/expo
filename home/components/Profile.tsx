@@ -261,7 +261,6 @@ function ProfileProjectsSection({
         image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
         title={app.name}
         sdkVersion={app.sdkVersion}
-        username={app.username}
         subtitle={app.packageName || app.fullName}
         experienceInfo={{ username: app.username || currentUsername, slug: app.packageName }}
       />

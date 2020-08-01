@@ -229,8 +229,6 @@ const ModalStack = createStackNavigator();
 export default (props: { theme: string }) => (
   <NavigationContainer theme={Themes[props.theme]}>
     <ModalStack.Navigator
-      initialRouteName="Tabs"
-      mode="modal"
       initialRouteName="RootStack"
       screenOptions={({ route, navigation }) => ({
         headerShown: false,
