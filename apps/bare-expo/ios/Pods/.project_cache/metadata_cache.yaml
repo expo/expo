@@ -90,6 +90,10 @@ EXDevice:
   LABEL: EXDevice
   PROJECT_PATH: EXDevice.xcodeproj
   UUID: 61CE878EC16A63D023F23DA6C1B824B9
+EXDevMenu:
+  LABEL: EXDevMenu
+  PROJECT_PATH: EXDevMenu.xcodeproj
+  UUID: 27DF359C8E918B12F36C792D67038350
 EXDocumentPicker:
   LABEL: EXDocumentPicker
   PROJECT_PATH: EXDocumentPicker.xcodeproj
@@ -390,6 +394,10 @@ React:
   LABEL: React
   PROJECT_PATH: React.xcodeproj
   UUID: 94DA87F24FB4B93E5D08FE961D5E5A3E
+React-callinvoker:
+  LABEL: React-callinvoker
+  PROJECT_PATH: React-callinvoker.xcodeproj
+  UUID: 704FBB32EAA23CE28E7EE270C43D6624
 React-Core:
   LABEL: React-Core
   PROJECT_PATH: React-Core.xcodeproj

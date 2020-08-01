@@ -275,30 +275,7 @@
 			};
 			name = Release;
 		};
-		5A40EE0E4A03D5CDE1EDDD367E96DD41 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8FE30E8AD256960F1E20409B20E451F6 /* DoubleConversion.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/DoubleConversion/DoubleConversion-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = DoubleConversion;
-				PRODUCT_NAME = DoubleConversion;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		B483C521BBCD93D8F9F7784A8DE5AD0F /* Release */ = {
+		5C0826B8D88EC0006CE6489CF655FE50 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 00031AB762A428383C38E41BBA40D7BD /* DoubleConversion.release.xcconfig */;
 			buildSettings = {
@@ -317,10 +294,35 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		85B99AE1A7609EB25D45C381154CDF54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8FE30E8AD256960F1E20409B20E451F6 /* DoubleConversion.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/DoubleConversion/DoubleConversion-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = DoubleConversion;
+				PRODUCT_NAME = DoubleConversion;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		C46D53ED63A930DD9E30FF761FFEB222 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -392,8 +394,8 @@
 		954BE09564C6C513E507625CBC406E59 /* Build configuration list for PBXNativeTarget "DoubleConversion" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5A40EE0E4A03D5CDE1EDDD367E96DD41 /* Debug */,
-				B483C521BBCD93D8F9F7784A8DE5AD0F /* Release */,
+				85B99AE1A7609EB25D45C381154CDF54 /* Debug */,
+				5C0826B8D88EC0006CE6489CF655FE50 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

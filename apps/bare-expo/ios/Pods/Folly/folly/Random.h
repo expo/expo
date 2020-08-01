@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -100,7 +100,7 @@ class Random {
   /**
    * Get secure random bytes. (On Linux and OSX, this means /dev/urandom).
    */
-  static void secureRandom(void* data, size_t len);
+  static void secureRandom(void* data, size_t size);
 
   /**
    * Shortcut to get a secure random value of integral type.

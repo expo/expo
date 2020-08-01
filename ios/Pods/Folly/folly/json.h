@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -166,6 +166,28 @@ void escapeString(
  */
 std::string stripComments(StringPiece jsonC);
 
+class FOLLY_EXPORT parse_error : public std::runtime_error {
+ public:
+  using std::runtime_error::runtime_error;
+};
+
+// may be extened in future to include offset, col, etc.
+struct parse_location {
+  uint32_t line{}; // 0-indexed
+};
+
+// may be extended in future to include end location
+struct parse_range {
+  parse_location begin;
+};
+
+struct parse_metadata {
+  parse_range key_range;
+  parse_range value_range;
+};
+
+using metadata_map = std::unordered_map<dynamic const*, parse_metadata>;
+
 } // namespace json
 
 //////////////////////////////////////////////////////////////////////
@@ -176,6 +198,12 @@ std::string stripComments(StringPiece jsonC);
  */
 dynamic parseJson(StringPiece, json::serialization_opts const&);
 dynamic parseJson(StringPiece);
+
+dynamic parseJsonWithMetadata(StringPiece range, json::metadata_map* map);
+dynamic parseJsonWithMetadata(
+    StringPiece range,
+    json::serialization_opts const& opts,
+    json::metadata_map* map);
 
 /*
  * Serialize a dynamic into a json string.

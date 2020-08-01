@@ -1822,6 +1822,10 @@ React:
   LABEL: React
   PROJECT_PATH: React.xcodeproj
   UUID: 94DA87F24FB4B93E5D08FE961D5E5A3E
+React-callinvoker:
+  LABEL: React-callinvoker
+  PROJECT_PATH: React-callinvoker.xcodeproj
+  UUID: 704FBB32EAA23CE28E7EE270C43D6624
 React-Core:
   LABEL: React-Core
   PROJECT_PATH: React-Core.xcodeproj

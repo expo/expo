@@ -659,6 +659,30 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		580E2F6DA0AEE1F62CE84693015C3A15 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FAEC39ADF3DE7DE8BAA2EDA0773DD694 /* lottie-ios.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/lottie-ios/lottie-ios-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Lottie;
+				PRODUCT_NAME = "lottie-ios";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		7274B4AA0ECF51E10F1749FEE9D77564 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -719,30 +743,7 @@
 			};
 			name = Release;
 		};
-		8EDE6167625019A40B0208E2A00E9905 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FAEC39ADF3DE7DE8BAA2EDA0773DD694 /* lottie-ios.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/lottie-ios/lottie-ios-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Lottie;
-				PRODUCT_NAME = "lottie-ios";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		DD86CCEB4B0E55E014E89B08E800FA9B /* Release */ = {
+		9DAF97EFF68CEE4FEE6B239D5D36B7D6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3AAEE0C07F77308D07243866C1FBF63E /* lottie-ios.release.xcconfig */;
 			buildSettings = {
@@ -761,6 +762,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -836,8 +838,8 @@
 		09B608A69A76C38165988F19AA867CAD /* Build configuration list for PBXNativeTarget "lottie-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8EDE6167625019A40B0208E2A00E9905 /* Debug */,
-				DD86CCEB4B0E55E014E89B08E800FA9B /* Release */,
+				580E2F6DA0AEE1F62CE84693015C3A15 /* Debug */,
+				9DAF97EFF68CEE4FEE6B239D5D36B7D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

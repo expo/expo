@@ -34,9 +34,10 @@ Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
-Add `android.permission.READ_EXTERNAL_STORAGE` and `android.permission.WRITE_EXTERNAL_STORAGE` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
+This package automatically adds the `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. They are used when accessing the user's images or videos.
 
 ```xml
+<!-- Added permissions -->
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```

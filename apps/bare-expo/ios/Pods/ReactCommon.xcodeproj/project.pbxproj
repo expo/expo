@@ -7,108 +7,106 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		014A8E8F18D8FA74D60FAFDD34767C6F /* MessageQueueThreadCallInvoker.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F32D348FBE66584550CC298715671FF /* MessageQueueThreadCallInvoker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		260336CBCCF02F483BC1E3DDCE738D82 /* LongLivedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 59874347E9E0E39A924708730B668DDD /* LongLivedObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		273F31766B4BE764E9D1930213F1FC15 /* TurboCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AF6B605E1681F5BAB74965D802964157 /* TurboCxxModule.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2F83B9C98A035CB060B9750C467AF487 /* RCTTurboModuleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 73E2D5AE7FE31E8033BA59C607EEB1A3 /* RCTTurboModuleManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3D4D477E7F5D9377AF157DBBE5694CC2 /* RCTTurboModule.h in Headers */ = {isa = PBXBuildFile; fileRef = B9D702D6DDD56B0B64431CB055321A13 /* RCTTurboModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5339EC8E41CE1ACA4F6E3FAB82B7CC1D /* BridgeJSCallInvoker.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A01E64900D43A06EC0DE0F44BE8C49 /* BridgeJSCallInvoker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7C744743076EE0BD6BE0AA3D5064606A /* RCTTurboModuleManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9F647452452D205B99B1BCFA3947D08 /* RCTTurboModuleManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7F39BC9D4B133717C07CECCE3A57F97A /* TurboModuleBinding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1E12BC7D76493C73E7C7C93E308F3D /* TurboModuleBinding.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		82260181AAD948A069E30B167DB38EE2 /* MessageQueueThreadCallInvoker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 245B0ACEB7A6F973F24131647B21E085 /* MessageQueueThreadCallInvoker.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8DD1C6EEA0C7810E0FC75E5AD88C647B /* TurboModule.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B5E2B88DB451A1536B49800681500D /* TurboModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9FEB06F4BDF02C40646088BB308B7FD3 /* BridgeJSCallInvoker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 82980351F5B64CB16F858407E973B9DB /* BridgeJSCallInvoker.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B782F8A0A7720E9436CC794A627C264C /* LongLivedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13ECFAA3A3DD8407C055E8EDA2820DD2 /* LongLivedObject.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C11F480E92D827012E5121F79D60C5B9 /* RCTTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17AEC6A633603623C6748DCCD3CB99EF /* RCTTurboModule.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D46E9E41AFB1CFD685CC0CC7338D6A42 /* CallInvoker.h in Headers */ = {isa = PBXBuildFile; fileRef = B4A7FAF240DC7EFD7022EA1069488C6B /* CallInvoker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D76763CD8CAC70E06EFF3D80E768927C /* TurboModuleUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 54E9944C6796EF38140C9A55E4584A88 /* TurboModuleUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DBFD5B32AD8E5AC13B1F3325FE5F3C77 /* TurboModuleUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7F31D56EC5E1BF25FBCEFDA51E35EE0 /* TurboModuleUtils.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E976943E1AFB04457423A58E11D48EA1 /* TurboModuleBinding.h in Headers */ = {isa = PBXBuildFile; fileRef = 15A9EA670EB01FF1436723613124051C /* TurboModuleBinding.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EF6ABD1083CD08FC23A2446D2C6F4474 /* ReactCommon-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C66552E3584EB7BF2EF9822C86586CE /* ReactCommon-dummy.m */; };
-		F1CDB6D633DD8A07ED18B086BE98D358 /* TurboModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECDC12C7CE725BF7BCF3B84978A8047B /* TurboModule.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FF4BF80AAE99F64B69F1FB0F872FA1BC /* TurboCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F074289F9A7139A20028291E498F3AB /* TurboCxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0FAB26D34EBF2B24D4773F42C5CFE49A /* TurboModuleUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E60D9B9105380EAF9A1C64A87B175D7 /* TurboModuleUtils.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		267167ACA5FF8EC7C04E09FF7179EDEC /* LongLivedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C1B411A69981EC84D5A2B3C9F575D5A /* LongLivedObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		306F06BCF9E32E4855A51DA8C8694EAB /* TurboModuleUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B269F0290524032B00F697A279D624B /* TurboModuleUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7D8A777F0381C9C6786B905FD91CAC85 /* TurboCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DD7CF6A558126D12CB03A9C7E35127F7 /* TurboCxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7DD6BA828D4864455D422D6F6EB4DC34 /* TurboModuleBinding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D201A3688318BD9D10FD39D1D39D62AA /* TurboModuleBinding.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7FE367AC52C33926B905D7E23CAF6012 /* TurboModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 853A99093CEC5F8DC59D24B3B9DB33BC /* TurboModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		86481FBF7DD2A246F4216B7F7B9FBFD8 /* RCTTurboModuleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF5D0EFFE68997F5894339A37D8BBF /* RCTTurboModuleManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8778A966ABBF3F6308EDA48C3881B904 /* RCTTurboModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A4023E7A23990E5E744BE79DAE1CDA6 /* RCTTurboModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8B427D938D1781142536818337722A2F /* TurboModuleBinding.h in Headers */ = {isa = PBXBuildFile; fileRef = B5B5112208C56B104AB6D8AF1D3429AC /* TurboModuleBinding.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9CCC2583244EA8F40A9A2B982D500E95 /* TurboModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7481217A5F6084AC4AB3FCA3E28777AE /* TurboModule.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A566607DD09C4828810E5A144390E701 /* LongLivedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A219BCB2CBB73130C80F3F28723E4D6 /* LongLivedObject.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AF08AE275CB849A24452FF957FC318D0 /* RCTTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A02867BB738CF8D6BB61141B07A7788C /* RCTTurboModule.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CB297A3790C493BFEA74141F2A49A555 /* ReactCommon-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A81098ECDA31D2ADD6BF65EB2550A1F7 /* ReactCommon-dummy.m */; };
+		E2AFB630153C04342A15FC5BBF93209B /* TurboCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E5D4A56A6C93545A4858D836D3EF1241 /* TurboCxxModule.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FE71A78F8371037A824C10D3D23FFCE3 /* RCTTurboModuleManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1C9B875130C362DF39F4E833F2B0678D /* RCTTurboModuleManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		125E81C6C264DCC2024825AAB4807504 /* PBXContainerItemProxy */ = {
+		120F94B5838A7E38DF8B7D41947AD87A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 127EE614C1DE3FE7D69ECE7353A2F658 /* React-Core.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
-			remoteInfo = "React-Core";
-		};
-		482D87F575C6450488EA8CEC23EE1F99 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D80ED4E8D1E1702BC122BB65412E8CC4 /* DoubleConversion.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
-			remoteInfo = DoubleConversion;
-		};
-		7C47CB97C2B3CA48DD4BA67C7FF043E7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4D3BB741A3F4E443291401164CA29177 /* React-cxxreact.xcodeproj */;
+			containerPortal = 7782C383F1EF87CF7F08FFD0E0BCD96E /* React-cxxreact.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
 			remoteInfo = "React-cxxreact";
 		};
-		9C89E6C49B58ABFD5BAAFAEDB2BC61B2 /* PBXContainerItemProxy */ = {
+		52E256E40A736D6FA166D088B4FFE4B2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6555FD6D1A122F12A03A7DAB33FEEC43 /* React-jsi.xcodeproj */;
+			containerPortal = 79943E89F263F96D6A9ABADD9A88C499 /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
-			remoteInfo = "React-jsi";
+			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
+			remoteInfo = DoubleConversion;
 		};
-		AC78E7B6B4C7EB867E70FF86BC842077 /* PBXContainerItemProxy */ = {
+		7B3CF6BAD7C1F4AE3176E39526A207FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 234F824198D3C0C344CFC4F9DCCBA6D2 /* Folly.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
-			remoteInfo = Folly;
-		};
-		FE26C48A652B774350347B9179104E60 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 92C390D057C340EB5B2F99CDC8392619 /* glog.xcodeproj */;
+			containerPortal = 1BF0A3A2E430AB9A6638F15C66C70F9E /* glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
 			remoteInfo = glog;
 		};
+		862626CAE002AB8C2416836007DF9F37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E5B3181945D669CF3453E8BB911620F /* React-callinvoker.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 704FBB32EAA23CE28E7EE270C43D6624;
+			remoteInfo = "React-callinvoker";
+		};
+		93D277874CCFC3A2B1DA6167EA8A468D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5D53B7B66D8123A411C636B7590B6A69 /* React-jsi.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
+			remoteInfo = "React-jsi";
+		};
+		C514623987988C96A240540F43C0CF71 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18B7450163EA83AEA64C16812C20AA11 /* Folly.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
+			remoteInfo = Folly;
+		};
+		C6B8D4CD2155E7D3BFCD5634F12DF9F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81C5BC713970FBAD6BBB648073E085CC /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0F32D348FBE66584550CC298715671FF /* MessageQueueThreadCallInvoker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MessageQueueThreadCallInvoker.h; path = callinvoker/ReactCommon/MessageQueueThreadCallInvoker.h; sourceTree = "<group>"; };
-		127EE614C1DE3FE7D69ECE7353A2F658 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
-		13ECFAA3A3DD8407C055E8EDA2820DD2 /* LongLivedObject.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = LongLivedObject.cpp; path = turbomodule/core/LongLivedObject.cpp; sourceTree = "<group>"; };
-		15A9EA670EB01FF1436723613124051C /* TurboModuleBinding.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboModuleBinding.h; path = turbomodule/core/TurboModuleBinding.h; sourceTree = "<group>"; };
-		17AEC6A633603623C6748DCCD3CB99EF /* RCTTurboModule.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTurboModule.mm; sourceTree = "<group>"; };
-		234F824198D3C0C344CFC4F9DCCBA6D2 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		245B0ACEB7A6F973F24131647B21E085 /* MessageQueueThreadCallInvoker.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = MessageQueueThreadCallInvoker.cpp; path = callinvoker/ReactCommon/MessageQueueThreadCallInvoker.cpp; sourceTree = "<group>"; };
-		48A01E64900D43A06EC0DE0F44BE8C49 /* BridgeJSCallInvoker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BridgeJSCallInvoker.h; path = callinvoker/ReactCommon/BridgeJSCallInvoker.h; sourceTree = "<group>"; };
-		4C66552E3584EB7BF2EF9822C86586CE /* ReactCommon-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ReactCommon-dummy.m"; sourceTree = "<group>"; };
-		4D3BB741A3F4E443291401164CA29177 /* React-cxxreact */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-cxxreact"; path = "React-cxxreact.xcodeproj"; sourceTree = "<group>"; };
-		54E9944C6796EF38140C9A55E4584A88 /* TurboModuleUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboModuleUtils.h; path = turbomodule/core/TurboModuleUtils.h; sourceTree = "<group>"; };
-		59874347E9E0E39A924708730B668DDD /* LongLivedObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LongLivedObject.h; path = turbomodule/core/LongLivedObject.h; sourceTree = "<group>"; };
-		622DC077D092086F02A4B13AB887D76C /* ReactCommon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ReactCommon.debug.xcconfig; sourceTree = "<group>"; };
-		6555FD6D1A122F12A03A7DAB33FEEC43 /* React-jsi */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsi"; path = "React-jsi.xcodeproj"; sourceTree = "<group>"; };
-		73E2D5AE7FE31E8033BA59C607EEB1A3 /* RCTTurboModuleManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTurboModuleManager.h; sourceTree = "<group>"; };
-		82980351F5B64CB16F858407E973B9DB /* BridgeJSCallInvoker.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = BridgeJSCallInvoker.cpp; path = callinvoker/ReactCommon/BridgeJSCallInvoker.cpp; sourceTree = "<group>"; };
-		92C390D057C340EB5B2F99CDC8392619 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
-		9F074289F9A7139A20028291E498F3AB /* TurboCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboCxxModule.h; path = turbomodule/core/TurboCxxModule.h; sourceTree = "<group>"; };
-		A7F31D56EC5E1BF25FBCEFDA51E35EE0 /* TurboModuleUtils.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboModuleUtils.cpp; path = turbomodule/core/TurboModuleUtils.cpp; sourceTree = "<group>"; };
-		AF6B605E1681F5BAB74965D802964157 /* TurboCxxModule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboCxxModule.cpp; path = turbomodule/core/TurboCxxModule.cpp; sourceTree = "<group>"; };
-		B1108A8FC76A0A1F5480169CA3450ED4 /* ReactCommon-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ReactCommon-prefix.pch"; sourceTree = "<group>"; };
-		B4A7FAF240DC7EFD7022EA1069488C6B /* CallInvoker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CallInvoker.h; path = callinvoker/ReactCommon/CallInvoker.h; sourceTree = "<group>"; };
-		B9D702D6DDD56B0B64431CB055321A13 /* RCTTurboModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTurboModule.h; sourceTree = "<group>"; };
-		D80ED4E8D1E1702BC122BB65412E8CC4 /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
-		E0AA10BBE9F50E8A41E09E86A65043F0 /* ReactCommon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ReactCommon.release.xcconfig; sourceTree = "<group>"; };
-		ECDC12C7CE725BF7BCF3B84978A8047B /* TurboModule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboModule.cpp; path = turbomodule/core/TurboModule.cpp; sourceTree = "<group>"; };
+		18B7450163EA83AEA64C16812C20AA11 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
+		1BF0A3A2E430AB9A6638F15C66C70F9E /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
+		1C9B875130C362DF39F4E833F2B0678D /* RCTTurboModuleManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTurboModuleManager.mm; sourceTree = "<group>"; };
+		1E5B3181945D669CF3453E8BB911620F /* React-callinvoker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-callinvoker"; path = "React-callinvoker.xcodeproj"; sourceTree = "<group>"; };
+		3B269F0290524032B00F697A279D624B /* TurboModuleUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboModuleUtils.h; path = turbomodule/core/TurboModuleUtils.h; sourceTree = "<group>"; };
+		4C1B411A69981EC84D5A2B3C9F575D5A /* LongLivedObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LongLivedObject.h; path = turbomodule/core/LongLivedObject.h; sourceTree = "<group>"; };
+		5A4023E7A23990E5E744BE79DAE1CDA6 /* RCTTurboModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTurboModule.h; sourceTree = "<group>"; };
+		5CBF5D0EFFE68997F5894339A37D8BBF /* RCTTurboModuleManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTurboModuleManager.h; sourceTree = "<group>"; };
+		5D53B7B66D8123A411C636B7590B6A69 /* React-jsi */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsi"; path = "React-jsi.xcodeproj"; sourceTree = "<group>"; };
+		6E60D9B9105380EAF9A1C64A87B175D7 /* TurboModuleUtils.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboModuleUtils.cpp; path = turbomodule/core/TurboModuleUtils.cpp; sourceTree = "<group>"; };
+		7481217A5F6084AC4AB3FCA3E28777AE /* TurboModule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboModule.cpp; path = turbomodule/core/TurboModule.cpp; sourceTree = "<group>"; };
+		7782C383F1EF87CF7F08FFD0E0BCD96E /* React-cxxreact */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-cxxreact"; path = "React-cxxreact.xcodeproj"; sourceTree = "<group>"; };
+		79943E89F263F96D6A9ABADD9A88C499 /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
+		81C5BC713970FBAD6BBB648073E085CC /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
+		853A99093CEC5F8DC59D24B3B9DB33BC /* TurboModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboModule.h; path = turbomodule/core/TurboModule.h; sourceTree = "<group>"; };
+		99D6B26824C9ACE3FD33A9B6DF7C8B43 /* ReactCommon-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ReactCommon-prefix.pch"; sourceTree = "<group>"; };
+		9A219BCB2CBB73130C80F3F28723E4D6 /* LongLivedObject.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = LongLivedObject.cpp; path = turbomodule/core/LongLivedObject.cpp; sourceTree = "<group>"; };
+		9E625C116F3D01CA23C8547CA4A2259D /* ReactCommon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ReactCommon.debug.xcconfig; sourceTree = "<group>"; };
+		A02867BB738CF8D6BB61141B07A7788C /* RCTTurboModule.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTurboModule.mm; sourceTree = "<group>"; };
+		A81098ECDA31D2ADD6BF65EB2550A1F7 /* ReactCommon-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ReactCommon-dummy.m"; sourceTree = "<group>"; };
+		B5B5112208C56B104AB6D8AF1D3429AC /* TurboModuleBinding.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboModuleBinding.h; path = turbomodule/core/TurboModuleBinding.h; sourceTree = "<group>"; };
+		D201A3688318BD9D10FD39D1D39D62AA /* TurboModuleBinding.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboModuleBinding.cpp; path = turbomodule/core/TurboModuleBinding.cpp; sourceTree = "<group>"; };
+		DD7CF6A558126D12CB03A9C7E35127F7 /* TurboCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboCxxModule.h; path = turbomodule/core/TurboCxxModule.h; sourceTree = "<group>"; };
+		DF244389B7223FF5D17C4DCACDDE8ABA /* ReactCommon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ReactCommon.release.xcconfig; sourceTree = "<group>"; };
+		E5D4A56A6C93545A4858D836D3EF1241 /* TurboCxxModule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboCxxModule.cpp; path = turbomodule/core/TurboCxxModule.cpp; sourceTree = "<group>"; };
 		EF9A7F3B524D6ECC030CBDE22DC29226 /* libReactCommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libReactCommon.a; path = libReactCommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F7B5E2B88DB451A1536B49800681500D /* TurboModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TurboModule.h; path = turbomodule/core/TurboModule.h; sourceTree = "<group>"; };
-		F9F647452452D205B99B1BCFA3947D08 /* RCTTurboModuleManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTurboModuleManager.mm; sourceTree = "<group>"; };
-		FC1E12BC7D76493C73E7C7C93E308F3D /* TurboModuleBinding.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = TurboModuleBinding.cpp; path = turbomodule/core/TurboModuleBinding.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		289617759979442F7AC2385F2602D5E6 /* Frameworks */ = {
+		7D017BE432D60A3F4EA23163ACD608B0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -126,108 +124,84 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		37F0C41A1D7463BD7C19D56829813289 /* platform */ = {
+		03626256447B0B34B177BEC1AF87545F /* turbomodule */ = {
 			isa = PBXGroup;
 			children = (
-				E1D4ADDA7C7A6E53ECA6603C1E5C07FB /* ios */,
+				BEEF05CCEBD1FED5C4807F3F66883D34 /* core */,
 			);
-			name = platform;
-			path = turbomodule/core/platform;
+			name = turbomodule;
 			sourceTree = "<group>";
 		};
-		711A857E294D62017CA0F1D39AD70594 /* Support Files */ = {
+		2B0E70214EA68BCB466B2DC077AD46C7 /* ReactCommon */ = {
 			isa = PBXGroup;
 			children = (
-				4C66552E3584EB7BF2EF9822C86586CE /* ReactCommon-dummy.m */,
-				B1108A8FC76A0A1F5480169CA3450ED4 /* ReactCommon-prefix.pch */,
-				622DC077D092086F02A4B13AB887D76C /* ReactCommon.debug.xcconfig */,
-				E0AA10BBE9F50E8A41E09E86A65043F0 /* ReactCommon.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/ReactCommon";
-			sourceTree = "<group>";
-		};
-		7EF0B589E8227A2EF3623E6E2E35008A /* ReactCommon */ = {
-			isa = PBXGroup;
-			children = (
-				93A98AD73CB74BC7F60A9FFD41FBF818 /* callinvoker */,
-				711A857E294D62017CA0F1D39AD70594 /* Support Files */,
-				CBD403D72AF9267DD4E51B2866BF9645 /* turbomodule */,
+				9984F0C1393A9598CC206AEECD2B92BC /* Support Files */,
+				03626256447B0B34B177BEC1AF87545F /* turbomodule */,
 			);
 			name = ReactCommon;
 			path = "../../../../react-native-lab/react-native/ReactCommon";
 			sourceTree = "<group>";
 		};
-		93A98AD73CB74BC7F60A9FFD41FBF818 /* callinvoker */ = {
+		7C0A4C7810CA92A854E5BA2F61D92111 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				82980351F5B64CB16F858407E973B9DB /* BridgeJSCallInvoker.cpp */,
-				48A01E64900D43A06EC0DE0F44BE8C49 /* BridgeJSCallInvoker.h */,
-				B4A7FAF240DC7EFD7022EA1069488C6B /* CallInvoker.h */,
-				245B0ACEB7A6F973F24131647B21E085 /* MessageQueueThreadCallInvoker.cpp */,
-				0F32D348FBE66584550CC298715671FF /* MessageQueueThreadCallInvoker.h */,
-			);
-			name = callinvoker;
-			sourceTree = "<group>";
-		};
-		9B168C93F8BF1145F4F7376781E88915 /* core */ = {
-			isa = PBXGroup;
-			children = (
-				13ECFAA3A3DD8407C055E8EDA2820DD2 /* LongLivedObject.cpp */,
-				59874347E9E0E39A924708730B668DDD /* LongLivedObject.h */,
-				AF6B605E1681F5BAB74965D802964157 /* TurboCxxModule.cpp */,
-				9F074289F9A7139A20028291E498F3AB /* TurboCxxModule.h */,
-				ECDC12C7CE725BF7BCF3B84978A8047B /* TurboModule.cpp */,
-				F7B5E2B88DB451A1536B49800681500D /* TurboModule.h */,
-				FC1E12BC7D76493C73E7C7C93E308F3D /* TurboModuleBinding.cpp */,
-				15A9EA670EB01FF1436723613124051C /* TurboModuleBinding.h */,
-				A7F31D56EC5E1BF25FBCEFDA51E35EE0 /* TurboModuleUtils.cpp */,
-				54E9944C6796EF38140C9A55E4584A88 /* TurboModuleUtils.h */,
-				37F0C41A1D7463BD7C19D56829813289 /* platform */,
-			);
-			name = core;
-			sourceTree = "<group>";
-		};
-		CBD403D72AF9267DD4E51B2866BF9645 /* turbomodule */ = {
-			isa = PBXGroup;
-			children = (
-				9B168C93F8BF1145F4F7376781E88915 /* core */,
-			);
-			name = turbomodule;
-			sourceTree = "<group>";
-		};
-		D30AC18550700B28DA6EC6CEA51F7CBF /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				D80ED4E8D1E1702BC122BB65412E8CC4 /* DoubleConversion */,
-				234F824198D3C0C344CFC4F9DCCBA6D2 /* Folly */,
-				92C390D057C340EB5B2F99CDC8392619 /* glog */,
-				127EE614C1DE3FE7D69ECE7353A2F658 /* React-Core */,
-				4D3BB741A3F4E443291401164CA29177 /* React-cxxreact */,
-				6555FD6D1A122F12A03A7DAB33FEEC43 /* React-jsi */,
+				79943E89F263F96D6A9ABADD9A88C499 /* DoubleConversion */,
+				18B7450163EA83AEA64C16812C20AA11 /* Folly */,
+				1BF0A3A2E430AB9A6638F15C66C70F9E /* glog */,
+				1E5B3181945D669CF3453E8BB911620F /* React-callinvoker */,
+				81C5BC713970FBAD6BBB648073E085CC /* React-Core */,
+				7782C383F1EF87CF7F08FFD0E0BCD96E /* React-cxxreact */,
+				5D53B7B66D8123A411C636B7590B6A69 /* React-jsi */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		E1D4ADDA7C7A6E53ECA6603C1E5C07FB /* ios */ = {
+		9984F0C1393A9598CC206AEECD2B92BC /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				B9D702D6DDD56B0B64431CB055321A13 /* RCTTurboModule.h */,
-				17AEC6A633603623C6748DCCD3CB99EF /* RCTTurboModule.mm */,
-				73E2D5AE7FE31E8033BA59C607EEB1A3 /* RCTTurboModuleManager.h */,
-				F9F647452452D205B99B1BCFA3947D08 /* RCTTurboModuleManager.mm */,
+				A81098ECDA31D2ADD6BF65EB2550A1F7 /* ReactCommon-dummy.m */,
+				99D6B26824C9ACE3FD33A9B6DF7C8B43 /* ReactCommon-prefix.pch */,
+				9E625C116F3D01CA23C8547CA4A2259D /* ReactCommon.debug.xcconfig */,
+				DF244389B7223FF5D17C4DCACDDE8ABA /* ReactCommon.release.xcconfig */,
 			);
-			name = ios;
-			path = ios;
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/ReactCommon";
+			sourceTree = "<group>";
+		};
+		BBE3F0533CC78EEF7DE8E29034A06D50 /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				ED9B6D6F31C1617DFE994DD080EA3A28 /* ios */,
+			);
+			name = platform;
+			path = turbomodule/core/platform;
+			sourceTree = "<group>";
+		};
+		BEEF05CCEBD1FED5C4807F3F66883D34 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				9A219BCB2CBB73130C80F3F28723E4D6 /* LongLivedObject.cpp */,
+				4C1B411A69981EC84D5A2B3C9F575D5A /* LongLivedObject.h */,
+				E5D4A56A6C93545A4858D836D3EF1241 /* TurboCxxModule.cpp */,
+				DD7CF6A558126D12CB03A9C7E35127F7 /* TurboCxxModule.h */,
+				7481217A5F6084AC4AB3FCA3E28777AE /* TurboModule.cpp */,
+				853A99093CEC5F8DC59D24B3B9DB33BC /* TurboModule.h */,
+				D201A3688318BD9D10FD39D1D39D62AA /* TurboModuleBinding.cpp */,
+				B5B5112208C56B104AB6D8AF1D3429AC /* TurboModuleBinding.h */,
+				6E60D9B9105380EAF9A1C64A87B175D7 /* TurboModuleUtils.cpp */,
+				3B269F0290524032B00F697A279D624B /* TurboModuleUtils.h */,
+				BBE3F0533CC78EEF7DE8E29034A06D50 /* platform */,
+			);
+			name = core;
 			sourceTree = "<group>";
 		};
 		EA3B8386B7BC28866825AE31758B5CA8 = {
 			isa = PBXGroup;
 			children = (
-				D30AC18550700B28DA6EC6CEA51F7CBF /* Dependencies */,
+				7C0A4C7810CA92A854E5BA2F61D92111 /* Dependencies */,
 				EC2113FB6CA66C46C261470082CC48C2 /* Frameworks */,
 				015AC08763B5F230DF072409F8186B78 /* Products */,
-				7EF0B589E8227A2EF3623E6E2E35008A /* ReactCommon */,
+				2B0E70214EA68BCB466B2DC077AD46C7 /* ReactCommon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -238,23 +212,32 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		ED9B6D6F31C1617DFE994DD080EA3A28 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				5A4023E7A23990E5E744BE79DAE1CDA6 /* RCTTurboModule.h */,
+				A02867BB738CF8D6BB61141B07A7788C /* RCTTurboModule.mm */,
+				5CBF5D0EFFE68997F5894339A37D8BBF /* RCTTurboModuleManager.h */,
+				1C9B875130C362DF39F4E833F2B0678D /* RCTTurboModuleManager.mm */,
+			);
+			name = ios;
+			path = ios;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E3BAB79C8FC928D3720D2A33F030A798 /* Headers */ = {
+		1A3AA8843EF5BCFD3919A5E75BE22042 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5339EC8E41CE1ACA4F6E3FAB82B7CC1D /* BridgeJSCallInvoker.h in Headers */,
-				D46E9E41AFB1CFD685CC0CC7338D6A42 /* CallInvoker.h in Headers */,
-				260336CBCCF02F483BC1E3DDCE738D82 /* LongLivedObject.h in Headers */,
-				014A8E8F18D8FA74D60FAFDD34767C6F /* MessageQueueThreadCallInvoker.h in Headers */,
-				3D4D477E7F5D9377AF157DBBE5694CC2 /* RCTTurboModule.h in Headers */,
-				2F83B9C98A035CB060B9750C467AF487 /* RCTTurboModuleManager.h in Headers */,
-				FF4BF80AAE99F64B69F1FB0F872FA1BC /* TurboCxxModule.h in Headers */,
-				8DD1C6EEA0C7810E0FC75E5AD88C647B /* TurboModule.h in Headers */,
-				E976943E1AFB04457423A58E11D48EA1 /* TurboModuleBinding.h in Headers */,
-				D76763CD8CAC70E06EFF3D80E768927C /* TurboModuleUtils.h in Headers */,
+				267167ACA5FF8EC7C04E09FF7179EDEC /* LongLivedObject.h in Headers */,
+				8778A966ABBF3F6308EDA48C3881B904 /* RCTTurboModule.h in Headers */,
+				86481FBF7DD2A246F4216B7F7B9FBFD8 /* RCTTurboModuleManager.h in Headers */,
+				7D8A777F0381C9C6786B905FD91CAC85 /* TurboCxxModule.h in Headers */,
+				7FE367AC52C33926B905D7E23CAF6012 /* TurboModule.h in Headers */,
+				8B427D938D1781142536818337722A2F /* TurboModuleBinding.h in Headers */,
+				306F06BCF9E32E4855A51DA8C8694EAB /* TurboModuleUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,21 +246,22 @@
 /* Begin PBXNativeTarget section */
 		2610D146B211EB79FECF83D4FA5AB36D /* ReactCommon */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8EE2EB6A5AB1CA3AC162BCF2CC6040B7 /* Build configuration list for PBXNativeTarget "ReactCommon" */;
+			buildConfigurationList = A928E6C82CF3D351FD19B0B0FD419A1A /* Build configuration list for PBXNativeTarget "ReactCommon" */;
 			buildPhases = (
-				E3BAB79C8FC928D3720D2A33F030A798 /* Headers */,
-				71B0837F803AF702BE30EA61E225BAC2 /* Sources */,
-				289617759979442F7AC2385F2602D5E6 /* Frameworks */,
+				1A3AA8843EF5BCFD3919A5E75BE22042 /* Headers */,
+				E9828DA38E9E3DCF61255A716A95E33F /* Sources */,
+				7D017BE432D60A3F4EA23163ACD608B0 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				4AE43429A6F68EB7873802EFAB72BC1C /* PBXTargetDependency */,
-				ECD275AEAA6FC9495B517F83A2AE3F2F /* PBXTargetDependency */,
-				6B18DBE8359024A92AEE215D6FBAFEA9 /* PBXTargetDependency */,
-				4A745DA5423F37657F7E8F68F74C34F8 /* PBXTargetDependency */,
-				C281369709BEBC4F1D64DD918968986F /* PBXTargetDependency */,
-				43F061E26306BD0A312E59C91E6DECDD /* PBXTargetDependency */,
+				C4E129755534146E1D22F5E89D09A61D /* PBXTargetDependency */,
+				EE543AC88ED6959CFD7315B0D584963C /* PBXTargetDependency */,
+				23B882060956FF2C9B3BD05845EBBD08 /* PBXTargetDependency */,
+				79E3B2BF7E84F8DEE52048706002F85A /* PBXTargetDependency */,
+				64A8F108327BF59B47F437957E68A53B /* PBXTargetDependency */,
+				44645E1806F13F061EF21E8CD544A8CB /* PBXTargetDependency */,
+				CAAF7C7C1F147D31172FEC2E7D16BB48 /* PBXTargetDependency */,
 			);
 			name = ReactCommon;
 			productName = ReactCommon;
@@ -306,22 +290,25 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 4D3BB741A3F4E443291401164CA29177 /* React-cxxreact */;
+					ProjectRef = 1E5B3181945D669CF3453E8BB911620F /* React-callinvoker */;
 				},
 				{
-					ProjectRef = D80ED4E8D1E1702BC122BB65412E8CC4 /* DoubleConversion */;
+					ProjectRef = 81C5BC713970FBAD6BBB648073E085CC /* React-Core */;
 				},
 				{
-					ProjectRef = 234F824198D3C0C344CFC4F9DCCBA6D2 /* Folly */;
+					ProjectRef = 7782C383F1EF87CF7F08FFD0E0BCD96E /* React-cxxreact */;
 				},
 				{
-					ProjectRef = 92C390D057C340EB5B2F99CDC8392619 /* glog */;
+					ProjectRef = 5D53B7B66D8123A411C636B7590B6A69 /* React-jsi */;
 				},
 				{
-					ProjectRef = 127EE614C1DE3FE7D69ECE7353A2F658 /* React-Core */;
+					ProjectRef = 18B7450163EA83AEA64C16812C20AA11 /* Folly */;
 				},
 				{
-					ProjectRef = 6555FD6D1A122F12A03A7DAB33FEEC43 /* React-jsi */;
+					ProjectRef = 79943E89F263F96D6A9ABADD9A88C499 /* DoubleConversion */;
+				},
+				{
+					ProjectRef = 1BF0A3A2E430AB9A6638F15C66C70F9E /* glog */;
 				},
 			);
 			projectRoot = "";
@@ -332,60 +319,63 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		71B0837F803AF702BE30EA61E225BAC2 /* Sources */ = {
+		E9828DA38E9E3DCF61255A716A95E33F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FEB06F4BDF02C40646088BB308B7FD3 /* BridgeJSCallInvoker.cpp in Sources */,
-				B782F8A0A7720E9436CC794A627C264C /* LongLivedObject.cpp in Sources */,
-				82260181AAD948A069E30B167DB38EE2 /* MessageQueueThreadCallInvoker.cpp in Sources */,
-				C11F480E92D827012E5121F79D60C5B9 /* RCTTurboModule.mm in Sources */,
-				7C744743076EE0BD6BE0AA3D5064606A /* RCTTurboModuleManager.mm in Sources */,
-				EF6ABD1083CD08FC23A2446D2C6F4474 /* ReactCommon-dummy.m in Sources */,
-				273F31766B4BE764E9D1930213F1FC15 /* TurboCxxModule.cpp in Sources */,
-				F1CDB6D633DD8A07ED18B086BE98D358 /* TurboModule.cpp in Sources */,
-				7F39BC9D4B133717C07CECCE3A57F97A /* TurboModuleBinding.cpp in Sources */,
-				DBFD5B32AD8E5AC13B1F3325FE5F3C77 /* TurboModuleUtils.cpp in Sources */,
+				A566607DD09C4828810E5A144390E701 /* LongLivedObject.cpp in Sources */,
+				AF08AE275CB849A24452FF957FC318D0 /* RCTTurboModule.mm in Sources */,
+				FE71A78F8371037A824C10D3D23FFCE3 /* RCTTurboModuleManager.mm in Sources */,
+				CB297A3790C493BFEA74141F2A49A555 /* ReactCommon-dummy.m in Sources */,
+				E2AFB630153C04342A15FC5BBF93209B /* TurboCxxModule.cpp in Sources */,
+				9CCC2583244EA8F40A9A2B982D500E95 /* TurboModule.cpp in Sources */,
+				7DD6BA828D4864455D422D6F6EB4DC34 /* TurboModuleBinding.cpp in Sources */,
+				0FAB26D34EBF2B24D4773F42C5CFE49A /* TurboModuleUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		43F061E26306BD0A312E59C91E6DECDD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = glog;
-			targetProxy = FE26C48A652B774350347B9179104E60 /* PBXContainerItemProxy */;
-		};
-		4A745DA5423F37657F7E8F68F74C34F8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-cxxreact";
-			targetProxy = 7C47CB97C2B3CA48DD4BA67C7FF043E7 /* PBXContainerItemProxy */;
-		};
-		4AE43429A6F68EB7873802EFAB72BC1C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DoubleConversion;
-			targetProxy = 482D87F575C6450488EA8CEC23EE1F99 /* PBXContainerItemProxy */;
-		};
-		6B18DBE8359024A92AEE215D6FBAFEA9 /* PBXTargetDependency */ = {
+		23B882060956FF2C9B3BD05845EBBD08 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 125E81C6C264DCC2024825AAB4807504 /* PBXContainerItemProxy */;
+			targetProxy = C6B8D4CD2155E7D3BFCD5634F12DF9F7 /* PBXContainerItemProxy */;
 		};
-		C281369709BEBC4F1D64DD918968986F /* PBXTargetDependency */ = {
+		44645E1806F13F061EF21E8CD544A8CB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsi";
-			targetProxy = 9C89E6C49B58ABFD5BAAFAEDB2BC61B2 /* PBXContainerItemProxy */;
+			targetProxy = 93D277874CCFC3A2B1DA6167EA8A468D /* PBXContainerItemProxy */;
 		};
-		ECD275AEAA6FC9495B517F83A2AE3F2F /* PBXTargetDependency */ = {
+		64A8F108327BF59B47F437957E68A53B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-cxxreact";
+			targetProxy = 120F94B5838A7E38DF8B7D41947AD87A /* PBXContainerItemProxy */;
+		};
+		79E3B2BF7E84F8DEE52048706002F85A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-callinvoker";
+			targetProxy = 862626CAE002AB8C2416836007DF9F37 /* PBXContainerItemProxy */;
+		};
+		C4E129755534146E1D22F5E89D09A61D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DoubleConversion;
+			targetProxy = 52E256E40A736D6FA166D088B4FFE4B2 /* PBXContainerItemProxy */;
+		};
+		CAAF7C7C1F147D31172FEC2E7D16BB48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = glog;
+			targetProxy = 7B3CF6BAD7C1F4AE3176E39526A207FC /* PBXContainerItemProxy */;
+		};
+		EE543AC88ED6959CFD7315B0D584963C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = AC78E7B6B4C7EB867E70FF86BC842077 /* PBXContainerItemProxy */;
+			targetProxy = C514623987988C96A240540F43C0CF71 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		142438BFF6F9BC6C0209F4B448CD5488 /* Debug */ = {
+		1AB3F756674F30F6F408F08C7B5EC7F5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -436,7 +426,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -449,7 +439,7 @@
 			};
 			name = Debug;
 		};
-		1BD0EF421BC713FAD5223C9DD1677392 /* Release */ = {
+		22EF584A69E0A7AD77766272760BBCB9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -497,7 +487,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -509,10 +499,36 @@
 			};
 			name = Release;
 		};
-		67505C3BD6F020FDFFB83529800F6FB9 /* Release */ = {
+		8FF3670650224778D8B01018DB772178 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E0AA10BBE9F50E8A41E09E86A65043F0 /* ReactCommon.release.xcconfig */;
+			baseConfigurationReference = 9E625C116F3D01CA23C8547CA4A2259D /* ReactCommon.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ReactCommon/ReactCommon-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ReactCommon;
+				PRODUCT_NAME = ReactCommon;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		97C468FC035CD049E7B5770E2D0F8CE2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DF244389B7223FF5D17C4DCACDDE8ABA /* ReactCommon.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -534,47 +550,23 @@
 			};
 			name = Release;
 		};
-		9DA0DC921362F09BCEB397AB3511A613 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 622DC077D092086F02A4B13AB887D76C /* ReactCommon.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/ReactCommon/ReactCommon-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = ReactCommon;
-				PRODUCT_NAME = ReactCommon;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		2CEFC04D088753046E64029597086034 /* Build configuration list for PBXProject "ReactCommon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				142438BFF6F9BC6C0209F4B448CD5488 /* Debug */,
-				1BD0EF421BC713FAD5223C9DD1677392 /* Release */,
+				1AB3F756674F30F6F408F08C7B5EC7F5 /* Debug */,
+				22EF584A69E0A7AD77766272760BBCB9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8EE2EB6A5AB1CA3AC162BCF2CC6040B7 /* Build configuration list for PBXNativeTarget "ReactCommon" */ = {
+		A928E6C82CF3D351FD19B0B0FD419A1A /* Build configuration list for PBXNativeTarget "ReactCommon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9DA0DC921362F09BCEB397AB3511A613 /* Debug */,
-				67505C3BD6F020FDFFB83529800F6FB9 /* Release */,
+				8FF3670650224778D8B01018DB772178 /* Debug */,
+				97C468FC035CD049E7B5770E2D0F8CE2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -98,7 +98,7 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
 @interface SDWebImageManager : NSObject
 
 /**
- * The delegate for manager. Defatuls to nil.
+ * The delegate for manager. Defaults to nil.
  */
 @property (weak, nonatomic, nullable) id <SDWebImageManagerDelegate> delegate;
 
@@ -136,8 +136,8 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
 
 /**
  * The cache serializer is used to convert the decoded image, the source downloaded data, to the actual data used for storing to the disk cache. If you return nil, means to generate the data from the image instance, see `SDImageCache`.
- * For example, if you are using WebP images and facing the slow decoding time issue when later retriving from disk cache again. You can try to encode the decoded image to JPEG/PNG format to disk cache instead of source downloaded data.
- * @note The `image` arg is nonnull, but when you also provide a image transformer and the image is transformed, the `data` arg may be nil, take attention to this case.
+ * For example, if you are using WebP images and facing the slow decoding time issue when later retrieving from disk cache again. You can try to encode the decoded image to JPEG/PNG format to disk cache instead of source downloaded data.
+ * @note The `image` arg is nonnull, but when you also provide an image transformer and the image is transformed, the `data` arg may be nil, take attention to this case.
  * @note This method is called from a global queue in order to not to block the main thread.
  * @code
  SDWebImageManager.sharedManager.cacheSerializer = [SDWebImageCacheSerializer cacheSerializerWithBlock:^NSData * _Nullable(UIImage * _Nonnull image, NSData * _Nullable data, NSURL * _Nullable imageURL) {
@@ -225,7 +225,7 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
  *   The forth parameter is an `SDImageCacheType` enum indicating if the image was retrieved from the local cache
  *   or from the memory cache or from the network.
  *
- *   The fith parameter is set to NO when the SDWebImageProgressiveLoad option is used and the image is
+ *   The fifth parameter is set to NO when the SDWebImageProgressiveLoad option is used and the image is
  *   downloading. This block is thus called repeatedly with a partial image. When image is fully downloaded, the
  *   block is called a last time with the full image and the last parameter set to YES.
  *
@@ -262,8 +262,26 @@ SDWebImageManager *manager = [SDWebImageManager sharedManager];
 - (void)cancelAll;
 
 /**
- * Return the cache key for a given URL
+ * Remove the specify URL from failed black list.
+ * @param url The failed URL.
+ */
+- (void)removeFailedURL:(nonnull NSURL *)url;
+
+/**
+ * Remove all the URL from failed black list.
+ */
+- (void)removeAllFailedURLs;
+
+/**
+ * Return the cache key for a given URL, does not considerate transformer or thumbnail.
+ * @note This method does not have context option, only use the url and manager level cacheKeyFilter to generate the cache key.
  */
 - (nullable NSString *)cacheKeyForURL:(nullable NSURL *)url;
+
+/**
+ * Return the cache key for a given URL and context option.
+ * @note The context option like `.thumbnailPixelSize` and `.imageTransformer` will effect the generated cache key, using this if you have those context associated.
+*/
+- (nullable NSString *)cacheKeyForURL:(nullable NSURL *)url context:(nullable SDWebImageContext *)context;
 
 @end

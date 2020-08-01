@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -125,12 +125,12 @@ Sample usage:
 #include <memory>
 #include <type_traits>
 
-#include <boost/iterator/iterator_facade.hpp>
 #include <glog/logging.h>
 
 #include <folly/ConcurrentSkipList-inl.h>
 #include <folly/Likely.h>
 #include <folly/Memory.h>
+#include <folly/detail/Iterators.h>
 #include <folly/synchronization/MicroSpinLock.h>
 
 namespace folly {
@@ -158,7 +158,7 @@ class ConcurrentSkipList {
   typedef T key_type;
 
   typedef detail::csl_iterator<value_type, NodeType> iterator;
-  typedef detail::csl_iterator<const value_type, const NodeType> const_iterator;
+  typedef detail::csl_iterator<const value_type, NodeType> const_iterator;
 
   class Accessor;
   class Skipper;
@@ -709,10 +709,10 @@ class ConcurrentSkipList<T, Comp, NodeAlloc, MAX_HEIGHT>::Accessor {
 
 // implements forward iterator concept.
 template <typename ValT, typename NodeT>
-class detail::csl_iterator : public boost::iterator_facade<
+class detail::csl_iterator : public detail::IteratorFacade<
                                  csl_iterator<ValT, NodeT>,
                                  ValT,
-                                 boost::forward_traversal_tag> {
+                                 std::forward_iterator_tag> {
  public:
   typedef ValT value_type;
   typedef value_type& reference;
@@ -738,9 +738,10 @@ class detail::csl_iterator : public boost::iterator_facade<
   }
 
  private:
-  friend class boost::iterator_core_access;
   template <class, class>
   friend class csl_iterator;
+  friend class detail::
+      IteratorFacade<csl_iterator, ValT, std::forward_iterator_tag>;
 
   void increment() {
     node_ = node_->next();

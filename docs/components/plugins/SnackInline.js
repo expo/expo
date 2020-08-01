@@ -10,20 +10,19 @@ const LATEST_VERSION = `v${require('../../package.json').version}`;
 export default class SnackInline extends React.Component {
   static contextType = DocumentationPageContext;
   contentRef = React.createRef();
-  formRef = React.createRef();
 
   static defaultProps = {
     dependencies: [],
   };
 
   state = {
-    showLink: false,
+    ready: false,
   };
 
   componentDidMount() {
     // render the link only on the client side, because it depends on accessing DOM
     // eslint-disable-next-line react/no-did-mount-set-state
-    this.setState({ showLink: true });
+    this.setState({ ready: true });
   }
 
   // Filter out `latest` and use the concrete latest version instead. We want to
@@ -54,68 +53,43 @@ export default class SnackInline extends React.Component {
     return [...this.props.dependencies].join(',');
   };
 
-  _getSnackUrl = templateId => {
-    const { label, defaultPlatform } = this.props;
-    const templateUrl = `${this._getExamplesPath()}/${templateId}.js`;
-
-    // TODO: find a better way to pass in the source-url, as this
-    // clutters the snack-url; and this doesn't support assets
-    return (
-      `${SNACK_URL}?platform=${defaultPlatform || DEFAULT_PLATFORM}&name=` +
-      encodeURIComponent(label) +
-      `&sdkVersion=${this._getSnackSdkVersion()}` +
-      `&dependencies=${encodeURIComponent(this._getDependencies())}` +
-      `&sourceUrl=${encodeURIComponent(templateUrl)}`
-    );
-  };
-
   _getCode = () => {
     return this.contentRef.current ? this.contentRef.current.textContent : '';
   };
 
   render() {
-    if (this.props.templateId) {
-      return (
-        <div>
-          <div ref={this.contentRef}>{this.props.children}</div>
-          {this.state.showLink ? (
-            <a
-              className="snack-inline-example-button"
-              href={this._getSnackUrl(this.props.templateId)}
-              target="_blank">
-              Try this example on Snack <OpenIcon />
-            </a>
-          ) : null}
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <div ref={this.contentRef}>{this.props.children}</div>
-
-          {/* TODO: this should be a POST request, need to change Snack to support it though */}
-          <form ref={this.formRef} action={SNACK_URL} method="POST" target="_blank">
-            <input
-              type="hidden"
-              name="platform"
-              value={this.props.defaultPlatform || DEFAULT_PLATFORM}
-            />
-            <input type="hidden" name="name" value={this.props.label || 'Example'} />
-            <input type="hidden" name="dependencies" value={this._getDependencies()} />
-            <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
+    return (
+      <div>
+        <div ref={this.contentRef}>{this.props.children}</div>
+        <form action={SNACK_URL} method="POST" target="_blank">
+          <input
+            type="hidden"
+            name="platform"
+            value={this.props.defaultPlatform || DEFAULT_PLATFORM}
+          />
+          <input type="hidden" name="name" value={this.props.label || 'Example'} />
+          <input type="hidden" name="dependencies" value={this._getDependencies()} />
+          <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
+          {this.state.ready && (
             <input
               type="hidden"
               name="files"
-              value={JSON.stringify(getSnackFiles(this._getCode(), this.props.files))}
+              value={JSON.stringify(
+                getSnackFiles({
+                  templateId: this.props.templateId,
+                  code: this._getCode(),
+                  files: this.props.files,
+                  baseURL: this._getExamplesPath(),
+                })
+              )}
             />
-
-            <button className="snack-inline-example-button">
-              Try this example on Snack <OpenIcon />
-            </button>
-          </form>
-        </div>
-      );
-    }
+          )}
+          <button className="snack-inline-example-button" disabled={!this.state.ready}>
+            Try this example on Snack <OpenIcon />
+          </button>
+        </form>
+      </div>
+    );
   }
 }
 

@@ -66,13 +66,13 @@ is to look at the headers in [top level `folly/` directory](https://github.com/f
 check the [`docs` folder](folly/docs) for documentation, starting with the
 [overview](folly/docs/Overview.md).
 
-Folly is published on Github at https://github.com/facebook/folly
+Folly is published on GitHub at https://github.com/facebook/folly
 
 ### Build Notes
 
 #### Dependencies
 
-folly requires gcc 4.9+ and a version of boost compiled with C++14 support.
+folly requires gcc 5.1+ and a version of boost compiled with C++14 support.
 
 googletest is required to build and run folly's tests.  You can download
 it from https://github.com/google/googletest/archive/release-1.8.0.tar.gz
@@ -104,6 +104,11 @@ cmake \
   -DCMAKE_LIBRARY_PATH=/alt/lib/path1:/alt/lib/path2 ...
 ```
 
+#### Building tests
+
+By default, building the tests is disabled as part of the CMake `all` target.
+To build the tests, specify `-DBUILD_TESTS=ON` to CMake at configure time.
+
 #### Ubuntu 16.04 LTS
 
 The following packages are required (feel free to cut and paste the apt-get
@@ -127,7 +132,21 @@ sudo apt-get install \
     binutils-dev \
     libjemalloc-dev \
     libssl-dev \
-    pkg-config
+    pkg-config \
+    libunwind-dev
+```
+
+Folly relies on [fmt](https://github.com/fmtlib/fmt) which needs to be installed from source.
+The following commands will download, compile, and install fmt.
+
+```
+git clone https://github.com/fmtlib/fmt.git && cd fmt
+
+mkdir _build && cd _build
+cmake ..
+
+make -j$(nproc)
+sudo make install
 ```
 
 If advanced debugging functionality is required, use:
@@ -139,12 +158,12 @@ sudo apt-get install \
     libdwarf-dev
 ```
 
-In the folly directory, run:
+In the folly directory (e.g. the checkout root or the archive unpack root), run:
 ```
   mkdir _build && cd _build
   cmake ..
   make -j $(nproc)
-  make install
+  make install # with either sudo or DESTDIR as necessary
 ```
 
 #### OS X (Homebrew)
@@ -154,9 +173,10 @@ folly is available as a Formula and releases may be built via `brew install foll
 You may also use `folly/build/bootstrap-osx-homebrew.sh` to build against `master`:
 
 ```
-  cd folly
-  ./build/bootstrap-osx-homebrew.sh
+  ./folly/build/bootstrap-osx-homebrew.sh
 ```
+
+This will create a build directory `_build` in the top-level.
 
 #### OS X (MacPorts)
 
@@ -164,9 +184,8 @@ Install the required packages from MacPorts:
 
 ```
   sudo port install \
-    autoconf \
-    automake \
     boost \
+    cmake \
     gflags \
     git \
     google-glog \
@@ -174,8 +193,9 @@ Install the required packages from MacPorts:
     libtool \
     lz4 \
     lzma \
-    scons \
+    openssl \
     snappy \
+    xz \
     zlib
 ```
 
@@ -193,9 +213,10 @@ Download and install folly with the parameters listed below:
 
 ```
   git clone https://github.com/facebook/folly.git
-  cd folly/folly
-  autoreconf -ivf
-  ./configure CPPFLAGS="-I/opt/local/include" LDFLAGS="-L/opt/local/lib"
+  cd folly
+  mkdir _build
+  cd _build
+  cmake ..
   make
   sudo make install
 ```

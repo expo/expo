@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F3C6B39A23D87BB866B4B113B94E4201 /* EXKeepAwake-dummy.m */; };
-		7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BBF1DF37A6AA6BC313F5CE4D66AEA3F /* EXKeepAwake.m */; };
-		CF3607FA749762EF7FA7EFB8F0549A3B /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = 63006FE3DDD42168985A9223AE3C082A /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		538BCCCDBC18F1D48B5596730696BAA0 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BBF1DF37A6AA6BC313F5CE4D66AEA3F /* EXKeepAwake.m */; };
+		6359653AAB93D1219D4BFA8F6BD9D72A /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = 63006FE3DDD42168985A9223AE3C082A /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B817DAD5FA521CB719CD1477D9CF4056 /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F3C6B39A23D87BB866B4B113B94E4201 /* EXKeepAwake-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		038B3DD660569C1D16F452185D51E667 /* PBXContainerItemProxy */ = {
+		424748E2385299CE74FF931ABC3FE7FF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B21C702A327A1FDEFA6CF37D23D42E93 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		65350C7128941538850904E74678B917 /* Frameworks */ = {
+		54A3F30E4D3BA320FA9A341EFB5979C8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		651229A5F646F0C58A99BB5E1250ECE7 /* Headers */ = {
+		E8CC745A7EFD95055E109C25BC9CA6AA /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF3607FA749762EF7FA7EFB8F0549A3B /* EXKeepAwake.h in Headers */,
+				6359653AAB93D1219D4BFA8F6BD9D72A /* EXKeepAwake.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		E593B1631324E147D59AE9990EDA53A2 /* EXKeepAwake */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 514B3B43938A18F8902A85F4E991BDE6 /* Build configuration list for PBXNativeTarget "EXKeepAwake" */;
+			buildConfigurationList = 068DD32F7BAED288D967FB7FCD80F52A /* Build configuration list for PBXNativeTarget "EXKeepAwake" */;
 			buildPhases = (
-				651229A5F646F0C58A99BB5E1250ECE7 /* Headers */,
-				FD692CD9924C0E5F8A61E8CC6105E942 /* Sources */,
-				65350C7128941538850904E74678B917 /* Frameworks */,
+				E8CC745A7EFD95055E109C25BC9CA6AA /* Headers */,
+				7384A06F67FFEB73E1A0CEA89FD09DE7 /* Sources */,
+				54A3F30E4D3BA320FA9A341EFB5979C8 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				1B404E31CE2B744CAD5008726F515258 /* PBXTargetDependency */,
+				80F00E88C5A9AAC7F293D93DE5F10E2B /* PBXTargetDependency */,
 			);
 			name = EXKeepAwake;
 			productName = EXKeepAwake;
@@ -175,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FD692CD9924C0E5F8A61E8CC6105E942 /* Sources */ = {
+		7384A06F67FFEB73E1A0CEA89FD09DE7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */,
-				7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */,
+				B817DAD5FA521CB719CD1477D9CF4056 /* EXKeepAwake-dummy.m in Sources */,
+				538BCCCDBC18F1D48B5596730696BAA0 /* EXKeepAwake.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B404E31CE2B744CAD5008726F515258 /* PBXTargetDependency */ = {
+		80F00E88C5A9AAC7F293D93DE5F10E2B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 038B3DD660569C1D16F452185D51E667 /* PBXContainerItemProxy */;
+			targetProxy = 424748E2385299CE74FF931ABC3FE7FF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -252,6 +252,32 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		2E0A4DBAA297F70E714C1393F65F7FE2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1E7E4C0DE6544017F8ABAEE1377E0FFF /* EXKeepAwake.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXKeepAwake/EXKeepAwake-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXKeepAwake;
+				PRODUCT_NAME = EXKeepAwake;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -319,32 +345,7 @@
 			};
 			name = Debug;
 		};
-		965E5B6D8AF63F4CB182898B96C701D9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1E7E4C0DE6544017F8ABAEE1377E0FFF /* EXKeepAwake.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXKeepAwake/EXKeepAwake-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXKeepAwake;
-				PRODUCT_NAME = EXKeepAwake;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		C7C73DA4FDC0871D715BE105FBFBE104 /* Debug */ = {
+		6B4851C25FCBFD17A7797C6FFEFE4909 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D9F853412E468CACC59633BFCB48CF98 /* EXKeepAwake.debug.xcconfig */;
 			buildSettings = {
@@ -364,6 +365,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -371,11 +373,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		514B3B43938A18F8902A85F4E991BDE6 /* Build configuration list for PBXNativeTarget "EXKeepAwake" */ = {
+		068DD32F7BAED288D967FB7FCD80F52A /* Build configuration list for PBXNativeTarget "EXKeepAwake" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C7C73DA4FDC0871D715BE105FBFBE104 /* Debug */,
-				965E5B6D8AF63F4CB182898B96C701D9 /* Release */,
+				6B4851C25FCBFD17A7797C6FFEFE4909 /* Debug */,
+				2E0A4DBAA297F70E714C1393F65F7FE2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

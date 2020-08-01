@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDURLQueryComponent.h
+../../../AppAuth/Source/AppAuthCore/OIDURLQueryComponent.h

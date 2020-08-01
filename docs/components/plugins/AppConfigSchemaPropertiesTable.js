@@ -18,12 +18,12 @@ const STYLES_HEAD = css`
 const STYLES_DESCRIPTION_CELL = css`
   word-break: break-word;
   white-space: break-spaces;
+  padding-bottom: 0.2rem;
 `;
 
 export function formatSchema(rawSchema) {
-  let formattedSchema = [];
+  const formattedSchema = [];
 
-  //appends each schema property (each index will become a tablerow)
   rawSchema.map(property => {
     appendProperty(formattedSchema, property, 0);
   });
@@ -31,60 +31,64 @@ export function formatSchema(rawSchema) {
   return formattedSchema;
 }
 
-//appends a property and recursivley calls itself to append sub-properties, accounting for nested "level"
-function appendProperty(formattedSchema, property, _level) {
-  let level = _level;
+//appends a property and recursivley appends sub-properties
+function appendProperty(formattedSchema, property, _nestingLevel) {
+  let nestingLevel = _nestingLevel;
   const propertyKey = property[0];
   const propertyValue = property[1];
 
-  //don't append deprecated or "hidden" properties
   if (propertyValue.meta && (propertyValue.meta.deprecated || propertyValue.meta.hidden)) {
     return;
   }
 
-  //append passed-in property
   formattedSchema.push({
-    //The ` backticks are for markdown highlighting, and #### is to apply anchor linking only on top-level properties
-    name: level ? `\`${propertyKey}\`` : `#### \`${propertyKey}\``,
-    type: propertyValue.enum ? 'enum' : propertyValue.type,
+    name: nestingLevel
+      ? `<subpropertyAnchor><inlineCode>${propertyKey}</inlineCode></subpropertyAnchor>`
+      : `#### \`${propertyKey}\``,
     description: createDescription(property),
-    level: level,
+    nestingLevel,
   });
 
-  //increase nesting level for sub-properties
-  level++;
+  nestingLevel++;
 
-  //recursively apply appending logic for each sub-property (if any) -> Note: sub-props are sometimes nested within "items"
   if (propertyValue.properties) {
     Object.entries(propertyValue.properties).forEach(subproperty => {
-      appendProperty(formattedSchema, subproperty, level);
+      appendProperty(formattedSchema, subproperty, nestingLevel);
     });
-  } else if (propertyValue.items && propertyValue.items.properties) {
+  } //Note: sub-properties are sometimes nested within "items"
+  else if (propertyValue.items && propertyValue.items.properties) {
     Object.entries(propertyValue.items.properties).forEach(subproperty => {
-      appendProperty(formattedSchema, subproperty, level);
+      appendProperty(formattedSchema, subproperty, nestingLevel);
     });
   }
 }
 
-//setting up a property's formatted description value, with all the possible extra values
+export function _getType(propertyValue) {
+  if (propertyValue.enum) {
+    return 'enum';
+  } else {
+    return propertyValue.type.toString().replace(',', ' || ');
+  }
+}
+
 export function createDescription(property) {
   const propertyValue = property[1];
 
-  let propertyDescription = propertyValue.description;
-  if (propertyValue.exampleString) {
-    propertyDescription += `\n\n>` + propertyValue.exampleString;
+  let propertyDescription = `**(${_getType(propertyValue)})**`;
+  if (propertyValue.description) {
+    propertyDescription += ` - ` + propertyValue.description;
   }
   if (propertyValue.meta && propertyValue.meta.regexHuman) {
     propertyDescription += `\n\n` + propertyValue.meta.regexHuman;
   }
   if (propertyValue.meta && propertyValue.meta.expoKit) {
-    propertyDescription += `\n>**ExpoKit**: ` + propertyValue.meta.expoKit;
+    propertyDescription += `<expokitDetails>${propertyValue.meta.expoKit}</expokitDetails>`;
   }
   if (propertyValue.meta && propertyValue.meta.bareWorkflow) {
-    if (propertyValue.meta.expoKit || propertyValue.exampleString) {
-      propertyDescription += `\n`;
-    }
-    propertyDescription += `\n>**Bare workflow**: ` + propertyValue.meta.bareWorkflow;
+    propertyDescription += `<bareworkflowDetails>${propertyValue.meta.bareWorkflow}</bareworkflowDetails>`;
+  }
+  if (propertyValue.exampleString) {
+    propertyDescription += `\n\n>` + propertyValue.exampleString;
   }
 
   return propertyDescription;
@@ -100,7 +104,6 @@ export default class AppConfigSchemaPropertiesTable extends React.Component {
         <thead className={STYLES_HEAD}>
           <tr>
             <td>Property</td>
-            <td>Type</td>
             <td>Description</td>
           </tr>
         </thead>
@@ -112,17 +115,14 @@ export default class AppConfigSchemaPropertiesTable extends React.Component {
                   <div
                     data-testid={property.name}
                     style={{
-                      marginLeft: `${12 + property.level * 32}px`,
-                      display: property.level ? 'list-item' : 'block',
-                      listStyleType: property.level % 2 ? 'default' : 'circle',
+                      marginLeft: `${12 + property.nestingLevel * 32}px`,
+                      display: property.nestingLevel ? 'list-item' : 'block',
+                      listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
                       width: 'fit-content',
                       overflowX: 'visible',
                     }}>
                     <MDX components={components}>{property.name}</MDX>
                   </div>
-                </td>
-                <td>
-                  <InlineCode>{property.type && property.type.toString()}</InlineCode>
                 </td>
                 <td className={STYLES_DESCRIPTION_CELL}>
                   <MDX components={components}>{property.description}</MDX>

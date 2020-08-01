@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@
 #include <folly/Portability.h>
 #include <folly/Range.h>
 #include <folly/ScopeGuard.h>
+#include <folly/net/NetworkSocket.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/SysUio.h>
 #include <folly/portability/Unistd.h>
@@ -38,7 +39,9 @@ namespace folly {
  * semantics of underlying system calls.
  */
 int openNoInt(const char* name, int flags, mode_t mode = 0666);
+// Two overloads, as we may be closing either a file or a socket.
 int closeNoInt(int fd);
+int closeNoInt(NetworkSocket fd);
 int dupNoInt(int fd);
 int dup2NoInt(int oldfd, int newfd);
 int fsyncNoInt(int fd);
@@ -46,15 +49,17 @@ int fdatasyncNoInt(int fd);
 int ftruncateNoInt(int fd, off_t len);
 int truncateNoInt(const char* path, off_t len);
 int flockNoInt(int fd, int operation);
-int shutdownNoInt(int fd, int how);
+int shutdownNoInt(NetworkSocket fd, int how);
 
-ssize_t readNoInt(int fd, void* buf, size_t n);
-ssize_t preadNoInt(int fd, void* buf, size_t n, off_t offset);
+ssize_t readNoInt(int fd, void* buf, size_t count);
+ssize_t preadNoInt(int fd, void* buf, size_t count, off_t offset);
 ssize_t readvNoInt(int fd, const iovec* iov, int count);
+ssize_t preadvNoInt(int fd, const iovec* iov, int count, off_t offset);
 
-ssize_t writeNoInt(int fd, const void* buf, size_t n);
-ssize_t pwriteNoInt(int fd, const void* buf, size_t n, off_t offset);
+ssize_t writeNoInt(int fd, const void* buf, size_t count);
+ssize_t pwriteNoInt(int fd, const void* buf, size_t count, off_t offset);
 ssize_t writevNoInt(int fd, const iovec* iov, int count);
+ssize_t pwritevNoInt(int fd, const iovec* iov, int count, off_t offset);
 
 /**
  * Wrapper around read() (and pread()) that, in addition to retrying on
@@ -78,8 +83,8 @@ ssize_t writevNoInt(int fd, const iovec* iov, int count);
  * readv and preadv.  The contents of iov after these functions return
  * is unspecified.
  */
-FOLLY_NODISCARD ssize_t readFull(int fd, void* buf, size_t n);
-FOLLY_NODISCARD ssize_t preadFull(int fd, void* buf, size_t n, off_t offset);
+FOLLY_NODISCARD ssize_t readFull(int fd, void* buf, size_t count);
+FOLLY_NODISCARD ssize_t preadFull(int fd, void* buf, size_t count, off_t offset);
 FOLLY_NODISCARD ssize_t readvFull(int fd, iovec* iov, int count);
 FOLLY_NODISCARD ssize_t preadvFull(int fd, iovec* iov, int count, off_t offset);
 
@@ -100,8 +105,8 @@ FOLLY_NODISCARD ssize_t preadvFull(int fd, iovec* iov, int count, off_t offset);
  * These functions return -1 on error, or the total number of bytes written
  * (which is always the same as the number of requested bytes) on success.
  */
-ssize_t writeFull(int fd, const void* buf, size_t n);
-ssize_t pwriteFull(int fd, const void* buf, size_t n, off_t offset);
+ssize_t writeFull(int fd, const void* buf, size_t count);
+ssize_t pwriteFull(int fd, const void* buf, size_t count, off_t offset);
 ssize_t writevFull(int fd, iovec* iov, int count);
 ssize_t pwritevFull(int fd, iovec* iov, int count, off_t offset);
 
@@ -126,7 +131,7 @@ bool readFile(
 
   size_t soFar = 0; // amount of bytes successfully read
   SCOPE_EXIT {
-    DCHECK(out.size() >= soFar); // resize better doesn't throw
+    assert(out.size() >= soFar); // resize better doesn't throw
     out.resize(soFar);
   };
 
@@ -170,7 +175,7 @@ bool readFile(
     const char* file_name,
     Container& out,
     size_t num_bytes = std::numeric_limits<size_t>::max()) {
-  DCHECK(file_name);
+  assert(file_name);
 
   const auto fd = openNoInt(file_name, O_RDONLY | O_CLOEXEC);
   if (fd == -1) {

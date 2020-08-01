@@ -10,7 +10,7 @@
   "dependencies": {
     "@expo/mux": "^1.0.7",
     "expo": "~38.0.0",
-    "react": "16.11.0",
-    "react-native": "0.62.2"
+    "react": "16.13.1",
+    "react-native": "0.63.2"
   }
 }

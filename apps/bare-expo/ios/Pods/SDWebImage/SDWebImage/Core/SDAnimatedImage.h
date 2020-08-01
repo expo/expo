@@ -101,11 +101,11 @@
  The scale factor of the image.
  
  @note For UIKit, this just call super instead.
- @note For AppKit, `NSImage` can contains multiple image representations with different scales. However, this class does not do that from the design. We processs the scale like UIKit. This wil actually be calculated from image size and pixel size.
+ @note For AppKit, `NSImage` can contains multiple image representations with different scales. However, this class does not do that from the design. We process the scale like UIKit. This will actually be calculated from image size and pixel size.
  */
 @property (nonatomic, readonly) CGFloat scale;
 
-// By default, animated image frames are returned by decoding just in time without keeping into memory. But you can choose to preload them into memory as well, See the decsription in `SDAnimatedImage` protocol.
+// By default, animated image frames are returned by decoding just in time without keeping into memory. But you can choose to preload them into memory as well, See the description in `SDAnimatedImage` protocol.
 // After preloaded, there is no huge difference on performance between this and UIImage's `animatedImageWithImages:duration:`. But UIImage's animation have some issues such like blanking and pausing during segue when using in `UIImageView`. It's recommend to use only if need.
 - (void)preloadAllFrames;
 - (void)unloadAllFrames;

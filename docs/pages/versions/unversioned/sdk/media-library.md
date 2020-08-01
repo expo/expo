@@ -17,7 +17,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Configuration
 
-In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
+In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)) is added automatically.
 
 ## API
 
@@ -248,7 +248,7 @@ Removes all listeners.
 
 `MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
-- `scope` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+- `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library
   - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
   - `none` if user denied or hasn't yet granted the permission

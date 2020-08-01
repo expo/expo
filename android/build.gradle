@@ -3,7 +3,7 @@
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 28
+    targetSdkVersion = 29
     compileSdkVersion = 29
 
     dbFlowVersion = '4.2.4'
@@ -20,7 +20,7 @@ buildscript {
     maven { url 'https://dl.bintray.com/android/android-tools/' }
   }
   dependencies {
-    classpath "com.android.tools.build:gradle:$gradlePluginVersion"
+    classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
     classpath 'com.google.gms:google-services:3.2.1'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
 
