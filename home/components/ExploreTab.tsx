@@ -109,6 +109,7 @@ export default function ExploreTab(props: QueryProps) {
         username={app.packageUsername}
         description={app.description}
         experienceInfo={{ username: app.packageUsername, slug: app.packageName }}
+        sdkVersion={app.sdkVersion}
         onPressUsername={onPressUsername}
         style={{ marginBottom: 10 }}
       />

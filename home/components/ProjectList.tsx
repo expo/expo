@@ -38,6 +38,7 @@ export type Project = {
   name: string;
   packageName: string;
   privacy: string;
+  sdkVersion: string;
   packageUsername?: string;
 };
 

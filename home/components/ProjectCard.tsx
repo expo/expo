@@ -123,16 +123,18 @@ export default function ProjectCard({
                   {username}
                 </StyledText>
               </View>
-              <StyledText
-                lightColor={Colors.light.greyText}
-                darkColor={Colors.dark.greyText}
-                style={{
-                  marginTop: 4,
-                  fontSize: 13,
-                }}>
-                SDK {sdkVersionNumber || sdkVersion}
-                {isExpired ? ': Not supported' : ''}
-              </StyledText>
+              {sdkVersionNumber && (
+                <StyledText
+                  lightColor={Colors.light.greyText}
+                  darkColor={Colors.dark.greyText}
+                  style={{
+                    marginTop: 4,
+                    fontSize: 13,
+                  }}>
+                  SDK {sdkVersionNumber || sdkVersion}
+                  {isExpired ? ': Not supported' : ''}
+                </StyledText>
+              )}
             </View>
           </View>
         </View>
