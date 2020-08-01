@@ -63,7 +63,7 @@ function ProjectListItem({
   };
 
   const renderSDKInfo = () =>
-    sdkVersion ? (
+    sdkVersionNumber ? (
       <StyledText
         lightColor={Colors.light.greyText}
         darkColor={Colors.dark.greyText}

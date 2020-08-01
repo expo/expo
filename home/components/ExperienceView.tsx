@@ -34,10 +34,10 @@ type Props = {
 export default function ExperienceView({ experience }: Props) {
   return (
     <>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor={'transparent'} />
       <StyledBlurView style={{ flex: 1 }}>
         {experience ? (
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 48 }}>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingVertical: 48 }}>
             <ExperienceContents experience={experience} />
           </ScrollView>
         ) : (
@@ -88,7 +88,7 @@ function ModalHeader() {
       pointerEvents="box-none"
       style={{
         position: 'absolute',
-        top: 0,
+        top: Platform.select({ android: 12, default: 3 }),
         left: 0,
         right: 0,
         flexDirection: 'row',

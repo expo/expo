@@ -141,7 +141,15 @@ export const StyledView = (props: Props) => {
 
 export const StyledBlurView = (props: React.ComponentProps<typeof View> & { children?: any }) => {
   // Use a styled view on android and a blur view on iOS.
-  if (Platform.OS === 'android') return <StyledView {...props} />;
+  if (Platform.OS === 'android') {
+    return (
+      <StyledView
+        lightBackgroundColor={Colors.light.bodyBackground}
+        darkBackgroundColor={Colors.dark.cardBackground}
+        {...props}
+      />
+    );
+  }
   return <ThemedBlurView {...props} />;
 };
 

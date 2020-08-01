@@ -172,7 +172,7 @@ export default class ListItem extends React.PureComponent<Props> {
   }
 }
 
-const ImageWidth = 50;
+const ImageWidth = 54;
 const ImageHeight = ImageWidth;
 
 const styles = StyleSheet.create({
