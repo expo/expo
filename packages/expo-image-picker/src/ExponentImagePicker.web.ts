@@ -8,6 +8,7 @@ import {
   ImagePickerOptions,
   ImagePickerMultipleResult,
   ImageInfo,
+  ExpandImagePickerOptions,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -24,7 +25,7 @@ export default {
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -34,7 +35,7 @@ export default {
   async launchCameraAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,

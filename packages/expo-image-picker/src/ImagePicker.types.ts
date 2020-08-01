@@ -45,11 +45,11 @@ export type ImagePickerOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
-  allowsMultipleSelection?: boolean;
   mediaTypes?: MediaTypeOptions;
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
+  // allowsMultipleSelection?: boolean;
 };
 
 export type OpenFileBrowserOptions = {
@@ -58,7 +58,16 @@ export type OpenFileBrowserOptions = {
   allowsMultipleSelection: boolean;
 };
 
-// These hacks allow to expand nested types in type hints
-// see https://stackoverflow.com/questions/60795256/typescript-type-merging
-export type Primitive = string | number | boolean | bigint | symbol | null | undefined;
-export type Expand<T> = T extends Primitive ? T : { [K in keyof T]: T[K] };
+
+export type ExpandImagePickerOptions =
+  | ImagePickerOptions
+  | (ImagePickerOptions & { allowsMultipleSelection: false })
+  | (ImagePickerOptions & { allowsMultipleSelection: true });
+
+export type ExpandImagePickerResult<T> = T extends ImagePickerOptions
+  ? ImagePickerResult
+  : T extends ImagePickerOptions & { allowsMultipleSelection: true }
+  ? ImagePickerMultipleResult
+  : T extends ImagePickerOptions & { allowsMultipleSelection: false }
+  ? ImagePickerResult
+  : never;
