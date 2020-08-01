@@ -50,19 +50,16 @@ export declare type ImagePickerOptions = {
     exif?: boolean;
     base64?: boolean;
     videoExportPreset?: VideoExportPreset;
+    allowsMultipleSelection?: boolean;
 };
 export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
     capture?: boolean;
     allowsMultipleSelection: boolean;
 };
-export declare type ExpandImagePickerOptions = ImagePickerOptions | (ImagePickerOptions & {
-    allowsMultipleSelection: false;
-}) | (ImagePickerOptions & {
+export declare type ExpandImagePickerOptions = (ImagePickerOptions & {
     allowsMultipleSelection: true;
-});
-export declare type ExpandImagePickerResult<T> = T extends ImagePickerOptions ? ImagePickerResult : T extends ImagePickerOptions & {
+}) | ImagePickerOptions;
+export declare type ExpandImagePickerResult<T> = T extends ImagePickerOptions & {
     allowsMultipleSelection: true;
-} ? ImagePickerMultipleResult : T extends ImagePickerOptions & {
-    allowsMultipleSelection: false;
-} ? ImagePickerResult : never;
+} ? ImagePickerMultipleResult : ImagePickerResult;

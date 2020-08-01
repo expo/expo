@@ -49,7 +49,7 @@ export type ImagePickerOptions = {
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
-  // allowsMultipleSelection?: boolean;
+   allowsMultipleSelection?: boolean;
 };
 
 export type OpenFileBrowserOptions = {
@@ -60,14 +60,9 @@ export type OpenFileBrowserOptions = {
 
 
 export type ExpandImagePickerOptions =
-  | ImagePickerOptions
-  | (ImagePickerOptions & { allowsMultipleSelection: false })
-  | (ImagePickerOptions & { allowsMultipleSelection: true });
+  | (ImagePickerOptions & { allowsMultipleSelection: true })
+  | ImagePickerOptions;
 
-export type ExpandImagePickerResult<T> = T extends ImagePickerOptions
-  ? ImagePickerResult
-  : T extends ImagePickerOptions & { allowsMultipleSelection: true }
+export type ExpandImagePickerResult<T> = T extends ImagePickerOptions & { allowsMultipleSelection: true }
   ? ImagePickerMultipleResult
-  : T extends ImagePickerOptions & { allowsMultipleSelection: false }
-  ? ImagePickerResult
-  : never;
+  : ImagePickerResult
