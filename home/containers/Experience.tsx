@@ -34,8 +34,6 @@ export const ExperiencePageQuery = gql`
           privacy
           icon {
             url
-            primaryColor
-            colorPalette
           }
         }
       }

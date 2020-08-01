@@ -14,10 +14,10 @@ import FadeIn from 'react-native-fade-in-image';
 
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
+import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
 import { Experience } from './ExperienceView.types';
-import { ExpiredSDK } from './Icons';
 
 export type PressUsernameHandler = (username: string) => void;
 
@@ -45,7 +45,7 @@ export default function ProjectCard({
   sdkVersion,
   experienceInfo,
 }: Props) {
-  const isExpired = useSDKExpired(sdkVersion);
+  const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
   const navigation = useNavigation();
   const _maybeRenderIcon = () => {
@@ -123,13 +123,18 @@ export default function ProjectCard({
                   {username}
                 </StyledText>
               </View>
+              <StyledText
+                lightColor={Colors.light.greyText}
+                darkColor={Colors.dark.greyText}
+                style={{
+                  marginTop: 4,
+                  fontSize: 13,
+                }}>
+                SDK {sdkVersionNumber || sdkVersion}
+                {isExpired ? ': Not supported' : ''}
+              </StyledText>
             </View>
           </View>
-          {isExpired && (
-            <View style={styles.expiredIconContainer}>
-              <ExpiredSDK size={24} />
-            </View>
-          )}
         </View>
         <View style={styles.body}>
           <StyledText
@@ -143,6 +148,8 @@ export default function ProjectCard({
     </View>
   );
 }
+
+const imageSize = 60;
 
 const styles = StyleSheet.create({
   container: {
@@ -180,8 +187,8 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   icon: {
-    width: 40,
-    height: 40,
+    width: imageSize,
+    height: imageSize,
     borderRadius: 3,
     ...Platform.select({
       android: {

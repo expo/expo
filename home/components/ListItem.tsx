@@ -26,6 +26,7 @@ type Props = {
   title?: string;
   subtitle?: string;
   onPressSubtitle?: () => any;
+  renderSDKInfo?: () => any;
   last?: boolean;
   margins?: boolean;
   icon?: IconProps['name'];
@@ -40,7 +41,16 @@ type Props = {
 
 export default class ListItem extends React.PureComponent<Props> {
   render() {
-    const { onPress, onLongPress, style, last, margins, title, subtitle } = this.props;
+    const {
+      onPress,
+      onLongPress,
+      renderSDKInfo,
+      style,
+      last,
+      margins,
+      title,
+      subtitle,
+    } = this.props;
     return (
       <View style={last && margins !== false ? styles.marginBottomLast : undefined}>
         <StyledButton
@@ -58,6 +68,7 @@ export default class ListItem extends React.PureComponent<Props> {
               ]}>
               {this.renderTitle()}
               {this.renderSubtitle()}
+              {renderSDKInfo?.()}
             </View>
             {this.renderRightContent()}
             {this.renderCheck()}
@@ -161,7 +172,7 @@ export default class ListItem extends React.PureComponent<Props> {
   }
 }
 
-const ImageWidth = 40;
+const ImageWidth = 50;
 const ImageHeight = ImageWidth;
 
 const styles = StyleSheet.create({
@@ -203,7 +214,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingEnd: 5,
+    paddingBottom: 8,
   },
   contentContainerNotLast: {
     borderBottomWidth: StyleSheet.hairlineWidth * 2,

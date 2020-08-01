@@ -5,8 +5,10 @@ import { Linking, StyleSheet, Text, View } from 'react-native';
 import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
 import { Experience } from './ExperienceView.types';
-import { ExpiredSDK } from './Icons';
+import * as Icons from './Icons';
 import ListItem from './ListItem';
+import Colors from '../constants/Colors';
+import { StyledText } from './Text';
 
 type Props = React.ComponentProps<typeof ListItem> & {
   url: string;
@@ -18,16 +20,16 @@ type Props = React.ComponentProps<typeof ListItem> & {
 };
 
 function ProjectListItem({
-  releaseChannel = 'pr-123',
   unlisted,
   username,
   subtitle,
   url,
+  releaseChannel,
   sdkVersion,
   ...props
 }: Props) {
   const navigation = useNavigation();
-  const isExpired = useSDKExpired(sdkVersion);
+  const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
   const renderRightContent = React.useCallback((): React.ReactNode => {
     return (
@@ -37,11 +39,6 @@ function ProjectListItem({
             <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
               {releaseChannel}
             </Text>
-          </View>
-        )}
-        {isExpired && (
-          <View style={styles.expiredIconContainer}>
-            <ExpiredSDK size={24} />
           </View>
         )}
       </View>
@@ -65,12 +62,24 @@ function ProjectListItem({
     navigation.navigate('Profile', { username });
   };
 
+  const renderSDKInfo = () =>
+    sdkVersion ? (
+      <StyledText
+        lightColor={Colors.light.greyText}
+        darkColor={Colors.dark.greyText}
+        style={styles.infoText}>
+        SDK {sdkVersionNumber}
+        {isExpired ? ': Not supported' : ''}
+      </StyledText>
+    ) : null;
+
   return (
     <ListItem
       onPress={handlePress}
       onLongPress={handleLongPress}
       rightContent={renderRightContent()}
       {...props}
+      renderSDKInfo={renderSDKInfo}
       subtitle={username || subtitle}
       onPressSubtitle={username ? handlePressUsername : undefined}
     />
@@ -78,6 +87,10 @@ function ProjectListItem({
 }
 
 const styles = StyleSheet.create({
+  infoText: {
+    marginTop: 4,
+    fontSize: 12,
+  },
   rightContentContainer: {
     flexDirection: 'row',
     alignItems: 'center',

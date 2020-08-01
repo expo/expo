@@ -240,7 +240,6 @@ function ExperienceHeader(
         source={props.icon ? props.icon.url : props.iconUrl}
         size={120}
         onPress={onPress}
-        isPrivate={props.privacy !== 'public'}
       />
       <StyledText
         style={{
@@ -258,7 +257,7 @@ function ExperienceHeader(
   );
 }
 
-function ExperienceIcon({ source, size, isPrivate, onPress }: any) {
+function ExperienceIcon({ source, size, onPress }: any) {
   return (
     <TouchableOpacity
       style={{
@@ -275,9 +274,6 @@ function ExperienceIcon({ source, size, isPrivate, onPress }: any) {
               height: size,
             }}
           />
-          {isPrivate && (
-            <Icons.Privacy size={24} style={{ position: 'absolute', right: 4, bottom: 4 }} />
-          )}
         </>
       </FadeIn>
     </TouchableOpacity>

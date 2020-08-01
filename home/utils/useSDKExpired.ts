@@ -1,14 +1,14 @@
 import * as React from 'react';
 import Environment from './Environment';
 
-export function useSDKExpired(sdkVersion?: string): boolean {
-  return React.useMemo<boolean>(() => {
+export function useSDKExpired(sdkVersion?: string): [boolean, number | null] {
+  return React.useMemo(() => {
     // undefined or UNVERSIONED will be false since we don't know.
     const majorVersionString = sdkVersion?.split('.').shift();
     if (majorVersionString) {
-      const majorVersion = parseInt(majorVersionString);
-      return majorVersion < Environment.lowestSupportedSdkVersion;
+      const sdkNumber = parseInt(majorVersionString);
+      return [sdkNumber < Environment.lowestSupportedSdkVersion, sdkNumber];
     }
-    return false;
+    return [false, null];
   }, [sdkVersion]);
 }
