@@ -18,6 +18,7 @@
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
 #import "EXScopedFirebaseCore.h"
+#import "EXUpdatesBinding.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
@@ -38,6 +39,11 @@
 - (UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params forExperienceId:(NSString *)experienceId withKernelServices:(NSDictionary *)kernelServices
 {
   UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
+
+#if __has_include(<EXUpdates/EXUpdatesService.h>)
+  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] init];
+  [moduleRegistry registerInternalModule:updatesBinding];
+#endif
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
