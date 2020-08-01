@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 8,
+    paddingBottom: 3,
   },
   contentContainerNotLast: {
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
