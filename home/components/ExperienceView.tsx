@@ -290,6 +290,18 @@ function SectionHeader({ children }: { children: string }) {
   );
 }
 
+function SectionView(props: React.ComponentProps<typeof StyledView> & { children?: any }) {
+  return (
+    <StyledView
+      darkBackgroundColor={Platform.select({
+        android: Colors.dark.absolute,
+        default: Colors.dark.cardBackground,
+      })}
+      {...props}
+    />
+  );
+}
+
 function ExperienceDescription(props: Pick<Experience, 'description'>) {
   const description: any = React.useMemo(() => {
     if (!props.description) {
@@ -312,9 +324,9 @@ function ExperienceDescription(props: Pick<Experience, 'description'>) {
   return (
     <View style={styles.itemMargins}>
       <SectionHeader>About this project</SectionHeader>
-      <StyledView style={styles.containerShape}>
+      <SectionView style={styles.containerShape}>
         <StyledText>{description}</StyledText>
-      </StyledView>
+      </SectionView>
     </View>
   );
 }
@@ -323,14 +335,14 @@ function ExpoSDKOutdated(props: Pick<Experience, 'sdkVersion'>) {
   return (
     <View style={styles.itemMargins}>
       <SectionHeader>This project needs an update</SectionHeader>
-      <StyledView style={styles.containerShape}>
+      <SectionView style={styles.containerShape}>
         <StyledText>
           This project uses SDK{' '}
           <Text style={{ fontWeight: 'bold', color: Colors.light.error }}>v{props.sdkVersion}</Text>
           . Your client supports {Environment.supportedSdksString}. If you want to open this
           project, the author will need to update the project's SDK version.
         </StyledText>
-      </StyledView>
+      </SectionView>
     </View>
   );
 }
@@ -339,12 +351,12 @@ function ExperienceUnpublished() {
   return (
     <View style={styles.itemMargins}>
       <SectionHeader>Project Missing</SectionHeader>
-      <StyledView style={styles.containerShape}>
+      <SectionView style={styles.containerShape}>
         <StyledText>
           This project is no longer published because the author unpublished it. If you want to open
           this project, the author will need to publish the project's again.
         </StyledText>
-      </StyledView>
+      </SectionView>
     </View>
   );
 }
@@ -353,12 +365,12 @@ function ExperienceSnack(props: Pick<Experience, 'username' | 'slug'>) {
   return (
     <View style={styles.itemMargins}>
       <SectionHeader>Looking for Snack?</SectionHeader>
-      <StyledView style={styles.containerShape}>
+      <SectionView style={styles.containerShape}>
         <StyledText>
           Want to see this snack? Click{' '}
           <A href={`https://snack.expo.io/@${props.username}/${props.slug}`}>here</A>.
         </StyledText>
-      </StyledView>
+      </SectionView>
     </View>
   );
 }
