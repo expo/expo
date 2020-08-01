@@ -82,7 +82,7 @@ export default class AppContainer extends React.Component {
           <Text>Origin: {this.state.notification.origin}</Text>
           <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
-        <Button title={'Press to Send Notification'} onPress={sendNotification} />
+        <Button title={'Press to Send Notification'} onPress={this.sendNotification} />
       </View>
     );
   }

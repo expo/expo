@@ -211,7 +211,7 @@ async function registerForPushNotificationsAsync() {
 
 </SnackInline>
 
-> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, snack doesn't support custom `app.json` files.
+> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom `app.json` files.
 
 ## Android push notification payload specification
 
