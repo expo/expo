@@ -32,6 +32,15 @@ public class LoaderTask {
 
   public interface LoaderTaskCallback {
     void onFailure(Exception e);
+    /**
+     * This method gives the calling class an opportunity to abort the LoaderTask early if, for
+     * example, we need to restart with a different configuration after getting the initial
+     * manifest.
+     *
+     * Return value should indicate whether to continue loading this app. `true` will continue
+     * loading with the provided configuration, `false` will abort the task and no other callback
+     * methods will be fired.
+     */
     boolean onCachedUpdateLoaded(UpdateEntity update);
     void onRemoteManifestLoaded(Manifest manifest);
     void onSuccess(Launcher launcher);
