@@ -23,10 +23,10 @@ const FormInput = React.forwardRef((props: FormInputProps, ref) => {
     ref,
     () => ({
       focus() {
-        inputRef.current?.focus();
+        inputRef.current?.focus?.();
       },
       blur() {
-        inputRef.current?.blur();
+        inputRef.current?.blur?.();
       },
     }),
     [inputRef]

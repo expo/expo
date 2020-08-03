@@ -2,12 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 
+import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
 import { Experience } from './ExperienceView.types';
-import * as Icons from './Icons';
 import ListItem from './ListItem';
-import Colors from '../constants/Colors';
 import { StyledText } from './Text';
 
 type Props = React.ComponentProps<typeof ListItem> & {
@@ -62,16 +61,19 @@ function ProjectListItem({
     navigation.navigate('Profile', { username });
   };
 
-  const renderSDKInfo = () =>
-    sdkVersionNumber ? (
-      <StyledText
-        lightColor={Colors.light.greyText}
-        darkColor={Colors.dark.greyText}
-        style={styles.infoText}>
-        SDK {sdkVersionNumber}
-        {isExpired ? ': Not supported' : ''}
-      </StyledText>
-    ) : null;
+  const renderExtraText = React.useCallback(
+    () =>
+      sdkVersionNumber ? (
+        <StyledText
+          lightColor={Colors.light.greyText}
+          darkColor={Colors.dark.greyText}
+          style={styles.infoText}>
+          SDK {sdkVersionNumber}
+          {isExpired ? ': Not supported' : ''}
+        </StyledText>
+      ) : null,
+    [sdkVersionNumber, isExpired]
+  );
 
   return (
     <ListItem
@@ -79,7 +81,8 @@ function ProjectListItem({
       onLongPress={handleLongPress}
       rightContent={renderRightContent()}
       {...props}
-      renderSDKInfo={renderSDKInfo}
+      imageSize={sdkVersionNumber ? 56 : 40}
+      renderExtraText={renderExtraText}
       subtitle={username || subtitle}
       onPressSubtitle={username ? handlePressUsername : undefined}
     />

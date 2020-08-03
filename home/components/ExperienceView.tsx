@@ -34,7 +34,7 @@ type Props = {
 export default function ExperienceView({ experience }: Props) {
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor={'transparent'} />
+      <StatusBar barStyle="light-content" backgroundColor="transparent" />
       <StyledBlurView style={{ flex: 1 }}>
         {experience ? (
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingVertical: 48 }}>
@@ -55,7 +55,7 @@ function ExperienceContents({ experience }: { experience: Experience }) {
   const isDeprecated = React.useMemo<boolean>(() => {
     const majorVersionString = experience?.sdkVersion?.split('.').shift();
     if (majorVersionString) {
-      const majorVersion = parseInt(majorVersionString);
+      const majorVersion = parseInt(majorVersionString, 10);
       return majorVersion < Environment.lowestSupportedSdkVersion;
     }
     return false;

@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
+import FeatureFlags from '../FeatureFlags';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import FeatureFlags from '../FeatureFlags';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import PrimaryButton from './PrimaryButton';
 import ProjectCard from './ProjectCard';
