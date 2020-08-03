@@ -40,7 +40,6 @@ export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & Im
 
 export type ImagePickerMultipleResult = { cancelled: true } | ({ cancelled: false; selected: ImageInfo[] });
 
-
 export type ImagePickerOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
