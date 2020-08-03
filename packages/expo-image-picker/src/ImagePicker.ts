@@ -38,7 +38,7 @@ export async function launchCameraAsync(
   return await ExponentImagePicker.launchCameraAsync(options);
 }
 
-export async function launchImageLibraryAsync<T extends ExpandImagePickerOptions>(
+export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
   options: T
 ): Promise<ExpandImagePickerResult<T>> {
   if (!ExponentImagePicker.launchImageLibraryAsync) {
