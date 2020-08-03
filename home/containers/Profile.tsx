@@ -34,6 +34,7 @@ const MyProfileQuery = gql`
         lastPublishedTime
         name
         packageName
+        sdkVersion
         privacy
       }
       snacks(limit: ${SNACK_LIMIT}, offset: 0) {
@@ -104,6 +105,7 @@ const OtherProfileQuery = gql`
           packageName
           packageUsername
           description
+          sdkVersion
           lastPublishedTime
         }
         snacks(limit: ${SNACK_LIMIT}, offset: 0) {
