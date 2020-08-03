@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixes LocalStorage access SecurityError ([#9257](https://github.com/expo/expo/pull/9257) by [@tommybru](https://github.com/tommybru) and [@fiberjw](https://github.com/fiberjw))
+- Fixes localStorage access SecurityError ([#9257](https://github.com/expo/expo/pull/9257) by [@tommybru](https://github.com/tommybru) and [@fiberjw](https://github.com/fiberjw))
 
 ## 1.2.1 — 2020-05-29
 

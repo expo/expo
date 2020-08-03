@@ -9,7 +9,7 @@ function _consumeRecoveryProps() {
         return props;
     }
     catch (e) {
-        console.log(e);
+        // Catches localStorage SecurityError https://github.com/expo/expo/issues/8355
     }
     return null;
 }
@@ -24,7 +24,7 @@ export default {
             localStorage.setItem(LOCAL_STORAGE_KEY, props);
         }
         catch (e) {
-            console.log(e);
+            // Catches localStorage SecurityError https://github.com/expo/expo/issues/8355
         }
     },
     recoveredProps: _consumeRecoveryProps(),
