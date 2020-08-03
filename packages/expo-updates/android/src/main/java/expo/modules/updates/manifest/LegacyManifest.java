@@ -63,8 +63,25 @@ public class LegacyManifest implements Manifest {
   }
 
   public static LegacyManifest fromLegacyManifestJson(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
-    UUID id = UUID.fromString(manifestJson.getString("releaseId"));
-    String commitTimeString = manifestJson.getString("commitTime");
+    UUID id;
+    Date commitTime;
+    if (isDevelopmentMode(manifestJson)) {
+      // xdl doesn't always serve a releaseId, but we don't need one in dev mode
+      id = UUID.randomUUID();
+      commitTime = new Date();
+    } else {
+      id = UUID.fromString(manifestJson.getString("releaseId"));
+      String commitTimeString = manifestJson.getString("commitTime");
+      try {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        commitTime = formatter.parse(commitTimeString);
+      } catch (ParseException e) {
+        Log.e(TAG, "Could not parse commitTime", e);
+        commitTime = new Date();
+      }
+    }
+
     String runtimeVersion = manifestJson.getString("sdkVersion");
     Object runtimeVersionObject = manifestJson.opt("runtimeVersion");
     if (runtimeVersionObject != null) {
@@ -75,16 +92,6 @@ public class LegacyManifest implements Manifest {
       }
     }
     Uri bundleUrl = Uri.parse(manifestJson.getString("bundleUrl"));
-
-    Date commitTime;
-    try {
-      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-      commitTime = formatter.parse(commitTimeString);
-    } catch (ParseException e) {
-      Log.e(TAG, "Could not parse commitTime", e);
-      commitTime = new Date();
-    }
 
     JSONArray bundledAssets = manifestJson.optJSONArray("bundledAssets");
 
@@ -165,5 +172,15 @@ public class LegacyManifest implements Manifest {
       }
     }
     return mAssetsUrlBase;
+  }
+
+  private static boolean isDevelopmentMode(final JSONObject manifest) {
+    try {
+      return (manifest != null &&
+        manifest.has("developer") &&
+        manifest.getJSONObject("developer").has("tool"));
+    } catch (JSONException e) {
+      return false;
+    }
   }
 }

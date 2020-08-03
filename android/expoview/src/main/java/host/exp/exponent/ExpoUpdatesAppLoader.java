@@ -89,7 +89,10 @@ public abstract class ExpoUpdatesAppLoader {
   public void start() {
     Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
 
-    // TODO: handle development mode manifests
+    if ("localhost".equals(manifestUrl.getHost()) || "10.0.2.2".equals(manifestUrl.getHost())) {
+      startDevelopmentLoad();
+      return;
+    }
 
     HashMap<String, Object> configMap = new HashMap<>();
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
@@ -125,6 +128,38 @@ public abstract class ExpoUpdatesAppLoader {
     startLoaderTask(configuration, directory, selectionPolicy);
   }
 
+  private void startDevelopmentLoad() {
+    Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
+
+    HashMap<String, Object> configMap = new HashMap<>();
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
+
+    UpdatesConfiguration configuration = new UpdatesConfiguration();
+    configuration.loadValuesFromMap(configMap);
+
+    FileDownloader.downloadManifest(configuration, mContext, new FileDownloader.ManifestDownloadCallback() {
+      @Override
+      public void onFailure(String message, Exception e) {
+        onError(e);
+      }
+
+      @Override
+      public void onSuccess(Manifest manifest) {
+        try {
+          JSONObject manifestJson = processAndSaveManifest(manifest.getRawManifestJson());
+          onManifestCompleted(manifestJson);
+          // ReactAndroid will load the bundle on its own in development mode, so we don't need to
+          // call onBundleCompleted()
+        } catch (Exception e) {
+          onError(e);
+        }
+      }
+    });
+  }
+
   private void startLoaderTask(final UpdatesConfiguration configuration, final File directory, final SelectionPolicy selectionPolicy) {
     new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
       @Override
@@ -134,6 +169,11 @@ public abstract class ExpoUpdatesAppLoader {
 
       @Override
       public boolean onCachedUpdateLoaded(UpdateEntity update) {
+        if (isDevelopmentMode(update.metadata)) {
+          startDevelopmentLoad();
+          return false;
+        }
+
         try {
           String experienceId = update.metadata.getString(ExponentManifest.MANIFEST_ID_KEY);
           // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
@@ -161,25 +201,17 @@ public abstract class ExpoUpdatesAppLoader {
 
       @Override
       public void onSuccess(Launcher launcher) {
-        JSONObject manifest = launcher.getLaunchedUpdate().metadata;
-
-        String bundleUrl;
         try {
-          // TODO: process third-party hosted manifests
-          manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
-          bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
-        } catch (JSONException ex) {
-          onError(ex);
-          return;
+          JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
+          onManifestCompleted(manifest);
+
+          // ReactAndroid will load the bundle on its own in development mode
+          if (!isDevelopmentMode(manifest)) {
+            onBundleCompleted(launcher.getLaunchAssetFile());
+          }
+        } catch (Exception e) {
+          onError(e);
         }
-
-        Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_MANIFEST);
-
-        mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
-        ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
-
-        onManifestCompleted(manifest);
-        onBundleCompleted(launcher.getLaunchAssetFile());
       }
 
       @Override
@@ -200,12 +232,32 @@ public abstract class ExpoUpdatesAppLoader {
     }).start(mContext);
   }
 
+  private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
+    // TODO: process third-party hosted manifests
+    manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
+    String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
+
+    Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_MANIFEST);
+
+    mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
+    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
+
+    return manifest;
+  }
+
+  private boolean isDevelopmentMode(JSONObject manifest) {
+    try {
+      return manifest.has(ExponentManifest.MANIFEST_DEVELOPER_KEY) &&
+        manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPER_KEY).has(ExponentManifest.MANIFEST_DEVELOPER_TOOL_KEY);
+    } catch (JSONException e) {
+      return false;
+    }
+  }
+
   private Map<String, String> getRequestHeaders() {
     HashMap<String, String> headers = new HashMap<>();
     headers.put("Expo-Updates-Environment", getClientEnvironment());
     headers.put("Expo-Client-Environment", getClientEnvironment());
-
-    headers.put("Exponent-Platform", "android");
 
     if (ExpoViewKernel.getInstance().getVersionName() != null) {
       headers.put("Exponent-Version", ExpoViewKernel.getInstance().getVersionName());
@@ -216,6 +268,9 @@ public abstract class ExpoUpdatesAppLoader {
       headers.put("Expo-Session", sessionSecret);
     }
 
+    // XDL expects the full "exponent-" header names
+    headers.put("Exponent-Accept-Signature", "true");
+    headers.put("Exponent-Platform", "android");
     if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
       headers.put("Exponent-SDK-Version", "UNVERSIONED");
     } else {
