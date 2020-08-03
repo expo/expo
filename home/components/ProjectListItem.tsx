@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Linking, Share, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
@@ -54,7 +54,16 @@ function ProjectListItem({
   };
 
   const handleLongPress = () => {
-    navigation.navigate('Experience', props.experienceInfo);
+    if (props.experienceInfo) {
+      navigation.navigate('Experience', props.experienceInfo);
+    } else {
+      const message = UrlUtils.normalizeUrl(url);
+      Share.share({
+        title: url,
+        message,
+        url: message,
+      });
+    }
   };
 
   const handlePressUsername = () => {
