@@ -7527,7 +7527,7 @@ CACHE_KEYS:
       DoubleConversion:
         :debug: 00ad3596e935bcd21487033fc301bf91
         :release: 00ad3596e935bcd21487033fc301bf91
-    CHECKSUM: 5805e889d232975c086db112ece9ed034df7a0b2
+    CHECKSUM: cde416483dac037923206447da6e1454df403714
     PROJECT_NAME: DoubleConversion
     SPECS:
       - DoubleConversion (1.1.6)
@@ -8697,7 +8697,7 @@ CACHE_KEYS:
       glog:
         :debug: 092f9229debf28ff43a16fd11331f793
         :release: 092f9229debf28ff43a16fd11331f793
-    CHECKSUM: 1f3da668190260b06b429bb211bfbee5cd790c28
+    CHECKSUM: 40a13f7840415b9a77023fbcae0f1e6f43192af3
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
