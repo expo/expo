@@ -9,63 +9,63 @@
 /* Begin PBXAggregateTarget section */
 		655B4D5DC1C1034B3458073E51ECD859 /* FirebaseMLCommon */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 1E95883C85F4EF704CCD50E23B0A5017 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */;
+			buildConfigurationList = 93B057DF87FC5C644ECEF4FEBED260B1 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */;
 			buildPhases = (
 			);
 			dependencies = (
-				E59A30DBCFD43E08560543131F92C716 /* PBXTargetDependency */,
-				919C3EE7CE5F8B38E9B36889564BF2D0 /* PBXTargetDependency */,
-				97CCA8D47A50C42F6B1408D4A94D4F85 /* PBXTargetDependency */,
-				CE91FFF7EA89874BA06EA31EB43040DD /* PBXTargetDependency */,
-				7EB16EBE078E007B398A6A7126FFEBB5 /* PBXTargetDependency */,
-				22213E896BDFC4F60C4DB3EA75146890 /* PBXTargetDependency */,
+				BE395CFF98FDE21CA12A650F7D3B9C27 /* PBXTargetDependency */,
+				E29762B3E89BBA4217F208761D377EAF /* PBXTargetDependency */,
+				4EBD20564A2AC0300886FCA269C47BE0 /* PBXTargetDependency */,
+				FD3AAED01B39DA861F3A791E607B86F0 /* PBXTargetDependency */,
+				B37EB3717D481C6F0540F30BBF10CB15 /* PBXTargetDependency */,
+				16B27B810393F0C750731B6DB6DEF00C /* PBXTargetDependency */,
 			);
 			name = FirebaseMLCommon;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		2FA87D209E2B5669A3EC7CD978708309 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2E530F5A2FE0D41A194A0028276E2C7D /* GoogleUtilities.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
-			remoteInfo = GoogleUtilities;
-		};
-		82C524E3EEDA6EF886EC528AE98848F1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 406C1DCFCDDC1EAF6AF5C12FC59CDB30 /* FirebaseCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
-			remoteInfo = FirebaseCore;
-		};
-		926CDC3D49A40E614A37C920EAA2769A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9046F13051A9DF618764D318EBD24CEA /* Protobuf.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BF47F3270E009392526FDEE0C3BA42AD;
-			remoteInfo = Protobuf;
-		};
-		A2291BEC98B0C75D1B82850F3B9BC9AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A43656C01091DFBE60B400918381DB06 /* GoogleToolboxForMac.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 6A6C31AF5480BB69EDDFCD50D28967CD;
-			remoteInfo = GoogleToolboxForMac;
-		};
-		C18723C1694F0B1CE66978DB7FD1AF8F /* PBXContainerItemProxy */ = {
+		2DD6FE76FEAD0119C42DDAABA182C51B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6DB5F2C7700A6A8BD737DA0162DDB240 /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
 			remoteInfo = GTMSessionFetcher;
 		};
-		C8B408965253A15CBA70C92C52442A1C /* PBXContainerItemProxy */ = {
+		34739D925B1D25E6AC42100EFBE5196A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 72F047E1B4ACC51BDCDAD1E641F251FC /* FirebaseInstanceID.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
 			remoteInfo = FirebaseInstanceID;
+		};
+		4B4821BC6B35E8ED664FF5E0DB80F27E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2E530F5A2FE0D41A194A0028276E2C7D /* GoogleUtilities.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
+			remoteInfo = GoogleUtilities;
+		};
+		551083AE4E6E291FD14A6820CC4866B0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9046F13051A9DF618764D318EBD24CEA /* Protobuf.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BF47F3270E009392526FDEE0C3BA42AD;
+			remoteInfo = Protobuf;
+		};
+		5EB2DFC8B4BE2A8E13C2880DE7220B2B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 406C1DCFCDDC1EAF6AF5C12FC59CDB30 /* FirebaseCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
+			remoteInfo = FirebaseCore;
+		};
+		C29EAE429ED7B6972FA4B2E333553456 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A43656C01091DFBE60B400918381DB06 /* GoogleToolboxForMac.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6A6C31AF5480BB69EDDFCD50D28967CD;
+			remoteInfo = GoogleToolboxForMac;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -195,35 +195,35 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		22213E896BDFC4F60C4DB3EA75146890 /* PBXTargetDependency */ = {
+		16B27B810393F0C750731B6DB6DEF00C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Protobuf;
-			targetProxy = 926CDC3D49A40E614A37C920EAA2769A /* PBXContainerItemProxy */;
+			targetProxy = 551083AE4E6E291FD14A6820CC4866B0 /* PBXContainerItemProxy */;
 		};
-		7EB16EBE078E007B398A6A7126FFEBB5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GTMSessionFetcher;
-			targetProxy = C18723C1694F0B1CE66978DB7FD1AF8F /* PBXContainerItemProxy */;
-		};
-		919C3EE7CE5F8B38E9B36889564BF2D0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseInstanceID;
-			targetProxy = C8B408965253A15CBA70C92C52442A1C /* PBXContainerItemProxy */;
-		};
-		97CCA8D47A50C42F6B1408D4A94D4F85 /* PBXTargetDependency */ = {
+		4EBD20564A2AC0300886FCA269C47BE0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleToolboxForMac;
-			targetProxy = A2291BEC98B0C75D1B82850F3B9BC9AA /* PBXContainerItemProxy */;
+			targetProxy = C29EAE429ED7B6972FA4B2E333553456 /* PBXContainerItemProxy */;
 		};
-		CE91FFF7EA89874BA06EA31EB43040DD /* PBXTargetDependency */ = {
+		B37EB3717D481C6F0540F30BBF10CB15 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = GoogleUtilities;
-			targetProxy = 2FA87D209E2B5669A3EC7CD978708309 /* PBXContainerItemProxy */;
+			name = GTMSessionFetcher;
+			targetProxy = 2DD6FE76FEAD0119C42DDAABA182C51B /* PBXContainerItemProxy */;
 		};
-		E59A30DBCFD43E08560543131F92C716 /* PBXTargetDependency */ = {
+		BE395CFF98FDE21CA12A650F7D3B9C27 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseCore;
-			targetProxy = 82C524E3EEDA6EF886EC528AE98848F1 /* PBXContainerItemProxy */;
+			targetProxy = 5EB2DFC8B4BE2A8E13C2880DE7220B2B /* PBXContainerItemProxy */;
+		};
+		E29762B3E89BBA4217F208761D377EAF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseInstanceID;
+			targetProxy = 34739D925B1D25E6AC42100EFBE5196A /* PBXContainerItemProxy */;
+		};
+		FD3AAED01B39DA861F3A791E607B86F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleUtilities;
+			targetProxy = 4B4821BC6B35E8ED664FF5E0DB80F27E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -288,7 +288,7 @@
 			};
 			name = Release;
 		};
-		591DE1B496C12782B93427D8865D4B1F /* Release */ = {
+		857036232E71FDB1C5AA30C57CDD9FCA /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 44A96582CFEB52D89E9B27740B6CC887 /* FirebaseMLCommon.release.xcconfig */;
 			buildSettings = {
@@ -366,7 +366,7 @@
 			};
 			name = Debug;
 		};
-		E7622985B1D2414582225C4685E5D1F9 /* Debug */ = {
+		96AEBD1B2F3D3EE25B8C1933F0012DE8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D37D9B4ADF25EC9F2D0EF830380C4DEB /* FirebaseMLCommon.debug.xcconfig */;
 			buildSettings = {
@@ -382,20 +382,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1E95883C85F4EF704CCD50E23B0A5017 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E7622985B1D2414582225C4685E5D1F9 /* Debug */,
-				591DE1B496C12782B93427D8865D4B1F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		563261E057016B239B089E1A9A693993 /* Build configuration list for PBXProject "FirebaseMLCommon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				958D8CB91AF71D3CC726314E3ED3986A /* Debug */,
 				5792AD55F5D5002C3FB8D65CFCEFF049 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		93B057DF87FC5C644ECEF4FEBED260B1 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96AEBD1B2F3D3EE25B8C1933F0012DE8 /* Debug */,
+				857036232E71FDB1C5AA30C57CDD9FCA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
