@@ -180,7 +180,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
       self.picker.allowsEditing = true;
       
       if (videoMaxDuration > 600.0) {
-        self.reject(@"ERR_IMAGE_PICKER_MAX_DURATION", @"`videoMaxDuration` limits to 600 when `allowsEditing=true`", nil);
+        self.reject(@"ERR_IMAGE_PICKER_MAX_DURATION", @"'videoMaxDuration' limits to 600 when 'allowsEditing=true'", nil);
         return;
       }
       

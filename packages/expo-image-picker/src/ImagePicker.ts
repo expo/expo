@@ -18,17 +18,28 @@ function validateOptions(options: ImagePickerOptions) {
     const [x, y] = aspect;
 
     if (x <= 0 || y <= 0) {
-      throw new CodedError('ERR_INVALID_ARGUMENT', 'Invalid aspect ratio values');
+      throw new CodedError(
+        'ERR_INVALID_ARGUMENT',
+        `Invalid aspect ratio values ${x}:${y}. Provide positive numbers.`
+      );
     }
   }
 
   if (quality && (quality < 0 || quality > 1)) {
-    throw new CodedError('ERR_INVALID_ARGUMENT', 'Quality value must be between 0 and 1');
+    throw new CodedError(
+      'ERR_INVALID_ARGUMENT',
+      `Invalid 'quality' value ${quality}. Provide a value between 0 and 1.`
+    );
   }
 
   if (videoMaxDuration && videoMaxDuration < 0) {
-    throw new CodedError('ERR_INVALID_ARGUMENT', 'videoMaxDuration must be a non-negative number');
+    throw new CodedError(
+      'ERR_INVALID_ARGUMENT',
+      `Invalid 'videoMaxDuration' value ${videoMaxDuration}. Provide a non-negative number.`
+    );
   }
+
+  return options;
 }
 
 export async function getCameraPermissionsAsync(): Promise<CameraPermissionResponse> {
@@ -53,9 +64,7 @@ export async function launchImageLibraryAsync(
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
   }
-
-  validateOptions(options);
-  return await ExponentImagePicker.launchImageLibraryAsync(options);
+  return await ExponentImagePicker.launchImageLibraryAsync(validateOptions(options));
 }
 
 export async function launchCameraAsync(
@@ -64,9 +73,7 @@ export async function launchCameraAsync(
   if (!ExponentImagePicker.launchCameraAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
-
-  validateOptions(options);
-  return await ExponentImagePicker.launchCameraAsync(options);
+  return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
 }
 
 export {
