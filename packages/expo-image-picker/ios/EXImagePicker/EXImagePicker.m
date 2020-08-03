@@ -169,16 +169,29 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     }
 
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
-
-    self.picker.videoMaximumDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
     
     if (@available(iOS 11.0, *)) {
       self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
     }
     
+    NSTimeInterval videoMaxDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
+    
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
       self.picker.allowsEditing = true;
+      
+      if (videoMaxDuration > 600.0) {
+        self.reject(@"ERR_IMAGE_PICKER_MAX_DURATION", @"`videoMaxDuration` limits to 600 when `allowsEditing=true`", nil);
+        return;
+      }
+      
+      // iOS has system-enforced duration limit for edited videos
+      if (videoMaxDuration == 0.0) {
+        videoMaxDuration = 600.0;
+      }
     }
+    
+    self.picker.videoMaximumDuration = videoMaxDuration;
+    
     self.picker.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     self.picker.delegate = self;
 
