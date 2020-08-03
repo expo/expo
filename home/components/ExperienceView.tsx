@@ -19,6 +19,7 @@ import semver from 'semver';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
 import * as Strings from '../utils/Strings';
+import * as UrlUtils from '../utils/UrlUtils';
 import CloseButton from './CloseButton';
 import { Experience, Viewer } from './ExperienceView.types';
 import * as Icons from './Icons';
@@ -77,7 +78,12 @@ function ExperienceContents({ experience }: { experience: Experience }) {
       <ExperienceDescription description={experience.description} />
       {isDeprecated && <ExpoSDKOutdated sdkVersion={experience.sdkVersion} />}
       {isSnack && <ExperienceSnack username={experience.username} slug={experience.slug} />}
-      <StartButton isDeprecated={isDeprecated} onPress={() => {}} />
+      <StartButton
+        isDeprecated={isDeprecated}
+        onPress={() => {
+          Linking.openURL(UrlUtils.normalizeUrl(experience.fullName!));
+        }}
+      />
     </>
   );
 }
@@ -221,7 +227,7 @@ function ExperienceHeader(
   const navigation = useNavigation();
 
   const onPress = () => {
-    Linking.openURL(`exp://exp.host/${props.fullName}`);
+    Linking.openURL(UrlUtils.normalizeUrl(props.fullName!));
   };
 
   const onPressUsername = () => {
