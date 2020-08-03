@@ -10,7 +10,6 @@ import {
   ImagePickerOptions,
   VideoExportPreset,
   ExpandImagePickerResult,
-  ExpandImagePickerOptions,
 } from './ImagePicker.types';
 
 export async function getCameraPermissionsAsync(): Promise<CameraPermissionResponse> {
