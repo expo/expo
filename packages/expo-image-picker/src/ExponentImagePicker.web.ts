@@ -78,7 +78,11 @@ function openFileBrowserAsync({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
-}: OpenFileBrowserOptions): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
+  mediaTypes,
+  capture = false,
+  allowsMultipleSelection = false,
+}: T): Promise<ExpandImagePickerResult<T>> {
   const mediaTypeFormat = MediaTypeInput[mediaTypes];
 
   const input = document.createElement('input');
