@@ -57,7 +57,6 @@ export type OpenFileBrowserOptions = {
   allowsMultipleSelection: boolean;
 };
 
-
 export type ExpandImagePickerOptions =
   | (ImagePickerOptions & { allowsMultipleSelection: true })
   | ImagePickerOptions;
