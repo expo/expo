@@ -62,11 +62,6 @@ android {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
   }
-
-  useLibrary 'android.test.runner'
-
-  useLibrary 'android.test.base'
-  useLibrary 'android.test.mock'
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
