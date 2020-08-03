@@ -49,7 +49,7 @@ export type ImagePickerOptions = {
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
-   allowsMultipleSelection?: boolean;
+  allowsMultipleSelection?: boolean;
 };
 
 export type OpenFileBrowserOptions = {
