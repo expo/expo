@@ -3,7 +3,6 @@ import Constants from 'expo-constants';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
-import semver from 'semver';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Connectivity from '../api/Connectivity';
@@ -24,10 +23,7 @@ import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallbac
 import Environment from '../utils/Environment';
 import getSnackId from '../utils/getSnackId';
 
-const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
 const PROJECT_UPDATE_INTERVAL = 10000;
-
-const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
 type Props = NavigationProps & {
   dispatch: (data: any) => any;
@@ -324,11 +320,7 @@ class ProjectsView extends React.Component<Props, State> {
           style={styles.supportSdksText}
           lightColor="rgba(0,0,0,0.3)"
           darkColor="rgba(255,255,255,0.6)">
-          Supported SDK
-          {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
-          {SupportedExpoSdks.map(semver.major)
-            .sort((a, b) => a - b)
-            .join(', ')}
+          Supported {Environment.supportedSdksString}
         </StyledText>
       </View>
     );

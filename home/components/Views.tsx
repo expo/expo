@@ -1,7 +1,8 @@
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import { useTheme } from '@react-navigation/native';
+import { BlurView } from 'expo-blur';
 import * as React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 
@@ -137,6 +138,26 @@ export const StyledView = (props: Props) => {
     />
   );
 };
+
+export const StyledBlurView = (props: React.ComponentProps<typeof View> & { children?: any }) => {
+  // Use a styled view on android and a blur view on iOS.
+  if (Platform.OS === 'android') {
+    return (
+      <StyledView
+        lightBackgroundColor={Colors.light.bodyBackground}
+        darkBackgroundColor={Colors.dark.cardBackground}
+        {...props}
+      />
+    );
+  }
+  return <ThemedBlurView {...props} />;
+};
+
+function ThemedBlurView(props: React.ComponentProps<typeof View> & { children?: any }) {
+  const theme = useTheme();
+
+  return <BlurView intensity={100} tint={theme.dark ? 'dark' : 'light'} {...props} />;
+}
 
 type ButtonProps = Props & TouchableNativeFeedbackSafe['props'];
 
