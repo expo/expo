@@ -15,12 +15,6 @@ Object.defineProperty(exports, "registerRootComponent", {
     return _registerRootComponent.default;
   }
 });
-Object.defineProperty(exports, "Notifications", {
-  enumerable: true,
-  get: function () {
-    return _Notifications.default;
-  }
-});
 Object.defineProperty(exports, "AppLoading", {
   enumerable: true,
   get: function () {
@@ -43,6 +37,12 @@ Object.defineProperty(exports, "Linking", {
   enumerable: true,
   get: function () {
     return _deprecated.Linking;
+  }
+});
+Object.defineProperty(exports, "Notifications", {
+  enumerable: true,
+  get: function () {
+    return _deprecated.Notifications;
   }
 });
 Object.defineProperty(exports, "Accelerometer", {
@@ -486,8 +486,6 @@ exports.Logs = Logs;
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
-
-var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 
 var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
 
