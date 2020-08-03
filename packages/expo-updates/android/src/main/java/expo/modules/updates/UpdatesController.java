@@ -232,7 +232,12 @@ public class UpdatesController {
       }
 
       @Override
-      public void onManifestLoaded(Manifest manifest) { }
+      public boolean onCachedUpdateLoaded(UpdateEntity update) {
+        return true;
+      }
+
+      @Override
+      public void onRemoteManifestLoaded(Manifest manifest) { }
 
       @Override
       public void onSuccess(Launcher launcher) {
