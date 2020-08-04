@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-safe-area-context` from `3.0.2` to `3.1.1`. ([#9548](https://github.com/expo/expo/pull/9548) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
