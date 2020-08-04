@@ -1,11 +1,11 @@
 /*
- * Copyright 2016-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,9 +29,15 @@
 #ifndef __STDC__
 /* nolint */
 #define __STDC__ 1
+#pragma push_macro("_CRT_DECLARE_NONSTDC_NAMES")
+#ifdef _CRT_DECLARE_NONSTDC_NAMES
+#undef _CRT_DECLARE_NONSTDC_NAMES
+#endif
+#define _CRT_DECLARE_NONSTDC_NAMES 0
 #include <direct.h> // @manual nolint
 #include <io.h> // @manual nolint
 #undef __STDC__
+#pragma pop_macro("_CRT_DECLARE_NONSTDC_NAMES")
 #else
 #include <direct.h> // @manual nolint
 #include <io.h> // @manual nolint

@@ -8,7 +8,7 @@ export type ProcessedTheme = {
 
 export default function processTheme(theme: Theme = {}) {
   return Object.keys(theme).reduce<ProcessedTheme>((result, key) => {
-    let value = theme[key];
+    const value = theme[key];
     if (key.toLowerCase().endsWith('color')) {
       result[key] = processColor(value);
       return result;

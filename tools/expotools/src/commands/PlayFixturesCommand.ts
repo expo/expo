@@ -8,7 +8,7 @@ async function action(fixtureFilePath, options) {
   await Fixtures.playFixtureAsync(absoluteFixtureFilePath, options.speed || 1.0);
 }
 
-export default program => {
+export default (program) => {
   program
     .command('play-fixtures [fixtureFilePath]')
     .description('Replays fixture network activity')

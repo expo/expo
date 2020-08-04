@@ -3,23 +3,62 @@ title: Speech
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-speech'
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-speech`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-speech).
+<InstallSection packageName="expo-speech" />
 
 ## Usage
 
-<SnackEmbed snackId="@charliecruzan/speechexample" />
+<SnackInline label='Speech' dependencies={['expo-constants', 'expo-speech']}>
+
+```js
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import Constants from 'expo-constants';
+import * as Speech from 'expo-speech';
+
+export default class App extends React.Component {
+  speak() {
+    var thingToSay = '0';
+    Speech.speak(thingToSay);
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Button title="Press to hear some words" onPress={this.speak} />
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+    padding: 8,
+  },
+  paragraph: {
+    margin: 24,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
+```
+
+</SnackInline>
 
 ## API
 
@@ -27,13 +66,29 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Speech from 'expo-speech';
 ```
 
+<TableOfContentSection title='Constants' contents={['Speech.maxSpeechInputLength']} />
+
+<TableOfContentSection title='Methods' contents={['Speech.speak(text, options)', 'Speech.stop()', 'Speech.pause()', 'Speech.resume()', 'Speech.isSpeakingAsync()', 'Speech.getAvailableVoicesAsync()']} />
+
+<TableOfContentSection title='Enum Types' contents={['Speech.VoiceQuality']} />
+
+<TableOfContentSection title='Error Codes' contents={['ERR_SPEECH_INPUT_LENGTH']} />
+
+## Constants
+
+### `Speech.maxSpeechInputLength`
+
+Maximum possible text length acceptable by `Speech.speak()` method. It is platform-dependent. On iOS, this returns `Number.MAX_VALUE`.
+
+## Methods
+
 ### `Speech.speak(text, options)`
 
 Speak out loud the `text` given `options`. Calling this when another text is being spoken adds an utterance to queue.
 
 #### Arguments
 
-- **text (_string_)** -- The text to be spoken.
+- **text (_string_)** -- The text to be spoken. Cannot be longer than [`Speech.maxSpeechInputLength`](#speechmaxspeechinputlength).
 - **options (_object_)** --
 
   A map of options:
@@ -46,6 +101,11 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
   - **onDone (_function_)** -- A callback that is invoked when speaking finishes.
   - **onStopped (_function_)** -- A callback that is invoked when speaking is stopped by calling `Speech.stop()`.
   - **onError (_function_)** -- (Android only). A callback that is invoked when an error occurred while speaking.
+
+#### Error Codes
+
+- [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
+
 
 ### `Speech.stop()`
 
@@ -84,6 +144,15 @@ List of `Voice` objects.
 |  quality   | enum Speech.VoiceQuality |
 |  language  |          string          |
 
-##### enum `Speech.VoiceQuality`
+## Enum Types
 
-possible values: `Default` or `Enhanced`.
+### `Speech.VoiceQuality`
+
+- **`VoiceQuality.Default`**
+- **`VoiceQuality.Enhanced`**
+
+## Error Codes
+
+### `ERR_SPEECH_INPUT_LENGTH`
+
+An error occurred when length of `text` parameter provided to `Speech.speak()` exceeds its limit. To see the limit, use `Speech.maxSpeechInputLength`.

@@ -11,13 +11,20 @@
 
 @implementation RNSVGLinearGradient
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _gradientTransform = CGAffineTransformIdentity;
+    }
+    return self;
+}
 
 - (void)setX1:(RNSVGLength *)x1
 {
     if ([x1 isEqualTo:_x1]) {
         return;
     }
-    
+
     _x1 = x1;
     [self invalidate];
 }
@@ -27,7 +34,7 @@
     if ([y1 isEqualTo:_y1]) {
         return;
     }
-    
+
     _y1 = y1;
     [self invalidate];
 }
@@ -37,7 +44,7 @@
     if ([x2 isEqualTo:_x2]) {
         return;
     }
-    
+
     _x2 = x2;
     [self invalidate];
 }
@@ -47,7 +54,7 @@
     if ([y2 isEqualTo:_y2]) {
         return;
     }
-    
+
     _y2 = y2;
     [self invalidate];
 }
@@ -57,7 +64,7 @@
     if (gradient == _gradient) {
         return;
     }
-    
+
     _gradient = gradient;
     [self invalidate];
 }
@@ -67,7 +74,7 @@
     if (gradientUnits == _gradientUnits) {
         return;
     }
-    
+
     _gradientUnits = gradientUnits;
     [self invalidate];
 }
@@ -91,11 +98,11 @@
     [painter setUnits:self.gradientUnits];
     [painter setTransform:self.gradientTransform];
     [painter setLinearGradientColors:self.gradient];
-    
+
     if (self.gradientUnits == kRNSVGUnitsUserSpaceOnUse) {
         [painter setUserSpaceBoundingBox:[self.svgView getContextBounds]];
     }
-    
+
     [self.svgView definePainter:painter painterName:self.name];
 }
 @end

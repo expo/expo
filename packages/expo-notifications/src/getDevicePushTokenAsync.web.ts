@@ -1,7 +1,7 @@
 import { CodedError, Platform, SyntheticPlatformEmitter } from '@unimodules/core';
 import Constants from 'expo-constants';
 
-import { DevicePushToken } from './getDevicePushTokenAsync';
+import { DevicePushToken } from './Tokens.types';
 
 export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   const data = await _subscribeDeviceToPushNotificationsAsync();
@@ -99,7 +99,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   // We wrap it with `fromExpoWebClient` to make sure other message
   // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
-  let notificationIcon = (Constants.manifest.notification || {}).icon;
+  const notificationIcon = (Constants.manifest.notification || {}).icon;
   await registration.active.postMessage(
     JSON.stringify({ fromExpoWebClient: { notificationIcon } })
   );

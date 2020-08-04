@@ -1,3 +1,6 @@
+export interface Window {
+    openDatabase?: (name: string, version: string, displayName: string, estimatedSize: number, creationCallback?: DatabaseCallback) => Database;
+}
 export interface DatabaseCallback {
     (database: Database): void;
 }
@@ -16,7 +19,7 @@ export interface SQLTransactionErrorCallback {
     (error: SQLError): void;
 }
 export interface SQLTransaction {
-    executeSql(sqlStatement: string, args?: Array<any>, callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
+    executeSql(sqlStatement: string, args?: any[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
 }
 export interface SQLStatementCallback {
     (transaction: SQLTransaction, resultSet: SQLResultSet): void;
@@ -58,8 +61,8 @@ export interface ResultSetError {
 export interface ResultSet {
     insertId?: number;
     rowsAffected: number;
-    rows: Array<{
+    rows: {
         [column: string]: any;
-    }>;
+    }[];
 }
-export declare type SQLiteCallback = (error?: Error | null, resultSet?: Array<ResultSetError | ResultSet>) => void;
+export declare type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError | ResultSet)[]) => void;

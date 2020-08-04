@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.picker;
 
 import android.content.Context;
@@ -24,6 +25,7 @@ public class ReactPicker extends AppCompatSpinner {
   private @Nullable List<ReactPickerItem> mStagedItems;
   private @Nullable Integer mStagedSelection;
   private @Nullable Integer mStagedPrimaryTextColor;
+  private @Nullable Integer mStagedBackgroundColor;
 
   private final OnItemSelectedListener mItemSelectedListener =
       new OnItemSelectedListener() {
@@ -122,8 +124,21 @@ public class ReactPicker extends AppCompatSpinner {
     mStagedSelection = selection;
   }
 
+  /** Will set the "selection" value immediately as opposed to {@link #setStagedSelection(int)} */
+  /* package */ void setImmediateSelection(int selection) {
+    if (selection != getSelectedItemPosition()) {
+      setOnItemSelectedListener(null);
+      setSelection(selection, false);
+      setOnItemSelectedListener(mItemSelectedListener);
+    }
+  }
+
   /* package */ void setStagedPrimaryTextColor(@Nullable Integer primaryColor) {
     mStagedPrimaryTextColor = primaryColor;
+  }
+
+  /* package */ void setStagedBackgroundColor(@Nullable Integer backgroundColor) {
+    mStagedBackgroundColor = backgroundColor;
   }
 
   /**
@@ -159,6 +174,13 @@ public class ReactPicker extends AppCompatSpinner {
         && mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
       adapter.setPrimaryTextColor(mStagedPrimaryTextColor);
       mStagedPrimaryTextColor = null;
+    }
+
+    if (mStagedBackgroundColor != null
+        && adapter != null
+        && mStagedBackgroundColor != adapter.getBackgroundColor()) {
+      adapter.setBackgroundColor(mStagedBackgroundColor);
+      mStagedBackgroundColor = null;
     }
 
     setOnItemSelectedListener(mItemSelectedListener);

@@ -3,7 +3,7 @@ package host.exp.exponent.headless;
 import android.os.Handler;
 import android.os.Looper;
 
-import expo.loaders.provider.interfaces.AppRecordInterface;
+import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.RNObject;
 
 public class HeadlessAppRecord implements AppRecordInterface {

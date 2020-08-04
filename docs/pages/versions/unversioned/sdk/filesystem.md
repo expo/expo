@@ -3,21 +3,28 @@ title: FileSystem
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
+**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
 
-#### Platform Compatibility
+<img src="/static/images/sdk/file-system/file-system-diagram.png" style={{maxWidth: 850, maxHeight: 600, marginBottom:"5em", display: "block", marginLeft: "auto", marginRight: "auto"}} />
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-file-system`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
+<InstallSection packageName="expo-file-system" />
+
+## Configuration
+
+On Android, this module requires permissions to interact with the filesystem and create resumable downloads. The `READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE` and `INTERNET` permissions are automatically added.
 
 ## Example Usage
+
+#### Downloading files
 
 ```javascript
 const callback = downloadProgress => {
@@ -75,6 +82,75 @@ try {
 }
 ```
 
+#### Managing Giphy's
+
+<SnackInline
+  label="Managing Giphy's"
+  templateId="filesystem/App"
+  files={{
+    'GifFetching.ts': 'filesystem/GifFetching.ts',
+    'GifManagement.ts': 'filesystem/GifManagement.ts'
+  }}>
+
+```typescript
+import * as FileSystem from 'expo-file-system';
+
+const gifDir = FileSystem.cacheDirectory + 'giphy/';
+const gifFileUri = (gifId: string) => gifDir + `gif_${gifId}_200.gif`;
+const gifUrl = (gifId: string) => `https://media1.giphy.com/media/${gifId}/200.gif`;
+
+// Checks if gif directory exists. If not, creates it
+async function ensureDirExists() {
+  const dirInfo = await FileSystem.getInfoAsync(gifDir)
+  if (!dirInfo.exists) {
+    console.log('Gif directory doesn\'t exist, creating...');
+    await FileSystem.makeDirectoryAsync(gifDir, { intermediates: true });
+  }
+}
+
+// Downloads all gifs specified as array of IDs 
+export async function addMultipleGifs(gifIds: string[]) {
+  try {
+    await ensureDirExists();
+
+    console.log('Downloading', gifIds.length, 'gif files...');
+    await Promise.all(gifIds.map(id => FileSystem.downloadAsync(gifUrl(id), gifFileUri(id))));
+  } catch(e) {
+    console.error("Couldn't download gif files:", e);
+  }
+}
+
+// Returns URI to our local gif file
+// If our gif doesn't exist locally, it downloads it
+export async function getSingleGif(gifId: string) {
+  await ensureDirExists();
+  
+  const fileUri = gifFileUri(gifId);
+  const fileInfo = await FileSystem.getInfoAsync(fileUri);
+
+  if (!fileInfo.exists) {
+    console.log("Gif isn't cached locally. Downloading...");
+    await FileSystem.downloadAsync(gifUrl(gifId), fileUri);
+  }
+
+  return fileUri;
+}
+
+// Exports shareable URI - it can be shared outside your app
+export async function getGifContentUri(gifId: string) {
+  return FileSystem.getContentUriAsync(await getSingleGif(gifId));
+}
+
+// Deletes whole giphy directory with all its content
+export async function deleteAllGifs() {
+  console.log('Deleting all GIF files...');
+  await FileSystem.deleteAsync(gifDir);
+}
+
+```
+
+</SnackInline>
+
 ## API
 
 ```js
@@ -83,9 +159,11 @@ import * as FileSystem from 'expo-file-system';
 
 <TableOfContentSection title='Directories' contents={['FileSystem.documentDirectory', 'FileSystem.cacheDirectory']} />
 
-<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType']} />
+<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType', 'FileSystem.FileSystemSessionType', 'FileSystem.FileSystemUploadOptions']} />
 
-<TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
+<TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.uploadAsync(url, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
+
+### [Supported URI schemes](#supported-uri-schemes-1)
 
 ## Directories
 
@@ -105,7 +183,7 @@ So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the
 
 Expo APIs that create files generally operate within these directories. This includes `Audio` recordings, `Camera` photos, `ImagePicker` results, `SQLite` databases and `takeSnapShotAsync()` results. This allows their use with the `FileSystem` API.
 
-Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) from React Native.
+Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos) from React Native.
 
 ## Constants
 
@@ -117,21 +195,66 @@ These values can be used to define how data is read / written.
 
 - **FileSystem.EncodingType.Base64** -- Binary, radix-64 representation.
 
+### `FileSystem.FileSystemSessionType`
+
+These values can be used to define how sessions work on iOS.
+
+- **FileSystem.FileSystemSessionType.BACKGROUND** -- Using this mode means that the downloading/uploading session on the native side will work even if the application is moved to background. If the task completes while the application is in background, the Promise will be either resolved immediately or (if the application execution has already been stopped) once the app is moved to foreground again.
+
+  > **Note**: The background session doesn't fail if the server or your connection is down. Rather, it continues retrying until the task succeeds or is canceled manually.
+
+- **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
+
+### `FileSystem.FileSystemUploadOptions`
+
+- **FileSystem.FileSystemUploadOptions.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
+
+- **FileSystem.FileSystemUploadOptions.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
+
+#### How to handle such requests?
+
+The simple server in Node.js, which can save uploaded images to disk:
+
+```js
+const express = require('express');
+const app = express();
+const fs = require('fs');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+// This method will save the binary content of the request as a file.
+app.patch('/binary-upload', (req, res) => {
+  req.pipe(fs.createWriteStream('./uploads/image' + Date.now() + '.png'));
+  res.end('OK');
+});
+
+// This method will save a "photo" field from the request as a file.
+app.patch('/multipart-upload', upload.single('photo'), (req, res) => {
+  // You can access other HTTP parameters. They are located in the body object.
+  console.log(req.body);
+  res.end('OK');
+});
+
+app.listen(3000, () => {
+  console.log('Working on port 3000');
+});
+```
+
 ## Methods
 
 ### `FileSystem.getInfoAsync(fileUri, options)`
 
-Get metadata information about a file or directory.
+Get metadata information about a file, directory or external content/asset.
 
 #### Arguments
 
-- **fileUri (_string_)** -- `file://` URI to the file or directory, or a URI returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos).
+- **fileUri (_string_)** -- URI to the file or directory. It may be e.g. URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
 
 - **options (_object_)** -- A map of options:
 
   - **md5 (_boolean_)** -- Whether to return the MD5 hash of the file. `false` by default.
 
-  - **size (_boolean_)** -- Whether to include the size of the file if operating on a source from [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) (skipping this can prevent downloading the file if it's stored in iCloud, for example). The size is always returned for `file://` locations.
+  - **size (_boolean_)** -- Whether to include the size of the file if operating on a source from [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos) (skipping this can prevent downloading the file if it's stored in iCloud, for example). The size is always returned for `file://` locations.
 
 #### Returns
 
@@ -143,7 +266,7 @@ If no item exists at this URI, returns a Promise that resolves to `{ exists: fal
 
 - **modificationTime (_number_)** -- The last modification time of the file expressed in seconds since epoch.
 
-- **size (_number_)** -- The size of the file in bytes. If operating on a source from [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos), only present if the `size` option was truthy.
+- **size (_number_)** -- The size of the file in bytes. If operating on a source from [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos), only present if the `size` option was truthy.
 
 - **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
@@ -209,13 +332,13 @@ Move a file or directory to a new location.
 
 ### `FileSystem.copyAsync(options)`
 
-Create a copy of a file or directory. Directories are recursively copied with all of their contents.
+Create a copy of a file or directory. Directories are recursively copied with all of their contents. It can be also used to copy content shared by other apps to local filesystem.
 
 #### Arguments
 
 - **options (_object_)** -- A map of options:
 
-  - **from (_string_)** -- `file://` URI to the file or directory to copy, or a URI returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos).
+  - **from (_string_)** -- URI to the asset, file or directory to copy. It can be e.g. URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
 
   - **to (_string_)** -- The `file://` URI to the new copy to create.
 
@@ -274,6 +397,8 @@ FileSystem.downloadAsync(
 
   - **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
 
+  - **sessionType (_FileSystemSessionType_)** -- (iOS only) A session type. Determines if tasks can be handled in the background. On Android, sessions always work in the background and you can't change it. Defaults to `FileSystemSessionType.BACKGROUND`.
+
 #### Returns
 
 Returns a Promise that resolves to an object with the following fields:
@@ -285,6 +410,44 @@ Returns a Promise that resolves to an object with the following fields:
 - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
 
 - **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+
+### `FileSystem.uploadAsync(url, fileUri, options)`
+
+Upload the contents of the file pointed by `fileUri` to the remote url.
+
+#### Arguments
+
+- **url (_string_)** -- The remote URL, where the file will be sent.
+
+- **fileUri (_string_)** -- The local URI of the file to send. The file must exist.
+
+- **options (_object_)** -- A map of options:
+
+  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+
+  - **httpMethod (_String_)** -- The request method. Accepts values: 'POST', 'PUT', 'PATCH. Default to 'POST'.
+
+  - **sessionType (_FileSystemSessionType_)** -- (iOS only) A session type. Determines if tasks can be handled in the background. On Android, sessions always work in the background and you can't change it. Defaults to `FileSystemSessionType.BACKGROUND`.
+
+  - **uploadType (_FileSystemUploadOptions_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
+
+  If `uploadType` is equal `FileSystemUploadType.MULTIPART`, more options are available:
+
+  - **fieldName (_string_)** -- The name of the field which will hold uploaded file. Defaults to the file name without an extension.
+
+  - **mimeType (_string_)** -- The MIME type of the provided file. If not provided, the module will try to guess it based on the extension.
+
+  - **parameters (_Record<string, string>_)** -- Additional form properties. They will be located in the request body.
+
+#### Returns
+
+Returns a Promise that resolves to an object with the following fields:
+
+- **status (_number_)** -- The HTTP status code for the download network request.
+
+- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+
+- **body (_string_)** -- The body of the server response.
 
 ### `FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)`
 
@@ -306,7 +469,9 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
   This function is called on each data write to update the download progress. An object with the following fields are passed:
 
   - **totalBytesWritten (_number_)** -- The total bytes written by the download operation.
-  - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation.
+  - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation. A value of `-1` means that the server did not return the `Content-Length` header and the total size is unknown. Without this header, you won't be able to track the download progress.
+
+  > **Note**: When the app has been moved to the background, this callback won't be fired until it's moved to the foreground.
 
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download. This is set on the `DownloadResumable` object automatically when a download is paused. When initializing a new `DownloadResumable` this should be `null`.
 
@@ -388,7 +553,7 @@ Take a `file://` URI and convert it into content URI (`content://`) so that it c
 FileSystem.getContentUriAsync(uri).then(cUri => {
   console.log(cUri);
   IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-    data: cUri.uri,
+    data: cUri,
     flags: 1,
   });
 });
@@ -400,9 +565,7 @@ FileSystem.getContentUriAsync(uri).then(cUri => {
 
 #### Returns
 
-Returns a Promise that resolves to an object with the following fields:
-
-- **uri (_string_)** -- A `content://` URI pointing to the file. This is the same as the `fileUri` input parameter but in different format.
+Returns a Promise that resolves to a _string_ containing a `content://` URI pointing to the file. The URI is the same as the `fileUri` input parameter but in a different format.
 
 ### `FileSystem.getFreeDiskStorageAsync()`
 
@@ -419,7 +582,7 @@ FileSystem.getFreeDiskStorageAsync().then(freeDiskStorage => {
 
 #### Returns
 
-Returns a Promise that resolves to the number of bytes available on the internal disk.
+Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
 ### `FileSystem.getTotalDiskCapacityAsync()`
 
@@ -436,6 +599,26 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 
 #### Returns
 
-Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
+Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
 #
+
+## Supported URI schemes
+
+In this table, you can see what type of URI can be handled by each method. For example, if you have an URI, which begins with `content://`, you cannot use `FileSystem.readAsStringAsync()`, but you can use `FileSystem.copyAsync()` which supports this scheme.
+
+| Method name               | Android                                                                                                          | iOS                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `getInfoAsync`            | `file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***                                                 | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
+| `readAsStringAsync`       | `file://`,<br/>`asset://`                                                                                        | `file://`                                                                                       |
+| `writeAsStringAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
+| `deleteAsync`             | `file://`                                                                                                        | `file://`                                                                                       |
+| `moveAsync`               | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                                        | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
+| `copyAsync`               | Source:<br/>`file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
+| `makeDirectoryAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
+| `readDirectoryAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
+| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                        | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
+| `uploadAsync`             | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                         | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
+| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                        | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |  |
+
+**\***On Android _no scheme_ defaults to a bundled resource.

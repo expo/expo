@@ -3,19 +3,17 @@ title: MediaLibrary
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-media-library`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+<InstallSection packageName="expo-media-library" />
 
 ## Configuration
 
@@ -53,7 +51,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
@@ -70,7 +68,9 @@ An object representing an [asset](#asset).
 
 ### `MediaLibrary.saveToLibraryAsync(localUri)`
 
-Saves the file at given `localUri` to the user's media library. On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
+
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key. 
 
 #### Arguments
 
@@ -84,7 +84,7 @@ Fetches a page of assets matching the provided criteria.
 
 - **options (_object_)**
 
-  - **first (_number_)** -- The maximum number of items on a single page.
+  - **first (_number_)** -- The maximum number of items on a single page. Defaults to 20.
   - **after (_string_)** -- Asset ID of the last item returned on the previous page.
   - **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
   - **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order. Note that if the `SortBy.default` key is used, then `ascending` argument will not matter.
@@ -253,7 +253,7 @@ Removes all listeners.
 | height           | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
 | creationTime     | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
 | modificationTime | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
-| duration         | _number_  | both      | Duration of the video or audio asset                                                                          |                                                                                                      |
+| duration         | _number_  | both      | Duration of the video or audio asset in seconds                                                               |                                                                                                      |
 | mediaSubtypes    | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
 | albumId          | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
 | localUri \*      | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |

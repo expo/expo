@@ -158,14 +158,6 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
   }
 
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("33.0.0")
-  public void sdk33TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-33-0-0", false);
-  }
-
   @Test
   @ExpoAlwaysPassThroughFilter
   public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {

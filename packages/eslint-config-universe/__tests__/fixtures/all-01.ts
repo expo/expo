@@ -15,6 +15,7 @@ export class Example {
   };
 
   m: object = {};
+  m: object = {};
 
   hi(): void {
     _fn();

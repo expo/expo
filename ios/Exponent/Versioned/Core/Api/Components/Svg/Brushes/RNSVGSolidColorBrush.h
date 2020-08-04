@@ -10,4 +10,6 @@
 
 @interface RNSVGSolidColorBrush : RNSVGBrush
 
+- (instancetype)initWithNumber:(NSNumber *)number;
+
 @end

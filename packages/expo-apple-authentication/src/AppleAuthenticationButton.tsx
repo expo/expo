@@ -1,4 +1,10 @@
 import React from 'react';
+
+import {
+  AppleAuthenticationButtonProps,
+  AppleAuthenticationButtonStyle,
+  AppleAuthenticationButtonType,
+} from './AppleAuthentication.types';
 import {
   ExpoAppleAuthenticationButtonSignInWhite,
   ExpoAppleAuthenticationButtonSignInWhiteOutline,
@@ -6,13 +12,10 @@ import {
   ExpoAppleAuthenticationButtonContinueWhite,
   ExpoAppleAuthenticationButtonContinueWhiteOutline,
   ExpoAppleAuthenticationButtonContinueBlack,
+  ExpoAppleAuthenticationButtonSignUpWhite,
+  ExpoAppleAuthenticationButtonSignUpWhiteOutline,
+  ExpoAppleAuthenticationButtonSignUpBlack,
 } from './ExpoAppleAuthenticationButton';
-
-import {
-  AppleAuthenticationButtonProps,
-  AppleAuthenticationButtonStyle,
-  AppleAuthenticationButtonType,
-} from './AppleAuthentication.types';
 
 /**
  * This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
@@ -59,6 +62,11 @@ const ButtonComponents: { [type: number]: { [style: number]: React.ElementType }
     [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonContinueWhite,
     [AppleAuthenticationButtonStyle.WHITE_OUTLINE]: ExpoAppleAuthenticationButtonContinueWhiteOutline,
     [AppleAuthenticationButtonStyle.BLACK]: ExpoAppleAuthenticationButtonContinueBlack,
+  },
+  [AppleAuthenticationButtonType.SIGN_UP]: {
+    [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonSignUpWhite,
+    [AppleAuthenticationButtonStyle.WHITE_OUTLINE]: ExpoAppleAuthenticationButtonSignUpWhiteOutline,
+    [AppleAuthenticationButtonStyle.BLACK]: ExpoAppleAuthenticationButtonSignUpBlack,
   },
 };
 

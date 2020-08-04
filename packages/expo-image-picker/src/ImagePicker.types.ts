@@ -1,4 +1,11 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'unimodules-permissions-interface';
+
+export { PermissionResponse as CameraPermissionResponse };
+
+export type CameraRollPermissionResponse = PermissionResponse & {
+  // iOS only
+  accessPrivileges?: 'all' | 'limited' | 'none';
+};
 
 export enum MediaTypeOptions {
   All = 'All',
@@ -40,6 +47,7 @@ export type ImagePickerOptions = {
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
+  videoMaxDuration?: number;
 };
 
 export type OpenFileBrowserOptions = {
@@ -47,5 +55,3 @@ export type OpenFileBrowserOptions = {
   capture?: boolean;
   allowsMultipleSelection: boolean;
 };
-
-export { PermissionResponse, PermissionStatus };

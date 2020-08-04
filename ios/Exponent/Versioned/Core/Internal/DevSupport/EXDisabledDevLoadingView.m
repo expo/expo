@@ -3,6 +3,7 @@
 @import UIKit;
 
 #import "EXDisabledDevLoadingView.h"
+#import "EXDevSettings.h"
 
 @implementation EXDisabledDevLoadingView {
   BOOL _isObserving;
@@ -10,16 +11,21 @@
 
 + (NSString *)moduleName { return @"RCTDevLoadingView"; }
 
+
 RCT_EXPORT_METHOD(hide)
 {
-  if (_isObserving) {
+  RCTDevSettings *settings = [[super bridge] devSettings];
+  BOOL isFastRefreshEnabled = [settings isHotLoadingEnabled];
+  if (_isObserving && isFastRefreshEnabled) {
     [self sendEventWithName:@"devLoadingView:hide" body:@{}];
   }
 }
 
 RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
 {
-  if (_isObserving) {
+  RCTDevSettings *settings = [[super bridge] devSettings];
+  BOOL isFastRefreshEnabled = [settings isHotLoadingEnabled];
+  if (_isObserving && isFastRefreshEnabled) {
     [self sendEventWithName:@"devLoadingView:showMessage" body:@{@"message":message}];
   }
 }

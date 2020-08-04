@@ -37,7 +37,7 @@
     "HEADER_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/src"
   },
   "platforms": {
-    "ios": "9.0",
-    "tvos": "9.2"
+    "ios": "10.0",
+    "tvos": "10.0"
   }
 }

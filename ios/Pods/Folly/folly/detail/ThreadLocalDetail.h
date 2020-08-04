@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include <functional>
 #include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <glog/logging.h>
@@ -36,6 +37,7 @@
 #include <folly/memory/Malloc.h>
 #include <folly/portability/PThread.h>
 #include <folly/synchronization/MicroSpinLock.h>
+#include <folly/system/ThreadId.h>
 
 #include <folly/detail/StaticSingletonManager.h>
 
@@ -209,12 +211,12 @@ struct ThreadEntryList;
 struct ThreadEntry {
   ElementWrapper* elements{nullptr};
   std::atomic<size_t> elementsCapacity{0};
-  ThreadEntry* next{nullptr};
-  ThreadEntry* prev{nullptr};
   ThreadEntryList* list{nullptr};
   ThreadEntry* listNext{nullptr};
   StaticMetaBase* meta{nullptr};
   bool removed_{false};
+  uint64_t tid_os{};
+  aligned_storage_for_t<std::thread::id> tid_data{};
 
   size_t getElementsCapacity() const noexcept {
     return elementsCapacity.load(std::memory_order_relaxed);
@@ -222,6 +224,10 @@ struct ThreadEntry {
 
   void setElementsCapacity(size_t capacity) noexcept {
     elementsCapacity.store(capacity, std::memory_order_relaxed);
+  }
+
+  std::thread::id& tid() {
+    return *reinterpret_cast<std::thread::id*>(&tid_data);
   }
 };
 
@@ -341,20 +347,9 @@ struct StaticMetaBase {
 
   StaticMetaBase(ThreadEntry* (*threadEntry)(), bool strict);
 
-  void push_back(ThreadEntry* t) {
-    t->next = &head_;
-    t->prev = head_.prev;
-    head_.prev->next = t;
-    head_.prev = t;
-  }
-
-  void erase(ThreadEntry* t) {
-    t->next->prev = t->prev;
-    t->prev->next = t->next;
-    t->next = t->prev = t;
-  }
-
   FOLLY_EXPORT static ThreadEntryList* getThreadEntryList();
+
+  static bool dying();
 
   static void onThreadExit(void* ptr);
 
@@ -400,7 +395,9 @@ struct StaticMetaBase {
   bool strict_;
 
  protected:
-  ~StaticMetaBase() {}
+  [[noreturn]] ~StaticMetaBase() {
+    std::terminate();
+  }
 };
 
 // Held in a singleton to track our global instances.
@@ -423,14 +420,10 @@ struct StaticMeta final : StaticMetaBase {
         /*child*/ &StaticMeta::onForkChild);
   }
 
-  ~StaticMeta() = delete;
-
   static StaticMeta<Tag, AccessMode>& instance() {
     // Leak it on exit, there's only one per process and we don't have to
     // worry about synchronization with exiting threads.
-    /* library-local */ static auto instance =
-        detail::createGlobal<StaticMeta<Tag, AccessMode>, void>();
-    return *instance;
+    return detail::createGlobal<StaticMeta<Tag, AccessMode>, void>();
   }
 
   FOLLY_EXPORT FOLLY_ALWAYS_INLINE static ElementWrapper& get(EntryID* ent) {
@@ -488,6 +481,9 @@ struct StaticMeta final : StaticMetaBase {
         threadEntryList->head = threadEntry;
       }
 
+      threadEntry->tid() = std::this_thread::get_id();
+      threadEntry->tid_os = folly::getOSThreadID();
+
       // if we're adding a thread entry
       // we need to increment the list count
       // even if the entry is reused
@@ -511,8 +507,6 @@ struct StaticMeta final : StaticMetaBase {
   static void onForkChild() {
     // only the current thread survives
     auto& head = instance().head_;
-    // init the head list
-    head.next = head.prev = &head;
     // init the circular lists
     auto elementsCapacity = head.getElementsCapacity();
     for (size_t i = 0u; i < elementsCapacity; ++i) {
@@ -529,10 +523,6 @@ struct StaticMeta final : StaticMetaBase {
       }
     }
 
-    // If this thread was in the list before the fork, add it back.
-    if (elementsCapacity != 0) {
-      instance().push_back(threadEntry);
-    }
     instance().lock_.unlock();
   }
 };

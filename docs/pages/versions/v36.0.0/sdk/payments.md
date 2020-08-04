@@ -3,6 +3,8 @@ title: Payments
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-payments-stripe'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
@@ -13,11 +15,7 @@ _Note_: (Android only) If you are using Expo client then the setup has already b
 import { PaymentsStripe } from 'expo-payments-stripe';
 ```
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ❌               | ✅         | ❌            | ❌  |
+<PlatformsSection android ios simulator web={{ pending: 'https://github.com/expo/expo/issues/4046' }} />
 
 ## Setup
 
@@ -43,7 +41,7 @@ target 'your-project-name' do
   ...
 ```
 
-Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod install` in `your-project-name/ios`. This will add the Payments module files to your project and the corresponding dependencies.
+Finally run `npx pod-install`, this will add the Payments module files to your project and the corresponding dependencies.
 
 ### Register hook in order to let Stripe process source authorization
 
@@ -199,7 +197,7 @@ const params = {
   addressZip: '55555',
 };
 
-const token = await stripe.createTokenWithCardAsync(params);
+const token = await Stripe.createTokenWithCardAsync(params);
 
 // Client specific code
 // api.sendTokenToBackend(token)

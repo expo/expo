@@ -1,7 +1,7 @@
+import { Subscription } from '@unimodules/core';
+import * as Sensors from 'expo-sensors';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import * as Sensors from 'expo-sensors';
-import { Subscription } from '@unimodules/core';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;
@@ -30,7 +30,7 @@ interface State<M extends object> {
   isAvailable?: boolean;
 }
 
-abstract class SensorBlock<M extends object> extends React.Component<{}, State<M>> {
+abstract class SensorBlock<M extends object> extends React.Component<object, State<M>> {
   readonly state: State<M> = { data: {} as M };
 
   _subscription?: Subscription;
@@ -134,19 +134,28 @@ class MagnetometerUncalibratedSensor extends ThreeAxisSensorBlock {
 class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
   getName = () => 'DangerZone.DeviceMotion';
   getSensor = () => Sensors.DeviceMotion;
-  renderXYZBlock = (name: string, { x, y, z }: { x?: number; y?: number; z?: number } = {}) => (
-    <Text>
-      {name}: x: {round(x)} y: {round(y)} z: {round(z)}
-    </Text>
-  );
+  renderXYZBlock = (name: string, event: null | { x?: number; y?: number; z?: number } = {}) => {
+    if (!event) return null;
+    const { x, y, z } = event;
+    return (
+      <Text>
+        {name}: x: {round(x)} y: {round(y)} z: {round(z)}
+      </Text>
+    );
+  };
   renderABGBlock = (
     name: string,
-    { alpha, beta, gamma }: { alpha?: number; beta?: number; gamma?: number } = {}
-  ) => (
-    <Text>
-      {name}: α: {round(alpha)} β: {round(beta)} γ: {round(gamma)}
-    </Text>
-  );
+    event: null | { alpha?: number; beta?: number; gamma?: number } = {}
+  ) => {
+    if (!event) return null;
+
+    const { alpha, beta, gamma } = event;
+    return (
+      <Text>
+        {name}: α: {round(alpha)} β: {round(beta)} γ: {round(gamma)}
+      </Text>
+    );
+  };
   renderData = () => (
     <View>
       {this.renderXYZBlock('Acceleration', this.state.data.acceleration)}

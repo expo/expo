@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /*
  * AtomicHashMap --
  *
@@ -80,10 +81,6 @@
 
 #pragma once
 #define FOLLY_ATOMICHASHMAP_H_
-
-#include <boost/iterator/iterator_facade.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/type_traits/is_convertible.hpp>
 
 #include <atomic>
 #include <functional>
@@ -162,7 +159,7 @@ template <
     class Allocator,
     class ProbeFcn,
     class KeyConvertFcn>
-class AtomicHashMap : boost::noncopyable {
+class AtomicHashMap {
   typedef AtomicHashArray<
       KeyT,
       ValueT,
@@ -205,6 +202,9 @@ class AtomicHashMap : boost::noncopyable {
   // number of elements to maximize space utilization and performance,
   // and a Config object to specify more advanced options.
   explicit AtomicHashMap(size_t finalSizeEst, const Config& c = Config());
+
+  AtomicHashMap(const AtomicHashMap&) = delete;
+  AtomicHashMap& operator=(const AtomicHashMap&) = delete;
 
   ~AtomicHashMap() {
     const unsigned int numMaps =

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/EXAV/ABI37_0_0EXAV/ABI37_0_0EXAudioSessionManager.h

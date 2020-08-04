@@ -26,7 +26,7 @@ import java.util.List;
  * views to custom {@link PagerAdapter} instance which is used by {@link NativeViewHierarchyManager}
  * to add children nodes according to react views hierarchy.
  */
-public class ReactViewPager extends ViewPager {
+public class ReactViewPager extends VerticalViewPager {
 
   private class Adapter extends PagerAdapter {
 

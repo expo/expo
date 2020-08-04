@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI33_0_0/Libraries/Image/ABI33_0_0RCTImageStoreManager.h

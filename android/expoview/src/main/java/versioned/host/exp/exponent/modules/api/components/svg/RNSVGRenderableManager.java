@@ -9,6 +9,7 @@
 
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import android.content.res.Resources;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -16,13 +17,20 @@ import android.graphics.RectF;
 import android.graphics.Region;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import javax.annotation.Nonnull;
+
+import static com.facebook.react.common.StandardCharsets.UTF_8;
 
 class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     RNSVGRenderableManager(ReactApplicationContext reactContext) {
@@ -59,7 +67,13 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
             return false;
         }
 
-        svg.getPath(null, null);
+        try {
+            svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return false;
+        }
+
         svg.initBounds();
 
         float scale = svg.mScale;
@@ -78,7 +92,15 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
             return 0;
         }
 
-        Path path = svg.getPath(null, null);
+        Path path;
+
+        try {
+            path = svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return -1;
+        }
+
         PathMeasure pm = new PathMeasure(path, false);
         return pm.getLength() / svg.mScale;
     }
@@ -88,10 +110,18 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getPointAtLength(int tag, ReadableMap options) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
-        Path path = svg.getPath(null, null);
+        Path path;
+
+        try {
+            path = svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return Arguments.createMap();
+        }
+
         PathMeasure pm = new PathMeasure(path, false);
         float length = (float) options.getDouble("length");
         float scale = svg.mScale;
@@ -114,7 +144,7 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getBBox(int tag, ReadableMap options) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
         boolean fill = options.getBoolean("fill");
@@ -122,25 +152,33 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
         boolean markers = options.getBoolean("markers");
         boolean clipped = options.getBoolean("clipped");
 
-        Path path = svg.getPath(null, null);
+        try {
+            svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return Arguments.createMap();
+        }
+
         float scale = svg.mScale;
         svg.initBounds();
 
         RectF bounds = new RectF();
-        if (fill) {
-            bounds.union(svg.mFillBounds);
+        RectF fillBounds = svg.mFillBounds;
+        RectF strokeBounds = svg.mStrokeBounds;
+        RectF markerBounds = svg.mMarkerBounds;
+        RectF clipBounds = svg.mClipBounds;
+
+        if (fill && fillBounds != null) {
+            bounds.union(fillBounds);
         }
-        if (stroke) {
-            bounds.union(svg.mStrokeBounds);
+        if (stroke && strokeBounds != null) {
+            bounds.union(strokeBounds);
         }
-        if (markers) {
-            bounds.union(svg.mMarkerBounds);
+        if (markers && markerBounds != null) {
+            bounds.union(markerBounds);
         }
-        if (clipped) {
-            RectF clipBounds = svg.mClipBounds;
-            if (clipBounds != null) {
-                bounds.intersect(svg.mClipBounds);
-            }
+        if (clipped && clipBounds != null) {
+            bounds.intersect(clipBounds);
         }
 
         WritableMap result = Arguments.createMap();
@@ -156,7 +194,7 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getCTM(int tag) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
         float scale = svg.mScale;
@@ -182,7 +220,7 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getScreenCTM(int tag) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
         float[] values = new float[9];
@@ -198,4 +236,38 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
         result.putDouble("f", values[Matrix.MTRANS_Y] / scale);
         return result;
     }
+
+    @ReactMethod
+    public void getRawResource(String name, Promise promise) {
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+            Resources resources = context.getResources();
+            String packageName = context.getPackageName();
+            int id = resources.getIdentifier(name, "raw", packageName);
+            InputStream stream = resources.openRawResource(id);
+            try {
+                InputStreamReader reader = new InputStreamReader(stream, UTF_8);
+                char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+                StringBuilder builder = new StringBuilder();
+                int n;
+                while ((n = reader.read(buffer, 0, DEFAULT_BUFFER_SIZE)) != EOF) {
+                    builder.append(buffer, 0, n);
+                }
+                String result = builder.toString();
+                promise.resolve(result);
+            } finally {
+                try {
+                    stream.close();
+                } catch (IOException ioe) {
+                    // ignore
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    private static final int EOF = -1;
+    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 }

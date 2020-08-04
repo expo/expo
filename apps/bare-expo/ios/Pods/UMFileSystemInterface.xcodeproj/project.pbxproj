@@ -19,20 +19,34 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		2255A30F02AFC6EF668EF70B3F27E6CF /* UMFileSystemInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFileSystemInterface.h; path = UMFileSystemInterface/UMFileSystemInterface.h; sourceTree = "<group>"; };
-		2B7E147FA525D37D19ED2CF100981279 /* UMFilePermissionModuleInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFilePermissionModuleInterface.h; path = UMFileSystemInterface/UMFilePermissionModuleInterface.h; sourceTree = "<group>"; };
-		671DBBE57C70B5638943B7E04ECEA4FF /* UMFileSystemInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMFileSystemInterface.xcconfig; sourceTree = "<group>"; };
-		E6A0C4D2B862537D15D5DF3ACEE7DCB8 /* UMFileSystemInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMFileSystemInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		4E67CFDC11481746882F133B8BC28E82 /* UMFileSystemInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMFileSystemInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		63B8CA6467CB650D08B5681032470A91 /* UMFilePermissionModuleInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFilePermissionModuleInterface.h; path = UMFileSystemInterface/UMFilePermissionModuleInterface.h; sourceTree = "<group>"; };
+		696003AF47EAABAA9099381875477D94 /* UMFileSystemInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMFileSystemInterface.release.xcconfig; sourceTree = "<group>"; };
+		730CC3086F5C7D3022F2F4FF61671A0D /* UMFileSystemInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMFileSystemInterface.debug.xcconfig; sourceTree = "<group>"; };
+		89DA295E3BD4261708E1A4DDBB5AEDC0 /* UMFileSystemInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMFileSystemInterface.h; path = UMFileSystemInterface/UMFileSystemInterface.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		3A9E920C6CA9FD52FFFC3804F1DC9FE6 /* Support Files */ = {
+		05E51F6D91B3412145141D2985B6B66D /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				671DBBE57C70B5638943B7E04ECEA4FF /* UMFileSystemInterface.xcconfig */,
+				730CC3086F5C7D3022F2F4FF61671A0D /* UMFileSystemInterface.debug.xcconfig */,
+				696003AF47EAABAA9099381875477D94 /* UMFileSystemInterface.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMFileSystemInterface";
+			sourceTree = "<group>";
+		};
+		1E47B82B233ADCA4006B240A932DA47B /* UMFileSystemInterface */ = {
+			isa = PBXGroup;
+			children = (
+				63B8CA6467CB650D08B5681032470A91 /* UMFilePermissionModuleInterface.h */,
+				89DA295E3BD4261708E1A4DDBB5AEDC0 /* UMFileSystemInterface.h */,
+				902C6F2FEC62B873B0D32560FE99C924 /* Pod */,
+				05E51F6D91B3412145141D2985B6B66D /* Support Files */,
+			);
+			name = UMFileSystemInterface;
+			path = "../../../../packages/unimodules-file-system-interface/ios";
 			sourceTree = "<group>";
 		};
 		6666874E6BA05AE7D872811764BCAA34 /* Frameworks */ = {
@@ -42,10 +56,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		96AD838619D6AD60B5B600B18E7CA660 /* Pod */ = {
+		902C6F2FEC62B873B0D32560FE99C924 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				E6A0C4D2B862537D15D5DF3ACEE7DCB8 /* UMFileSystemInterface.podspec */,
+				4E67CFDC11481746882F133B8BC28E82 /* UMFileSystemInterface.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -55,7 +69,7 @@
 			children = (
 				6666874E6BA05AE7D872811764BCAA34 /* Frameworks */,
 				C71C7C24D271E65BF2FA8A154F041F30 /* Products */,
-				C8B74CC696243EF0FE3B4748B0DE22D1 /* UMFileSystemInterface */,
+				1E47B82B233ADCA4006B240A932DA47B /* UMFileSystemInterface */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,18 +78,6 @@
 			children = (
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		C8B74CC696243EF0FE3B4748B0DE22D1 /* UMFileSystemInterface */ = {
-			isa = PBXGroup;
-			children = (
-				2B7E147FA525D37D19ED2CF100981279 /* UMFilePermissionModuleInterface.h */,
-				2255A30F02AFC6EF668EF70B3F27E6CF /* UMFileSystemInterface.h */,
-				96AD838619D6AD60B5B600B18E7CA660 /* Pod */,
-				3A9E920C6CA9FD52FFFC3804F1DC9FE6 /* Support Files */,
-			);
-			name = UMFileSystemInterface;
-			path = "../../../../packages/unimodules-file-system-interface/ios";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -106,9 +108,9 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		14A6A4807730846623F9209A2FE1BF26 /* Debug */ = {
+		68BBDCB6120A375FFD3D102F1D71F286 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 671DBBE57C70B5638943B7E04ECEA4FF /* UMFileSystemInterface.xcconfig */;
+			baseConfigurationReference = 730CC3086F5C7D3022F2F4FF61671A0D /* UMFileSystemInterface.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -119,21 +121,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		32307DB9DA12B17F4CB73966FD90C9F1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 671DBBE57C70B5638943B7E04ECEA4FF /* UMFileSystemInterface.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		8A401A4113B85808496B564502C3B420 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -198,6 +185,21 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Debug;
+		};
+		D717CBABAD6FFD084968FA2B7AF82532 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 696003AF47EAABAA9099381875477D94 /* UMFileSystemInterface.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		E2552E9CC20E91B677C675FDB7A736C5 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -274,8 +276,8 @@
 		5A5EA4FBBE7CD0F4A941C19E64580979 /* Build configuration list for PBXAggregateTarget "UMFileSystemInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				14A6A4807730846623F9209A2FE1BF26 /* Debug */,
-				32307DB9DA12B17F4CB73966FD90C9F1 /* Release */,
+				68BBDCB6120A375FFD3D102F1D71F286 /* Debug */,
+				D717CBABAD6FFD084968FA2B7AF82532 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

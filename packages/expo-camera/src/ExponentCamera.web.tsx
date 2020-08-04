@@ -1,11 +1,17 @@
 import React, { forwardRef } from 'react';
-import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
+import { findNodeHandle, StyleSheet, View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
-import { CapturedPicture, MountError, NativeProps, PictureOptions } from './Camera.types';
+import {
+  CameraCapturedPicture,
+  CameraMountError,
+  CameraNativeProps,
+  CameraPictureOptions,
+} from './Camera.types';
 import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 
-export default class ExponentCamera extends React.Component<NativeProps> {
+export default class ExponentCamera extends React.Component<CameraNativeProps> {
   video?: number | null;
   camera?: CameraModule;
   canvas?: HTMLCanvasElement;
@@ -18,11 +24,11 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(nextProps) {
     this._updateCameraProps(nextProps);
   }
 
-  _updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }: NativeProps) => {
+  _updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }: CameraNativeProps) => {
     const { camera } = this;
     if (!camera) {
       return;
@@ -96,18 +102,13 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     return camera.getAvailablePictureSizes(ratio);
   };
 
-  takePicture = async (options: PictureOptions): Promise<CapturedPicture> => {
+  takePicture = async (options: CameraPictureOptions): Promise<CameraCapturedPicture> => {
     const camera = this.getCamera();
     return camera.takePicture({
       ...options,
       // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
       onPictureSaved: this.props.onPictureSaved,
     });
-  };
-
-  getAvailableCameraTypesAsync = async (): Promise<string[]> => {
-    const camera = this.getCamera();
-    return await camera.getAvailableCameraTypesAsync();
   };
 
   resumePreview = async (): Promise<void> => {
@@ -126,7 +127,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     }
   };
 
-  onMountError = ({ nativeEvent }: { nativeEvent: MountError }) => {
+  onMountError = ({ nativeEvent }: { nativeEvent: CameraMountError }) => {
     if (this.props.onMountError) {
       this.props.onMountError({ nativeEvent });
     }

@@ -70,7 +70,10 @@
     // ask for permission. If granted then save it as scope permission
     void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
       UM_ENSURE_STRONGIFY(self)
-      [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
+      // if permission should be scoped save it
+      if ([self shouldVerifyScopedPermission:permissionType]) {
+        [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
+      }
       resolve(permission);
     };
     
@@ -117,7 +120,7 @@
       && [self shouldVerifyScopedPermission:permissionType]
       && [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
-    permission[@"granted"] = @(NO);
+    permission[@"granted"] = [permission[@"status"] isEqual:@"granted"] ? @YES : @NO;
   }
   return permission;
 }
@@ -127,7 +130,7 @@
                     withDenyAction:(UIAlertAction *)deny
 {
   NSString *experienceName = self.experienceId; // TODO: we might want to use name from the manifest?
-  NSString *messageTemplate = @"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to use it also?";
+  NSString *messageTemplate = @"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to also use it?";
   NSString *permissionString = [[self class] textForPermissionType:permissionType];
 
   NSString *message = [NSString stringWithFormat:messageTemplate, experienceName, permissionString];

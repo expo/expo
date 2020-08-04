@@ -3,43 +3,47 @@ title: BarCodeScanner
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-barcode-scanner'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-barcode-scanner`** provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
-#### Platform Compatibility
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/4166' }} />
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+> **Note:** Only one active BarCodeScanner preview is supported currently. When using navigation, the best practice is to unmount any previously rendered BarCodeScanner component so the following screens can use `<BarCodeScanner />` without issues.
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+<InstallSection packageName="expo-barcode-scanner" />
+
+## Configuration
+
+In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](../permissions/#permissionscamera) permission. See the [usage example](#usage) below.
 
 ## Supported formats
 
-| Bar code format | iOS   | Android |
-| --------------- | ----- | ------- |
-| aztec           | Yes   | Yes     |
-| codabar         | No    | Yes     |
-| code39          | Yes   | Yes     |
-| code93          | Yes   | Yes     |
-| code128         | Yes   | Yes     |
-| code39mod43     | Yes   | No      |
-| datamatrix      | Yes   | Yes     |
-| ean13           | Yes   | Yes     |
-| ean8            | Yes   | Yes     |
-| interleaved2of5 | Yes   | No      |
-| itf14           | Yes\* | Yes     |
-| maxicode        | No    | Yes     |
-| pdf417          | Yes   | Yes     |
-| rss14           | No    | Yes     |
-| rssexpanded     | No    | Yes     |
-| upc_a           | No    | Yes     |
-| upc_e           | Yes   | Yes     |
-| upc_ean         | No    | Yes     |
-| qr              | Yes   | Yes     |
+| Bar code format | iOS   | Android     |
+| --------------- | ----- | ----------- |
+| aztec           | Yes   | Yes         |
+| codabar         | No    | Yes         |
+| code39          | Yes   | Yes         |
+| code93          | Yes   | Yes         |
+| code128         | Yes   | Yes         |
+| code39mod43     | Yes   | No          |
+| datamatrix      | Yes   | Yes         |
+| ean13           | Yes   | Yes         |
+| ean8            | Yes   | Yes         |
+| interleaved2of5 | Yes   | use `itf14` |
+| itf14           | Yes\* | Yes         |
+| maxicode        | No    | Yes         |
+| pdf417          | Yes   | Yes         |
+| rss14           | No    | Yes         |
+| rssexpanded     | No    | Yes         |
+| upc_a           | No    | Yes         |
+| upc_e           | Yes   | Yes         |
+| upc_ean         | No    | Yes         |
+| qr              | Yes   | Yes         |
 
 > Important notes:
 >
@@ -115,7 +119,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 - **barCodeTypes (_Array\<string\>_)** -- An array of bar code types. Usage: `BarCodeScanner.Constants.BarCodeType.<codeType>` where `codeType` is one of these [listed above](#supported-formats). Defaults to all supported bar code types. It is recommended to provide only the bar code formats you expect to scan to minimize battery usage. For example: `barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}`.
 
-- **onBarCodeScanned (_function_)** -- A callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL).
+- **onBarCodeScanned (_function_)** -- A callback that is invoked when a bar code has been successfully scanned. The callback is provided with an [BarCodeScanner.BarCodeScannerResult](#barcodescannerbarcodescannerresult).
 
 ## Methods
 
@@ -132,3 +136,39 @@ Scan bar codes from the image given by the URL.
 #### Returns
 
 A possibly empty array of objects of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code.
+
+## Types
+
+### `BarCodeScanner.BarCodePoint`
+
+Object of type `BarCodePoint` contains following keys:
+
+- **x (_number_)** -- The x value.
+- **y (_number_)** -- The y value.
+
+Those coordinates are represented in the coordinate space of the barcode source (e.g. when you are using the barcode scanner view, these values are adjusted to the dimensions of the view).
+
+### `BarCodeScanner.BarCodeSize`
+
+Object of type `BarCodeSize` contains following keys:
+
+- **height (_number_)** -- The height value.
+- **width (_number_)** -- The width value.
+
+### `BarCodeBounds`
+
+Object of type `BarCodeBounds` contains following keys:
+
+- **origin : [BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)** -- The origin point of the bounding box.
+- **size : [BarCodeScanner.BarCodeSize](#barcodescannerbarcodesize)** -- The size of the bounding box.
+
+### `BarCodeScanner.BarCodeScannerResult`
+
+Object of type `BarCodeScannerResult` contains following keys:
+
+- **type (_BarCodeScanner.Constants.BarCodeType_)** -- The barcode type.
+- **data (_string_)** -- The information encoded in the bar code.
+- **bounds : [BarCodeScanner.BarCodeBounds](#barcodescannerbarcodebounds)** -- (_Optional_) The `BarCodeBounds` object.
+- **cornerPoints : Array\<[BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)\>** -- (_Optional_) Corner points of the bounding box.
+
+> **NOTE** `bounds` and `cornerPoints` are not always available. On iOS, for `code39` and `pdf417` you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode. For some types, they will represent the area used by the scanner.

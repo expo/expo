@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI37_0_0/ReactNative/Libraries/Settings/ABI37_0_0RCTSettingsManager.h

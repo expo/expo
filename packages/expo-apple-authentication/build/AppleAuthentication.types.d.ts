@@ -189,7 +189,11 @@ export declare enum AppleAuthenticationUserDetectionStatus {
  */
 export declare enum AppleAuthenticationButtonType {
     SIGN_IN = 0,
-    CONTINUE = 1
+    CONTINUE = 1,
+    /**
+     * Requires iOS 13.2 or later.
+     */
+    SIGN_UP = 2
 }
 /**
  * Controls the predefined style of the authenticating button.

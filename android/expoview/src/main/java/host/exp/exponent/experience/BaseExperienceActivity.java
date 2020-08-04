@@ -2,7 +2,9 @@
 
 package host.exp.exponent.experience;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -13,6 +15,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
@@ -62,7 +65,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   private static BaseExperienceActivity sVisibleActivity;
 
   @Inject
-  Kernel mKernel;
+  protected Kernel mKernel;
 
   private long mOnResumeTime;
 
@@ -176,55 +179,61 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     // TODO: OkHttpClientProvider leaks Activity. Clean it up.
   }
 
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("onConfigurationChanged", this, newConfig);
+    }
+  }
+
   protected void consumeErrorQueue() {
     if (sErrorQueue.isEmpty()) {
       return;
     }
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (sErrorQueue.isEmpty()) {
-          return;
-        }
-
-        Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
-        boolean isFatal = result.first;
-        ExponentErrorMessage errorMessage = result.second;
-
-        if (!shouldShowErrorScreen(errorMessage)) {
-          return;
-        }
-
-        if (!isFatal) {
-          return;
-        }
-
-        // we don't ever want to show any Expo UI in a production standalone app
-        // so hard crash in this case
-        if (Constants.isStandaloneApp() && !isDebugModeEnabled()) {
-          throw new RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage());
-        }
-
-        if (!isDebugModeEnabled()) {
-          removeViews();
-          mReactInstanceManager.assign(null);
-          mReactRootView.assign(null);
-        }
-
-        mIsCrashed = true;
-        mIsLoading = false;
-
-        Intent intent = new Intent(BaseExperienceActivity.this, ErrorActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        onError(intent);
-        intent.putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled());
-        intent.putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage());
-        intent.putExtra(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY, errorMessage.developerErrorMessage());
-        startActivity(intent);
-
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
+    runOnUiThread(() -> {
+      if (sErrorQueue.isEmpty()) {
+        return;
       }
+
+      Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
+      boolean isFatal = result.first;
+      ExponentErrorMessage errorMessage = result.second;
+
+      if (!shouldShowErrorScreen(errorMessage)) {
+        return;
+      }
+
+      if (!isFatal) {
+        return;
+      }
+
+      // we don't ever want to show any Expo UI in a production standalone app
+      // so hard crash in this case
+      if (Constants.isStandaloneApp() && !isDebugModeEnabled()) {
+        throw new RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage());
+      }
+
+      if (!isDebugModeEnabled()) {
+        removeViews();
+        mReactInstanceManager.assign(null);
+        mReactRootView.assign(null);
+      }
+
+      mIsCrashed = true;
+      mIsLoading = false;
+
+      Intent intent = new Intent(BaseExperienceActivity.this, ErrorActivity.class);
+      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      onError(intent);
+      intent.putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled());
+      intent.putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage());
+      intent.putExtra(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY, errorMessage.developerErrorMessage());
+      startActivity(intent);
+
+      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
     });
   }
 

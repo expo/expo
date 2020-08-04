@@ -6,7 +6,7 @@
     "sdkVersion": "UNVERSIONED",
     "version": "UNVERSIONED",
     "githubUrl": "https://github.com/expo/native-component-list",
-    "orientation": "portrait",
+    "orientation": "default",
     "primaryColor": "#cccccc",
     "privacy": "public",
     "icon": "./assets/icons/icon.png",
@@ -18,9 +18,6 @@
     },
     "splash": {
       "image": "./assets/icons/loadingIcon.png"
-    },
-    "packagerOpts": {
-      "config": "metro.config.js"
     },
     "platforms": ["android", "ios", "web"],
     "facebookScheme": "fb1201211719949057",
@@ -47,7 +44,8 @@
           "apiKey": "key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO"
         },
         "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713"
-      }
+      },
+      "useNextNotificationsApi": true
     },
     "ios": {
       "bundleIdentifier": "host.exp.nclexp",

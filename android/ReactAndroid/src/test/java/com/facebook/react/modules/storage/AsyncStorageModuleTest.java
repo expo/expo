@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.storage;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -78,7 +79,7 @@ public class AsyncStorageModuleTest {
 
   @After
   public void cleanUp() {
-    // RuntimeEnvironment.application.deleteDatabase(ReactDatabaseSupplier.DATABASE_NAME);
+    RuntimeEnvironment.application.deleteDatabase(ReactDatabaseSupplier.DATABASE_NAME);
     ReactDatabaseSupplier.deleteInstance();
   }
 

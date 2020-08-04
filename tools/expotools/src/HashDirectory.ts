@@ -19,14 +19,14 @@ export async function getListOfFilesAsync(directory: string): Promise<string[]> 
     // Don't worry if we can't find this gitignore
   }
   let gitignoreLines = [...expoGitignore.split('\n'), ...directoryGitignore.split('\n')].filter(
-    line => {
+    (line) => {
       return _.trim(line).length > 0 && !_.trim(line).startsWith('#');
     }
   );
 
   let gitignoreGlobPatterns: string[] = [];
 
-  gitignoreLines.forEach(line => {
+  gitignoreLines.forEach((line) => {
     // Probably doesn't cover every gitignore possiblity but works better than the gitignore-to-glob
     // package on npm
     let firstCharacter = '';
@@ -49,7 +49,7 @@ export async function getListOfFilesAsync(directory: string): Promise<string[]> 
   let files = await globby(['**', ...gitignoreGlobPatterns], {
     cwd: directory,
   });
-  return files.map(file => path.resolve(directory, file));
+  return files.map((file) => path.resolve(directory, file));
 }
 
 export async function hashFilesAsync(options: { [key: string]: any }): Promise<string> {

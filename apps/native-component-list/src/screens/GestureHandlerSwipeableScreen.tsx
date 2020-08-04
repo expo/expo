@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-
 import { FlatList, RectButton } from 'react-native-gesture-handler';
 
 import AppleStyleSwipeableRow from './GestureHandler/AppleStyleSwipeableRow';
@@ -93,7 +92,7 @@ interface Item {
 
 const DATA: Item[] = [
   {
-    from: 'D\'Artagnan',
+    from: "D'Artagnan",
     when: '3:11 PM',
     message:
       'Unus pro omnibus, omnes pro uno. Nunc scelerisque, massa non lacinia porta, quam odio dapibus enim, nec tincidunt dolor leo non neque',
@@ -123,7 +122,7 @@ const DATA: Item[] = [
       'Pellentesque id quam ac tortor pellentesque tempor tristique ut nunc. Pellentesque posuere ut massa eget imperdiet. Ut at nisi magna. Ut volutpat tellus ut est viverra, eu egestas ex tincidunt. Cras tellus tellus, fringilla eget massa in, ultricies maximus eros.',
   },
   {
-    from: 'D\'Artagnan',
+    from: "D'Artagnan",
     when: 'Week ago',
     message:
       'Aliquam non aliquet mi. Proin feugiat nisl maximus arcu imperdiet euismod nec at purus. Vestibulum sed dui eget mauris consequat dignissim.',

@@ -22,15 +22,15 @@ typedef void (^GADInitializationCompletionHandler)(GADInitializationStatus *_Non
 /// Returns the shared GADMobileAds instance.
 + (nonnull GADMobileAds *)sharedInstance;
 
-/// Disables automated in app purchase (IAP) reporting. Must be called before any IAP transaction is
-/// initiated. IAP reporting is used to track IAP ad conversions. Do not disable reporting if you
-/// use IAP ads.
-+ (void)disableAutomatedInAppPurchaseReporting;
-
 /// Disables automated SDK crash reporting. If not called, the SDK records the original exception
 /// handler if available and registers a new exception handler. The new exception handler only
 /// reports SDK related exceptions and calls the recorded original exception handler.
 + (void)disableSDKCrashReporting;
+
+/// Disables automated in-app purchase (IAP) reporting. Must be called before or during the call to
+/// your application delegate's -application:didFinishLaunchingWithOptions: method. IAP reporting is
+/// used to track IAP ad conversions. Don't disable reporting if you use IAP ads.
++ (void)disableAutomatedInAppPurchaseReporting;
 
 /// The application's audio volume. Affects audio volumes of all ads relative to other audio output.
 /// Valid ad volume values range from 0.0 (silent) to 1.0 (current device volume). Use this method
@@ -67,10 +67,19 @@ typedef void (^GADInitializationCompletionHandler)(GADInitializationStatus *_Non
 /// request if this method is not called.
 - (void)startWithCompletionHandler:(nullable GADInitializationCompletionHandler)completionHandler;
 
+/// Disables automated in-app purchase (IAP) reporting. Must be called before or during the call to
+/// your application delegate's -application:didFinishLaunchingWithOptions: method. IAP reporting is
+/// used to track IAP ad conversions. Don't disable reporting if you use IAP ads.
+- (void)disableAutomatedInAppPurchaseReporting;
+
+/// Enables automated in-app purchase (IAP) reporting. IAP reporting is used to track IAP ad
+/// conversions.
+- (void)enableAutomatedInAppPurchaseReporting;
+
 #pragma mark Deprecated
 
 /// Configures the SDK using the settings associated with the given application ID.
 + (void)configureWithApplicationID:(nonnull NSString *)applicationID
-    GAD_DEPRECATED_MSG_ATTRIBUTE("Use [GADMobileAds.sharedInstance startWithCompletionHandler:]");
+    GAD_DEPRECATED_MSG_ATTRIBUTE("Use -[GADMobileAds.sharedInstance startWithCompletionHandler:]");
 
 @end

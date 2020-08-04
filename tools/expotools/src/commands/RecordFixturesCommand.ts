@@ -8,7 +8,7 @@ async function action(projectDir) {
   await Fixtures.startRecordingAsync(projectRoot);
 }
 
-export default program => {
+export default (program) => {
   program
     .command('record-fixtures [projectDir]')
     .description('Runs a proxy server over an Expo project that records all packager activity')

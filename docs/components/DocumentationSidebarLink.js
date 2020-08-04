@@ -47,13 +47,14 @@ export default class DocumentationSidebarLink extends React.Component {
 
   isSelected() {
     if (!this.props.url) {
+      console.log('[debug] isSelected bailed out, no url', this.props);
       return false;
     }
 
     // Special case for root url
-    if (this.props.info.name === 'What is Expo?') {
-      const asPath = this.props.asPath;
-      if (this.props.asPath.match(/\/versions\/[\w\.]+\/$/)) {
+    if (this.props.info.name === 'Introduction') {
+      const { asPath } = this.props;
+      if (asPath.match(/\/versions\/[\w\.]+\/$/) || asPath === '/versions/latest/') {
         return true;
       }
     }

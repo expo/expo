@@ -57,7 +57,7 @@ export async function getInstallationTimeAsync(): Promise<Date> {
   if (!ExpoApplication.getInstallationTimeAsync) {
     throw new UnavailabilityError('expo-application', 'getInstallationTimeAsync');
   }
-  let installationTime = await ExpoApplication.getInstallationTimeAsync();
+  const installationTime = await ExpoApplication.getInstallationTimeAsync();
   return new Date(installationTime);
 }
 
@@ -65,6 +65,6 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
   if (!ExpoApplication.getLastUpdateTimeAsync) {
     throw new UnavailabilityError('expo-application', 'getLastUpdateTimeAsync');
   }
-  let lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
+  const lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
   return new Date(lastUpdateTime);
 }

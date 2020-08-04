@@ -1,8 +1,8 @@
+import { CodedError } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import { CodedError } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontResource, FontSource } from './Font.types';
 

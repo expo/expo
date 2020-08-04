@@ -1,6 +1,7 @@
 #import "REAParamNode.h"
 #import "REAValueNode.h"
 #import "REANodesManager.h"
+#import "REAClockNodes.h"
 
 @implementation REAParamNode {
   NSMutableArray<REANodeID> *_argstack;
@@ -45,6 +46,35 @@
   id val = [node value];
   self.updateContext.callID = callID;
   return val;
+}
+
+- (void)start
+{
+  REANode* node = [self.nodesManager findNodeByID:[_argstack lastObject]];
+  if ([node isKindOfClass:[REAParamNode class]]) {
+    [(REAParamNode* )node start];
+  } else {
+    [(REAClockNode* )node start];
+  }
+}
+
+- (void)stop
+{
+  REANode* node = [self.nodesManager findNodeByID:[_argstack lastObject]];
+  if ([node isKindOfClass:[REAParamNode class]]) {
+    [(REAParamNode* )node stop];
+  } else {
+    [(REAClockNode* )node stop];
+  }
+}
+
+- (BOOL)isRunning
+{
+  REANode* node = [self.nodesManager findNodeByID:[_argstack lastObject]];
+  if ([node isKindOfClass:[REAParamNode class]]) {
+    return [(REAParamNode* )node isRunning];
+  }
+  return [(REAClockNode* )node isRunning];
 }
 
 @end

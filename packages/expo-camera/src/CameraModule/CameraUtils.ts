@@ -1,10 +1,10 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 
-import { PictureOptions } from './../Camera.types';
+import { CameraPictureOptions } from './../Camera.types';
 import { CameraType, CaptureOptions, ImageSize, ImageType } from './CameraModule.types';
-import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
 import { requestUserMediaAsync } from './UserMediaManager';
+import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
 
 interface ConstrainLongRange {
   max?: number;
@@ -101,7 +101,10 @@ export function captureImageContext(
   return canvas;
 }
 
-export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOptions): string {
+export function captureImage(
+  video: HTMLVideoElement,
+  pictureOptions: CameraPictureOptions
+): string {
   const config = ensureCaptureOptions(pictureOptions);
   const canvas = captureImageContext(video, config);
   const { imageType, quality = DEFAULT_QUALITY } = config;
@@ -120,7 +123,7 @@ export function getIdealConstraints(
   width?: number | ConstrainLongRange,
   height?: number | ConstrainLongRange
 ): MediaStreamConstraints {
-  let preferredConstraints: MediaStreamConstraints = {
+  const preferredConstraints: MediaStreamConstraints = {
     audio: false,
     video: {},
   };
@@ -206,7 +209,7 @@ export function drawBarcodeBounds(
 
 export function captureImageData(
   video: HTMLVideoElement,
-  pictureOptions: PictureOptions = {}
+  pictureOptions: CameraPictureOptions = {}
 ): ImageData | null {
   const config = ensureCaptureOptions(pictureOptions);
   const canvas = captureImageContext(video, config);

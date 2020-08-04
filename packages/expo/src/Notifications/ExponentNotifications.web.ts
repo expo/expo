@@ -1,11 +1,12 @@
 import * as badgin from 'badgin';
-import UUID from 'uuid-js';
-import { LocalNotification, LocalNotificationId } from './Notifications.types';
+import uuidv4 from 'uuid/v4';
+
 import {
   guardPermission,
   getExponentPushTokenAsync,
   getDevicePushTokenAsync,
 } from './ExponentNotificationsHelper.web';
+import { LocalNotification, LocalNotificationId } from './Notifications.types';
 
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';
@@ -28,10 +29,6 @@ function transformLocalNotification(
   return [nativeNotification.title, nativeNotification];
 }
 
-function generateID(): string {
-  return UUID.create().toString();
-}
-
 async function getRegistrationAsync(): Promise<ServiceWorkerRegistration> {
   guardPermission();
   const registration = await navigator.serviceWorker.getRegistration();
@@ -50,7 +47,7 @@ async function getNotificationsAsync(tag?: string): Promise<Notification[]> {
 export default {
   async presentLocalNotification(notification: LocalNotification): Promise<LocalNotificationId> {
     const registration = await getRegistrationAsync();
-    const tag = generateID();
+    const tag = uuidv4();
     registration.showNotification(...transformLocalNotification(notification, tag));
     return tag;
   },
@@ -64,7 +61,7 @@ export default {
   ): Promise<string> {
     if (options.intervalMs) {
       const registration = await getRegistrationAsync();
-      const tag = generateID();
+      const tag = uuidv4();
       setTimeout(() => {
         registration.showNotification(...transformLocalNotification(notification, tag));
       }, options.intervalMs);
@@ -109,7 +106,7 @@ export default {
     return await getExponentPushTokenAsync();
   },
 
-  async getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
+  async getDevicePushTokenAsync(): Promise<{ type: string; data: object }> {
     return await getDevicePushTokenAsync();
   },
 

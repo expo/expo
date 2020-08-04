@@ -1,34 +1,17 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
+import * as React from 'react';
 
-import ListButton from '../../components/ListButton';
+import ComponentListScreen from '../ComponentListScreen';
 import GLScreens from './GLScreens';
 
-export default class GLScreen extends React.Component<NavigationScreenProps> {
-  static navigationOptions = {
-    title: 'Examples of GL use',
-  };
-  static path = 'GL';
-
-  render() {
-    return (
-      <ScrollView style={styles.container}>
-        {Object.keys(GLScreens).map(screenName => (
-          <View key={screenName} style={{ padding: 10 }}>
-            <ListButton
-              onPress={() => this.props.navigation.navigate(screenName)}
-              title={GLScreens[screenName].screen.title}
-            />
-          </View>
-        ))}
-      </ScrollView>
-    );
-  }
+const screens = Object.keys(GLScreens).map(name => ({
+  name: GLScreens[name].screen.title ?? name,
+  route: name,
+  isAvailable: true,
+}));
+export default function GLScreen() {
+  return <ComponentListScreen apis={screens} />;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+GLScreen.navigationOptions = {
+  title: 'Examples of GL use',
+};

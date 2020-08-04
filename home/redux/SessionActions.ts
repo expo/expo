@@ -1,11 +1,13 @@
 import Analytics from '../api/Analytics';
-import LocalStorage from '../storage/LocalStorage';
 import ApolloClient from '../api/ApolloClient';
 import AuthApi from '../api/AuthApi';
+import LocalStorage from '../storage/LocalStorage';
+import { SessionObject } from './SessionReducer';
+import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
-  setSession(session) {
-    return async dispatch => {
+  setSession(session: SessionObject): AppThunk {
+    return async (dispatch: AppDispatch) => {
       await LocalStorage.saveSessionAsync(session);
       return dispatch({
         type: 'setSession',
@@ -14,11 +16,16 @@ export default {
     };
   },
 
-  signOut({ retainApolloStore = false } = {}) {
-    return async dispatch => {
+  signOut({ retainApolloStore = false }: { retainApolloStore?: boolean } = {}): AppThunk {
+    return async (dispatch: AppDispatch) => {
       const session = await LocalStorage.getSessionAsync();
       if (session) {
-        await AuthApi.signOutAsync(session.sessionSecret);
+        try {
+          await AuthApi.signOutAsync(session.sessionSecret);
+        } catch (e) {
+          // continue to clear out session in redux and local storage even if API logout fails
+          console.error('Something went wrong when signing out:', e);
+        }
         await LocalStorage.removeSessionAsync();
         Analytics.track(Analytics.events.USER_LOGGED_OUT);
       }

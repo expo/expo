@@ -99,10 +99,13 @@
       return NO;
     }
   } else {
+#if DEBUG
+    return NO;
+#else
     // we only need this because the bundle URL of prod home never changes, so we need
     // to use the legacy logic and load embedded home if and only if a cached copy doesn't exist.
-    // TODO: get rid of this branch once prod home is loaded like any other bundle!!!!!!!
     return [super isUsingEmbeddedResource];
+#endif
   }
 }
 

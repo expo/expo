@@ -1,71 +1,74 @@
 import React from 'react';
 
-import ActionSheet from '../screens/ActionSheetScreen';
-import AppAuth from '../screens/AppAuthScreen';
-import Audio from '../screens/AV/AudioScreen';
-import AuthSession from '../screens/AuthSessionScreen';
-import Branch from '../screens/BranchScreen';
-import Brightness from '../screens/BrightnessScreen';
-import Calendars from '../screens/CalendarsScreen';
-import Constants from '../screens/ConstantsScreen';
-import ContactDetail from '../screens/Contacts/ContactDetailScreen';
-import Contacts from '../screens/Contacts/ContactsScreen';
-import Device from '../screens/DeviceScreen';
-import DocumentPicker from '../screens/DocumentPickerScreen';
-import Events from '../screens/EventsScreen';
-import FacebookLogin from '../screens/FacebookLoginScreen';
-import FaceDetector from '../screens/FaceDetectorScreen';
-import FileSystem from '../screens/FileSystemScreen';
-import Font from '../screens/FontScreen';
-import Geocoding from '../screens/GeocodingScreen';
-import Google from '../screens/GoogleScreen';
-import ImageManipulator from '../screens/ImageManipulatorScreen';
-import ImagePicker from '../screens/ImagePickerScreen';
-import IntentLauncher from '../screens/IntentLauncherScreen';
-import KeepAwake from '../screens/KeepAwakeScreen';
-import Linking from '../screens/LinkingScreen';
-import LocalAuthentication from '../screens/LocalAuthenticationScreen';
-import MailComposer from '../screens/MailComposerScreen';
-import NetInfo from '../screens/NetInfoScreen';
-import Notification from '../screens/NotificationScreen';
-import Pedometer from '../screens/PedometerScreen';
-import Permissions from '../screens/PermissionsScreen';
-import Print from '../screens/PrintScreen';
-import Recording from '../screens/AV/RecordingScreen';
-import Reminders from '../screens/RemindersScreen';
-import SafeAreaContext from '../screens/SafeAreaContextScreen';
-import ScreenOrientation from '../screens/ScreenOrientationScreen';
-import Sharing from '../screens/SharingScreen';
-import SecureStore from '../screens/SecureStoreScreen';
-import SMS from '../screens/SMSScreen';
-import StoreReview from '../screens/StoreReview';
-import TextToSpeech from '../screens/TextToSpeechScreen';
-import WebBrowser from '../screens/WebBrowserScreen';
-
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {}
+  } catch (e) {
+    return null;
+  }
 }
 
-const ViewShot = optionalRequire(() => require('../screens/ViewShotScreen'));
-const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
+const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
+const ActionSheet = optionalRequire(() => require('../screens/ActionSheetScreen'));
+const AppAuth = optionalRequire(() => require('../screens/AppAuthScreen'));
+const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
+const Audio = optionalRequire(() => require('../screens/AV/AudioScreen'));
+const AuthSession = optionalRequire(() => require('../screens/AuthSession/AuthSessionScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
+const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
+const Branch = optionalRequire(() => require('../screens/BranchScreen'));
+const Brightness = optionalRequire(() => require('../screens/BrightnessScreen'));
+const Calendars = optionalRequire(() => require('../screens/CalendarsScreen'));
+const Constants = optionalRequire(() => require('../screens/ConstantsScreen'));
+const ContactDetail = optionalRequire(() => require('../screens/Contacts/ContactDetailScreen'));
+const Contacts = optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
+const Device = optionalRequire(() => require('../screens/DeviceScreen'));
+const DocumentPicker = optionalRequire(() => require('../screens/DocumentPickerScreen'));
+const Events = optionalRequire(() => require('../screens/EventsScreen'));
+const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
+const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
+const FileSystem = optionalRequire(() => require('../screens/FileSystemScreen'));
+const FirebaseRecaptcha = optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
+const Font = optionalRequire(() => require('../screens/FontScreen'));
+const Google = optionalRequire(() => require('../screens/GoogleScreen'));
 const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScreen'));
 const Haptics = optionalRequire(() => require('../screens/HapticsScreen'));
+const ImageManipulator = optionalRequire(() => require('../screens/ImageManipulatorScreen'));
+const ImagePicker = optionalRequire(() => require('../screens/ImagePickerScreen'));
+const InAppPurchases = optionalRequire(() => require('../screens/InAppPurchases/InAppPurchases'));
+const IntentLauncher = optionalRequire(() => require('../screens/IntentLauncherScreen'));
+const KeepAwake = optionalRequire(() => require('../screens/KeepAwakeScreen'));
+const Linking = optionalRequire(() => require('../screens/LinkingScreen'));
+const LocalAuthentication = optionalRequire(() => require('../screens/LocalAuthenticationScreen'));
 const Localization = optionalRequire(() => require('../screens/LocalizationScreen'));
-const TaskManager = optionalRequire(() => require('../screens/TaskManagerScreen'));
 const LocationScreens = optionalRequire(() => require('../screens/Location/LocationScreens'));
+const MailComposer = optionalRequire(() => require('../screens/MailComposerScreen'));
 const MediaLibraryScreens = optionalRequire(() =>
   require('../screens/MediaLibrary/MediaLibraryScreens')
 );
+const NetInfo = optionalRequire(() => require('../screens/NetInfoScreen'));
+const Notification = optionalRequire(() => require('../screens/NotificationScreen'));
+const Pedometer = optionalRequire(() => require('../screens/PedometerScreen'));
+const Permissions = optionalRequire(() => require('../screens/PermissionsScreen'));
+const Print = optionalRequire(() => require('../screens/PrintScreen'));
+const Recording = optionalRequire(() => require('../screens/AV/RecordingScreen'));
+const Reminders = optionalRequire(() => require('../screens/RemindersScreen'));
+const SafeAreaContext = optionalRequire(() => require('../screens/SafeAreaContextScreen'));
+const ScreenOrientation = optionalRequire(() => require('../screens/ScreenOrientationScreen'));
+const SecureStore = optionalRequire(() => require('../screens/SecureStoreScreen'));
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
-const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
-const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
+const Sharing = optionalRequire(() => require('../screens/SharingScreen'));
+const SMS = optionalRequire(() => require('../screens/SMSScreen'));
+const StoreReview = optionalRequire(() => require('../screens/StoreReview'));
+const TaskManager = optionalRequire(() => require('../screens/TaskManagerScreen'));
+const TextToSpeech = optionalRequire(() => require('../screens/TextToSpeechScreen'));
+const ViewShot = optionalRequire(() => require('../screens/ViewShotScreen'));
+const WebBrowser = optionalRequire(() => require('../screens/WebBrowserScreen'));
 
+// @ts-ignore
 const optionalScreens: {
-  [key: string]: React.ComponentType | undefined;
+  [key: string]: React.ComponentType | null;
 } = {
   Accelerometer,
   ActionSheet,
@@ -84,22 +87,19 @@ const optionalScreens: {
   FacebookLogin,
   FaceDetector,
   FileSystem,
+  FirebaseRecaptcha,
   Font,
   Google,
   GoogleSignIn,
   Haptics,
-  // @ts-ignore
   Calendars,
   Constants,
-  // @ts-ignore
   Contacts,
-  // @ts-ignore
   ContactDetail,
-  // @ts-ignore
   Events,
-  Geocoding,
   ImageManipulator,
   ImagePicker,
+  InAppPurchases,
   IntentLauncher,
   KeepAwake,
   Linking,
@@ -113,7 +113,6 @@ const optionalScreens: {
   Permissions,
   Print,
   Recording,
-  // @ts-ignore
   Reminders,
   SafeAreaContext,
   ScreenOrientation,
@@ -128,9 +127,8 @@ const optionalScreens: {
   ViewShot,
 };
 
-interface ScreensObjectType {
-  [key: string]: React.ComponentType;
-}
+type ScreensObjectType = Record<string, React.ComponentType>;
+type RoutesObjectType = Record<string, string>;
 
 export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>(
   (acc, [key, screen]) => {
@@ -141,3 +139,8 @@ export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>
   },
   {}
 );
+
+export const Routes = Object.entries(Screens).reduce<RoutesObjectType>((acc, [key, screen]) => {
+  acc[key] = key.toLowerCase();
+  return acc;
+}, {});

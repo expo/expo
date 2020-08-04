@@ -1,0 +1,92 @@
+/* Prompts a person to go to the URL listed to enter the confirmation code that is presented to them above the given string. */
+"DeviceLogin.LogInPrompt" = "Gå til %@, og oppgi koden som vises ovenfor.";
+
+/* Prompts a person that the next thing they need to do to finish connecting their Smart TV and Facebook application is to navigate to their Facebook application on their mobile device and look through their notifications for a message about the connection being formed */
+"DeviceLogin.SmartLogInPrompt" = "Koble til kontoen din ved å åpne Facebook-appen på mobilenheten din og se etter varsler.";
+
+/* Displayed as a separator between two options. First option is on a line above this, and second option is below */
+"DeviceLogin.SmartLogInOrLabel" = "- ELLER -";
+
+/* The title of the label to dismiss the alert when presenting user facing error messages */
+"ErrorRecovery.Alert.OK" = "OK";
+
+/* The title of the label to decline attempting error recovery */
+"ErrorRecovery.Cancel" = "Avbryt";
+
+/* The fallback message to display to recover invalidated tokens */
+"ErrorRecovery.Login.Suggestion" = "Logg deg inn igjen på denne appen for å koble til Facebook-kontoen på nytt.";
+
+/* The title of the label to start attempting error recovery */
+"ErrorRecovery.OK" = "OK";
+
+/* The fallback message to display to retry transient errors */
+"ErrorRecovery.Transient.Suggestion" = "Serveren er midlertidig opptatt. Prøv på nytt.";
+
+/* The label for the FBSDKLikeButton when the object is not currently liked. */
+"LikeButton.Like" = "Liker";
+
+/* The label for the FBSDKLikeButton when the object is currently liked. */
+"LikeButton.Liked" = "Likt";
+
+/* The label for the FBSDKLoginButton action sheet to cancel logging out */
+"LoginButton.CancelLogout" = "Avbryt";
+
+/* The label for the FBSDKLoginButton action sheet to confirm logging out */
+"LoginButton.ConfirmLogOut" = "Logg ut";
+
+/* The fallback string for the FBSDKLoginButton label when the user name is not available yet */
+"LoginButton.LoggedIn" = "Logget inn med Facebook";
+
+/* The format string for the FBSDKLoginButton label when the user is logged in */
+"LoginButton.LoggedInAs" = "Logget inn som %@";
+
+/* The short label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogIn" = "Logg inn";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInContinue" = "Fortsett med Facebook";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInLong" = "Logg inn med Facebook";
+
+/* The label for the FBSDKLoginButton when the user is currently logged in */
+"LoginButton.LogOut" = "Logg ut";
+
+/* The user facing error message when the app slider has been disabled and login fails. */
+"LoginError.SystemAccount.Disabled" = "Det er ikke gitt tilgang til Facebook-kontoen. Bekreft enhetsinnstillinger.";
+
+/* The user facing error message when the Accounts framework encounters a network error. */
+"LoginError.SystemAccount.Network" = "Kunne ikke koble til Facebook. Kontroller nettverkstilkoblingen, og prøv på nytt.";
+
+/* The user facing error message when the device Facebook account password is incorrect and login fails. */
+"LoginError.SystemAccount.PasswordChange" = "Facebook-passordet ditt er endret. Bekreft passordet ditt ved å gå til Innstillinger &gt; Facebook og trykke på navnet ditt.";
+
+/* The user facing error message when the device Facebook account is unavailable and login fails. */
+"LoginError.SystemAccount.Unavailable" = "Facebook-kontoen er ikke konfigurert på enheten.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework becomes unconfirmed. */
+"LoginError.SystemAccount.UnconfirmedUser" = "Kontoen din er bekreftet. Logg deg inn på www.facebook.com, og følg instruksjonene.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework has been checkpointed. */
+"LoginError.SystemAccount.UserCheckpointed" = "Du kan ikke logge deg inn på apper for øyeblikket. Logg deg inn på www.facebook.com, og følg instruksjonene.";
+
+/* The message of the FBSDKLoginTooltipView */
+"LoginTooltip.Message" = "Du bestemmer – velg hvilke opplysninger du vil dele med appene.";
+
+/* Title of the web dialog that prompts the user to log in to Facebook. */
+"LoginWeb.LogInTitle" = "Logg inn";
+
+/* The label for FBSDKSendButton */
+"SendButton.Send" = "Send";
+
+/* The label for FBSDKShareButton */
+"ShareButton.Share" = "Del";
+
+/* Prompts a person if this is their current account */
+"SmartLogin.NotYou" = "Ikke deg?";
+
+/* Text on a button that a person presses to confirm that they are finished with the login experience */
+"SmartLogin.ConfirmationTitle" = "Bekreft innlogging";
+
+/* Text on a button that lets a person continue with their name linked to a Facebook account (Name = %@) */
+"SmartLogin.Continue" = "Fortsett som %@";

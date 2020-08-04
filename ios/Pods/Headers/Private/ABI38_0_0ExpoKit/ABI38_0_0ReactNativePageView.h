@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/ViewPager/ABI38_0_0ReactNativePageView.h

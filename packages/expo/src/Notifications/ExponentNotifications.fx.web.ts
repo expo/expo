@@ -1,6 +1,7 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { emitNotification } from './Notifications';
+
 import { getExponentPushTokenAsync } from './ExponentNotificationsHelper.web';
+import { emitNotification } from './Notifications';
 
 if (canUseDOM && 'serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('message', event => {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,15 +24,19 @@ class AccessibilityProps {
 
 #pragma mark - Props
 
-  bool const accessible{false};
-  AccessibilityTraits const accessibilityTraits{AccessibilityTraits::None};
-  std::string const accessibilityLabel{""};
-  std::string const accessibilityHint{""};
-  std::vector<std::string> const accessibilityActions{};
-  bool const accessibilityViewIsModal{false};
-  bool const accessibilityElementsHidden{false};
-  bool const accessibilityIgnoresInvertColors{false};
-  std::string const testId{""};
+  bool accessible{false};
+  AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
+  std::string accessibilityLabel{""};
+  std::string accessibilityHint{""};
+  std::vector<std::string> accessibilityActions{};
+  bool accessibilityViewIsModal{false};
+  bool accessibilityElementsHidden{false};
+  bool accessibilityIgnoresInvertColors{false};
+  bool onAccessibilityTap{};
+  bool onAccessibilityMagicTap{};
+  bool onAccessibilityEscape{};
+  bool onAccessibilityAction{};
+  std::string testId{""};
 
 #pragma mark - DebugStringConvertible
 

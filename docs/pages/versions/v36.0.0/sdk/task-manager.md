@@ -3,21 +3,19 @@ title: TaskManager
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-task-manager'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-task-manager`** provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of Expo modules that use TaskManager:
 
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. If you're using the bare workflow, React Native's [Headless JS](https://facebook.github.io/react-native/docs/headless-js-android) might suit your needs.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. If you're using the bare workflow, React Native's [Headless JS](https://reactnative.dev/docs/headless-js-android) might suit your needs.
 
 ## Configuration for standalone apps
 

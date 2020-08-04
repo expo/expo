@@ -1,19 +1,13 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.0'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.0.1-rc.0'
+version = '0.2.11'
+
+// Simple helper that allows the root project to override versions declared by this library.
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -41,16 +35,24 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
-    versionCode 2
-    versionName '1.0.0'
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    versionCode 21
+    versionName '0.2.11'
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   lintOptions {
     abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
   }
 }
 
@@ -64,4 +66,23 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  implementation "com.facebook.react:react-native:+"
+
+  def room_version = "2.1.0"
+
+  implementation "androidx.room:room-runtime:$room_version"
+  annotationProcessor "androidx.room:room-compiler:$room_version"
+
+  implementation("com.squareup.okhttp3:okhttp:3.12.1")
+  implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
+  implementation("com.squareup.okio:okio:1.15.0")
+  implementation("commons-io:commons-io:2.6")
+  implementation("org.apache.commons:commons-lang3:3.9")
+
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'androidx.test:core:1.0.0'
+  testImplementation 'org.mockito:mockito-core:1.10.19'
+
+  androidTestImplementation 'androidx.test:runner:1.1.0'
+  androidTestImplementation 'androidx.test:rules:1.1.0'
 }

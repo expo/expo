@@ -12,6 +12,14 @@
 
 @implementation RNSVGPattern
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _patternTransform = CGAffineTransformIdentity;
+    }
+    return self;
+}
+
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     return nil;
@@ -26,11 +34,11 @@
     [painter setContentUnits:self.patternContentUnits];
     [painter setTransform:self.patternTransform];
     [painter setPattern:self];
-    
+
     if (self.patternUnits == kRNSVGUnitsUserSpaceOnUse || self.patternContentUnits == kRNSVGUnitsUserSpaceOnUse) {
         [painter setUserSpaceBoundingBox:[self.svgView getContextBounds]];
     }
-    
+
     [self.svgView definePainter:painter painterName:self.name];
 }
 
@@ -39,7 +47,7 @@
     if ([x isEqualTo:_x]) {
         return;
     }
-    
+
     _x = x;
     [self invalidate];
 }
@@ -49,7 +57,7 @@
     if ([y isEqualTo:_y]) {
         return;
     }
-    
+
     _y = y;
     [self invalidate];
 }
@@ -59,7 +67,7 @@
     if ([patternwidth isEqualTo:_patternwidth]) {
         return;
     }
-    
+
     _patternwidth = patternwidth;
     [self invalidate];
 }
@@ -69,7 +77,7 @@
     if ([patternheight isEqualTo:_patternheight]) {
         return;
     }
-    
+
     _patternheight = patternheight;
     [self invalidate];
 }
@@ -79,7 +87,7 @@
     if (patternUnits == _patternUnits) {
         return;
     }
-    
+
     _patternUnits = patternUnits;
     [self invalidate];
 }
@@ -89,7 +97,7 @@
     if (patternContentUnits == _patternContentUnits) {
         return;
     }
-    
+
     _patternContentUnits = patternContentUnits;
     [self invalidate];
 }
@@ -105,7 +113,7 @@
     if (minX == _minX) {
         return;
     }
-    
+
     [self invalidate];
     _minX = minX;
 }
@@ -115,7 +123,7 @@
     if (minY == _minY) {
         return;
     }
-    
+
     [self invalidate];
     _minY = minY;
 }
@@ -125,7 +133,7 @@
     if (vbWidth == _vbWidth) {
         return;
     }
-    
+
     [self invalidate];
     _vbWidth = vbWidth;
 }
@@ -135,7 +143,7 @@
     if (_vbHeight == vbHeight) {
         return;
     }
-    
+
     [self invalidate];
     _vbHeight = vbHeight;
 }
@@ -145,7 +153,7 @@
     if ([align isEqualToString:_align]) {
         return;
     }
-    
+
     [self invalidate];
     _align = align;
 }
@@ -155,7 +163,7 @@
     if (meetOrSlice == _meetOrSlice) {
         return;
     }
-    
+
     [self invalidate];
     _meetOrSlice = meetOrSlice;
 }

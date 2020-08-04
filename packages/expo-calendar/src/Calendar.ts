@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, processColor } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoCalendar from './ExpoCalendar';
 
@@ -20,7 +20,7 @@ export interface Calendar {
   allowsModifications: boolean;
   allowedAvailabilities: string[];
   isPrimary?: boolean; // Android
-  name?: string; // Android
+  name?: string | null; // Android
   ownerAccount?: string; // Android
   timeZone?: string; // Android
   allowedReminders?: string[]; // Android
@@ -140,10 +140,10 @@ export enum MonthOfTheYear {
 export type RecurrenceRule = {
   frequency: string; // Frequency
   interval?: number;
-  endDate?: string;
+  endDate?: string | Date;
   occurrence?: number;
 
-  daysOfTheWeek?: Array<{ dayOfTheWeek: DayOfTheWeek; weekNumber?: number }>;
+  daysOfTheWeek?: { dayOfTheWeek: DayOfTheWeek; weekNumber?: number }[];
   daysOfTheMonth?: number[];
   monthsOfTheYear?: MonthOfTheYear[];
   weeksOfTheYear?: number[];
@@ -171,7 +171,7 @@ export async function createCalendarAsync(details: OptionalKeys<Calendar> = {}):
   if (!ExpoCalendar.saveCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'createCalendarAsync');
   }
-  let color = details.color ? processColor(details.color) : undefined;
+  const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color };
   return ExpoCalendar.saveCalendarAsync(newDetails);
 }
@@ -188,7 +188,7 @@ export async function updateCalendarAsync(
       'updateCalendarAsync must be called with an id (string) of the target calendar'
     );
   }
-  let color = details.color ? processColor(details.color) : undefined;
+  const color = details.color ? processColor(details.color) : undefined;
 
   if (Platform.OS === 'android') {
     if (
@@ -427,7 +427,7 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 } // Android
 
 export async function getRemindersAsync(
-  calendarIds: Array<string | null>,
+  calendarIds: (string | null)[],
   status: string | null,
   startDate: Date,
   endDate: Date
@@ -701,7 +701,14 @@ function stringifyIfDate(date: any): any {
 
 function stringifyDateValues(obj: object): object {
   return Object.keys(obj).reduce((acc, key) => {
-    acc[key] = stringifyIfDate(obj[key]);
+    const value = obj[key];
+    if (value != null && typeof value === 'object' && !(value instanceof Date)) {
+      if (Array.isArray(value)) {
+        return { ...acc, [key]: value.map(stringifyDateValues) };
+      }
+      return { ...acc, [key]: stringifyDateValues(value) };
+    }
+    acc[key] = stringifyIfDate(value);
     return acc;
   }, {});
 }

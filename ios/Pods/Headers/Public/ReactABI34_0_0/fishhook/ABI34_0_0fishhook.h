@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI34_0_0/Libraries/fishhook/ABI34_0_0fishhook.h

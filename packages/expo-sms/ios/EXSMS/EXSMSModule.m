@@ -3,6 +3,11 @@
 #import <MessageUI/MessageUI.h>
 #import <EXSMS/EXSMSModule.h>
 #import <UMCore/UMUtilities.h>
+#if SD_MAC
+#import <CoreServices/CoreServices.h>
+#else
+#import <MobileCoreServices/MobileCoreServices.h>
+#endif
 
 @interface EXSMSModule () <MFMessageComposeViewControllerDelegate>
 
@@ -15,6 +20,13 @@
 @implementation EXSMSModule
 
 UM_EXPORT_MODULE(ExpoSMS);
+
+- (dispatch_queue_t)methodQueue
+{
+  // Everything in this module uses `MFMessageComposeViewController` which is a subclass of UIViewController,
+  // so everything should be called from main thread.
+  return dispatch_get_main_queue();
+}
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
@@ -31,6 +43,7 @@ UM_EXPORT_METHOD_AS(isAvailableAsync,
 UM_EXPORT_METHOD_AS(sendSMSAsync,
                     sendSMS:(NSArray<NSString *> *)addresses
                     message:(NSString *)message
+                    options:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -46,17 +59,42 @@ UM_EXPORT_METHOD_AS(sendSMSAsync,
   
   _resolve = resolve;
   _reject = reject;
-    
+
   MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
   messageComposeViewController.messageComposeDelegate = self;
   messageComposeViewController.recipients = addresses;
   messageComposeViewController.body = message;
-    
-  UM_WEAKIFY(self);
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    UM_ENSURE_STRONGIFY(self);
-    [self.utils.currentViewController presentViewController:messageComposeViewController animated:YES completion:nil];
-  }];
+  
+  if (options) {
+    if (options[@"attachments"]) {
+      NSArray *attachments = (NSArray *) [options objectForKey:@"attachments"];
+      for (NSDictionary* attachment in attachments) {
+        NSString *mimeType = attachment[@"mimeType"];
+        CFStringRef mimeTypeRef = (__bridge CFStringRef)mimeType;
+        CFStringRef utiRef = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeTypeRef, NULL);
+        if (utiRef == NULL) {
+          reject(@"E_SMS_ATTACHMENT", [NSString stringWithFormat:@"Failed to find UTI for mimeType: %@", mimeType], nil);
+          _resolve = nil;
+          _reject = nil;
+          return;
+        }
+        NSString *typeIdentifier = (__bridge_transfer NSString *)utiRef;
+        NSString *uri = attachment[@"uri"];
+        NSString *filename = attachment[@"filename"];
+        NSError *error;
+        NSData *attachmentData = [NSData dataWithContentsOfURL:[NSURL URLWithString:uri] options:(NSDataReadingOptions)0 error:&error];
+        bool attached = [messageComposeViewController addAttachmentData:attachmentData typeIdentifier:typeIdentifier filename:filename];
+        if (!attached) {
+          reject(@"E_SMS_ATTACHMENT", [NSString stringWithFormat:@"Failed to attach file: %@", uri], nil);
+          _resolve = nil;
+          _reject = nil;
+          return;
+        }
+      }
+    }
+  }
+
+  [self.utils.currentViewController presentViewController:messageComposeViewController animated:YES completion:nil];
 }
 
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller
@@ -90,5 +128,5 @@ UM_EXPORT_METHOD_AS(sendSMSAsync,
     self->_resolve = nil;
   }];
 }
-
+    
 @end

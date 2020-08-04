@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,QAAQ,CAAC;AACvB,OAAO,EAAE,QAAQ,EAAE,MAAM,aAAa,CAAC","sourcesContent":["export * from './Font';\nexport { useFonts } from './FontHooks';\n"]}

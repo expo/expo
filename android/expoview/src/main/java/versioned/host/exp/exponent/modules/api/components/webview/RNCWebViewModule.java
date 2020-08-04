@@ -32,6 +32,7 @@ import com.facebook.react.modules.core.PermissionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -180,11 +181,13 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
     filePathCallback = callback;
 
     ArrayList<Parcelable> extraIntents = new ArrayList<>();
-    if (acceptsImages(acceptTypes)) {
-      extraIntents.add(getPhotoIntent());
-    }
-    if (acceptsVideo(acceptTypes)) {
-      extraIntents.add(getVideoIntent());
+    if (! needsCameraPermission()) {
+      if (acceptsImages(acceptTypes)) {
+        extraIntents.add(getPhotoIntent());
+      }
+      if (acceptsVideo(acceptTypes)) {
+        extraIntents.add(getVideoIntent());
+      }
     }
 
     Intent fileSelectionIntent = getFileChooserIntent(acceptTypes, allowMultiple);
@@ -233,6 +236,23 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
     return result;
   }
 
+  protected boolean needsCameraPermission() {
+    boolean needed = false;
+
+    PackageManager packageManager = getCurrentActivity().getPackageManager();
+    try {
+      String[] requestedPermissions = packageManager.getPackageInfo(getReactApplicationContext().getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
+      if (Arrays.asList(requestedPermissions).contains(Manifest.permission.CAMERA)
+        && ContextCompat.checkSelfPermission(getCurrentActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        needed = true;
+      }
+    } catch (PackageManager.NameNotFoundException e) {
+      needed = true;
+    }
+
+    return needed;
+  }
+
   private Intent getPhotoIntent() {
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     outputFileUri = getOutputUri(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -242,8 +262,6 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
 
   private Intent getVideoIntent() {
     Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-    // @todo from experience, for Videos we get the data onActivityResult
-    // so there's no need to store the Uri
     outputFileUri = getOutputUri(MediaStore.ACTION_VIDEO_CAPTURE);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
     return intent;

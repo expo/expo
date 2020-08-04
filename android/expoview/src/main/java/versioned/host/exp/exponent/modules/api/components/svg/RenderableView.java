@@ -27,6 +27,7 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.lang.reflect.Field;
@@ -41,6 +42,8 @@ abstract public class RenderableView extends VirtualView {
 
     RenderableView(ReactContext reactContext) {
         super(reactContext);
+        setPivotX(0);
+        setPivotY(0);
     }
 
     static RenderableView contextElement;
@@ -77,8 +80,8 @@ abstract public class RenderableView extends VirtualView {
     public float strokeMiterlimit = 4;
     public float strokeDashoffset = 0;
 
-    public Paint.Cap strokeLinecap = Paint.Cap.ROUND;
-    public Paint.Join strokeLinejoin = Paint.Join.ROUND;
+    public Paint.Cap strokeLinecap = Paint.Cap.BUTT;
+    public Paint.Join strokeLinejoin = Paint.Join.MITER;
 
     public @Nullable ReadableArray fill;
     public float fillOpacity = 1;
@@ -114,7 +117,9 @@ abstract public class RenderableView extends VirtualView {
             return;
         }
         ReadableType type = fill.getType();
-        if (type.equals(ReadableType.Array)) {
+        if (type.equals(ReadableType.Number)) {
+            this.fill = JavaOnlyArray.of(0, fill.asInt());
+        } else if (type.equals(ReadableType.Array)) {
             this.fill = fill.asArray();
         } else {
             JavaOnlyArray arr = new JavaOnlyArray();
@@ -160,15 +165,18 @@ abstract public class RenderableView extends VirtualView {
             return;
         }
         ReadableType type = strokeColors.getType();
-        if (type.equals(ReadableType.Array)) {
+        if (type.equals(ReadableType.Number)) {
+            stroke = JavaOnlyArray.of(0, strokeColors.asInt());
+        } else if (type.equals(ReadableType.Array)) {
             stroke = strokeColors.asArray();
         } else {
             JavaOnlyArray arr = new JavaOnlyArray();
             arr.pushInt(0);
             Matcher m = regex.matcher(strokeColors.asString());
+            int i = 0;
             while (m.find()) {
                 double parsed = Double.parseDouble(m.group());
-                arr.pushDouble(parsed);
+                arr.pushDouble(i++ < 3 ? parsed / 255 : parsed);
             }
             stroke = arr;
         }
@@ -336,49 +344,47 @@ abstract public class RenderableView extends VirtualView {
     void draw(Canvas canvas, Paint paint, float opacity) {
         opacity *= mOpacity;
 
-        if (opacity > MIN_OPACITY_FOR_DRAW) {
-            boolean computePaths = mPath == null;
-            if (computePaths) {
-                mPath = getPath(canvas, paint);
-                mPath.setFillType(fillRule);
-            }
-            boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
-            Path path = mPath;
-            if (nonScalingStroke) {
-                Path scaled = new Path();
-                //noinspection deprecation
-                mPath.transform(mCTM, scaled);
-                canvas.setMatrix(null);
-                path = scaled;
-            }
-
-            if (computePaths || path != mPath) {
-                mBox = new RectF();
-                path.computeBounds(mBox, true);
-            }
-
-            RectF clientRect = new RectF(mBox);
-            mCTM.mapRect(clientRect);
-            this.setClientRect(clientRect);
-
-            clip(canvas, paint);
-
-            if (setupFillPaint(paint, opacity * fillOpacity)) {
-                if (computePaths) {
-                    mFillPath = new Path();
-                    paint.getFillPath(path, mFillPath);
-                }
-                canvas.drawPath(path, paint);
-            }
-            if (setupStrokePaint(paint, opacity * strokeOpacity)) {
-                if (computePaths) {
-                    mStrokePath = new Path();
-                    paint.getFillPath(path, mStrokePath);
-                }
-                canvas.drawPath(path, paint);
-            }
-            renderMarkers(canvas, paint, opacity);
+        boolean computePaths = mPath == null;
+        if (computePaths) {
+            mPath = getPath(canvas, paint);
+            mPath.setFillType(fillRule);
         }
+        boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
+        Path path = mPath;
+        if (nonScalingStroke) {
+            Path scaled = new Path();
+            //noinspection deprecation
+            mPath.transform(mCTM, scaled);
+            canvas.setMatrix(null);
+            path = scaled;
+        }
+
+        if (computePaths || path != mPath) {
+            mBox = new RectF();
+            path.computeBounds(mBox, true);
+        }
+
+        RectF clientRect = new RectF(mBox);
+        mCTM.mapRect(clientRect);
+        this.setClientRect(clientRect);
+
+        clip(canvas, paint);
+
+        if (setupFillPaint(paint, opacity * fillOpacity)) {
+            if (computePaths) {
+                mFillPath = new Path();
+                paint.getFillPath(path, mFillPath);
+            }
+            canvas.drawPath(path, paint);
+        }
+        if (setupStrokePaint(paint, opacity * strokeOpacity)) {
+            if (computePaths) {
+                mStrokePath = new Path();
+                paint.getFillPath(path, mStrokePath);
+            }
+            canvas.drawPath(path, paint);
+        }
+        renderMarkers(canvas, paint, opacity);
     }
 
     void renderMarkers(Canvas canvas, Paint paint, float opacity) {
@@ -421,7 +427,7 @@ abstract public class RenderableView extends VirtualView {
      * Sets up paint according to the props set on a view. Returns {@code true}
      * if the fill should be drawn, {@code false} if not.
      */
-    private boolean setupFillPaint(Paint paint, float opacity) {
+    boolean setupFillPaint(Paint paint, float opacity) {
         if (fill != null && fill.size() > 0) {
             paint.reset();
             paint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
@@ -436,7 +442,7 @@ abstract public class RenderableView extends VirtualView {
      * Sets up paint according to the props set on a view. Returns {@code true}
      * if the stroke should be drawn, {@code false} if not.
      */
-    private boolean setupStrokePaint(Paint paint, float opacity) {
+    boolean setupStrokePaint(Paint paint, float opacity) {
         paint.reset();
         double strokeWidth = relativeOnOther(this.strokeWidth);
         if (strokeWidth == 0 || stroke == null || stroke.size() == 0) {
@@ -514,6 +520,10 @@ abstract public class RenderableView extends VirtualView {
     @Override
     int hitTest(final float[] src) {
         if (mPath == null || !mInvertible || !mTransformInvertible) {
+            return -1;
+        }
+
+        if (mPointerEvents == PointerEvents.NONE) {
             return -1;
         }
 

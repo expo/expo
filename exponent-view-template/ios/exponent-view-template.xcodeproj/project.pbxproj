@@ -39,6 +39,7 @@
 		B5DB047E1F3A684600E91581 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B5DB047F1F3A684600E91581 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-exponent-view-template.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F196B53624913A0100A10179 /* prepare-detached-build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "prepare-detached-build.sh"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,10 +74,11 @@
 		B56386381DB9693800A0598C = {
 			isa = PBXGroup;
 			children = (
+				F196B535249139A200A10179 /* Build-Phases */,
 				B56386431DB9693800A0598C /* exponent-view-template */,
-				B56386421DB9693800A0598C /* Products */,
-				5B29BC350A332C58878A9F13 /* Pods */,
 				1A42804E64B7E9E0AB8B6799 /* Frameworks */,
+				5B29BC350A332C58878A9F13 /* Pods */,
+				B56386421DB9693800A0598C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -116,6 +118,14 @@
 			path = Supporting;
 			sourceTree = "<group>";
 		};
+		F196B535249139A200A10179 /* Build-Phases */ = {
+			isa = PBXGroup;
+			children = (
+				F196B53624913A0100A10179 /* prepare-detached-build.sh */,
+			);
+			path = "Build-Phases";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -130,7 +140,6 @@
 				B563863F1DB9693800A0598C /* Resources */,
 				8D34C7FE3D99F20E5EA1B18A /* [CP] Embed Pods Frameworks */,
 				AA38385B7D8D0854176B72FC /* [CP] Copy Pods Resources */,
-				19D233B7204FDD7D0087ED51 /* Bundle Expo Assets */,
 			);
 			buildRules = (
 			);
@@ -162,6 +171,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -195,20 +205,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		19D233B7204FDD7D0087ED51 /* Bundle Expo Assets */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Bundle Expo Assets";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -eo pipefail\n\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\n  echo \"Skipping asset bundling in debug mode.\"\n  exit 0\nfi\n\npushd \"${SRCROOT}/..\"\nexport PATH=\"$(if [ -f ~/.expo/PATH ]; then echo $PATH:$(cat ~/.expo/PATH); else echo $PATH; fi)\"\ndest=\"$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nexpo bundle-assets --platform ios --dest \"$dest\"\npopd\n";
-		};
 		23539343DCC44EF8449429EE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -266,7 +262,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -eo pipefail\n\nexport PATH=\"$(if [ -f ~/.expo/PATH ]; then echo $PATH:$(cat ~/.expo/PATH); else echo $PATH; fi)\"\nexpo prepare-detached-build --platform ios \"${SRCROOT}/..\"\n";
+			shellScript = "$SRCROOT/Build-Phases/prepare-detached-build.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

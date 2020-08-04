@@ -25,7 +25,7 @@ all_types=$(
     --request POST \
     --header 'content-type: application/json' \
     --data "{ \"query\": \"$introspection_query\" }" \
-    https://expo.io/--/graphql
+    https://exp.host/--/graphql
 )
 
 echo "Filtering for union or interface types..."

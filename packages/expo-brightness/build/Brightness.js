@@ -1,5 +1,5 @@
-import { Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+import { Platform } from 'react-native';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBrightness from './ExpoBrightness';
 export var BrightnessMode;
@@ -19,7 +19,7 @@ export async function setBrightnessAsync(brightnessValue) {
     if (!ExpoBrightness.setBrightnessAsync) {
         throw new UnavailabilityError('expo-brightness', 'setBrightnessAsync');
     }
-    let clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
+    const clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
     if (isNaN(clampedBrightnessValue)) {
         throw new TypeError(`setBrightnessAsync cannot be called with ${brightnessValue}`);
     }
@@ -32,7 +32,7 @@ export async function getSystemBrightnessAsync() {
     return await ExpoBrightness.getSystemBrightnessAsync();
 }
 export async function setSystemBrightnessAsync(brightnessValue) {
-    let clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
+    const clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
     if (isNaN(clampedBrightnessValue)) {
         throw new TypeError(`setSystemBrightnessAsync cannot be called with ${brightnessValue}`);
     }
@@ -45,6 +45,7 @@ export async function useSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
         return;
     }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     return await ExpoBrightness.useSystemBrightnessAsync();
 }
 export async function isUsingSystemBrightnessAsync() {

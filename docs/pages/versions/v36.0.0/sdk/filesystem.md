@@ -3,19 +3,17 @@ title: FileSystem
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-file-system`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
+<InstallSection packageName="expo-file-system" />
 
 ## Example Usage
 
@@ -105,7 +103,7 @@ So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the
 
 Expo APIs that create files generally operate within these directories. This includes `Audio` recordings, `Camera` photos, `ImagePicker` results, `SQLite` databases and `takeSnapShotAsync()` results. This allows their use with the `FileSystem` API.
 
-Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) from React Native.
+Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos) from React Native.
 
 ## Constants
 
@@ -125,13 +123,13 @@ Get metadata information about a file or directory.
 
 #### Arguments
 
-- **fileUri (_string_)** -- `file://` URI to the file or directory, or a URI returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos).
+- **fileUri (_string_)** -- `file://` URI to the file or directory, or a URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos).
 
 - **options (_object_)** -- A map of options:
 
   - **md5 (_boolean_)** -- Whether to return the MD5 hash of the file. `false` by default.
 
-  - **size (_boolean_)** -- Whether to include the size of the file if operating on a source from [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) (skipping this can prevent downloading the file if it's stored in iCloud, for example). The size is always returned for `file://` locations.
+  - **size (_boolean_)** -- Whether to include the size of the file if operating on a source from [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos) (skipping this can prevent downloading the file if it's stored in iCloud, for example). The size is always returned for `file://` locations.
 
 #### Returns
 
@@ -143,7 +141,7 @@ If no item exists at this URI, returns a Promise that resolves to `{ exists: fal
 
 - **modificationTime (_number_)** -- The last modification time of the file expressed in seconds since epoch.
 
-- **size (_number_)** -- The size of the file in bytes. If operating on a source from [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos), only present if the `size` option was truthy.
+- **size (_number_)** -- The size of the file in bytes. If operating on a source from [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos), only present if the `size` option was truthy.
 
 - **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
@@ -215,7 +213,7 @@ Create a copy of a file or directory. Directories are recursively copied with al
 
 - **options (_object_)** -- A map of options:
 
-  - **from (_string_)** -- `file://` URI to the file or directory to copy, or a URI returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos).
+  - **from (_string_)** -- `file://` URI to the file or directory to copy, or a URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos).
 
   - **to (_string_)** -- The `file://` URI to the new copy to create.
 
@@ -306,7 +304,7 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
   This function is called on each data write to update the download progress. An object with the following fields are passed:
 
   - **totalBytesWritten (_number_)** -- The total bytes written by the download operation.
-  - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation.
+  - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation. A value of `-1` means that the server did not return the `Content-Length` header and the total size is unknown.
 
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download. This is set on the `DownloadResumable` object automatically when a download is paused. When initializing a new `DownloadResumable` this should be `null`.
 
@@ -423,7 +421,7 @@ Returns a Promise that resolves to the number of bytes available on the internal
 
 ### `FileSystem.getTotalDiskCapacityAsync()`
 
-Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
+Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device, or Javascript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
 #### Example
 
@@ -436,6 +434,6 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 
 #### Returns
 
-Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
+Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or Javascript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
 #

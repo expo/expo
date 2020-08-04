@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "8.0.0",
+  "version": "8.3.0",
   "description": "ExpoSharing standalone module",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
@@ -36,7 +36,6 @@
     "unimodules-file-system-interface": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1"
-  },
-  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+    "expo-module-scripts": "~1.2.0"
+  }
 }

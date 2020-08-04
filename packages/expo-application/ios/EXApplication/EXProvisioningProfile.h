@@ -14,7 +14,7 @@ typedef NS_ENUM(NSInteger, EXAppReleaseType) {
 
 @interface EXProvisioningProfile : NSObject
 
-+ (instancetype)mainProvisioningProfile;
++ (nonnull instancetype)mainProvisioningProfile;
 
 - (EXAppReleaseType)appReleaseType;
 - (nullable NSString *)notificationServiceEnvironment;

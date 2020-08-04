@@ -1,0 +1,31 @@
+{
+  "name": "react-native-branch",
+  "version": "4.2.1",
+  "summary": "Branch Metrics React Native SDK",
+  "requires_arc": true,
+  "authors": {
+    "rt2zz": "zack@root-two.com",
+    "Jimmy Dee": "jgvdthree@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution.git"
+  },
+  "source_files": [
+    "ios/*.h",
+    "ios/*.m"
+  ],
+  "header_dir": "RNBranch",
+  "dependencies": {
+    "Branch": [
+      "0.29.0"
+    ],
+    "React": [
+
+    ]
+  }
+}

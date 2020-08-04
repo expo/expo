@@ -7,7 +7,6 @@ import android.util.Log;
 import org.json.JSONObject;
 
 import host.exp.exponent.Constants;
-import host.exp.expoview.Exponent;
 
 // EXpo Log
 public class EXL {
@@ -33,11 +32,8 @@ public class EXL {
   // TODO send string version of Throwable to Amplitude
   public static void e(final String tag, final Throwable e) {
     Log.e(tag, e.toString());
-
-    Exponent.logException(e);
   }
 
-  // TODO send to Crashlytics
   public static void e(final String tag, final String msg) {
     Log.e(tag, msg);
 

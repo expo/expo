@@ -3,20 +3,18 @@ title: Accelerometer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `Accelerometer` from **`expo-sensors`** provides access to the device accelerometer sensor(s) and associated listeners to respond to changes in acceleration in 3d space, meaning any movement or vibration.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ❌            | ✅  |
+<PlatformsSection android emulator ios web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+<InstallSection packageName="expo-sensors" />
 
 ## Example Usage
 
@@ -115,6 +113,8 @@ import { Accelerometer } from 'expo-sensors';
 > You should always check the sensor availability before attempting to use it.
 
 Returns whether the accelerometer is enabled on the device.
+
+On mobile web, you must first invoke `Permissions.askAsync(Permissions.MOTION)` in a user interaction (i.e. touch event) before you can use this module. If the `status` is not equal to `granted` then you should inform the end user that they may have to open settings.
 
 On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
 

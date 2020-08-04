@@ -5,7 +5,7 @@ import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
-import { downloadAsync, IS_MANAGED_ENV } from './PlatformUtils';
+import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
 type AssetDescriptor = {
@@ -52,13 +52,13 @@ export class Asset {
       this.height = height;
     }
 
-    // This only applies to assets that are bundled in Expo standalone apps
-    if (IS_MANAGED_ENV && hash) {
+    if (hash) {
       this.localUri = getEmbeddedAssetUri(hash, type);
       if (this.localUri) {
         this.downloaded = true;
       }
     }
+
     if (Platform.OS === 'web') {
       if (!name) {
         this.name = AssetUris.getFilename(uri);
@@ -69,7 +69,7 @@ export class Asset {
     }
   }
 
-  static loadAsync(moduleId: number | number[]): Promise<void[]> {
+  static loadAsync(moduleId: number | number[] | string | string[]): Promise<Asset[]> {
     const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
     return Promise.all(moduleIds.map(moduleId => Asset.fromModule(moduleId).downloadAsync()));
   }
@@ -86,7 +86,7 @@ export class Asset {
 
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
-    if (!IS_MANAGED_ENV) {
+    if (!IS_ENV_WITH_UPDATES_ENABLED) {
       const { uri } = resolveAssetSource(virtualAssetModule);
       const asset = new Asset({
         name: meta.name,
@@ -119,8 +119,6 @@ export class Asset {
     const metaHash = meta.hash;
     if (Asset.byHash[metaHash]) {
       return Asset.byHash[metaHash];
-    } else if (!IS_MANAGED_ENV && !Asset.byHash[metaHash]) {
-      throw new Error('Assets must be initialized with Asset.fromModule');
     }
 
     const { uri, hash } = AssetSources.selectAssetSource(meta);
@@ -162,15 +160,15 @@ export class Asset {
     return asset;
   }
 
-  async downloadAsync(): Promise<void> {
+  async downloadAsync(): Promise<this> {
     if (this.downloaded) {
-      return;
+      return this;
     }
     if (this.downloading) {
       await new Promise((resolve, reject) => {
         this._downloadCallbacks.push({ resolve, reject });
       });
-      return;
+      return this;
     }
     this.downloading = true;
 
@@ -196,5 +194,6 @@ export class Asset {
       this.downloading = false;
       this._downloadCallbacks = [];
     }
+    return this;
   }
 }

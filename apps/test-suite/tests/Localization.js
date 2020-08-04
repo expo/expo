@@ -94,8 +94,6 @@ export function test(t) {
         t.expect(result).toBeDefined();
         t.expect(typeof result).toBe('string');
         t.expect(result.length > 0).toBe(true);
-        // Format: expect something like America/Los_Angeles or America/Chihuahua
-        t.expect(result.split('/').length > 1).toBe(true);
       });
     }
 

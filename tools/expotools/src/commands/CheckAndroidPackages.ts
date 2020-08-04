@@ -8,14 +8,23 @@ const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 
 async function _getOutdatedUnimodules(packages: Packages.Package[]): Promise<string[]> {
-  let outdatedPackages: string[] = [];
+  const outdatedPackages: string[] = [];
   for (const pkg of packages) {
-    if (!pkg.isSupportedOnPlatform('android') || !pkg.androidPackageName || pkg.packageSlug === 'expo-module-template') continue;
-    const buildDir = `${pkg.androidPackageName.replace(/\./g, '/')}/${pkg.packageSlug}`
+    if (
+      !pkg.isSupportedOnPlatform('android') ||
+      !pkg.androidPackageName ||
+      pkg.packageSlug === 'expo-module-template'
+    )
+      continue;
+    const buildDir = `${pkg.androidPackageName.replace(/\./g, '/')}/${pkg.packageSlug}`;
     const version = pkg.packageVersion;
-      if (!(await fs.exists(path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', buildDir, version)))) {
-        outdatedPackages.push(pkg.packageSlug);
-      }
+    if (
+      !(await fs.pathExists(
+        path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', buildDir, version)
+      ))
+    ) {
+      outdatedPackages.push(pkg.packageSlug);
+    }
   }
   return outdatedPackages;
 }
@@ -27,21 +36,39 @@ async function action() {
   const match = expoviewBuildGradle
     .toString()
     .match(/api 'com.facebook.react:react-native:([\d.]+)'/);
-  if (!match[1]) {
+  if (!match || !match[1]) {
     throw new Error(
       'Could not find SDK version in android/expoview/build.gradle: unexpected format'
     );
   }
   const sdkVersion = match[1];
 
-  let outdatedPackages = await _getOutdatedUnimodules(unimodules)
+  const outdatedPackages = await _getOutdatedUnimodules(unimodules);
 
-  const reactNativePath = path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', 'com', 'facebook', 'react', 'react-native', sdkVersion);
-  const expoviewPath = path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', 'host', 'exp', 'exponent', 'expoview', sdkVersion);
-  if (!(await fs.exists(reactNativePath))) {
+  const reactNativePath = path.join(
+    EXPO_ROOT_DIR,
+    'expokit-npm-package',
+    'maven',
+    'com',
+    'facebook',
+    'react',
+    'react-native',
+    sdkVersion
+  );
+  const expoviewPath = path.join(
+    EXPO_ROOT_DIR,
+    'expokit-npm-package',
+    'maven',
+    'host',
+    'exp',
+    'exponent',
+    'expoview',
+    sdkVersion
+  );
+  if (!(await fs.pathExists(reactNativePath))) {
     outdatedPackages.push('ReactAndroid');
   }
-  if (!(await fs.exists(expoviewPath))) {
+  if (!(await fs.pathExists(expoviewPath))) {
     outdatedPackages.push('expoview');
   }
 
@@ -52,7 +79,6 @@ async function action() {
     );
   } else {
     console.log('All packages are up-to-date!');
-    return;
   }
 }
 

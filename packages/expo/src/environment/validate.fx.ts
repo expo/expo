@@ -1,9 +1,9 @@
+import Constants from 'expo-constants'; // eslint-disable-line no-unused-expressions
 import {
   // React Native's internal InitializeCore module sets up `window` but runs only when its React
   // renderer is loaded. We can cause this by loading one of its dependents.
   findNodeHandle,
 } from 'react-native';
-import Constants from 'expo-constants'; // eslint-disable-line no-unused-expressions
 
 import { shouldThrowAnErrorOutsideOfExpo } from './validatorState';
 

@@ -1,4 +1,4 @@
-export type ComposeOptions = {
+export type MailComposerOptions = {
   recipients?: string[];
   ccRecipients?: string[];
   bccRecipients?: string[];
@@ -8,8 +8,15 @@ export type ComposeOptions = {
   attachments?: string[];
 };
 
-export type ComposeResult = {
-  status: ComposeStatus;
+export type MailComposerResult = {
+  status: MailComposerStatus;
 };
 
-export type ComposeStatus = 'undetermined' | 'sent' | 'saved' | 'cancelled';
+export const MailComposerStatus = {
+  UNDETERMINED: 'undetermined',
+  SENT: 'sent',
+  SAVED: 'saved',
+  CANCELLED: 'cancelled',
+} as const;
+
+export type MailComposerStatus = typeof MailComposerStatus[keyof typeof MailComposerStatus];

@@ -3,12 +3,6 @@ package expo.modules.taskManager;
 import android.content.Context;
 import android.os.Bundle;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.LifecycleEventListener;
@@ -16,8 +10,14 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class TaskManagerInternalModule implements InternalModule, TaskManagerInterface, LifecycleEventListener {
   private UIManager mUIManager;
@@ -35,7 +35,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Arrays.<Class>asList(TaskManagerInterface.class);
+    return Collections.singletonList(TaskManagerInterface.class);
   }
 
   //endregion
@@ -57,6 +57,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void onDestroy() {
     mUIManager.unregisterLifecycleEventListener(this);
+    mTaskService.setTaskManager(null, getAppId(), getAppUrl());
   }
 
   //endregion
@@ -81,7 +82,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
       mEventsQueue.add(body);
     } else {
       // Manager is already being observed by JS app, so we can execute the event immediately.
-      mEventEmitter.emit(TaskManagerModule.EVENT_NAME, body);
+      mEventEmitter.emit(TaskManagerInterface.EVENT_NAME, body);
     }
   }
 
@@ -98,7 +99,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     // Execute any events that came before this call.
     if (mEventsQueue != null) {
       for (Bundle body : mEventsQueue) {
-        mEventEmitter.emit(TaskManagerModule.EVENT_NAME, body);
+        mEventEmitter.emit(TaskManagerInterface.EVENT_NAME, body);
       }
       mEventsQueue = null;
     }
@@ -111,15 +112,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     }
     return null;
   }
-
-  @Override
-  public boolean isRunningInHeadlessMode() {
-    if (mConstants != null) {
-      return (boolean) mConstants.getConstants().get("isHeadless");
-    }
-    return false;
-  }
-
   //endregion
   //region LifecycleEventListener
 
@@ -156,12 +148,15 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
           ((LifecycleEventListener) taskConsumer).onHostDestroy();
         }
       }
-      mTaskService.setTaskManager(null, getAppId(), getAppUrl());
     }
   }
 
   //endregion
   //region helpers
+
+  private boolean isRunningInHeadlessMode() {
+    return mTaskService.isStartedByHeadlessLoader(getAppId());
+  }
 
   private String getAppUrl() {
     // If Constants module is available and experienceUrl is provided, just return it.

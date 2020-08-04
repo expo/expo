@@ -10,6 +10,7 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.views.modal.RNGHModalUtils;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerOrchestrator;
 
@@ -20,22 +21,22 @@ public class RNGestureHandlerRootHelper {
   private final ReactContext mContext;
   private final GestureHandlerOrchestrator mOrchestrator;
   private final GestureHandler mJSGestureHandler;
-  private final ReactRootView mReactRootView;
+  private final ViewGroup mRootView;
 
   private boolean mShouldIntercept = false;
   private boolean mPassingTouch = false;
 
-  private static ReactRootView findRootViewTag(ViewGroup viewGroup) {
+  private static ViewGroup findRootViewTag(ViewGroup viewGroup) {
     UiThreadUtil.assertOnUiThread();
     ViewParent parent = viewGroup;
-    while (parent != null && !(parent instanceof ReactRootView)) {
+    while (parent != null && !(parent instanceof ReactRootView || RNGHModalUtils.isDialogRootViewGroup(parent))) {
       parent = parent.getParent();
     }
     if (parent == null) {
       throw new IllegalStateException("View " + viewGroup + " has not been mounted under" +
               " ReactRootView");
     }
-    return (ReactRootView) parent;
+    return (ViewGroup) parent;
   }
 
   public RNGestureHandlerRootHelper(ReactContext context, ViewGroup wrappedView) {
@@ -48,11 +49,11 @@ public class RNGestureHandlerRootHelper {
     RNGestureHandlerModule module = context.getNativeModule(RNGestureHandlerModule.class);
     RNGestureHandlerRegistry registry = module.getRegistry();
 
-    mReactRootView = findRootViewTag(wrappedView);
+    mRootView = findRootViewTag(wrappedView);
 
     Log.i(
             ReactConstants.TAG,
-            "[GESTURE HANDLER] Initialize gesture handler for root view " + mReactRootView);
+            "[GESTURE HANDLER] Initialize gesture handler for root view " + mRootView);
 
     mContext = context;
     mOrchestrator = new GestureHandlerOrchestrator(
@@ -70,14 +71,14 @@ public class RNGestureHandlerRootHelper {
   public void tearDown() {
     Log.i(
             ReactConstants.TAG,
-            "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mReactRootView);
+            "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mRootView);
     RNGestureHandlerModule module = mContext.getNativeModule(RNGestureHandlerModule.class);
     module.getRegistry().dropHandler(mJSGestureHandler.getTag());
     module.unregisterRootHelper(this);
   }
 
-  public ReactRootView getRootView() {
-    return mReactRootView;
+  public ViewGroup getRootView() {
+    return mRootView;
   }
 
   private class RootViewGestureHandler extends GestureHandler {
@@ -99,7 +100,11 @@ public class RNGestureHandlerRootHelper {
       long time = SystemClock.uptimeMillis();
       MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
       event.setAction(MotionEvent.ACTION_CANCEL);
-      mReactRootView.onChildStartedNativeGesture(event);
+      if (mRootView instanceof ReactRootView) {
+        ((ReactRootView) mRootView).onChildStartedNativeGesture(event);
+      } else {
+        RNGHModalUtils.dialogRootViewGroupOnChildStartedNativeGesture(mRootView, event);
+      }
     }
   }
 

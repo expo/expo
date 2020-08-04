@@ -163,7 +163,7 @@ public class MediaLibraryModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void getAssetInfoAsync(String assetId, Promise promise) {
+  public void getAssetInfoAsync(String assetId, Map<String, Object> options /* unused on android atm */, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;

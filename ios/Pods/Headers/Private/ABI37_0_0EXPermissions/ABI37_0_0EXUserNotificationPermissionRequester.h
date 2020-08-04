@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/EXPermissions/ABI37_0_0EXPermissions/Requesters/UserNotification/ABI37_0_0EXUserNotificationPermissionRequester.h

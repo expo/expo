@@ -1,17 +1,18 @@
 import { EventEmitter } from '@unimodules/core';
-import { throwIfAudioIsDisabled } from './AudioAvailability';
+
 import {
   Playback,
   PlaybackMixin,
-  PlaybackSource,
-  PlaybackStatus,
-  PlaybackStatusToSet,
+  AVPlaybackSource,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
   assertStatusValuesInBounds,
   getNativeSourceAndFullInitialStatusForLoadAsync,
   getUnloadedStatus,
 } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 
 type AudioInstance = number | HTMLMediaElement | null;
 export class Sound implements Playback {
@@ -20,17 +21,17 @@ export class Sound implements Playback {
   _key: AudioInstance = null;
   _lastStatusUpdate: string | null = null;
   _lastStatusUpdateTime: Date | null = null;
-  _subscriptions: Array<{ remove: () => void }> = [];
+  _subscriptions: { remove: () => void }[] = [];
   _eventEmitter: EventEmitter = new EventEmitter(ExponentAV);
   _coalesceStatusUpdatesInMillis: number = 100;
-  _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null;
+  _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
 
   static create = async (
-    source: PlaybackSource,
-    initialStatus: PlaybackStatusToSet = {},
-    onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null,
+    source: AVPlaybackSource,
+    initialStatus: AVPlaybackStatusToSet = {},
+    onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null,
     downloadFirst: boolean = true
-  ): Promise<{ sound: Sound; status: PlaybackStatus }> => {
+  ): Promise<{ sound: Sound; status: AVPlaybackStatus }> => {
     console.warn(
       `Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`
     );
@@ -38,20 +39,20 @@ export class Sound implements Playback {
   };
 
   static createAsync = async (
-    source: PlaybackSource,
-    initialStatus: PlaybackStatusToSet = {},
-    onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null,
+    source: AVPlaybackSource,
+    initialStatus: AVPlaybackStatusToSet = {},
+    onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null,
     downloadFirst: boolean = true
-  ): Promise<{ sound: Sound; status: PlaybackStatus }> => {
+  ): Promise<{ sound: Sound; status: AVPlaybackStatus }> => {
     const sound: Sound = new Sound();
     sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-    const status: PlaybackStatus = await sound.loadAsync(source, initialStatus, downloadFirst);
+    const status: AVPlaybackStatus = await sound.loadAsync(source, initialStatus, downloadFirst);
     return { sound, status };
   };
 
   // Internal methods
 
-  _callOnPlaybackStatusUpdateForNewStatus(status: PlaybackStatus) {
+  _callOnPlaybackStatusUpdateForNewStatus(status: AVPlaybackStatus) {
     const shouldDismissBasedOnCoalescing =
       this._lastStatusUpdateTime &&
       JSON.stringify(status) === this._lastStatusUpdate &&
@@ -65,8 +66,8 @@ export class Sound implements Playback {
   }
 
   async _performOperationAndHandleStatusAsync(
-    operation: () => Promise<PlaybackStatus>
-  ): Promise<PlaybackStatus> {
+    operation: () => Promise<AVPlaybackStatus>
+  ): Promise<AVPlaybackStatus> {
     throwIfAudioIsDisabled();
     if (this._loaded) {
       const status = await operation();
@@ -82,7 +83,7 @@ export class Sound implements Playback {
     status,
   }: {
     key: AudioInstance;
-    status: PlaybackStatus;
+    status: AVPlaybackStatus;
   }) => {
     if (this._key === key) {
       this._callOnPlaybackStatusUpdateForNewStatus(status);
@@ -128,18 +129,18 @@ export class Sound implements Playback {
 
   // Get status API
 
-  getStatusAsync = async (): Promise<PlaybackStatus> => {
+  getStatusAsync = async (): Promise<AVPlaybackStatus> => {
     if (this._loaded) {
       return this._performOperationAndHandleStatusAsync(() =>
         ExponentAV.getStatusForSound(this._key)
       );
     }
-    const status: PlaybackStatus = getUnloadedStatus();
+    const status: AVPlaybackStatus = getUnloadedStatus();
     this._callOnPlaybackStatusUpdateForNewStatus(status);
     return status;
   };
 
-  setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null) {
+  setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null) {
     this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
     this.getStatusAsync();
   }
@@ -147,10 +148,10 @@ export class Sound implements Playback {
   // Loading / unloading API
 
   async loadAsync(
-    source: PlaybackSource,
-    initialStatus: PlaybackStatusToSet = {},
+    source: AVPlaybackSource,
+    initialStatus: AVPlaybackStatusToSet = {},
     downloadFirst: boolean = true
-  ): Promise<PlaybackStatus> {
+  ): Promise<AVPlaybackStatus> {
     throwIfAudioIsDisabled();
     if (this._loading) {
       throw new Error('The Sound is already loading.');
@@ -168,8 +169,8 @@ export class Sound implements Playback {
       );
 
       // This is a workaround, since using load with resolve / reject seems to not work.
-      return new Promise<PlaybackStatus>((resolve, reject) => {
-        const loadSuccess = (result: [AudioInstance, PlaybackStatus]) => {
+      return new Promise<AVPlaybackStatus>((resolve, reject) => {
+        const loadSuccess = (result: [AudioInstance, AVPlaybackStatus]) => {
           const [key, status] = result;
           this._key = key;
           this._loaded = true;
@@ -193,7 +194,7 @@ export class Sound implements Playback {
     }
   }
 
-  async unloadAsync(): Promise<PlaybackStatus> {
+  async unloadAsync(): Promise<AVPlaybackStatus> {
     if (this._loaded) {
       this._loaded = false;
       const key = this._key;
@@ -209,14 +210,14 @@ export class Sound implements Playback {
 
   // Set status API (only available while isLoaded = true)
 
-  async setStatusAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus> {
+  async setStatusAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus> {
     assertStatusValuesInBounds(status);
     return this._performOperationAndHandleStatusAsync(() =>
       ExponentAV.setStatusForSound(this._key, status)
     );
   }
 
-  async replayAsync(status: PlaybackStatusToSet = {}): Promise<PlaybackStatus> {
+  async replayAsync(status: AVPlaybackStatusToSet = {}): Promise<AVPlaybackStatus> {
     if (status.positionMillis && status.positionMillis !== 0) {
       throw new Error('Requested position after replay has to be 0.');
     }
@@ -231,28 +232,28 @@ export class Sound implements Playback {
   }
 
   // Methods of the Playback interface that are set via PlaybackMixin
-  playAsync!: () => Promise<PlaybackStatus>;
+  playAsync!: () => Promise<AVPlaybackStatus>;
   playFromPositionAsync!: (
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
-  ) => Promise<PlaybackStatus>;
-  pauseAsync!: () => Promise<PlaybackStatus>;
-  stopAsync!: () => Promise<PlaybackStatus>;
+  ) => Promise<AVPlaybackStatus>;
+  pauseAsync!: () => Promise<AVPlaybackStatus>;
+  stopAsync!: () => Promise<AVPlaybackStatus>;
   setPositionAsync!: (
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
-  ) => Promise<PlaybackStatus>;
+  ) => Promise<AVPlaybackStatus>;
   setRateAsync!: (
     rate: number,
     shouldCorrectPitch: boolean,
     pitchCorrectionQuality?: PitchCorrectionQuality
-  ) => Promise<PlaybackStatus>;
-  setVolumeAsync!: (volume: number) => Promise<PlaybackStatus>;
-  setIsMutedAsync!: (isMuted: boolean) => Promise<PlaybackStatus>;
-  setIsLoopingAsync!: (isLooping: boolean) => Promise<PlaybackStatus>;
+  ) => Promise<AVPlaybackStatus>;
+  setVolumeAsync!: (volume: number) => Promise<AVPlaybackStatus>;
+  setIsMutedAsync!: (isMuted: boolean) => Promise<AVPlaybackStatus>;
+  setIsLoopingAsync!: (isLooping: boolean) => Promise<AVPlaybackStatus>;
   setProgressUpdateIntervalAsync!: (
     progressUpdateIntervalMillis: number
-  ) => Promise<PlaybackStatus>;
+  ) => Promise<AVPlaybackStatus>;
 }
 
 Object.assign(Sound.prototype, PlaybackMixin);

@@ -134,6 +134,14 @@ RCT_EXPORT_METHOD(configureProps:(nonnull NSArray<NSString *> *)nativeProps
   }];
 }
 
+RCT_EXPORT_METHOD(setValue:(nonnull NSNumber *)nodeID
+                  newValue:(nonnull NSNumber *)newValue
+                  )
+{
+  [self addOperationBlock:^(REANodesManager *nodesManager) {
+    [nodesManager setValueForNodeID:nodeID value:newValue];
+  }];
+}
 
 #pragma mark -- Batch handling
 

@@ -1,5 +1,5 @@
 import * as badgin from 'badgin';
-import UUID from 'uuid-js';
+import uuidv4 from 'uuid/v4';
 import { guardPermission, getExponentPushTokenAsync, getDevicePushTokenAsync, } from './ExponentNotificationsHelper.web';
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';
@@ -15,9 +15,6 @@ function transformLocalNotification(notification, tag) {
         _isLocal: true,
     };
     return [nativeNotification.title, nativeNotification];
-}
-function generateID() {
-    return UUID.create().toString();
 }
 async function getRegistrationAsync() {
     guardPermission();
@@ -35,14 +32,14 @@ async function getNotificationsAsync(tag) {
 export default {
     async presentLocalNotification(notification) {
         const registration = await getRegistrationAsync();
-        const tag = generateID();
+        const tag = uuidv4();
         registration.showNotification(...transformLocalNotification(notification, tag));
         return tag;
     },
     async scheduleLocalNotification(notification, options = {}) {
         if (options.intervalMs) {
             const registration = await getRegistrationAsync();
-            const tag = generateID();
+            const tag = uuidv4();
             setTimeout(() => {
                 registration.showNotification(...transformLocalNotification(notification, tag));
             }, options.intervalMs);

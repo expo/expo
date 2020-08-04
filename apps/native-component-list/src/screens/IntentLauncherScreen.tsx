@@ -1,6 +1,7 @@
+import * as IntentLauncher from 'expo-intent-launcher';
 import React from 'react';
 import { Platform, ScrollView, Text, ToastAndroid, View } from 'react-native';
-import * as IntentLauncher from 'expo-intent-launcher';
+
 import Button from '../components/Button';
 
 export default class IntentLauncherScreen extends React.Component {
@@ -21,19 +22,10 @@ export default class IntentLauncherScreen extends React.Component {
         <Button
           onPress={async () => {
             try {
-              const result = await IntentLauncher.startActivityAsync(
-                activityAction,
-                intentParams
-              );
-              ToastAndroid.show(
-                `Activity finished: ${JSON.stringify(result)}`,
-                ToastAndroid.SHORT
-              );
+              const result = await IntentLauncher.startActivityAsync(activityAction, intentParams);
+              ToastAndroid.show(`Activity finished: ${JSON.stringify(result)}`, ToastAndroid.SHORT);
             } catch (e) {
-              ToastAndroid.show(
-                `An error occurred: ${e.message}`,
-                ToastAndroid.SHORT
-              );
+              ToastAndroid.show(`An error occurred: ${e.message}`, ToastAndroid.SHORT);
             }
           }}
           title={title}
@@ -51,10 +43,7 @@ export default class IntentLauncherScreen extends React.Component {
           IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS
         )}
 
-        {this.renderSettingsLink(
-          'Wireless Settings',
-          IntentLauncher.ACTION_WIRELESS_SETTINGS
-        )}
+        {this.renderSettingsLink('Wireless Settings', IntentLauncher.ACTION_WIRELESS_SETTINGS)}
 
         {this.renderSettingsLink(
           'Application Details for Expo Client',

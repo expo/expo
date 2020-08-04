@@ -1,0 +1,32 @@
+name: Expotools
+
+on:
+  push:
+    branches: [ master, 'sdk-*' ]
+    paths:
+      - .github/workflows/expotools.yml
+      - tools/expotools/**
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/expotools.yml
+      - tools/expotools/**
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('tools/expotools/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --ignore-scripts --frozen-lockfile
+        working-directory: tools/expotools
+      - run: yarn tsc
+        working-directory: tools/expotools

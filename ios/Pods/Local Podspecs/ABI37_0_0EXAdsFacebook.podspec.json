@@ -1,0 +1,26 @@
+{
+  "name": "ABI37_0_0EXAdsFacebook",
+  "version": "8.0.0",
+  "summary": "Facebook Audience SDK integration",
+  "description": "Facebook Audience SDK integration",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook-ads/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ABI37_0_0EXAdsFacebook/**/*.{h,m}",
+  "preserve_paths": "ABI37_0_0EXAdsFacebook/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "ABI37_0_0UMCore": [
+
+    ],
+    "FBAudienceNetwork": [
+      "5.7.1"
+    ]
+  }
+}

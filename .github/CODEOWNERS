@@ -1,3 +1,6 @@
+# Ignore CHANGELOG.md files to prevent Danger.js from triggering code owner reviews
+/packages/**/CHANGELOG.md                       @ghost
+
 /packages/@unimodules/core                      @sjchmiela @tsapeta
 /packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne
@@ -30,12 +33,16 @@
 /packages/expo-face-detector                    @sjchmiela @mczernek
 /packages/expo-facebook                         @sjchmiela @mczernek
 /packages/expo-file-system                      @sjchmiela @bbarthec
+/packages/expo-firebase-core                    @IjzerenHein
+/packages/expo-firebase-analytics               @IjzerenHein @EvanBacon
+/packages/expo-firebase-recaptcha               @IjzerenHein
 /packages/expo-font                             @sjchmiela
 /packages/expo-gl-cpp                           @tsapeta @bbarthec
 /packages/expo-gl                               @tsapeta @bbarthec
 /packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
 /packages/expo-haptics                          @tsapeta @bbarthec
+/packages/expo-image                            @sjchmiela @IjzerenHein
 /packages/expo-image-manipulator                @bbarthec @tsapeta
 /packages/expo-image-picker                     @bbarthec @tsapeta
 /packages/expo-in-app-purchases                 @ide
@@ -50,22 +57,25 @@
 /packages/expo-module-scripts                   @ide @bbarthec
 /packages/expo-module-template                  @bbarthec @tsapeta
 /packages/expo-network                          @ide
-/packages/expo-notifications                    @mczernek @sjchmiela
+/packages/expo-notifications                    @cruzach @sjchmiela
 /packages/expo-payments-stripe                  @sjchmiela
 /packages/expo-permissions                      @bbarthec @lukmccall
 /packages/expo-print                            @tsapeta @lukmccall
 /packages/expo-processing                       @EvanBacon
 /packages/expo-random                           @EvanBacon
+/packages/expo-screen-capture                   @cruzach
 /packages/expo-screen-orientation               @lukmccall
 /packages/expo-secure-store                     @sjchmiela @mczernek
 /packages/expo-sensors                          @sjchmiela @mczernek
 /packages/expo-sharing                          @sjchmiela @bbarthec
 /packages/expo-sms                              @bbarthec
 /packages/expo-speech                           @sjchmiela @mczernek
+/packages/expo-splash-screen                    @bbarthec
+/packages/expo-splash-screen-command            @bbarthec
 /packages/expo-sqlite                           @sjchmiela @mczernek
 /packages/expo-store-review                     @EvanBacon @tsapeta
 /packages/expo-task-manager                     @tsapeta @mczernek
-/packages/expo-updates                          @esamelson @mczernek
+/packages/expo-updates                          @esamelson
 /packages/expo-video-thumbnails                 @sjchmiela
 /packages/expo-web-browser                      @sjchmiela @mczernek
 /packages/expo-yarn-workspaces                  @ide

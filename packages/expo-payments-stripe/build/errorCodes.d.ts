@@ -29,7 +29,7 @@ declare const _default: Readonly<{
     };
     deviceNotSupportsNativePay: {
         errorCode: string;
-        description: string;
+        description: string | undefined;
     };
     noPaymentRequest: {
         errorCode: string;

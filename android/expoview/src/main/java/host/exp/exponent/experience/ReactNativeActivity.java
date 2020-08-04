@@ -2,21 +2,14 @@
 
 package host.exp.exponent.experience;
 
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
-import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +34,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
@@ -73,9 +69,19 @@ import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 import static host.exp.exponent.utils.ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST;
 
-public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity  {
+public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   public static class ExperienceDoneLoadingEvent {
+    private Activity mActivity;
+
+    ExperienceDoneLoadingEvent(Activity activity) {
+      super();
+      mActivity = activity;
+    }
+
+    public Activity getActivity() {
+      return mActivity;
+    }
   }
 
   // Override
@@ -184,9 +190,13 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     addView(view);
   }
 
-  protected void addView(final View view) {
+  public void addView(final View view) {
     removeViewFromParent(view);
     mContainer.addView(view);
+  }
+
+  public boolean hasView(final View view) {
+    return view.getParent() == mContainer;
   }
 
   protected void removeViewFromParent(final View view) {
@@ -201,13 +211,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
     mHandler.removeCallbacksAndMessages(null);
     hideLoadingScreen();
-  }
-
-  protected void updateLoadingProgress(String status, Integer done, Integer total) {
-    if (!mIsLoading) {
-      showLoadingScreen(mManifest);
-    }
-    mLoadingView.updateProgress(status, done, total);
   }
 
   protected void removeViews() {
@@ -250,12 +253,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     if (!mIsLoading) {
       return;
     }
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        hideLoadingScreen();
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
-      }
+    runOnUiThread(() -> {
+      hideLoadingScreen();
+      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
     });
   }
 
@@ -266,7 +266,11 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       mContainer.setLayoutParams(layoutParams);
     }
 
-    ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
+    try {
+      ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
+    } catch (Exception e) {
+      EXL.e(TAG, e);
+    }
 
     if (mLoadingView != null && mLoadingView.getParent() == mLayout) {
       mLoadingView.setAlpha(0.0f);
@@ -286,24 +290,12 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        mReactInstanceManager.call("showDevOptionsDialog");
-        return true;
-      }
-      RNObject devSupportManager = mReactInstanceManager.callRecursive("getDevSupportManager");
+      RNObject devSupportManager = getDevSupportManager();
       if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-            .didDoubleTapR(keyCode, getCurrentFocus());
+          .didDoubleTapR(keyCode, getCurrentFocus());
 
-        // TODO: remove the path where we don't reload from manifest once SDK 35 is deprecated
-        boolean shouldReloadFromManifest = Exponent.getInstance().shouldAlwaysReloadFromManifest(mSDKVersion);
-        if (didDoubleTapR && !shouldReloadFromManifest) {
-          // The loading screen is hidden by versioned code when reloading JS so we can't show it
-          // on older sdks.
-          showLoadingScreen(mManifest);
-          devSupportManager.call("handleReloadJS");
-          return true;
-        } else if (didDoubleTapR && shouldReloadFromManifest) {
+        if (didDoubleTapR) {
           devSupportManager.call("reloadExpoApp");
           return true;
         }
@@ -349,9 +341,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
-      mReactInstanceManager.call("destroy");
-    }
+    destroyReactInstanceManager();
 
     mHandler.removeCallbacksAndMessages(null);
     mLoadingHandler.removeCallbacksAndMessages(null);
@@ -376,28 +366,10 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     return ExponentManifest.isDebugModeEnabled(mManifest);
   }
 
-  protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
-    mJSBundlePath = jsBundlePath;
-
-    // TODO: remove once SDK 35 is deprecated
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
-      new AlertDialog.Builder(this)
-          .setTitle("Please enable \"Permit drawing over other apps\"")
-          .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
-          .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-              Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                  Uri.parse("package:" + getPackageName()));
-              startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-            }
-          })
-          .setCancelable(false)
-          .show();
-
-      return;
+  protected void destroyReactInstanceManager() {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("destroy");
     }
-
-    startReactInstance();
   }
 
   @Override
@@ -431,10 +403,10 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
     String linkingUri = getLinkingUri();
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
-        MANIFEST_URL_KEY, mManifestUrl,
-        LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri,
-        IS_HEADLESS_KEY, false
+      MANIFEST_URL_KEY, mManifestUrl,
+      LINKING_URI_KEY, linkingUri,
+      INTENT_URI_KEY, mIntentUri,
+      IS_HEADLESS_KEY, false
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
@@ -453,6 +425,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       builder.call("setCurrentActivity", this);
     }
 
+    // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
+    builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "RESUMED"));
+
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
         builder.call("addPackage", nativeModule);
@@ -468,8 +443,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       devLoadingView.callRecursive("setDevLoadingEnabled", false);
 
       RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
-          .loadVersion(mSDKVersion)
-          .construct(progressListener);
+        .loadVersion(mSDKVersion)
+        .construct(progressListener);
       builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
     } else {
       checkForReactViews();
@@ -490,7 +465,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       exponentProps.put("manifest", mManifest);
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
-      exponentProps.put("errorRecovery", ErrorRecoveryManager.getInstance(mExperienceId).popRecoveryProps());
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }
@@ -500,7 +474,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
         try {
           exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-              metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
+            metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
         } catch (JSONException e) {
           e.printStackTrace();
         }
@@ -545,9 +519,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
     mReactInstanceManager.onHostResume(this, this);
     mReactRootView.call("startReactApplication",
-        mReactInstanceManager.get(),
-        mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
-        initialProps(bundle));
+      mReactInstanceManager.get(),
+      mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
+      initialProps(bundle));
 
     return mReactInstanceManager;
   }
@@ -605,7 +579,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
       rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
       RNObject existingEmitter = mReactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass());
+        .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass());
 
       if (existingEmitter != null) {
         Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
@@ -648,20 +622,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
     if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
-      // TODO: remove once SDK 35 is deprecated
-      String sdkVersion = "0.0.0";
-      try {
-        sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-      if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
-        Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
-      } else {
-        if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
-          mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
-          mScopedPermissionsRequester = null;
-        }
+      if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
+        mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
+        mScopedPermissionsRequester = null;
       }
     } else {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -672,26 +635,11 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
     int globalResult = super.checkPermission(permission, pid, uid);
+    return mExpoKernelServiceRegistry.getPermissionsKernelService().getPermissions(globalResult, getPackageManager(), permission, mExperienceId);
+  }
 
-    // only these permissions, which show a dialog to the user should be scoped.
-    boolean isDangerousPermission;
-    try {
-      PermissionInfo permissionInfo = getPackageManager().getPermissionInfo(permission, PackageManager.GET_META_DATA);
-      isDangerousPermission = (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_DANGEROUS) != 0;
-    } catch (PackageManager.NameNotFoundException e) {
-      return PackageManager.PERMISSION_DENIED;
-    }
-
-    if (Constants.isStandaloneApp() || !isDangerousPermission) {
-      return globalResult;
-    }
-
-    if (globalResult == PackageManager.PERMISSION_GRANTED &&
-        mExpoKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
-      return PackageManager.PERMISSION_GRANTED;
-    } else {
-      return PackageManager.PERMISSION_DENIED;
-    }
+  public RNObject getDevSupportManager() {
+    return mReactInstanceManager.callRecursive("getDevSupportManager");
   }
 
   // deprecated in favor of Expo.Linking.makeUrl
@@ -703,7 +651,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       Uri uri = Uri.parse(mManifestUrl);
       String host = uri.getHost();
       if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
+        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
         List<String> pathSegments = uri.getPathSegments();
         Uri.Builder builder = uri.buildUpon();
         builder.path(null);

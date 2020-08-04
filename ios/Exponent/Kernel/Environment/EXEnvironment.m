@@ -6,7 +6,6 @@
 #import "ExpoKit.h"
 #import "EXEnvironment.h"
 
-#import <Crashlytics/Crashlytics.h>
 #import <React/RCTUtils.h>
 
 NSString * const kEXEmbeddedBundleResourceName = @"shell-app";
@@ -224,7 +223,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 {
   if (_testEnvironment == EXTestEnvironmentNone) {
     [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": shellManifestUrl }];
-    [CrashlyticsKit setObjectValue:_standaloneManifestUrl forKey:@"initial_url"];
     if (isUserDetached) {
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
     }

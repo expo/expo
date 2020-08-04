@@ -31,7 +31,7 @@ export declare type OAuthBaseProps = {
 export declare type OAuthProps = OAuthBaseProps & {
     redirectUrl?: string;
     clientSecret?: string;
-    scopes?: Array<string>;
+    scopes?: string[];
     additionalParameters?: OAuthParameters;
     canMakeInsecureRequests?: boolean;
     isRefresh?: boolean;

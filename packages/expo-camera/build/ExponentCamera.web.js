@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
-import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
+import { findNodeHandle, StyleSheet, View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 export default class ExponentCamera extends React.Component {
@@ -70,10 +71,6 @@ export default class ExponentCamera extends React.Component {
                 onPictureSaved: this.props.onPictureSaved,
             });
         };
-        this.getAvailableCameraTypesAsync = async () => {
-            const camera = this.getCamera();
-            return await camera.getAvailableCameraTypesAsync();
-        };
         this.resumePreview = async () => {
             const camera = this.getCamera();
             await camera.resumePreview();
@@ -115,7 +112,7 @@ export default class ExponentCamera extends React.Component {
             this.camera.stopAsync();
         }
     }
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(nextProps) {
         this._updateCameraProps(nextProps);
     }
     updateCameraCanvas() {
@@ -133,11 +130,10 @@ export default class ExponentCamera extends React.Component {
             // Flip the camera
             transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
         };
-        return (<View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
-        <Video autoPlay playsInline muted={isMuted} pointerEvents={pointerEvents} ref={this._setRef} style={[StyleSheet.absoluteFill, styles.video, style]}/>
-        {this.shouldRenderIndicator() && <Canvas ref={this.setCanvasRef} style={styles.canvas}/>}
-        {this.props.children}
-      </View>);
+        return (React.createElement(View, { pointerEvents: "box-none", style: [styles.videoWrapper, this.props.style] },
+            React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, pointerEvents: pointerEvents, ref: this._setRef, style: [StyleSheet.absoluteFill, styles.video, style] }),
+            this.shouldRenderIndicator() && React.createElement(Canvas, { ref: this.setCanvasRef, style: styles.canvas }),
+            this.props.children));
     }
 }
 const Canvas = forwardRef((props, ref) => createElement('canvas', { ...props, ref }));

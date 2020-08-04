@@ -11,8 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
-import androidx.collection.ArraySet;
 import android.util.Log;
+
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskInterface;
+import androidx.annotation.NonNull;
+import androidx.collection.ArraySet;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
+
   // Key that every job created by the task manager must contain in its extras bundle.
   private static final String EXTRAS_REQUIRED_KEY = "expo.modules.taskManager";
+  private static final String TAG = "TaskManagerUtils";
 
   // Request code number used for pending intents created by this module.
   private static final int PENDING_INTENT_REQUEST_CODE = 5055;
@@ -52,8 +56,12 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @Override
-  public void scheduleJob(Context context, TaskInterface task, List<PersistableBundle> data) {
-    updateOrScheduleJob(context, task, data);
+  public void scheduleJob(Context context, @NonNull TaskInterface task, List<PersistableBundle> data) {
+    if (task == null) {
+      Log.e(TAG, "Trying to schedule job for null task!");
+    } else {
+      updateOrScheduleJob(context, task, data);
+    }
   }
 
   @Override
@@ -170,9 +178,9 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     Intent intent = new Intent(TaskBroadcastReceiver.INTENT_ACTION, null, context, TaskBroadcastReceiver.class);
 
     Uri dataUri = new Uri.Builder()
-        .appendQueryParameter("appId", appId)
-        .appendQueryParameter("taskName", taskName)
-        .build();
+      .appendQueryParameter("appId", appId)
+      .appendQueryParameter("taskName", taskName)
+      .build();
 
     intent.setData(dataUri);
 
@@ -188,10 +196,10 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   private JobInfo createJobInfo(int jobId, ComponentName jobService, PersistableBundle extras) {
     return new JobInfo.Builder(jobId, jobService)
-        .setExtras(extras)
-        .setMinimumLatency(0)
-        .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE)
-        .build();
+      .setExtras(extras)
+      .setMinimumLatency(0)
+      .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE)
+      .build();
   }
 
   private JobInfo createJobInfo(Context context, TaskInterface task, int jobId, List<PersistableBundle> data) {

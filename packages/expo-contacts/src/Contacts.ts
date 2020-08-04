@@ -1,7 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
-import UUID from 'uuid-js';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import uuidv4 from 'uuid/v4';
 
 import ExpoContacts from './ExpoContacts';
 
@@ -238,7 +238,7 @@ export { PermissionStatus, PermissionResponse };
 export async function shareContactAsync(
   contactId: string,
   message: string,
-  shareOptions: Object = {}
+  shareOptions: object = {}
 ): Promise<any> {
   if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({
@@ -281,7 +281,7 @@ export async function getPagedContactsAsync(
 
 export async function getContactByIdAsync(
   id: string,
-  fields?: FieldType
+  fields?: FieldType[]
 ): Promise<Contact | undefined> {
   if (!ExpoContacts.getContactsAsync) {
     throw new UnavailabilityError('Contacts', 'getContactsAsync');
@@ -303,7 +303,7 @@ export async function getContactByIdAsync(
   return undefined;
 }
 
-export async function addContactAsync(contact: Contact, containerId: string): Promise<string> {
+export async function addContactAsync(contact: Contact, containerId?: string): Promise<string> {
   if (!ExpoContacts.addContactAsync) {
     throw new UnavailabilityError('Contacts', 'addContactAsync');
   }
@@ -342,7 +342,7 @@ export async function presentFormAsync(
     throw new UnavailabilityError('Contacts', 'presentFormAsync');
   }
   if (Platform.OS === 'ios') {
-    let adjustedOptions = formOptions;
+    const adjustedOptions = formOptions;
 
     if (contactId) {
       if (contact) {
@@ -381,7 +381,7 @@ export async function createGroupAsync(name?: string, containerId?: string): Pro
     throw new UnavailabilityError('Contacts', 'createGroupAsync');
   }
 
-  name = name || UUID.create().toString();
+  name = name || uuidv4();
   if (!containerId) {
     containerId = await getDefaultContainerIdAsync();
   }
@@ -456,7 +456,7 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
     throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
   }
 
-  return ExpoContacts.getPermissionsAsync();
+  return await ExpoContacts.getPermissionsAsync();
 }
 
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
@@ -485,6 +485,7 @@ export const SOCIAL_PROFILES = 'socialProfiles';
 export const IM_ADDRESSES = 'instantMessageAddresses';
 export const URLS = 'urlAddresses';
 export const DATES = 'dates';
+export const RAW_DATES = 'rawDates';
 export const RELATIONSHIPS = 'relationships';
 
 export const Fields = {

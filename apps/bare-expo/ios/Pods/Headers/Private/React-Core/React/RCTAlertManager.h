@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Modules/RCTAlertManager.h
+../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTAlertManager.h

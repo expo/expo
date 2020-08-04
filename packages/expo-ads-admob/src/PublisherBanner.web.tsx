@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Text, View } from 'react-native';
 
-export default class PublisherBanner extends React.Component<{}> {
+export default class PublisherBanner extends React.Component<object> {
   render() {
     return (
       <View>

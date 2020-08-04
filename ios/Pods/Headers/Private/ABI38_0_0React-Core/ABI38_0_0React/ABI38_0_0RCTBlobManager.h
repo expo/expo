@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI38_0_0/ReactNative/Libraries/Blob/ABI38_0_0RCTBlobManager.h

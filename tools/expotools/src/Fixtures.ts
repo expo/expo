@@ -17,7 +17,7 @@ import WebSocket from 'ws';
 import { Api, Exp, ProjectSettings, UrlUtils, UserManager } from '@expo/xdl';
 import spawnAsync from '@expo/spawn-async';
 
-import sleepAsync from './utils/sleepAsync';
+import { sleepAsync } from './Utils';
 
 type FixtureServer = 'manifest' | 'packager' | 'tests';
 
@@ -143,7 +143,7 @@ export async function startRecordingAsync(
     target: `http://localhost:${packagerInfo.expoServerPort}`,
   });
 
-  manifestProxy.on('proxyReq', function(proxyReq, req, res, options) {
+  manifestProxy.on('proxyReq', function (proxyReq, req, res, options) {
     console.log(`Got manifest request: ${req.url}`);
     proxyReq.removeHeader('if-none-match');
     req._expoRequestId = currentRequestId++;
@@ -192,7 +192,7 @@ export async function startRecordingAsync(
     })
   );
 
-  manifestProxyServer.use(function(req, res) {
+  manifestProxyServer.use(function (req, res) {
     manifestProxy.web(req, res);
   });
   http.createServer(manifestProxyServer).listen(manifestProxyPort);
@@ -242,12 +242,12 @@ export async function startRecordingAsync(
   });
 
   // @ts-ignore
-  packagerProxy.on('open', proxySocket => {
+  packagerProxy.on('open', (proxySocket) => {
     console.log('WebSocket opened');
     _writeFixtureDataAsync(currentRequestId++, 'packager', FixtureType.WS_OPEN, '', '');
 
     // Listen for messages coming FROM the target here
-    proxySocket.on('data', message => {
+    proxySocket.on('data', (message) => {
       console.log('Packager sent outbound WebSocket message');
       _writeFixtureDataAsync(
         currentRequestId++,
@@ -259,19 +259,19 @@ export async function startRecordingAsync(
     });
   });
 
-  packagerProxy.on('close', function(res, socket, head) {
+  packagerProxy.on('close', function (res, socket, head) {
     // View disconnected WebScoket connections
     console.log('WebSocket disconnected');
     _writeFixtureDataAsync(currentRequestId++, 'packager', FixtureType.WS_CLOSED, '', '');
   });
 
   let packagerProxyServer = connect();
-  packagerProxyServer.use(function(req, res) {
+  packagerProxyServer.use(function (req, res) {
     packagerProxy.web(req, res);
   });
   http
     .createServer(packagerProxyServer)
-    .on('upgrade', function(req, socket, head) {
+    .on('upgrade', function (req, socket, head) {
       console.log('Got WebSocket upgrade');
       packagerProxy.ws(req, socket, head);
       _writeFixtureDataAsync(currentRequestId++, 'packager', FixtureType.WS_UPGRADE, '', '');
@@ -279,7 +279,7 @@ export async function startRecordingAsync(
     .listen(packagerProxyPort);
 
   // Print out URL
-  qrcodeTerminal.generate(`exp://${newManifestUrl}`, code =>
+  qrcodeTerminal.generate(`exp://${newManifestUrl}`, (code) =>
     console.log(`${indentString(code, 2)}\n`)
   );
   console.log(`Your proxy URL is: exp://${newManifestUrl}\n`);
@@ -333,14 +333,14 @@ function _recordHTTPStream(
   };
 
   let oldWriteHead = res.writeHead;
-  res.writeHead = function(...args) {
+  res.writeHead = function (...args) {
     oldWriteHead.apply(this, args as any);
 
     _headers = res.getHeaders();
     _writeData();
   };
 
-  let concatStream = concat(data => {
+  let concatStream = concat((data) => {
     _data = data;
     _writeData();
   });
@@ -426,12 +426,12 @@ export async function playFixtureAsync(
   manifestServer.on('request', (req, res) => {
     requestHandler('manifest', req, res);
   });
-  manifestServer.listen(manifestFixturePort, function() {
+  manifestServer.listen(manifestFixturePort, function () {
     let port = (manifestServer.address() as net.AddressInfo).port;
 
     if (verbose) {
       // Print out url
-      qrcodeTerminal.generate(`exp://${lanAddress}:${port}`, code =>
+      qrcodeTerminal.generate(`exp://${lanAddress}:${port}`, (code) =>
         console.log(`${indentString(code, 2)}\n`)
       );
       console.log(`Your fixture URL is: exp://${lanAddress}:${port}\n`);
@@ -461,7 +461,7 @@ export async function getFixtureServerRequestHandlerAsync(
   fs.readFileSync(filePath)
     .toString()
     .split('\n')
-    .forEach(data => {
+    .forEach((data) => {
       try {
         fixtures.push(JSON.parse(data));
       } catch (e) {}
@@ -490,7 +490,7 @@ export async function getFixtureServerRequestHandlerAsync(
       }
     }
   };
-  let consumeFixture = fixture => {
+  let consumeFixture = (fixture) => {
     fixture.isConsumed = true;
   };
 
@@ -575,7 +575,7 @@ export async function getFixtureServerRequestHandlerAsync(
     console.log(`[${fixtureResponseId}] Responded to ${req.url}...`);
   };
 
-  let testEvents = fixtures.filter(fixture => {
+  let testEvents = fixtures.filter((fixture) => {
     return fixture.type === FixtureType.FIND_TEXT_ON_SCREEN;
   });
 

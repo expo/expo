@@ -1,3 +1,1 @@
-import './environment/validate.fx';
-import './environment/muteWarnings.fx';
-import 'expo-asset';
+import './environment/react-native-logs.fx';

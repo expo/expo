@@ -1,0 +1,1 @@
+{"version":3,"file":"NotificationsEmitterModule.types.js","sourceRoot":"","sources":["../src/NotificationsEmitterModule.types.ts"],"names":[],"mappings":"","sourcesContent":["import { ProxyNativeModule } from '@unimodules/core';\n\nexport interface NotificationsEmitterModule extends ProxyNativeModule {}\n"]}

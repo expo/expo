@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Profiler/RCTFPSGraph.h
+../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTFPSGraph.h

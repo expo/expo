@@ -1,6 +1,6 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
 

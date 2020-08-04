@@ -11,11 +11,23 @@ UNIMODULE_MANIFEST_PATH=$VERSIONED_ABI_PATH/src/main/UnimoduleAndroidManifest.xm
 pushd $EXPO_ROOT_DIR/android
 
 cp -r $2/src/main/java/* $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
+cp -r $2/src/main/kotlin/* $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
 cp -r $2/src/main/AndroidManifest.xml $UNIMODULE_MANIFEST_PATH
 
 # Rename references to other packages previously under versioned.host.exp.exponent
 
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname 'flutter' -type d -print0 | xargs -0 rm -r
+
+# Remove packages-to-keep
+
+while read PACKAGE
+do
+  PACKAGE_DIR=${PACKAGE//\./\/}
+  # $PACKAGE_DIR* catches both:
+  # - FQDNs of classes, eg. org.unimodules.core.interfaces.Consumer which becomes org/.../Consumer*. which catches both .java and .kt
+  # - packages, eg. org.unimodules.interfaces.taskManager which becomes a path
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION/$PACKAGE_DIR* \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 rm -rf
+done < $TOOLS_DIR/android-packages-to-keep.txt
 
 while read PACKAGE
 do

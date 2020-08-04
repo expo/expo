@@ -1,9 +1,9 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 import readline from 'readline';
-import spawnAsync from '@expo/spawn-async';
 
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
@@ -81,7 +81,7 @@ async function _gitLogAsync(path: string): Promise<{ lines: string[] }> {
     lines: child.stdout
       .trim()
       .split(/\r?\n/g)
-      .filter(a => a),
+      .filter((a) => a),
   };
 }
 
@@ -244,9 +244,9 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
 
   console.log(' 🚚  Copying newly built packages...');
 
-  await fs.mkdir(path.join(ANDROID_DIR, 'maven/com/facebook'), { recursive: true });
-  await fs.mkdir(path.join(ANDROID_DIR, 'maven/host/exp/exponent'), { recursive: true });
-  await fs.mkdir(path.join(ANDROID_DIR, 'maven/org/unimodules'), { recursive: true });
+  await fs.mkdirs(path.join(ANDROID_DIR, 'maven/com/facebook'));
+  await fs.mkdirs(path.join(ANDROID_DIR, 'maven/host/exp/exponent'));
+  await fs.mkdirs(path.join(ANDROID_DIR, 'maven/org/unimodules'));
 
   for (const pkg of packages) {
     if (failedPackages.includes(pkg.name)) {
@@ -295,7 +295,7 @@ async function action(options: ActionOptions) {
   const match = expoviewBuildGradle
     .toString()
     .match(/api 'com.facebook.react:react-native:([\d.]+)'/);
-  if (!match[1]) {
+  if (!match || !match[1]) {
     throw new Error(
       'Could not find SDK version in android/expoview/build.gradle: unexpected format'
     );
@@ -305,18 +305,18 @@ async function action(options: ActionOptions) {
     console.log(
       " 🔍  It looks like you're adding a new SDK version. Ignoring the `--packages` option and rebuilding all packages..."
     );
-    packagesToBuild = packages.map(pkg => pkg.name);
+    packagesToBuild = packages.map((pkg) => pkg.name);
   } else if (options.packages) {
     if (options.packages === 'all') {
-      packagesToBuild = packages.map(pkg => pkg.name);
+      packagesToBuild = packages.map((pkg) => pkg.name);
     } else if (options.packages === 'suggested') {
       console.log(' 🔍  Gathering data about packages...');
       packagesToBuild = await _getSuggestedPackagesToBuild(packages);
     } else {
       const packageNames = options.packages.split(',');
       packagesToBuild = packages
-        .map(pkg => pkg.name)
-        .filter(pkgName => packageNames.includes(pkgName));
+        .map((pkg) => pkg.name)
+        .filter((pkgName) => packageNames.includes(pkgName));
     }
     console.log(' 🛠   Rebuilding the following packages:');
     console.log(packagesToBuild);
@@ -343,14 +343,14 @@ async function action(options: ActionOptions) {
     ]);
 
     if (option === 'all') {
-      packagesToBuild = packages.map(pkg => pkg.name);
+      packagesToBuild = packages.map((pkg) => pkg.name);
     } else if (option === 'choose') {
       const result = await inquirer.prompt<{ packagesToBuild: string[] }>([
         {
           type: 'checkbox',
           name: 'packagesToBuild',
           message: 'Choose which packages to build',
-          choices: packages.map(pkg => pkg.name),
+          choices: packages.map((pkg) => pkg.name),
           default: packagesToBuild,
           pageSize: Math.min(packages.length, (process.stdout.rows || 100) - 2),
         },
@@ -361,7 +361,7 @@ async function action(options: ActionOptions) {
 
   try {
     await _updateExpoViewAsync(
-      packages.filter(pkg => packagesToBuild.includes(pkg.name)),
+      packages.filter((pkg) => packagesToBuild.includes(pkg.name)),
       options.sdkVersion
     );
   } catch (e) {

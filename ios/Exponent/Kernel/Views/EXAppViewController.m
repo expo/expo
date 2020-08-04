@@ -6,6 +6,7 @@
 #import "EXAppLoader.h"
 #import "EXAppLoadingView.h"
 #import "EXAppViewController.h"
+#import "EXAppLoadingProgressWindowController.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -14,8 +15,14 @@
 #import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
 #import "EXScreenOrientationManager.h"
+#import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
+#import <UMCore/UMModuleRegistryProvider.h>
+
+#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
+#endif
 
 #import <React/RCTUtils.h>
 
@@ -45,6 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
 
+/*
+ * Controller for handling all messages from bundler/fetcher.
+ * It shows another UIWindow with text and percentage progress.
+ * Enabled only in managed workflow or home when in development mode.
+ * It should appear once manifest is fetched.
+ */
+@property (nonatomic, strong, nonnull) EXAppLoadingProgressWindowController *appLoadingProgressWindowController;
+
 @end
 
 @implementation EXAppViewController
@@ -58,6 +73,13 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appRecord = record;
     _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
+
+    BOOL loadingProgressEnabled = ![EXEnvironment sharedEnvironment].isDetached;
+    if (![EXEnvironment sharedEnvironment].isDebugXCodeScheme) {
+      // home app should show loading progress only in debug mode (development)
+      loadingProgressEnabled &= record != [EXKernel sharedInstance].appRegistry.homeAppRecord;
+    }
+    _appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:loadingProgressEnabled];
   }
   return self;
 }
@@ -72,9 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
 
-  // TODO(brentvatne): probably this should not just be UIColor whiteColor?
   self.view.backgroundColor = [UIColor whiteColor];
-
   _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
   [self.view addSubview:_loadingView];
   _appRecord.appManager.delegate = self;
@@ -105,6 +125,24 @@ NS_ASSUME_NONNULL_BEGIN
   if (_contentView) {
     _contentView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
+}
+
+/**
+ * Force presented view controllers to use the same user interface style.
+ */
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated: (BOOL)flag completion:(void (^ __nullable)(void))completion
+{
+  [super presentViewController:viewControllerToPresent animated:flag completion:completion];
+  [self _overrideUserInterfaceStyleOf:viewControllerToPresent];
+}
+
+/**
+ * Force child view controllers to use the same user interface style.
+ */
+- (void)addChildViewController:(UIViewController *)childController
+{
+  [super addChildViewController:childController];
+  [self _overrideUserInterfaceStyleOf:childController];
 }
 
 #pragma mark - Public
@@ -176,6 +214,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _enforceDesiredDeviceOrientation];
+
+    // Reset the root view background color and window color if we switch between Expo home and project
+    [self _setBackgroundColor:self.view];
   });
   [_appRecord.appManager appStateDidBecomeActive];
 }
@@ -191,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_loadingView.manifest = manifest;
-      [self _overrideUserInterfaceStyle];
+      [self _overrideUserInterfaceStyleOf:self];
       [self _enforceDesiredDeviceOrientation];
       [self _rebuildBridge];
     });
@@ -236,13 +277,12 @@ NS_ASSUME_NONNULL_BEGIN
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
   [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  [self.appLoadingProgressWindowController show];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_loadingView updateStatusWithProgress:progress];
-  });
+  [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
@@ -274,14 +314,15 @@ NS_ASSUME_NONNULL_BEGIN
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  [self _setRootViewBackgroundColor:reactView];
   
   [_contentView removeFromSuperview];
   _contentView = reactView;
   [self.view addSubview:_contentView];
   [self.view sendSubviewToBack:_contentView];
-
   [reactView becomeFirstResponder];
+
+  // Set root view background color after adding as subview so we can access window
+  [self _setBackgroundColor:reactView];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -319,9 +360,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
+    return [screenOrientationRegistry requiredOrientationMask];
+  }
+#endif
+  
+  // TODO: Remove once sdk 37 is phased out
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
+  
+  return [self orientationMaskFromManifestOrDefault];
+}
+
+- (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
   if (_appRecord.appLoader.manifest) {
     NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
     if ([orientationConfig isEqualToString:@"portrait"]) {
@@ -336,6 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+// TODO: Remove once sdk 37 is phased out
 - (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   _supportedInterfaceOrientations = supportedInterfaceOrientations;
@@ -346,10 +401,18 @@ NS_ASSUME_NONNULL_BEGIN
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
+    
+    #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
+    #endif
+      
+    // TODO: Remove once sdk 37 is phased out
     [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }
 }
 
+// TODO: Remove once sdk 37 is phased out
 - (void)_enforceDesiredDeviceOrientation
 {
   RCTAssertMainQueue();
@@ -395,11 +458,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - user interface style
 
-- (void)_overrideUserInterfaceStyle
+- (void)_overrideUserInterfaceStyleOf:(UIViewController *)viewController
 {
   if (@available(iOS 13.0, *)) {
     NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
-    self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
+    viewController.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
   }
 }
 
@@ -421,17 +484,25 @@ NS_ASSUME_NONNULL_BEGIN
   return UIUserInterfaceStyleLight;
 }
 
-#pragma mark - root view background color
+#pragma mark - root view and window background color
 
-- (void)_setRootViewBackgroundColor:(UIView *)view
+- (void)_setBackgroundColor:(UIView *)view
 {
     NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
     UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
 
     if (backgroundColor) {
       view.backgroundColor = backgroundColor;
+      // NOTE(brentvatne): it may be desirable at some point to split the window backgroundColor out from the
+      // root view, we can do if use case is presented to us.
+      view.window.backgroundColor = backgroundColor;
     } else {
       view.backgroundColor = [UIColor whiteColor];
+
+      // NOTE(brentvatne): we used to use white as a default background color for window but this caused
+      // problems when using form sheet presentation style with vcs eg: <Modal /> and native-stack. Most
+      // users expect the background behind these to be black, which is the default if backgroundColor is nil.
+      view.window.backgroundColor = nil;
 
       // NOTE(brentvatne): we may want to default to respecting the default system background color
       // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android
@@ -495,6 +566,7 @@ NS_ASSUME_NONNULL_BEGIN
       [self.view bringSubviewToFront:self.loadingView];
     } else {
       self.loadingView.hidden = YES;
+      [self.appLoadingProgressWindowController hide];
     }
   });
 }

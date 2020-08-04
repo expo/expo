@@ -3,13 +3,11 @@ import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-int
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
-  PlaybackStatus,
-  PlaybackStatusToSet,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
 } from '../AV';
-
 import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
-
 import { Sound } from './Sound';
 
 export type RecordingOptions = {
@@ -368,9 +366,9 @@ export class Recording {
   }
 
   async createNewLoadedSound(
-    initialStatus: PlaybackStatusToSet = {},
-    onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null
-  ): Promise<{ sound: Sound; status: PlaybackStatus }> {
+    initialStatus: AVPlaybackStatusToSet = {},
+    onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null
+  ): Promise<{ sound: Sound; status: AVPlaybackStatus }> {
     console.warn(
       `createNewLoadedSound is deprecated in favor of createNewLoadedSoundAsync, which has the same API aside from the method name`
     );
@@ -378,9 +376,9 @@ export class Recording {
   }
 
   async createNewLoadedSoundAsync(
-    initialStatus: PlaybackStatusToSet = {},
-    onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null
-  ): Promise<{ sound: Sound; status: PlaybackStatus }> {
+    initialStatus: AVPlaybackStatusToSet = {},
+    onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null
+  ): Promise<{ sound: Sound; status: AVPlaybackStatus }> {
     if (this._uri == null || !this._isDoneRecording) {
       throw new Error('Cannot create sound when the Recording has not finished!');
     }

@@ -23,11 +23,15 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.MatrixMathHelper;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.TransformHelper;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -122,6 +126,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         RNSVGPattern,
         RNSVGMask,
         RNSVGMarker,
+        RNSVGForeignObject,
     }
 
     class RenderableShadowNode extends LayoutShadowNode {
@@ -379,8 +384,8 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     private static void resetTransformProperty(View view) {
-        view.setTranslationX(PixelUtil.toPixelFromDIP(0));
-        view.setTranslationY(PixelUtil.toPixelFromDIP(0));
+        view.setTranslationX(0);
+        view.setTranslationY(0);
         view.setRotation(0);
         view.setRotationX(0);
         view.setRotationY(0);
@@ -907,6 +912,32 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         }
     }
 
+    static class ForeignObjectManager extends GroupViewManager {
+        ForeignObjectManager() {
+            super(SVGClass.RNSVGForeignObject);
+        }
+
+        @ReactProp(name = "x")
+        public void setX(ForeignObjectView node, Dynamic x) {
+            node.setX(x);
+        }
+
+        @ReactProp(name = "y")
+        public void setY(ForeignObjectView node, Dynamic y) {
+            node.setY(y);
+        }
+
+        @ReactProp(name = "width")
+        public void setWidth(ForeignObjectView node, Dynamic width) {
+            node.setWidth(width);
+        }
+
+        @ReactProp(name = "height")
+        public void setHeight(ForeignObjectView node, Dynamic height) {
+            node.setHeight(height);
+        }
+    }
+
     static class MarkerManager extends GroupViewManager {
         MarkerManager() {
             super(SVGClass.RNSVGMarker);
@@ -1203,6 +1234,17 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         node.setResponsible(responsible);
     }
 
+    @ReactProp(name = ViewProps.POINTER_EVENTS)
+    public void setPointerEvents(VirtualView view, @androidx.annotation.Nullable String pointerEventsStr) {
+        if (pointerEventsStr == null) {
+            view.setPointerEvents(PointerEvents.AUTO);
+        } else {
+            PointerEvents pointerEvents =
+                    PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+            view.setPointerEvents(pointerEvents);
+        }
+    }
+
     @ReactProp(name = "onLayout")
     public void setOnLayout(VirtualView node, boolean onLayout) {
         node.setOnLayout(onLayout);
@@ -1211,6 +1253,11 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     @ReactProp(name = "name")
     public void setName(VirtualView node, String name) {
         node.setName(name);
+    }
+
+    @ReactProp(name = "display")
+    public void setDisplay(VirtualView node, String display) {
+        node.setDisplay(display);
     }
 
     private void invalidateSvgView(VirtualView node) {
@@ -1297,6 +1344,8 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
                 return new MaskView(reactContext);
             case RNSVGMarker:
                 return new MarkerView(reactContext);
+            case RNSVGForeignObject:
+                return new ForeignObjectView(reactContext);
             default:
                 throw new IllegalStateException("Unexpected type " + svgClass.toString());
         }

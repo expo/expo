@@ -27,7 +27,7 @@ export const globalFonts = `
 
   @font-face {
     font-family: ${Constants.fonts.mono};
-    src: url('/static/fonts/MaisonNeue-Mono.woff2');
-    src: url('/static/fonts/MaisonNeue-Mono.woff') format('woff');
+    src: url('/static/fonts/Menlo-Regular.woff2');
+    src: url('/static/fonts/Menlo-Regular.woff') format('woff');
   }
 `.replace(/\s/g, '');

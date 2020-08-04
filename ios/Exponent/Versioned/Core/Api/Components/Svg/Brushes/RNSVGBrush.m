@@ -16,8 +16,6 @@
     return [super init];
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-
 - (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter bounds:(CGRect)bounds
 {
 
@@ -31,6 +29,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)applyStrokeColor:(CGContextRef)context opacity:(CGFloat)opacity
 {
     return NO;
+}
+
+- (CGColorRef)getColorWithOpacity:(CGFloat)opacity
+{
+    return nil;
 }
 
 - (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter

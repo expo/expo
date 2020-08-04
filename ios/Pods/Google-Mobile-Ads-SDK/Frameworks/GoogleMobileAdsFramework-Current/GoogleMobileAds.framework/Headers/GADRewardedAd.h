@@ -20,7 +20,8 @@
 /// object is non-null and provides failure information. On success, |error| is nil.
 typedef void (^GADRewardedAdLoadCompletionHandler)(GADRequestError *_Nullable error);
 
-/// The GADRewardedAd class is used for requesting and presenting a rewarded ad.
+/// A rewarded ad. Rewarded ads are ads that users have the option of interacting with in exchange
+/// for in-app rewards. See https://developers.google.com/admob/ios/rewarded-ads to get started.
 @interface GADRewardedAd : NSObject
 
 /// Initializes a rewarded ad with the provided ad unit ID. Create ad unit IDs using the AdMob
@@ -40,8 +41,8 @@ typedef void (^GADRewardedAdLoadCompletionHandler)(GADRequestError *_Nullable er
 /// Indicates whether the rewarded ad is ready to be presented.
 @property(nonatomic, readonly, getter=isReady) BOOL ready;
 
-/// Information about the ad response that returned the current ad. Nil while an ad
-/// request is in progress or if the latest ad request failed.
+/// Information about the ad response that returned the current ad. Nil while an ad request is in
+/// progress or if the latest ad request failed.
 @property(nonatomic, readonly, nullable) GADResponseInfo *responseInfo;
 
 /// The reward earned by the user for interacting with a rewarded ad. Is nil until the ad has

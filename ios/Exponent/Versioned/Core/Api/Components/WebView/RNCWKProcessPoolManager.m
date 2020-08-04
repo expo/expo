@@ -9,8 +9,8 @@
 #import "RNCWKProcessPoolManager.h"
 
 @interface RNCWKProcessPoolManager() {
-  WKProcessPool *_sharedProcessPool;
-  NSMutableDictionary<NSString *, WKProcessPool *> *_pools;
+    WKProcessPool *_sharedProcessPool;
+    NSMutableDictionary<NSString *, WKProcessPool *> *_pools;
 }
 @end
 
@@ -28,10 +28,10 @@
 
 - (instancetype)init
 {
-  if (self = [super init]) {
-    _pools = [NSMutableDictionary new];
-  }
-  return self;
+    if (self = [super init]) {
+        _pools = [NSMutableDictionary new];
+    }
+    return self;
 }
 
 - (WKProcessPool *)sharedProcessPool {
@@ -43,15 +43,15 @@
 
 - (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId
 {
-  if (!experienceId) {
-    return [self sharedProcessPool];
-  }
+    if (!experienceId) {
+        return [self sharedProcessPool];
+    }
 
-  if (!_pools[experienceId]) {
-    _pools[experienceId] = [[WKProcessPool alloc] init];
-  }
+    if (!_pools[experienceId]) {
+        _pools[experienceId] = [[WKProcessPool alloc] init];
+    }
 
-  return _pools[experienceId];
+    return _pools[experienceId];
 }
 
 @end

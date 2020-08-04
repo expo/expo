@@ -1,5 +1,5 @@
 import { Subscription } from '@unimodules/core';
-import { DevicePushToken } from './getDevicePushTokenAsync';
+import { DevicePushToken } from './Tokens.types';
 export declare type PushTokenListener = (token: DevicePushToken) => void;
 export declare function addPushTokenListener(listener: PushTokenListener): Subscription;
 export declare function removePushTokenSubscription(subscription: Subscription): void;

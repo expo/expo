@@ -6,7 +6,7 @@
   NSDictionary *_plist;
 }
 
-+ (instancetype)mainProvisioningProfile
++ (nonnull instancetype)mainProvisioningProfile
 {
   static EXProvisioningProfile *profile;
   static dispatch_once_t onceToken;

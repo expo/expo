@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,9 @@
 #include <type_traits>
 
 #include <folly/detail/AtomicHashUtils.h>
+#include <folly/detail/Iterators.h>
 #include <folly/lang/Bits.h>
+#include <folly/lang/Exception.h>
 
 namespace folly {
 
@@ -58,7 +60,11 @@ AtomicHashArray<
       numEntries_(0, cacheSize),
       numPendingEntries_(0, cacheSize),
       isFull_(0),
-      numErases_(0) {}
+      numErases_(0) {
+  if (capacity == 0) {
+    throw_exception<std::invalid_argument>("capacity");
+  }
+}
 
 /*
  * findInternal --
@@ -480,10 +486,10 @@ struct AtomicHashArray<
     Allocator,
     ProbeFcn,
     KeyConvertFcn>::aha_iterator
-    : boost::iterator_facade<
+    : detail::IteratorFacade<
           aha_iterator<ContT, IterVal>,
           IterVal,
-          boost::forward_traversal_tag> {
+          std::forward_iterator_tag> {
   explicit aha_iterator() : aha_(nullptr) {}
 
   // Conversion ctor for interoperability between const_iterator and
@@ -514,7 +520,8 @@ struct AtomicHashArray<
 
  private:
   friend class AtomicHashArray;
-  friend class boost::iterator_core_access;
+  friend class detail::
+      IteratorFacade<aha_iterator, IterVal, std::forward_iterator_tag>;
 
   void increment() {
     ++offset_;

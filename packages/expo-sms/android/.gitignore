@@ -152,12 +152,6 @@ atlassian-ide-plugin.xml
 # Mongo Explorer plugin
 .idea/mongoSettings.xml
 
-# Crashlytics plugin (for Android Studio and IntelliJ)
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
-
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
@@ -204,8 +198,6 @@ cmake-build-debug/
 
 # Ruby plugin and RubyMine
 /.rakeTasks
-
-# Crashlytics plugin (for Android Studio and IntelliJ)
 
 ### Intellij Patch ###
 # Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721

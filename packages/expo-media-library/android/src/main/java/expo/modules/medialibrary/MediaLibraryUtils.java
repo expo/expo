@@ -1,17 +1,24 @@
 package expo.modules.medialibrary;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
-import androidx.exifinterface.media.ExifInterface;
 import android.text.TextUtils;
+import android.util.Log;
+
+import org.unimodules.core.Promise;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -19,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.Promise;
+import androidx.exifinterface.media.ExifInterface;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
@@ -50,9 +57,9 @@ final class MediaLibraryUtils {
     public File apply(File src, File dir, Context context) throws IOException {
       File newFile = safeMoveFile(src, dir);
       context.getContentResolver().delete(
-          EXTERNAL_CONTENT,
-          Media.DATA + "=?",
-          new String[]{src.getPath()});
+        EXTERNAL_CONTENT,
+        Media.DATA + "=?",
+        new String[]{src.getPath()});
       return newFile;
     }
   };
@@ -96,12 +103,13 @@ final class MediaLibraryUtils {
   }
 
   static void queryAssetInfo(Context context, final String selection, final String[] selectionArgs, boolean fullInfo, Promise promise) {
-    try (Cursor asset = context.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        ASSET_PROJECTION,
-        selection,
-        selectionArgs,
-        null
+    ContentResolver contentResolver = context.getContentResolver();
+    try (Cursor asset = contentResolver.query(
+      EXTERNAL_CONTENT,
+      ASSET_PROJECTION,
+      selection,
+      selectionArgs,
+      null
     )) {
       if (asset == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.");
@@ -109,7 +117,7 @@ final class MediaLibraryUtils {
         if (asset.getCount() == 1) {
           asset.moveToFirst();
           ArrayList<Bundle> array = new ArrayList<>();
-          putAssetsInfo(asset, array, 1, 0, fullInfo);
+          putAssetsInfo(contentResolver, asset, array, 1, 0, fullInfo);
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
           // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
@@ -120,18 +128,16 @@ final class MediaLibraryUtils {
       }
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
+        "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
       promise.reject(ERROR_IO_EXCEPTION, "Could not read file or parse EXIF tags", e);
     }
   }
 
-  static void putAssetsInfo(Cursor cursor, ArrayList<Bundle> response, int limit, int offset, boolean fullInfo) throws IOException {
+  static void putAssetsInfo(ContentResolver contentResolver, Cursor cursor, ArrayList<Bundle> response, int limit, int offset, boolean fullInfo) throws IOException {
     final int idIndex = cursor.getColumnIndex(Media._ID);
     final int filenameIndex = cursor.getColumnIndex(Media.DISPLAY_NAME);
     final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
-    final int latitudeIndex = cursor.getColumnIndex(Media.LATITUDE);
-    final int longitudeIndex = cursor.getColumnIndex(Media.LONGITUDE);
     final int creationDateIndex = cursor.getColumnIndex(Media.DATE_TAKEN);
     final int modificationDateIndex = cursor.getColumnIndex(Media.DATE_MODIFIED);
     final int durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION);
@@ -142,9 +148,16 @@ final class MediaLibraryUtils {
       return;
     }
     for (int i = 0; i < limit && !cursor.isAfterLast(); i++) {
-      String localUri = "file://" + cursor.getString(localUriIndex);
+      String path = cursor.getString(localUriIndex);
+      String localUri = "file://" + path;
       int mediaType = cursor.getInt(mediaTypeIndex);
-      int[] size = getSizeFromCursor(cursor, mediaType, localUriIndex);
+
+      ExifInterface exifInterface = null;
+      if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
+        exifInterface = new ExifInterface(path);
+      }
+
+      int[] size = getSizeFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex);
 
       Bundle asset = new Bundle();
       asset.putString("id", cursor.getString(idIndex));
@@ -159,24 +172,12 @@ final class MediaLibraryUtils {
       asset.putString("albumId", cursor.getString(albumIdIndex));
 
       if (fullInfo) {
-        if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
-          getExifFullInfo(cursor, asset);
+        if (exifInterface != null) {
+          getExifFullInfo(exifInterface, asset);
+          getExifLocation(exifInterface, asset);
         }
 
         asset.putString("localUri", localUri);
-
-        double latitude = cursor.getDouble(latitudeIndex);
-        double longitude = cursor.getDouble(longitudeIndex);
-
-        // we want location to be null if it's not available
-        if (latitude != 0.0 || longitude != 0.0) {
-          Bundle location = new Bundle();
-          location.putDouble("latitude", latitude);
-          location.putDouble("longitude", longitude);
-          asset.putParcelable("location", location);
-        } else {
-          asset.putParcelable("location", null);
-        }
       }
       cursor.moveToNext();
       response.add(asset);
@@ -213,25 +214,68 @@ final class MediaLibraryUtils {
     return MEDIA_TYPES.get(mediaType);
   }
 
-  static int[] getSizeFromCursor(Cursor cursor, int mediaType, int localUriIndex){
-    final int orientationIndex = cursor.getColumnIndex(Media.ORIENTATION);
-    final int widthIndex = cursor.getColumnIndex(Media.WIDTH);
-    final int heightIndex = cursor.getColumnIndex(Media.HEIGHT);
+  static int[] getSizeFromCursor(ContentResolver contentResolver, ExifInterface exifInterface, Cursor cursor, int mediaType, int localUriIndex) throws IOException {
+    final String uri = cursor.getString(localUriIndex);
 
-    int[] size;
-    // If image doesn't have the required information, we can get them from Bitmap.Options
-    if ((cursor.getType(widthIndex) == Cursor.FIELD_TYPE_NULL ||
-        cursor.getType(heightIndex) == Cursor.FIELD_TYPE_NULL) &&
-        mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
+    if (mediaType == Files.FileColumns.MEDIA_TYPE_VIDEO) {
+      Uri videoUri = Uri.parse("file://" + uri);
+      MediaMetadataRetriever retriever = null;
+      try (AssetFileDescriptor photoDescriptor = contentResolver.openAssetFileDescriptor(videoUri, "r")) {
+        retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(photoDescriptor.getFileDescriptor());
+        int videoWidth = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+        );
+        int videoHeight = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+        );
+        int videoOrientation = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+        );
+        return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation);
+      } catch (NumberFormatException e) {
+        Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: " + e.getMessage());
+      } catch (FileNotFoundException e) {
+        Log.e("expo-media-library", String.format("ContentResolver failed to read %s: %s", uri, e.getMessage()));
+      } finally {
+        if (retriever != null) {
+          retriever.release();
+        }
+      }
+    }
+
+    final int widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH);
+    final int heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT);
+    final int orientationIndex = cursor.getColumnIndex(Media.ORIENTATION);
+    int width = cursor.getInt(widthIndex);
+    int height = cursor.getInt(heightIndex);
+    int orientation = cursor.getInt(orientationIndex);
+
+    // If the image doesn't have the required information, we can get them from Bitmap.Options
+    if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE && (width <= 0 || height <= 0)) {
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = true;
-
-      BitmapFactory.decodeFile(cursor.getString(localUriIndex), options);
-      size = maybeRotateAssetSize(options.outWidth, options.outHeight, cursor.getInt(orientationIndex));
-    } else {
-      size = maybeRotateAssetSize(cursor.getInt(widthIndex), cursor.getInt(heightIndex), cursor.getInt(orientationIndex));
+      BitmapFactory.decodeFile(uri, options);
+      width = options.outWidth;
+      height = options.outHeight;
     }
-    return size;
+
+    if (exifInterface != null) {
+      int exifOrientation = exifInterface.getAttributeInt(
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_NORMAL
+      );
+      if (
+        exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 ||
+          exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
+          exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
+          exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
+      ) {
+        orientation = 90;
+      }
+    }
+
+    return maybeRotateAssetSize(width, height, orientation);
   }
 
   static int[] maybeRotateAssetSize(int width, int height, int orientation) {
@@ -265,9 +309,7 @@ final class MediaLibraryUtils {
     return TextUtils.join(",", result);
   }
 
-  static void getExifFullInfo(Cursor cursor, Bundle response) throws IOException {
-    File input = new File(cursor.getString(cursor.getColumnIndex(Media.DATA)));
-    ExifInterface exifInterface = new ExifInterface(input.getPath());
+  static void getExifFullInfo(ExifInterface exifInterface, Bundle response) {
     Bundle exifMap = new Bundle();
     for (String[] tagInfo : exifTags) {
       String name = tagInfo[1];
@@ -289,6 +331,19 @@ final class MediaLibraryUtils {
     response.putParcelable("exif", exifMap);
   }
 
+  static void getExifLocation(ExifInterface exifInterface, Bundle asset) {
+    double[] latLong = exifInterface.getLatLong();
+    if (latLong == null) {
+      asset.putParcelable("location", null);
+      return;
+    }
+
+    Bundle location = new Bundle();
+    location.putDouble("latitude", latLong[0]);
+    location.putDouble("longitude", latLong[1]);
+    asset.putParcelable("location", location);
+  }
+
   static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
     final String countColumn = "COUNT(*)";
@@ -297,11 +352,11 @@ final class MediaLibraryUtils {
     final String group = Media.BUCKET_DISPLAY_NAME;
 
     try (Cursor albums = context.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        projection,
-        selectionWithGroupBy,
-        selectionArgs,
-        group)) {
+      EXTERNAL_CONTENT,
+      projection,
+      selectionWithGroupBy,
+      selectionArgs,
+      group)) {
 
       if (albums == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.");
@@ -321,18 +376,18 @@ final class MediaLibraryUtils {
       promise.resolve(result);
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
+        "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
     }
   }
 
   static void deleteAssets(Context context, String selection, String[] selectionArgs, Promise promise) {
     final String[] projection = {Media.DATA};
     try (Cursor filesToDelete = context.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        projection,
-        selection,
-        selectionArgs,
-        null)) {
+      EXTERNAL_CONTENT,
+      projection,
+      selection,
+      selectionArgs,
+      null)) {
       if (filesToDelete == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.");
       } else {
@@ -341,9 +396,9 @@ final class MediaLibraryUtils {
           File file = new File(filePath);
           if (file.delete()) {
             context.getContentResolver().delete(
-                EXTERNAL_CONTENT,
-                Media.DATA + " = \"" + filePath + "\"",
-                null);
+              EXTERNAL_CONTENT,
+              Media.DATA + " = \"" + filePath + "\"",
+              null);
           } else {
             promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
             return;
@@ -353,7 +408,7 @@ final class MediaLibraryUtils {
       }
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_SAVE_PERMISSION,
-          "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
+        "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
     }
   }
 
@@ -370,11 +425,11 @@ final class MediaLibraryUtils {
     final String selection = MediaStore.Images.Media._ID + " IN ( " + getInPart(assetsId) + " )";
 
     try (Cursor assets = context.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        path,
-        selection,
-        assetsId,
-        null
+      EXTERNAL_CONTENT,
+      path,
+      selection,
+      assetsId,
+      null
     )) {
 
       if (assets == null) {

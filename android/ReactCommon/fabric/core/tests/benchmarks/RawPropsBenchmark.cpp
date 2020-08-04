@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -20,8 +20,8 @@ namespace react {
 
 auto contextContainer = std::make_shared<ContextContainer const>();
 auto eventDispatcher = std::shared_ptr<EventDispatcher>{nullptr};
-auto viewComponentDescriptor =
-    ViewComponentDescriptor(eventDispatcher, contextContainer);
+auto viewComponentDescriptor = ViewComponentDescriptor{
+    ComponentDescriptorParameters{eventDispatcher, contextContainer}};
 
 auto emptyPropsDynamic = folly::parseJson("{}");
 auto propsString = std::string{

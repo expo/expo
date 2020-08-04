@@ -3,20 +3,18 @@ title: Contacts
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-contacts`** provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-contacts`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
+<InstallSection packageName="expo-contacts" />
 
 ## Configuration
 
@@ -70,7 +68,7 @@ export default function App() {
 import * as Contacts from 'expo-contacts';
 ```
 
-<TableOfContentSection title='Methods' contents={['Contacts.getContactsAsync(contactQuery)', 'Contacts.getContactByIdAsync(contactId, fields)', 'Contacts.addContactAsync(contact, containerId)', 'Contacts.updateContactAsync(contact)', 'Contacts.presentFormAsync(contactId, contact, formOptions)', 'Contacts.removeContactAsync(contactId)', 'Contacts.writeContactToFileAsync(contactQuery)']} />
+<TableOfContentSection title='Methods' contents={['Contacts.requestPermissionsAsync', 'Contacts.getPermissionsAsync', 'Contacts.getContactsAsync(contactQuery)', 'Contacts.getContactByIdAsync(contactId, fields)', 'Contacts.addContactAsync(contact, containerId)', 'Contacts.updateContactAsync(contact)', 'Contacts.presentFormAsync(contactId, contact, formOptions)', 'Contacts.removeContactAsync(contactId)', 'Contacts.writeContactToFileAsync(contactQuery)']} />
 
 <TableOfContentSection title='iOS-only Methods' contents={['Contacts.addExistingGroupToContainerAsync(groupId, containerId)', 'Contacts.createGroupAsync(groupName, containerId?)', 'Contacts.updateGroupNameAsync(groupName, groupId)', 'Contacts.removeGroupAsync(groupId)', 'Contacts.addExistingContactToGroupAsync(contactId, groupId)', 'Contacts.removeContactFromGroupAsync(contactId, groupId)', 'Contacts.getGroupsAsync(query)', 'Contacts.getDefaultContainerIdAsync()', 'Contacts.getContainersAsync(containerQuery)']} />
 
@@ -168,7 +166,7 @@ Contacts.addContactAsync(contact: Contact, containerId: string): Promise<string>
 
 Creates a new contact and adds it to the system.
 
-> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) and add permission through there.
+> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](../../distribution/building-standalone-apps/) and add permission through there.
 
 **Parameters**
 

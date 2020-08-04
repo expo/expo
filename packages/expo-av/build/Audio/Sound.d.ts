@@ -1,5 +1,5 @@
 import { EventEmitter } from '@unimodules/core';
-import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from '../AV';
+import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 declare type AudioInstance = number | HTMLMediaElement | null;
 export declare class Sound implements Playback {
@@ -8,25 +8,25 @@ export declare class Sound implements Playback {
     _key: AudioInstance;
     _lastStatusUpdate: string | null;
     _lastStatusUpdateTime: Date | null;
-    _subscriptions: Array<{
+    _subscriptions: {
         remove: () => void;
-    }>;
+    }[];
     _eventEmitter: EventEmitter;
     _coalesceStatusUpdatesInMillis: number;
-    _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null;
-    static create: (source: PlaybackSource, initialStatus?: PlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: PlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{
+    _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
+    static create: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{
         sound: Sound;
-        status: PlaybackStatus;
+        status: AVPlaybackStatus;
     }>;
-    static createAsync: (source: PlaybackSource, initialStatus?: PlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: PlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{
+    static createAsync: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{
         sound: Sound;
-        status: PlaybackStatus;
+        status: AVPlaybackStatus;
     }>;
-    _callOnPlaybackStatusUpdateForNewStatus(status: PlaybackStatus): void;
-    _performOperationAndHandleStatusAsync(operation: () => Promise<PlaybackStatus>): Promise<PlaybackStatus>;
+    _callOnPlaybackStatusUpdateForNewStatus(status: AVPlaybackStatus): void;
+    _performOperationAndHandleStatusAsync(operation: () => Promise<AVPlaybackStatus>): Promise<AVPlaybackStatus>;
     _internalStatusUpdateCallback: ({ key, status, }: {
         key: AudioInstance;
-        status: PlaybackStatus;
+        status: AVPlaybackStatus;
     }) => void;
     _internalErrorCallback: ({ key, error }: {
         key: AudioInstance;
@@ -35,27 +35,27 @@ export declare class Sound implements Playback {
     _subscribeToNativeEvents(): void;
     _clearSubscriptions(): void;
     _errorCallback: (error: string) => void;
-    getStatusAsync: () => Promise<PlaybackStatus>;
-    setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null): void;
-    loadAsync(source: PlaybackSource, initialStatus?: PlaybackStatusToSet, downloadFirst?: boolean): Promise<PlaybackStatus>;
-    unloadAsync(): Promise<PlaybackStatus>;
-    setStatusAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
-    replayAsync(status?: PlaybackStatusToSet): Promise<PlaybackStatus>;
-    playAsync: () => Promise<PlaybackStatus>;
+    getStatusAsync: () => Promise<AVPlaybackStatus>;
+    setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null): void;
+    loadAsync(source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, downloadFirst?: boolean): Promise<AVPlaybackStatus>;
+    unloadAsync(): Promise<AVPlaybackStatus>;
+    setStatusAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
+    replayAsync(status?: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
+    playAsync: () => Promise<AVPlaybackStatus>;
     playFromPositionAsync: (positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
-    }) => Promise<PlaybackStatus>;
-    pauseAsync: () => Promise<PlaybackStatus>;
-    stopAsync: () => Promise<PlaybackStatus>;
+    }) => Promise<AVPlaybackStatus>;
+    pauseAsync: () => Promise<AVPlaybackStatus>;
+    stopAsync: () => Promise<AVPlaybackStatus>;
     setPositionAsync: (positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
-    }) => Promise<PlaybackStatus>;
-    setRateAsync: (rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality) => Promise<PlaybackStatus>;
-    setVolumeAsync: (volume: number) => Promise<PlaybackStatus>;
-    setIsMutedAsync: (isMuted: boolean) => Promise<PlaybackStatus>;
-    setIsLoopingAsync: (isLooping: boolean) => Promise<PlaybackStatus>;
-    setProgressUpdateIntervalAsync: (progressUpdateIntervalMillis: number) => Promise<PlaybackStatus>;
+    }) => Promise<AVPlaybackStatus>;
+    setRateAsync: (rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality) => Promise<AVPlaybackStatus>;
+    setVolumeAsync: (volume: number) => Promise<AVPlaybackStatus>;
+    setIsMutedAsync: (isMuted: boolean) => Promise<AVPlaybackStatus>;
+    setIsLoopingAsync: (isLooping: boolean) => Promise<AVPlaybackStatus>;
+    setProgressUpdateIntervalAsync: (progressUpdateIntervalMillis: number) => Promise<AVPlaybackStatus>;
 }
 export {};

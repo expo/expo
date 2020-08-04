@@ -1,11 +1,17 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+
 export default {
   get name(): string {
     return 'ExponentUpdates';
   },
   async reload(): Promise<void> {
-    location.reload(true);
+    if (!canUseDOM) return;
+
+    window.location.reload(true);
   },
   async reloadFromCache(): Promise<void> {
-    location.reload(false);
+    if (!canUseDOM) return;
+
+    window.location.reload(false);
   },
 };

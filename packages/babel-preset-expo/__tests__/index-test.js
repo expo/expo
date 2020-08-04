@@ -8,17 +8,17 @@ const WEBPACK_CALLER = { name: 'babel-loader' };
 
 describe.each([['metro'], ['webpack', WEBPACK_CALLER]])('%s', (_name, caller) => {
   it(`compiles sample files`, () => {
-    let options = {
+    const options = {
       babelrc: false,
       presets: [preset],
       sourceMaps: true,
       caller,
     };
-    let samplesPath = path.resolve(__dirname, 'samples');
-    let filenames = fs.readdirSync(samplesPath);
+    const samplesPath = path.resolve(__dirname, 'samples');
+    const filenames = fs.readdirSync(samplesPath);
 
-    for (let filename of filenames) {
-      let { code, map, ast } = babel.transformFileSync(path.join(samplesPath, filename), options);
+    for (const filename of filenames) {
+      const { code, map, ast } = babel.transformFileSync(path.join(samplesPath, filename), options);
 
       expect(code).toBeDefined();
       expect(map).toBeDefined();
@@ -27,7 +27,7 @@ describe.each([['metro'], ['webpack', WEBPACK_CALLER]])('%s', (_name, caller) =>
   });
 
   it(`uses the platform's react-native import`, () => {
-    let options = {
+    const options = {
       babelrc: false,
       presets: [preset],
       filename: 'unknown',
@@ -36,16 +36,16 @@ describe.each([['metro'], ['webpack', WEBPACK_CALLER]])('%s', (_name, caller) =>
       caller,
     };
 
-    let sourceCode = `
+    const sourceCode = `
 import { View } from 'react-native';
 `;
-    let { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options);
 
     expect(code).toMatchSnapshot();
   });
 
   it(`aliases @expo/vector-icons`, () => {
-    let options = {
+    const options = {
       babelrc: false,
       presets: [preset],
       filename: 'unknown',
@@ -54,20 +54,20 @@ import { View } from 'react-native';
       caller,
     };
 
-    let sourceCode = `
+    const sourceCode = `
 import 'react-native-vector-icons';
 require('react-native-vector-icons');
 imposter.require('react-native-vector-icons');
 imposter.import('react-native-vector-icons');
 `;
-    let { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options);
 
     expect(code).toMatch(/"@expo\/vector-icons"/);
     expect(code).toMatchSnapshot();
   });
 
   it(`composes with babel-plugin-module-resolver`, () => {
-    let options = {
+    const options = {
       babelrc: false,
       presets: [preset],
       plugins: [
@@ -84,11 +84,11 @@ imposter.import('react-native-vector-icons');
       caller,
     };
 
-    let sourceCode = `
+    const sourceCode = `
 import 'rn';
 import 'react-native-vector-icons';
 `;
-    let { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options);
 
     expect(code).toMatch(/"react-native"/);
     expect(code).toMatch(/"@expo\/vector-icons"/);
@@ -98,18 +98,18 @@ import 'react-native-vector-icons';
 
 describe('"lazyImports" option', () => {
   it(`defaults to null`, () => {
-    let testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
-    let optionsDefault = {
+    const testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
+    const optionsDefault = {
       babelrc: false,
       presets: [preset],
     };
-    let { codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
+    const { codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
 
-    let optionsNull = {
+    const optionsNull = {
       babelrc: false,
       presets: [[preset, { lazyImports: null }]],
     };
-    let { codeNull } = babel.transformFileSync(testFilename, optionsNull);
+    const { codeNull } = babel.transformFileSync(testFilename, optionsNull);
 
     expect(codeDefault).toEqual(codeNull);
   });
@@ -121,15 +121,15 @@ describe('"lazyImports" option', () => {
     [['inline-comp', './inline-func', '../inline-func-with-side-effects.fx.ts']],
     [name => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
   ])(`accepts %p`, lazyImportsOption => {
-    let testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
-    let options = {
+    const testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
+    const options = {
       babelrc: false,
       presets: [[preset, { lazyImports: lazyImportsOption }]],
       // Make the snapshot easier to read
       retainLines: true,
     };
 
-    let { code } = babel.transformFileSync(testFilename, options);
+    const { code } = babel.transformFileSync(testFilename, options);
     expect(code).toMatchSnapshot();
   });
 });

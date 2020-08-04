@@ -1,42 +1,78 @@
-import React from 'react';
-import { SectionList, Text, StyleProp, ViewStyle, SectionListProps } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as React from 'react';
+import {
+  SectionList,
+  SectionListProps,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from 'react-native';
 
-import ContactDetailListItem from './ContactDetailListItem';
 import Colors from '../../constants/Colors';
 
-export default class ContactDetailList extends React.Component<{
-  data: Array<{ title: string; data: any }>;
-  refreshControl: JSX.Element;
-  style: StyleProp<ViewStyle>;
-} & SectionListProps<any>> {
-  renderItem = ({ item = {} }) => (
-    // @ts-ignore
-    <ContactDetailListItem key={item.id} contactId={item.id} {...item} />
-  )
-
-  render() {
-    const { data, style, ...props } = this.props;
-    return (
-      <SectionList
-        {...props}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text
-            style={{
-              fontWeight: 'bold',
-              paddingVertical: 4,
-              paddingHorizontal: 16,
-              backgroundColor: Colors.greyBackground,
-              color: Colors.tintColor,
-            }}
-          >
-            {title}
-          </Text>
-        )}
-        style={[{ flex: 1 }, style]}
-        keyExtractor={item => item.id}
-        sections={data}
-        renderItem={this.renderItem}
-      />
-    );
-  }
+export interface DetailListItem {
+  label: string;
+  value: string;
+  id: string;
+  onPress?: () => void;
 }
+
+function ContactDetailListItem({ label, value, onPress }: DetailListItem) {
+  return (
+    <TouchableHighlight
+      underlayColor={Colors.listItemTouchableHighlight}
+      disabled={!onPress}
+      onPress={onPress}>
+      <View style={styles.container}>
+        <View style={{ maxWidth: '80%' }}>
+          <Text style={styles.title}>{label}</Text>
+          <Text style={styles.link}>{value}</Text>
+        </View>
+        {onPress && <Ionicons size={24} color={Colors.tabIconDefault} name="ios-arrow-forward" />}
+      </View>
+    </TouchableHighlight>
+  );
+}
+
+export default function ContactDetailList(props: SectionListProps<DetailListItem>) {
+  return (
+    <SectionList
+      {...props}
+      renderSectionHeader={({ section: { title } }) => <Text style={styles.header}>{title}</Text>}
+      style={styles.list}
+      keyExtractor={item => item.id}
+      sections={props.sections}
+      renderItem={({ item }) => <ContactDetailListItem {...item} />}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  list: { flex: 1 },
+  header: {
+    fontWeight: 'bold',
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.greyBackground,
+    color: Colors.tintColor,
+  },
+  container: {
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  title: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+    fontSize: 14,
+  },
+  link: {
+    fontSize: 14,
+    color: Colors.tintColor,
+  },
+  subtitle: {
+    opacity: 0.8,
+  },
+});

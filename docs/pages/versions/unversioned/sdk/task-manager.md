@@ -3,28 +3,28 @@ title: TaskManager
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-task-manager'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-task-manager`** provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of Expo modules that use TaskManager:
 
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. If you're using the bare workflow, React Native's [Headless JS](https://facebook.github.io/react-native/docs/headless-js-android) might suit your needs.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
 
 ## Configuration for standalone apps
+
+### Background modes on iOS
 
 `TaskManager` works out of the box in the Expo client on Android, but on iOS you'll need to test using [a custom Expo client](../../guides/adhoc-builds/).
 
 Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
-Example of `app.json` that enables background location and background fetch:
+Here is an example of an `app.json` configuration that enables background location and background fetch:
 
 ```json
 {
@@ -42,6 +42,18 @@ Example of `app.json` that enables background location and background fetch:
     }
   }
 }
+```
+
+For bare React Native apps, you need to add those keys manually. You can do it by clicking on your project in Xcode, then `Signing & Capabilities`, adding the `BackgroundMode` capability (if absent), and checking either `Location updates` or `Background fetch`, depending on your needs.
+
+### AppDelegate.h
+
+Make sure that in your `AppDelegate.h`, `AppDelegate` subclasses the `UMAppDelegateWrapper` class from `@unimodules/core`, like so:
+
+```objc
+#import <UMCore/UMAppDelegateWrapper.h>
+
+@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>
 ```
 
 ## API

@@ -2,7 +2,7 @@ import { mount } from 'enzyme';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { LinearGradient } from '..';
+import { LinearGradient } from '../LinearGradient';
 
 const getStyleProp = (component, prop) => StyleSheet.flatten(component.prop('style'))[prop];
 

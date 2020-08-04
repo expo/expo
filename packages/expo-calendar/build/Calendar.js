@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, processColor } from 'react-native';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoCalendar from './ExpoCalendar';
 export var DayOfTheWeek;
 (function (DayOfTheWeek) {
@@ -41,7 +41,7 @@ export async function createCalendarAsync(details = {}) {
     if (!ExpoCalendar.saveCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'createCalendarAsync');
     }
-    let color = details.color ? processColor(details.color) : undefined;
+    const color = details.color ? processColor(details.color) : undefined;
     const newDetails = { ...details, id: undefined, color };
     return ExpoCalendar.saveCalendarAsync(newDetails);
 }
@@ -52,7 +52,7 @@ export async function updateCalendarAsync(id, details = {}) {
     if (!id) {
         throw new Error('updateCalendarAsync must be called with an id (string) of the target calendar');
     }
-    let color = details.color ? processColor(details.color) : undefined;
+    const color = details.color ? processColor(details.color) : undefined;
     if (Platform.OS === 'android') {
         if (details.hasOwnProperty('source') ||
             details.hasOwnProperty('color') ||
@@ -443,7 +443,14 @@ function stringifyIfDate(date) {
 }
 function stringifyDateValues(obj) {
     return Object.keys(obj).reduce((acc, key) => {
-        acc[key] = stringifyIfDate(obj[key]);
+        const value = obj[key];
+        if (value != null && typeof value === 'object' && !(value instanceof Date)) {
+            if (Array.isArray(value)) {
+                return { ...acc, [key]: value.map(stringifyDateValues) };
+            }
+            return { ...acc, [key]: stringifyDateValues(value) };
+        }
+        acc[key] = stringifyIfDate(value);
         return acc;
     }, {});
 }

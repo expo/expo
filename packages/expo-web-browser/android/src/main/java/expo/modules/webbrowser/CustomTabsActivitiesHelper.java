@@ -1,105 +1,33 @@
 package expo.modules.webbrowser;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsClient;
-import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.Function;
+import org.unimodules.core.interfaces.InternalModule;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
-import static androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION;
+public interface CustomTabsActivitiesHelper extends InternalModule {
 
-class CustomTabsActivitiesHelper {
+  @NonNull
+  ArrayList<String> getCustomTabsResolvingActivities() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
+  @NonNull
+  ArrayList<String> getCustomTabsResolvingServices() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
-  private final static String DUMMY_URL = "https://expo.io";
+  @Nullable
+  String getPreferredCustomTabsResolvingActivity(@Nullable List<String> packages) throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
-  private ModuleRegistry mModuleRegistry;
+  @Nullable
+  String getDefaultCustomTabsResolvingActivity() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
-  CustomTabsActivitiesHelper(ModuleRegistry moduleRegistry) {
-    this.mModuleRegistry = moduleRegistry;
-  }
+  void startCustomTabs(Intent intent) throws CurrentActivityNotFoundException;
 
-  ArrayList<String> getCustomTabsResolvingActivities() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    return mapCollectionToDistinctArrayList(getResolvingActivities(createDefaultCustomTabsIntent()), resolveInfo -> resolveInfo.activityInfo.packageName);
-  }
-
-  ArrayList<String> getCustomTabsResolvingServices() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    return mapCollectionToDistinctArrayList(getPackageManager().queryIntentServices(createDefaultCustomTabsServiceIntent(), 0), resolveInfo -> resolveInfo.serviceInfo.packageName);
-  }
-
-  String getPreferredCustomTabsResolvingActivity(@Nullable List<String> packages) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    if (packages == null) packages = getCustomTabsResolvingActivities();
-    return CustomTabsClient.getPackageName(getCurrentActivity(), packages);
-  }
-
-  String getDefaultCustomTabsResolvingActivity() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    return getPackageManager().resolveActivity(createDefaultCustomTabsIntent(), 0).activityInfo.packageName;
-  }
-
-  List<ResolveInfo> getResolvingActivities(@NonNull Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    PackageManager pm = getPackageManager();
-    if (pm == null) {
-      throw new PackageManagerNotFoundException();
-    }
-
-    return pm.queryIntentActivities(intent, 0);
-  }
-
-  void startCustomTabs(Intent intent) throws CurrentActivityNotFoundException {
-    getCurrentActivity().startActivity(intent);
-  }
-
-  private PackageManager getPackageManager() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    PackageManager pm = getCurrentActivity().getPackageManager();
-    if (pm == null) throw new PackageManagerNotFoundException();
-    else return pm;
-  }
-
-  private Activity getCurrentActivity() throws CurrentActivityNotFoundException {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    if (activityProvider == null || activityProvider.getCurrentActivity() == null) {
-      throw new CurrentActivityNotFoundException();
-    }
-    return activityProvider.getCurrentActivity();
-  }
-
-  private Intent createDefaultCustomTabsIntent() {
-    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-    CustomTabsIntent customTabsIntent = builder.build();
-
-    Intent intent = customTabsIntent.intent;
-    intent.setData(Uri.parse(DUMMY_URL));
-    return intent;
-  }
-
-  private Intent createDefaultCustomTabsServiceIntent() {
-    Intent serviceIntent = new Intent();
-    serviceIntent.setAction(ACTION_CUSTOM_TABS_CONNECTION);
-    return serviceIntent;
-  }
-
-  public static <T, R> ArrayList<R> mapCollectionToDistinctArrayList(Collection<? extends T> toMap, Function<T, R> mapper) {
-    LinkedHashSet<R> resultSet = new LinkedHashSet<>();
-    for (T element : toMap) {
-      resultSet.add(mapper.apply(element));
-    }
-    return new ArrayList<>(resultSet);
-  }
-
+  boolean canResolveIntent(Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 }

@@ -1,12 +1,16 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 
-import { PictureOptions } from '../Camera.types';
+import { CameraPictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
+import {
+  isBackCameraAvailableAsync,
+  isFrontCameraAvailableAsync,
+  canGetUserMedia,
+} from './UserMediaManager';
 import { FacingModeToCameraType, PictureSizes } from './constants';
-import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
 import BarCodeScanner from './barcode/BarCodeScanner';
 
 export { ImageType, CameraType, CaptureOptions };
@@ -266,7 +270,7 @@ class CameraModule {
     return null;
   }
 
-  public takePicture(config: PictureOptions): CapturedPicture {
+  public takePicture(config: CameraPictureOptions): CapturedPicture {
     const base64 = Utils.captureImage(this.videoElement, config);
 
     const capturedPicture: CapturedPicture = {
@@ -301,10 +305,9 @@ class CameraModule {
     return PictureSizes;
   };
 
-  public getAvailableCameraTypesAsync = async (): Promise<string[]> => {
-    if (!navigator.mediaDevices.enumerateDevices) {
-      return [];
-    }
+  static async getAvailableCameraTypesAsync(): Promise<string[]> {
+    if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) return [];
+
     const devices = await navigator.mediaDevices.enumerateDevices();
 
     const types: (string | null)[] = await Promise.all([
@@ -313,7 +316,7 @@ class CameraModule {
     ]);
 
     return types.filter(Boolean) as string[];
-  };
+  }
 }
 
 function stopMediaStream(stream: MediaStream | null) {

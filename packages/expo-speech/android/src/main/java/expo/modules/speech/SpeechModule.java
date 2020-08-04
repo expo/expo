@@ -42,6 +42,12 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
 
   @ExpoMethod
   public void speak(final String id, final String text, final Map<String, Object> options, final Promise promise) {
+    if(text.length() > TextToSpeech.getMaxSpeechInputLength()) {
+      promise.reject("ERR_SPEECH_INPUT_LENGTH",
+        "Speech input text is too long! Limit of input length is: " + TextToSpeech.getMaxSpeechInputLength());
+      return;
+    }
+
     if (mTtsReady) {
       speakOut(id, text, options);
     } else {
@@ -185,6 +191,13 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
       });
     }
     return mTextToSpeech;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("maxSpeechInputLength", TextToSpeech.getMaxSpeechInputLength());
+    return constants;
   }
 
   @Override

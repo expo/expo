@@ -4,18 +4,30 @@ import inquirer from 'inquirer';
 
 import { Platform, getSDKVersionsAsync } from '../ProjectVersions';
 
-export default async function askForSDKVersionAsync(platform: Platform, defaultSdkVersion?: string) {
+export default async function askForSDKVersionAsync(
+  platform: Platform,
+  defaultSdkVersion?: string
+) {
   const sdkVersions = await getSDKVersionsAsync(platform);
 
   if (process.env.CI) {
     if (defaultSdkVersion) {
-      console.log(`${chalk.red('`--sdkVersion`')} not provided - defaulting to ${chalk.cyan(defaultSdkVersion)}.`);
+      console.log(
+        `${chalk.red('`--sdkVersion`')} not provided - defaulting to ${chalk.cyan(
+          defaultSdkVersion
+        )}.`
+      );
       return defaultSdkVersion;
     }
-    throw new Error(`${chalk.red('`--sdkVersion`')} not provided and unable to obtain default value.`);
+    throw new Error(
+      `${chalk.red('`--sdkVersion`')} not provided and unable to obtain default value.`
+    );
   }
 
-  const defaultValue = defaultSdkVersion && sdkVersions.includes(defaultSdkVersion) ? defaultSdkVersion : sdkVersions[sdkVersions.length - 1];
+  const defaultValue =
+    defaultSdkVersion && sdkVersions.includes(defaultSdkVersion)
+      ? defaultSdkVersion
+      : sdkVersions[sdkVersions.length - 1];
   const { sdkVersion } = await inquirer.prompt<{ sdkVersion: string }>([
     {
       type: 'list',
@@ -29,7 +41,7 @@ export default async function askForSDKVersionAsync(platform: Platform, defaultS
         }
         return true;
       },
-    }
+    },
   ]);
   return sdkVersion;
 }

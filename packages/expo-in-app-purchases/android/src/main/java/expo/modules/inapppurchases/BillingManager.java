@@ -93,7 +93,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         .build();
   }
 
-  public void startConnectionAndQueryHistory(final Promise promise) {
+  public void startConnection(final Promise promise) {
     // Start setup. This is asynchronous and the specified listener will be called
     // once setup completes.
     // It also starts to report all the new purchases through onPurchasesUpdated() callback.
@@ -102,8 +102,7 @@ public class BillingManager implements PurchasesUpdatedListener {
       public void run() {
         // Notifying the listener that billing client is ready
         mBillingUpdatesListener.onBillingClientSetupFinished();
-        // IAB is fully set up. Now, let's get an inventory of stuff we own.
-        queryPurchases(promise);
+        promise.resolve(null);
       }
     });
   }

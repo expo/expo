@@ -1,5 +1,5 @@
-export declare let userMediaRequested: boolean;
-export declare let mountedInstances: any[];
+export declare const userMediaRequested: boolean;
+export declare const mountedInstances: any[];
 export declare function requestUserMediaAsync(props: {
     audio?: any;
     video?: any;

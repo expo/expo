@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		38E912B45859CD7978DF745D12C55BBF /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A0142BFC1E6F5F7F13E69EFFB5C99908 /* EXSecureStore.m */; };
-		BD1CD80F4789399AC2BC89AEAEDE4A2E /* EXSecureStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CEC4ED96CB0B4E72ACAB34A82C672C4 /* EXSecureStore.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C8CE6C444CFD3AE37726C98A7BC72CBC /* EXSecureStore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8BF500CF0A29DDF91AB0A5F18E02E6 /* EXSecureStore-dummy.m */; };
+		9DC26B45EFDF8C69019006337564D97B /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A9444B2362D9C714F974A1109F6366E3 /* EXSecureStore.m */; };
+		AD0177EB6916013553C77E85D9E6A515 /* EXSecureStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FACE66D7CBAFA2CA6D2F71A515C981C /* EXSecureStore.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EABE9547FF5CE5A68D10649ABE7AED31 /* EXSecureStore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F98CFFEDE652D155F61BCFDCF7AF5C /* EXSecureStore-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		66E443D44118E7BCA2362B01FD6FF5E2 /* PBXContainerItemProxy */ = {
+		41BC40A677EA08E4342EDBFAFE6DCE71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C6B42B9AA7A45C2893C26C30EF9EB39F /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -23,18 +23,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0CEC4ED96CB0B4E72ACAB34A82C672C4 /* EXSecureStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSecureStore.h; path = EXSecureStore/EXSecureStore.h; sourceTree = "<group>"; };
-		4C8BF500CF0A29DDF91AB0A5F18E02E6 /* EXSecureStore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSecureStore-dummy.m"; sourceTree = "<group>"; };
-		94E5F679CB23DBF7F5E69EC20C47DBF4 /* EXSecureStore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSecureStore.xcconfig; sourceTree = "<group>"; };
-		97DDDFA42BAF58A2FEFA4F0281C78A05 /* EXSecureStore-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSecureStore-prefix.pch"; sourceTree = "<group>"; };
-		A0142BFC1E6F5F7F13E69EFFB5C99908 /* EXSecureStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSecureStore.m; path = EXSecureStore/EXSecureStore.m; sourceTree = "<group>"; };
+		09077AD4220B30DCA05F1E3F826D3832 /* EXSecureStore-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSecureStore-prefix.pch"; sourceTree = "<group>"; };
+		15B545DF7C8CECEFA8CE4A9A86E97979 /* EXSecureStore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSecureStore.release.xcconfig; sourceTree = "<group>"; };
+		5FACE66D7CBAFA2CA6D2F71A515C981C /* EXSecureStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSecureStore.h; path = EXSecureStore/EXSecureStore.h; sourceTree = "<group>"; };
+		93F98CFFEDE652D155F61BCFDCF7AF5C /* EXSecureStore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSecureStore-dummy.m"; sourceTree = "<group>"; };
 		A8F92DF39249ABDCA791B61BE52227AC /* libEXSecureStore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSecureStore.a; path = libEXSecureStore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9444B2362D9C714F974A1109F6366E3 /* EXSecureStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSecureStore.m; path = EXSecureStore/EXSecureStore.m; sourceTree = "<group>"; };
+		BC5741C7727980E8EABEA839476D5FC0 /* EXSecureStore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSecureStore.debug.xcconfig; sourceTree = "<group>"; };
+		C594EA28E995864B835B9BE5538771DB /* EXSecureStore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSecureStore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		C6B42B9AA7A45C2893C26C30EF9EB39F /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		C7E2118B4CD14DAF3E27816C1BA275B5 /* EXSecureStore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSecureStore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		193F61C9D2A9422C05E27F6FB69E9051 /* Frameworks */ = {
+		868B385A83A342FD7321AD10FE2FEB18 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -44,6 +45,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D0A26CD07927D6E639DEAFC7033E731 /* EXSecureStore */ = {
+			isa = PBXGroup;
+			children = (
+				5FACE66D7CBAFA2CA6D2F71A515C981C /* EXSecureStore.h */,
+				A9444B2362D9C714F974A1109F6366E3 /* EXSecureStore.m */,
+				AEBC6DE9EA94383950485F25BFC136A4 /* Pod */,
+				CAAD903EB44BE3EC868E5A03561D34CB /* Support Files */,
+			);
+			name = EXSecureStore;
+			path = "../../../../packages/expo-secure-store/ios";
+			sourceTree = "<group>";
+		};
 		865E335ADABB361D125A24463A63902E /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -60,16 +73,12 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		959773E41DCDAD29CF8BB0F563F1FC6D /* EXSecureStore */ = {
+		AEBC6DE9EA94383950485F25BFC136A4 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				0CEC4ED96CB0B4E72ACAB34A82C672C4 /* EXSecureStore.h */,
-				A0142BFC1E6F5F7F13E69EFFB5C99908 /* EXSecureStore.m */,
-				E19CE60F97C7FE105720FF3174DDEFBC /* Pod */,
-				FE64760BFB2E7B7AB7FCBBC9B7C32EFD /* Support Files */,
+				C594EA28E995864B835B9BE5538771DB /* EXSecureStore.podspec */,
 			);
-			name = EXSecureStore;
-			path = "../../../../packages/expo-secure-store/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		B0BA1BCFC252378F9C4026104FDE0346 /* Frameworks */ = {
@@ -79,43 +88,36 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E19CE60F97C7FE105720FF3174DDEFBC /* Pod */ = {
+		CAAD903EB44BE3EC868E5A03561D34CB /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				C7E2118B4CD14DAF3E27816C1BA275B5 /* EXSecureStore.podspec */,
+				93F98CFFEDE652D155F61BCFDCF7AF5C /* EXSecureStore-dummy.m */,
+				09077AD4220B30DCA05F1E3F826D3832 /* EXSecureStore-prefix.pch */,
+				BC5741C7727980E8EABEA839476D5FC0 /* EXSecureStore.debug.xcconfig */,
+				15B545DF7C8CECEFA8CE4A9A86E97979 /* EXSecureStore.release.xcconfig */,
 			);
-			name = Pod;
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXSecureStore";
 			sourceTree = "<group>";
 		};
 		E412D4879AFBEA23E9D048A9B43BBB3E = {
 			isa = PBXGroup;
 			children = (
 				936747B770AC09D2C17EEA80EF5457C2 /* Dependencies */,
-				959773E41DCDAD29CF8BB0F563F1FC6D /* EXSecureStore */,
+				3D0A26CD07927D6E639DEAFC7033E731 /* EXSecureStore */,
 				B0BA1BCFC252378F9C4026104FDE0346 /* Frameworks */,
 				865E335ADABB361D125A24463A63902E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		FE64760BFB2E7B7AB7FCBBC9B7C32EFD /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				94E5F679CB23DBF7F5E69EC20C47DBF4 /* EXSecureStore.xcconfig */,
-				4C8BF500CF0A29DDF91AB0A5F18E02E6 /* EXSecureStore-dummy.m */,
-				97DDDFA42BAF58A2FEFA4F0281C78A05 /* EXSecureStore-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXSecureStore";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FABBCD3BB035E95E0B2FA8A91175E8CD /* Headers */ = {
+		BC8A6E41815756F6D64D744EF1F0DB62 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD1CD80F4789399AC2BC89AEAEDE4A2E /* EXSecureStore.h in Headers */,
+				AD0177EB6916013553C77E85D9E6A515 /* EXSecureStore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		C4DBAA5ED98E7A037D09674FF42AF66F /* EXSecureStore */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0DAB6336B4BF6F2742329A0B94C17C6C /* Build configuration list for PBXNativeTarget "EXSecureStore" */;
+			buildConfigurationList = 970EC6EECF7FEBB6AC335A6B8254DAB4 /* Build configuration list for PBXNativeTarget "EXSecureStore" */;
 			buildPhases = (
-				FABBCD3BB035E95E0B2FA8A91175E8CD /* Headers */,
-				4CBF830EEC21A67A463036FA67BB7049 /* Sources */,
-				193F61C9D2A9422C05E27F6FB69E9051 /* Frameworks */,
+				BC8A6E41815756F6D64D744EF1F0DB62 /* Headers */,
+				8A5DDC694B01391BD304723494643BBF /* Sources */,
+				868B385A83A342FD7321AD10FE2FEB18 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				6E8FF44644A3D4F8E26764E3B689048F /* PBXTargetDependency */,
+				720F5B20E355FC9BD8D2C05FF248DD2B /* PBXTargetDependency */,
 			);
 			name = EXSecureStore;
 			productName = EXSecureStore;
@@ -173,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4CBF830EEC21A67A463036FA67BB7049 /* Sources */ = {
+		8A5DDC694B01391BD304723494643BBF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8CE6C444CFD3AE37726C98A7BC72CBC /* EXSecureStore-dummy.m in Sources */,
-				38E912B45859CD7978DF745D12C55BBF /* EXSecureStore.m in Sources */,
+				EABE9547FF5CE5A68D10649ABE7AED31 /* EXSecureStore-dummy.m in Sources */,
+				9DC26B45EFDF8C69019006337564D97B /* EXSecureStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6E8FF44644A3D4F8E26764E3B689048F /* PBXTargetDependency */ = {
+		720F5B20E355FC9BD8D2C05FF248DD2B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 66E443D44118E7BCA2362B01FD6FF5E2 /* PBXContainerItemProxy */;
+			targetProxy = 41BC40A677EA08E4342EDBFAFE6DCE71 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -253,9 +255,9 @@
 			};
 			name = Release;
 		};
-		1F84EC0624A99F5A0A51494A3A3DE45D /* Debug */ = {
+		614860826EB6072453E376254AC9180E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 94E5F679CB23DBF7F5E69EC20C47DBF4 /* EXSecureStore.xcconfig */;
+			baseConfigurationReference = BC5741C7727980E8EABEA839476D5FC0 /* EXSecureStore.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -273,13 +275,14 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		2CD8CF28DBCE34A953D2690AC3F6C649 /* Release */ = {
+		8536BAF91501B2BD2CBB7F9FBD810FBA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 94E5F679CB23DBF7F5E69EC20C47DBF4 /* EXSecureStore.xcconfig */;
+			baseConfigurationReference = 15B545DF7C8CECEFA8CE4A9A86E97979 /* EXSecureStore.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -297,6 +300,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -378,11 +382,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0DAB6336B4BF6F2742329A0B94C17C6C /* Build configuration list for PBXNativeTarget "EXSecureStore" */ = {
+		970EC6EECF7FEBB6AC335A6B8254DAB4 /* Build configuration list for PBXNativeTarget "EXSecureStore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1F84EC0624A99F5A0A51494A3A3DE45D /* Debug */,
-				2CD8CF28DBCE34A953D2690AC3F6C649 /* Release */,
+				614860826EB6072453E376254AC9180E /* Debug */,
+				8536BAF91501B2BD2CBB7F9FBD810FBA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

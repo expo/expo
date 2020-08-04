@@ -97,7 +97,7 @@
     }];
   } else {
     BLOCK_SAFE_RUN(callback, NO);
-    UMLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://facebook.github.io/react-native/docs/debugging.html)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
+    UMLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
   }
 }
 
@@ -230,7 +230,12 @@
     NSData *imageData;
     NSString *extension;
     
-    if ([format isEqualToString:@"png"]) {
+    if ([format isEqualToString:@"webp"]) {
+      UMLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
+      imageData = UIImagePNGRepresentation(image);
+      extension = @".png";
+    }
+    else if ([format isEqualToString:@"png"]) {
       imageData = UIImagePNGRepresentation(image);
       extension = @".png";
     } else {

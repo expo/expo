@@ -1,15 +1,14 @@
-import styled, { keyframes, css } from 'react-emotion';
-
 import Router from 'next/router';
-
 import * as React from 'react';
+import { css } from 'react-emotion';
+
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
-
 import { LATEST_VERSION } from '~/common/versions';
 
 const STYLES_INPUT = css`
   display: flex;
+  position: relative;
   align-items: flex-end;
 
   .searchbox {
@@ -22,35 +21,95 @@ const STYLES_INPUT = css`
 
   .searchbox__input,
   input {
-    font-family: ${Constants.fontFamilies.book};
+    -webkit-appearance: none;
     color: ${Constants.colors.black80};
     box-sizing: border-box;
-    width: 380px;
-    font-size: 14px;
-    padding: 2px 36px 0 8px;
-    border-radius: 5px;
-    height: 32px;
+    width: 38vw;
+    max-width: ${Constants.breakpoints.mobileStrictValue - 32}px;
+    font-size: 16px;
+    padding: 1px 36px 0 36px;
+    border-radius: 2px;
+    height: 40px;
     outline: 0;
     border: 1px solid ${Constants.colors.border};
-    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.04);
-
-    :focus {
-      border: 1px solid ${Constants.colors.expo};
-      outline: 0;
-    }
+    background-color: ${Constants.expoColors.gray[200]};
   }
 
   .svg-icons {
     left: 240px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
     display: none;
+  }
+
+  .shortcut-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .search {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    display: flex;
+    left: 8px;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
+
+const STYLES_INPUT_MOBILE = css`
+  flex: auto;
+  margin: 0px 16px;
+
+  .searchbox__input,
+  input {
+    width: calc(100vw - 32px) !important;
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    display: flex;
+  }
+
+  .close-search {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    color: rgba(0, 0, 0, 0.3);
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
 `;
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
+  constructor(props) {
+    super(props);
+    this.searchRef = React.createRef();
+  }
+
+  state = {
+    isFocused: false,
+  };
+
   processUrl(url) {
     // Update URLs for new doc URLs
     var routes = url.split('/');
@@ -58,48 +117,49 @@ class AlgoliaSearch extends React.Component {
     return routes.join('/');
   }
 
+  focusSearchInput() {
+    if (this.searchRef.current) {
+      this.searchRef.current.focus();
+    }
+  }
+
   componentDidMount() {
     const docsearch = require('docsearch.js');
     const Hotshot = require('hotshot');
 
+    // latest is indexed in algolia, but we try to match the exact version instead
+    // latest is also filtered using the facetFilters, and should not be returned in the search results
+    const currentVersion = this.props.version === 'latest' ? LATEST_VERSION : this.props.version;
+
     this.docsearch = docsearch({
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
       indexName: 'expo',
-      inputSelector: '#algolia-search-box',
+      inputSelector: this.props.hiddenOnMobile
+        ? '#algolia-search-box'
+        : '#algolia-search-box-mobile',
       enhancedSearchInput: false,
-      transformData: hits => {
-        // modify hits to account for no anchors on page headings
-        hits.map(hit => {
-          hit.url = hit.url.replace(/#__next$/, '');
-          hit.anchor = hit.anchor.replace(/^__next$/, '');
-        });
-
-        return hits;
-      },
       algoliaOptions: {
-        facetFilters: [
-          `version:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
-        ],
+        // include pages without version (guides/get-started) OR exact version (api-reference)
+        facetFilters: [['version:none', `version:${currentVersion}`]],
       },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
-        const url = suggestion.url;
 
-        let route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
+        const url = new URL(suggestion.url);
+        const route = this.processUrl(url.pathname + url.hash);
 
-        let asPath = null;
-        if (this.props.version === 'latest') {
+        let asPath;
+        if (Utilities.isVersionedUrl(suggestion.url) && this.props.version === 'latest') {
           asPath = this.processUrl(Utilities.replaceVersionInUrl(route, 'latest'));
         }
 
-        route = this.processUrl(route);
         if (asPath) {
           Router.push(route, asPath);
         } else {
           Router.push(route);
         }
 
-        let docSearchEl = document.getElementById('docsearch');
+        const docSearchEl = document.getElementById('docsearch');
         if (docSearchEl) {
           docSearchEl.blur();
         }
@@ -118,28 +178,56 @@ class AlgoliaSearch extends React.Component {
       },
     });
 
-    // add keyboard shortcut
-    this.hotshot = new Hotshot({
-      combos: [
-        {
-          keyCodes: [16, 191], // shift + / (otherwise known as '?')
-          callback: () => setTimeout(() => document.getElementById('docsearch').focus(), 16),
-        },
-      ],
-    });
+    // add keyboard shortcut for desktop
+    if (this.props.hiddenOnMobile) {
+      this.hotshot = new Hotshot({
+        combos: [
+          {
+            keyCodes: [191], // open search by pressing / key
+            callback: () => setTimeout(() => this.focusSearchInput(), 0),
+          },
+        ],
+      });
+    }
+
+    if (!this.props.hiddenOnMobile) {
+      //auto-focuses on mobile
+      this.focusSearchInput();
+    }
   }
 
   render() {
     return (
-      <div className={STYLES_INPUT} style={this.props.style}>
+      <div
+        className={`${STYLES_INPUT} ${!this.props.hiddenOnMobile && STYLES_INPUT_MOBILE}`}
+        style={this.props.style}>
+        <div className="search">
+          <img src="/static/images/header/search.svg" />
+        </div>
+
         <input
-          id="algolia-search-box"
+          onFocus={() => this.setState({ isFocused: true })}
+          onBlur={() => this.setState({ isFocused: false })}
+          id={this.props.hiddenOnMobile ? 'algolia-search-box' : 'algolia-search-box-mobile'}
           type="text"
-          placeholder={`Search ${Utilities.getUserFacingVersionString(this.props.version)} docs`}
+          placeholder="Search the documentation"
           autoComplete="off"
           spellCheck="false"
           dir="auto"
+          ref={this.searchRef}
         />
+
+        {this.props.hiddenOnMobile ? (
+          <div
+            className="shortcut-hint"
+            style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
+            <img src="/static/images/header/slash.svg" />
+          </div>
+        ) : (
+          <span className="close-search" onClick={this.props.onToggleSearch}>
+            <img src="/static/images/header/x.svg" />
+          </span>
+        )}
       </div>
     );
   }

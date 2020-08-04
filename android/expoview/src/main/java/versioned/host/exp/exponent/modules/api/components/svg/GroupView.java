@@ -23,6 +23,7 @@ import android.view.View;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.ReactViewGroup;
 
 import javax.annotation.Nullable;
 
@@ -76,10 +77,8 @@ class GroupView extends RenderableView {
 
     void draw(final Canvas canvas, final Paint paint, final float opacity) {
         setupGlyphContext(canvas);
-        if (opacity > MIN_OPACITY_FOR_DRAW) {
-            clip(canvas, paint);
-            drawGroup(canvas, paint, opacity);
-        }
+        clip(canvas, paint);
+        drawGroup(canvas, paint, opacity);
     }
 
     void drawGroup(final Canvas canvas, final Paint paint, final float opacity) {
@@ -94,6 +93,9 @@ class GroupView extends RenderableView {
             }
             if (child instanceof VirtualView) {
                 VirtualView node = ((VirtualView)child);
+                if ("none".equals(node.mDisplay)) {
+                    continue;
+                }
                 if (node instanceof RenderableView) {
                     ((RenderableView)node).mergeProperties(self);
                 }

@@ -4,10 +4,11 @@ import android.view.View;
 
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import javax.annotation.Nonnull;
 
 @ReactModule(name = ScreenStackHeaderConfigViewManager.REACT_CLASS)
 public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenStackHeaderConfig> {
@@ -30,6 +31,16 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
       throw new JSApplicationCausedNativeException("Config children should be of type " + ScreenStackHeaderSubviewManager.REACT_CLASS);
     }
     parent.addConfigSubview((ScreenStackHeaderSubview) child, index);
+  }
+
+  @Override
+  public void onDropViewInstance(@Nonnull ScreenStackHeaderConfig view) {
+    view.destroy();
+  }
+
+  @Override
+  public void removeAllViews(ScreenStackHeaderConfig parent) {
+    parent.removeAllConfigSubviews();
   }
 
   @Override
@@ -69,8 +80,8 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
   }
 
   @ReactProp(name = "titleFontSize")
-  public void setTitleFontSize(ScreenStackHeaderConfig config, double titleFontSizeSP) {
-    config.setTitleFontSize((int) PixelUtil.toPixelFromSP(titleFontSizeSP));
+  public void setTitleFontSize(ScreenStackHeaderConfig config, float titleFontSize) {
+    config.setTitleFontSize(titleFontSize);
   }
 
   @ReactProp(name = "titleColor", customType = "Color")
@@ -88,14 +99,14 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
     config.setHideShadow(hideShadow);
   }
 
-  @ReactProp(name = "gestureEnabled", defaultBoolean = true)
-  public void setGestureEnabled(ScreenStackHeaderConfig config, boolean gestureEnabled) {
-    config.setGestureEnabled(gestureEnabled);
-  }
-
   @ReactProp(name = "hideBackButton")
   public void setHideBackButton(ScreenStackHeaderConfig config, boolean hideBackButton) {
     config.setHideBackButton(hideBackButton);
+  }
+
+  @ReactProp(name = "topInsetEnabled")
+  public void setTopInsetEnabled(ScreenStackHeaderConfig config, boolean topInsetEnabled) {
+    config.setTopInsetEnabled(topInsetEnabled);
   }
 
   @ReactProp(name = "color", customType = "Color")
@@ -106,6 +117,11 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
   @ReactProp(name = "hidden")
   public void setHidden(ScreenStackHeaderConfig config, boolean hidden) {
     config.setHidden(hidden);
+  }
+
+  @ReactProp(name = "backButtonInCustomView")
+  public void setBackButtonInCustomView(ScreenStackHeaderConfig config, boolean backButtonInCustomView) {
+    config.setBackButtonInCustomView(backButtonInCustomView);
   }
 
 

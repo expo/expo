@@ -1,7 +1,7 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { View, findNodeHandle } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 
 import { AdOptionsViewContext, AdOptionsViewContextValue } from './withNativeAd';
 
@@ -38,7 +38,7 @@ export default class AdOptionsView extends React.Component<Props> {
     return (
       <AdOptionsViewContext.Consumer>
         {(contextValue: AdOptionsViewContextValue | null) => {
-          let adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
+          const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
           return (
             <NativeAdOptionsView
               {...this.props}

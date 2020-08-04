@@ -1,9 +1,11 @@
+import { Platform } from '@unimodules/core';
+import * as Notifications from 'expo-notifications';
 import React from 'react';
-import { Notifications } from 'expo';
-import { Alert, Platform } from 'react-native';
-import { EventSubscription } from 'fbemitter';
-import ComponentListScreen from './ComponentListScreen';
+import { Alert } from 'react-native';
+
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import { Screens } from '../navigation/ExpoApis';
+import ComponentListScreen from './ComponentListScreen';
 
 try {
   require('react-native-branch').default.subscribe((bundle: any) => {
@@ -15,126 +17,73 @@ try {
   // Branch is not available, do nothing
 }
 
-export default class ExpoApisScreen extends React.Component {
-  static path = '';
+if (Platform.OS !== 'web')
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
 
-  static navigationOptions = {
-    title: 'APIs in Expo SDK',
-  };
+const screens = [
+  'Accelerometer',
+  'ActionSheet',
+  'AppAuth',
+  'Appearance',
+  'AppleAuthentication',
+  'Audio',
+  'AuthSession',
+  'Battery',
+  'BackgroundFetch',
+  'Branch',
+  'Brightness',
+  'Calendars',
+  'Constants',
+  'Contacts',
+  'Device',
+  'DocumentPicker',
+  'FacebookLogin',
+  'FaceDetector',
+  'FileSystem',
+  'FirebaseRecaptcha',
+  'Font',
+  'Geocoding',
+  'Google',
+  'GoogleSignIn',
+  'Haptics',
+  'ImagePicker',
+  'ImageManipulator',
+  'InAppPurchases',
+  'IntentLauncher',
+  'KeepAwake',
+  'Linking',
+  'LocalAuthentication',
+  'Localization',
+  'Location',
+  'MailComposer',
+  'MediaLibrary',
+  'NetInfo',
+  'Notification',
+  'Pedometer',
+  'Permissions',
+  'Print',
+  'Recording',
+  'SafeAreaContext',
+  'ScreenOrientation',
+  'Sensor',
+  'SecureStore',
+  'Sharing',
+  'SMS',
+  'StoreReview',
+  'TaskManager',
+  'TextToSpeech',
+  'WebBrowser',
+  'ViewShot',
+];
 
-  _notificationSubscription?: EventSubscription;
-
-  componentDidMount() {
-    if (Platform.OS !== 'web') {
-      this._notificationSubscription = Notifications.addListener(this._handleNotification);
-    }
-  }
-
-  componentWillUnmount() {
-    this._notificationSubscription && this._notificationSubscription.remove();
-  }
-
-  _handleNotification = (notification: {
-    data: object | string;
-    origin: string;
-    remote: boolean;
-    actionId: string;
-    userText?: string;
-  }) => {
-    let { data } = notification;
-    const { origin, remote, actionId, userText } = notification;
-    if (typeof data === 'string') {
-      data = JSON.parse(data);
-    }
-
-    /**
-     * Currently on Android this will only fire when selected for local
-     * notifications, and there is no way to distinguish between local
-     * and remote notifications
-     */
-
-    let message: string;
-    if (remote) {
-      message = `Push notification ${
-        actionId ? `"${actionId}"` : origin
-      } with data: ${JSON.stringify(data)}`;
-    } else {
-      message = `Local notification ${
-        actionId ? `"${actionId}"` : origin
-      } with data: ${JSON.stringify(data)}`;
-    }
-
-    if (userText) {
-      message += `\nUser provided text: ${userText}.`;
-    } else {
-      message += `\nNo text provided.`;
-    }
-
-    // Calling alert(message) immediately fails to show the alert on Android
-    // if after backgrounding the app and then clicking on a notification
-    // to foreground the app
-    setTimeout(() => alert(message), 1000);
-  };
-
-  render() {
-    // @ts-ignore
-    return <ComponentListScreen apis={this._getApis()} tabName="ExpoApis" />;
-  }
-
-  _getApis = () => {
-    const screens = [
-      'Accelerometer',
-      'ActionSheet',
-      'AppAuth',
-      'Appearance',
-      'AppleAuthentication',
-      'Audio',
-      'AuthSession',
-      'Battery',
-      'BackgroundFetch',
-      'Branch',
-      'Brightness',
-      'Calendars',
-      'Constants',
-      'Contacts',
-      'Device',
-      'DocumentPicker',
-      'FacebookLogin',
-      'FaceDetector',
-      'FileSystem',
-      'Font',
-      'Geocoding',
-      'Google',
-      'GoogleSignIn',
-      'Haptics',
-      'ImagePicker',
-      'ImageManipulator',
-      'IntentLauncher',
-      'KeepAwake',
-      'Linking',
-      'LocalAuthentication',
-      'Localization',
-      'Location',
-      'MailComposer',
-      'NetInfo',
-      'Notification',
-      'Pedometer',
-      'Permissions',
-      'Print',
-      'MediaLibrary',
-      'Recording',
-      'SafeAreaContext',
-      'ScreenOrientation',
-      'Sensor',
-      'SecureStore',
-      'Sharing',
-      'SMS',
-      'StoreReview',
-      'TaskManager',
-      'TextToSpeech',
-      'WebBrowser',
-      'ViewShot',
-    ];
+export default function ExpoApisScreen() {
+  const apis = React.useMemo(() => {
     return screens
       .map(name => ({ name, isAvailable: !!Screens[name] }))
       .sort((a, b) => {
@@ -146,5 +95,12 @@ export default class ExpoApisScreen extends React.Component {
         }
         return 0;
       });
-  };
+  }, []);
+
+  const renderItemRight = React.useCallback(
+    ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
+    []
+  );
+
+  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} />;
 }

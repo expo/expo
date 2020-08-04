@@ -20,12 +20,15 @@
 @property (nonatomic) BOOL largeTitle;
 @property (nonatomic, retain) NSString *largeTitleFontFamily;
 @property (nonatomic, retain) NSNumber *largeTitleFontSize;
+@property (nonatomic, retain) UIColor *largeTitleBackgroundColor;
+@property (nonatomic) BOOL largeTitleHideShadow;
+@property (nonatomic, retain) UIColor *largeTitleColor;
 @property (nonatomic) BOOL hideBackButton;
+@property (nonatomic) BOOL backButtonInCustomView;
 @property (nonatomic) BOOL hideShadow;
 @property (nonatomic) BOOL translucent;
-@property (nonatomic) BOOL gestureEnabled;
 
-+ (void)willShowViewController:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig*)config;
++ (void)willShowViewController:(UIViewController *)vc animated:(BOOL)animated withConfig:(RNSScreenStackHeaderConfig*)config;
 
 @end
 
@@ -34,6 +37,7 @@
 @end
 
 typedef NS_ENUM(NSInteger, RNSScreenStackHeaderSubviewType) {
+  RNSScreenStackHeaderSubviewTypeBackButton,
   RNSScreenStackHeaderSubviewTypeLeft,
   RNSScreenStackHeaderSubviewTypeRight,
   RNSScreenStackHeaderSubviewTypeTitle,

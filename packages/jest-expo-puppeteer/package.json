@@ -1,11 +1,11 @@
 {
   "name": "jest-expo-puppeteer",
-  "version": "0.0.0",
+  "version": "1.0.2",
+  "description": "Run end-to-end tests on your Expo web projects with Jest, Puppeteer, and the Expo CLI.",
   "license": "MIT",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "build",
   "files": [
-    "build/*",
+    "build",
     "jest-preset.js"
   ],
   "repository": {
@@ -25,24 +25,20 @@
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
   "dependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/preset-flow": "^7.0.0",
-    "@expo/babel-preset-cli": "^0.2.0",
-    "@expo/config": "^2.1.4",
-    "@expo/xdl": "^56.2.1",
-    "@types/getenv": "^0.7.0",
-    "babel-jest": "^24.7.1",
-    "getenv": "^0.7.0",
-    "jest": "^24.7.1",
-    "jest-puppeteer": "^4.3.0",
-    "puppeteer": "^1.19.0",
-    "serve": "^11.1.0"
+    "@expo/config": "^3.2.3",
+    "@expo/xdl": "^57.9.5",
+    "getenv": "^1.0.0",
+    "jest": "^25.2.0",
+    "jest-puppeteer": "^4.4.0",
+    "serve": "^11.3.0"
+  },
+  "peerDependencies": {
+    "puppeteer": "^2.1.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1",
-    "react": "16.9.0"
+    "@types/getenv": "^1.0.0",
+    "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },

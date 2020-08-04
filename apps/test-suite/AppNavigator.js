@@ -1,48 +1,53 @@
-import React from 'react';
-import { createStackNavigator } from 'react-navigation-stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createStackNavigator } from '@react-navigation/stack';
+import * as React from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { Platform } from 'react-native';
+import Colors from './constants/Colors';
 import SelectScreen from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';
-import Colors from './constants/Colors';
 
-const AppNavigator = createStackNavigator(
-  {
-    Select: { screen: SelectScreen, path: 'select/:tests' },
-    RunTests,
+// @tsapeta: This navigator is also being used by `bare-expo` app,
+// so make sure it still works there once you change something here.
+
+const Stack = createStackNavigator();
+
+const spec = {
+  animation: 'timing',
+  config: {
+    duration: 0,
   },
-  {
-    headerMode: Platform.select({ web: 'screen', default: undefined }),
-    transitionConfig: global.DETOX
-      ? () => ({
-        transitionSpec: {
-          duration: 0,
-        },
-      })
-      : undefined,
-    defaultNavigationOptions: {
-      headerBackTitle: 'Select',
-      headerTitleStyle: {
-        color: 'black',
-      },
-      headerTintColor: Colors.tintColor,
-      headerStyle: {
-        borderBottomWidth: 0.5,
-        borderBottomColor: 'rgba(0,0,0,0.1)',
-        boxShadow: '',
-      },
-    },
-  }
-);
+};
 
-function CustomNavigator(props) {
+const shouldDisableTransition = !!global.DETOX;
+
+// Disable transition animations in E2E tests
+const transitionSpec = shouldDisableTransition ? { open: spec, close: spec } : undefined;
+
+export default function AppNavigator(props) {
   return (
-    <SafeAreaProvider>
-      <AppNavigator {...props} />
-    </SafeAreaProvider>
+    <Stack.Navigator
+      {...props}
+      screenOptions={{
+        title: 'Tests',
+        tabBarLabel: 'Tests',
+        tabBarIcon: ({ focused }) => {
+          const color = focused ? Colors.activeTintColor : Colors.inactiveTintColor;
+          return <MaterialCommunityIcons name="format-list-checks" size={27} color={color} />;
+        },
+        transitionSpec,
+        headerBackTitle: 'Select',
+        headerTitleStyle: {
+          color: 'black',
+        },
+        headerTintColor: Colors.tintColor,
+        headerStyle: {
+          borderBottomWidth: 0.5,
+          borderBottomColor: 'rgba(0,0,0,0.1)',
+          boxShadow: '',
+        },
+      }}>
+      <Stack.Screen name="select" component={SelectScreen} options={{ title: 'Expo Test Suite' }} />
+      <Stack.Screen name="run" component={RunTests} options={{ title: 'Test Runner' }} />
+    </Stack.Navigator>
   );
 }
-CustomNavigator.router = AppNavigator.router;
-
-export default CustomNavigator;

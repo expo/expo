@@ -1,96 +1,131 @@
-import React from 'react';
-import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { StyleSheet, View, Text, Button, Platform } from 'react-native';
+import moment from 'moment';
+import React, { useState } from 'react';
+import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
-// This example is a copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
+// This example is a refactored copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
 // Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
 
-type DateTimeMode = 'date' | 'datetime' | 'time';
+const DateTimePickerScreen = () => {
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [color, setColor] = useState();
+  const [display, setDisplay] = useState('default');
 
-type State = {
-  date: Date;
-  mode: DateTimeMode;
-  show: boolean;
-};
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
 
-class DateTimePickerScreen extends React.Component {
-  static navigationOptions = {
-    title: 'DateTimePicker',
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
   };
 
-  state: State = {
-    date: new Date(1598051730000),
-    mode: 'date',
-    show: false,
+  const showMode = currentMode => {
+    setShow(true);
+    setMode(currentMode);
   };
 
-  setDate = (event: any, date?: Date) => {
-    date = date || this.state.date;
+  const showDatepicker = () => {
+    showMode('date');
+    setDisplay('default');
+  };
 
-    this.setState({
-      show: Platform.OS === 'ios' ? true : false,
-      date,
-    });
-  }
+  const showDatepickerSpinner = () => {
+    showMode('date');
+    setDisplay('spinner');
+  };
 
-  show = (mode: DateTimeMode) => {
-    this.setState({
-      show: true,
-      mode,
-    });
-  }
+  const showTimepicker = () => {
+    showMode('time');
+    setDisplay('default');
+  };
 
-  datepicker = () => {
-    this.show('date');
-  }
+  const showTimepickerSpinner = () => {
+    showMode('time');
+    setDisplay('spinner');
+  };
 
-  timepicker = () => {
-    this.show('time');
-  }
-
-  render() {
-    const { show, date, mode } = this.state;
-
-    return (
-      <View style={styles.body}>
-        <View style={styles.header}>
-          <Text style={styles.text}>Example DateTime Picker</Text>
-        </View>
-        <View style={styles.button}>
-          <Button testID="datePickerButton" onPress={this.datepicker} title="Show date picker!" />
-        </View>
-        <View style={styles.button}>
-          <Button testID="timePickerButton" onPress={this.timepicker} title="Show time picker!" />
-        </View>
-        <View style={styles.header}>
-          <Text testID="dateTimeText" style={styles.dateTimeText}>
-            { mode === 'time' && moment.utc(date).format('HH:mm') }
-            { mode === 'date' && moment.utc(date).format('MM/DD/YYYY') }
+  return (
+    <ScrollView contentInsetAdjustmentBehavior="automatic">
+      {global.HermesInternal == null ? null : (
+        <View style={styles.engine}>
+          <Text testID="hermesIndicator" style={styles.footer}>
+            Engine: Hermes
           </Text>
         </View>
-        { show &&
-          <DateTimePicker
-            testID="dateTimePicker"
-            timeZoneOffsetInMinutes={0}
-            value={date}
-            mode={mode}
-            is24Hour={true}
-            display="default"
-            onChange={this.setDate} />
-        }
+      )}
+      <View>
+        <View testID="appRootView" style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.text}>Example DateTime Picker</Text>
+          </View>
+          <View style={styles.header}>
+            <Text style={{ margin: 10, flex: 1 }}>text color (iOS only)</Text>
+            <TextInput
+              value={color}
+              style={{ height: 60, flex: 1 }}
+              onChangeText={text => {
+                setColor(text.toLowerCase());
+              }}
+              placeholder="color"
+            />
+          </View>
+          <View style={styles.button}>
+            <Button
+              testID="datePickerButton"
+              onPress={showDatepicker}
+              title="Show date picker default!"
+            />
+          </View>
+          <View style={styles.button}>
+            <Button
+              testID="datePickerButtonSpinner"
+              onPress={showDatepickerSpinner}
+              title="Show date picker spinner!"
+            />
+          </View>
+          <View style={styles.button}>
+            <Button testID="timePickerButton" onPress={showTimepicker} title="Show time picker!" />
+          </View>
+          <View style={styles.button}>
+            <Button
+              testID="timePickerButtonSpinner"
+              onPress={showTimepickerSpinner}
+              title="Show time picker spinner!"
+            />
+          </View>
+          <View style={styles.header}>
+            <Text testID="dateTimeText" style={styles.dateTimeText}>
+              {mode === 'time' && moment.utc(date).format('HH:mm')}
+              {mode === 'date' && moment.utc(date).format('MM/DD/YYYY')}
+            </Text>
+            <Button testID="hidePicker" onPress={() => setShow(false)} title="hide picker" />
+          </View>
+          {show && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              timeZoneOffsetInMinutes={0}
+              value={date}
+              mode={mode}
+              is24Hour
+              display={display}
+              onChange={onChange}
+              style={styles.iOsPicker}
+              textColor={color || undefined}
+            />
+          )}
+        </View>
       </View>
-    );
-  }
-}
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    paddingVertical: 30,
+  engine: {
+    position: 'absolute',
+    right: 0,
   },
   footer: {
-    color: '#333',
     fontSize: 12,
     fontWeight: '600',
     padding: 4,
@@ -101,24 +136,35 @@ const styles = StyleSheet.create({
     marginTop: 32,
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#F5FCFF',
   },
   header: {
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    flexDirection: 'row',
   },
   button: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
+  },
+  resetButton: {
+    width: 150,
   },
   text: {
     fontSize: 20,
     fontWeight: 'bold',
   },
   dateTimeText: {
+    paddingRight: 20,
     fontSize: 16,
     fontWeight: 'normal',
   },
+  iOsPicker: {
+    flex: 1,
+  },
 });
+
+DateTimePickerScreen.navigationOptions = {
+  title: 'DateTimePicker',
+};
 
 export default DateTimePickerScreen;

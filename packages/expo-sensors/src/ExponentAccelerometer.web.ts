@@ -1,6 +1,9 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 
-import { isSensorEnabledAsync } from './utils/isSensorEnabledAsync.web';
+import {
+  isSensorEnabledAsync,
+  assertSensorEventEnabledAsync,
+} from './utils/isSensorEnabledAsync.web';
 
 const scalar = Math.PI / 180;
 const eventName = 'deviceorientation';
@@ -23,6 +26,7 @@ export default {
     });
   },
   startObserving() {
+    assertSensorEventEnabledAsync(eventName);
     window.addEventListener(eventName, this._handleMotion);
   },
   stopObserving() {

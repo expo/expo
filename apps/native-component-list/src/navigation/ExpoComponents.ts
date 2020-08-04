@@ -1,7 +1,9 @@
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {}
+  } catch (e) {
+    return null;
+  }
 }
 
 const AdMob = optionalRequire(() => require('../screens/AdMobScreen'));
@@ -34,12 +36,20 @@ const ReanimatedImagePreview = optionalRequire(() =>
 const ReanimatedProgress = optionalRequire(() =>
   require('../screens/Reanimated/ReanimatedProgressScreen')
 );
+const SegmentedControl = optionalRequire(() => require('../screens/SegmentedControlScreen'));
 const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
 const ViewPager = optionalRequire(() => require('../screens/ViewPagerScreen'));
+const HTML = optionalRequire(() => require('../screens/HTMLElementsScreen'));
+const Image = optionalRequire(() => require('../screens/Image/ImageScreen'));
+const ImageScreens = (optionalRequire(() =>
+  require('../screens/Image/ImageScreens')
+) as unknown) as {
+  [key: string]: React.ComponentType;
+};
 
-const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
+const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
   BarCodeScanner,
   MaskedView: BasicMaskScreen,
@@ -47,14 +57,28 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   Camera,
   DateTimePicker,
   GL,
-  ...GLScreens,
+  ...Object.keys(GLScreens ?? {}).reduce((prev, screenName) => {
+    const entry = GLScreens[screenName];
+    const screen = entry.screen ?? entry;
+    screen.navigationOptions = {
+      title: screen.title,
+    };
+    return {
+      ...prev,
+      [screenName]: screen,
+    };
+  }, {}),
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,
+  HTML,
+  Image,
+  ...ImageScreens,
   ReanimatedImagePreview,
   ReanimatedProgress,
   Gif,
   FacebookAds,
+  SegmentedControl,
   SVG,
   SVGExample,
   LinearGradient,
@@ -70,6 +94,7 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
 interface ScreensObjectType {
   [key: string]: React.ComponentType;
 }
+type RoutesObjectType = Record<string, string>;
 
 export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>(
   (acc, [key, screen]) => {
@@ -80,3 +105,8 @@ export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>
   },
   {}
 );
+
+export const Routes = Object.entries(Screens).reduce<RoutesObjectType>((acc, [key, screen]) => {
+  acc[key] = key.toLowerCase();
+  return acc;
+}, {});

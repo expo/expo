@@ -1,13 +1,7 @@
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
-import {
-  createElement,
-  LayoutChangeEvent,
-  PixelRatio,
-  StyleSheet,
-  View,
-  ViewProps,
-} from 'react-native';
+import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 function getElement(component) {
   try {

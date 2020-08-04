@@ -3,17 +3,15 @@ title: Sharing
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sharing'
 ---
 
-import Video from '../../../../components/plugins/Video'
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import Video from '~/components/plugins/Video'
 
 **`expo-sharing`** allows you to share files directly with other compatible applications.
 
 <Video file={"sdk/sharing.mp4"} loop={false} />
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 <br />
 
@@ -29,7 +27,7 @@ import Video from '../../../../components/plugins/Video'
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sharing`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sharing).
+<InstallSection packageName="expo-sharing" />
 
 ## API
 

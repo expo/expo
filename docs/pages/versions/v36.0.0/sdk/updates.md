@@ -3,13 +3,11 @@ title: Updates
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Updates'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

@@ -3,15 +3,13 @@ title: SplashScreen
 sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/launch/SplashScreen.ts'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 The `SplashScreen` module tells Expo to keep the splash screen visible until you choose to hide it. This is useful to do some work behind the scenes before displaying your app and to create transitions for your splash screen, so you can have it fade out or slide away, for example.
 
 This is useful to let you create an impression of a pure React component splash screen. You can combine it with [AppLoading](../app-loading/). Read more about [creating a splash screen.](../../guides/splash-screens/)
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -190,11 +188,11 @@ export default class App extends React.Component {
           style={{ flex: 1, resizeMode: 'contain', width: undefined, height: undefined }}
           source={require('./assets/splash.png')}
           onLoadEnd={() => {
-            // wait for image's content to fully load [`Image#onLoadEnd`] (https://facebook.github.io/react-native/docs/image#onloadend)
+            // wait for image's content to fully load [`Image#onLoadEnd`] (https://reactnative.dev/docs/image#onloadend)
             console.log('Image#onLoadEnd: hiding SplashScreen');
             SplashScreen.hide(); // Image is fully presented, instruct SplashScreen to hide
           }}
-          fadeDuration={0} // we need to adjust Android devices (https://facebook.github.io/react-native/docs/image#fadeduration) fadeDuration prop to `0` as it's default value is `300`
+          fadeDuration={0} // we need to adjust Android devices (https://reactnative.dev/docs/image#fadeduration) fadeDuration prop to `0` as it's default value is `300`
         />
       </View>
     );

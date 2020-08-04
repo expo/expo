@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/jscallinvoker/ReactCommon/ABI37_0_0BridgeJSCallInvoker.h

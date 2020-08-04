@@ -1,5 +1,4 @@
 import { CodedError, EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
-import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 import {
   AppleAuthenticationSignInOptions,
@@ -10,6 +9,7 @@ import {
   AppleAuthenticationOperation,
   AppleAuthenticationRevokeListener,
 } from './AppleAuthentication.types';
+import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 export async function isAvailableAsync(): Promise<boolean> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.isAvailableAsync) {

@@ -8,12 +8,18 @@ import {
   PixelRatio,
   ListRenderItem,
 } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { EvilIcons } from '@expo/vector-icons';
 
 import examples from './examples';
 
-export default class SVGScreen extends React.Component<NavigationScreenProps> {
+type StackParams = {
+  SVGExample: { title: string; key: string };
+};
+
+export default class SVGScreen extends React.Component<{
+  navigation: StackNavigationProp<StackParams>;
+}> {
   static navigationOptions = {
     title: '<Svg />',
   };
@@ -24,8 +30,7 @@ export default class SVGScreen extends React.Component<NavigationScreenProps> {
       style={styles.rowTouchable}
       onPress={() =>
         this.props.navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })
-      }
-    >
+      }>
       <View style={styles.row}>
         <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
         <Text style={styles.rowLabel}>{exampleKey}</Text>
@@ -34,7 +39,7 @@ export default class SVGScreen extends React.Component<NavigationScreenProps> {
         </Text>
       </View>
     </TouchableHighlight>
-  )
+  );
 
   keyExtractor = (item: string) => item;
 

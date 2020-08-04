@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UMTaskManagerInterface/UMTaskInterface.h>
-#import <EXAppLoaderProvider/EXAppRecordInterface.h>
+#import <UMAppLoader/UMAppLoaderInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

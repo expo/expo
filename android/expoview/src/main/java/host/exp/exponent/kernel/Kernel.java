@@ -14,10 +14,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -54,10 +56,13 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
-import host.exp.exponent.headless.HeadlessAppLoader;
+import host.exp.exponent.headless.InternalHeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
+import host.exp.exponent.notifications.ScopedNotificationsUtils;
+import host.exp.exponent.storage.ExperienceDBObject;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -71,9 +76,11 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONBundleConverter;
 import okhttp3.OkHttpClient;
+import versioned.host.exp.exponent.ExpoTurboPackage;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
+
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
@@ -167,7 +174,7 @@ public class Kernel extends KernelInterface {
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
-  public void startJSKernel(AppCompatActivity activity) {
+  public void startJSKernel(Activity activity) {
     if (Constants.isStandaloneApp()) {
       return;
     }
@@ -261,12 +268,14 @@ public class Kernel extends KernelInterface {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
+
             ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
                 .setApplication(mApplicationContext)
                 .setCurrentActivity(getActivityContext())
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
                 .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
+                .addPackage(ExpoTurboPackage.createWithManifest(mExponentManifest.getKernelManifest()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
@@ -383,7 +392,7 @@ public class Kernel extends KernelInterface {
     }
   }
 
-  private void openHomeActivity() {
+  public void openHomeActivity() {
     ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     for (ActivityManager.AppTask task : manager.getAppTasks()) {
       Intent baseIntent = task.getTaskInfo().baseIntent;
@@ -439,9 +448,16 @@ public class Kernel extends KernelInterface {
       }
     } catch (Throwable e) {}
 
-    Bundle bundle = intent.getExtras();
     setActivityContext(activity);
 
+    if (intent.getAction() != null && NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION.equals(intent.getAction())) {
+      if (!openExperienceFromNotificationIntent(intent)) {
+        openDefaultUrl();
+      }
+      return;
+    }
+
+    Bundle bundle = intent.getExtras();
     Uri uri = intent.getData();
     String intentUri = uri == null ? null : uri.toString();
 
@@ -493,6 +509,28 @@ public class Kernel extends KernelInterface {
       }
     }
 
+    openDefaultUrl();
+  }
+
+  private boolean openExperienceFromNotificationIntent(Intent intent) {
+    NotificationResponse response = NotificationResponseReceiver.getNotificationResponse(intent);
+    String experienceIdString = ScopedNotificationsUtils.getExperienceId(response);
+    if (experienceIdString == null) {
+      return false;
+    }
+
+    ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(experienceIdString);
+    if (experience == null) {
+      Log.w("expo-notifications", "Couldn't find experience from experienceId.");
+      return false;
+    }
+
+    String manifestUrl = experience.manifestUrl;
+    openExperience(new KernelConstants.ExperienceOptions(manifestUrl, manifestUrl, null));
+    return true;
+  }
+
+  private void openDefaultUrl() {
     String defaultUrl = Constants.INITIAL_URL == null ? KernelConstants.HOME_MANIFEST_URL : Constants.INITIAL_URL;
     openExperience(new KernelConstants.ExperienceOptions(defaultUrl, defaultUrl, null));
   }
@@ -673,21 +711,11 @@ public class Kernel extends KernelInterface {
     task.bundleUrl = bundleUrl;
 
     manifest = mExponentManifest.normalizeManifest(manifestUrl, manifest);
-    boolean isFirstRunFinished = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY);
 
-    // TODO: shouldShowNux used to be set to `!manifestUrl.equals(Constants.INITIAL_URL);`.
-    // This caused nux to show up in RNPlay. What's the right behavior here?
-    boolean shouldShowNux = !Constants.isStandaloneApp() && !KernelConfig.HIDE_NUX;
-    boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
-    opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
 
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
-    }
-
-    if (loadNux) {
-      mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY, true);
     }
 
     WritableMap params = Arguments.createMap();
@@ -742,8 +770,8 @@ public class Kernel extends KernelInterface {
       return sInstance.getBundleUrl();
     }
 
-    if (HeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
-      return HeadlessAppLoader.getBundleUrlForActivityId(activityId);
+    if (InternalHeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
+      return InternalHeadlessAppLoader.getBundleUrlForActivityId(activityId);
     }
 
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
@@ -1015,9 +1043,6 @@ public class Kernel extends KernelInterface {
   public static void handleReactNativeError(Throwable throwable, String errorMessage, Object detailsUnversioned,
                                             Integer exceptionId, Boolean isFatal) {
     handleReactNativeError(ExponentErrorMessage.developerErrorMessage(errorMessage), detailsUnversioned, exceptionId, isFatal);
-    if (throwable != null) {
-      Exponent.logException(throwable);
-    }
   }
 
   private static void handleReactNativeError(ExponentErrorMessage errorMessage, Object detailsUnversioned,
@@ -1068,7 +1093,6 @@ public class Kernel extends KernelInterface {
 
   public void handleError(Exception exception) {
     handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true);
-    Exponent.logException(exception);
   }
 
   private static int getExceptionId(Integer originalId) {
@@ -1120,12 +1144,5 @@ public class Kernel extends KernelInterface {
         ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
       }
     });
-  }
-
-  private void goToHome() {
-    Intent startMain = new Intent(Intent.ACTION_MAIN);
-    startMain.addCategory(Intent.CATEGORY_HOME);
-    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    mContext.startActivity(startMain);
   }
 }

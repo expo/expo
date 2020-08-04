@@ -46,15 +46,43 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8C105C35C8A7695F4AEAD1162747BB39 /* GoogleSignIn.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleSignIn.xcconfig; sourceTree = "<group>"; };
-		8CED358CCD5BDE6D6060FCF5CADE3A51 /* GoogleSignIn.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = GoogleSignIn.bundle; path = Resources/GoogleSignIn.bundle; sourceTree = "<group>"; };
+		0A7DA241E4A685E1B4FC100CC912B3A1 /* GoogleSignIn.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleSignIn.release.xcconfig; sourceTree = "<group>"; };
+		774710C444F1A12D3615056A88E3997F /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = Frameworks/GoogleSignIn.framework; sourceTree = "<group>"; };
 		AAB213FF8B3B34C742C88E631A9D55D4 /* GTMSessionFetcher */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMSessionFetcher; path = GTMSessionFetcher.xcodeproj; sourceTree = "<group>"; };
-		C48B033F9C8690F4A5D00924C43E0CCA /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = Frameworks/GoogleSignIn.framework; sourceTree = "<group>"; };
+		B2834995F8CF458535DB0C40EAF13F62 /* GoogleSignIn.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleSignIn.debug.xcconfig; sourceTree = "<group>"; };
+		C0E021C8C3B59A30DB97798503DFC509 /* GoogleSignIn.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = GoogleSignIn.bundle; path = Resources/GoogleSignIn.bundle; sourceTree = "<group>"; };
 		CB2D9210EF148D2DC5D65B9406311595 /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
 		EB042BCC144B6A014BA9B50F5036853E /* GTMAppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMAppAuth; path = GTMAppAuth.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		4D0A5C602719944F8ABD0AA2120C9D5C /* GoogleSignIn */ = {
+			isa = PBXGroup;
+			children = (
+				6517C979A72D8A8114796912A4A7BC9F /* Frameworks */,
+				8847BE9EA48EC63158830F21F85FF5F8 /* Resources */,
+				CC53102FFD37B375F401AECCC7880B9D /* Support Files */,
+			);
+			name = GoogleSignIn;
+			path = GoogleSignIn;
+			sourceTree = "<group>";
+		};
+		6517C979A72D8A8114796912A4A7BC9F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				774710C444F1A12D3615056A88E3997F /* GoogleSignIn.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8847BE9EA48EC63158830F21F85FF5F8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C0E021C8C3B59A30DB97798503DFC509 /* GoogleSignIn.bundle */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		91906A0FB75DD16BCE13EB75A411A5B6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -67,7 +95,7 @@
 			children = (
 				F8F87EA4C5AEF914EAD5E99ED1678C63 /* Dependencies */,
 				9978313BC3DC3A0237EE4AE0AFB57197 /* Frameworks */,
-				E8E26005124BAC6F420DEEFAC9588B49 /* GoogleSignIn */,
+				4D0A5C602719944F8ABD0AA2120C9D5C /* GoogleSignIn */,
 				91906A0FB75DD16BCE13EB75A411A5B6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,40 +107,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B6225A11CD08BD208879F6B1A07F5CFE /* Frameworks */ = {
+		CC53102FFD37B375F401AECCC7880B9D /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				C48B033F9C8690F4A5D00924C43E0CCA /* GoogleSignIn.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		D45B575784DDCF024F8CEA2B7C0440BD /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				8CED358CCD5BDE6D6060FCF5CADE3A51 /* GoogleSignIn.bundle */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		D84C4BC2D9D50F9C6D2AA6B4CE7AEC14 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				8C105C35C8A7695F4AEAD1162747BB39 /* GoogleSignIn.xcconfig */,
+				B2834995F8CF458535DB0C40EAF13F62 /* GoogleSignIn.debug.xcconfig */,
+				0A7DA241E4A685E1B4FC100CC912B3A1 /* GoogleSignIn.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/GoogleSignIn";
-			sourceTree = "<group>";
-		};
-		E8E26005124BAC6F420DEEFAC9588B49 /* GoogleSignIn */ = {
-			isa = PBXGroup;
-			children = (
-				B6225A11CD08BD208879F6B1A07F5CFE /* Frameworks */,
-				D45B575784DDCF024F8CEA2B7C0440BD /* Resources */,
-				D84C4BC2D9D50F9C6D2AA6B4CE7AEC14 /* Support Files */,
-			);
-			name = GoogleSignIn;
-			path = GoogleSignIn;
 			sourceTree = "<group>";
 		};
 		F8F87EA4C5AEF914EAD5E99ED1678C63 /* Dependencies */ = {
@@ -182,20 +184,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		196927A840490DEFAC62EE3F9F57E00D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8C105C35C8A7695F4AEAD1162747BB39 /* GoogleSignIn.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		2688194DF5BA8254C518B7AEAC881E11 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -255,6 +243,19 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
+		};
+		29AC161660F19A7D2B3C39241F8EAAF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B2834995F8CF458535DB0C40EAF13F62 /* GoogleSignIn.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		A008B3E7A41B4A149B7E2F68669059A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -320,9 +321,9 @@
 			};
 			name = Debug;
 		};
-		C5ABE0CA35CEDC057371B49684E321B3 /* Debug */ = {
+		A9ACDC0B9C1C70469B1A0174BAC15E18 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8C105C35C8A7695F4AEAD1162747BB39 /* GoogleSignIn.xcconfig */;
+			baseConfigurationReference = 0A7DA241E4A685E1B4FC100CC912B3A1 /* GoogleSignIn.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -330,8 +331,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -339,8 +341,8 @@
 		5BDBA2FA6136B807DAD219EB4B6FBEDD /* Build configuration list for PBXAggregateTarget "GoogleSignIn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C5ABE0CA35CEDC057371B49684E321B3 /* Debug */,
-				196927A840490DEFAC62EE3F9F57E00D /* Release */,
+				29AC161660F19A7D2B3C39241F8EAAF2 /* Debug */,
+				A9ACDC0B9C1C70469B1A0174BAC15E18 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

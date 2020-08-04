@@ -1,13 +1,4 @@
-import React from 'react';
-import { View } from 'react-native';
-declare type Props = {
-    colors: number[];
-    locations?: number[] | null;
-    startPoint?: Point | null;
-    endPoint?: Point | null;
-} & React.ComponentProps<typeof View>;
-declare type Point = [number, number];
-export default class NativeLinearGradient extends React.PureComponent<Props> {
-    render(): JSX.Element;
-}
-export {};
+import * as React from 'react';
+import { NativeLinearGradientProps } from './NativeLinearGradient.types';
+declare const NativeLinearGradient: React.FC<NativeLinearGradientProps>;
+export default NativeLinearGradient;

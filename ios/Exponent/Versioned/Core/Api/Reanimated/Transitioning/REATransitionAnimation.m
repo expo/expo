@@ -42,8 +42,15 @@ CGFloat SimAnimationDragCoefficient()
 
 - (void)play
 {
+  /*
+  CACurrentMediaTime introduces some kind of delay  even if _delay is set to 0
+  it calls mach_absolute_time() which is based on the last time the device booted
+  which might cause the delay
+  */
+  if (_delay > 0){
+    _animation.beginTime = CACurrentMediaTime() + _delay * SimAnimationDragCoefficient();
+  }
   _animation.duration = self.duration * SimAnimationDragCoefficient();
-  _animation.beginTime = CACurrentMediaTime() + _delay * SimAnimationDragCoefficient();
   [_layer addAnimation:_animation forKey:_keyPath];
 }
 

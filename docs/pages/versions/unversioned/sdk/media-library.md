@@ -3,23 +3,21 @@ title: MediaLibrary
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-media-library`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+<InstallSection packageName="expo-media-library" />
 
 ## Configuration
 
-In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
+In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)) is added automatically.
 
 ## API
 
@@ -27,7 +25,7 @@ In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
 import * as MediaLibrary from 'expo-media-library';
 ```
 
-<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
+<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset, options)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
 
 <TableOfContentSection title='Types' contents={['Asset', 'Album']} />
 
@@ -41,7 +39,7 @@ Asks the user to grant permissions for accessing media in user's media library. 
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.getPermissionsAsync()`
 
@@ -49,11 +47,11 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
@@ -62,7 +60,7 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 #### Returns
 
@@ -70,11 +68,13 @@ An object representing an [asset](#asset).
 
 ### `MediaLibrary.saveToLibraryAsync(localUri)`
 
-Saves the file at given `localUri` to the user's media library. On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
+
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 ### `MediaLibrary.getAssetsAsync(options)`
 
@@ -84,7 +84,7 @@ Fetches a page of assets matching the provided criteria.
 
 - **options (_object_)**
 
-  - **first (_number_)** -- The maximum number of items on a single page.
+  - **first (_number_)** -- The maximum number of items on a single page. Defaults to 20.
   - **after (_string_)** -- Asset ID of the last item returned on the previous page.
   - **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
   - **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order. Note that if the `SortBy.default` key is used, then `ascending` argument will not matter.
@@ -103,13 +103,15 @@ A promise that resolves to an object that contains following keys:
 - **hasNextPage (_boolean_)** -- Whether there are more assets to fetch.
 - **totalCount (_number_)** -- Estimated total number of assets that match the query.
 
-### `MediaLibrary.getAssetInfoAsync(asset)`
+### `MediaLibrary.getAssetInfoAsync(asset, options)`
 
 Provides more informations about an asset, including GPS location, local URI and EXIF metadata.
 
 #### Arguments
 
 - **asset (_string_ | _Asset_)** -- [Asset](#asset) or its ID.
+- **options (_object_)**
+  - **shouldDownloadFromNetwork (_boolean_)** -- Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets. Defaults to `true`.
 
 #### Returns
 
@@ -230,6 +232,7 @@ Subscribes for updates in user's media library.
 - **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
+  - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).
 
 #### Returns
 
@@ -240,6 +243,15 @@ An EventSubscription object that you can call `remove()` on when you would like 
 Removes all listeners.
 
 ## Types
+
+### `MediaLibrary.CameraRollPermissionResponse`
+
+`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+
+- `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+  - `all` if the user granted your app access to the whole photo library
+  - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+  - `none` if user denied or hasn't yet granted the permission
 
 ### `Asset`
 
@@ -253,7 +265,7 @@ Removes all listeners.
 | height           | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
 | creationTime     | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
 | modificationTime | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
-| duration         | _number_  | both      | Duration of the video or audio asset                                                                          |                                                                                                      |
+| duration         | _number_  | both      | Duration of the video or audio asset in seconds                                                               |                                                                                                      |
 | mediaSubtypes    | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
 | albumId          | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
 | localUri \*      | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |
@@ -261,8 +273,11 @@ Removes all listeners.
 | exif \*          | _object_  | both      | EXIF metadata associated with the image                                                                       |                                                                                                      |
 | orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
 | isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite                                                                       | `true`, `false`                                                                                      |
+| isNetworkAsset \*\*| _boolean_ | iOS       | Whether the asset is stored on the network (iCloud on iOS)| `true`, `false`
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method
+
+> \*\* This field is available only if flag `shouldDownloadFromNetwork` is set to `false`
 
 ### `Album`
 

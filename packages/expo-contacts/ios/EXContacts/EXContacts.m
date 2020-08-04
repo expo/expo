@@ -314,8 +314,9 @@ UM_EXPORT_METHOD_AS(updateContactAsync,
     if (!contact) return;
     [self _mutateContact:contact withData:updates resolver:resolve rejecter:reject];
     [saveRequest updateContact:contact];
-    [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
-}
+    if ([EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:nil rejecter:reject]) {
+        resolve(contact.identifier);
+    }}
 
 UM_EXPORT_METHOD_AS(removeContactAsync,
                     removeContactAsync:(NSString *)identifier

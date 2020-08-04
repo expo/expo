@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContext;
 import java.util.Arrays;
 import java.util.List;
 
+import org.unimodules.adapters.react.apploader.RNHeadlessAppLoader;
 import org.unimodules.adapters.react.services.CookieManagerModule;
 import org.unimodules.adapters.react.services.EventEmitterModule;
 import org.unimodules.adapters.react.services.FontManagerModule;
@@ -16,10 +17,13 @@ import org.unimodules.core.BasePackage;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.Package;
 
+import org.unimodules.apploader.AppLoaderProvider;
+
 /**
  * A {@link Package} creating modules provided with the @unimodules/react-native-adapter package.
  */
 public class ReactAdapterPackage extends BasePackage {
+
   @Override
   public List<InternalModule> createInternalModules(Context context) {
     // We can force-cast here, because this package will only be used in React Native context.

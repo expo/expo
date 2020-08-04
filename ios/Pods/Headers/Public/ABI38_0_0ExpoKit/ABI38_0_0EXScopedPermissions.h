@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/UniversalModules/Permissions/ABI38_0_0EXScopedPermissions.h

@@ -59,4 +59,11 @@ public class ExponentDB {
           }
         }).execute();
   }
+
+  public static ExperienceDBObject experienceIdToExperienceSync(String experienceId) {
+    return SQLite.select()
+      .from(ExperienceDBObject.class)
+      .where(ExperienceDBObject_Table.id.is(experienceId))
+      .querySingle();
+   }
 }

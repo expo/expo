@@ -3,17 +3,16 @@ title: FacebookAds
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-facebook'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-ads-facebook`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-ads-facebook).
+<InstallSection packageName="expo-ads-facebook" />
 
 ## Configuration
 
@@ -24,6 +23,9 @@ You need to create a placement ID to display ads. Follow steps 1 and 3 from the 
 ### Configuring app.json
 
 In your project's [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
+
+- In the Expo Client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in the Expo Client.
+- To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../distribution/building-standalone-apps/).
 
 ### Development vs Production
 
@@ -168,6 +170,27 @@ class MyApp extends React.Component {
     return (
       <View>
         <AdComponent adsManager={adsManager} />
+      </View>
+    );
+  }
+}
+```
+
+If you want, you can optionally pass two other callback properties — `onAdLoaded` and `onError`.
+
+- `onAdLoaded` will be called once an ad is fetched and provided to your component (the `nativeAd` property introduced in step 2.) The one and only argument with which the function will be called will be the native ad object.
+- `onError` will be called if the Audience framework encounters an error while fetching the ad. The one and only argument with which the function will be called will be an instance of `Error`.
+
+```js
+class MyApp extends React.Component {
+  render() {
+    return (
+      <View>
+        <AdComponent
+          adsManager={adsManager}
+          onAdLoaded={ad => console.log(ad)}
+          onError={error => console.warn(error)}
+        />
       </View>
     );
   }

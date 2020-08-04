@@ -58,12 +58,12 @@ export async function getExponentPushTokenAsync(): Promise<string> {
   return response.data.expoPushToken;
 }
 
-export async function getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
+export async function getDevicePushTokenAsync(): Promise<{ type: string; data: object }> {
   const data = await _subscribeUserToPushAsync();
   return { type: Platform.OS, data };
 }
 
-async function _subscribeUserToPushAsync(): Promise<Object> {
+async function _subscribeUserToPushAsync(): Promise<object> {
   if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
     throw new CodedError(
       'E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
@@ -110,7 +110,7 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
   // We wrap it with `fromExpoWebClient` to make sure other message
   // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
-  let notificationIcon = (Constants.manifest.notification || {}).icon;
+  const notificationIcon = (Constants.manifest.notification || {}).icon;
   await registration.active.postMessage(
     JSON.stringify({ fromExpoWebClient: { notificationIcon } })
   );

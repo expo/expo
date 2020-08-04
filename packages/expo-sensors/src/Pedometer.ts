@@ -5,8 +5,8 @@ import ExponentPedometer from './ExponentPedometer';
 
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 
-type PedometerResult = { steps: number };
-type PedometerUpdateCallback = (result: PedometerResult) => void;
+export type PedometerResult = { steps: number };
+export type PedometerUpdateCallback = (result: PedometerResult) => void;
 export interface PedometerListener {
   remove: () => void;
 }

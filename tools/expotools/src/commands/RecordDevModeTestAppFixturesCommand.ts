@@ -29,7 +29,7 @@ async function action(options) {
   ProjectUtils.attachLoggerStream(projectDir, {
     type: 'raw',
     stream: {
-      write: async chunk => {
+      write: async (chunk) => {
         if (chunk.msg.includes('DEV_MODE_TEST_FINISHED_LOADING')) {
           console.log('Detected that app finished loading');
 
@@ -60,7 +60,7 @@ async function action(options) {
   console.log('Scan the QR code with a device to start recording fixtures');
 }
 
-export default program => {
+export default (program) => {
   program
     .command('record-dev-mode-test-app-fixtures')
     .description('Records fixtures from apps/dev-mode-test')

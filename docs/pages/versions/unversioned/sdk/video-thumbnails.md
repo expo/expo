@@ -3,17 +3,16 @@ title: VideoThumbnails
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-video-thumbnails'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-video-thumbnails`** allows you to generate an image to serve as a thumbnail from a video file.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-video-thumbnails`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails).
+<InstallSection packageName="expo-video-thumbnails" />
 
 ## API
 

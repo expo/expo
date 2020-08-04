@@ -9,6 +9,7 @@ import android.os.Build;
 import com.facebook.react.modules.core.PermissionListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ReactNativeActivity;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
@@ -68,9 +68,15 @@ public class ScopedPermissionsRequester {
 
     if (!mPermissionsToRequestPerExperience.isEmpty()) {
       requestExperienceAndGlobalPermissions(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
-    } else if (!mPermissionsToRequestGlobally.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      currentActivity.requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),
+    } else if (!mPermissionsToRequestGlobally.isEmpty()) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        currentActivity.requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),
           EXPONENT_PERMISSIONS_REQUEST);
+      } else {
+        int[] result = new int[mPermissionsToRequestGlobally.size()];
+        Arrays.fill(result, PackageManager.PERMISSION_DENIED);
+        onRequestPermissionsResult(mPermissionsToRequestGlobally.toArray(new String[0]), result);
+      }
     }
   }
 
@@ -84,7 +90,7 @@ public class ScopedPermissionsRequester {
     if (grantResults.length > 0) {
       for (int i = 0; i < grantResults.length; i++) {
         if (grantResults[i] == PackageManager.PERMISSION_GRANTED && mExperienceId != null) {
-          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(permissions[i], mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(permissions[i], mExperienceId);
         }
         mPermissionsResult.put(permissions[i], grantResults[i]);
       }
@@ -158,12 +164,12 @@ public class ScopedPermissionsRequester {
       mPermissionsAskedCount -= 1;
       switch (which) {
         case DialogInterface.BUTTON_POSITIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(mPermission, mExperienceId);
           mPermissionsResult.put(mPermission, PackageManager.PERMISSION_GRANTED);
           break;
 
         case DialogInterface.BUTTON_NEGATIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().revokePermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().revokeScopedPermissions(mPermission, mExperienceId);
           mPermissionsResult.put(mPermission, PackageManager.PERMISSION_DENIED);
           break;
       }

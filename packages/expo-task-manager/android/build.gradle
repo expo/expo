@@ -1,21 +1,10 @@
-
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.1'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '8.0.0'
+version = '8.4.0'
 
+// Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -46,16 +35,20 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 29)
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 16
-    versionName "8.0.0"
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    versionCode 20
+    versionName "8.4.0"
   }
   lintOptions {
     abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
   }
 }
 
@@ -63,15 +56,19 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
-            "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
-            "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
+      "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
 }
 
 dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-task-manager-interface"
   unimodule "unimodules-constants-interface"
-  unimodule "expo-app-loader-provider"
+  unimodule "unimodules-app-loader"
+
 
   api "androidx.core:core:1.0.0"
+}
+repositories {
+  mavenCentral()
 }

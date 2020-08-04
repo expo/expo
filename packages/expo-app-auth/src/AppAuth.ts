@@ -128,45 +128,4 @@ export async function revokeAsync(
   }
 }
 
-// NOTE: This function is unused; delete it if we don't need it
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function parseAuthRevocationResults(results: Response): Promise<any> {
-  const data = await results.json();
-  const token = results.headers['update-client-auth'];
-  // the token has been revoked successfully or the client submitted an invalid token.
-  if (results.ok) {
-    // successful op
-    return { type: 'success', status: results.status, data, token };
-  } else if (results.status === 503 && results.headers['retry-after']) {
-    // Failed op
-    const retryAfterValue = results.headers['retry-after'];
-    let retryAfter: number | undefined;
-    if (retryAfterValue) {
-      retryAfter = parseRetryTime(retryAfterValue);
-    }
-    // the client must assume the token still exists and may retry after a reasonable delay.
-    return { type: 'failed', status: results.status, data, token, retryAfter };
-  } else {
-    // Error
-    return { type: 'error', status: results.status, data, token };
-  }
-}
-
-function parseRetryTime(value: string): number {
-  // In accordance with RFC2616, Section 14.37. Timout may be of format seconds or future date time value
-  if (/^\d+$/.test(value)) {
-    return parseInt(value, 10) * 1000;
-  }
-  const retry = Date.parse(value);
-  if (isNaN(retry)) {
-    throw new CodedError(
-      'ERR_APP_AUTH_FETCH_RETRY_TIME',
-      'Cannot parse the Retry-After header value returned by the server: ' + value
-    );
-  }
-  const now = Date.now();
-  const parsedDate = new Date(retry);
-  return parsedDate.getTime() - now;
-}
-
 export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;

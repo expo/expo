@@ -1,17 +1,16 @@
+import { DeviceEventEmitter } from 'react-native';
+
 import { EventEmitter, Subscription } from './EventEmitter';
-import NativeModulesProxy, { ProxyNativeModule } from './NativeModulesProxy';
+import NativeModulesProxy from './NativeModulesProxy';
+import { ProxyNativeModule } from './NativeModulesProxy.types';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
 import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
-
-// RCTDeviceEventEmitter pending https://github.com/necolas/react-native-web/pull/1402
-import { RCTDeviceEventEmitter } from './nativeEmitters';
-
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
 export {
-  RCTDeviceEventEmitter,
+  DeviceEventEmitter,
   EventEmitter,
   NativeModulesProxy,
   ProxyNativeModule,
@@ -23,3 +22,8 @@ export {
   CodedError,
   UnavailabilityError,
 };
+
+/**
+ * @deprecated renamed to `DeviceEventEmitter`
+ */
+export const RCTDeviceEventEmitter = DeviceEventEmitter;

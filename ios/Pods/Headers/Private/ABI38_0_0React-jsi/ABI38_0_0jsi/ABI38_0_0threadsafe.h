@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI38_0_0/ReactNative/ReactCommon/jsi/jsi/ABI38_0_0threadsafe.h

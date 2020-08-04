@@ -13,15 +13,14 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Build;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import android.text.format.DateFormat;
 
-import java.util.Calendar;
 import java.util.Locale;
-
-import javax.annotation.Nullable;
 
 @SuppressWarnings("ValidFragment")
 public class RNTimePickerDialogFragment extends DialogFragment {
@@ -31,6 +30,8 @@ public class RNTimePickerDialogFragment extends DialogFragment {
   private OnTimeSetListener mOnTimeSetListener;
   @Nullable
   private OnDismissListener mOnDismissListener;
+  @Nullable
+  private static OnClickListener mOnNeutralButtonActionListener;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -44,7 +45,11 @@ public class RNTimePickerDialogFragment extends DialogFragment {
     instance.updateTime(date.hour(), date.minute());
   }
 
-  static TimePickerDialog createDialog(Bundle args, Context activityContext, @Nullable OnTimeSetListener onTimeSetListener) {
+  static TimePickerDialog getDialog(
+          Bundle args,
+          Context activityContext,
+          @Nullable OnTimeSetListener onTimeSetListener) {
+
     final RNDate date = new RNDate(args);
     final int hour = date.hour();
     final int minute = date.minute();
@@ -60,32 +65,25 @@ public class RNTimePickerDialogFragment extends DialogFragment {
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (display == RNTimePickerDisplay.CLOCK) {
-        return new RNDismissableTimePickerDialog(
-          activityContext,
-          activityContext.getResources().getIdentifier(
-            "ClockTimePickerDialog",
-            "style",
-            activityContext.getPackageName()
-          ),
-          onTimeSetListener,
-          hour,
-          minute,
-          is24hour
-        );
-      } else if (display == RNTimePickerDisplay.SPINNER) {
-        return new RNDismissableTimePickerDialog(
-          activityContext,
-          activityContext.getResources().getIdentifier(
-            "SpinnerTimePickerDialog",
-            "style",
-            activityContext.getPackageName()
-          ),
-          onTimeSetListener,
-          hour,
-          minute,
-          is24hour
-        );
+      switch (display) {
+        case CLOCK:
+        case SPINNER:
+          String resourceName = display == RNTimePickerDisplay.CLOCK
+                  ? "ClockTimePickerDialog"
+                  : "SpinnerTimePickerDialog";
+          return new RNDismissableTimePickerDialog(
+                  activityContext,
+                  activityContext.getResources().getIdentifier(
+                          resourceName,
+                          "style",
+                          activityContext.getPackageName()
+                  ),
+                  onTimeSetListener,
+                  hour,
+                  minute,
+                  is24hour,
+                  display
+          );
       }
     }
     return new RNDismissableTimePickerDialog(
@@ -93,8 +91,21 @@ public class RNTimePickerDialogFragment extends DialogFragment {
             onTimeSetListener,
             hour,
             minute,
-            is24hour
+            is24hour,
+            display
     );
+  }
+
+  static TimePickerDialog createDialog(
+          Bundle args, Context activityContext,
+          @Nullable OnTimeSetListener onTimeSetListener) {
+
+    TimePickerDialog dialog = getDialog(args, activityContext, onTimeSetListener);
+
+    if (args != null && args.containsKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
+      dialog.setButton(DialogInterface.BUTTON_NEUTRAL, args.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL), mOnNeutralButtonActionListener);
+    }
+    return dialog;
   }
 
   @Override
@@ -111,5 +122,9 @@ public class RNTimePickerDialogFragment extends DialogFragment {
 
   public void setOnTimeSetListener(@Nullable OnTimeSetListener onTimeSetListener) {
     mOnTimeSetListener = onTimeSetListener;
+  }
+
+  /*package*/ void setOnNeutralButtonActionListener(@Nullable OnClickListener onNeutralButtonActionListener) {
+    mOnNeutralButtonActionListener = onNeutralButtonActionListener;
   }
 }

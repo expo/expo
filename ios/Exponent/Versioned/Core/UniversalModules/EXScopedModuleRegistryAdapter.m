@@ -17,10 +17,17 @@
 #import "EXScopedBranch.h"
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
+#import "EXScopedFirebaseCore.h"
 
 #import "EXScopedReactNativeAdapter.h"
-#import "EXModuleRegistryBinding.h"
 #import "EXExpoUserNotificationCenterProxy.h"
+
+#import "EXScopedNotificationsEmitter.h"
+#import "EXScopedNotificationsHandlerModule.h"
+#import "EXScopedNotificationBuilder.h"
+#import "EXScopedNotificationSchedulerModule.h"
+#import "EXScopedNotificationPresentationModule.h"
+#import "EXScopedNotificationCategoriesModule.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -109,18 +116,48 @@
   [moduleRegistry registerInternalModule:taskManagerModule];
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
-
+  
 #if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
   EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:errorRecovery];
 #endif
   
-  return moduleRegistry;
-}
+#if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
+  EXScopedFirebaseCore *firebaseCoreModule = [[EXScopedFirebaseCore alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  [moduleRegistry registerExportedModule:firebaseCoreModule];
+  [moduleRegistry registerInternalModule:firebaseCoreModule];
+#endif
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  return [[super extraModulesForModuleRegistry:moduleRegistry] arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
+#if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
+  EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:notificationsEmmitter];
+#endif
+  
+#if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
+  EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:notificationsHandler];
+#endif
+  
+#if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
+  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerInternalModule:notificationsBuilder];
+#endif
+  
+#if __has_include(<EXNotifications/EXNotificationSchedulerModule.h>)
+  EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:schedulerModule];
+#endif
+    
+#if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
+  EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:notificationPresentationModule];
+#endif
+  
+#if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
+  EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:categoriesModule];
+#endif
+  return moduleRegistry;
 }
 
 @end

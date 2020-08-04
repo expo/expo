@@ -3,43 +3,43 @@ title: BarCodeScanner
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-barcode-scanner'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-barcode-scanner`** provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
-#### Platform Compatibility
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/4166' }} />
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+> **Note:** Only one active BarCodeScanner preview is supported currently. When using navigation, the best practice is to unmount any previously rendered BarCodeScanner component so the following screens can use `<BarCodeScanner />` without issues.
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+<InstallSection packageName="expo-barcode-scanner" />
 
 ## Supported formats
 
-| Bar code format | iOS   | Android |
-| --------------- | ----- | ------- |
-| aztec           | Yes   | Yes     |
-| codabar         | No    | Yes     |
-| code39          | Yes   | Yes     |
-| code93          | Yes   | Yes     |
-| code128         | Yes   | Yes     |
-| code39mod43     | Yes   | No      |
-| datamatrix      | Yes   | Yes     |
-| ean13           | Yes   | Yes     |
-| ean8            | Yes   | Yes     |
-| interleaved2of5 | Yes   | No      |
-| itf14           | Yes\* | Yes     |
-| maxicode        | No    | Yes     |
-| pdf417          | Yes   | Yes     |
-| rss14           | No    | Yes     |
-| rssexpanded     | No    | Yes     |
-| upc_a           | No    | Yes     |
-| upc_e           | Yes   | Yes     |
-| upc_ean         | No    | Yes     |
-| qr              | Yes   | Yes     |
+| Bar code format | iOS   | Android     |
+| --------------- | ----- | ----------- |
+| aztec           | Yes   | Yes         |
+| codabar         | No    | Yes         |
+| code39          | Yes   | Yes         |
+| code93          | Yes   | Yes         |
+| code128         | Yes   | Yes         |
+| code39mod43     | Yes   | No          |
+| datamatrix      | Yes   | Yes         |
+| ean13           | Yes   | Yes         |
+| ean8            | Yes   | Yes         |
+| interleaved2of5 | Yes   | use `itf14` |
+| itf14           | Yes\* | Yes         |
+| maxicode        | No    | Yes         |
+| pdf417          | Yes   | Yes         |
+| rss14           | No    | Yes         |
+| rssexpanded     | No    | Yes         |
+| upc_a           | No    | Yes         |
+| upc_e           | Yes   | Yes         |
+| upc_ean         | No    | Yes         |
+| qr              | Yes   | Yes         |
 
 > Important notes:
 >

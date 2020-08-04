@@ -17,4 +17,9 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'UMCore'
+  s.dependency 'React'
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/*.{h,m}'
+  end
 end

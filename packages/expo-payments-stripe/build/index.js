@@ -1,6 +1,2 @@
-module.exports = {
-    get PaymentsStripe() {
-        return require('./Stripe').default;
-    },
-};
+export { default as PaymentsStripe } from './Stripe';
 //# sourceMappingURL=index.js.map

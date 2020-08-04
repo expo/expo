@@ -44,7 +44,16 @@
 #import <FBAudienceNetwork/FBRewardedVideoAd.h>
 #import <FBAudienceNetwork/UIView+FBNativeAdViewTag.h>
 
+// Unity Bridge
+#import <FBAudienceNetwork/FBAdBridgeCommon.h>
+#import <FBAudienceNetwork/FBAdBridgeContainer.h>
+#import <FBAudienceNetwork/FBAdSettingsBridge.h>
+#import <FBAudienceNetwork/FBAdUtilityBridge.h>
+#import <FBAudienceNetwork/FBAdViewBridge.h>
+#import <FBAudienceNetwork/FBInterstitialAdBridge.h>
+#import <FBAudienceNetwork/FBRewardedVideoAdBridge.h>
+
 // NOTE: Any changes should also be made to the module.modulemap
 // to ensure comptability with Swift apps using Cocoapods
 
-#define FB_AD_SDK_VERSION @"5.5.0"
+#define FB_AD_SDK_VERSION @"5.7.1"

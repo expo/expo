@@ -26,7 +26,7 @@ npm install ${packageName}
 <!--- remove for no-ios --->
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 <!--- end remove for no-ios --->
 

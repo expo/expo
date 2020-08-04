@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoUpdates.js","sourceRoot":"","sources":["../src/ExpoUpdates.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,WAAW,IAAK,EAAU,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoUpdates || ({} as any);\n"]}

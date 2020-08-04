@@ -16,7 +16,7 @@ export default {
         return null;
     },
     async getCellularGenerationAsync() {
-        let connection = navigator['connection'] ||
+        const connection = navigator['connection'] ||
             navigator['mozConnection'] ||
             navigator['webkitConnection'] ||
             null;

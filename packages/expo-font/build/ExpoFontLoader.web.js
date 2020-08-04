@@ -1,6 +1,6 @@
-import FontObserver from 'fontfaceobserver';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { CodedError } from '@unimodules/core';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import FontObserver from 'fontfaceobserver';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {
     if (!canUseDOM) {
@@ -63,11 +63,10 @@ export default {
         }
         const style = _createWebStyle(fontFamilyName, resource);
         document.head.appendChild(style);
-        // https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
-        if (navigator.userAgent.includes('Edge')) {
+        if (!isFontLoadingListenerSupported()) {
             return;
         }
-        return new FontObserver(fontFamilyName).load();
+        return new FontObserver(fontFamilyName, { display: resource.display }).load();
     },
 };
 const ID = 'expo-generated-fonts';
@@ -101,5 +100,18 @@ function _createWebStyle(fontFamily, resource) {
         styleElement.appendChild(textNode);
     }
     return styleElement;
+}
+function isFontLoadingListenerSupported() {
+    const { userAgent } = window.navigator;
+    // WebKit is broken https://github.com/bramstein/fontfaceobserver/issues/95
+    const isIOS = !!userAgent.match(/iPad|iPhone/i);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // Edge is broken https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
+    const isEdge = userAgent.includes('Edge');
+    // Internet Explorer
+    const isIE = userAgent.includes('Trident');
+    // Firefox
+    const isFirefox = userAgent.includes('Firefox');
+    return !isSafari && !isIOS && !isEdge && !isIE && !isFirefox;
 }
 //# sourceMappingURL=ExpoFontLoader.web.js.map

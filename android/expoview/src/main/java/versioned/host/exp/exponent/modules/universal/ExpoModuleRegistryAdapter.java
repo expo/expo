@@ -5,21 +5,23 @@ import com.facebook.react.bridge.ReactApplicationContext;
 
 import org.json.JSONObject;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ModuleRegistryReadyNotifier;
-import org.unimodules.adapters.react.NativeModulesProxy;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedGravitySensorService;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedGyroscopeService;
@@ -58,11 +60,25 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-error-recovery ErrorRecoveryModule
     moduleRegistry.registerExportedModule(new ScopedErrorRecoveryModule(scopedContext, manifest, experienceId));
 
+    // Overriding expo-permissions ScopedPermissionsService
+    moduleRegistry.registerInternalModule(new ScopedPermissionsService(scopedContext, experienceId));
+
     // Overriding expo-facebook
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
 
     // Scoping Amplitude
     moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
+
+    // Overriding expo-firebase-core
+    moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceId));
+
+    // Overriding expo-notifications classes
+    moduleRegistry.registerExportedModule(new ScopedNotificationsEmitter(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedExpoNotificationCategoriesModule(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
+    moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();

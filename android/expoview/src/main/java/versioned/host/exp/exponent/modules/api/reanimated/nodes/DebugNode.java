@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
+import versioned.host.exp.exponent.modules.api.reanimated.MapUtils;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
 public class DebugNode extends Node {
@@ -12,8 +13,8 @@ public class DebugNode extends Node {
 
   public DebugNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
     super(nodeID, config, nodesManager);
-    mMessage = config.getString("message");
-    mValueID = config.getInt("value");
+    mMessage = MapUtils.getString(config, "message", "Reanimated: First argument passed to debug node is either of wrong type or is missing.");
+    mValueID = MapUtils.getInt(config, "value", "Reanimated: Second argument passed to debug node is either of wrong type or is missing.");
   }
 
   @Override

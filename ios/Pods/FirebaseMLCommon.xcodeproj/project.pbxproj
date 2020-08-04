@@ -72,50 +72,52 @@
 /* Begin PBXFileReference section */
 		2E530F5A2FE0D41A194A0028276E2C7D /* GoogleUtilities */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleUtilities; path = GoogleUtilities.xcodeproj; sourceTree = "<group>"; };
 		406C1DCFCDDC1EAF6AF5C12FC59CDB30 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
-		5C5B132F66A05B0413EA68D99F5FE90A /* FirebaseMLCommon.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLCommon.xcconfig; sourceTree = "<group>"; };
-		6117CA2BD74F6A768C90BEE7CAF05E26 /* FirebaseMLCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLCommon.framework; path = Frameworks/FirebaseMLCommon.framework; sourceTree = "<group>"; };
+		44A96582CFEB52D89E9B27740B6CC887 /* FirebaseMLCommon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLCommon.release.xcconfig; sourceTree = "<group>"; };
 		6DB5F2C7700A6A8BD737DA0162DDB240 /* GTMSessionFetcher */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMSessionFetcher; path = GTMSessionFetcher.xcodeproj; sourceTree = "<group>"; };
 		72F047E1B4ACC51BDCDAD1E641F251FC /* FirebaseInstanceID */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseInstanceID; path = FirebaseInstanceID.xcodeproj; sourceTree = "<group>"; };
 		9046F13051A9DF618764D318EBD24CEA /* Protobuf */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Protobuf; path = Protobuf.xcodeproj; sourceTree = "<group>"; };
 		A43656C01091DFBE60B400918381DB06 /* GoogleToolboxForMac */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleToolboxForMac; path = GoogleToolboxForMac.xcodeproj; sourceTree = "<group>"; };
+		D37D9B4ADF25EC9F2D0EF830380C4DEB /* FirebaseMLCommon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLCommon.debug.xcconfig; sourceTree = "<group>"; };
+		D568895124925E095D5917857B079CD5 /* FirebaseMLCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLCommon.framework; path = Frameworks/FirebaseMLCommon.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		617273E8F1363186CA5DF531A90424E4 /* FirebaseMLCommon */ = {
+		7A3A304EBADF65A6333622A829AF6CEF /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				7C6FBD3A72B96DDEE731D07DB07C98B5 /* Frameworks */,
-				A62003E02263C41C56B38DAFDAA00DC5 /* Support Files */,
+				D37D9B4ADF25EC9F2D0EF830380C4DEB /* FirebaseMLCommon.debug.xcconfig */,
+				44A96582CFEB52D89E9B27740B6CC887 /* FirebaseMLCommon.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/FirebaseMLCommon";
+			sourceTree = "<group>";
+		};
+		857A61979706044957D46B955B6FE3C0 /* FirebaseMLCommon */ = {
+			isa = PBXGroup;
+			children = (
+				AD16A97F8F95CB38656DB0719787EE9A /* Frameworks */,
+				7A3A304EBADF65A6333622A829AF6CEF /* Support Files */,
 			);
 			name = FirebaseMLCommon;
 			path = FirebaseMLCommon;
-			sourceTree = "<group>";
-		};
-		7C6FBD3A72B96DDEE731D07DB07C98B5 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				6117CA2BD74F6A768C90BEE7CAF05E26 /* FirebaseMLCommon.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		8CD19720016F8AE65C2E5627073AA449 = {
 			isa = PBXGroup;
 			children = (
 				CB586BE478619C393A11F72FA971F76E /* Dependencies */,
-				617273E8F1363186CA5DF531A90424E4 /* FirebaseMLCommon */,
+				857A61979706044957D46B955B6FE3C0 /* FirebaseMLCommon */,
 				FD60261B5F695A4ACCED07A7249E9A47 /* Frameworks */,
 				B6ED2DF423A70384D457F1AF101520BB /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A62003E02263C41C56B38DAFDAA00DC5 /* Support Files */ = {
+		AD16A97F8F95CB38656DB0719787EE9A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5C5B132F66A05B0413EA68D99F5FE90A /* FirebaseMLCommon.xcconfig */,
+				D568895124925E095D5917857B079CD5 /* FirebaseMLCommon.framework */,
 			);
-			name = "Support Files";
-			path = "../Target Support Files/FirebaseMLCommon";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B6ED2DF423A70384D457F1AF101520BB /* Products */ = {
@@ -286,9 +288,9 @@
 			};
 			name = Release;
 		};
-		8BB5DB816A22DA3EF1768234E7B9702B /* Release */ = {
+		857036232E71FDB1C5AA30C57CDD9FCA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5C5B132F66A05B0413EA68D99F5FE90A /* FirebaseMLCommon.xcconfig */;
+			baseConfigurationReference = 44A96582CFEB52D89E9B27740B6CC887 /* FirebaseMLCommon.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -364,9 +366,9 @@
 			};
 			name = Debug;
 		};
-		C62EEC43F588DC7DD803AAE28355CA1C /* Debug */ = {
+		96AEBD1B2F3D3EE25B8C1933F0012DE8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5C5B132F66A05B0413EA68D99F5FE90A /* FirebaseMLCommon.xcconfig */;
+			baseConfigurationReference = D37D9B4ADF25EC9F2D0EF830380C4DEB /* FirebaseMLCommon.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -392,8 +394,8 @@
 		93B057DF87FC5C644ECEF4FEBED260B1 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C62EEC43F588DC7DD803AAE28355CA1C /* Debug */,
-				8BB5DB816A22DA3EF1768234E7B9702B /* Release */,
+				96AEBD1B2F3D3EE25B8C1933F0012DE8 /* Debug */,
+				857036232E71FDB1C5AA30C57CDD9FCA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

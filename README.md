@@ -68,7 +68,7 @@ Expo is an open-source platform for making universal native apps that run on And
 - [`docs`](/docs) The source code for **https://docs.expo.io**
 - [`templates`](/templates) The template projects you get when you run `expo start`
 - [`react-native-lab`](/react-native-lab) This is our fork of `react-native`. We keep this very close to the upstream but sometimes need to add quick fixes locally before they can land.
-- [`guides`](/guides) In-depth tutorials for our most advanced topics like contributing to the client.
+- [`guides`](/guides) In-depth tutorials for advanced topics like contributing to the client.
 - [`android`](/android) contains the Android project.
 - [`home`](/home) contains the JavaScript source code of the app.
 - [`ios`](/ios) contains the iOS project.

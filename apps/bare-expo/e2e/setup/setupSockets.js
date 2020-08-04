@@ -1,4 +1,5 @@
 import * as detox from 'detox';
+
 import { startAsync, send } from '../../relapse/server';
 
 let stopAsync;

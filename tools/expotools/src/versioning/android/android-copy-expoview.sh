@@ -42,17 +42,18 @@ sed -i '' "/ADD_NEW_SUPPORTED_ABIS_HERE/$SED_APPEND_COMMAND\ \ \ \ \"$ABI_VERSIO
 cp -r expoview/src/main/java/versioned/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
 cp -r expoview/src/main/java/com/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION/com
 
+while read PACKAGE
+do
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
+done < $TOOLS_DIR/android-packages-to-keep.txt
+
 # Rename references to other packages previously under versioned.host.exp.exponent
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import versioned\.host\.exp\.exponent/import $ABI_VERSION\.host\.exp\.exponent/g"
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import expo\./import $ABI_VERSION\.expo\./g"
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import static versioned\.host\.exp\.exponent/import static $ABI_VERSION\.host\.exp\.exponent/g"
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import static expo\./import static $ABI_VERSION\.expo\./g"
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/package versioned\.host\.exp\.exponent/package $ABI_VERSION\.host\.exp\.exponent/g"
-
-while read PACKAGE
-do
-  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
-done < $TOOLS_DIR/android-packages-to-keep.txt
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/versioned\.host\.exp\.exponent/$ABI_VERSION\.host\.exp\.exponent/g"
 
 # Rename references to react native
 while read PACKAGE

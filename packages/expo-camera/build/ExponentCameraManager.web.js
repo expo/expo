@@ -1,3 +1,4 @@
+import CameraModule from './CameraModule/CameraModule';
 import { canGetUserMedia } from './CameraModule/UserMediaManager';
 export default {
     get name() {
@@ -50,10 +51,8 @@ export default {
     async resumePreview(camera) {
         return await camera.resumePreview();
     },
-    async getAvailableCameraTypesAsync(camera) {
-        if (!canGetUserMedia())
-            return [];
-        return await camera.getAvailableCameraTypesAsync();
+    async getAvailableCameraTypesAsync() {
+        return await CameraModule.getAvailableCameraTypesAsync();
     },
     async getAvailablePictureSizes(ratio, camera) {
         return await camera.getAvailablePictureSizes(ratio);

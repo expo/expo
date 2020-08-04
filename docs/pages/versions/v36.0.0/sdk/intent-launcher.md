@@ -3,19 +3,17 @@ title: IntentLauncher
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-intent-launcher'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-intent-launcher`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-intent-launcher).
+<InstallSection packageName="expo-intent-launcher" />
 
 #### Example
 

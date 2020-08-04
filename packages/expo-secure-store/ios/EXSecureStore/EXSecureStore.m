@@ -132,7 +132,7 @@
     case EXSecureStoreAccessibleAlwaysThisDeviceOnly:
       return kSecAttrAccessibleAlwaysThisDeviceOnly;
     case EXSecureStoreAccessibleWhenUnlockedThisDeviceOnly:
-      return kSecAttrAccessibleAlwaysThisDeviceOnly;
+      return kSecAttrAccessibleWhenUnlockedThisDeviceOnly;
     default:
       return kSecAttrAccessibleWhenUnlocked;
   }

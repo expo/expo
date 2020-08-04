@@ -63,6 +63,7 @@ final class ChangeTransition extends Transition {
 
   @Override
   public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues) {
+    mChangeTransform.setReparent(false);
     Animator changeTransformAnimator = mChangeTransform.createAnimator(sceneRoot, startValues, endValues);
     Animator changeBoundsAnimator = mChangeBounds.createAnimator(sceneRoot, startValues, endValues);
 

@@ -1,13 +1,12 @@
-import React from 'react';
 import { Asset } from 'expo-asset';
-import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
 import { Audio } from 'expo-av';
+import React from 'react';
+import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
-import ListButton from '../../components/ListButton';
 import HeadingText from '../../components/HeadingText';
-
-import Player from './AudioPlayer';
+import ListButton from '../../components/ListButton';
 import AudioModeSelector from './AudioModeSelector';
+import Player from './AudioPlayer';
 
 export default class AuthSessionScreen extends React.Component {
   static navigationOptions = {
@@ -28,7 +27,7 @@ export default class AuthSessionScreen extends React.Component {
         <Player
           source={{
             uri:
-            // tslint:disable-next-line: max-line-length
+              // tslint:disable-next-line: max-line-length
               'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
           }}
           style={styles.player}

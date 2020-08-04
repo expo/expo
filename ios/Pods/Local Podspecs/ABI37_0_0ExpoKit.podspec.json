@@ -1,0 +1,292 @@
+{
+  "name": "ABI37_0_0ExpoKit",
+  "version": "36.0.0",
+  "summary": "ExpoKit",
+  "description": "ExpoKit allows native projects to integrate with the Expo SDK.",
+  "homepage": "http://docs.expo.io",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "requires_arc": true,
+  "platforms": {
+    "ios": "10.0"
+  },
+  "default_subspecs": "Core",
+  "source": {
+    "git": "http://github.com/expo/expo.git"
+  },
+  "subspecs": [
+    {
+      "name": "Expo",
+      "source_files": "Core/**/*.{h,m,mm}",
+      "dependencies": {
+        "ABI37_0_0React-Core": [
+
+        ],
+        "ABI37_0_0React-Core/DevSupport": [
+
+        ],
+        "ABI37_0_0UMCore": [
+
+        ],
+        "ABI37_0_0UMReactNativeAdapter": [
+
+        ],
+        "ABI37_0_0EXAdsAdMob": [
+
+        ],
+        "ABI37_0_0EXAdsFacebook": [
+
+        ],
+        "ABI37_0_0EXAmplitude": [
+
+        ],
+        "ABI37_0_0EXSegment": [
+
+        ],
+        "ABI37_0_0EXAppAuth": [
+
+        ],
+        "ABI37_0_0EXAppleAuthentication": [
+
+        ],
+        "ABI37_0_0EXApplication": [
+
+        ],
+        "ABI37_0_0EXAV": [
+
+        ],
+        "ABI37_0_0EXBackgroundFetch": [
+
+        ],
+        "ABI37_0_0EXBarCodeScanner": [
+
+        ],
+        "ABI37_0_0EXBattery": [
+
+        ],
+        "ABI37_0_0EXBlur": [
+
+        ],
+        "EXBranch": [
+
+        ],
+        "ABI37_0_0EXBrightness": [
+
+        ],
+        "ABI37_0_0EXCalendar": [
+
+        ],
+        "ABI37_0_0EXCamera": [
+
+        ],
+        "ABI37_0_0EXCellular": [
+
+        ],
+        "ABI37_0_0EXConstants": [
+
+        ],
+        "ABI37_0_0EXContacts": [
+
+        ],
+        "ABI37_0_0EXCrypto": [
+
+        ],
+        "ABI37_0_0EXDevice": [
+
+        ],
+        "ABI37_0_0EXDocumentPicker": [
+
+        ],
+        "ABI37_0_0EXErrorRecovery": [
+
+        ],
+        "ABI37_0_0EXFaceDetector": [
+
+        ],
+        "ABI37_0_0EXFacebook": [
+
+        ],
+        "ABI37_0_0EXFileSystem": [
+
+        ],
+        "ABI37_0_0EXFirebaseAnalytics": [
+
+        ],
+        "ABI37_0_0EXFirebaseCore": [
+
+        ],
+        "ABI37_0_0EXFont": [
+
+        ],
+        "ABI37_0_0EXGL": [
+
+        ],
+        "EXGL_CPP": [
+
+        ],
+        "ABI37_0_0EXGoogleSignIn": [
+
+        ],
+        "ABI37_0_0EXHaptics": [
+
+        ],
+        "ABI37_0_0EXImageLoader": [
+
+        ],
+        "ABI37_0_0EXImageManipulator": [
+
+        ],
+        "ABI37_0_0EXImagePicker": [
+
+        ],
+        "ABI37_0_0EXKeepAwake": [
+
+        ],
+        "ABI37_0_0EXLinearGradient": [
+
+        ],
+        "ABI37_0_0EXLocalAuthentication": [
+
+        ],
+        "ABI37_0_0EXLocalization": [
+
+        ],
+        "ABI37_0_0EXLocation": [
+
+        ],
+        "ABI37_0_0EXMailComposer": [
+
+        ],
+        "ABI37_0_0EXMediaLibrary": [
+
+        ],
+        "ABI37_0_0EXNetwork": [
+
+        ],
+        "ABI37_0_0EXPermissions": [
+
+        ],
+        "ABI37_0_0EXPrint": [
+
+        ],
+        "ABI37_0_0EXRandom": [
+
+        ],
+        "ABI37_0_0EXScreenOrientation": [
+
+        ],
+        "ABI37_0_0EXSecureStore": [
+
+        ],
+        "ABI37_0_0EXSensors": [
+
+        ],
+        "ABI37_0_0EXSharing": [
+
+        ],
+        "ABI37_0_0EXSMS": [
+
+        ],
+        "ABI37_0_0EXSpeech": [
+
+        ],
+        "ABI37_0_0EXSQLite": [
+
+        ],
+        "ABI37_0_0EXStoreReview": [
+
+        ],
+        "ABI37_0_0EXTaskManager": [
+
+        ],
+        "ABI37_0_0EXVideoThumbnails": [
+
+        ],
+        "ABI37_0_0EXWebBrowser": [
+
+        ],
+        "ABI37_0_0UMAppLoader": [
+
+        ],
+        "ABI37_0_0UMBarCodeScannerInterface": [
+
+        ],
+        "ABI37_0_0UMCameraInterface": [
+
+        ],
+        "ABI37_0_0UMConstantsInterface": [
+
+        ],
+        "ABI37_0_0UMFaceDetectorInterface": [
+
+        ],
+        "ABI37_0_0UMFileSystemInterface": [
+
+        ],
+        "ABI37_0_0UMFontInterface": [
+
+        ],
+        "ABI37_0_0UMImageLoaderInterface": [
+
+        ],
+        "ABI37_0_0UMPermissionsInterface": [
+
+        ],
+        "ABI37_0_0UMSensorsInterface": [
+
+        ],
+        "ABI37_0_0UMTaskManagerInterface": [
+
+        ],
+        "Amplitude-iOS": [
+
+        ],
+        "Analytics": [
+
+        ],
+        "AppAuth": [
+
+        ],
+        "FBAudienceNetwork": [
+
+        ],
+        "FBSDKCoreKit": [
+
+        ],
+        "FBSDKLoginKit": [
+
+        ],
+        "GoogleSignIn": [
+
+        ],
+        "GoogleMaps": [
+
+        ],
+        "Google-Maps-iOS-Utils": [
+
+        ],
+        "lottie-ios": [
+
+        ],
+        "JKBigInteger2": [
+
+        ],
+        "Branch": [
+
+        ],
+        "Google-Mobile-Ads-SDK": [
+
+        ]
+      }
+    },
+    {
+      "name": "ExpoOptional",
+      "dependencies": {
+        "ABI37_0_0ExpoKit/Expo": [
+
+        ]
+      },
+      "source_files": "Optional/**/*.{h,m,mm}"
+    }
+  ]
+}

@@ -19,7 +19,7 @@ export default function BatteryScreen() {
         Battery.isLowPowerModeEnabledAsync(),
       ]);
 
-      setIsAvailable(isAvailable && false);
+      setIsAvailable(isAvailable || false);
       setBatteryLevel(batteryLevel);
       setBatteryState(batteryState);
       setLowPowerMode(lowPowerMode);
@@ -58,10 +58,6 @@ export default function BatteryScreen() {
     </ScrollView>
   );
 }
-
-BatteryScreen.navigationOptions = {
-  title: 'Battery',
-};
 
 function getBatteryStateString(batteryState: Battery.BatteryState): string {
   switch (batteryState) {

@@ -43,6 +43,9 @@
             // no-op
         } else if ([node isKindOfClass:[RNSVGNode class]]) {
             RNSVGNode* svgNode = (RNSVGNode*)node;
+            if (svgNode.display && [@"none" isEqualToString:svgNode.display]) {
+                return YES;
+            }
             if (svgNode.responsible && !self.svgView.responsible) {
                 self.svgView.responsible = YES;
             }

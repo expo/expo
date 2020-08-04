@@ -1,25 +1,28 @@
-const { join } = require('path');
+const withCSS = require('@zeit/next-css');
 const { copySync, removeSync } = require('fs-extra');
+const { join } = require('path');
+const semver = require('semver');
+
+const { version } = require('./package.json');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
-const vLatest = join('pages', 'versions', `v${require('./package.json').version}/`);
+const vLatest = join('pages', 'versions', `v${version}/`);
 const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
 
-module.exports = {
+module.exports = withCSS({
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   webpack: (config, options) => {
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
-      use: [
-        options.defaultLoaders.babel,
-        '@mdx-js/loader',
-        join(__dirname, './common/md-loader'),
-      ],
+      use: [options.defaultLoaders.babel, '@mdx-js/loader', join(__dirname, './common/md-loader')],
     });
+    config.node = {
+      fs: 'empty',
+    };
     return config;
   },
   async exportPathMap(defaultPathMap, { dev, dir, outDir }) {
@@ -33,13 +36,17 @@ module.exports = {
           // ends in "/v<version>"
           pathname += '/index.html'; // TODO: find out why we need to do this
         }
-
         if (pathname.match(/unversioned/)) {
           return {};
         } else {
+          // hide versions greater than the package.json version number
+          const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
+          if (versionMatch && versionMatch[1] && semver.gt(versionMatch[1], version)) {
+            return {};
+          }
           return { [pathname]: page };
         }
       })
     );
   },
-};
+});

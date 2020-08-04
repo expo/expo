@@ -1,6 +1,7 @@
-import React from 'react';
-import { ScrollView, View, Text, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
+import React from 'react';
+import { Button, ScrollView, View } from 'react-native';
+
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
@@ -57,7 +58,7 @@ class DeviceMethods extends React.Component<DeviceMethod, State> {
 
   render() {
     let { name } = this.props;
-    if(!name) name = '';
+    if (!name) name = '';
     return (
       <View style={{ padding: 10 }}>
         <View style={{ marginBottom: 10 }}>

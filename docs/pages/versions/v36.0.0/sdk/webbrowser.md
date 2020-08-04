@@ -3,20 +3,17 @@ title: WebBrowser
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-web-browser'
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-web-browser`** provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-web-browser`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
+<InstallSection packageName="expo-web-browser" />
 
 ## Usage
 
@@ -68,14 +65,14 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
 
 - **url (_string_)** -- The url to open in the web browser.
 - **options (_object_)** (_optional_) --
-  A dictionaty with following key-value pairs:
+  A dictionary with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **enableBarCollapsing (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
   - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
-  - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
+  - **browserPackage (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
 
   Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
@@ -158,7 +155,7 @@ Dismisses the presented web browser.
 
 The promise resolves with `{ type: 'dismiss' }`.
 
-### `WebBrowser.getCustomTabsSupportingBrowsers`
+### `WebBrowser.getCustomTabsSupportingBrowsersAsync`
 
 _Android only_
 

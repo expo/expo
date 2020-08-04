@@ -1,22 +1,21 @@
-import React from 'react';
-import { Alert, StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
-import * as FaceDetector from 'expo-face-detector';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import * as Permissions from 'expo-permissions';
-import * as FileSystem from 'expo-file-system';
-import { Camera } from 'expo-camera';
-import Constants from 'expo-constants';
-import isIPhoneX from 'react-native-is-iphonex';
 import {
-  Ionicons,
-  MaterialIcons,
   Foundation,
+  Ionicons,
   MaterialCommunityIcons,
+  MaterialIcons,
   Octicons,
 } from '@expo/vector-icons';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import { Camera } from 'expo-camera';
+import Constants from 'expo-constants';
+import * as FileSystem from 'expo-file-system';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import isIPhoneX from 'react-native-is-iphonex';
 
-import GalleryScreen from './GalleryScreen';
 import { face, landmarks } from '../../components/Face';
+import GalleryScreen from './GalleryScreen';
 
 interface Picture {
   width: number;

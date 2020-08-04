@@ -1,13 +1,13 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXNotifications.h"
-#import "EXModuleRegistryBinding.h"
 #import "EXUnversioned.h"
 #import "EXUtil.h"
 
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 
+#import <UMReactNativeAdapter/UMModuleRegistryHolderReactModule.h>
 #import "EXConstantsBinding.h"
 
 @implementation RCTConvert (NSCalendarUnit)
@@ -62,17 +62,18 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  EXConstantsBinding *constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-
+  EXConstantsBinding *constants = [[[self.bridge moduleForClass:[UMModuleRegistryHolderReactModule class]] moduleRegistry] getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
   if (![constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
 
-  NSString *token = [_remoteNotificationsDelegate apnsTokenStringForScopedModule:self];
-  if (!token) {
-    return reject(0, @"APNS token has not been set", nil);
-  }
-  return resolve(@{ @"type": @"apns", @"data": token });
+  [_remoteNotificationsDelegate getApnsTokenForScopedModule:self completionHandler:^(NSString * _Nullable apnsToken, NSError * _Nullable error) {
+    if (error) {
+      reject(@"ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED", error.localizedDescription, error);
+    } else {
+      resolve(@{ @"type": @"apns", @"data": apnsToken });
+    }
+  }];
 }
 
 RCT_REMAP_METHOD(getExponentPushTokenAsync,
@@ -294,6 +295,7 @@ RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
 RCT_REMAP_METHOD(createCategoryAsync,
                  createCategoryWithCategoryId:(NSString *)categoryId
                  actions:(NSArray *)actions
+                 previewPlaceholder: (NSString *)previewPlaceholder
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
@@ -302,10 +304,19 @@ RCT_REMAP_METHOD(createCategoryAsync,
     [actionsArray addObject:[self parseNotificationActionFromParams:actionParams]];
   }
 
-  UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
+  UNNotificationCategory *newCategory;
+  if (@available(iOS 11, *)) {
+    newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
                                                                                actions:actionsArray
                                                                      intentIdentifiers:@[]
+                                                                     hiddenPreviewsBodyPlaceholder: previewPlaceholder
                                                                                options:UNNotificationCategoryOptionNone];
+  } else {
+    newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
+                                                                  actions:actionsArray
+                                                                  intentIdentifiers:@[]
+                                                                  options:UNNotificationCategoryOptionNone];
+  }
 
   __weak id<EXUserNotificationCenterService> userNotificationCenter = _userNotificationCenter;
   [_userNotificationCenter getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {

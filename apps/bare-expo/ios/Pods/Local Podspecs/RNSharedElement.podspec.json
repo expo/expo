@@ -1,0 +1,23 @@
+{
+  "name": "RNSharedElement",
+  "version": "0.7.0",
+  "summary": "Native shared element transition primitives for react-native 💫",
+  "description": "Native shared element transition primitives for react-native 💫",
+  "license": "MIT",
+  "authors": "IjzerenHein <hrutjes@gmail.com>",
+  "homepage": "https://github.com/IjzerenHein/react-native-shared-element",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/IjzerenHein/react-native-shared-element.git",
+    "tag": "v0.7.0"
+  },
+  "source_files": "ios/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "React": [
+
+    ]
+  }
+}

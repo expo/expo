@@ -18,7 +18,7 @@ npm install unimodules-image-loader-interface
 
 ### Configure for iOS
 
-Add the dependency to your `Podfile` and then run `pod install`.
+Add the dependency to your `Podfile` and then run `npx pod-install`.
 
 ### Configure for Android
 

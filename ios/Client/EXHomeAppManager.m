@@ -67,7 +67,6 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                    @"bridge": bridge,
                                    @"browserModuleClass": [EXHomeModule class],
                                    @"constants": @{
-                                       @"installationId": [EXKernel deviceInstallUUID],
                                        @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                        @"linkingUri": @"exp://",
                                        @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
@@ -123,17 +122,6 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 - (NSString *)bundleResourceNameForAppFetcher:(__unused EXAppFetcher *)appFetcher withManifest:(nonnull __unused NSDictionary *)manifest
 {
   return kEXHomeBundleResourceName;
-}
-
-- (BOOL)appFetcherShouldInvalidateBundleCache:(__unused EXAppFetcher *)appFetcher
-{
-  // if crashlytics shows that we're recovering from a native crash, invalidate any downloaded home cache.
-  BOOL shouldClearKernelCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXKernelClearJSCacheUserDefaultsKey];
-  if (shouldClearKernelCache) {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXKernelClearJSCacheUserDefaultsKey];
-    return YES;
-  }
-  return NO;
 }
 
 #pragma mark - util

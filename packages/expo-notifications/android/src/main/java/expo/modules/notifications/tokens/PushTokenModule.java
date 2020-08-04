@@ -41,12 +41,12 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
+    mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
+
     // Register the module as a listener in PushTokenManager singleton module.
     // Deregistration happens in onDestroy callback.
     mPushTokenManager = moduleRegistry.getSingletonModule("PushTokenManager", PushTokenManager.class);
     mPushTokenManager.addListener(this);
-
-    mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
   }
 
   @Override

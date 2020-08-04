@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
@@ -307,7 +308,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public @Nullable WritableMap getConstantsForViewManager(final String viewManagerName) {
+  public @Nullable WritableMap getConstantsForViewManager(@Nullable String viewManagerName) {
     if (mViewManagerConstantsCache != null
         && mViewManagerConstantsCache.containsKey(viewManagerName)) {
       WritableMap constants = mViewManagerConstantsCache.get(viewManagerName);
@@ -321,7 +322,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  private @Nullable WritableMap computeConstantsForViewManager(final String viewManagerName) {
+  private @Nullable WritableMap computeConstantsForViewManager(@Nullable String viewManagerName) {
     ViewManager targetView =
         viewManagerName != null ? mUIImplementation.resolveViewManager(viewManagerName) : null;
     if (targetView == null) {
@@ -392,7 +393,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     if (uiManagerType == FABRIC) {
       UIManager fabricUIManager =
           UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+      if (fabricUIManager != null) {
+        fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+      }
     } else {
       mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
     }
@@ -414,7 +417,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(reactApplicationContext, rootView.getContext());
+        new ThemedReactContext(
+            reactApplicationContext, rootView.getContext(), ((ReactRoot) rootView).getSurfaceID());
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -466,7 +470,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void updateView(int tag, String className, ReadableMap props) {
+  public void updateView(final int tag, final String className, final ReadableMap props) {
     if (DEBUG) {
       String message =
           "(UIManager.updateView) tag: " + tag + ", class: " + className + ", props: " + props;
@@ -475,9 +479,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager =
-          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+      if (reactApplicationContext.hasActiveCatalystInstance()) {
+        final UIManager fabricUIManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType);
+        if (fabricUIManager != null) {
+          reactApplicationContext.runOnUiQueueThread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+                }
+              });
+        }
+      }
     } else {
       mUIImplementation.updateView(tag, className, props);
     }
@@ -665,16 +680,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
     // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    @Nullable
+    UIManager uiManager =
+        UIManagerHelper.getUIManager(
+            getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag));
+    if (uiManager == null) {
+      return;
+    }
+
     if (commandId.getType() == ReadableType.Number) {
-      final int commandIdNum = commandId.asInt();
-      UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
-          .dispatchCommand(reactTag, commandIdNum, commandArgs);
+      uiManager.dispatchCommand(reactTag, commandId.asInt(), commandArgs);
     } else if (commandId.getType() == ReadableType.String) {
-      final String commandIdStr = commandId.asString();
-      UIManagerHelper.getUIManager(
-              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
-          .dispatchCommand(reactTag, commandIdStr, commandArgs);
+      uiManager.dispatchCommand(reactTag, commandId.asString(), commandArgs);
     }
   }
 
@@ -796,7 +813,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
-    mUIImplementation.sendAccessibilityEvent(tag, eventType);
+    int uiManagerType = ViewUtil.getUIManagerType(tag);
+    if (uiManagerType == FABRIC) {
+      UIManager fabricUIManager =
+          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      if (fabricUIManager != null) {
+        fabricUIManager.sendAccessibilityEvent(tag, eventType);
+      }
+    } else {
+      mUIImplementation.sendAccessibilityEvent(tag, eventType);
+    }
   }
 
   /**
@@ -836,9 +862,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Given a reactTag from a component, find its root node tag, if possible. Otherwise, this will
    * return 0. If the reactTag belongs to a root node, this will return the same reactTag.
    *
+   * @deprecated this method is not going to be supported in the near future, use {@link
+   *     ViewUtil#isRootTag(int)} to verify if a react Tag is a root or not
+   *     <p>TODO: T63569137 Delete the method UIManagerModule.resolveRootTagFromReactTag
    * @param reactTag the component tag
    * @return the rootTag
    */
+  @Deprecated
   public int resolveRootTagFromReactTag(int reactTag) {
     return ViewUtil.isRootTag(reactTag)
         ? reactTag

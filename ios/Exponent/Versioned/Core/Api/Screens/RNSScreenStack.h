@@ -2,7 +2,9 @@
 #import <React/RCTUIManagerObserverCoordinator.h>
 #import "RNSScreenContainer.h"
 
-@interface RNSScreenStackView : UIView <RNSScreenContainerDelegate>
+@interface RNSScreenStackView : UIView <RNSScreenContainerDelegate, RCTInvalidating>
+
+@property (nonatomic, copy) RCTDirectEventBlock onFinishTransitioning;
 
 - (void)markChildUpdated;
 - (void)didUpdateChildren;

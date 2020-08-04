@@ -47,7 +47,8 @@ const STYLES_H3 = css`
   margin-top: 2rem;
 
   code.inline {
-    background-color: ${Constants.colors.portage};
+    padding: 2px 4px;
+    top: 0;
     font-size: 1.1rem;
     line-height: 1.75rem;
   }

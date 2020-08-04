@@ -3,6 +3,7 @@
 #import <UMReactNativeAdapter/UMViewManagerAdapter.h>
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <UMReactNativeAdapter/UMViewManagerAdapterClassesRegistry.h>
+#import <UMReactNativeAdapter/UMModuleRegistryHolderReactModule.h>
 
 @interface UMModuleRegistryAdapter ()
 
@@ -55,6 +56,9 @@
       [extraModules addObject:reactBridgeModule];
     }
   }
+  
+  // Adding the way to access the module registry from RCTBridgeModules.
+  [extraModules addObject:[[UMModuleRegistryHolderReactModule alloc] initWithModuleRegistry:moduleRegistry]];
 
   // One could add some modules to the Module Registry after creating it.
   // Here is our last call for finalizing initialization.

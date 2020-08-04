@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/EXBarCodeScanner/ABI37_0_0EXBarCodeScanner/Utilities/ABI37_0_0EXBarCodeScannerUtils.h

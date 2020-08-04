@@ -1,0 +1,92 @@
+/* Prompts a person to go to the URL listed to enter the confirmation code that is presented to them above the given string. */
+"DeviceLogin.LogInPrompt" = "%@를 방문하여 위에 표시된 코드를 입력하세요.";
+
+/* Prompts a person that the next thing they need to do to finish connecting their Smart TV and Facebook application is to navigate to their Facebook application on their mobile device and look through their notifications for a message about the connection being formed */
+"DeviceLogin.SmartLogInPrompt" = "계정을 연결하려면 모바일 기기에서 Facebook 앱을 열고 알림을 확인하세요.";
+
+/* Displayed as a separator between two options. First option is on a line above this, and second option is below */
+"DeviceLogin.SmartLogInOrLabel" = "- 또는 -";
+
+/* The title of the label to dismiss the alert when presenting user facing error messages */
+"ErrorRecovery.Alert.OK" = "확인";
+
+/* The title of the label to decline attempting error recovery */
+"ErrorRecovery.Cancel" = "취소";
+
+/* The fallback message to display to recover invalidated tokens */
+"ErrorRecovery.Login.Suggestion" = "Facebook 계정을 다시 연결하려면 이 앱에 다시 로그인하세요.";
+
+/* The title of the label to start attempting error recovery */
+"ErrorRecovery.OK" = "확인";
+
+/* The fallback message to display to retry transient errors */
+"ErrorRecovery.Transient.Suggestion" = "일시적으로 서버 사용량이 많아졌습니다. 다시 시도하세요.";
+
+/* The label for the FBSDKLikeButton when the object is not currently liked. */
+"LikeButton.Like" = "좋아요";
+
+/* The label for the FBSDKLikeButton when the object is currently liked. */
+"LikeButton.Liked" = "좋아요";
+
+/* The label for the FBSDKLoginButton action sheet to cancel logging out */
+"LoginButton.CancelLogout" = "취소";
+
+/* The label for the FBSDKLoginButton action sheet to confirm logging out */
+"LoginButton.ConfirmLogOut" = "로그아웃";
+
+/* The fallback string for the FBSDKLoginButton label when the user name is not available yet */
+"LoginButton.LoggedIn" = "Facebook 계정으로 로그인함";
+
+/* The format string for the FBSDKLoginButton label when the user is logged in */
+"LoginButton.LoggedInAs" = "%@(으)로 로그인함";
+
+/* The short label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogIn" = "로그인";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInContinue" = "Facebook으로 계속";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInLong" = "Facebook으로 로그인";
+
+/* The label for the FBSDKLoginButton when the user is currently logged in */
+"LoginButton.LogOut" = "로그아웃";
+
+/* The user facing error message when the app slider has been disabled and login fails. */
+"LoginError.SystemAccount.Disabled" = "Facebook 계정에 대한 액세스가 승인되지 않았습니다. 기기 설정을 확인하세요.";
+
+/* The user facing error message when the Accounts framework encounters a network error. */
+"LoginError.SystemAccount.Network" = "Facebook에 연결할 수 없습니다. 네트워크 연결을 확인하고 다시 시도하세요.";
+
+/* The user facing error message when the device Facebook account password is incorrect and login fails. */
+"LoginError.SystemAccount.PasswordChange" = "Facebook 비밀번호가 변경되었습니다. 비밀번호를 확인하려면 설정 &gt; Facebook으로 이동하여 이름을 누르세요.";
+
+/* The user facing error message when the device Facebook account is unavailable and login fails. */
+"LoginError.SystemAccount.Unavailable" = "Facebook 계정이 기기에 구성되어 있지 않습니다.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework becomes unconfirmed. */
+"LoginError.SystemAccount.UnconfirmedUser" = "계정이 확인되지 않았습니다. www.facebook.com에 로그인한 뒤 안내를 따라주세요.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework has been checkpointed. */
+"LoginError.SystemAccount.UserCheckpointed" = "현재 앱에 로그인할 수 없습니다. www.facebook.com에 로그인한 뒤 안내를 따라주세요.";
+
+/* The message of the FBSDKLoginTooltipView */
+"LoginTooltip.Message" = "원하는 정보를 선택하여 앱에 공유할 수 있습니다.";
+
+/* Title of the web dialog that prompts the user to log in to Facebook. */
+"LoginWeb.LogInTitle" = "로그인";
+
+/* The label for FBSDKSendButton */
+"SendButton.Send" = "보내기";
+
+/* The label for FBSDKShareButton */
+"ShareButton.Share" = "공유하기";
+
+/* Prompts a person if this is their current account */
+"SmartLogin.NotYou" = "회원님이 아닌가요?";
+
+/* Text on a button that a person presses to confirm that they are finished with the login experience */
+"SmartLogin.ConfirmationTitle" = "로그인 확인";
+
+/* Text on a button that lets a person continue with their name linked to a Facebook account (Name = %@) */
+"SmartLogin.Continue" = "%@님으로 계속";

@@ -1,5 +1,5 @@
-import { Platform } from 'react-native';
 import * as Crypto from 'expo-crypto';
+import { Platform } from 'react-native';
 
 const { CryptoEncoding, CryptoDigestAlgorithm } = Crypto;
 
@@ -30,6 +30,7 @@ export const name = 'Crypto';
 
 const UNSUPPORTED = Platform.select({
   web: ['MD2', 'MD4', 'MD5'],
+  android: ['MD2', 'MD4'],
   default: [],
 });
 function supportedAlgorithm(algorithm) {

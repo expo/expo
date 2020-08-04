@@ -1,0 +1,23 @@
+{
+  "name": "unimodules-file-system-interface",
+  "version": "5.0.0",
+  "description": "Interface for file system modules",
+  "main": "index.js",
+  "keywords": [
+    "unimodules",
+    "file-system",
+    "file"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/unimodules-file-system-interface"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-file-system-interface",
+  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+}

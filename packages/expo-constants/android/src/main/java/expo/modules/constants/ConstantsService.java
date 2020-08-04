@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.os.Build;
 import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
@@ -27,6 +28,9 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   protected Context mContext;
   protected int mStatusBarHeight = 0;
   private String mSessionId = UUID.randomUUID().toString();
+  private SharedPreferences sharedPref;
+  private static final String PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences";
+  private static final String UUID_KEY = "uuid";
 
   private static int convertPixelsToDp(float px, Context context) {
     Resources resources = context.getResources();
@@ -38,6 +42,8 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   public ConstantsService(Context context) {
     super();
     mContext = context;
+
+    sharedPref = mContext.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
 
     int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
 
@@ -64,6 +70,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     constants.put("isDevice", getIsDevice());
     constants.put("systemFonts", getSystemFonts());
     constants.put("systemVersion", getSystemVersion());
+    constants.put("installationId", getOrCreateInstallationId());
 
     PackageManager packageManager = mContext.getPackageManager();
     try {
@@ -113,6 +120,15 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     return Build.VERSION.RELEASE;
   }
 
+  public String getOrCreateInstallationId() {
+    String uuid = sharedPref.getString(UUID_KEY, null);
+    if (uuid == null) {
+      uuid = UUID.randomUUID().toString();
+      sharedPref.edit().putString(UUID_KEY, uuid).apply();
+    }
+    return uuid;
+  }
+  
   public List<String> getSystemFonts() {
     // From https://github.com/dabit3/react-native-fonts
     List<String> result = new ArrayList<>();

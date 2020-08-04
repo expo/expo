@@ -3,25 +3,25 @@ title: DocumentPicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-document-picker'
 ---
 
-import Video from '../../../../components/plugins/Video'
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import Video from '~/components/plugins/Video'
 
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 
 <Video file={"sdk/documentpicker.mp4"} loop={false} />
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-document-picker`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-document-picker).
+<InstallSection packageName="expo-document-picker" />
 
 ## Configuration
 
-On iOS, for [standalone apps](../../distribution/building-standalone-apps/) and [ExpoKit](../../expokit/overview/) projects, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your `app.json` file as specified [here](../../workflow/configuration/#ios).
+### Managed workflow
+
+For iOS, outside of the Expo client, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your `app.json` file as specified [here](../../workflow/configuration/#ios).
 
 In addition, you'll also need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple developer interface](https://developer.apple.com/account/ios/identifier/bundle).
 
@@ -29,7 +29,13 @@ Enable iCloud service with CloudKit support, create one iCloud Container, and na
 
 And finally, to apply those changes, you'll need to revoke your existing provisioning profile and run `expo build:ios -c`
 
-For ExpoKit apps, you need to open the project in Xcode and follow the [Using DocumentPicker instructions](../../expokit/advanced-expokit-topics/#using-documentpicker) in the Advanced ExpoKit Topics guide.
+### Bare workflow
+
+For iOS bare projects, the `DocumentPicker` module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:
+
+- In the project, go to the `Capabilities` tab
+- Set the iCloud switch to `on`
+- Check the `iCloud Documents` checkbox
 
 ## API
 

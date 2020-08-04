@@ -22,6 +22,12 @@ export function test(t) {
         type: 'ttf',
         hash: '69d77ab5cba970d7934a5f5bcd8fdd11',
       },
+      {
+        module: 'https://docs.expo.io/static/images/header-logo.png',
+        name: '',
+        type: 'png',
+        hash: null,
+      },
     ].forEach(({ module, name, type, ...more }) =>
       t.describe(`${name}.${type}`, () => {
         t.it(`has correct name, type, ${Object.keys(more).join(', ')}`, async () => {
@@ -50,7 +56,7 @@ export function test(t) {
             });
 
             t.expect(exists).toBeTruthy();
-            t.expect(md5).toBe(asset.hash);
+            more['hash'] && t.expect(md5).toBe(asset.hash);
             t.expect(cacheUri).toBe(asset.localUri);
           }
         );

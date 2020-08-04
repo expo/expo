@@ -38,23 +38,21 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 Note: We support building the clients only on macOS.
 
-- Install [nix](https://nixos.org/nix) (currently `curl https://nixos.org/nix/install | sh`)
 - Install [direnv](http://direnv.net/) (to do this with nix, run `nix-env -iA nixpkgs.direnv`)
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`)
 - Run `yarn` in the root and `tools-public` directories.
+- Run `npm run setup:native` in the root directory.
 - Run `yarn build` in the `packages/expo` directory.
 
 ### iOS
 
 - Make sure you have latest non-beta Xcode installed.
-- Run `git lfs pull`.
 - Run `et ios-generate-dynamic-macros`.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 ### Android
 
 - Make sure you have Android Studio 3 installed
-- Run `android/install-ndk-17c.sh` to get the required version of the Android NDK.
 - See "Running on a Device"
 
 ## Running on a Device
@@ -74,6 +72,8 @@ Note: We support building the clients only on macOS.
 - If the Play Store version of the Expo Client App is installed on your test device, uninstall it.
 - Connect your test device to your computer with a USB cable.
 - Run `fastlane android start`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
+  - You can also run `./gradlew installDebug` from the `android` directory. 
+  - If you're having trouble building the Android client, trying clearing your gradle cache with `./gradlew clean` and rebuilding.
 
 ## Standalone Apps
 

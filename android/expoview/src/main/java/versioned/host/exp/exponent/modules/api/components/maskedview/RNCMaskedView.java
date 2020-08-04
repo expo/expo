@@ -29,6 +29,9 @@ public class RNCMaskedView extends ReactViewGroup {
   protected void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
 
+    // redraw mask element to support animated elements
+    updateBitmapMask();
+
     // draw the mask
     if (mBitmapMask != null) {
       mPaint.setXfermode(mPorterDuffXferMode);
@@ -42,12 +45,27 @@ public class RNCMaskedView extends ReactViewGroup {
     super.onLayout(changed, l, t, r, b);
 
     if (changed) {
-      this.mBitmapMask = getBitmapFromView(getChildAt(0));
+      updateBitmapMask();
     }
+  }
+
+  private void updateBitmapMask() {
+    if (this.mBitmapMask != null) {
+      this.mBitmapMask.recycle();
+    }
+
+    View maskView = getChildAt(0);
+    maskView.setVisibility(View.VISIBLE);
+    this.mBitmapMask = getBitmapFromView(maskView);
+    maskView.setVisibility(View.INVISIBLE);
   }
 
   public static Bitmap getBitmapFromView(final View view) {
     view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+    if (view.getMeasuredWidth() <= 0 || view.getMeasuredHeight() <= 0) {
+      return null;
+    }
 
     final Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(),
             view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);

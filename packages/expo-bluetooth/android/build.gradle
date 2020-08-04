@@ -1,20 +1,10 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.0'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
 version = '1.0.0'
 
+// Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -45,11 +35,11 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName '1.0.0'
   }

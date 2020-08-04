@@ -7,8 +7,8 @@ export default class App extends React.Component {
   componentDidMount = async () => {
     const { status } = await Permissions.askAsync(Permissions.CALENDAR);
     if (status === 'granted') {
-        const calendars = await Calendar.getCalendarsAsync();
-        console.log({calendars})
+      const calendars = await Calendar.getCalendarsAsync();
+      console.log({ calendars });
     }
   };
 

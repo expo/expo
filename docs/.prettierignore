@@ -1,0 +1,7 @@
+/.expo/
+/.next/
+/coverage/
+/node_modules/
+/static/libs/nprogress/nprogress.js
+static/libs/tippy/tippy.all.min.js
+global-styles/nprogress.js

@@ -36,6 +36,9 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
 
 + (RNSVGBrush *)RNSVGBrush:(id)json
 {
+    if ([json isKindOfClass:[NSNumber class]]) {
+        return [[RNSVGSolidColorBrush alloc] initWithNumber:json];
+    }
     if ([json isKindOfClass:[NSString class]]) {
         NSString *value = [self NSString:json];
         if (!RNSVGDigitRegEx) {
@@ -163,7 +166,7 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
         colorsAndOffsets[colorIndex + 2] = b;
         colorsAndOffsets[colorIndex + 3] = a;
 
-        colorsAndOffsets[offsetIndex + i] = offset;
+        colorsAndOffsets[offsetIndex + i] = fmax(0, fmin(offset, 1));
     }
 
     CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();

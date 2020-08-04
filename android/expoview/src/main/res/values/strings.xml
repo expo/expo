@@ -21,7 +21,7 @@
   <string name="cvc">CVC</string>
   <string name="android_pay_unavaliable">Android Pay unavailable on your device.</string>
   <string name="user_cancel_dialog">User cancel dialog. No card added!</string>
-  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to use it also?</string>
+  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to also use it?</string>
   <string name="allow_experience_permissions">Allow</string>
   <string name="deny_experience_permissions">Deny</string>
   <string name="perm_audio_recording">audio recording</string>
@@ -39,6 +39,19 @@
   <string name="persistent_notification_channel_group">Expo</string>
   <string name="persistent_notification_channel_name">Experience notifications</string>
   <string name="persistent_notification_channel_desc">Persistent notifications that provide debug info about open experiences</string>
+  <string name="devmenu_hide_element_inspector">Hide Element Inspector</string>
+  <string name="devmenu_show_element_inspector">Show Element Inspector</string>
+  <string name="devmenu_element_inspector_unavailable">Element Inspector Unavailable</string>
+  <string name="devmenu_stop_remote_debugging">Stop Remote Debugging</string>
+  <string name="devmenu_start_remote_debugging">Debug Remote JS</string>
+  <string name="devmenu_remote_debugger_unavailable">Remote Debugger Unavailable</string>
+  <string name="devmenu_disable_fast_refresh">Disable Fast Refresh</string>
+  <string name="devmenu_enable_fast_refresh">Enable Fast Refresh</string>
+  <string name="devmenu_fast_refresh_unavailable">Fast Refresh Unavailable</string>
+  <string name="devmenu_fast_refresh_unavailable_details">Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh.</string>
+  <string name="devmenu_hide_performance_monitor">Hide Performance Monitor</string>
+  <string name="devmenu_show_performance_monitor">Show Performance Monitor</string>
+  <string name="devmenu_performance_monitor_unavailable">Performance Monitor Unavailable</string>
 
   <string-array name="currency_array">
       <item>Currency (optional)</item>

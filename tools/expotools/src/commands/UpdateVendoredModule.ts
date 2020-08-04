@@ -3,19 +3,24 @@ import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import xcode from 'xcode';
+import semver from 'semver';
+import inquirer from 'inquirer';
 import glob from 'glob-promise';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
+import * as Npm from '../Npm';
 
 interface ActionOptions {
   list: boolean;
+  listOutdated: boolean;
   module: string;
   platform: 'ios' | 'android' | 'all';
   commit: string;
   pbxproj: boolean;
+  semverPrefix: string;
 }
 
 interface VendoredModuleUpdateStep {
@@ -33,6 +38,7 @@ interface VendoredModuleUpdateStep {
 interface VendoredModuleConfig {
   repoUrl: string;
   packageName?: string;
+  packageJsonPath?: string;
   installableInManagedApps?: boolean;
   semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
@@ -47,7 +53,7 @@ const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNati
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-gesture-handler': {
-    repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
+    repoUrl: 'https://github.com/software-mansion/react-native-gesture-handler.git',
     installableInManagedApps: true,
     semverPrefix: '~',
     steps: [
@@ -67,9 +73,14 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
     ],
+    warnings: [
+      `NOTE: Any files in ${chalk.magenta(
+        'com.facebook.react'
+      )} will not be updated -- you'll need to add these to expoview manually!`,
+    ],
   },
   'react-native-reanimated': {
-    repoUrl: 'https://github.com/kmagiera/react-native-reanimated.git',
+    repoUrl: 'https://github.com/software-mansion/react-native-reanimated.git',
     installableInManagedApps: true,
     semverPrefix: '~',
     steps: [
@@ -86,11 +97,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     warnings: [
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
-      )} will not be updated -- you'll need to add these to ReactAndroid manually!`,
+      )} will not be updated -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-screens': {
-    repoUrl: 'https://github.com/kmagiera/react-native-screens.git',
+    repoUrl: 'https://github.com/software-mansion/react-native-screens.git',
     installableInManagedApps: true,
     semverPrefix: '~',
     steps: [
@@ -112,9 +123,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'ios/Appearance',
         targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/com/reactlibrary',
+        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
         targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'com.reactlibrary',
+        sourceAndroidPackage: 'io.expo.appearance',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
       },
     ],
@@ -211,9 +222,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-netinfo': {
+  '@react-native-community/netinfo': {
     repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
-    packageName: '@react-native-community/netinfo',
     installableInManagedApps: true,
     steps: [
       {
@@ -231,7 +241,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
-        sourceIosPath: 'ios',
+        sourceIosPath: 'apple',
         targetIosPath: 'Api/Components/WebView',
         sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/webview',
         targetAndroidPath: 'modules/api/components/webview',
@@ -268,9 +278,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       ),
     ],
   },
-  'react-native-datetimepicker': {
+  '@react-native-community/datetimepicker': {
     repoUrl: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-    packageName: '@react-native-community/datetimepicker',
     installableInManagedApps: true,
     steps: [
       {
@@ -283,9 +292,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-masked-view': {
+  '@react-native-community/masked-view': {
     repoUrl: 'https://github.com/react-native-community/react-native-masked-view',
-    packageName: '@react-native-community/masked-view',
     installableInManagedApps: true,
     steps: [
       {
@@ -295,12 +303,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/maskedview',
         sourceAndroidPackage: 'org.reactnative.maskedview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      }
+      },
     ],
   },
-  'react-native-viewpager': {
+  '@react-native-community/viewpager': {
     repoUrl: 'https://github.com/react-native-community/react-native-viewpager',
-    packageName: '@react-native-community/viewpager',
     installableInManagedApps: true,
     steps: [
       {
@@ -310,12 +317,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/viewpager',
         sourceAndroidPackage: 'com.reactnativecommunity.viewpager',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.viewpager',
-      }
+      },
     ],
   },
   'react-native-shared-element': {
     repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
-    packageName: 'react-native-shared-element',
     installableInManagedApps: true,
     steps: [
       {
@@ -325,6 +331,45 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/sharedelement',
         sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
+      },
+    ],
+  },
+  '@react-native-community/segmented-control': {
+    repoUrl: 'https://github.com/react-native-community/segmented-control',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/SegmentedControl',
+      },
+    ],
+  },
+  '@react-native-community/picker': {
+    repoUrl: 'https://github.com/react-native-community/react-native-picker',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/Picker',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/picker',
+        targetAndroidPath: 'modules/api/components/picker',
+        sourceAndroidPackage: 'com.reactnativecommunity.picker',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
+      },
+    ],
+  },
+  '@react-native-community/slider': {
+    repoUrl: 'https://github.com/react-native-community/react-native-slider',
+    installableInManagedApps: true,
+    packageJsonPath: 'src',
+    steps: [
+      {
+        sourceIosPath: 'src/ios',
+        targetIosPath: 'Api/Components/Slider',
+        sourceAndroidPath: 'src/android/src/main/java/com/reactnativecommunity/slider',
+        targetAndroidPath: 'modules/api/components/slider',
+        sourceAndroidPackage: 'com.reactnativecommunity.slider',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.slider',
       },
     ],
   },
@@ -384,7 +429,7 @@ async function findAndroidFilesAsync(dir: string): Promise<string[]> {
 async function loadXcodeprojFileAsync(file: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const pbxproj = xcode.project(file);
-    pbxproj.parse(err => (err ? reject(err) : resolve(pbxproj)));
+    pbxproj.parse((err) => (err ? reject(err) : resolve(pbxproj)));
   });
 }
 
@@ -396,7 +441,7 @@ function pbxGroupChild(file) {
 }
 
 function pbxGroupHasChildWithRef(group: any, ref: string): boolean {
-  return group.children.some(child => child.value === ref);
+  return group.children.some((child) => child.value === ref);
 }
 
 async function addFileToPbxprojAsync(
@@ -465,51 +510,126 @@ async function copyFilesAsync(
   }
 }
 
-async function action(options: ActionOptions) {
-  if (options.list) {
-    const bundledNativeModules = await getBundledNativeModulesAsync();
+async function listAvailableVendoredModulesAsync(onlyOutdated: boolean = false) {
+  const bundledNativeModules = await getBundledNativeModulesAsync();
+  const vendoredPackageNames = Object.keys(vendoredModulesConfig);
+  const packageViews: Npm.PackageViewType[] = await Promise.all(
+    vendoredPackageNames.map((packageName: string) => Npm.getPackageViewAsync(packageName))
+  );
 
-    for (const vendoredModuleName in vendoredModulesConfig) {
-      const moduleConfig = vendoredModulesConfig[vendoredModuleName];
-      const currentBundledVersion =
-        bundledNativeModules[moduleConfig.packageName || vendoredModuleName];
+  for (const packageName of vendoredPackageNames) {
+    const packageView = packageViews.shift();
 
-      console.log(chalk.bold.green(vendoredModuleName));
-      console.log(chalk.yellow('>'), 'repository:', chalk.magenta(moduleConfig.repoUrl));
-      console.log(
-        chalk.yellow('>'),
-        'current bundled version:',
-        (currentBundledVersion ? chalk.cyan : chalk.gray)(currentBundledVersion)
+    if (!packageView) {
+      console.error(
+        chalk.red.bold(`Couldn't get package view for ${chalk.green.bold(packageName)}.\n`)
       );
+      continue;
+    }
+
+    const moduleConfig = vendoredModulesConfig[packageName];
+    const bundledVersion = bundledNativeModules[packageName];
+    const latestVersion = packageView.versions[packageView.versions.length - 1];
+
+    if (!onlyOutdated || !bundledVersion || semver.gtr(latestVersion, bundledVersion)) {
+      console.log(chalk.bold.green(packageName));
+      console.log(`${chalk.yellow('>')} repository     : ${chalk.magenta(moduleConfig.repoUrl)}`);
+      console.log(
+        `${chalk.yellow('>')} bundled version: ${(bundledVersion ? chalk.cyan : chalk.gray)(
+          bundledVersion
+        )}`
+      );
+      console.log(`${chalk.yellow('>')} latest version : ${chalk.cyan(latestVersion)}`);
       console.log();
     }
+  }
+}
+
+async function askForModuleAsync(): Promise<string> {
+  const { moduleName } = await inquirer.prompt<{ moduleName: string }>([
+    {
+      type: 'list',
+      name: 'moduleName',
+      message: 'Which 3rd party module would you like to update?',
+      choices: Object.keys(vendoredModulesConfig),
+    },
+  ]);
+  return moduleName;
+}
+
+async function getPackageJsonPathsAsync(): Promise<string[]> {
+  const packageJsonPath = path.join(Directories.getAppsDir(), '**', 'package.json');
+  return await glob(packageJsonPath, { ignore: '**/node_modules/**' });
+}
+
+async function updateWorkspaceDependencies(
+  dependencyName: string,
+  versionRange: string
+): Promise<boolean> {
+  const paths = await getPackageJsonPathsAsync();
+  const results = await Promise.all(
+    paths.map((path) => updateDependencyAsync(path, dependencyName, versionRange))
+  );
+  return results.some(Boolean);
+}
+
+async function updateHomeDependencies(
+  dependencyName: string,
+  versionRange: string
+): Promise<boolean> {
+  const packageJsonPath = path.join(Directories.getExpoHomeJSDir(), 'package.json');
+  return await updateDependencyAsync(packageJsonPath, dependencyName, versionRange);
+}
+
+async function updateDependencyAsync(
+  packageJsonPath: string,
+  dependencyName: string,
+  newVersionRange: string
+): Promise<boolean> {
+  const jsonFile = new JsonFile(packageJsonPath);
+  const packageJson = await jsonFile.readAsync();
+
+  const dependencies = (packageJson || {}).dependencies || {};
+  if (dependencies[dependencyName] && dependencies[dependencyName] !== newVersionRange) {
+    console.log(
+      `${chalk.yellow('>')} ${chalk.green(packageJsonPath)}: ${chalk.magentaBright(
+        dependencies[dependencyName]
+      )} -> ${chalk.magentaBright(newVersionRange)}`
+    );
+    dependencies[dependencyName] = newVersionRange;
+    await jsonFile.writeAsync(packageJson);
+    return true;
+  }
+  return false;
+}
+
+async function action(options: ActionOptions) {
+  if (options.list || options.listOutdated) {
+    await listAvailableVendoredModulesAsync(options.listOutdated);
     return;
   }
 
-  if (!options.module) {
-    throw new Error('Must be run with `--module <module_name>`.');
-  }
-
-  const moduleConfig = vendoredModulesConfig[options.module];
+  const moduleName = options.module || (await askForModuleAsync());
+  const moduleConfig = vendoredModulesConfig[moduleName];
 
   if (!moduleConfig) {
     throw new Error(
-      `Config for module ${chalk.green(
-        options.module
-      )} not found. Run with \`--list\` to show a list of available 3rd party modules`
+      `Module \`${chalk.green(
+        moduleName
+      )}\` doesn't match any of currently supported 3rd party modules. Run with \`--list\` to show a list of modules.`
     );
   }
 
   moduleConfig.installableInManagedApps =
     moduleConfig.installableInManagedApps == null ? true : moduleConfig.installableInManagedApps;
 
-  const tmpDir = path.join(os.tmpdir(), options.module);
+  const tmpDir = path.join(os.tmpdir(), moduleName);
 
   // Cleanup tmp dir.
   await fs.remove(tmpDir);
 
   console.log(
-    `Cloning ${chalk.green(options.module)}${chalk.red('#')}${chalk.cyan(
+    `Cloning ${chalk.green(moduleName)}${chalk.red('#')}${chalk.cyan(
       options.commit
     )} from GitHub ...`
   );
@@ -521,7 +641,7 @@ async function action(options: ActionOptions) {
   await spawnAsync('git', ['checkout', options.commit], { cwd: tmpDir });
 
   if (moduleConfig.warnings) {
-    moduleConfig.warnings.forEach(warning => console.warn(warning));
+    moduleConfig.warnings.forEach((warning) => console.warn(warning));
   }
 
   for (const step of moduleConfig.steps) {
@@ -635,18 +755,21 @@ async function action(options: ActionOptions) {
     }
   }
 
-  await updateBundledNativeModulesAsync(async bundledNativeModules => {
-    const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
-      name: string;
-      version: string;
-    };
+  const { name, version } = await JsonFile.readAsync<{
+    name: string;
+    version: string;
+  }>(path.join(tmpDir, moduleConfig.packageJsonPath ?? '', 'package.json'));
+  const semverPrefix =
+    (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
+  const versionRange = `${semverPrefix}${version}`;
 
+  await updateBundledNativeModulesAsync(async (bundledNativeModules) => {
     if (moduleConfig.installableInManagedApps) {
-      bundledNativeModules[name] = `${moduleConfig.semverPrefix || ''}${version}`;
+      bundledNativeModules[name] = versionRange;
       console.log(
-        `Updated ${chalk.green(name)} version number in ${chalk.magenta(
+        `Updated ${chalk.green(name)} in ${chalk.magenta(
           'bundledNativeModules.json'
-        )}`
+        )} to version range ${chalk.cyan(versionRange)}`
       );
     } else if (bundledNativeModules[name]) {
       delete bundledNativeModules[name];
@@ -659,9 +782,25 @@ async function action(options: ActionOptions) {
     return bundledNativeModules;
   });
 
+  console.log(`\nUpdating ${chalk.green(name)} in workspace projects...`);
+  const homeWasUpdated = await updateHomeDependencies(name, versionRange);
+  const workspaceWasUpdated = await updateWorkspaceDependencies(name, versionRange);
+
+  // We updated dependencies so we need to run yarn.
+  if (homeWasUpdated || workspaceWasUpdated) {
+    console.log(`\nRunning \`${chalk.cyan(`yarn`)}\`...`);
+    await spawnAsync('yarn', [], {
+      cwd: Directories.getExpoRepositoryRootDir(),
+    });
+  }
+
+  if (homeWasUpdated) {
+    console.log(`\nHome dependencies were updated. You need to publish the new dev home version.`);
+  }
+
   console.log(
     `\nFinished updating ${chalk.green(
-      options.module
+      moduleName
     )}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`
   );
 }
@@ -669,9 +808,10 @@ async function action(options: ActionOptions) {
 export default (program: Command) => {
   program
     .command('update-vendored-module')
-    .alias('update-module')
+    .alias('update-module', 'uvm')
     .description('Updates 3rd party modules.')
     .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
+    .option('-o, --list-outdated', 'Shows a list of outdated 3rd party modules.', false)
     .option('-m, --module <string>', 'Name of the module to update.')
     .option(
       '-p, --platform <string>',
@@ -682,6 +822,11 @@ export default (program: Command) => {
       '-c, --commit <string>',
       'Git reference on which to checkout when copying 3rd party module.',
       'master'
+    )
+    .option(
+      '-s, --semver-prefix <string>',
+      'Setting this flag forces to use given semver prefix. Some modules may specify them by the config, but in case we want to update to alpha/beta versions we should use an empty prefix to be more strict.',
+      null
     )
     .option('--no-pbxproj', 'Whether to skip updating project.pbxproj file.', false)
     .asyncAction(action);

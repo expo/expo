@@ -5,12 +5,9 @@ import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.uiautomator.UiDevice;
 
-import org.junit.BeforeClass;
-
 import java.util.concurrent.TimeUnit;
 
 import host.exp.exponent.kernel.KernelConfig;
-import host.exp.exponent.utils.DeviceUtils;
 import host.exp.exponent.utils.ElapsedTimeIdlingResource;
 import host.exp.exponent.utils.JSTestRunnerIdlingResource;
 import host.exp.exponent.utils.TestNativeModuleServer;
@@ -28,7 +25,7 @@ public class BaseTestClass {
   public static void beforeClass() {
     KernelConfig.IS_TEST = true;
     KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE = true;
-    KernelConfig.HIDE_NUX = true;
+    KernelConfig.HIDE_ONBOARDING = true;
 
     sUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     TestNativeModuleServer.getInstance().setUiDevice(sUiDevice);

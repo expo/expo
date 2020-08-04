@@ -12,9 +12,8 @@ export const INTERRUPTION_MODE_ANDROID_DUCK_OTHERS = 2;
 const _isValueValid = (value, validValues) => {
     return validValues.filter(validValue => validValue === value).length > 0;
 };
-// Returns array of missing keys in object. Returns an empty array if no missing keys are found.
 const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
-    for (let key in defaultAudioMode) {
+    for (const key in defaultAudioMode) {
         if (!userAudioMode.hasOwnProperty(key)) {
             userAudioMode[key] = defaultAudioMode[key];
         }
@@ -28,7 +27,7 @@ const defaultMode = {
     staysActiveInBackground: false,
     interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
     shouldDuckAndroid: true,
-    playThroughEarpieceAndroid: true,
+    playThroughEarpieceAndroid: false,
 };
 let currentAudioMode = null;
 function getCurrentAudioMode() {
@@ -37,9 +36,8 @@ function getCurrentAudioMode() {
     }
     return currentAudioMode;
 }
-export async function setAudioModeAsync(mode) {
-    mode = _populateMissingKeys(mode, getCurrentAudioMode());
-    currentAudioMode = mode;
+export async function setAudioModeAsync(partialMode) {
+    const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
     if (!_isValueValid(mode.interruptionModeIOS, [
         INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -60,6 +58,7 @@ export async function setAudioModeAsync(mode) {
         typeof mode.playThroughEarpieceAndroid !== 'boolean') {
         throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.');
     }
+    currentAudioMode = mode;
     return await ExponentAV.setAudioMode(mode);
 }
 //# sourceMappingURL=Audio.js.map

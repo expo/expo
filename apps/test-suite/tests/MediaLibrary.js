@@ -1,7 +1,9 @@
 import { Asset } from 'expo-asset';
-import { Platform } from 'react-native';
-import * as Permissions from 'expo-permissions';
 import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
+import { Platform } from 'react-native';
+
+import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 
@@ -69,6 +71,16 @@ async function createAlbum(assets, name) {
   return album;
 }
 
+async function checkIfThrows(f) {
+  try {
+    await f();
+  } catch (e) {
+    return true;
+  }
+
+  return false;
+}
+
 function timeoutWrapper(fun, time) {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -84,18 +96,46 @@ export async function test(t) {
     let album;
     let files;
 
-    t.beforeAll(async () => {
+    async function initializeAsync() {
       await Permissions.askAsync(Permissions.CAMERA_ROLL);
       files = await getFiles();
       testAssets = await getAssets(files);
       album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
-      if (album == null) album = await createAlbum(testAssets, ALBUM_NAME);
-      else await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, true);
+      if (album == null) {
+        album = await createAlbum(testAssets, ALBUM_NAME);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, true);
+      }
+    }
+
+    async function cleanupAsync() {
+      await MediaLibrary.deleteAssetsAsync(testAssets);
+      await MediaLibrary.deleteAlbumsAsync(album);
+    }
+
+    t.beforeAll(async () => {
+      // NOTE(2020-06-03): The `initializeAsync` function is flaky on Android; often the
+      // `addAssetsToAlbumAsync` method call inside of `createAlbum` will fail with the error
+      // "Could not get all of the requested assets". Usually retrying a few times works, so we do
+      // that programmatically here.
+      let error;
+      for (let i = 0; i < 3; i++) {
+        try {
+          await initializeAsync();
+          break;
+        } catch (e) {
+          error = e;
+          console.log('Error initializing MediaLibrary tests, trying again', e.message);
+          await cleanupAsync();
+          await waitFor(1000);
+        }
+        // if we get here, just throw
+        throw error;
+      }
     });
 
     t.afterAll(async () => {
-      await MediaLibrary.deleteAssetsAsync(testAssets);
-      await MediaLibrary.deleteAlbumsAsync(album);
+      cleanupAsync();
     });
 
     t.describe('Every return value has proper shape', async () => {
@@ -147,6 +187,23 @@ export async function test(t) {
         t.expect(asset).toBeNull();
       });
 
+      t.it(
+        'saveToLibraryAsync should throw when the provided path does not contain an extension',
+        async () => {
+          t.expect(
+            await checkIfThrows(() => MediaLibrary.saveToLibraryAsync('/test/file'))
+          ).toBeTruthy();
+        }
+      );
+
+      t.it(
+        'createAssetAsync should throw when the provided path does not contain an extension',
+        async () => {
+          t.expect(
+            await checkIfThrows(() => MediaLibrary.createAssetAsync('/test/file'))
+          ).toBeTruthy();
+        }
+      );
       // On both platforms assets should perserve their id. On iOS it's native behaviour,
       // but on Android it should be implemented (but it isn't)
       // t.it("After createAlbum and addAssetsTo album all assets have the same id", async () => {
@@ -219,7 +276,7 @@ export async function test(t) {
         assets.forEach(asset => {
           t.expect(asset.width).not.toEqual(0);
           t.expect(asset.height).not.toEqual(0);
-        });      
+        });
       });
 
       t.it('check size - video', async () => {
@@ -230,7 +287,7 @@ export async function test(t) {
         assets.forEach(asset => {
           t.expect(asset.width).not.toEqual(0);
           t.expect(asset.height).not.toEqual(0);
-        });      
+        });
       });
 
       t.it('supports getting assets from specified time range', async () => {

@@ -94,7 +94,7 @@ ${chalk.gray('>')} ${chalk.italic.cyan('et remove-sdk-version --platform ios')}`
     .option(
       '-p, --platform <string>',
       `Specifies a platform for which the SDK code should be removed. Supported platforms: ${SUPPORTED_PLATFORMS.map(
-        platform => chalk.cyan(platform)
+        (platform) => chalk.cyan(platform)
       ).join(', ')}.`
     )
     .option(

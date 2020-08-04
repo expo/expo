@@ -285,10 +285,6 @@ public class NodesManager implements EventDispatcherListener {
 
   public void connectNodes(int parentID, int childID) {
     Node parentNode = mAnimatedNodes.get(parentID);
-    if (parentNode == null) {
-      throw new JSApplicationIllegalArgumentException("Animated node with ID " + parentID +
-              " does not exists");
-    }
     Node childNode = mAnimatedNodes.get(childID);
     if (childNode == null) {
       throw new JSApplicationIllegalArgumentException("Animated node with ID " + childID +
@@ -299,10 +295,6 @@ public class NodesManager implements EventDispatcherListener {
 
   public void disconnectNodes(int parentID, int childID) {
     Node parentNode = mAnimatedNodes.get(parentID);
-    if (parentNode == null) {
-      throw new JSApplicationIllegalArgumentException("Animated node with ID " + parentID +
-              " does not exists");
-    }
     Node childNode = mAnimatedNodes.get(childID);
     if (childNode == null) {
       throw new JSApplicationIllegalArgumentException("Animated node with ID " + childID +
@@ -406,5 +398,12 @@ public class NodesManager implements EventDispatcherListener {
 
   public void sendEvent(String name, WritableMap body) {
     mEventEmitter.emit(name, body);
+  }
+
+  public void setValue(int nodeID, Double newValue) {
+    Node node = mAnimatedNodes.get(nodeID);
+    if (node != null) {
+        ((ValueNode) node).setValue(newValue);
+    }
   }
 }

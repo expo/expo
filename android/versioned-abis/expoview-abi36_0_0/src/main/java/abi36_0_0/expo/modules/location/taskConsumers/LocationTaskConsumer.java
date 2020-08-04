@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PersistableBundle;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,30 +21,30 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.unimodules.interfaces.taskManager.TaskConsumer;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import abi36_0_0.expo.modules.location.LocationHelpers;
+import abi36_0_0.expo.modules.location.services.LocationTaskService;
 import abi36_0_0.org.unimodules.core.MapHelper;
 import abi36_0_0.org.unimodules.core.arguments.MapArguments;
 import abi36_0_0.org.unimodules.core.arguments.ReadableArguments;
 import abi36_0_0.org.unimodules.core.interfaces.Arguments;
 import abi36_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.interfaces.taskManager.TaskConsumer;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskInterface;
-
-import abi36_0_0.expo.modules.location.LocationHelpers;
-import abi36_0_0.expo.modules.location.services.LocationTaskService;
+import androidx.annotation.NonNull;
 
 public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
-  public static int VERSION = 1;
-
   private static final String TAG = "LocationTaskConsumer";
   private static final String FOREGROUND_SERVICE_KEY = "foregroundService";
+  public static int VERSION = 1;
   private static long sLastTimestamp = 0;
 
   private TaskInterface mTask;
@@ -303,7 +302,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
   }
 
   private boolean shouldReportDeferredLocations() {
-    if (mDeferredLocations.size() == 0) {
+    if (mDeferredLocations.size() == 0 || mTask == null) {
       return false;
     }
     if (!mIsHostPaused) {

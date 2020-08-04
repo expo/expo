@@ -1,6 +1,12 @@
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  AdMobRewarded,
+  setTestDeviceIDAsync,
+} from 'expo-ads-admob';
 import React from 'react';
-import { StyleSheet, View, Platform, Switch, Text } from 'react-native';
-import { AdMobBanner, AdMobInterstitial, AdMobRewarded, setTestDeviceIDAsync } from 'expo-ads-admob';
+import { Platform, StyleSheet, Switch, Text, View } from 'react-native';
+
 import Button from '../components/Button';
 
 export default class AdMobScreen extends React.Component {
@@ -99,10 +105,7 @@ export default class AdMobScreen extends React.Component {
             onPress={this.onInterstitialPress}
             disabled={!this.state.isInterstitialReady}
           />
-          <AdMobBanner
-            bannerSize="banner"
-            adUnitID="ca-app-pub-3940256099942544/6300978111"
-          />
+          <AdMobBanner bannerSize="banner" adUnitID="ca-app-pub-3940256099942544/6300978111" />
           <View
             style={{
               flexDirection: 'row',

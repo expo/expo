@@ -1,22 +1,20 @@
 ---
 title: Calendar
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-calendar"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-calendar'
 ---
- 
+
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-calendar`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-calendar).
+<InstallSection packageName="expo-calendar" />
 
 ## Configuration
 
@@ -59,9 +57,7 @@ export default function App() {
 
 async function getDefaultCalendarSource() {
   const calendars = await Calendar.getCalendarsAsync();
-  const defaultCalendars = calendars.filter(
-    each => each.source.name === 'Default'
-  );
+  const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
   return defaultCalendars[0].source;
 }
 
@@ -83,6 +79,7 @@ async function createCalendar() {
   console.log(`Your new calendar ID is: ${newCalendarID}`);
 }
 ```
+
 </SnackInline>
 
 ## API
@@ -90,8 +87,8 @@ async function createCalendar() {
 ```js
 import * as Calendar from 'expo-calendar';
 ```
-<TableOfContentSection title='Methods' contents={['Calendar.getCalendarsAsync(entityType)', 'Calendar.getDefaultCalendarAsync()', 'Calendar.requestCalendarPermissionsAsync()', 'Calendar.requestRemindersPermissionsAsync()', 'Calendar.getCalendarPermissionsAsync()', 'Calendar.createCalendarAsync(details)', 'Calendar.updateCalendarAsync(id, details)', 'Calendar.deleteCalendarAsync(id)', 'Calendar.getEventsAsync(calendarIds, startDate, endDate)', 'Calendar.getEventAsync(id, recurringEventOptions)', 'Calendar.createEventAsync(calendarId, details)', 'Calendar.updateEventAsync(id, details, recurringEventOptions)', 'Calendar.deleteEventAsync(id, recurringEventOptions)', 'Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)', 'Calendar.createAttendeeAsync(eventId, details)', 'Calendar.updateAttendeeAsync(id, details)', 'Calendar.deleteAttendeeAsync(id)', 'Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)', 'Calendar.getReminderAsync(id)', 'Calendar.createReminderAsync(calendarId, details)', 'Calendar.updateReminderAsync(id, details)', 'Calendar.deleteReminderAsync(id)', 'Calendar.getSourcesAsync()', 'Calendar.getSourceAsync(id)', 'Calendar.openEventInCalendar(id)']} />
 
+<TableOfContentSection title='Methods' contents={['Calendar.getCalendarsAsync(entityType)', 'Calendar.getDefaultCalendarAsync()', 'Calendar.requestCalendarPermissionsAsync()', 'Calendar.requestRemindersPermissionsAsync()', 'Calendar.getCalendarPermissionsAsync()', 'Calendar.createCalendarAsync(details)', 'Calendar.updateCalendarAsync(id, details)', 'Calendar.deleteCalendarAsync(id)', 'Calendar.getEventsAsync(calendarIds, startDate, endDate)', 'Calendar.getEventAsync(id, recurringEventOptions)', 'Calendar.createEventAsync(calendarId, details)', 'Calendar.updateEventAsync(id, details, recurringEventOptions)', 'Calendar.deleteEventAsync(id, recurringEventOptions)', 'Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)', 'Calendar.createAttendeeAsync(eventId, details)', 'Calendar.updateAttendeeAsync(id, details)', 'Calendar.deleteAttendeeAsync(id)', 'Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)', 'Calendar.getReminderAsync(id)', 'Calendar.createReminderAsync(calendarId, details)', 'Calendar.updateReminderAsync(id, details)', 'Calendar.deleteReminderAsync(id)', 'Calendar.getSourcesAsync()', 'Calendar.getSourceAsync(id)', 'Calendar.openEventInCalendar(id)']} />
 
 <TableOfContentSection title='Object Types' contents={['Calendar', 'Event', 'Reminder', 'Attendee', 'RecurrenceRule', 'Alarm', 'Source']} />
 
@@ -164,7 +161,7 @@ Creates a new calendar on the device, allowing events to be added later and disp
   - **title (_string_)** -- Required
   - **color (_string_)** -- Required
   - **entityType (_string_)** -- Required (iOS only)
-  - **sourceId (_string_)** -- Required (iOS only). ID of the source to be used for the calendar. Likely the same as the source for any other locally stored calendars.
+  - **sourceId (_string_)** -- (iOS only) ID of the source to be used for the calendar. Likely the same as the source for any other locally stored calendars.
   - **source (_object_)** -- Required (Android only). Object representing the source to be used for the calendar.
 
     - **isLocalAccount (_boolean_)** -- Whether this source is the local phone account. Must be `true` if `type` is undefined.
@@ -518,7 +515,7 @@ A calendar record upon which events (or, on iOS, reminders) can be stored. Setti
 | allowsModifications   | _boolean_ | both      | Boolean value that determines whether this calendar can be modified           |                                                                                                                                                                                                                                                                                                                                                                    |
 | type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`, `Calendar.CalendarType.UNKNOWN`                                                                                                                                                            |
 | isPrimary             | _boolean_ | Android   | Boolean value indicating whether this is the device's primary calendar        |                                                                                                                                                                                                                                                                                                                                                                    |
-| name                  | _string_  | Android   | Internal system name of the calendar                                          |                                                                                                                                                                                                                                                                                                                                                                    |
+| name                  | _string | null_  | Android   | Internal system name of the calendar                                          |                                                                                                                                                                                                                                                                                                                                                                    |
 | ownerAccount          | _string_  | Android   | Name for the account that owns this calendar                                  |                                                                                                                                                                                                                                                                                                                                                                    |
 | timeZone              | _string_  | Android   | Time zone for the calendar                                                    |                                                                                                                                                                                                                                                                                                                                                                    |
 | allowedAvailabilities | _array_   | both      | Availability types that this calendar supports                                | array of `Calendar.Availability.BUSY`, `Calendar.Availability.FREE`, `Calendar.Availability.TENTATIVE`, `Calendar.Availability.UNAVAILABLE` (iOS only), `Calendar.Availability.NOT_SUPPORTED` (iOS only)                                                                                                                                                           |
@@ -608,19 +605,18 @@ potentially complex interface.
 
 Not all of the combinations make sense. For example, when frequency is `DAILY`, setting `daysOfTheMonth` makes no sense.
 
-
-| Field name | Type     | Description                                                                                                                                                                | Possible values                                                                                                    |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| frequency  | _string_ | How often the calendar item should recur                                                                                                                                   | `Calendar.Frequency.DAILY`, `Calendar.Frequency.WEEKLY`, `Calendar.Frequency.MONTHLY`, `Calendar.Frequency.YEARLY` |
-| interval   | _number_ | Interval at which the calendar item should recur. For example, an `interval: 2` with `frequency: DAILY` would yield an event that recurs every other day. Defaults to `1`. |                                                                                                                    |
-| endDate    | _Date_   | Date on which the calendar item should stop recurring; overrides `occurrence` if both are specified                                                                        |                                                                                                                    |
-| occurrence | _number_ | Number of times the calendar item should recur before stopping                                                                                                             |                                                                                                                    |
-| daysOfTheWeek | _array_ | (Optional, iOS only) the days of the week the event should recur on. An array of `{ dayOfTheWeek: DayOfTheWeek; weekNumber?: number }`  | `dayOfTheWeek`: Sunday to Saturday (`enum DayOfTheWeek`), `weekNumber`: -53 to 53 (0 ignores this field, and a negative indicates a value from the end of the range).                               |
-| daysOfTheMonth | _number[]_ | (Optional, iOS only) They days of the month this event occurs on                                                                                                            | -31 to 31 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Monthly`.   |
-| monthsOfTheYear | _MonthOfTheYear[]_ | (Optional, iOS only) The months this event occurs on.                                                                                                                |  This field is only valid for `Calendar.Frequency.Yearly`.                                                                                    |
-| weeksOfTheYear | _number[]_ | (Optional, iOS only) The weeks of the year this event occurs on.                                                                                                    |  -53 to 53 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.            |
-| daysOfTheYear | _number[]_ | (Optional, iOS only) The days of the year this event occurs on.                                                                                                    |  -366 to 366 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.            |
-| setPositions | _number[]_ | (Optional, iOS only) An array of numbers that filters which recurrences to include. For example, for an event that recurs every Monday, passing 2 here will make it recur every other Monday.        |  -366 to 366 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.            |
+| Field name      | Type               | Description                                                                                                                                                                                   | Possible values                                                                                                                                                       |
+| --------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| frequency       | _string_           | How often the calendar item should recur                                                                                                                                                      | `Calendar.Frequency.DAILY`, `Calendar.Frequency.WEEKLY`, `Calendar.Frequency.MONTHLY`, `Calendar.Frequency.YEARLY`                                                    |
+| interval        | _number_           | Interval at which the calendar item should recur. For example, an `interval: 2` with `frequency: DAILY` would yield an event that recurs every other day. Defaults to `1`.                    |                                                                                                                                                                       |
+| endDate         | _Date_             | Date on which the calendar item should stop recurring; overrides `occurrence` if both are specified                                                                                           |                                                                                                                                                                       |
+| occurrence      | _number_           | Number of times the calendar item should recur before stopping                                                                                                                                |                                                                                                                                                                       |
+| daysOfTheWeek   | _array_            | (Optional, iOS only) the days of the week the event should recur on. An array of `{ dayOfTheWeek: DayOfTheWeek; weekNumber?: number }`                                                        | `dayOfTheWeek`: Sunday to Saturday (`enum DayOfTheWeek`), `weekNumber`: -53 to 53 (0 ignores this field, and a negative indicates a value from the end of the range). |
+| daysOfTheMonth  | _number[]_         | (Optional, iOS only) They days of the month this event occurs on                                                                                                                              | -31 to 31 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Monthly`.                         |
+| monthsOfTheYear | _MonthOfTheYear[]_ | (Optional, iOS only) The months this event occurs on.                                                                                                                                         | This field is only valid for `Calendar.Frequency.Yearly`.                                                                                                             |
+| weeksOfTheYear  | _number[]_         | (Optional, iOS only) The weeks of the year this event occurs on.                                                                                                                              | -53 to 53 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.                          |
+| daysOfTheYear   | _number[]_         | (Optional, iOS only) The days of the year this event occurs on.                                                                                                                               | -366 to 366 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.                        |
+| setPositions    | _number[]_         | (Optional, iOS only) An array of numbers that filters which recurrences to include. For example, for an event that recurs every Monday, passing 2 here will make it recur every other Monday. | -366 to 366 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.                        |
 
 ### Alarm
 
@@ -647,29 +643,29 @@ A source account that owns a particular calendar. Expo apps will typically not n
 
 ### `Calendar.DayOfTheWeek`
 
-| DayOfTheWeek                 | Value |
-| ---------------------------- | ----- |
-| `DayOfTheWeek.Sunday`        | 1     |
-| `DayOfTheWeek.Monday`        | 2     |
-| `DayOfTheWeek.Tuesday`       | 3     |
-| `DayOfTheWeek.Wednesday`     | 4     |
-| `DayOfTheWeek.Thursday`      | 5     |
-| `DayOfTheWeek.Friday`        | 6     |
-| `DayOfTheWeek.Saturday`      | 7     |
+| DayOfTheWeek             | Value |
+| ------------------------ | ----- |
+| `DayOfTheWeek.Sunday`    | 1     |
+| `DayOfTheWeek.Monday`    | 2     |
+| `DayOfTheWeek.Tuesday`   | 3     |
+| `DayOfTheWeek.Wednesday` | 4     |
+| `DayOfTheWeek.Thursday`  | 5     |
+| `DayOfTheWeek.Friday`    | 6     |
+| `DayOfTheWeek.Saturday`  | 7     |
 
 ### `Calendar.MonthOfTheYear`
 
-| MonthOfTheYear                      | Value |
-| ----------------------------------- | ----- |
-| `MonthOfTheYear.January`            |   1   |
-| `MonthOfTheYear.February`           |   2   |
-| `MonthOfTheYear.March`              |   3   |
-| `MonthOfTheYear.April`              |   4   |
-| `MonthOfTheYear.May`                |   5   |
-| `MonthOfTheYear.June`               |   6   |
-| `MonthOfTheYear.July`               |   7   |
-| `MonthOfTheYear.August`             |   8   |
-| `MonthOfTheYear.September`          |   9   |
-| `MonthOfTheYear.October`            |   10  |
-| `MonthOfTheYear.November`           |   11  |
-| `MonthOfTheYear.December`           |   12  |
+| MonthOfTheYear             | Value |
+| -------------------------- | ----- |
+| `MonthOfTheYear.January`   | 1     |
+| `MonthOfTheYear.February`  | 2     |
+| `MonthOfTheYear.March`     | 3     |
+| `MonthOfTheYear.April`     | 4     |
+| `MonthOfTheYear.May`       | 5     |
+| `MonthOfTheYear.June`      | 6     |
+| `MonthOfTheYear.July`      | 7     |
+| `MonthOfTheYear.August`    | 8     |
+| `MonthOfTheYear.September` | 9     |
+| `MonthOfTheYear.October`   | 10    |
+| `MonthOfTheYear.November`  | 11    |
+| `MonthOfTheYear.December`  | 12    |

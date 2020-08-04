@@ -3,6 +3,7 @@ package expo.modules.av.player.datasource;
 import android.content.Context;
 
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,7 @@ public class SharedCookiesDataSourceFactoryProvider implements InternalModule, D
   }
 
   @Override
-  public DataSource.Factory createFactory(Context reactApplicationContext, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders) {
-    return new SharedCookiesDataSourceFactory(reactApplicationContext, moduleRegistry, userAgent, requestHeaders);
+  public DataSource.Factory createFactory(Context reactApplicationContext, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders, TransferListener transferListener) {
+    return new SharedCookiesDataSourceFactory(reactApplicationContext, moduleRegistry, userAgent, requestHeaders, transferListener);
   }
 }

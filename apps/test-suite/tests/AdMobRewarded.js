@@ -13,8 +13,8 @@ const invalidAdUnitID = 'ad';
 export function test(t) {
   t.describe('AdMobRewarded', () => {
     t.describe('setTestDeviceIDAsync', () => {
-      t.it('successfully sets Test Device ID for rewarded ads', () => {
-        t.expect(setTestDeviceIDAsync('EMULATOR')).not.toBeNull();
+      t.it('successfully sets Test Device ID for rewarded ads', async () => {
+        await setTestDeviceIDAsync('EMULATOR');
       });
     });
 

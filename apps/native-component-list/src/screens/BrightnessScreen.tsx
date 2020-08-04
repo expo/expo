@@ -1,9 +1,11 @@
-import React from 'react';
-import { ScrollView, Text, View, Slider } from 'react-native';
+import Slider from '@react-native-community/slider';
 import * as Brightness from 'expo-brightness';
 import * as Permissions from 'expo-permissions';
-import HeadingText from '../components/HeadingText';
+import React from 'react';
+import { ScrollView, Text, View } from 'react-native';
+
 import Button from '../components/Button';
+import HeadingText from '../components/HeadingText';
 
 interface State {
   initBrightness: { [type: string]: number };
@@ -13,7 +15,7 @@ interface State {
 
 const brightnessTypes: string[] = ['Brightness', 'SystemBrightness'];
 
-export default class BrightnessScreen extends React.Component<{}, State> {
+export default class BrightnessScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Brightness',
   };

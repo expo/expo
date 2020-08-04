@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { Config } from '@jest/types';
+import chalk from 'chalk';
 
 export default function withEnzyme(preset: Config.ProjectConfig) {
   const {

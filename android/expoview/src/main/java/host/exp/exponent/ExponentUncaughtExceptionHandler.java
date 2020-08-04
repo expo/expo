@@ -3,7 +3,6 @@
 package host.exp.exponent;
 
 import android.content.Context;
-import android.util.Log;
 
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.experience.ExperienceActivity;
@@ -25,12 +24,12 @@ public class ExponentUncaughtExceptionHandler implements Thread.UncaughtExceptio
     try {
       ExperienceActivity.removeNotification(mContext);
     } catch (Throwable e) {
-      // Don't ever want to crash before getting to Crashlytics
+      // Don't ever want to crash before getting to default exception handler
       EXL.e(TAG, e);
     }
 
     if (mOldExceptionHandler != null) {
-      // Let Crashlytics know about the crash.
+      // Let default handler know about the crash.
       mOldExceptionHandler.uncaughtException(thread, ex);
     }
 

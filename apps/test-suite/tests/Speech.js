@@ -27,6 +27,7 @@ export function test(t) {
         await waitFor(
           Platform.select({
             web: 1000,
+            android: 1500,
             default: 500,
           })
         );
@@ -40,6 +41,7 @@ export function test(t) {
         await waitFor(
           Platform.select({
             web: 1500,
+            android: 1500,
             default: 1000,
           })
         );

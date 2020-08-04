@@ -48,9 +48,7 @@ UEXGLContextId EXGLContext::ContextCreate(JSGlobalContextRef jsCtx) {
     jsEXGLContextMap = JSObjectMake(jsCtx, nullptr, nullptr);
     EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsGlobal, "__EXGLContexts", jsEXGLContextMap);
   }
-  std::stringstream ss;
-  ss << exglCtxId;
-  auto exglCtxIdStr = ss.str();
+  auto exglCtxIdStr = std::to_string(exglCtxId);
   EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsEXGLContextMap,
                                         exglCtxIdStr.c_str(), exglCtx->getJSObject());
 

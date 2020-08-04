@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/EXCamera/ABI38_0_0EXCamera/Utilities/ABI38_0_0EXCameraUtils.h

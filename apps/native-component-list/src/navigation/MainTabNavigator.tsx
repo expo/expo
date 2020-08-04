@@ -1,98 +1,90 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from '@react-navigation/drawer';
+import * as React from 'react';
+import { Platform, ScrollViewProps, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
-import TabIcon from '../components/TabIcon';
-import { Colors, Layout } from '../constants';
+import { Colors } from '../constants';
 import createTabNavigator from './createTabNavigator';
-import ExpoApisStackNavigator from './ExpoApisStackNavigator';
-import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
-import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';
+import Screens from './MainNavigators';
 
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: Colors.tabBar,
-  },
-});
+const Tab = createTabNavigator();
 
-// @ts-ignore
-ExpoApisStackNavigator.path = 'API';
-ExpoApisStackNavigator.navigationOptions = {
-  title: 'Expo API',
-};
+const Drawer = createDrawerNavigator();
 
-// @ts-ignore
-ExpoComponentsStackNavigator.path = 'Components';
-ExpoComponentsStackNavigator.navigationOptions = {
-  title: 'Expo Components',
-};
+function CustomDrawerContent({
+  hideLabels,
+  ...props
+}: ScrollViewProps & {
+  children?: React.ReactNode;
+  hideLabels?: boolean;
+}) {
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} labelStyle={hideLabels ? { display: 'none' } : undefined} />
+    </DrawerContentScrollView>
+  );
+}
 
-// @ts-ignore
-ReactNativeCoreStackNavigator.path = 'ReactNative';
-ReactNativeCoreStackNavigator.navigationOptions = {
-  title: 'React Native Core',
-};
+export default function MainTabbedNavigator(props: any) {
+  const { width } = useWindowDimensions();
+  const { left } = useSafeArea();
+  const isMobile = width <= 640;
+  const isTablet = !isMobile && width <= 960;
+  const isLargeScreen = !isTablet && !isMobile;
 
-const MainTabNavigator = createTabNavigator(
-  {
-    ExpoApis: ExpoApisStackNavigator,
-    ExpoComponents: ExpoComponentsStackNavigator,
-    ReactNativeCore: ReactNativeCoreStackNavigator,
-  },
-  {
-    // @ts-ignore
-    defaultNavigationOptions: ({ navigation }: any) => {
-      let tabBarLabel;
-      const { routeName } = navigation.state;
-      if (routeName === 'ReactNativeCore') {
-        tabBarLabel = Layout.isSmallDevice ? 'RN Core' : 'React Native Core';
-      } else if (routeName === 'ExpoComponents') {
-        tabBarLabel = Layout.isSmallDevice ? 'Components' : 'Expo Components';
-      } else if (routeName === 'ExpoApis') {
-        tabBarLabel = Layout.isSmallDevice ? 'APIs' : 'Expo APIs';
-      }
-
-      return {
-        header: null,
-        tabBarLabel,
-        tabBarIcon: ({ focused }: { focused: boolean }) => {
-          const { routeName } = navigation.state;
-          switch (routeName) {
-            case 'ReactNativeCore':
-              return <TabIcon name="react" focused={focused} />;
-            case 'ExpoComponents':
-              return <TabIcon name="cards-playing-outline" focused={focused} />;
-            case 'ExpoApis':
-            default:
-              return <TabIcon name="exponent-box" focused={focused} />;
-          }
-        },
-      };
-    },
-    // @ts-ignore
-    resetOnBlur: false,
-    /* Below applies to material bottom tab navigator */
-    activeTintColor: Colors.tabIconSelected,
-    inactiveTintColor: Colors.tabIconDefault,
-    shifting: true,
-    barStyle: {
-      backgroundColor: Colors.tabBar,
-      borderTopWidth: StyleSheet.hairlineWidth,
-      borderTopColor: Colors.tabIconDefault,
-    },
-    /* Below applies to bottom tab navigator */
-    tabBarOptions: {
-      style: styles.tabBar,
-      activeTintColor: Colors.tabIconSelected,
-      inactiveTintColor: Colors.tabIconDefault,
-    },
+  // Use a tab bar on all except web desktop.
+  // NOTE(brentvatne): if you navigate to an example screen and then resize your
+  // browser such that the navigator changes from tab to drawer or drawer to tab
+  // then it will reset to the list because the navigator has changed and the state
+  // of its children will be reset.
+  if (Platform.OS !== 'web' || isMobile) {
+    return (
+      <Tab.Navigator
+        shifting
+        activeTintColor={Colors.tabIconSelected}
+        inactiveTintColor={Colors.tabIconDefault}
+        barStyle={{
+          backgroundColor: Colors.tabBar,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: Colors.tabIconDefault,
+        }}
+        tabBarOptions={{
+          style: {
+            backgroundColor: Colors.tabBar,
+          },
+          activeTintColor: Colors.tabIconSelected,
+          inactiveTintColor: Colors.tabIconDefault,
+        }}>
+        {Object.keys(Screens).map(name => (
+          <Tab.Screen
+            name={name}
+            key={name}
+            component={Screens[name].navigator}
+            options={Screens[name].navigator.navigationOptions}
+          />
+        ))}
+      </Tab.Navigator>
+    );
   }
-);
 
-// @ts-ignore
-MainTabNavigator.path = '';
-MainTabNavigator.navigationOptions = {
-  // @ts-ignore
-  title: 'Native Component List',
-};
-
-export default MainTabNavigator;
+  return (
+    <Drawer.Navigator
+      {...props}
+      drawerContent={props => <CustomDrawerContent {...props} hideLabels={isTablet} />}
+      drawerStyle={{ width: isLargeScreen ? undefined : 64 + left }}
+      drawerType="permanent">
+      {Object.keys(Screens).map(name => (
+        <Drawer.Screen
+          name={name}
+          key={name}
+          component={Screens[name].navigator}
+          options={Screens[name].navigator.navigationOptions}
+        />
+      ))}
+    </Drawer.Navigator>
+  );
+}

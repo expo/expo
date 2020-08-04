@@ -1,103 +1,118 @@
-// Simplified version of https://github.com/facebook/react-native/blob/master/React/Views/SafeAreaView/RCTSafeAreaView.m
-
 #import "RNCSafeAreaView.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>
 
-static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIEdgeInsets insets2, CGFloat threshold) {
-  return
-  ABS(insets1.left - insets2.left) <= threshold &&
-  ABS(insets1.right - insets2.right) <= threshold &&
-  ABS(insets1.top - insets2.top) <= threshold &&
-  ABS(insets1.bottom - insets2.bottom) <= threshold;
-}
+#import "RNCSafeAreaViewLocalData.h"
+#import "RNCSafeAreaViewMode.h"
+#import "RNCSafeAreaViewEdges.h"
+#import "RCTView+SafeAreaCompat.h"
+#import "RNCSafeAreaProvider.h"
 
-@implementation RNCSafeAreaView
-{
+@implementation RNCSafeAreaView {
+  __weak RCTBridge *_bridge;
   UIEdgeInsets _currentSafeAreaInsets;
-  BOOL _initialInsetsSent;
+  RNCSafeAreaViewMode _mode;
+  RNCSafeAreaViewEdges _edges;
+  __weak UIView * _Nullable _providerView;
 }
 
-- (BOOL)isSupportedByOS
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  return [self respondsToSelector:@selector(safeAreaInsets)];
+  if (self = [super initWithFrame:CGRectZero]) {
+    _bridge = bridge;
+    // Defaults
+    _mode = RNCSafeAreaViewModePadding;
+    _edges = RNCSafeAreaViewEdgesAll;
+  }
+
+  return self;
 }
 
-- (UIEdgeInsets)realOrEmulateSafeAreaInsets
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+
+- (NSString *)description
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  if (self.isSupportedByOS) {
-    if (@available(iOS 11.0, *)) {
-      return self.safeAreaInsets;
-    }
-  }
-#endif
-  return self.emulatedSafeAreaInsets;
-}
+  NSString *superDescription = [super description];
 
-- (UIEdgeInsets)emulatedSafeAreaInsets
-{
-  UIViewController* vc = self.reactViewController;
-
-  if (!vc) {
-    return UIEdgeInsetsZero;
+  // Cutting the last `>` character.
+  if (superDescription.length > 0 && [superDescription characterAtIndex:superDescription.length - 1] == '>') {
+    superDescription = [superDescription substringToIndex:superDescription.length - 1];
   }
 
-  CGFloat topLayoutOffset = vc.topLayoutGuide.length;
-  CGFloat bottomLayoutOffset = vc.bottomLayoutGuide.length;
-  CGRect safeArea = vc.view.bounds;
-  safeArea.origin.y += topLayoutOffset;
-  safeArea.size.height -= topLayoutOffset + bottomLayoutOffset;
-  CGRect localSafeArea = [vc.view convertRect:safeArea toView:self];
-  UIEdgeInsets safeAreaInsets = UIEdgeInsetsMake(0, 0, 0, 0);
-  if (CGRectGetMinY(localSafeArea) > CGRectGetMinY(self.bounds)) {
-    safeAreaInsets.top = CGRectGetMinY(localSafeArea) - CGRectGetMinY(self.bounds);
-  }
-  if (CGRectGetMaxY(localSafeArea) < CGRectGetMaxY(self.bounds)) {
-    safeAreaInsets.bottom = CGRectGetMaxY(self.bounds) - CGRectGetMaxY(localSafeArea);
-  }
-
-  return safeAreaInsets;
+  return [NSString stringWithFormat:@"%@; RNCSafeAreaInsets = %@; appliedRNCSafeAreaInsets = %@>",
+          superDescription,
+          NSStringFromUIEdgeInsets([_providerView safeAreaInsetsOrEmulate]),
+          NSStringFromUIEdgeInsets(_currentSafeAreaInsets)];
 }
 
 - (void)safeAreaInsetsDidChange
 {
+  [super safeAreaInsetsDidChange];
   [self invalidateSafeAreaInsets];
-}
-
-- (void)invalidateSafeAreaInsets
-{
-  // This gets called before the view size is set by react-native so
-  // make sure to wait so we don't set wrong insets to JS.
-  if (CGSizeEqualToSize(self.frame.size, CGSizeZero)) {
-    return;
-  }
-
-  UIEdgeInsets safeAreaInsets = [self realOrEmulateSafeAreaInsets];
-
-  if (_initialInsetsSent && UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
-    return;
-  }
-
-  _initialInsetsSent = YES;
-  _currentSafeAreaInsets = safeAreaInsets;
-
-  self.onInsetsChange(@{
-    @"insets": @{
-      @"top": @(safeAreaInsets.top),
-      @"right": @(safeAreaInsets.right),
-      @"bottom": @(safeAreaInsets.bottom),
-      @"left": @(safeAreaInsets.left),
-    }
-  });
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
 
+  if (!self.nativeSafeAreaSupport) {
+    [self invalidateSafeAreaInsets];
+  }
+}
+
+- (void)didMoveToWindow
+{
+  _providerView = [self findNearestProvider];
   [self invalidateSafeAreaInsets];
+}
+
+- (void)invalidateSafeAreaInsets
+{
+  if (_providerView == nil) {
+    return;
+  }
+  UIEdgeInsets safeAreaInsets = [_providerView safeAreaInsetsOrEmulate];
+
+  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+    return;
+  }
+
+  _currentSafeAreaInsets = safeAreaInsets;
+  [self updateLocalData];
+}
+
+- (UIView *)findNearestProvider
+{
+  UIView *current = self.reactSuperview;
+  while (current != nil) {
+    if ([current isKindOfClass:RNCSafeAreaProvider.class] ) {
+      return current;
+    }
+    current = current.reactSuperview;
+  }
+  return self;
+}
+
+- (void)updateLocalData
+{
+  RNCSafeAreaViewLocalData *localData = [[RNCSafeAreaViewLocalData alloc] initWithInsets:_currentSafeAreaInsets
+                                                                                    mode:_mode
+                                                                                   edges:_edges];
+  [_bridge.uiManager setLocalData:localData forView:self];
+}
+
+- (void)setMode:(RNCSafeAreaViewMode)mode
+{
+  _mode = mode;
+  [self updateLocalData];
+}
+
+- (void)setEdges:(RNCSafeAreaViewEdges)edges
+{
+  _edges = edges;
+  [self updateLocalData];
 }
 
 @end

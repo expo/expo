@@ -1,5 +1,5 @@
-import compareVersions from 'compare-versions';
 import { CodedError } from '@unimodules/react-native-adapter';
+import compareVersions from 'compare-versions';
 const postedWarnings = {};
 /**
  * Used for deprecating values and throwing an error if a given version of Expo has passed.

@@ -11,7 +11,7 @@
       "build": {
         "babel": {
           "root": "./",
-          "include": ["test-suite", "bare-expo"]
+          "include": ["test-suite", "native-component-list", "bare-expo"]
         }
       }
     },

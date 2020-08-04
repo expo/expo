@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/UMPermissionsInterface/ABI34_0_0UMPermissionsInterface/ABI34_0_0UMPermissionsInterface.h

@@ -1,9 +1,11 @@
-import LocationScreen from './LocationScreen';
-import GeofencingScreen from './GeofencingScreen';
 import BackgroundLocationMapScreen from './BackgroundLocationMapScreen';
+import GeofencingScreen from './GeofencingScreen';
+import LocationScreen from './LocationScreen';
+import GeocodingScreen from './GeocodingScreen';
 
 export default {
-  Location: { screen: LocationScreen },
-  Geofencing: { screen: GeofencingScreen },
-  BackgroundLocationMap: { screen: BackgroundLocationMapScreen },
+  Location: LocationScreen,
+  Geocoding: GeocodingScreen,
+  Geofencing: GeofencingScreen,
+  BackgroundLocationMap: BackgroundLocationMapScreen,
 };

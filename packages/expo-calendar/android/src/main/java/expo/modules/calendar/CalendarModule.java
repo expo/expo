@@ -1235,16 +1235,19 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
       }
 
       if (recurrenceRules.length >= 3) {
-        if (recurrenceRules[2].split("=")[0].equals("UNTIL")) {
-          try {
-            recurrenceRule.putString("endDate", sdf.format(format.parse(recurrenceRules[2].split("=")[1])));
-          } catch (ParseException e) {
-            Log.e(TAG, "error", e);
+        String[] terminationRules = recurrenceRules[2].split("=");
+        if (terminationRules.length >= 2) {
+          if (terminationRules[0].equals("UNTIL")) {
+            try {
+              recurrenceRule.putString("endDate", sdf.format(format.parse(terminationRules[1])));
+            } catch (ParseException e) {
+              Log.e(TAG, "Couldn't parse the `endDate` property.", e);
+            }
+          } else if (terminationRules[0].equals("COUNT")) {
+            recurrenceRule.putInt("occurrence", Integer.parseInt(recurrenceRules[2].split("=")[1]));
           }
-        } else if (recurrenceRules[2].split("=")[0].equals("COUNT")) {
-          recurrenceRule.putInt("occurrence", Integer.parseInt(recurrenceRules[2].split("=")[1]));
         }
-
+        Log.e(TAG, String.format("Couldn't parse termination rules: '%s'.", recurrenceRules[2]), null);
       }
 
       event.putBundle("recurrenceRule", recurrenceRule);

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/EXFirebaseCore/ABI38_0_0EXFirebaseCore/ABI38_0_0UMFirebaseCoreInterface.h

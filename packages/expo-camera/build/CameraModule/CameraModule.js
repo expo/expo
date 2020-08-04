@@ -3,9 +3,8 @@ import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
+import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync, canGetUserMedia, } from './UserMediaManager';
 import { FacingModeToCameraType, PictureSizes } from './constants';
-import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
-import BarCodeScanner from './barcode/BarCodeScanner';
 export { ImageType, CameraType };
 const VALID_SETTINGS_KEYS = [
     'autoFocus',
@@ -40,18 +39,6 @@ class CameraModule {
         this.getAvailablePictureSizes = async (ratio) => {
             return PictureSizes;
         };
-        this.getAvailableCameraTypesAsync = async () => {
-            if (!navigator.mediaDevices.enumerateDevices) {
-                return [];
-            }
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const types = await Promise.all([
-                (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
-                (await isBackCameraAvailableAsync()) && CameraType.back,
-            ]);
-            return types.filter(Boolean);
-        };
-        this.barCodeScanner = new BarCodeScanner(videoElement);
         if (this.videoElement) {
             this.videoElement.addEventListener('loadedmetadata', () => {
                 this.syncTrackCapabilities();
@@ -162,7 +149,6 @@ class CameraModule {
         if (this.settings) {
             // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
             const { facingMode = 'user' } = this.settings;
-            this.barCodeScanner.isImageMirrored = facingMode === 'user';
             return FacingModeToCameraType[facingMode];
         }
         return null;
@@ -214,7 +200,16 @@ class CameraModule {
     stopAsync() {
         stopMediaStream(this.stream);
         this.setStream(null);
-        this.barCodeScanner.stopScanner();
+    }
+    static async getAvailableCameraTypesAsync() {
+        if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices)
+            return [];
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const types = await Promise.all([
+            (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+            (await isBackCameraAvailableAsync()) && CameraType.back,
+        ]);
+        return types.filter(Boolean);
     }
 }
 function stopMediaStream(stream) {

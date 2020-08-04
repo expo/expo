@@ -3,19 +3,17 @@ title: GLView
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-gl'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-gl`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-gl).
+<InstallSection packageName="expo-gl" />
 
 ## API
 
@@ -82,8 +80,10 @@ Takes a snapshot of the framebuffer and saves it as a file to app's cache direct
   - **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view or the current framebuffer if context is headless.
   - **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
   - **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
-  - **format (_string_)** -- Either `'jpeg'` or `'png'`. Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
+  - **format (_string_)** -- Either `'jpeg'`, `'png'` or `'webp'` (_Android only_ for the latter). Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
   - **compress (_number_)** -- A value in range 0 - 1 specifying compression level of the result image. 1 means no compression and 0 the highest compression. Defaults to `1.0`.
+
+> **Note:** When using WebP format, the iOS version will print a warning, and generate a `'png'` file instead. It is recommendable to use platform dependant code in this case. You can refer to the [documentation on platform specifi code](https://docs.expo.io/versions/latest/react-native/platform-specific-code/).
 
 #### Returns
 

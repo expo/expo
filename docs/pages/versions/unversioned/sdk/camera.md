@@ -3,25 +3,23 @@ title: Camera
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-camera'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run [this snack](https://snack.expo.io/@charliecruzan/camerja) on your device to see all these features working together!
+**`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run the [snack below](##example-usage) on your device to see all these features working together!
 
-#### Platform Compatibility
+<PlatformsSection android ios web />
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ❌               | ✅         | ❌            | ✅  |
-
-> **Note**:
-
-- Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
-- Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
+> **Notes:**
+>
+> - Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount any previously rendered `Camera` component so the following screens can use `<Camera />` without issues.
+> - Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-camera`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-camera).
+<InstallSection packageName="expo-camera" />
 
 ## Configuration
 
@@ -92,7 +90,7 @@ export default function App() {
 import { Camera } from 'expo-camera';
 ```
 
-<TableOfContentSection title='Static Methods' contents={['Camera.isAvailableAsync()', 'Camera.getAvailableCameraTypesAsync()']} />
+<TableOfContentSection title='Static Methods' contents={['Camera.isAvailableAsync()', 'Camera.getAvailableCameraTypesAsync(): string[]']} />
 
 <TableOfContentSection title='Props' contents={['type', 'flashMode', 'autoFocus', 'zoom', 'whiteBalance', 'focusDepth', 'ratio', 'pictureSize', 'onCameraReady', 'onFacesDetected', 'faceDetectorSettings', 'onMountError', 'onBarCodeScanned', 'barCodeScannerSettings', 'useCamera2Api', 'videoStablizationMode']} />
 
@@ -101,6 +99,8 @@ import { Camera } from 'expo-camera';
 ## Static Methods
 
 ### `Camera.isAvailableAsync(): boolean`
+
+_Web Only_
 
 Check whether the current device has a camera. This is useful for web and simulators cases. This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser). You will still need to check if the native permission has been accepted.
 
@@ -112,6 +112,8 @@ if (await Camera.isAvailableAsync()) {
 ```
 
 ### `Camera.getAvailableCameraTypesAsync(): string[]`
+
+_Web Only_
 
 Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
 
@@ -228,6 +230,8 @@ snap = async () => {
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation (if **options.skipProcessing** flag is not enabled) and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
 
+> **Note**: Make sure to wait for the [`onCameraReady`](./#oncameraready) callback before calling this method.
+
 #### Arguments
 
 - **options (_object_)** --
@@ -261,6 +265,7 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxDuration (_number_)** -- Maximum video duration in seconds.
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
+  - **mirror (_boolean_)** -- (iOS only; on Android, this is handled in the user's device settings) If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default, but you can reverse that back by setting this to `true`.
 
 #### Returns
 

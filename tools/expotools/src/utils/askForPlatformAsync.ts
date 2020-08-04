@@ -2,7 +2,9 @@ import inquirer from 'inquirer';
 
 import { Platform } from '../ProjectVersions';
 
-export default async function askForPlatformAsync(platforms: Platform[] = ['ios', 'android']): Promise<Platform> {
+export default async function askForPlatformAsync(
+  platforms: Platform[] = ['ios', 'android']
+): Promise<Platform> {
   if (process.env.CI) {
     throw new Error(`Run with \`--platform <${platforms.join(' | ')}>\`.`);
   }

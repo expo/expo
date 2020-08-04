@@ -12,8 +12,8 @@ if (!ExpoNativeModuleIntrospection) {
 
 export default class App extends React.Component {
   async componentDidMount() {
-    let moduleSpecs = await _getExpoModuleSpecsAsync();
-    let code = `module.exports = ${JSON.stringify(moduleSpecs)};`;
+    const moduleSpecs = await _getExpoModuleSpecsAsync();
+    const code = `module.exports = ${JSON.stringify(moduleSpecs)};`;
     console.log('\n');
     console.log('------------------------------COPY THE TEXT BELOW------------------------------');
     console.log('\n');
@@ -36,11 +36,11 @@ export default class App extends React.Component {
 }
 
 async function _getExpoModuleSpecsAsync() {
-  let whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
-  let moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
-  let expoModuleNames = moduleNames.filter(moduleName => whitelist.test(moduleName)).sort();
-  let specPromises = {};
-  for (let moduleName of expoModuleNames) {
+  const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
+  const moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
+  const expoModuleNames = moduleNames.filter(moduleName => whitelist.test(moduleName)).sort();
+  const specPromises = {};
+  for (const moduleName of expoModuleNames) {
     specPromises[moduleName] = _getModuleSpecAsync(moduleName, NativeModules[moduleName]);
   }
   return await mux(specPromises);
@@ -51,10 +51,10 @@ async function _getModuleSpecAsync(moduleName, module) {
     return {};
   }
 
-  let moduleDescription = await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(
+  const moduleDescription = await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(
     moduleName
   );
-  let spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
+  const spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
   if (moduleName === 'NativeUnimoduleProxy') {
     spec.exportedMethods.mock = _sortObject(module.exportedMethods);
     spec.viewManagersNames.mock = module.viewManagersNames.sort();
@@ -78,9 +78,9 @@ const _mockify = (obj, context) =>
   Object.keys(obj)
     .sort()
     .reduce((spec, key) => {
-      let value = obj[key];
-      let type = Array.isArray(value) ? 'array' : typeof value;
-      let mock = type !== 'function' ? _mockifyValue(value, { context, key }) : undefined;
+      const value = obj[key];
+      const type = Array.isArray(value) ? 'array' : typeof value;
+      const mock = type !== 'function' ? _mockifyValue(value, { context, key }) : undefined;
       return { ...spec, [key]: { type, mock } };
     }, {});
 

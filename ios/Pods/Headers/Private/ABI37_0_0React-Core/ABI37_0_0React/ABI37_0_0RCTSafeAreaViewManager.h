@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI37_0_0/ReactNative/React/Views/SafeAreaView/ABI37_0_0RCTSafeAreaViewManager.h

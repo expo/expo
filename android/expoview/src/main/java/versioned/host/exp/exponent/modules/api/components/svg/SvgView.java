@@ -21,6 +21,8 @@ import android.util.Base64;
 import android.view.View;
 import android.view.ViewParent;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.DisplayMetricsHolder;

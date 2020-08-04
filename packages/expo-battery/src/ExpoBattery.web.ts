@@ -1,5 +1,4 @@
-import { EventEmitter } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { EventEmitter, Platform } from '@unimodules/core';
 
 import { BatteryState } from './Battery.types';
 
@@ -40,7 +39,7 @@ export default {
 
   get isSupported(): boolean {
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
-    return canUseDOM && ('getBattery' in navigator || 'battery' in navigator);
+    return Platform.isDOMAvailable && ('getBattery' in navigator || 'battery' in navigator);
   },
 
   async getBatteryLevelAsync(): Promise<number> {
@@ -53,7 +52,7 @@ export default {
   async getBatteryStateAsync(): Promise<BatteryState> {
     const batteryManager = await getBatteryManagerAsync();
     if (!batteryManager) return BatteryState.UNKNOWN;
-    return batteryManager.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
+    return getBatteryState(batteryManager.charging, batteryManager.level);
   },
 
   async startObserving() {
@@ -71,18 +70,37 @@ export default {
   },
 };
 
-function onChargingChange(this: BatteryManager): void {
-  const batteryState = this.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
+let lastReportedState: BatteryState = BatteryState.UNKNOWN;
+
+function getBatteryState(isCharging: boolean, level: number): BatteryState {
+  return isCharging
+    ? level >= 1.0
+      ? BatteryState.FULL
+      : BatteryState.CHARGING
+    : BatteryState.UNPLUGGED;
+}
+
+function emitStateChange(isCharging: boolean, level: number) {
+  const batteryState = getBatteryState(isCharging, level);
+  // prevent sending the same state change twice.
+  if (batteryState === lastReportedState) return;
+  lastReportedState = batteryState;
   emitter.emit('Expo.batteryStateDidChange', { batteryState });
+}
+
+function onChargingChange(this: BatteryManager): void {
+  emitStateChange(this.charging, this.level);
 }
 
 function onLevelChange(this: BatteryManager): void {
   const batteryLevel = this.level;
+  // update the state as well in case the state changed to full.
+  emitStateChange(this.charging, this.level);
   emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
 }
 
 async function getBatteryManagerAsync(): Promise<BatteryManager | null> {
-  if (!canUseDOM) return null;
+  if (Platform.isDOMAvailable === false) return null;
   if ('getBattery' in navigator) {
     // @ts-ignore
     return await navigator.getBattery();

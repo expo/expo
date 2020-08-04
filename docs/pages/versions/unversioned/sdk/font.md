@@ -3,23 +3,59 @@ title: Font
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-font'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../../guides/using-custom-fonts/#using-custom-fonts) guide.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-font`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-font).
+<InstallSection packageName="expo-font" />
 
-## API
+# API
 
 ```js
 import * as Font from 'expo-font';
 ```
+
+## Hooks
+
+### `useFonts`
+
+```ts
+const [loaded, error] = useFonts({ ... });
+```
+
+Load a map of fonts with [`loadAsync`](#loadasyncobject). This returns a boolean if the fonts are loaded and ready to use. It also returns an error if something went wrong, to use in development.
+
+#### Arguments
+
+- **fonts (_{ [fontFamily: string]: FontSource }_)** -- A map of `fontFamily`s to [`FontSource`](#FontSource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
+
+#### Returns
+
+- **loaded (_boolean_)** -- A boolean to detect if the font for `fontFamily` has finished loading.
+- **error (_Error | null_)** -- An error encountered when loading the fonts.
+
+#### Example: hook
+
+```tsx
+function App() {
+  const [loaded] = useFonts({
+    Montserrat: require('./assets/fonts/Montserrat.ttf'),
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <Text style={{ fontFamily: 'Montserrat' }} />;
+}
+```
+
+## Methods
 
 ### `loadAsync(object)`
 
@@ -29,7 +65,7 @@ Highly efficient method for loading fonts from static or remote resources which 
 
 - **{ [fontFamily: string]: FontSource }** -- A map of `fontFamily`s to [`FontSource`](#FontSource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
 
-#### Example
+#### Example: functions
 
 ```tsx
 await loadAsync({

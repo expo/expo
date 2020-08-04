@@ -32,7 +32,7 @@ declare module 'react-native/Libraries/Image/AssetSourceResolver' {
     drawableFolderInBundle(): ResolvedAssetSource;
     fromSource(source: string): ResolvedAssetSource;
 
-    static pickScale(scales: Array<number>, deviceScale: number): number;
+    static pickScale(scales: number[], deviceScale: number): number;
   }
 }
 

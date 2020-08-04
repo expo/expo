@@ -2,7 +2,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
@@ -27,7 +27,7 @@
         _reloadImageCancellationBlock = nil;
     }
     __weak typeof(self) weakSelf = self;
-    _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
+    _reloadImageCancellationBlock = [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
                                                                             size:weakSelf.bounds.size
                                                                            scale:RCTScreenScale()
                                                                          clipped:YES
@@ -50,13 +50,13 @@
 - (void)setBoundsRect:(NSArray *)boundsRect {
     _boundsRect = boundsRect;
 
-    _southWest = CLLocationCoordinate2DMake([boundsRect[1][0] doubleValue], [boundsRect[0][1] doubleValue]);
-    _northEast = CLLocationCoordinate2DMake([boundsRect[0][0] doubleValue], [boundsRect[1][1] doubleValue]);
+    _southWest = CLLocationCoordinate2DMake([boundsRect[0][0] doubleValue], [boundsRect[0][1] doubleValue]);
+    _northEast = CLLocationCoordinate2DMake([boundsRect[1][0] doubleValue], [boundsRect[1][1] doubleValue]);
 
     MKMapPoint southWest = MKMapPointForCoordinate(_southWest);
     MKMapPoint northEast = MKMapPointForCoordinate(_northEast);
 
-    _mapRect = MKMapRectMake(southWest.x, northEast.y, northEast.x - southWest.x, northEast.y - southWest.y);
+    _mapRect = MKMapRectMake(southWest.x, northEast.y, ABS(northEast.x - southWest.x), ABS(northEast.y - southWest.y));
 
     [self update];
 }

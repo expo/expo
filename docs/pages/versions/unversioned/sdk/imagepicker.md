@@ -3,25 +3,85 @@ title: ImagePicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-picker'
 ---
 
-import Video from '../../../../components/plugins/Video'
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import Video from '~/components/plugins/Video';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
 <Video file={"sdk/imagepicker.mp4"} loop={false} />
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-image-picker`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-picker).
+<InstallSection packageName="expo-image-picker" />
 
-## Usage
+## Configuration
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)), are added automatically.
+
+## Example Usage
+
+<SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+
+```js
+import React, { useState, useEffect } from 'react';
+import { Button, Image, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+
+export default function ImagePickerExample() {
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      if (Constants.platform.ios) {
+        const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button title="Pick an image from camera roll" onPress={pickImage} />
+      {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+    </View>
+  );
+}
+```
+
+</SnackInline>
+
+When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:
+
+```javascript
+{
+  "cancelled":false,
+  "height":1611,
+  "width":2148,
+  "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
+}
+```
 
 ## API
 
@@ -31,19 +91,19 @@ import * as ImagePicker from 'expo-image-picker';
 
 ### `ImagePicker.requestCameraPermissionsAsync()`
 
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
+Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`. This does nothing on web because the browser camera is not used.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
 ### `ImagePicker.requestCameraRollPermissionsAsync()`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
+Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`. This does nothing on web.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
@@ -51,7 +111,7 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
 ### `ImagePicker.getCameraRollPermissionsAsync()`
 
@@ -59,11 +119,11 @@ Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
-Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only.
+Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
 #### Arguments
 
@@ -93,11 +153,15 @@ Display the system UI for choosing an image or a video from the phone's library.
 
 If the user cancelled the picking, returns `{ cancelled: true }`.
 
-Otherwise, returns `{ cancelled: false, uri, width, height, type }` where `uri` is a URI to the local media file (useable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the media and `type` is one of `image` or `video` telling what kind of media has been chosen. Images can contain also `base64` and `exif` keys. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpeg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags. If a video has been picked the return object contains an additional key `duration` specifying the video's duration in miliseconds.
+Otherwise, this method returns information about the selected media item. When the chosen item is an image, this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`; when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+  - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
+  - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
+  - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+  - The `duration` property is the length of the video in milliseconds.
 
 ### `ImagePicker.launchCameraAsync(options)`
 
-Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`. On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required.
+Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`. On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
 #### Arguments
 
@@ -117,6 +181,10 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   Option for videos:
 
+  - **videoMaxDuration (_number_)** -- Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit. Defaults to 0 (no limit).
+    - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes. This limit is applied automatically, if `0` or no value is specified.
+    - **On Android**, effect of this option depends on support of installed camera app.
+    - **On Web** this option has no effect - the limit is browser-dependant.
   - **videoExportPreset (_[ImagePicker.VideoExportPreset](#imagepickervideoexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.VideoExportPreset.Passthrough`.
 
 #### Returns
@@ -124,22 +192,10 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 If the user cancelled the action, the method returns `{ cancelled: true }`.
 
 Otherwise, this method returns information about the selected media item. When the chosen item is an image, this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`; when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
-The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
-The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data; prepared it with `data:image/jpeg;base64,` to create a data URI, which you can use as the source of an `Image` element, for example.
-The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-
-<SnackEmbed snackId="@charliecruzan/imagepickerfromcameraroll34" />
-
-When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:
-
-```javascript
-{
-  "cancelled":false,
-  "height":1611,
-  "width":2148,
-  "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
-}
-```
+  - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
+  - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
+  - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+  - The `duration` property is the length of the video in milliseconds.
 
 ## Enums
 
@@ -164,5 +220,20 @@ When you run this example and pick an image, you will see the image that you pic
 | `VideoExportPreset.H264_1280x720`  | 6     | 1280 x 720            | H.264                       | AAC                         |
 | `VideoExportPreset.H264_1920x1080` | 7     | 1920 x 1080           | H.264                       | AAC                         |
 | `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
-| `VideoExportPreset.HEVC1920x1080`  | 9     | 1920 x 1080           | HEVC                        | AAC                         |
-| `VideoExportPreset.HEVC3840x2160`  | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+| `VideoExportPreset.HEVC_1920x1080` | 9     | 1920 x 1080           | HEVC                        | AAC                         |
+| `VideoExportPreset.HEVC_3840x2160` | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+
+## Types
+
+### `ImagePicker.CameraRollPermissionResponse`
+
+`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+
+- `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+  - `all` if the user granted your app access to the whole photo library
+  - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+  - `none` if user denied or hasn't yet granted the permission
+
+### `ImagePicker.CameraPermissionResponse`
+
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.

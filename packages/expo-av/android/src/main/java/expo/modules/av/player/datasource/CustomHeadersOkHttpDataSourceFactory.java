@@ -21,15 +21,12 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   @Nullable
   private final String mUserAgent;
   @Nullable
-  private final TransferListener mListener;
-  @Nullable
   private final CacheControl mCacheControl;
 
   public CustomHeadersOkHttpDataSourceFactory(@NonNull Call.Factory callFactory, @Nullable String userAgent, @Nullable Map<String, Object> requestHeaders) {
     super();
     mCallFactory = callFactory;
     mUserAgent = userAgent;
-    mListener = null;
     mCacheControl = null;
     updateRequestProperties(getDefaultRequestProperties(), requestHeaders);
   }

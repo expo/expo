@@ -21,7 +21,6 @@ public class KernelConstants {
   public static final String IS_HEADLESS_KEY = "isHeadless";
   public static final String IS_OPTIMISTIC_KEY = "isOptimistic";
   public static final String LOAD_FROM_CACHE_KEY = "loadFromCache";
-  public static final String OPTION_LOAD_NUX_KEY = "loadNux";
   public static final String BUNDLE_TAG = "BUNDLE";
   public static final String HOME_MODULE_NAME = "main";
   public static final String BUNDLE_FILE_PREFIX = "cached-bundle-";

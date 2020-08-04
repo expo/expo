@@ -6,23 +6,30 @@
  */
 package versioned.host.exp.exponent.modules.api.netinfo;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
+
+import androidx.core.content.ContextCompat;
 import androidx.core.net.ConnectivityManagerCompat;
+
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import versioned.host.exp.exponent.modules.api.netinfo.types.CellularGeneration;
 import versioned.host.exp.exponent.modules.api.netinfo.types.ConnectionType;
+
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.util.Locale;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -33,9 +40,12 @@ abstract class ConnectivityReceiver {
     private final TelephonyManager mTelephonyManager;
     private final ReactApplicationContext mReactContext;
 
-    @Nonnull private ConnectionType mConnectionType = ConnectionType.UNKNOWN;
-    @Nullable private CellularGeneration mCellularGeneration = null;
+    @Nonnull
+    private ConnectionType mConnectionType = ConnectionType.UNKNOWN;
+    @Nullable
+    private CellularGeneration mCellularGeneration = null;
     private boolean mIsInternetReachable = false;
+    private Boolean mIsInternetReachableOverride;
 
     ConnectivityReceiver(ReactApplicationContext reactContext) {
         mReactContext = reactContext;
@@ -52,8 +62,17 @@ abstract class ConnectivityReceiver {
 
     abstract void unregister();
 
-    public void getCurrentState(Promise promise) {
-        promise.resolve(createConnectivityEventMap());
+    public void getCurrentState(@Nullable final String requestedInterface, final Promise promise) {
+        promise.resolve(createConnectivityEventMap(requestedInterface));
+    }
+
+    public void setIsInternetReachableOverride(boolean isInternetReachableOverride) {
+        this.mIsInternetReachableOverride = isInternetReachableOverride;
+        updateConnectivity(mConnectionType, mCellularGeneration, mIsInternetReachable);
+    }
+
+    public void clearIsInternetReachableOverride() {
+        this.mIsInternetReachableOverride = null;
     }
 
     ReactApplicationContext getReactContext() {
@@ -67,7 +86,11 @@ abstract class ConnectivityReceiver {
     void updateConnectivity(
             @Nonnull ConnectionType connectionType,
             @Nullable CellularGeneration cellularGeneration,
-            boolean isInternetReachable) {
+            boolean isInternetReachableRaw) {
+        boolean isInternetReachable = mIsInternetReachableOverride == null
+                ? isInternetReachableRaw
+                : mIsInternetReachableOverride;
+
         // It is possible to get multiple broadcasts for the same connectivity change, so we only
         // update and send an event when the connectivity has indeed changed.
         boolean connectionTypeChanged = connectionType != mConnectionType;
@@ -85,14 +108,18 @@ abstract class ConnectivityReceiver {
     private void sendConnectivityChangedEvent() {
         getReactContext()
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("netInfo.networkStatusDidChange", createConnectivityEventMap());
+                .emit("netInfo.networkStatusDidChange", createConnectivityEventMap(null));
     }
 
-    private WritableMap createConnectivityEventMap() {
-        WritableMap event = new WritableNativeMap();
+    private WritableMap createConnectivityEventMap(@Nullable final String requestedInterface) {
+        WritableMap event = Arguments.createMap();
+
+        // Add if WiFi is ON or OFF
+        boolean isEnabled = mWifiManager.isWifiEnabled();
+        event.putBoolean("isWifiEnabled", isEnabled);
 
         // Add the connection type information
-        event.putString("type", mConnectionType.label);
+        event.putString("type", requestedInterface != null ? requestedInterface : mConnectionType.label);
 
         // Add the connection state information
         boolean isConnected =
@@ -101,18 +128,27 @@ abstract class ConnectivityReceiver {
         event.putBoolean("isConnected", isConnected);
 
         // Add the internet reachable information
-        event.putBoolean("isInternetReachable", mIsInternetReachable);
+        event.putBoolean(
+                "isInternetReachable",
+                mIsInternetReachable && (requestedInterface == null || requestedInterface.equals(mConnectionType.label)));
 
         // Add the details, if there are any
-        WritableMap details = null;
+        String detailsInterface = requestedInterface != null ? requestedInterface : mConnectionType.label;
+        WritableMap details = createDetailsMap(detailsInterface);
         if (isConnected) {
-            details = new WritableNativeMap();
-
             boolean isConnectionExpensive =
                     ConnectivityManagerCompat.isActiveNetworkMetered(getConnectivityManager());
             details.putBoolean("isConnectionExpensive", isConnectionExpensive);
+        }
+        event.putMap("details", details);
 
-            if (mConnectionType.equals(ConnectionType.CELLULAR)) {
+        return event;
+    }
+
+    private WritableMap createDetailsMap(@Nonnull String detailsInterface) {
+        WritableMap details = Arguments.createMap();
+        switch (detailsInterface) {
+            case "cellular":
                 // Add the cellular generation, if we have one
                 if (mCellularGeneration != null) {
                     details.putString("cellularGeneration", mCellularGeneration.label);
@@ -123,61 +159,97 @@ abstract class ConnectivityReceiver {
                 if (carrier != null) {
                     details.putString("carrier", carrier);
                 }
-            } else if (mConnectionType.equals(ConnectionType.WIFI)) {
-                WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-
-                if (wifiInfo != null) {
-                    // Get the SSID
-                    try {
-                        String initialSSID = wifiInfo.getSSID();
-                        if (initialSSID != null && !initialSSID.contains("<unknown ssid>")) {
-                            // Strip the quotes, if any
-                            String ssid = initialSSID.replace("\"", "");
-                            details.putString("ssid", ssid);
+                break;
+            case "wifi":
+                if (ContextCompat.checkSelfPermission(getReactContext(),
+                        Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+                    WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                    if (wifiInfo != null) {
+                        // Get the SSID
+                        try {
+                            String initialSSID = wifiInfo.getSSID();
+                            if (initialSSID != null && !initialSSID.contains("<unknown ssid>")) {
+                                // Strip the quotes, if any
+                                String ssid = initialSSID.replace("\"", "");
+                                details.putString("ssid", ssid);
+                            }
+                        } catch (Exception e) {
+                            // Ignore errors
                         }
-                    } catch (Exception e) {
-                        // Ignore errors
-                    }
 
-                    // Get/parse the wifi signal strength
-                    try {
-                        int signalStrength =
-                                WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 100);
-                        details.putInt("strength", signalStrength);
-                    } catch (Exception e) {
-                        // Ignore errors
-                    }
+                        // Get the BSSID
+                        try {
+                            String bssid = wifiInfo.getBSSID();
+                            if (bssid != null) {
+                                details.putString("bssid", bssid);
+                            }
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
 
-                    // Get the IP address
-                    try {
-                        byte[] ipAddressByteArray =
-                                BigInteger.valueOf(wifiInfo.getIpAddress()).toByteArray();
-                        NetInfoUtils.reverseByteArray(ipAddressByteArray);
-                        InetAddress inetAddress = InetAddress.getByAddress(ipAddressByteArray);
-                        String ipAddress = inetAddress.getHostAddress();
-                        details.putString("ipAddress", ipAddress);
-                    } catch (Exception e) {
-                        // Ignore errors
-                    }
 
-                    // Get the subnet mask
-                    try {
-                        byte[] ipAddressByteArray =
-                                BigInteger.valueOf(wifiInfo.getIpAddress()).toByteArray();
-                        NetInfoUtils.reverseByteArray(ipAddressByteArray);
-                        InetAddress inetAddress = InetAddress.getByAddress(ipAddressByteArray);
-                        NetworkInterface netAddress = NetworkInterface.getByInetAddress(inetAddress);
-                        int mask = 0xffffffff << (32 - netAddress.getInterfaceAddresses().get(1).getNetworkPrefixLength());
-                        String subnet = String.format("%d.%d.%d.%d", (mask >> 24 & 0xff), (mask >> 16 & 0xff), (mask >> 8 & 0xff), (mask & 0xff));
-                        details.putString("subnet", subnet);
-                    } catch (Exception e) {
-                        // Ignore errors
+                        // Get/parse the wifi signal strength
+                        try {
+                            int signalStrength =
+                                    WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 100);
+                            details.putInt("strength", signalStrength);
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get WiFi frequency
+                        try {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                                int frequency = wifiInfo.getFrequency();
+                                details.putInt("frequency", frequency);
+                            }
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get the IP address
+                        try {
+                            byte[] ipAddressByteArray =
+                                    BigInteger.valueOf(wifiInfo.getIpAddress()).toByteArray();
+                            NetInfoUtils.reverseByteArray(ipAddressByteArray);
+                            InetAddress inetAddress = InetAddress.getByAddress(ipAddressByteArray);
+                            String ipAddress = inetAddress.getHostAddress();
+                            details.putString("ipAddress", ipAddress);
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get the subnet mask
+                        try {
+                            byte[] ipAddressByteArray =
+                                    BigInteger.valueOf(wifiInfo.getIpAddress()).toByteArray();
+                            NetInfoUtils.reverseByteArray(ipAddressByteArray);
+                            InetAddress inetAddress = InetAddress.getByAddress(ipAddressByteArray);
+                            NetworkInterface netAddress =
+                                    NetworkInterface.getByInetAddress(inetAddress);
+                            int mask =
+                                    0xffffffff
+                                            << (32
+                                            - netAddress
+                                            .getInterfaceAddresses()
+                                            .get(1)
+                                            .getNetworkPrefixLength());
+                            String subnet =
+                                    String.format(
+                                            Locale.US,
+                                            "%d.%d.%d.%d",
+                                            (mask >> 24 & 0xff),
+                                            (mask >> 16 & 0xff),
+                                            (mask >> 8 & 0xff),
+                                            (mask & 0xff));
+                            details.putString("subnet", subnet);
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
                     }
                 }
-            }
+                break;
         }
-        event.putMap("details", details);
-
-        return event;
+        return details;
     }
 }

@@ -7,6 +7,7 @@
  */
 
 #import <React/UIView+React.h>
+#import <React/RCTPointerEvents.h>
 #import "RNSVGCGFCRule.h"
 #import "RNSVGSvgView.h"
 @class RNSVGGroup;
@@ -27,6 +28,7 @@ extern CGFloat const RNSVG_M_SQRT1_2l;
 extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 
 @property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *display;
 @property (nonatomic, assign) CGFloat opacity;
 @property (nonatomic, assign) RNSVGCGFCRule clipRule;
 @property (nonatomic, strong) NSString *clipPath;
@@ -34,7 +36,13 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 @property (nonatomic, strong) NSString *markerStart;
 @property (nonatomic, strong) NSString *markerMid;
 @property (nonatomic, strong) NSString *markerEnd;
+
+/**
+ * Used to control how touch events are processed.
+ */
+@property (nonatomic, assign) RCTPointerEvents pointerEvents;
 @property (nonatomic, assign) BOOL responsible;
+
 @property (nonatomic, assign) CGAffineTransform ctm;
 @property (nonatomic, assign) CGAffineTransform screenCTM;
 @property (nonatomic, assign) CGAffineTransform matrix;

@@ -1,22 +1,44 @@
-const prevaledNavigationData = require('./navigation-data');
 const packageVersion = require('../package.json').version;
+const prevaledNavigationData = require('./navigation-data');
 
-// Groups of sections
-// - Each section is a top-level folder within the version directory
-// - The groups of sections are expressed only below, there is no representation of them in the filesystem
+// Groups of sections: these groups are exclusively expressed below, there is no
+// representation of them in the filesystem!
+// Groups -> Sections -> Pages
 const GROUPS = {
-  'The Basics': ['Introduction', 'Get Started', 'Tutorial', 'Next Steps'],
-  'Managed Workflow': ['Fundamentals', 'Guides', 'Distributing Your App', 'ExpoKit'],
+  'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
+  'Managed Workflow': [
+    'Fundamentals',
+    'Push Notifications',
+    'Distributing Your App',
+    'Assorted Guides',
+    'Regulatory Compliance',
+  ],
+  Deprecated: ['ExpoKit'],
   'Bare Workflow': ['Essentials'],
-  'API Reference': ['Expo SDK', 'React Native'],
+  'Expo SDK': ['Expo SDK'],
+  'Configuration Files': ['Configuration Files'],
+  'React Native': ['React Native'],
+  Preview: ['Preview'],
+  Build: ['Build'],
 };
 
-// This array provides the ordering for pages within each section
+// This array provides the **ordering** for pages within each section
 const sections = [
   {
-    name: 'Introduction',
+    name: 'Preview',
+    reference: ['Introduction', 'Support and feedback'],
+  },
+  {
+    name: 'Build',
+    reference: ['Introduction', 'Setup', 'iOS', 'Android'],
+  },
+  {
+    name: 'Get Started',
+    reference: ['Installation', 'Create a new app'],
+  },
+  {
+    name: 'Conceptual Overview',
     reference: [
-      'What is Expo?',
       'Workflows',
       'Walkthrough',
       'Limitations',
@@ -25,13 +47,9 @@ const sections = [
     ],
   },
   {
-    name: 'Get Started',
-    reference: ['Installation', 'Create a new app'],
-  },
-  {
     name: 'Tutorial',
     reference: [
-      'Introduction',
+      'First steps',
       'Styling text',
       'Adding an image',
       'Creating a button',
@@ -39,6 +57,7 @@ const sections = [
       'Sharing the image',
       'Handling platform differences',
       'Configuring a splash screen and app icon',
+      'Errors and debugging',
       'Learning more',
     ],
   },
@@ -47,25 +66,40 @@ const sections = [
     reference: ['Using the documentation', 'Join the community', 'Additional resources'],
   },
   {
-    name: 'Guides',
+    name: 'Regulatory Compliance',
+    reference: ['Data Privacy & Protection', 'Privacy Shield', 'HIPAA', 'GDPR'],
+  },
+  {
+    name: 'Push Notifications',
     reference: [
-      'App Icons',
+      'Push Notifications Overview',
+      'Push Notifications Setup',
+      "Sending Notifications with Expo's Push API",
+      'Receiving Notifications',
+      'Using FCM for Push Notifications',
+    ],
+  },
+  {
+    name: 'Assorted Guides',
+    reference: [
       'Assets',
-      'Error Handling',
-      'Preloading & Caching Assets',
       'Icons',
-      'Custom Fonts',
       'Using Custom Fonts',
       'Routing & Navigation',
-      'Configuring StatusBar',
+      'Authentication',
+      'App Icons',
       'Create a Splash Screen',
-      'Offline Support',
+      'Configuring the Status Bar',
       'Configuring OTA Updates',
-      'Account Permissions',
-      'Push Notifications',
-      'Using FCM for Push Notifications',
+      'Preloading & Caching Assets',
+      'Offline Support',
+      'Progressive Web Apps',
+      'Customizing Metro',
+      'Customizing Webpack',
       'Notification Channels',
+      'Error Handling',
       'Testing with Jest',
+      'Account Permissions',
       'Using TypeScript',
       'Using Modern JavaScript',
       'Using ClojureScript',
@@ -75,6 +109,7 @@ const sections = [
       'Using Bugsnag',
       'User Interface Component Libraries',
       'Crafting Educational Materials',
+      'Custom Fonts',
     ],
   },
   {
@@ -82,15 +117,16 @@ const sections = [
     reference: [
       'Overview',
       'Building Standalone Apps',
-      'App signing',
+      'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
-      'Hosting An App on Your Servers',
+      'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',
       'Uploading Apps to the Apple App Store and Google Play',
       'App Transfers',
       'Security',
+      'Data and Privacy Protection',
     ],
   },
   {
@@ -110,16 +146,18 @@ const sections = [
       'Managed Workflow Walkthrough',
       'Up and Running',
       'Expo CLI',
+      'Using Libraries',
       'Viewing Logs',
-      'Debugging',
-      'Development Mode',
-      'Common Development Errors',
+      'Development and Production Mode',
       'iOS Simulator',
       'Android Studio Emulator',
-      'Configuration with app.json',
+      'Debugging',
+      'Common Development Errors',
+      'Configuration with app.json / app.config.js',
       'Publishing',
       'Release Channels',
       'Building Standalone Apps',
+      'Developing for Web',
       'Upgrading Expo SDK Walkthrough',
       'Linking',
       'How Expo Works',
@@ -133,12 +171,21 @@ const sections = [
     reference: [
       'Bare Workflow Walkthrough',
       'Up and Running',
+      'Using Libraries',
+      'Existing Apps',
+      'Installing react-native-unimodules',
+      'Installing expo-updates',
       'Supported Expo SDK APIs',
       'Using Expo client',
       'Using Expo for web',
       'Ejecting from Managed Workflow',
       'Migrating from ExpoKit',
+      'Updating your App',
     ],
+  },
+  {
+    name: 'Configuration Files',
+    reference: ['app.json / app.config.js', 'metro.config.js'],
   },
   {
     name: 'React Native',
@@ -185,6 +232,7 @@ const sections = [
       'SafeAreaView',
       'ScrollView',
       'SectionList',
+      'SegmentedControl',
       'SegmentedControlIOS',
       'Slider',
       'SnapshotViewIOS',
@@ -247,36 +295,42 @@ const sections = [
 // TODO(brentvatne): this doesn't make too much sense because of higher level groupings, should
 // move this logic to GROUPS instead
 const ROOT = [
-  'Introduction',
   'Get Started',
   'Tutorial',
+  'Conceptual Overview',
   'Fundamentals',
-  'Guides',
+  'Push Notifications',
   'Distributing Your App',
-  'ExpoKit',
+  'Regulatory Compliance',
+  'Assorted Guides',
   'Essentials',
+  'Configuration Files',
   'Expo SDK',
   'React Native',
+  'ExpoKit',
 ];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
 
-  let subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
+  const subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
 
   arr.forEach(category => {
     category.weight = reference.indexOf(category.name) * -1;
   });
 
-  let arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
-  return subSort(arrSortedByWeight, arrSortedByWeight.findIndex(o => o.weight === 1));
+  const arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
+  return subSort(
+    arrSortedByWeight,
+    arrSortedByWeight.findIndex(o => o.weight === 1)
+  );
 };
 
 const sortNav = nav => {
   nav = sortAccordingToReference(nav, ROOT);
 
   sections.forEach(({ name, reference }) => {
-    let section = nav.find(o => {
+    const section = nav.find(o => {
       return o.name.toLowerCase() === name.toLowerCase();
     });
     if (section) {
@@ -294,28 +348,14 @@ function getGroupForSectionName(sectionName) {
 
 // Yikes, this groups together multiple sections under one heading
 const groupNav = nav => {
-  let sections = [];
-  let groupNameToSectionIndex = {};
+  const sections = [];
+  const groupNameToSectionIndex = {};
   nav.forEach(section => {
-    // This moves the "Overview" post to the top of the Expo SDK section
-    if (section.name === 'Expo SDK') {
-      let overview;
-      section.posts.forEach(post => {
-        if (post.name === 'Overview') {
-          overview = post;
-        }
-      });
-      if (overview) {
-        section.posts.splice(section.posts.indexOf(overview), 1);
-        section.posts.unshift(overview);
-      }
-    }
-
     // If it's grouped then we add it
-    let groupName = getGroupForSectionName(section.name);
+    const groupName = getGroupForSectionName(section.name);
     if (groupName) {
       if (groupNameToSectionIndex.hasOwnProperty(groupName)) {
-        let existingSectionIndex = groupNameToSectionIndex[groupName];
+        const existingSectionIndex = groupNameToSectionIndex[groupName];
         sections[existingSectionIndex].children.push(section);
       } else {
         groupNameToSectionIndex[groupName] = sections.length;
@@ -333,10 +373,22 @@ const groupNav = nav => {
   return sections;
 };
 
-const sortedNavigation = Object.assign(
-  ...Object.entries(prevaledNavigationData).map(([version, versionNavigation]) => ({
+const sortedReference = Object.assign(
+  ...Object.entries(prevaledNavigationData.reference).map(([version, versionNavigation]) => ({
     [version]: groupNav(sortNav(versionNavigation)),
   }))
 );
 
-module.exports = { ...sortedNavigation, latest: sortedNavigation['v' + packageVersion] };
+const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
+const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
+const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
+
+module.exports = {
+  generalDirectories: prevaledNavigationData.generalDirectories,
+  startingDirectories: prevaledNavigationData.startingDirectories,
+  previewDirectories: prevaledNavigationData.previewDirectories,
+  starting: sortedStarting,
+  general: sortedGeneral,
+  preview: sortedPreview,
+  reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
+};

@@ -49,7 +49,8 @@ public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule {
   @Override
   public void deactivate(final String tag, final Runnable done) throws CurrentActivityNotFoundException {
     final Activity activity = getCurrentActivity();
-    if (isActivated() && activity != null) {
+
+    if (mTags.size() == 1 && mTags.contains(tag) && activity != null) {
       activity.runOnUiThread(() -> activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
     }
     mTags.remove(tag);

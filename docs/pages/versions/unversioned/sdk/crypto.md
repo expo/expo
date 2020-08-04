@@ -3,23 +3,21 @@ title: Crypto
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-crypto`** enables you to hash (encrypt) data in an equivalent manner to the `Node.js` core `crypto` API.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-crypto`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
+<InstallSection packageName="expo-crypto" />
 
 ## Usage
 
-<SnackInline label='Basic Crypto usage' templateId='crypto' dependencies={['expo-crypto']}>
+<SnackInline label='Basic Crypto usage' dependencies={['expo-crypto']}>
 
 ```js
 import React, { useEffect } from 'react';
@@ -28,14 +26,14 @@ import * as Crypto from 'expo-crypto';
 
 export default function App() {
   useEffect(() => {
-    (async () => {
+    async function runCrypto() {
       const digest = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
         'Github stars are neat 🌟'
       );
       console.log('Digest: ', digest);
       /* Some crypto operation... */
-    })();
+    }
     runCrypto();
   }, []);
 
@@ -121,8 +119,8 @@ const digest = await Crypto.digestStringAsync(
 | [SHA256][sha-def] | string | `256` bits  | ✅                  | ✅     | ✅         | ✅     |
 | [SHA384][sha-def] | string | `384` bits  | ✅                  | ✅     | ✅         | ✅     |
 | [SHA512][sha-def] | string | `512` bits  | ✅                  | ✅     | ✅         | ✅     |
-| MD2               | string | `128` bits  | ❌                  | ✅     | ✅         | ❌     |
-| MD4               | string | `128` bits  | ❌                  | ✅     | ✅         | ❌     |
+| MD2               | string | `128` bits  | ❌                  | ✅     | ❌         | ❌     |
+| MD4               | string | `128` bits  | ❌                  | ✅     | ❌         | ❌     |
 | MD5               | string | `128` bits  | ❌                  | ✅     | ✅         | ❌     |
 
 ### `CryptoEncoding`

@@ -4,11 +4,11 @@
 #import "EXReactAppManager.h"
 #import "EXAppLoader.h"
 
-#import <EXAppLoaderProvider/EXAppRecordInterface.h>
+#import <UMAppLoader/UMAppRecordInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXHeadlessAppRecord : EXKernelAppRecord <EXAppRecordInterface, EXReactAppManagerUIDelegate, EXAppLoaderDelegate>
+@interface EXHeadlessAppRecord : EXKernelAppRecord <UMAppRecordInterface, EXReactAppManagerUIDelegate, EXAppLoaderDelegate>
 
 - (nonnull instancetype)initWithManifestUrl:(NSURL *)manifestUrl
                                    callback:(void(^)(BOOL success, NSError * _Nullable error))callback;

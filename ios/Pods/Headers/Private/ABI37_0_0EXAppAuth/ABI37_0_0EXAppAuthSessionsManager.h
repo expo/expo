@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/EXAppAuth/ABI37_0_0EXAppAuth/ABI37_0_0EXAppAuthSessionsManager.h

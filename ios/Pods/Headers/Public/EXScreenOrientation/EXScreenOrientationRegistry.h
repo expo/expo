@@ -1,0 +1,1 @@
+../../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h

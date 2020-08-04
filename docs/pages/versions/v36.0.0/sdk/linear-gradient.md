@@ -3,27 +3,68 @@ title: LinearGradient
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-linear-gradient'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
+
 **`expo-linear-gradient`** provides a React component that renders a gradient view.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-linear-gradient`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-linear-gradient).
+<InstallSection packageName="expo-linear-gradient" />
 
 ## Usage
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+<SnackInline label='Linear Gradient' dependencies={['expo-linear-gradient']}>
 
-<SnackEmbed snackId="@charliecruzan/lineargradientexample" />
+```js
+import React from 'react';
+import { Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-<br />
+export default class FacebookButton extends React.Component {
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'orange',
+        }}>
+        // Background Linear Gradient
+        <LinearGradient
+          colors={['rgba(0,0,0,0.8)', 'transparent']}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: 300,
+          }}
+        />
+        // Button Linear Gradient
+        <LinearGradient
+          colors={['#4c669f', '#3b5998', '#192f6a']}
+          style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
+          <Text
+            style={{
+              backgroundColor: 'transparent',
+              fontSize: 15,
+              color: '#fff',
+            }}>
+            Sign in with Facebook
+          </Text>
+        </LinearGradient>
+      </View>
+    );
+  }
+}
+```
 
-<SnackEmbed snackId="@charliecruzan/lineargradienttransparencyexample" />
+</SnackInline>
 
 ## API
 

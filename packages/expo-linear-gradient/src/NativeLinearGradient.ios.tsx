@@ -1,20 +1,10 @@
-import React from 'react';
-import { View } from 'react-native';
 import { requireNativeViewManager } from '@unimodules/core';
+import * as React from 'react';
 
-type Props = {
-  colors: number[];
-  locations?: number[] | null;
-  startPoint?: Point | null;
-  endPoint?: Point | null;
-} & React.ComponentProps<typeof View>;
+import { NativeLinearGradientProps } from './NativeLinearGradient.types';
 
-type Point = [number, number];
+const NativeLinearGradient = requireNativeViewManager('ExpoLinearGradient') as React.FC<
+  NativeLinearGradientProps
+>;
 
-export default class NativeLinearGradient extends React.PureComponent<Props> {
-  render() {
-    return <BaseNativeLinearGradient {...this.props} />;
-  }
-}
-
-const BaseNativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');
+export default NativeLinearGradient;

@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A32D43EBCF99FD321A125D74024783F /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D84A22398483FCF1B870C8D1569D7E5 /* EXLocalization.m */; };
-		A6B7B6845DAC372B97E51258E0F5FD54 /* EXLocalization-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E5DEDC6723AB11C276776F7E84EC919 /* EXLocalization-dummy.m */; };
-		EF9F7CD893EB2A2EFD3188F1A62CB412 /* EXLocalization.h in Headers */ = {isa = PBXBuildFile; fileRef = 39480747FF123AF7C24EFFF260569040 /* EXLocalization.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		401B44021D0FCDAAE9C58257D3628692 /* EXLocalization-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F938B82CF0A996F9F1B32FD35ABE71C /* EXLocalization-dummy.m */; };
+		B3C0E849A2C068733DFD8653C7472CD7 /* EXLocalization.h in Headers */ = {isa = PBXBuildFile; fileRef = 45E66F1F7A9B12CC13C78CFE6880EB77 /* EXLocalization.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D435C48C963DFB69F42B548F78930D37 /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = F1E7640A96378320A4FB0541F81B7B59 /* EXLocalization.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1D9AB10DBDF84673A446880E5A279CBB /* PBXContainerItemProxy */ = {
+		4795083F48286209BCC2F94C9819C6ED /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 778B65EAF31FB30C54A4915BA6DF7A4B /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -23,18 +23,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1D84A22398483FCF1B870C8D1569D7E5 /* EXLocalization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocalization.m; path = EXLocalization/EXLocalization.m; sourceTree = "<group>"; };
-		39480747FF123AF7C24EFFF260569040 /* EXLocalization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocalization.h; path = EXLocalization/EXLocalization.h; sourceTree = "<group>"; };
+		21507C858ECA4C75DCFA167A296C5FCB /* EXLocalization-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocalization-prefix.pch"; sourceTree = "<group>"; };
+		2312154BD5E69BC7DEE067E8EAEB7896 /* EXLocalization.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalization.release.xcconfig; sourceTree = "<group>"; };
+		3F938B82CF0A996F9F1B32FD35ABE71C /* EXLocalization-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocalization-dummy.m"; sourceTree = "<group>"; };
+		45E66F1F7A9B12CC13C78CFE6880EB77 /* EXLocalization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocalization.h; path = EXLocalization/EXLocalization.h; sourceTree = "<group>"; };
 		778B65EAF31FB30C54A4915BA6DF7A4B /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		7E5DEDC6723AB11C276776F7E84EC919 /* EXLocalization-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocalization-dummy.m"; sourceTree = "<group>"; };
+		8B0967CDBD4601ED329F55AE2C050E5D /* EXLocalization.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalization.debug.xcconfig; sourceTree = "<group>"; };
 		99AD99F330D065450E0AE14D824F6CCF /* libEXLocalization.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXLocalization.a; path = libEXLocalization.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A9BC1DCE8A1FB90C009E9C006314B7C3 /* EXLocalization-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocalization-prefix.pch"; sourceTree = "<group>"; };
-		B22703C06AA6D50A189D2BD67A62C897 /* EXLocalization.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalization.xcconfig; sourceTree = "<group>"; };
-		CD02A8F1D0B07A4D5F288B5BB33343CF /* EXLocalization.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocalization.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C3E6E2397D5C27CF06F1DD6A28A7F100 /* EXLocalization.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocalization.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F1E7640A96378320A4FB0541F81B7B59 /* EXLocalization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocalization.m; path = EXLocalization/EXLocalization.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		812D83FE14D78DE95299C3520DCF78A7 /* Frameworks */ = {
+		7F036A199AD53CC70F2784704318CE51 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -48,21 +49,10 @@
 			isa = PBXGroup;
 			children = (
 				E97C859B523FB373B190E539622A6F7D /* Dependencies */,
-				FC13E0347E7226E307253A997D79D0EC /* EXLocalization */,
+				DF0F6177101710E166DA474E45B382FA /* EXLocalization */,
 				811F5E4566E211E9921D139CE2BEE091 /* Frameworks */,
 				9ABA14A7EACA3D94D93E0C3CBE17214F /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		4FC4010C1DE0CB5B1CA617215D1CCBE4 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				B22703C06AA6D50A189D2BD67A62C897 /* EXLocalization.xcconfig */,
-				7E5DEDC6723AB11C276776F7E84EC919 /* EXLocalization-dummy.m */,
-				A9BC1DCE8A1FB90C009E9C006314B7C3 /* EXLocalization-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXLocalization";
 			sourceTree = "<group>";
 		};
 		811F5E4566E211E9921D139CE2BEE091 /* Frameworks */ = {
@@ -80,12 +70,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AEBCD21211C8B19CFA79E904C40CFF00 /* Pod */ = {
+		DF0F6177101710E166DA474E45B382FA /* EXLocalization */ = {
 			isa = PBXGroup;
 			children = (
-				CD02A8F1D0B07A4D5F288B5BB33343CF /* EXLocalization.podspec */,
+				45E66F1F7A9B12CC13C78CFE6880EB77 /* EXLocalization.h */,
+				F1E7640A96378320A4FB0541F81B7B59 /* EXLocalization.m */,
+				FDF1C0B7333D23FF85288CAC74E6A8DC /* Pod */,
+				FC6D72A3EC12BBEC722917A62F73D773 /* Support Files */,
 			);
-			name = Pod;
+			name = EXLocalization;
+			path = "../../../../packages/expo-localization/ios";
 			sourceTree = "<group>";
 		};
 		E97C859B523FB373B190E539622A6F7D /* Dependencies */ = {
@@ -96,26 +90,34 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		FC13E0347E7226E307253A997D79D0EC /* EXLocalization */ = {
+		FC6D72A3EC12BBEC722917A62F73D773 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				39480747FF123AF7C24EFFF260569040 /* EXLocalization.h */,
-				1D84A22398483FCF1B870C8D1569D7E5 /* EXLocalization.m */,
-				AEBCD21211C8B19CFA79E904C40CFF00 /* Pod */,
-				4FC4010C1DE0CB5B1CA617215D1CCBE4 /* Support Files */,
+				3F938B82CF0A996F9F1B32FD35ABE71C /* EXLocalization-dummy.m */,
+				21507C858ECA4C75DCFA167A296C5FCB /* EXLocalization-prefix.pch */,
+				8B0967CDBD4601ED329F55AE2C050E5D /* EXLocalization.debug.xcconfig */,
+				2312154BD5E69BC7DEE067E8EAEB7896 /* EXLocalization.release.xcconfig */,
 			);
-			name = EXLocalization;
-			path = "../../../../packages/expo-localization/ios";
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXLocalization";
+			sourceTree = "<group>";
+		};
+		FDF1C0B7333D23FF85288CAC74E6A8DC /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				C3E6E2397D5C27CF06F1DD6A28A7F100 /* EXLocalization.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		5328244C26E5D31B7A75D664C1D0759F /* Headers */ = {
+		5B107C8A9AE10E2732B08B4C36142C02 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF9F7CD893EB2A2EFD3188F1A62CB412 /* EXLocalization.h in Headers */,
+				B3C0E849A2C068733DFD8653C7472CD7 /* EXLocalization.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		55C7C51CE4B49B971674C896CB1DC301 /* EXLocalization */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3725D11B4D31D9BB4295554931BAC696 /* Build configuration list for PBXNativeTarget "EXLocalization" */;
+			buildConfigurationList = EA553291441334C476BE89C56426AD15 /* Build configuration list for PBXNativeTarget "EXLocalization" */;
 			buildPhases = (
-				5328244C26E5D31B7A75D664C1D0759F /* Headers */,
-				755470D4CE5B4E1A633B95B8F9B7617D /* Sources */,
-				812D83FE14D78DE95299C3520DCF78A7 /* Frameworks */,
+				5B107C8A9AE10E2732B08B4C36142C02 /* Headers */,
+				BD9E8D36FB2F42B4D5388D6A88E2D9C7 /* Sources */,
+				7F036A199AD53CC70F2784704318CE51 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B13DF77DA2A1DFE1DF25B0806E5E3489 /* PBXTargetDependency */,
+				2EAE1A5A6EE02F90701E49F647C68170 /* PBXTargetDependency */,
 			);
 			name = EXLocalization;
 			productName = EXLocalization;
@@ -173,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		755470D4CE5B4E1A633B95B8F9B7617D /* Sources */ = {
+		BD9E8D36FB2F42B4D5388D6A88E2D9C7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A6B7B6845DAC372B97E51258E0F5FD54 /* EXLocalization-dummy.m in Sources */,
-				0A32D43EBCF99FD321A125D74024783F /* EXLocalization.m in Sources */,
+				401B44021D0FCDAAE9C58257D3628692 /* EXLocalization-dummy.m in Sources */,
+				D435C48C963DFB69F42B548F78930D37 /* EXLocalization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		B13DF77DA2A1DFE1DF25B0806E5E3489 /* PBXTargetDependency */ = {
+		2EAE1A5A6EE02F90701E49F647C68170 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 1D9AB10DBDF84673A446880E5A279CBB /* PBXContainerItemProxy */;
+			targetProxy = 4795083F48286209BCC2F94C9819C6ED /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -253,9 +255,9 @@
 			};
 			name = Release;
 		};
-		520EB3F5080A8E79E6A33090F83F884A /* Release */ = {
+		0CDA427C6FFCE56A5624BA07CF721B88 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B22703C06AA6D50A189D2BD67A62C897 /* EXLocalization.xcconfig */;
+			baseConfigurationReference = 8B0967CDBD4601ED329F55AE2C050E5D /* EXLocalization.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -273,6 +275,32 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		35F6E70812A7F4FEC9B1FC8D16A8CEFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2312154BD5E69BC7DEE067E8EAEB7896 /* EXLocalization.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLocalization/EXLocalization-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLocalization;
+				PRODUCT_NAME = EXLocalization;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -342,47 +370,23 @@
 			};
 			name = Debug;
 		};
-		C96EBD3714339EBB0580A342BB299B99 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B22703C06AA6D50A189D2BD67A62C897 /* EXLocalization.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXLocalization/EXLocalization-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLocalization;
-				PRODUCT_NAME = EXLocalization;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3725D11B4D31D9BB4295554931BAC696 /* Build configuration list for PBXNativeTarget "EXLocalization" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C96EBD3714339EBB0580A342BB299B99 /* Debug */,
-				520EB3F5080A8E79E6A33090F83F884A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		CB49B987196276AD3217CFE0625F96F0 /* Build configuration list for PBXProject "EXLocalization" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C42A429807184871421575264DD3249A /* Debug */,
 				097A0C34EBC2A0A9A70452A5F02F3EE9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EA553291441334C476BE89C56426AD15 /* Build configuration list for PBXNativeTarget "EXLocalization" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CDA427C6FFCE56A5624BA07CF721B88 /* Debug */,
+				35F6E70812A7F4FEC9B1FC8D16A8CEFB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

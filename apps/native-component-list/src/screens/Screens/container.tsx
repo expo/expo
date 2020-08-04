@@ -1,6 +1,5 @@
 import React from 'react';
-
-import { StyleSheet, Button, View, TextInput } from 'react-native';
+import { Button, StyleSheet, TextInput, View } from 'react-native';
 import { Screen, ScreenContainer } from 'react-native-screens';
 
 export class LazyTabs extends React.Component<{ renderScreen: (key: string) => JSX.Element }> {

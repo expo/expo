@@ -42,14 +42,13 @@ injectGlobal`
 `;
 
 const STYLES_CONTAINER = css`
-  max-width: 1440px;
   width: 100%;
   height: 100vh;
   overflow; hidden;
   margin: 0 auto 0 auto;
   border-left: 1px solid ${Constants.colors.border};
   border-right: 1px solid ${Constants.colors.border};
-  background: ${Constants.colors.white};
+  background: #f9f9f9;
 
   display: flex;
   align-items: center;
@@ -68,14 +67,32 @@ const STYLES_CONTAINER = css`
 `;
 
 const STYLES_HEADER = css`
-  border-bottom: 1px solid ${Constants.colors.border};
+  background: #fff;
   flex-shrink: 0;
   width: 100%;
+
+  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    position: sticky;
+    top: -57px;
+    z-index: 3;
+  }
+`;
+
+const SHOW_SEARCH_AND_MENU = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    top: 0px;
+  }
 `;
 
 const STYLES_CONTENT = css`
   display: flex;
   align-items: flex-start;
+  max-width: 1440px;
+  margin: 0 auto;
   justify-content: space-between;
   width: 100%;
   height: 100%;
@@ -87,8 +104,9 @@ const STYLES_CONTENT = css`
 `;
 
 const STYLES_LEFT = css`
+  scrollbar-color: red white;
   flex-shrink: 0;
-  border-right: 1px solid ${Constants.colors.border};
+  // border-right: 1px solid ${Constants.colors.border};
   max-width: 280px;
   height: 100%;
   overflow: hidden;
@@ -104,6 +122,7 @@ const STYLES_LEFT = css`
 `;
 
 const STYLES_RIGHT = css`
+  background: #fff;
   min-width: 5%;
   width: 100%;
   height: 100%;
@@ -182,19 +201,24 @@ export default class DocumentationNestedScrollLayout extends React.Component {
   };
 
   render() {
+    if (this.props.isMenuActive) {
+      window.scrollTo(0, 0);
+    }
     return (
       <div className={STYLES_CONTAINER}>
-        <div className={STYLES_HEADER}>{this.props.header}</div>
+        <div
+          className={`${STYLES_HEADER} ${(this.props.isMobileSearchActive ||
+            this.props.isMenuActive) &&
+            SHOW_SEARCH_AND_MENU}`}>
+          {this.props.header}
+        </div>
         <div className={STYLES_CONTENT}>
-          {!this.props.isMenuActive ? (
-            <div className={STYLES_LEFT}>
-              <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
-                {this.props.sidebar}
-              </ScrollContainer>
-            </div>
-          ) : (
-            undefined
-          )}
+          <div className={STYLES_LEFT}>
+            <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
+              {this.props.sidebar}
+            </ScrollContainer>
+          </div>
+
           <div className={STYLES_RIGHT}>
             <ScrollContainer>{this.props.children}</ScrollContainer>
           </div>

@@ -1,0 +1,22 @@
+{
+  "name": "react-native-appearance",
+  "version": "0.3.4",
+  "summary": "Polyfill for `Appearance` API which will be available in `react-native@0.62`.",
+  "license": "MIT",
+  "authors": "Brent Vatne <brent@expo.io>",
+  "homepage": "https://github.com/expo/react-native-appearance#readme",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source": {
+    "git": "https://github.com/expo/react-native-appearance.git",
+    "tag": "v0.3.4"
+  },
+  "source_files": "ios/**/*.{h,m}",
+  "dependencies": {
+    "React": [
+
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/EXGoogleSignIn/ABI37_0_0EXGoogleSignIn/ABI37_0_0EXGoogleSignIn+Serialization.h

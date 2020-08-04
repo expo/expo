@@ -8,12 +8,11 @@ export default class AdTriggerView extends React.Component {
         this._trigger = null;
     }
     render() {
-        return (<AdTriggerViewContext.Consumer>
-        {(contextValue) => {
-            let context = nullthrows(contextValue);
+        return (React.createElement(AdTriggerViewContext.Consumer, null, (contextValue) => {
+            const context = nullthrows(contextValue);
             // Compute the context-dependent props to pass to the interactive component
-            let forwardedProps = this._getForwardedProps();
-            let props = Object.assign({}, forwardedProps, {
+            const forwardedProps = this._getForwardedProps();
+            const props = Object.assign({}, forwardedProps, {
                 // Register the trigger component with the ad manager when it is mounted and unmounted
                 ref: (component) => {
                     if (component) {
@@ -36,20 +35,19 @@ export default class AdTriggerView extends React.Component {
             return this.props.renderInteractiveComponent
                 ? this.props.renderInteractiveComponent(props)
                 : this._renderDefaultInteractiveComponent(props);
-        }}
-      </AdTriggerViewContext.Consumer>);
+        }));
     }
     // NOTE: This is a helper method to extract the props to forward to the interactive component
     // because TypeScript does not currently support rest objects with generic types in some cases,
     // hence the type assertions
     _getForwardedProps() {
-        let { renderInteractiveComponent, ...props } = this.props;
+        const { renderInteractiveComponent, ...props } = this.props;
         return props;
     }
     // TODO: change from TouchableOpacity to a Gesture Handler BorderlessButton
     _renderDefaultInteractiveComponent(props) {
         // @ts-ignore: the RN TypeScript declarations are missing the "collapsable" prop
-        return <TouchableOpacity {...props} collapsable={false}/>;
+        return React.createElement(TouchableOpacity, Object.assign({}, props, { collapsable: false }));
     }
 }
 //# sourceMappingURL=AdTriggerView.js.map

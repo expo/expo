@@ -3,19 +3,37 @@ title: Permissions
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-permissions'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 When it comes to adding functionality that can access potentially sensitive information on a user's device, such as their location, or possibly send them possibly unwanted push notifications, you will need to ask the user for their permission first. Unless you've already asked their permission, then no need. And so we have the **`expo-permissions`** module.
 
 If you are deploying your app to the Apple iTunes Store, you must add additional metadata to your app in order to customize the system permissions dialog, and more importantly, explain why your app requires permissions. **Without this explanation, your app may be rejected from the App Store.** See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-permissions`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-permissions).
+<InstallSection packageName="expo-permissions" />
+
+### Usage in bare workflow
+
+`expo-permissions` includes the shared infrastructure for handling system permissions, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
+
+The following table shows you which permissions correspond to which packages.
+
+| Permission type             | Packages                                  |
+| --------------------------- | ----------------------------------------- |
+| `NOTIFICATIONS`             | `expo-permissions`                        |
+| `USER_FACING_NOTIFICATIONS` | `expo-permissions`                        |
+| `LOCATION`                  | `expo-location`                           |
+| `CAMERA`                    | `expo-camera`, `expo-barcode-scanner`     |
+| `AUDIO_RECORDING`           | `expo-av`                                 |
+| `CONTACTS`                  | `expo-contacts`                           |
+| `CAMERA_ROLL`               | `expo-image-picker`, `expo-media-library` |
+| `CALENDAR`                  | `expo-calendar`                           |
+| `REMINDERS`                 | `expo-calendar`                           |
+| `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
 
 ## Usage
 
@@ -85,7 +103,7 @@ async function checkMultiPermissions() {
     Permissions.CONTACTS
   );
   if (status !== 'granted') {
-    alert('Hey! You heve not enabled selected permissions');
+    alert('Hey! You have not enabled selected permissions');
   }
 }
 ```
@@ -141,6 +159,8 @@ The permission type for user-facing notifications. This does **not** register yo
 The permission type for location access.
 
 <!-- TODO: Permissions.LOCATION issue (search by this phrase) -->
+
+> **Note:** If your app is being launched on Android 10 or newer, permission will be treated as granted only when user accepted it for backgrounded app. To check whether permission is granted for when app is in use, use `foregroundGranted`.
 
 > **Note:** iOS is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
 > On iOS ask for this permission type individually.

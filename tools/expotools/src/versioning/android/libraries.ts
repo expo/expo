@@ -40,4 +40,4 @@ export const getJavaPackagesToRename = async () => {
     'utf8'
   );
   return packagesToRename.split('\n').filter((p: string) => !!p);
-}
+};

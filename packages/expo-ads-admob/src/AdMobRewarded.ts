@@ -1,7 +1,7 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 
-import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 import { setTestDeviceIDAsync } from './AdMob';
+import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 
 const moduleName = 'AdMobRewarded';
 

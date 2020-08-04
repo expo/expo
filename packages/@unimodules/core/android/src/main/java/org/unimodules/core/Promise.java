@@ -2,14 +2,15 @@ package org.unimodules.core;
 
 import org.unimodules.core.interfaces.CodedThrowable;
 
-public abstract class Promise {
-  private static String UNKNOWN_ERROR = "E_UNKNOWN_ERROR";
+public interface Promise {
+  String UNKNOWN_ERROR = "E_UNKNOWN_ERROR";
 
-  public abstract void resolve(Object value);
-  public abstract void reject(String code, String message, Throwable e);
+  void resolve(Object value);
+
+  void reject(String code, String message, Throwable e);
 
   // Obsolete methods, however nice-to-have when porting React Native modules to Expo modules.
-  public void reject(Throwable e) {
+  default void reject(Throwable e) {
     if (e instanceof CodedThrowable) {
       CodedThrowable codedThrowable = (CodedThrowable) e;
       reject(codedThrowable.getCode(), codedThrowable.getMessage(), e);
@@ -17,10 +18,12 @@ public abstract class Promise {
       reject(UNKNOWN_ERROR, e);
     }
   }
-  public void reject(String code, String message) {
+
+  default void reject(String code, String message) {
     reject(code, message, null);
   }
-  public void reject(String code, Throwable e) {
+
+  default void reject(String code, Throwable e) {
     reject(code, e.getMessage(), e);
   }
 }

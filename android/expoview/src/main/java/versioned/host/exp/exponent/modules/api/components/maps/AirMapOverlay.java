@@ -50,12 +50,12 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     }
   }
 
-  // public void setTransparency(float transparency) {
-  //     this.transparency = transparency;
-  //     if (groundOverlay != null) {
-  //         groundOverlay.setTransparency(transparency);
-  //     }
-  // }
+  public void setTransparency(float transparency) {
+      this.transparency = transparency;
+      if (groundOverlay != null) {
+          groundOverlay.setTransparency(transparency);
+      }
+  }
 
   public void setImage(String uri) {
     this.mImageReader.setImage(uri);
@@ -138,6 +138,7 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     if (this.groundOverlay != null) {
       this.groundOverlay.setVisible(true);
       this.groundOverlay.setImage(this.iconBitmapDescriptor);
+      this.groundOverlay.setTransparency(this.transparency);
       this.groundOverlay.setClickable(this.tappable);
     }
   }

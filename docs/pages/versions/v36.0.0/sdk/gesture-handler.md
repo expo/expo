@@ -3,19 +3,18 @@ title: GestureHandler
 sourceCodeUrl: 'https://github.com/kmagiera/react-native-gesture-handler'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 An API for handling complex gestures. From the project's README:
 
 > This library provides an API that exposes mobile platform specific native capabilities of touch & gesture handling and recognition. It allows for defining complex gesture handling and recognition logic that runs 100% in native thread and is therefore deterministic.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-gesture-handler`. In bare apps, also follow the [react-native-gesture-handler linking and configuration instructions](https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html).
+<InstallSection packageName="react-native-gesture-handler" href="https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html" />
 
 ## API
 

@@ -25,7 +25,7 @@ function githubUrl(path) {
     } else {
       path = path.replace('/versions/latest/', '/versions/unversioned/');
     }
-  } else if (path.match(/v\d+\.\d+\.\d+\/?$/)) {
+  } else if (path.match(/v\d+\.\d+\.\d+\/?$/) || path === '/') {
     if (path[path.length - 1] === '/') {
       path = `${path}index`;
     } else {
@@ -89,12 +89,9 @@ export default class DocumentationFooter extends React.PureComponent {
     }
 
     return (
-      <a
-        className={STYLES_FOOTER_LINK}
-        target="_blank"
-        href={`${this.props.sourceCodeUrl}`}>
+      <a className={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
         View source code for {this.props.title}
       </a>
     );
-  }
+  };
 }

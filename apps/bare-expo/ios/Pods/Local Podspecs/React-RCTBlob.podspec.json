@@ -1,40 +1,52 @@
 {
   "name": "React-RCTBlob",
-  "version": "0.61.4",
+  "version": "0.63.2",
   "summary": "An API for displaying iOS action sheets and share sheets.",
-  "homepage": "http://facebook.github.io/react-native/",
+  "homepage": "https://reactnative.dev/",
   "license": "MIT",
   "authors": "Facebook, Inc. and its affiliates",
   "platforms": {
-    "ios": "9.0",
-    "tvos": "9.2"
+    "ios": "10.0",
+    "tvos": "10.0"
   },
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness",
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.4"
+    "tag": "v0.63.2"
   },
-  "source_files": [
-    "*.{m,mm}",
-    "RCTBlobCollector.h"
-  ],
+  "source_files": "*.{m,mm}",
   "preserve_paths": [
     "package.json",
     "LICENSE",
     "LICENSE-docs"
   ],
   "header_dir": "RCTBlob",
+  "pod_target_xcconfig": {
+    "USE_HEADERMAP": "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++14",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Folly\""
+  },
   "dependencies": {
-    "React-Core/RCTBlobHeaders": [
-      "0.61.4"
+    "Folly": [
+      "2020.01.13.00"
     ],
-    "React-Core/RCTWebSocket": [
-      "0.61.4"
+    "FBReactNativeSpec": [
+      "0.63.2"
     ],
-    "React-RCTNetwork": [
-      "0.61.4"
+    "ReactCommon/turbomodule/core": [
+      "0.63.2"
     ],
     "React-jsi": [
-      "0.61.4"
+      "0.63.2"
+    ],
+    "React-Core/RCTBlobHeaders": [
+      "0.63.2"
+    ],
+    "React-Core/RCTWebSocket": [
+      "0.63.2"
+    ],
+    "React-RCTNetwork": [
+      "0.63.2"
     ]
   }
 }

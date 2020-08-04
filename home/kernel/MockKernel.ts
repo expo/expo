@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const STORAGE_PREFIX = '@@expo@@';
 
@@ -12,7 +12,13 @@ const STORAGE_PREFIX = '@@expo@@';
 export default {
   sdkVersions: [] as string[],
 
-  async doesCurrentTaskEnableDevtools(): Promise<boolean> {
+  async getDevMenuSettingsAsync(): Promise<null> {
+    return null;
+  },
+
+  async setDevMenuSettingAsync(key: string, value: any): Promise<void> {},
+
+  async doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
     return false;
   },
 
@@ -20,24 +26,26 @@ export default {
     return {};
   },
 
-  selectDevMenuItemWithKey(_key: string): void {},
-  selectRefresh(): void {},
-  selectCloseMenu(): void {},
-  selectGoToHome(): void {},
+  async selectDevMenuItemWithKeyAsync(_key: string): Promise<void> {},
+
+  async reloadAppAsync(): Promise<void> {},
+
+  async closeDevMenuAsync(): Promise<void> {},
+
+  async goToHomeAsync(): Promise<void> {},
+
   selectQRReader(): void {},
 
-  async setIsLegacyMenuBehaviorEnabledAsync(_enabled: boolean): Promise<void> {},
-
-  async getIsNuxFinishedAsync(): Promise<boolean> {
-    const item = await AsyncStorage.getItem(`${STORAGE_PREFIX}:nux`);
+  async getIsOnboardingFinishedAsync(): Promise<boolean> {
+    const item = await AsyncStorage.getItem(`${STORAGE_PREFIX}:onboarding`);
     return !!item;
   },
 
-  async setIsNuxFinishedAsync(finished: boolean): Promise<void> {
+  async setIsOnboardingFinishedAsync(finished: boolean): Promise<void> {
     if (finished) {
-      await AsyncStorage.setItem(`${STORAGE_PREFIX}:nux`, '1');
+      await AsyncStorage.setItem(`${STORAGE_PREFIX}:onboarding`, '1');
     } else {
-      await AsyncStorage.removeItem(`${STORAGE_PREFIX}:nux`);
+      await AsyncStorage.removeItem(`${STORAGE_PREFIX}:onboarding`);
     }
   },
 

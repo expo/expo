@@ -86,7 +86,7 @@ describe(`asserting`, () => {
 });
 
 describe('logging', () => {
-  let data = ['hi', { a: 'b' }, [1, 2], null, false];
+  const data = ['hi', { a: 'b' }, [1, 2], null, false];
 
   it(`logs debug data at the "info" level`, () => {
     console.debug(...data);
@@ -238,7 +238,7 @@ describe('grouping', () => {
   function _expectGroupDepthToBe(depth) {
     expect(RemoteLogging.enqueueRemoteLogAsync).toHaveBeenCalled();
 
-    let calls = (RemoteLogging.enqueueRemoteLogAsync as jest.Mock).mock.calls;
+    const calls = (RemoteLogging.enqueueRemoteLogAsync as jest.Mock).mock.calls;
     expect(calls[calls.length - 1][1]).toMatchObject({
       groupDepth: depth,
     });

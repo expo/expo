@@ -5,9 +5,6 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-#import <EXPermissions/EXUserNotificationPermissionRequester.h>
-#import <EXPermissions/EXRemoteNotificationPermissionRequester.h>
-
 NSString * const EXStatusKey = @"status";
 NSString * const EXExpiresKey = @"expires";
 NSString * const EXGrantedKey = @"granted";
@@ -51,11 +48,6 @@ UM_EXPORT_MODULE(ExpoPermissions);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  
-  id<UMPermissionsRequester> userNotificationRequester = [[EXUserNotificationPermissionRequester alloc] initWithNotificationProxy:[moduleRegistry getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)] withMethodQueue:self.methodQueue];
-  id<UMPermissionsRequester> remoteNotificationRequester = [[EXRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:userNotificationRequester withMethodQueue:self.methodQueue];
-
-  [self registerRequesters:@[userNotificationRequester, remoteNotificationRequester]];
 }
 
 # pragma mark - Exported methods
@@ -110,7 +102,7 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)type
 {
-  return [self getPermissionUsingRequester:_requesters[type]];
+  return [self getPermissionUsingRequester:[self getPermissionRequesterForType:type]];
 }
 
 - (NSDictionary *)getPermissionUsingRequester:(id<UMPermissionsRequester>)requester
@@ -219,10 +211,6 @@ UM_EXPORT_METHOD_AS(askAsync,
 - (id<UMPermissionsRequester>)getPermissionRequesterForClass:(Class)requesterClass
 {
   return [_requestersByClass objectForKey:requesterClass];
-}
-
-- (UMModuleRegistry *)getModuleRegistry {
-  return _moduleRegistry;
 }
 
 @end

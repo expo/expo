@@ -5,20 +5,20 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
 		07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 07295CD820559E7300ED42D4 /* EXUpdatesManager.m */; };
 		07639ABA20507B2000B4BE4C /* EXUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07639AB920507B2000B4BE4C /* EXUpdates.m */; };
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
-		08FCA2B1B8F4B2420E552303 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC01B7874B93745E639DFA6 /* libPods-Tests.a */; };
 		09642C2C78D047D0AFCB7C1D /* RNSharedElementTransitionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		0CC6F95E225F5B1B00322635 /* EXStandaloneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */; };
 		0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */; };
 		0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
+		2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */; };
+		2197FFB523C613A9003CA3B2 /* RNSharedElementContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2197FFB323C613A9003CA3B2 /* RNSharedElementContent.m */; };
 		2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */; };
 		2520E83A21ABEEF100D900A4 /* EXScopedFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520E83921ABEEF100D900A4 /* EXScopedFilePermissionModule.m */; };
 		255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 255A63092154FB88009FDFC6 /* EXPendingNotification.m */; };
@@ -33,10 +33,7 @@
 		31361A5D2260B9A400662769 /* EXScopedAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A5C2260B9A400662769 /* EXScopedAmplitude.m */; };
 		31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A602261C65A00662769 /* EXPermissionsManager.m */; };
 		31361A642261C6CB00662769 /* EXScopedPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A632261C6CB00662769 /* EXScopedPermissions.m */; };
-		313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */; };
 		314410DC223BF73B00310599 /* RNCWKProcessPoolManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D2223BF73A00310599 /* RNCWKProcessPoolManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		3151637B23146FC300AA029B /* RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3151637723146FC300AA029B /* RNCSafeAreaView.m */; };
-		3151637C23146FC300AA029B /* RNCSafeAreaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */; };
 		31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B292265DC9700358D65 /* EXScopedSegment.m */; };
 		31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */; };
 		317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */; };
@@ -210,16 +207,26 @@
 		78C832ED23546BD400448582 /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C832E323546BD400448582 /* RNNativeViewHandler.m */; };
 		78C832EE23546BD400448582 /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C832E523546BD400448582 /* RNPinchHandler.m */; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
-		78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */; };
 		78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */; };
 		78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
 		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
+		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
+		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
+		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
+		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
+		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
@@ -227,14 +234,12 @@
 		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
 		B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B52217D51F146658002241BA /* EXKernelServiceRegistry.m */; };
 		B526B5081E6A543500606CAB /* ExpoKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B526B5051E6A543500606CAB /* ExpoKit.m */; };
-		B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */; };
 		B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */ = {isa = PBXBuildFile; fileRef = B54D2912205307380019411A /* EXAppLoadingCancelView.m */; };
 		B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5576080204A41F90041D9C8 /* EXHomeModule.m */; };
 		B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5576084204A423B0041D9C8 /* EXHomeModuleManager.m */; };
 		B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65C1204768F2002B2424 /* EXRootViewController.m */; };
-		B56C65C7204768F3002B2424 /* EXAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65C2204768F2002B2424 /* EXAppDelegate.m */; };
 		B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65C4204768F2002B2424 /* EXHomeAppManager.m */; };
-		B56C65CC204769F9002B2424 /* EXMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65CB204769F9002B2424 /* EXMenuViewController.m */; };
+		B56C65CC204769F9002B2424 /* EXDevMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65CB204769F9002B2424 /* EXDevMenuViewController.m */; };
 		B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */; };
 		B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA21D54175A00DCABBC /* shell-app-manifest.json */; };
 		B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA31D54175B00DCABBC /* shell-app.bundle */; };
@@ -248,7 +253,6 @@
 		B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D4204A66F60035C61C /* EXAppViewController.m */; };
 		B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D6204A66F60035C61C /* EXErrorView.m */; };
 		B5A473E0204A673E0035C61C /* EXAppLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473DE204A673E0035C61C /* EXAppLoadingView.m */; };
-		B5A473E3204A676C0035C61C /* EXAppLoadingProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473E2204A676C0035C61C /* EXAppLoadingProgressView.m */; };
 		B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1D20A0D13E00974CCE /* EXManifestResource.m */; };
 		B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1E20A0D13E00974CCE /* EXCachedResource.m */; };
 		B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1F20A0D13E00974CCE /* EXJavaScriptResource.m */; };
@@ -258,14 +262,11 @@
 		B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2B20A0D1BF00974CCE /* EXAppFetcher.m */; };
 		B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAppLoader.m */; };
 		B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
-		B5AC39AA1E95A90B00540AA7 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39961E95A90B00540AA7 /* EXKernelDevKeyCommands.m */; };
-		B5AC39AC1E95A90B00540AA7 /* EXKernelDevMotionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC399A1E95A90B00540AA7 /* EXKernelDevMotionHandler.m */; };
 		B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39A11E95A90B00540AA7 /* EXVersions.m */; };
 		B5AC39B01E95A90B00540AA7 /* EXUserNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39A41E95A90B00540AA7 /* EXUserNotificationManager.m */; };
 		B5AC39B11E95A90B00540AA7 /* EXRemoteNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39A61E95A90B00540AA7 /* EXRemoteNotificationManager.m */; };
 		B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */; };
 		B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */; };
-		B5BC7B191FF6DA7B00F102C1 /* EXGLARSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC7B061FF6DA7B00F102C1 /* EXGLARSessionManager.m */; };
 		B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */; };
 		B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */; };
 		B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65B204F152D00DDFC99 /* EXViewController.m */; };
@@ -274,11 +275,9 @@
 		B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66B204F4C0400DDFC99 /* EXFileDownloader.m */; };
 		B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */; };
 		B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
-		B5D52379205746E300F36C66 /* EXButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D52378205746E300F36C66 /* EXButtonView.m */; };
 		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
 		B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B671D1348E800AA6436 /* EXShell.plist */; };
-		B5E49B6E1D13491B00AA6436 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E49B6D1D13491B00AA6436 /* main.m */; };
 		B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B741D134F0700AA6436 /* kernel.ios.bundle */; };
 		B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5E628FD1E32F05A00629A55 /* kernel-manifest.json */; };
 		B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826C1F55B8F100FC7424 /* launch_background_image.png */; };
@@ -292,7 +291,6 @@
 		B5FB745C1FF6DADB001C764B /* EXContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72E51FF6DADB001C764B /* EXContainerView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
 		B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738F1FF6DADB001C764B /* EXImageUtils.m */; };
-		B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */; };
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
 		B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A31FF6DADB001C764B /* RNViewShot.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B5FB74DE1FF6DADC001C764B /* EXVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73FC1FF6DADB001C764B /* EXVersionManager.m */; };
@@ -308,33 +306,54 @@
 		B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74231FF6DADB001C764B /* EXTest.m */; };
 		B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74261FF6DADB001C764B /* EXScopedBridgeModule.m */; };
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
+		B75F881E8F9641B785F76CB0 /* RNSVGForeignObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A0DCD2EBCF2B4FDC80E8EBE3 /* RNSVGForeignObject.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D93FFB9A64504D3E92FE8931 /* RNSVGMarkerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BB36BC632135C98E00AFFD58 /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */; };
 		BB36BC642135C98E00AFFD58 /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = BB36BC612135C98D00AFFD58 /* RNSScreen.m */; };
+		BBB83C632479C3B50004FF8E /* RNCSafeAreaViewEdges.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C552479C3B50004FF8E /* RNCSafeAreaViewEdges.m */; };
+		BBB83C642479C3B50004FF8E /* RNCSafeAreaProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C562479C3B50004FF8E /* RNCSafeAreaProviderManager.m */; };
+		BBB83C652479C3B50004FF8E /* RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C572479C3B50004FF8E /* RNCSafeAreaView.m */; };
+		BBB83C662479C3B50004FF8E /* RNCSafeAreaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C592479C3B50004FF8E /* RNCSafeAreaViewManager.m */; };
+		BBB83C672479C3B50004FF8E /* RNCSafeAreaProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C5A2479C3B50004FF8E /* RNCSafeAreaProvider.m */; };
+		BBB83C682479C3B50004FF8E /* RNCSafeAreaShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C5B2479C3B50004FF8E /* RNCSafeAreaShadowView.m */; };
+		BBB83C692479C3B50004FF8E /* RNCSafeAreaViewLocalData.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C5F2479C3B50004FF8E /* RNCSafeAreaViewLocalData.m */; };
+		BBB83C6A2479C3B50004FF8E /* RCTView+SafeAreaCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */; };
 		BBCC403FA67946E08560B394 /* RNCWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8BF65CC9F2438FAD9F906D /* RNCWebView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		BBE603762310CD8900971F79 /* RNCAppearanceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE603712310CD8900971F79 /* RNCAppearanceProvider.m */; };
 		BBE603772310CD8900971F79 /* RNCAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE603722310CD8900971F79 /* RNCAppearance.m */; };
 		BBE603782310CD8900971F79 /* RNCAppearanceProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE603732310CD8900971F79 /* RNCAppearanceProviderManager.m */; };
 		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
+		BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		C7AB1A74D650FCF755E54086 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */; };
-		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
+		C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */; };
+		DE9DE727B5D75D6A80905846 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39CE0C0AB7A919742FB12FF1 /* libPods-Exponent.a */; };
+		E2BF7EA6366243D98A78D9E8 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 93C9E2950F474416B3F7A60E /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		E75397FDFB6B4FF780EA612A /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E77A18FAA07E47EFBBDD7338 /* ReactNativePageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01D6195E420E433AA7BB8584 /* ReactNativePageView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		E7A65010FA85413EA748C757 /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 26AEDCCD9FDB4296B2B4AF5E /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E7F4DCD62B6043AEB2B9F2B5 /* RNCWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E6E68AB99C5B4BA58B372F19 /* RNCWebViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EF5E8C163603C21D7DA45E6C /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D52770593795F4C7AC872315 /* libPods-ExponentIntegrationTests.a */; };
+		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
+		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
+		F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */; };
 		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
 		F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
 		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
-		F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */; };
-		F12A1ABD22ABE400008542C6 /* run-fabric.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1ABC22ABE400008542C6 /* run-fabric.sh */; };
-		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
+		F156867823E19E3D0029DF16 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
+		F1D6AF61244714C100AC1C74 /* EXDevMenuGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF60244714C100AC1C74 /* EXDevMenuGestureRecognizer.m */; };
+		F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF63244720E100AC1C74 /* EXDevMenuManager.m */; };
+		F1F7433E24ABECD500EA5023 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F7433D24ABECD500EA5023 /* AppDelegate.swift */; };
 		F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
+		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
+		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -356,6 +375,7 @@
 
 /* Begin PBXFileReference section */
 		01D6195E420E433AA7BB8584 /* ReactNativePageView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = ReactNativePageView.m; sourceTree = "<group>"; };
+		02F26B94889E4EB5BA470AFB /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
 		0726F0572007E438004992E7 /* EXKernelAppRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRecord.h; sourceTree = "<group>"; };
 		0726F0582007E438004992E7 /* EXKernelAppRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRecord.m; sourceTree = "<group>"; };
 		0726F05A2007E446004992E7 /* EXKernelAppRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRegistry.h; sourceTree = "<group>"; };
@@ -373,13 +393,17 @@
 		0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCConnectionStateWatcher.m; sourceTree = "<group>"; };
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
 		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerManager.h; sourceTree = "<group>"; };
-		13E8F108A9CD2612A9EB2573 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionManager.h; sourceTree = "<group>"; };
 		19382BA71EC2EACC001ED4A1 /* EXScopedBranchManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedBranchManager.h; sourceTree = "<group>"; };
 		19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedBranchManager.m; sourceTree = "<group>"; };
 		19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXCachedResourceManager.h; sourceTree = "<group>"; };
 		19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXCachedResourceManager.m; sourceTree = "<group>"; };
+		1CF1D8E66E5B4C7A9476C145 /* RNCSliderManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSliderManager.h; sourceTree = "<group>"; };
 		1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionManager.m; sourceTree = "<group>"; };
+		2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedFirebaseCore.m; sourceTree = "<group>"; };
+		2168B25B23E3058500A94C0D /* EXScopedFirebaseCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFirebaseCore.h; sourceTree = "<group>"; };
+		2197FFB323C613A9003CA3B2 /* RNSharedElementContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementContent.m; sourceTree = "<group>"; };
+		2197FFB423C613A9003CA3B2 /* RNSharedElementContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSharedElementContent.h; sourceTree = "<group>"; };
 		23181375B61140378B02E53B /* RNSharedElementStyle.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementStyle.h; sourceTree = "<group>"; };
 		2519CCFA216B292600FA7C80 /* EXUserNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUserNotificationCenter.h; sourceTree = "<group>"; };
 		2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUserNotificationCenter.m; sourceTree = "<group>"; };
@@ -393,9 +417,11 @@
 		25742BEF21774212003E7453 /* EXNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNotifications.m; sourceTree = "<group>"; };
 		2596F06922201A9400DEEFF9 /* EXScopedFileSystemModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFileSystemModule.h; sourceTree = "<group>"; };
 		2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedFileSystemModule.m; sourceTree = "<group>"; };
+		26AEDCCD9FDB4296B2B4AF5E /* RNCPicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPicker.m; sourceTree = "<group>"; };
 		28E6BF17A5204DD4814864E1 /* RNSVGContextBrush.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGContextBrush.h; sourceTree = "<group>"; };
 		2C8BF65CC9F2438FAD9F906D /* RNCWebView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCWebView.m; sourceTree = "<group>"; };
 		2CC6701F60EF495685FCD7B9 /* RNCWebView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCWebView.h; sourceTree = "<group>"; };
+		2EBAA829A2238361F2EC490B /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		312D2ED1234DF2DC002F4049 /* EXScopedFacebook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedFacebook.m; sourceTree = "<group>"; };
 		312D2ED3234DF2F6002F4049 /* EXScopedFacebook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFacebook.h; sourceTree = "<group>"; };
 		31361A582260B2F600662769 /* EXScopedSecureStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedSecureStore.h; sourceTree = "<group>"; };
@@ -406,14 +432,8 @@
 		31361A602261C65A00662769 /* EXPermissionsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPermissionsManager.m; sourceTree = "<group>"; };
 		31361A622261C6CB00662769 /* EXScopedPermissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedPermissions.h; sourceTree = "<group>"; };
 		31361A632261C6CB00662769 /* EXScopedPermissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedPermissions.m; sourceTree = "<group>"; };
-		313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXModuleRegistryBinding.h; sourceTree = "<group>"; };
-		313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXModuleRegistryBinding.m; sourceTree = "<group>"; };
 		314410D2223BF73A00310599 /* RNCWKProcessPoolManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCWKProcessPoolManager.m; sourceTree = "<group>"; };
 		314410D5223BF73B00310599 /* RNCWKProcessPoolManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCWKProcessPoolManager.h; sourceTree = "<group>"; };
-		3151637723146FC300AA029B /* RNCSafeAreaView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaView.m; sourceTree = "<group>"; };
-		3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewManager.m; sourceTree = "<group>"; };
-		3151637923146FC300AA029B /* RNCSafeAreaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaView.h; sourceTree = "<group>"; };
-		3151637A23146FC300AA029B /* RNCSafeAreaViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewManager.h; sourceTree = "<group>"; };
 		31571B282265DC9700358D65 /* EXScopedSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedSegment.h; sourceTree = "<group>"; };
 		31571B292265DC9700358D65 /* EXScopedSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedSegment.m; sourceTree = "<group>"; };
 		31571B2B2265DD5800358D65 /* EXScopedLocalAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedLocalAuthentication.h; sourceTree = "<group>"; };
@@ -547,17 +567,18 @@
 		31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXClientReleaseType.m; sourceTree = "<group>"; };
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedView.m; sourceTree = "<group>"; };
-		36BC76754E88A8F5C6E57DDD /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
 		36D368D781234C37BC0979B5 /* ReactViewPagerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = ReactViewPagerManager.m; sourceTree = "<group>"; };
 		391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementStyle.m; sourceTree = "<group>"; };
+		39CE0C0AB7A919742FB12FF1 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C3C339320E24E7D000F8B92 /* EXSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreen.h; sourceTree = "<group>"; };
 		3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreen.m; sourceTree = "<group>"; };
 		417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerPosition.m; sourceTree = "<group>"; };
 		4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+UIPageViewControllerTransitionStyle.m"; sourceTree = "<group>"; };
 		476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedViewManager.h; sourceTree = "<group>"; };
-		4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		50FA56FBAFB44A7AB2A97B96 /* RCTConvert+UIPageViewControllerNavigationOrientation.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+UIPageViewControllerNavigationOrientation.m"; sourceTree = "<group>"; };
+		55321D87F6F24AA280C9C7E7 /* RNCPickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPickerManager.h; sourceTree = "<group>"; };
 		56982E29371C48638AB74543 /* RCTConvert+UIPageViewControllerNavigationOrientation.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+UIPageViewControllerNavigationOrientation.h"; sourceTree = "<group>"; };
+		57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementCornerRadii.h; sourceTree = "<group>"; };
 		5972DE6FF6EE4E5BAE26F7FC /* RNSVGMarkerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerManager.h; sourceTree = "<group>"; };
 		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
 		5E8A7DA8E798407CA5410CF6 /* RNSVGPathMeasure.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGPathMeasure.m; sourceTree = "<group>"; };
@@ -565,6 +586,7 @@
 		6261E3DAD1C3435E87DCF5DB /* RNSScreenStackHeaderConfig.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSScreenStackHeaderConfig.m; sourceTree = "<group>"; };
 		626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNode.h; sourceTree = "<group>"; };
 		65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmap.m; sourceTree = "<group>"; };
+		6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewMode.m; sourceTree = "<group>"; };
 		7043DEFB2283303800272D74 /* RNSVGPainter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGPainter.h; sourceTree = "<group>"; };
 		7043DEFC2283303800272D74 /* RNSVGSolidColorBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGSolidColorBrush.h; sourceTree = "<group>"; };
 		7043DEFD2283303800272D74 /* RNSVGBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGBrush.h; sourceTree = "<group>"; };
@@ -684,6 +706,7 @@
 		7043DF742283303800272D74 /* RNSVGNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGNode.m; sourceTree = "<group>"; };
 		7043DF752283303800272D74 /* RNSVGContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGContainer.h; sourceTree = "<group>"; };
 		731D1E5D176247F4893297CE /* RNSVGMarker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarker.h; sourceTree = "<group>"; };
+		780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementCornerRadii.m; sourceTree = "<group>"; };
 		78C8326B23545ECE00448582 /* REAModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAModule.m; sourceTree = "<group>"; };
 		78C8326D23545ECE00448582 /* REAPropsNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAPropsNode.m; sourceTree = "<group>"; };
 		78C8326E23545ECE00448582 /* REABezierNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REABezierNode.h; sourceTree = "<group>"; };
@@ -772,7 +795,6 @@
 		78C832E623546BD400448582 /* RNRotationHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNRotationHandler.h; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Exponent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Exponent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		78CEE2D31ACD07D70095B124 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		78D82525204E8F9C00CBD9D9 /* EXApiV2Client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Client.h; sourceTree = "<group>"; };
 		78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Client.m; sourceTree = "<group>"; };
 		78D82528204F826700CBD9D9 /* EXApiV2Result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Result.h; sourceTree = "<group>"; };
@@ -783,20 +805,41 @@
 		78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "EXApiV2Client+EXRemoteNotifications.m"; sourceTree = "<group>"; };
 		78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedViewManager.m; sourceTree = "<group>"; };
 		7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarker.m; sourceTree = "<group>"; };
+		7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionItem.m; sourceTree = "<group>"; };
+		7F6CB974983B435DB3C2F7BE /* RNSVGForeignObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObject.h; sourceTree = "<group>"; };
 		80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNodeManager.m; sourceTree = "<group>"; };
-		80F51F42EE852A05B015A15E /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
-		929FABE1C395FB3FECB8B2DE /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressWindowController.h; sourceTree = "<group>"; };
+		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
+		8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObjectManager.m; sourceTree = "<group>"; };
+		8A3442268EC4E750318A4755 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		90EDC72E21EF251B7424E2E5 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
+		93C9E2950F474416B3F7A60E /* RNCPickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPickerManager.m; sourceTree = "<group>"; };
 		993696B522A54FE2B8DC27D4 /* RNSVGMarkerPosition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerPosition.h; sourceTree = "<group>"; };
 		9A34C4ECEE0D49B6AD86972D /* RNCConnectionState.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionState.h; sourceTree = "<group>"; };
-		9A44375C5408A1FBD7D682FA /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
+		9F02F7D4DDFF4D76804115FF /* RNCSegmentedControlManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSegmentedControlManager.h; sourceTree = "<group>"; };
+		A0DCD2EBCF2B4FDC80E8EBE3 /* RNSVGForeignObject.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObject.m; sourceTree = "<group>"; };
 		A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmapManager.m; sourceTree = "<group>"; };
 		A7848BD4CFE74709BDC8E8B0 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStackHeaderConfig.h; sourceTree = "<group>"; };
 		AA6C990084ED43EFA6B281D9 /* RCTConvert+UIPageViewControllerTransitionStyle.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+UIPageViewControllerTransitionStyle.h"; sourceTree = "<group>"; };
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
+		B1BEB7E458624CEBA53B3CE8 /* RNCSegmentedControl.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSegmentedControl.h; sourceTree = "<group>"; };
+		B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationBuilder.h; sourceTree = "<group>"; };
+		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
 		B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
+		B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSchedulerModule.h; sourceTree = "<group>"; };
+		B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSchedulerModule.m; sourceTree = "<group>"; };
+		B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationPresentationModule.h; sourceTree = "<group>"; };
+		B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationPresentationModule.m; sourceTree = "<group>"; };
 		B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementDelegate.h; sourceTree = "<group>"; };
+		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
+		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
+		B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsHandlerModule.h; sourceTree = "<group>"; };
+		B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsHandlerModule.m; sourceTree = "<group>"; };
+		B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsUtils.h; sourceTree = "<group>"; };
+		B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsUtils.m; sourceTree = "<group>"; };
 		B505BA0E20CAF77A0046ACFB /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B505BA1220CAF77A0046ACFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentMocks.m; sourceTree = "<group>"; };
@@ -812,8 +855,6 @@
 		B52217D71F146686002241BA /* EXKernelService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelService.h; sourceTree = "<group>"; };
 		B526B5041E6A543500606CAB /* ExpoKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpoKit.h; sourceTree = "<group>"; };
 		B526B5051E6A543500606CAB /* ExpoKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpoKit.m; sourceTree = "<group>"; };
-		B532EB652058431000569CF2 /* EXMenuGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuGestureRecognizer.h; sourceTree = "<group>"; };
-		B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuGestureRecognizer.m; sourceTree = "<group>"; };
 		B54D2911205307380019411A /* EXAppLoadingCancelView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingCancelView.h; sourceTree = "<group>"; };
 		B54D2912205307380019411A /* EXAppLoadingCancelView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingCancelView.m; sourceTree = "<group>"; };
 		B5576080204A41F90041D9C8 /* EXHomeModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHomeModule.m; sourceTree = "<group>"; };
@@ -822,12 +863,10 @@
 		B5576084204A423B0041D9C8 /* EXHomeModuleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHomeModuleManager.m; sourceTree = "<group>"; };
 		B56C65C0204768F2002B2424 /* EXRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXRootViewController.h; sourceTree = "<group>"; };
 		B56C65C1204768F2002B2424 /* EXRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXRootViewController.m; sourceTree = "<group>"; };
-		B56C65C2204768F2002B2424 /* EXAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppDelegate.m; sourceTree = "<group>"; };
-		B56C65C3204768F2002B2424 /* EXAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppDelegate.h; sourceTree = "<group>"; };
 		B56C65C4204768F2002B2424 /* EXHomeAppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHomeAppManager.m; sourceTree = "<group>"; };
 		B56C65C5204768F2002B2424 /* EXHomeAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHomeAppManager.h; sourceTree = "<group>"; };
-		B56C65CA204769F9002B2424 /* EXMenuViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuViewController.h; sourceTree = "<group>"; };
-		B56C65CB204769F9002B2424 /* EXMenuViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuViewController.m; sourceTree = "<group>"; };
+		B56C65CA204769F9002B2424 /* EXDevMenuViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuViewController.h; sourceTree = "<group>"; };
+		B56C65CB204769F9002B2424 /* EXDevMenuViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuViewController.m; sourceTree = "<group>"; };
 		B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientationManager.h; sourceTree = "<group>"; };
 		B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientationManager.m; sourceTree = "<group>"; };
 		B575EEA21D54175A00DCABBC /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
@@ -851,8 +890,6 @@
 		B5A473D9204A66F60035C61C /* EXErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorView.h; sourceTree = "<group>"; };
 		B5A473DE204A673E0035C61C /* EXAppLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingView.m; sourceTree = "<group>"; };
 		B5A473DF204A673E0035C61C /* EXAppLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingView.h; sourceTree = "<group>"; };
-		B5A473E1204A676C0035C61C /* EXAppLoadingProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressView.h; sourceTree = "<group>"; };
-		B5A473E2204A676C0035C61C /* EXAppLoadingProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressView.m; sourceTree = "<group>"; };
 		B5A72C1A20A0D13E00974CCE /* EXManifestResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXManifestResource.h; sourceTree = "<group>"; };
 		B5A72C1B20A0D13E00974CCE /* EXCachedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCachedResource.h; sourceTree = "<group>"; };
 		B5A72C1C20A0D13E00974CCE /* EXJavaScriptResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXJavaScriptResource.h; sourceTree = "<group>"; };
@@ -874,10 +911,6 @@
 		B5AC398D1E95A90B00540AA7 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
 		B5AC398E1E95A90B00540AA7 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
 		B5AC39931E95A90B00540AA7 /* EXKernelUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelUtil.h; sourceTree = "<group>"; };
-		B5AC39951E95A90B00540AA7 /* EXKernelDevKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevKeyCommands.h; sourceTree = "<group>"; };
-		B5AC39961E95A90B00540AA7 /* EXKernelDevKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevKeyCommands.m; sourceTree = "<group>"; };
-		B5AC39991E95A90B00540AA7 /* EXKernelDevMotionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevMotionHandler.h; sourceTree = "<group>"; };
-		B5AC399A1E95A90B00540AA7 /* EXKernelDevMotionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevMotionHandler.m; sourceTree = "<group>"; };
 		B5AC39A01E95A90B00540AA7 /* EXVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersions.h; sourceTree = "<group>"; };
 		B5AC39A11E95A90B00540AA7 /* EXVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersions.m; sourceTree = "<group>"; };
 		B5AC39A31E95A90B00540AA7 /* EXUserNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUserNotificationManager.h; sourceTree = "<group>"; };
@@ -888,8 +921,6 @@
 		B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecoveryManager.m; sourceTree = "<group>"; };
 		B5ADEE931F7DB4E000C88D2F /* EXBuildConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBuildConstants.h; sourceTree = "<group>"; };
 		B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBuildConstants.m; sourceTree = "<group>"; };
-		B5BC7B051FF6DA7B00F102C1 /* EXGLARSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXGLARSessionManager.h; sourceTree = "<group>"; };
-		B5BC7B061FF6DA7B00F102C1 /* EXGLARSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXGLARSessionManager.m; sourceTree = "<group>"; };
 		B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelLinkingManager.h; sourceTree = "<group>"; };
 		B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelLinkingManager.m; sourceTree = "<group>"; };
 		B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXBuildConstants.plist; sourceTree = "<group>"; };
@@ -906,15 +937,12 @@
 		B5D0D670204F4C0400DDFC99 /* EXReactAppManager+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXReactAppManager+Private.h"; sourceTree = "<group>"; };
 		B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppExceptionHandler.m; sourceTree = "<group>"; };
 		B5D0D672204F4C0400DDFC99 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
-		B5D52377205746E300F36C66 /* EXButtonView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXButtonView.h; sourceTree = "<group>"; };
-		B5D52378205746E300F36C66 /* EXButtonView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXButtonView.m; sourceTree = "<group>"; };
 		B5E458EC204B59B300DC2B2E /* EXAppBrowserController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppBrowserController.h; sourceTree = "<group>"; };
 		B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Exponent-Prefix.pch"; sourceTree = "<group>"; };
 		B5E49B551D1346FA00AA6436 /* Exponent.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Exponent.entitlements; sourceTree = "<group>"; };
 		B5E49B561D1346FA00AA6436 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXSDKVersions.plist; sourceTree = "<group>"; };
 		B5E49B671D1348E800AA6436 /* EXShell.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXShell.plist; sourceTree = "<group>"; };
-		B5E49B6D1D13491B00AA6436 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B5E49B741D134F0700AA6436 /* kernel.ios.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = kernel.ios.bundle; sourceTree = "<group>"; };
 		B5E628FD1E32F05A00629A55 /* kernel-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kernel-manifest.json"; sourceTree = "<group>"; };
 		B5EF826C1F55B8F100FC7424 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
@@ -933,8 +961,6 @@
 		B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstantsBinding.m; sourceTree = "<group>"; };
 		B5FB738E1FF6DADB001C764B /* EXImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImageUtils.h; sourceTree = "<group>"; };
 		B5FB738F1FF6DADB001C764B /* EXImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXImageUtils.m; sourceTree = "<group>"; };
-		B5FB73961FF6DADB001C764B /* EXScreenOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScreenOrientation.h; sourceTree = "<group>"; };
-		B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScreenOrientation.m; sourceTree = "<group>"; };
 		B5FB73A01FF6DADB001C764B /* EXUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUtil.h; sourceTree = "<group>"; };
 		B5FB73A11FF6DADB001C764B /* EXUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUtil.m; sourceTree = "<group>"; };
 		B5FB73A21FF6DADB001C764B /* RNViewShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNViewShot.h; sourceTree = "<group>"; };
@@ -970,10 +996,27 @@
 		B5FB74271FF6DADB001C764B /* EXScopedEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedEventEmitter.h; sourceTree = "<group>"; };
 		B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedEventEmitter.m; sourceTree = "<group>"; };
 		B683FEF12A9E4E4D9CFCC5A1 /* AIRGoogleMapHeatmap.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmap.h; sourceTree = "<group>"; };
+		B6982387E180A3864221896B /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		BB36BC5D2135C98D00AFFD58 /* RNSScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreen.h; sourceTree = "<group>"; };
 		BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSScreenContainer.m; sourceTree = "<group>"; };
 		BB36BC602135C98D00AFFD58 /* RNSScreenContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreenContainer.h; sourceTree = "<group>"; };
 		BB36BC612135C98D00AFFD58 /* RNSScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSScreen.m; sourceTree = "<group>"; };
+		BBB83C532479C3B50004FF8E /* RNCSafeAreaShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaShadowView.h; sourceTree = "<group>"; };
+		BBB83C542479C3B50004FF8E /* RNCSafeAreaViewLocalData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewLocalData.h; sourceTree = "<group>"; };
+		BBB83C552479C3B50004FF8E /* RNCSafeAreaViewEdges.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewEdges.m; sourceTree = "<group>"; };
+		BBB83C562479C3B50004FF8E /* RNCSafeAreaProviderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaProviderManager.m; sourceTree = "<group>"; };
+		BBB83C572479C3B50004FF8E /* RNCSafeAreaView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaView.m; sourceTree = "<group>"; };
+		BBB83C582479C3B50004FF8E /* RCTView+SafeAreaCompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTView+SafeAreaCompat.h"; sourceTree = "<group>"; };
+		BBB83C592479C3B50004FF8E /* RNCSafeAreaViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewManager.m; sourceTree = "<group>"; };
+		BBB83C5A2479C3B50004FF8E /* RNCSafeAreaProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaProvider.m; sourceTree = "<group>"; };
+		BBB83C5B2479C3B50004FF8E /* RNCSafeAreaShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaShadowView.m; sourceTree = "<group>"; };
+		BBB83C5C2479C3B50004FF8E /* RNCSafeAreaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaView.h; sourceTree = "<group>"; };
+		BBB83C5D2479C3B50004FF8E /* RNCSafeAreaProviderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaProviderManager.h; sourceTree = "<group>"; };
+		BBB83C5E2479C3B50004FF8E /* RNCSafeAreaViewEdges.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewEdges.h; sourceTree = "<group>"; };
+		BBB83C5F2479C3B50004FF8E /* RNCSafeAreaViewLocalData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewLocalData.m; sourceTree = "<group>"; };
+		BBB83C602479C3B50004FF8E /* RNCSafeAreaProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaProvider.h; sourceTree = "<group>"; };
+		BBB83C612479C3B50004FF8E /* RNCSafeAreaViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewManager.h; sourceTree = "<group>"; };
+		BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTView+SafeAreaCompat.m"; sourceTree = "<group>"; };
 		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
 		BBE603702310CD8900971F79 /* RNCAppearanceProviderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCAppearanceProviderManager.h; sourceTree = "<group>"; };
@@ -984,41 +1027,62 @@
 		BBE603752310CD8900971F79 /* RNCAppearance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCAppearance.h; sourceTree = "<group>"; };
 		BBE8539222B98828001FF9C2 /* EXScopedFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFontLoader.h; sourceTree = "<group>"; };
 		BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedFontLoader.m; sourceTree = "<group>"; };
-		BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C147366B532F4B4387086885 /* RNSVGPathMeasure.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGPathMeasure.h; sourceTree = "<group>"; };
 		C349E74BFFF643C38858FD6F /* RNSVGContextBrush.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGContextBrush.m; sourceTree = "<group>"; };
+		C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSegmentedControl.m; sourceTree = "<group>"; };
+		C5E293DD722E4378A24299D9 /* RNCSafeAreaViewMode.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewMode.h; sourceTree = "<group>"; };
 		C6C45542575546F8AAC2AE50 /* RNSharedElementNodeManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNodeManager.h; sourceTree = "<group>"; };
 		C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransition.m; sourceTree = "<group>"; };
+		C9B790CD211D4E869D7099DD /* RNCPicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPicker.h; sourceTree = "<group>"; };
+		CB140B5293CF4E4B9FA74E62 /* RNSVGForeignObjectManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObjectManager.h; sourceTree = "<group>"; };
 		CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTypes.h; sourceTree = "<group>"; };
-		CD4BAD322092A30A009A1287 /* EXAR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAR.h; sourceTree = "<group>"; };
-		CD4BAD332092A30A009A1287 /* EXAR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAR.m; sourceTree = "<group>"; };
+		CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSliderManager.m; sourceTree = "<group>"; };
 		D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNode.m; sourceTree = "<group>"; };
 		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePicker.m; sourceTree = "<group>"; };
 		D47B9E6257F1413387F5CD67 /* ReactViewPagerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = ReactViewPagerManager.h; sourceTree = "<group>"; };
+		D48607EC4F61D3E513BBF4EF /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		D52770593795F4C7AC872315 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePickerManager.m; sourceTree = "<group>"; };
 		D93FFB9A64504D3E92FE8931 /* RNSVGMarkerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerManager.m; sourceTree = "<group>"; };
 		DC16FA23D2824BC78C9D6E51 /* RNCWebViewManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCWebViewManager.h; sourceTree = "<group>"; };
 		E307EED1B62C455182DBF80B /* RNSharedElementTransitionItem.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionItem.h; sourceTree = "<group>"; };
 		E4381D58C24E4B2195CDD1F7 /* ReactNativePageView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = ReactNativePageView.h; sourceTree = "<group>"; };
 		E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSScreenStack.m; sourceTree = "<group>"; };
+		E5E493D6EE6840CDB98CCBB5 /* REAUtils.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = REAUtils.h; sourceTree = "<group>"; };
 		E6E68AB99C5B4BA58B372F19 /* RNCWebViewManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCWebViewManager.m; sourceTree = "<group>"; };
-		EB9676B1E402ED70AEB10A7A /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSlider.m; sourceTree = "<group>"; };
 		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
 		EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionStateWatcher.h; sourceTree = "<group>"; };
+		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
+		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
+		F108698C2448C6B800B7DC04 /* EXDevMenuGestureInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevMenuGestureInterceptor.h; sourceTree = "<group>"; };
+		F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuGestureInterceptor.m; sourceTree = "<group>"; };
+		F116A3BE2445EBBB008FA957 /* EXDevMenuWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuWindow.h; sourceTree = "<group>"; };
+		F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuWindow.m; sourceTree = "<group>"; };
 		F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppRecord.m; sourceTree = "<group>"; };
 		F11E530E21601058007ACF56 /* EXHeadlessAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppLoader.h; sourceTree = "<group>"; };
 		F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppRecord.h; sourceTree = "<group>"; };
 		F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppLoader.m; sourceTree = "<group>"; };
 		F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-dynamic-macros.sh"; sourceTree = "<group>"; };
-		F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cleanup-dynamic-macros.sh"; sourceTree = "<group>"; };
-		F12A1ABC22ABE400008542C6 /* run-fabric.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "run-fabric.sh"; sourceTree = "<group>"; };
-		F1545BF720877E39002DAC67 /* EXMenuWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuWindow.h; sourceTree = "<group>"; };
-		F1545BF820877E39002DAC67 /* EXMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXMenuWindow.m; sourceTree = "<group>"; };
+		F156867623E19E3C0029DF16 /* EXKernelDevKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevKeyCommands.h; sourceTree = "<group>"; };
+		F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevKeyCommands.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
+		F1D6AF5F244714C100AC1C74 /* EXDevMenuGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuGestureRecognizer.h; sourceTree = "<group>"; };
+		F1D6AF60244714C100AC1C74 /* EXDevMenuGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuGestureRecognizer.m; sourceTree = "<group>"; };
+		F1D6AF62244720E100AC1C74 /* EXDevMenuManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuManager.h; sourceTree = "<group>"; };
+		F1D6AF63244720E100AC1C74 /* EXDevMenuManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuManager.m; sourceTree = "<group>"; };
+		F1D6AF6524472BA900AC1C74 /* EXDevMenuDelegateProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuDelegateProtocol.h; sourceTree = "<group>"; };
+		F1E9894638084CB4956C637C /* RNCSlider.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSlider.h; sourceTree = "<group>"; };
+		F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Exponent-Bridging-Header.h"; sourceTree = "<group>"; };
+		F1F7433D24ABECD500EA5023 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSegmentedControlManager.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
-		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSerializer.m; sourceTree = "<group>"; };
+		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
+		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
+		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1027,7 +1091,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */,
-				C7AB1A74D650FCF755E54086 /* libPods-Exponent.a in Frameworks */,
+				DE9DE727B5D75D6A80905846 /* libPods-Exponent.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1035,7 +1099,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08FCA2B1B8F4B2420E552303 /* libPods-Tests.a in Frameworks */,
+				FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1043,13 +1107,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */,
+				EF5E8C163603C21D7DA45E6C /* libPods-ExponentIntegrationTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E05846EF744409D93CC1ED6 /* Slider */ = {
+			isa = PBXGroup;
+			children = (
+				F1E9894638084CB4956C637C /* RNCSlider.h */,
+				EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */,
+				1CF1D8E66E5B4C7A9476C145 /* RNCSliderManager.h */,
+				CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */,
+			);
+			path = Slider;
+			sourceTree = "<group>";
+		};
 		255747E7222D515400D91513 /* EXScopedFileSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -1065,9 +1140,9 @@
 			isa = PBXGroup;
 			children = (
 				F77DDB921E04AC1100624CA2 /* SafariServices.framework */,
-				4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */,
-				BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */,
-				FDC01B7874B93745E639DFA6 /* libPods-Tests.a */,
+				39CE0C0AB7A919742FB12FF1 /* libPods-Exponent.a */,
+				D52770593795F4C7AC872315 /* libPods-ExponentIntegrationTests.a */,
+				7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1103,17 +1178,6 @@
 			path = WebView;
 			sourceTree = "<group>";
 		};
-		3151637623146FC300AA029B /* SafeAreaContext */ = {
-			isa = PBXGroup;
-			children = (
-				3151637923146FC300AA029B /* RNCSafeAreaView.h */,
-				3151637723146FC300AA029B /* RNCSafeAreaView.m */,
-				3151637A23146FC300AA029B /* RNCSafeAreaViewManager.h */,
-				3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */,
-			);
-			path = SafeAreaContext;
-			sourceTree = "<group>";
-		};
 		317306052242459A006D1BC0 /* NetInfo */ = {
 			isa = PBXGroup;
 			children = (
@@ -1139,6 +1203,7 @@
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
+				B2B492142462F5B7001576D8 /* EXNotifications */,
 				312D2ED0234DF2C1002F4049 /* EXFacebook */,
 				31361A5E2261C64100662769 /* Permissions */,
 				255747E7222D515400D91513 /* EXScopedFileSystem */,
@@ -1148,8 +1213,6 @@
 				B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */,
 				25742BE52174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.h */,
 				25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */,
-				313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */,
-				313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */,
 				31E6D48120B845920082B09F /* EXSensorsManagerBinding.h */,
 				31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */,
 				3179683420B5B95B00243B6B /* EXScopedModuleRegistryAdapter.h */,
@@ -1170,6 +1233,8 @@
 				31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */,
 				319C949D22F80DE100063194 /* EXScopedBranch.h */,
 				319C949E22F80DE100063194 /* EXScopedBranch.m */,
+				2168B25B23E3058500A94C0D /* EXScopedFirebaseCore.h */,
+				2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */,
 			);
 			path = UniversalModules;
 			sourceTree = "<group>";
@@ -1183,22 +1248,22 @@
 			path = ViewShot;
 			sourceTree = "<group>";
 		};
-		4C1BE4EC7AA7900503D72A22 /* Pods */ = {
+		45255D23E23C4C79A634FC92 /* Picker */ = {
 			isa = PBXGroup;
 			children = (
-				80F51F42EE852A05B015A15E /* Pods-Exponent.debug.xcconfig */,
-				36BC76754E88A8F5C6E57DDD /* Pods-Exponent.release.xcconfig */,
-				929FABE1C395FB3FECB8B2DE /* Pods-ExponentIntegrationTests.debug.xcconfig */,
-				13E8F108A9CD2612A9EB2573 /* Pods-ExponentIntegrationTests.release.xcconfig */,
-				EB9676B1E402ED70AEB10A7A /* Pods-Tests.debug.xcconfig */,
-				9A44375C5408A1FBD7D682FA /* Pods-Tests.release.xcconfig */,
+				C9B790CD211D4E869D7099DD /* RNCPicker.h */,
+				26AEDCCD9FDB4296B2B4AF5E /* RNCPicker.m */,
+				55321D87F6F24AA280C9C7E7 /* RNCPickerManager.h */,
+				93C9E2950F474416B3F7A60E /* RNCPickerManager.m */,
 			);
-			name = Pods;
+			path = Picker;
 			sourceTree = "<group>";
 		};
 		65B902B660654403B6731F7E /* SharedElement */ = {
 			isa = PBXGroup;
 			children = (
+				2197FFB423C613A9003CA3B2 /* RNSharedElementContent.h */,
+				2197FFB323C613A9003CA3B2 /* RNSharedElementContent.m */,
 				B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */,
 				626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */,
 				D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */,
@@ -1213,6 +1278,8 @@
 				143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */,
 				1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */,
 				CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */,
+				57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */,
+				780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */,
 			);
 			path = SharedElement;
 			sourceTree = "<group>";
@@ -1326,6 +1393,8 @@
 				7043DF2F2283303800272D74 /* RNSVGSymbolManager.h */,
 				5972DE6FF6EE4E5BAE26F7FC /* RNSVGMarkerManager.h */,
 				D93FFB9A64504D3E92FE8931 /* RNSVGMarkerManager.m */,
+				CB140B5293CF4E4B9FA74E62 /* RNSVGForeignObjectManager.h */,
+				8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */,
 			);
 			path = ViewManagers;
 			sourceTree = "<group>";
@@ -1401,6 +1470,8 @@
 				7043DF622283303800272D74 /* RNSVGLinearGradient.h */,
 				731D1E5D176247F4893297CE /* RNSVGMarker.h */,
 				7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */,
+				7F6CB974983B435DB3C2F7BE /* RNSVGForeignObject.h */,
+				A0DCD2EBCF2B4FDC80E8EBE3 /* RNSVGForeignObject.m */,
 			);
 			path = Elements;
 			sourceTree = "<group>";
@@ -1430,9 +1501,10 @@
 			isa = PBXGroup;
 			children = (
 				78C832A123545ECE00448582 /* REAModule.h */,
-				78C8329323545ECE00448582 /* REANodesManager.h */,
 				78C8326B23545ECE00448582 /* REAModule.m */,
+				78C8329323545ECE00448582 /* REANodesManager.h */,
 				78C832A223545ECE00448582 /* REANodesManager.m */,
+				E5E493D6EE6840CDB98CCBB5 /* REAUtils.h */,
 				78C8326C23545ECE00448582 /* Nodes */,
 				78C8329423545ECE00448582 /* Transitioning */,
 			);
@@ -1487,18 +1559,18 @@
 		78C8329423545ECE00448582 /* Transitioning */ = {
 			isa = PBXGroup;
 			children = (
-				78C8329523545ECE00448582 /* REATransitionManager.h */,
-				78C8329623545ECE00448582 /* REATransition.m */,
-				78C8329723545ECE00448582 /* REATransitionValues.m */,
-				78C8329823545ECE00448582 /* REATransitionAnimation.h */,
-				78C8329923545ECE00448582 /* REAAllTransitions.h */,
+				78C8329F23545ECE00448582 /* RCTConvert+REATransition.h */,
 				78C8329A23545ECE00448582 /* RCTConvert+REATransition.m */,
+				78C8329923545ECE00448582 /* REAAllTransitions.h */,
+				78C832A023545ECE00448582 /* REAAllTransitions.m */,
 				78C8329B23545ECE00448582 /* REATransition.h */,
+				78C8329623545ECE00448582 /* REATransition.m */,
+				78C8329823545ECE00448582 /* REATransitionAnimation.h */,
+				78C8329E23545ECE00448582 /* REATransitionAnimation.m */,
+				78C8329523545ECE00448582 /* REATransitionManager.h */,
 				78C8329C23545ECE00448582 /* REATransitionManager.m */,
 				78C8329D23545ECE00448582 /* REATransitionValues.h */,
-				78C8329E23545ECE00448582 /* REATransitionAnimation.m */,
-				78C8329F23545ECE00448582 /* RCTConvert+REATransition.h */,
-				78C832A023545ECE00448582 /* REAAllTransitions.m */,
+				78C8329723545ECE00448582 /* REATransitionValues.m */,
 			);
 			path = Transitioning;
 			sourceTree = "<group>";
@@ -1553,15 +1625,16 @@
 		78CEE2B71ACD07D70095B124 = {
 			isa = PBXGroup;
 			children = (
+				F12A1AB722ABD461008542C6 /* Build-Phases */,
 				B56C65BF20476834002B2424 /* Client */,
 				78CEE2C21ACD07D70095B124 /* Exponent */,
+				F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */,
 				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
-				F12A1AB722ABD461008542C6 /* Build-Phases */,
-				B505BA0F20CAF77A0046ACFB /* Tests */,
 				3050F5A98E56E9379C36ABD2 /* Frameworks */,
 				A17682721BE42C7F0057BBF2 /* Libraries */,
+				AE58247EE2419C33B3A8CBAE /* Pods */,
 				78CEE2C11ACD07D70095B124 /* Products */,
-				4C1BE4EC7AA7900503D72A22 /* Pods */,
+				B505BA0F20CAF77A0046ACFB /* Tests */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -1586,7 +1659,7 @@
 				B5E49B521D1346FA00AA6436 /* Supporting */,
 				B5812C331C9CD59200A10345 /* Versioned */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
-				78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */,
+				8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */,
 			);
 			path = Exponent;
 			sourceTree = "<group>";
@@ -1623,6 +1696,42 @@
 			children = (
 			);
 			name = Libraries;
+			sourceTree = "<group>";
+		};
+		AE58247EE2419C33B3A8CBAE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				02F26B94889E4EB5BA470AFB /* Pods-Exponent.debug.xcconfig */,
+				90EDC72E21EF251B7424E2E5 /* Pods-Exponent.release.xcconfig */,
+				8A3442268EC4E750318A4755 /* Pods-ExponentIntegrationTests.debug.xcconfig */,
+				2EBAA829A2238361F2EC490B /* Pods-ExponentIntegrationTests.release.xcconfig */,
+				D48607EC4F61D3E513BBF4EF /* Pods-Tests.debug.xcconfig */,
+				B6982387E180A3864221896B /* Pods-Tests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		B2B492142462F5B7001576D8 /* EXNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */,
+				B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */,
+				FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */,
+				FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */,
+				B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */,
+				FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */,
+				FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */,
+				B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */,
+				B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */,
+				B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */,
+				B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */,
+				B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */,
+				B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */,
+				B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */,
+				B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */,
+				B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */,
+			);
+			path = EXNotifications;
 			sourceTree = "<group>";
 		};
 		B505BA0F20CAF77A0046ACFB /* Tests */ = {
@@ -1699,12 +1808,11 @@
 		B56C65BF20476834002B2424 /* Client */ = {
 			isa = PBXGroup;
 			children = (
-				B56C65C3204768F2002B2424 /* EXAppDelegate.h */,
-				B56C65C2204768F2002B2424 /* EXAppDelegate.m */,
-				B56C65C0204768F2002B2424 /* EXRootViewController.h */,
-				B56C65C1204768F2002B2424 /* EXRootViewController.m */,
+				F1F7433D24ABECD500EA5023 /* AppDelegate.swift */,
 				B56C65C5204768F2002B2424 /* EXHomeAppManager.h */,
 				B56C65C4204768F2002B2424 /* EXHomeAppManager.m */,
+				B56C65C0204768F2002B2424 /* EXRootViewController.h */,
+				B56C65C1204768F2002B2424 /* EXRootViewController.m */,
 				B56C65C9204769B6002B2424 /* Menu */,
 			);
 			path = Client;
@@ -1713,14 +1821,19 @@
 		B56C65C9204769B6002B2424 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
-				B56C65CA204769F9002B2424 /* EXMenuViewController.h */,
-				B56C65CB204769F9002B2424 /* EXMenuViewController.m */,
-				B5D52377205746E300F36C66 /* EXButtonView.h */,
-				B5D52378205746E300F36C66 /* EXButtonView.m */,
-				B532EB652058431000569CF2 /* EXMenuGestureRecognizer.h */,
-				B532EB662058431000569CF2 /* EXMenuGestureRecognizer.m */,
-				F1545BF720877E39002DAC67 /* EXMenuWindow.h */,
-				F1545BF820877E39002DAC67 /* EXMenuWindow.m */,
+				F1D6AF6524472BA900AC1C74 /* EXDevMenuDelegateProtocol.h */,
+				F108698C2448C6B800B7DC04 /* EXDevMenuGestureInterceptor.h */,
+				F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */,
+				F1D6AF5F244714C100AC1C74 /* EXDevMenuGestureRecognizer.h */,
+				F1D6AF60244714C100AC1C74 /* EXDevMenuGestureRecognizer.m */,
+				F1D6AF62244720E100AC1C74 /* EXDevMenuManager.h */,
+				F1D6AF63244720E100AC1C74 /* EXDevMenuManager.m */,
+				F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */,
+				F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */,
+				B56C65CA204769F9002B2424 /* EXDevMenuViewController.h */,
+				B56C65CB204769F9002B2424 /* EXDevMenuViewController.m */,
+				F116A3BE2445EBBB008FA957 /* EXDevMenuWindow.h */,
+				F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -1773,10 +1886,10 @@
 			children = (
 				B5A473DF204A673E0035C61C /* EXAppLoadingView.h */,
 				B5A473DE204A673E0035C61C /* EXAppLoadingView.m */,
-				B5A473E1204A676C0035C61C /* EXAppLoadingProgressView.h */,
-				B5A473E2204A676C0035C61C /* EXAppLoadingProgressView.m */,
 				B54D2911205307380019411A /* EXAppLoadingCancelView.h */,
 				B54D2912205307380019411A /* EXAppLoadingCancelView.m */,
+				878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */,
+				878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */,
 			);
 			path = Loading;
 			sourceTree = "<group>";
@@ -1850,10 +1963,8 @@
 			children = (
 				B5576081204A41F90041D9C8 /* EXHomeModule.h */,
 				B5576080204A41F90041D9C8 /* EXHomeModule.m */,
-				B5AC39951E95A90B00540AA7 /* EXKernelDevKeyCommands.h */,
-				B5AC39961E95A90B00540AA7 /* EXKernelDevKeyCommands.m */,
-				B5AC39991E95A90B00540AA7 /* EXKernelDevMotionHandler.h */,
-				B5AC399A1E95A90B00540AA7 /* EXKernelDevMotionHandler.m */,
+				F156867623E19E3C0029DF16 /* EXKernelDevKeyCommands.h */,
+				F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */,
 				0799CFD821839B470039E97C /* EXSession.h */,
 				0799CFD921839B520039E97C /* EXSession.m */,
 			);
@@ -1911,20 +2022,8 @@
 		B5BC7B031FF6DA7B00F102C1 /* Optional */ = {
 			isa = PBXGroup;
 			children = (
-				B5BC7B041FF6DA7B00F102C1 /* ARKit */,
 			);
 			path = Optional;
-			sourceTree = "<group>";
-		};
-		B5BC7B041FF6DA7B00F102C1 /* ARKit */ = {
-			isa = PBXGroup;
-			children = (
-				B5BC7B051FF6DA7B00F102C1 /* EXGLARSessionManager.h */,
-				B5BC7B061FF6DA7B00F102C1 /* EXGLARSessionManager.m */,
-				CD4BAD322092A30A009A1287 /* EXAR.h */,
-				CD4BAD332092A30A009A1287 /* EXAR.m */,
-			);
-			path = ARKit;
 			sourceTree = "<group>";
 		};
 		B5D0D660204F4C0400DDFC99 /* AppLoader */ = {
@@ -1968,7 +2067,6 @@
 				B5E49B561D1346FA00AA6436 /* Info.plist */,
 				B5E628FD1E32F05A00629A55 /* kernel-manifest.json */,
 				B5E49B741D134F0700AA6436 /* kernel.ios.bundle */,
-				B5E49B6D1D13491B00AA6436 /* main.m */,
 				B575EEA21D54175A00DCABBC /* shell-app-manifest.json */,
 				B575EEA31D54175B00DCABBC /* shell-app.bundle */,
 			);
@@ -1992,20 +2090,18 @@
 		B5FB72711FF6DADB001C764B /* Api */ = {
 			isa = PBXGroup;
 			children = (
+				BBB83C522479C3B50004FF8E /* SafeAreaContext */,
 				31F25C9123717B08009AD55F /* ViewShot */,
 				BBE6036F2310CD8900971F79 /* Appearance */,
 				BBD0318A200011C9009F0434 /* Cognito */,
 				317306052242459A006D1BC0 /* NetInfo */,
 				78C8326A23545ECE00448582 /* Reanimated */,
-				3151637623146FC300AA029B /* SafeAreaContext */,
 				BB36BC5C2135C98D00AFFD58 /* Screens */,
 				B5FB728D1FF6DADB001C764B /* Components */,
 				B5FB738E1FF6DADB001C764B /* EXImageUtils.h */,
 				B5FB738F1FF6DADB001C764B /* EXImageUtils.m */,
 				25742BEC21774211003E7453 /* EXNotifications.h */,
 				25742BEF21774212003E7453 /* EXNotifications.m */,
-				B5FB73961FF6DADB001C764B /* EXScreenOrientation.h */,
-				B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */,
 				07639ABB20507B2C00B4BE4C /* EXUpdates.h */,
 				07639AB920507B2000B4BE4C /* EXUpdates.m */,
 				B5FB73A01FF6DADB001C764B /* EXUtil.h */,
@@ -2027,6 +2123,9 @@
 				E3BD4F6E1BF543B697AFB794 /* DateTimePicker */,
 				6999211AF26A46738FB9E106 /* MaskedView */,
 				69CAB43F632147D3A686A75B /* ViewPager */,
+				F10D02089BA74515B49FBBC2 /* SegmentedControl */,
+				45255D23E23C4C79A634FC92 /* Picker */,
+				0E05846EF744409D93CC1ED6 /* Slider */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2245,6 +2344,31 @@
 			path = Exponent/Versioned/Core/Api/Screens;
 			sourceTree = SOURCE_ROOT;
 		};
+		BBB83C522479C3B50004FF8E /* SafeAreaContext */ = {
+			isa = PBXGroup;
+			children = (
+				BBB83C532479C3B50004FF8E /* RNCSafeAreaShadowView.h */,
+				BBB83C542479C3B50004FF8E /* RNCSafeAreaViewLocalData.h */,
+				BBB83C552479C3B50004FF8E /* RNCSafeAreaViewEdges.m */,
+				BBB83C562479C3B50004FF8E /* RNCSafeAreaProviderManager.m */,
+				BBB83C572479C3B50004FF8E /* RNCSafeAreaView.m */,
+				BBB83C582479C3B50004FF8E /* RCTView+SafeAreaCompat.h */,
+				BBB83C592479C3B50004FF8E /* RNCSafeAreaViewManager.m */,
+				BBB83C5A2479C3B50004FF8E /* RNCSafeAreaProvider.m */,
+				BBB83C5B2479C3B50004FF8E /* RNCSafeAreaShadowView.m */,
+				BBB83C5C2479C3B50004FF8E /* RNCSafeAreaView.h */,
+				BBB83C5D2479C3B50004FF8E /* RNCSafeAreaProviderManager.h */,
+				BBB83C5E2479C3B50004FF8E /* RNCSafeAreaViewEdges.h */,
+				BBB83C5F2479C3B50004FF8E /* RNCSafeAreaViewLocalData.m */,
+				BBB83C602479C3B50004FF8E /* RNCSafeAreaProvider.h */,
+				BBB83C612479C3B50004FF8E /* RNCSafeAreaViewManager.h */,
+				BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */,
+				C5E293DD722E4378A24299D9 /* RNCSafeAreaViewMode.h */,
+				6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */,
+			);
+			path = SafeAreaContext;
+			sourceTree = "<group>";
+		};
 		BBD0318A200011C9009F0434 /* Cognito */ = {
 			isa = PBXGroup;
 			children = (
@@ -2278,6 +2402,17 @@
 			path = DateTimePicker;
 			sourceTree = "<group>";
 		};
+		F10D02089BA74515B49FBBC2 /* SegmentedControl */ = {
+			isa = PBXGroup;
+			children = (
+				B1BEB7E458624CEBA53B3CE8 /* RNCSegmentedControl.h */,
+				C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */,
+				9F02F7D4DDFF4D76804115FF /* RNCSegmentedControlManager.h */,
+				F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */,
+			);
+			path = SegmentedControl;
+			sourceTree = "<group>";
+		};
 		F11E530C2160101B007ACF56 /* HeadlessApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -2292,9 +2427,7 @@
 		F12A1AB722ABD461008542C6 /* Build-Phases */ = {
 			isa = PBXGroup;
 			children = (
-				F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */,
 				F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */,
-				F12A1ABC22ABE400008542C6 /* run-fabric.sh */,
 				3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */,
 			);
 			path = "Build-Phases";
@@ -2307,15 +2440,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 78CEE2E31ACD07D70095B124 /* Build configuration list for PBXNativeTarget "Exponent" */;
 			buildPhases = (
-				1D818BE8C603EF7A020170AB /* [CP] Check Pods Manifest.lock */,
+				AD799953B44D18A93FDD0639 /* [CP] Check Pods Manifest.lock */,
 				78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */,
 				78CEE2BC1ACD07D70095B124 /* Sources */,
 				78CEE2BD1ACD07D70095B124 /* Frameworks */,
 				78CEE2BE1ACD07D70095B124 /* Resources */,
 				347794D3234BFFC20087B402 /* Copy Bundle Resources Conditionally */,
-				B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */,
-				78F81D401B70746F000E5595 /* Fabric */,
-				9F407D89B3F72F916C80DD38 /* [CP] Copy Pods Resources */,
+				65CD50218C6CF1A5BF985CC7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2330,7 +2461,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B505BA1720CAF77A0046ACFB /* Build configuration list for PBXNativeTarget "Tests" */;
 			buildPhases = (
-				A1289FB6F840103038A16BFA /* [CP] Check Pods Manifest.lock */,
+				10F78BE428856BF0D40FD4D0 /* [CP] Check Pods Manifest.lock */,
 				B505BA0A20CAF77A0046ACFB /* Sources */,
 				B505BA0B20CAF77A0046ACFB /* Frameworks */,
 				B505BA0C20CAF77A0046ACFB /* Resources */,
@@ -2349,7 +2480,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */;
 			buildPhases = (
-				998600B63FF60AF3734A2A4F /* [CP] Check Pods Manifest.lock */,
+				D7A644915E8C9561CC604EC1 /* [CP] Check Pods Manifest.lock */,
 				B513333C1CE649FE00E9FC9E /* Sources */,
 				B513333D1CE649FE00E9FC9E /* Frameworks */,
 				B513333E1CE649FE00E9FC9E /* Resources */,
@@ -2377,6 +2508,7 @@
 					78CEE2BF1ACD07D70095B124 = {
 						CreatedOnToolsVersion = 6.2;
 						DevelopmentTeam = C8D8QTF339;
+						LastSwiftMigration = 1150;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplePay = {
@@ -2443,13 +2575,11 @@
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
 				B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */,
-				F12A1ABD22ABE400008542C6 /* run-fabric.sh in Resources */,
 				B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */,
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
-				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
-				F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
+				8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
 			);
@@ -2473,18 +2603,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1D818BE8C603EF7A020170AB /* [CP] Check Pods Manifest.lock */ = {
+		10F78BE428856BF0D40FD4D0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Exponent-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Tests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2509,6 +2643,40 @@
 			shellPath = /bin/bash;
 			shellScript = "$SRCROOT/Build-Phases/cp-bundle-resources-conditionally.sh\n\n";
 		};
+		65CD50218C6CF1A5BF985CC7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/api.amplitude.com.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2523,30 +2691,42 @@
 			shellPath = /bin/bash;
 			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
 		};
-		78F81D401B70746F000E5595 /* Fabric */ = {
+		AD799953B44D18A93FDD0639 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-			);
-			name = Fabric;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "$SRCROOT/Build-Phases/run-fabric.sh\n";
-		};
-		998600B63FF60AF3734A2A4F /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Exponent-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D7A644915E8C9561CC604EC1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-ExponentIntegrationTests-checkManifestLockResult.txt",
 			);
@@ -2554,70 +2734,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		9F407D89B3F72F916C80DD38 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh",
-				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
-				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
-				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
-				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der",
-				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
-				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleMobileVision/GoogleMVFaceDetectorResources.bundle",
-				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/api.amplitude.com.der",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoCaLimitedRsaCertificationAuthority.der",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaCA.der",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A1289FB6F840103038A16BFA /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Tests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Clean Up Dynamic Macros";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "$SRCROOT/Build-Phases/cleanup-dynamic-macros.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2641,6 +2757,7 @@
 				B5A473E0204A673E0035C61C /* EXAppLoadingView.m in Sources */,
 				31AD99EA2285B51100F19090 /* AIRGoogleMapCircleManager.m in Sources */,
 				31AD9A422285B53100F19090 /* AIRMapLocalTileOverlay.m in Sources */,
+				FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */,
 				7043DF792283303800272D74 /* RNSVGSolidColorBrush.m in Sources */,
 				7043DF882283303800272D74 /* RNSVGTextPathManager.m in Sources */,
 				7043DF7D2283303800272D74 /* RNSVGEllipseManager.m in Sources */,
@@ -2654,19 +2771,19 @@
 				7043DF852283303800272D74 /* RNSVGTextManager.m in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
 				F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */,
-				B5A473E3204A676C0035C61C /* EXAppLoadingProgressView.m in Sources */,
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				314410DC223BF73B00310599 /* RNCWKProcessPoolManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
+				BBB83C692479C3B50004FF8E /* RNCSafeAreaViewLocalData.m in Sources */,
 				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
 				7043DF9E2283303800272D74 /* RNSVGSvgView.m in Sources */,
-				B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */,
 				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */,
 				31AD99E82285B51100F19090 /* AIRGoogleMapCalloutManager.m in Sources */,
 				78C832A323545ECE00448582 /* REAModule.m in Sources */,
 				78C832BA23545ECF00448582 /* REATransitionManager.m in Sources */,
 				31AD99E32285B51100F19090 /* AIRGoogleMapMarkerManager.m in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */,
+				B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */,
 				31AD9A3F2285B53100F19090 /* AIRMapPolylineRenderer.m in Sources */,
 				7043DF8C2283303800272D74 /* RNSVGLineManager.m in Sources */,
 				31AD99EF2285B51100F19090 /* AIRGMSPolygon.m in Sources */,
@@ -2675,7 +2792,6 @@
 				7043DF9B2283303800272D74 /* RNSVGRadialGradient.m in Sources */,
 				31AD9A4F2285B53100F19090 /* AIRMapCallout.m in Sources */,
 				BBE603772310CD8900971F79 /* RNCAppearance.m in Sources */,
-				F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */,
 				7043DF8E2283303800272D74 /* RNSVGTSpanManager.m in Sources */,
 				B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */,
 				7043DF772283303800272D74 /* RNSVGBrush.m in Sources */,
@@ -2687,9 +2803,9 @@
 				F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */,
 				78C832AB23545ECE00448582 /* REACondNode.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
+				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */,
-				3151637C23146FC300AA029B /* RNCSafeAreaViewManager.m in Sources */,
 				78C832AC23545ECE00448582 /* REAJSCallNode.m in Sources */,
 				7043DF832283303800272D74 /* RNSVGSvgViewManager.m in Sources */,
 				7043DF982283303800272D74 /* RNSVGViewBox.m in Sources */,
@@ -2697,22 +2813,23 @@
 				78C832AF23545ECE00448582 /* REATransformNode.m in Sources */,
 				BB36BC642135C98E00AFFD58 /* RNSScreen.m in Sources */,
 				78C832B323545ECF00448582 /* REASetNode.m in Sources */,
+				F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */,
 				B5A72C2D20A0D1BF00974CCE /* EXAppFetcherCacheOnly.m in Sources */,
-				B56C65C7204768F3002B2424 /* EXAppDelegate.m in Sources */,
 				78C832BB23545ECF00448582 /* REATransitionAnimation.m in Sources */,
-				B5AC39AC1E95A90B00540AA7 /* EXKernelDevMotionHandler.m in Sources */,
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
 				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
 				31AD99ED2285B51100F19090 /* AIRGoogleMapManager.m in Sources */,
 				7043DFAC2283303800272D74 /* RNSVGGlyphContext.m in Sources */,
+				BBB83C672479C3B50004FF8E /* RNCSafeAreaProvider.m in Sources */,
 				31AD9A352285B53100F19090 /* AIRMapManager.m in Sources */,
 				78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */,
+				B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */,
+				F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */,
 				78C832E823546BD400448582 /* RNRotationHandler.m in Sources */,
 				31AD9A3A2285B53100F19090 /* AIRMapPolygonManager.m in Sources */,
 				318102BA20C15E460061726F /* EXLinkingManager.m in Sources */,
 				7043DFA62283303800272D74 /* RNSVGTextPath.m in Sources */,
 				78C832D023546B6E00448582 /* RNGestureHandlerManager.m in Sources */,
-				B5BC7B191FF6DA7B00F102C1 /* EXGLARSessionManager.m in Sources */,
 				78C832EB23546BD400448582 /* RNFlingHandler.m in Sources */,
 				78C832D423546B6E00448582 /* RNRootViewGestureRecognizer.m in Sources */,
 				31AD99E62285B51100F19090 /* AIRGoogleMapWMSTileManager.m in Sources */,
@@ -2721,6 +2838,8 @@
 				78C832D223546B6E00448582 /* RNGestureHandlerEvents.m in Sources */,
 				31AD9A4E2285B53100F19090 /* AIRMapPolyline.m in Sources */,
 				3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */,
+				BBB83C682479C3B50004FF8E /* RNCSafeAreaShadowView.m in Sources */,
+				FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */,
 				31AD99EC2285B51100F19090 /* RCTConvert+GMSMapViewType.m in Sources */,
 				31AD99E42285B51100F19090 /* AIRGoogleMapPolyline.m in Sources */,
 				BB36BC632135C98E00AFFD58 /* RNSScreenContainer.m in Sources */,
@@ -2734,17 +2853,17 @@
 				78C832B823545ECF00448582 /* REATransitionValues.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */,
+				878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
 				7043DF802283303800272D74 /* RNSVGSymbolManager.m in Sources */,
 				78C832A523545ECE00448582 /* REAStyleNode.m in Sources */,
 				B5D0D65F204F4BF500DDFC99 /* EXLog.m in Sources */,
-				313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */,
 				78C832BD23545ECF00448582 /* REANodesManager.m in Sources */,
 				7043DF942283303800272D74 /* RNSVGBezierElement.m in Sources */,
 				B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */,
 				7043DFA32283303800272D74 /* RNSVGPath.m in Sources */,
 				31361A642261C6CB00662769 /* EXScopedPermissions.m in Sources */,
-				B5D52379205746E300F36C66 /* EXButtonView.m in Sources */,
+				2197FFB523C613A9003CA3B2 /* RNSharedElementContent.m in Sources */,
 				B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */,
 				78C832B123545ECE00448582 /* REAAlwaysNode.m in Sources */,
 				78C832A823545ECE00448582 /* REAClockNodes.m in Sources */,
@@ -2752,18 +2871,22 @@
 				31AD99E52285B51100F19090 /* AIRGoogleMapOverlay.m in Sources */,
 				7043DFA72283303800272D74 /* RNSVGPropHelper.m in Sources */,
 				31AD99F42285B51100F19090 /* AIRGMSPolyline.m in Sources */,
+				B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */,
 				B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */,
 				B5AC39B01E95A90B00540AA7 /* EXUserNotificationManager.m in Sources */,
 				31AD9A372285B53100F19090 /* AIRMapMarker.m in Sources */,
 				31AD9A492285B53100F19090 /* SMCalloutView.m in Sources */,
+				F1D6AF61244714C100AC1C74 /* EXDevMenuGestureRecognizer.m in Sources */,
 				7043DF822283303800272D74 /* RNSVGClipPathManager.m in Sources */,
 				78C832D523546B6E00448582 /* RNGestureHandlerModule.m in Sources */,
 				2520E83A21ABEEF100D900A4 /* EXScopedFilePermissionModule.m in Sources */,
 				78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */,
+				F1F7433E24ABECD500EA5023 /* AppDelegate.swift in Sources */,
 				31361A5D2260B9A400662769 /* EXScopedAmplitude.m in Sources */,
 				BBE603762310CD8900971F79 /* RNCAppearanceProvider.m in Sources */,
+				F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */,
 				78C832AD23545ECE00448582 /* REABezierNode.m in Sources */,
-				B56C65CC204769F9002B2424 /* EXMenuViewController.m in Sources */,
+				B56C65CC204769F9002B2424 /* EXDevMenuViewController.m in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
 				7043DF762283303800272D74 /* RNSVGPainterBrush.m in Sources */,
 				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
@@ -2777,7 +2900,6 @@
 				31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */,
 				255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */,
 				7043DFA42283303800272D74 /* RNSVGGroup.m in Sources */,
-				B5AC39AA1E95A90B00540AA7 /* EXKernelDevKeyCommands.m in Sources */,
 				B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */,
 				7043DF812283303800272D74 /* RNSVGNodeManager.m in Sources */,
 				0799CFDA21839B520039E97C /* EXSession.m in Sources */,
@@ -2794,11 +2916,11 @@
 				78C832A623545ECE00448582 /* READebugNode.m in Sources */,
 				0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */,
 				31AD99F22285B51100F19090 /* AIRGoogleMapCalloutSubviewManager.m in Sources */,
+				BBB83C652479C3B50004FF8E /* RNCSafeAreaView.m in Sources */,
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				78C832EE23546BD400448582 /* RNPinchHandler.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
-				3151637B23146FC300AA029B /* RNCSafeAreaView.m in Sources */,
 				31AD9A442285B53100F19090 /* AIRMapCalloutManager.m in Sources */,
 				B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */,
 				31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */,
@@ -2832,15 +2954,18 @@
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
 				31AD9A4D2285B53100F19090 /* RCTConvert+AirMap.m in Sources */,
 				7043DF872283303800272D74 /* RNSVGLinearGradientManager.m in Sources */,
+				2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
 				7043DF992283303800272D74 /* RNSVGPattern.m in Sources */,
-				B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */,
 				7043DFAD2283303800272D74 /* RNSVGNode.m in Sources */,
 				31AD99DD2285B51100F19090 /* AIRGoogleMapOverlayManager.m in Sources */,
+				F156867823E19E3D0029DF16 /* EXKernelDevKeyCommands.m in Sources */,
 				31AD9A482285B53100F19090 /* AIRMapUrlTileManager.m in Sources */,
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
 				7043DF892283303800272D74 /* RNSVGImageManager.m in Sources */,
+				BBB83C632479C3B50004FF8E /* RNCSafeAreaViewEdges.m in Sources */,
+				BBB83C642479C3B50004FF8E /* RNCSafeAreaProviderManager.m in Sources */,
 				7043DFA02283303800272D74 /* RNSVGUse.m in Sources */,
 				31AD9A452285B53100F19090 /* AIRMapUrlTile.m in Sources */,
 				31AD9A402285B53100F19090 /* AIRMapCircle.m in Sources */,
@@ -2857,16 +2982,18 @@
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				78C832D123546B6E00448582 /* RNGestureHandlerRegistry.m in Sources */,
 				31AD9A3E2285B53100F19090 /* AIRMapCoordinate.m in Sources */,
-				CD4BAD342092A30A009A1287 /* EXAR.m in Sources */,
 				7043DF9F2283303800272D74 /* RNSVGMask.m in Sources */,
 				31AD99EB2285B51100F19090 /* AIRGoogleMapMarker.m in Sources */,
+				F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */,
 				F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */,
 				78C832BC23545ECF00448582 /* REAAllTransitions.m in Sources */,
 				31AD99DC2285B51100F19090 /* AIRGoogleMapPolygon.m in Sources */,
+				BBB83C6A2479C3B50004FF8E /* RCTView+SafeAreaCompat.m in Sources */,
 				31AD99F12285B51100F19090 /* AIRGoogleMapPolylineManager.m in Sources */,
 				7043DFAB2283303800272D74 /* RNSVGTSpan.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
+				BBB83C662479C3B50004FF8E /* RNCSafeAreaViewManager.m in Sources */,
 				7043DF782283303800272D74 /* RNSVGPainter.m in Sources */,
 				7043DF922283303800272D74 /* RNSVGEllipse.m in Sources */,
 				B57181001F0FF41600315A66 /* EXScreenOrientationManager.m in Sources */,
@@ -2888,7 +3015,6 @@
 				25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */,
 				7043DFAA2283303800272D74 /* RNSVGText.m in Sources */,
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
-				B5E49B6E1D13491B00AA6436 /* main.m in Sources */,
 				7043DFA92283303800272D74 /* RNSVGFontData.m in Sources */,
 				B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */,
 				7043DF932283303800272D74 /* RCTConvert+RNSVG.m in Sources */,
@@ -2911,7 +3037,9 @@
 				4E3532555D7C4B0392A6AE9D /* RNSVGContextBrush.m in Sources */,
 				9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */,
 				0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */,
+				B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */,
 				4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */,
+				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
 				B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */,
 				B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */,
 				49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */,
@@ -2921,6 +3049,16 @@
 				2E50A3637BCE4846A8676DEC /* ReactViewPagerManager.m in Sources */,
 				4F0C654D34E74404BA5425F6 /* RNSScreenStack.m in Sources */,
 				66827DD222C54196B1FDA739 /* RNSScreenStackHeaderConfig.m in Sources */,
+				B75F881E8F9641B785F76CB0 /* RNSVGForeignObject.m in Sources */,
+				C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */,
+				F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */,
+				97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */,
+				E75397FDFB6B4FF780EA612A /* RNCSegmentedControlManager.m in Sources */,
+				E7A65010FA85413EA748C757 /* RNCPicker.m in Sources */,
+				E2BF7EA6366243D98A78D9E8 /* RNCPickerManager.m in Sources */,
+				ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */,
+				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
+				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2967,12 +3105,12 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */ = {
+		8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				78CEE2D31ACD07D70095B124 /* Base */,
+				8746D75D24D04B2300BFAD22 /* Base */,
 			);
-			name = LaunchScreen.xib;
+			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -3091,10 +3229,11 @@
 		};
 		78CEE2E41ACD07D70095B124 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80F51F42EE852A05B015A15E /* Pods-Exponent.debug.xcconfig */;
+			baseConfigurationReference = 02F26B94889E4EB5BA470AFB /* Pods-Exponent.debug.xcconfig */;
 			buildSettings = {
 				APP_OWNER = Expo;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -3111,20 +3250,25 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/ABI38_0_0yoga/ABI38_0_0Yoga.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";
+				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		78CEE2E51ACD07D70095B124 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 36BC76754E88A8F5C6E57DDD /* Pods-Exponent.release.xcconfig */;
+			baseConfigurationReference = 90EDC72E21EF251B7424E2E5 /* Pods-Exponent.release.xcconfig */;
 			buildSettings = {
 				APP_OWNER = Expo;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -3141,18 +3285,22 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/ABI38_0_0yoga/ABI38_0_0Yoga.modulemap\" -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -D RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore host.exp.Exponent";
 				STRIP_STYLE = "non-global";
+				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 		B505BA1520CAF77A0046ACFB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EB9676B1E402ED70AEB10A7A /* Pods-Tests.debug.xcconfig */;
+			baseConfigurationReference = D48607EC4F61D3E513BBF4EF /* Pods-Tests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -3177,8 +3325,9 @@
 		};
 		B505BA1620CAF77A0046ACFB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A44375C5408A1FBD7D682FA /* Pods-Tests.release.xcconfig */;
+			baseConfigurationReference = B6982387E180A3864221896B /* Pods-Tests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -3203,8 +3352,9 @@
 		};
 		B51333471CE649FE00E9FC9E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 929FABE1C395FB3FECB8B2DE /* Pods-ExponentIntegrationTests.debug.xcconfig */;
+			baseConfigurationReference = 8A3442268EC4E750318A4755 /* Pods-ExponentIntegrationTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -3220,8 +3370,9 @@
 		};
 		B51333481CE649FE00E9FC9E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 13E8F108A9CD2612A9EB2573 /* Pods-ExponentIntegrationTests.release.xcconfig */;
+			baseConfigurationReference = 2EBAA829A2238361F2EC490B /* Pods-ExponentIntegrationTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

@@ -19,18 +19,38 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		42B25C74E8CEAE9091E4F643FE1DC19B /* UMImageLoaderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMImageLoaderInterface.h; path = UMImageLoaderInterface/UMImageLoaderInterface.h; sourceTree = "<group>"; };
-		97410125370BAF239A49980329183D5B /* UMImageLoaderInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMImageLoaderInterface.xcconfig; sourceTree = "<group>"; };
-		F2E51604C988ACD683232028F12AE71A /* UMImageLoaderInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMImageLoaderInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		0C3EEFB9476E4B702E525DDA758FC31F /* UMImageLoaderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMImageLoaderInterface.h; path = UMImageLoaderInterface/UMImageLoaderInterface.h; sourceTree = "<group>"; };
+		23070AF4D843D21B579BB6F0660EA5CD /* UMImageLoaderInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMImageLoaderInterface.debug.xcconfig; sourceTree = "<group>"; };
+		23443262C9F6B41E55C0B11E581D7031 /* UMImageLoaderInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMImageLoaderInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A6E0C4C4220BBB4C9CAE668051D12CCC /* UMImageLoaderInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMImageLoaderInterface.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		10423B75FDBA0959AE6E1CB926195149 /* UMImageLoaderInterface */ = {
+			isa = PBXGroup;
+			children = (
+				0C3EEFB9476E4B702E525DDA758FC31F /* UMImageLoaderInterface.h */,
+				22B5B899F0D28251E83B5C174984FB90 /* Pod */,
+				E11F47708E73E70E1B31F011753D1274 /* Support Files */,
+			);
+			name = UMImageLoaderInterface;
+			path = "../../../../packages/unimodules-image-loader-interface/ios";
+			sourceTree = "<group>";
+		};
+		22B5B899F0D28251E83B5C174984FB90 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				23443262C9F6B41E55C0B11E581D7031 /* UMImageLoaderInterface.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		3744FFC3FEC11AFBA1076CDA496FB542 = {
 			isa = PBXGroup;
 			children = (
 				6263D5F2CFB2B0821D0D8E4D3CDBC210 /* Frameworks */,
 				D870125169CC6B933073FFB68AD48387 /* Products */,
-				FFB5180ED869B2E540AE90607BCB4BCB /* UMImageLoaderInterface */,
+				10423B75FDBA0959AE6E1CB926195149 /* UMImageLoaderInterface */,
 			);
 			sourceTree = "<group>";
 		};
@@ -41,23 +61,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		808397E2F1AD0182FBB69C21D9109598 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				97410125370BAF239A49980329183D5B /* UMImageLoaderInterface.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMImageLoaderInterface";
-			sourceTree = "<group>";
-		};
-		9F634CBCD1BDD46CC8D181776ACE1630 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				F2E51604C988ACD683232028F12AE71A /* UMImageLoaderInterface.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		D870125169CC6B933073FFB68AD48387 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -65,15 +68,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FFB5180ED869B2E540AE90607BCB4BCB /* UMImageLoaderInterface */ = {
+		E11F47708E73E70E1B31F011753D1274 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				42B25C74E8CEAE9091E4F643FE1DC19B /* UMImageLoaderInterface.h */,
-				9F634CBCD1BDD46CC8D181776ACE1630 /* Pod */,
-				808397E2F1AD0182FBB69C21D9109598 /* Support Files */,
+				23070AF4D843D21B579BB6F0660EA5CD /* UMImageLoaderInterface.debug.xcconfig */,
+				A6E0C4C4220BBB4C9CAE668051D12CCC /* UMImageLoaderInterface.release.xcconfig */,
 			);
-			name = UMImageLoaderInterface;
-			path = "../../../../packages/unimodules-image-loader-interface/ios";
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMImageLoaderInterface";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,9 +170,9 @@
 			};
 			name = Debug;
 		};
-		2034B845A869D3459807B1859CDD2F4D /* Release */ = {
+		60D04963FE54E224CC0C57F361BC45ED /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97410125370BAF239A49980329183D5B /* UMImageLoaderInterface.xcconfig */;
+			baseConfigurationReference = A6E0C4C4220BBB4C9CAE668051D12CCC /* UMImageLoaderInterface.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -182,6 +184,20 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		94BFA7F4EA5A7C389C7820709F5CD8F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 23070AF4D843D21B579BB6F0660EA5CD /* UMImageLoaderInterface.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		D9A4B59EF712D14D8871A660A52DC429 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -243,28 +259,14 @@
 			};
 			name = Release;
 		};
-		E019C57E7DD81FF7E66C5892F6890BEF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97410125370BAF239A49980329183D5B /* UMImageLoaderInterface.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		74301DFD6973EA54F668249306CC5B41 /* Build configuration list for PBXAggregateTarget "UMImageLoaderInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E019C57E7DD81FF7E66C5892F6890BEF /* Debug */,
-				2034B845A869D3459807B1859CDD2F4D /* Release */,
+				94BFA7F4EA5A7C389C7820709F5CD8F7 /* Debug */,
+				60D04963FE54E224CC0C57F361BC45ED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

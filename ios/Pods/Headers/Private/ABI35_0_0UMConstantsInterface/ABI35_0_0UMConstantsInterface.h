@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/UMConstantsInterface/ABI35_0_0UMConstantsInterface/ABI35_0_0UMConstantsInterface.h

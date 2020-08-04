@@ -10,4 +10,9 @@
   return nil;
 }
 
+- (const NSInteger)priority
+{
+  return 0;
+}
+
 @end

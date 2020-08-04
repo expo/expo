@@ -1,8 +1,10 @@
 ---
 title: Brightness
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-brightness"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-brightness'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
@@ -10,15 +12,11 @@ An API to get and set screen brightness.
 
 On Android, there is a global system-wide brightness setting, and each app has its own brightness setting that can optionally override the global setting. It is possible to set either of these values with this API. On iOS, the system brightness setting cannot be changed programmatically; instead, any changes to the screen brightness will persist until the device is locked or powered off.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-brightness`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-brightness).
+<InstallSection packageName="expo-brightness" />
 
 ## Usage
 
@@ -52,6 +50,7 @@ export default function App() {
   );
 }
 ```
+
 </SnackInline>
 
 ## API
@@ -59,6 +58,7 @@ export default function App() {
 ```js
 import * as Brightness from 'expo-brightness';
 ```
+
 <TableOfContentSection title='Methods' contents={['Brightness.requestPermissionsAsync()', 'Brightness.getPermissionsAsync()', 'Brightness.getBrightnessAsync()', 'Brightness.setBrightnessAsync(brightnessValue)', 'Brightness.useSystemBrightnessAsync()', 'Brightness.isUsingSystemBrightnessAsync()', 'Brightness.getSystemBrightnessAsync()', 'Brightness.setSystemBrightnessAsync(brightnessValue)', 'Brightness.getSystemBrightnessModeAsync()', 'Brightness.setSystemBrightnessModeAsync(brightnessMode)' ]} />
 
 <TableOfContentSection title='Enum Types' contents={['Brightness.BrightnessMode']} />
@@ -211,16 +211,21 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 ## Error Codes
 
 ### `ERR_BRIGHTNESS`
+
 An error occurred when getting or setting the app brightness.
 
 ### `ERR_BRIGHTNESS_MODE`
+
 An error occurred when getting or setting the system brightness mode. See the `nativeError` property of the thrown error for more information.
 
 ### `ERR_BRIGHTNESS_PERMISSIONS_DENIED`
+
 An attempt to set the system brightness was made without the proper permissions from the user. The user did not grant `SYSTEM_BRIGHTNESS` permissions.
 
 ### `ERR_BRIGHTNESS_SYSTEM`
+
 An error occurred when getting or setting the system brightness.
 
 ### `ERR_INVALID_ARGUMENT`
+
 An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC` are allowed.

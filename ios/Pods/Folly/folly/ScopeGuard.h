@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,7 @@
 #include <folly/Portability.h>
 #include <folly/Preprocessor.h>
 #include <folly/Utility.h>
+#include <folly/lang/Exception.h>
 #include <folly/lang/UncaughtExceptions.h>
 
 namespace folly {
@@ -89,7 +90,7 @@ class ScopeGuardImpl : public ScopeGuardImplBase {
     // on the value of other.dismissed_. The following lines only execute
     // if the move/copy succeeded, in which case *this assumes ownership of
     // the cleanup action and dismisses other.
-    dismissed_ = exchange(other.dismissed_, true);
+    dismissed_ = std::exchange(other.dismissed_, true);
   }
 
   ~ScopeGuardImpl() noexcept(InvokeNoexcept) {
@@ -120,12 +121,9 @@ class ScopeGuardImpl : public ScopeGuardImplBase {
 
   void execute() noexcept(InvokeNoexcept) {
     if (InvokeNoexcept) {
-      try {
-        function_();
-      } catch (...) {
-        warnAboutToCrash();
-        std::terminate();
-      }
+      using R = decltype(function_());
+      auto catcher = []() -> R { warnAboutToCrash(), std::terminate(); };
+      catch_exception(function_, catcher);
     } else {
       function_();
     }
@@ -142,7 +140,7 @@ using ScopeGuardImplDecay = ScopeGuardImpl<typename std::decay<F>::type, INE>;
 /**
  * ScopeGuard is a general implementation of the "Initialization is
  * Resource Acquisition" idiom.  Basically, it guarantees that a function
- * is executed upon leaving the currrent scope unless otherwise told.
+ * is executed upon leaving the current scope unless otherwise told.
  *
  * The makeGuard() function is used to create a new ScopeGuard object.
  * It can be instantiated with a lambda function, a std::function<void()>,
@@ -181,7 +179,7 @@ using ScopeGuardImplDecay = ScopeGuardImpl<typename std::decay<F>::type, INE>;
  *     http://www.codeproject.com/KB/cpp/scope_guard.aspx
  */
 template <typename F>
-detail::ScopeGuardImplDecay<F, true> makeGuard(F&& f) noexcept(
+FOLLY_NODISCARD detail::ScopeGuardImplDecay<F, true> makeGuard(F&& f) noexcept(
     noexcept(detail::ScopeGuardImplDecay<F, true>(static_cast<F&&>(f)))) {
   return detail::ScopeGuardImplDecay<F, true>(static_cast<F&&>(f));
 }

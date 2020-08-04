@@ -76,6 +76,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 
   // Notifications were only shown while the app wasn't active or if the user specifies to do so.
   if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive || shouldDisplayInForeground) {
+    // TODO(iOS 14): use UNNotificationPresentationOptionList and UNNotificationPresentationOptionBanner
     completionHandler(
                       UNNotificationPresentationOptionAlert +
                       UNNotificationPresentationOptionSound +

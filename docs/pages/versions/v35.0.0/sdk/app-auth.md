@@ -36,7 +36,7 @@ const config = {
  * StorageKey is used for caching the OAuth Key in your app so you can use it later.
  * This can be any string value, but usually it follows this format: @AppName:NameOfValue
  */
-const StorageKey = '@PillarValley:GoogleOAuthKey';
+const StorageKey = '@MyApp:CustomGoogleOAuthKey';
 
 /*
  * Notice that Sign-In / Sign-Out aren't operations provided by this module.

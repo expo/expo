@@ -1,6 +1,7 @@
-import React from 'react';
-import { Alert, Image, Text, View, Switch } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import React from 'react';
+import { Alert, Image, Switch, Text, View } from 'react-native';
+
 import Button from '../components/Button';
 
 interface State {
@@ -8,7 +9,7 @@ interface State {
   copyToCache: boolean;
 }
 
-export default class DocumentPickerScreen extends React.Component<{}, State> {
+export default class DocumentPickerScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'DocumentPicker',
   };
@@ -28,10 +29,10 @@ export default class DocumentPickerScreen extends React.Component<{}, State> {
         Alert.alert('Document picked', JSON.stringify(result, null, 2));
       }, 100);
     }
-  }
+  };
 
   _renderDocument() {
-    if (!this.state.document) {
+    if (this.state.document?.type !== 'success') {
       return null;
     }
     return (
@@ -60,8 +61,7 @@ export default class DocumentPickerScreen extends React.Component<{}, State> {
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',
-          }}
-        >
+          }}>
           <Text>Copy to cache</Text>
           <Switch
             value={this.state.copyToCache}

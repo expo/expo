@@ -35,7 +35,7 @@ NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"
 - (void)handleScreenOrientationChange:(UITraitCollection *)traitCollection
 {
   for(NSString *experienceId in _subscribedModules) {
-    EXScreenOrientation *subscribedModule = [_subscribedModules objectForKey:experienceId];
+    id<EXScreenOrientationListener> subscribedModule = [_subscribedModules objectForKey:experienceId];
     [subscribedModule handleScreenOrientationChange:traitCollection];
   }
 }

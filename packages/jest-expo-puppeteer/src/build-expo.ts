@@ -7,12 +7,7 @@ async function main(args: any[]) {
   try {
     await Webpack.bundleAsync(projectRoot, {
       nonInteractive: true,
-      // @ts-ignore
-      verbose: true,
       mode: 'production',
-      webpackEnv: {
-        removeUnusedImportExports: true,
-      },
     });
     process.exit(0);
   } catch (error) {

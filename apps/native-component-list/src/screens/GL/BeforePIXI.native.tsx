@@ -156,6 +156,3 @@ class HTMLImageElement2 {
 
 // @ts-ignore
 global.HTMLImageElement = global.Image = HTMLImageElement2;
-
-// @ts-ignore
-global.performance = null;

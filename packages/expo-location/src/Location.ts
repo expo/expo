@@ -1,166 +1,36 @@
-import { EventEmitter, Platform, CodedError } from '@unimodules/core';
-import {
-  PermissionResponse as UMPermissionResponse,
-  PermissionStatus,
-} from 'unimodules-permissions-interface';
-
-import invariant from 'invariant';
+import { Platform } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoLocation from './ExpoLocation';
+import {
+  LocationAccuracy,
+  LocationCallback,
+  LocationGeocodedAddress,
+  LocationGeocodedLocation,
+  LocationHeadingCallback,
+  LocationHeadingObject,
+  LocationLastKnownOptions,
+  LocationObject,
+  LocationOptions,
+  LocationPermissionResponse,
+  LocationProviderStatus,
+  LocationRegion,
+  LocationSubscription,
+  LocationTaskOptions,
+  LocationActivityType,
+  LocationGeofencingEventType,
+  LocationGeofencingRegionState,
+  LocationGeocodingOptions,
+} from './Location.types';
+import { LocationEventEmitter } from './LocationEventEmitter';
+import {
+  setGoogleApiKey,
+  googleGeocodeAsync,
+  googleReverseGeocodeAsync,
+} from './LocationGoogleGeocoding';
+import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
 
-const LocationEventEmitter = new EventEmitter(ExpoLocation);
-
-export interface ProviderStatus {
-  locationServicesEnabled: boolean;
-  backgroundModeEnabled: boolean;
-  gpsAvailable?: boolean;
-  networkAvailable?: boolean;
-  passiveAvailable?: boolean;
-}
-
-export interface LocationOptions {
-  accuracy?: LocationAccuracy;
-  enableHighAccuracy?: boolean;
-  timeInterval?: number;
-  distanceInterval?: number;
-  timeout?: number;
-  mayShowUserSettingsDialog?: boolean;
-}
-
-export interface LocationData {
-  coords: {
-    latitude: number;
-    longitude: number;
-    altitude: number;
-    accuracy: number;
-    heading: number;
-    speed: number;
-  };
-  timestamp: number;
-}
-
-export interface HeadingData {
-  trueHeading: number;
-  magHeading: number;
-  accuracy: number;
-}
-
-export interface GeocodedLocation {
-  latitude: number;
-  longitude: number;
-  altitude?: number;
-  accuracy?: number;
-}
-
-export interface Address {
-  city: string;
-  street: string;
-  region: string;
-  country: string;
-  postalCode: string;
-  name: string;
-}
-
-export { PermissionStatus };
-
-export type PermissionDetailsLocationIOS = {
-  scope: 'whenInUse' | 'always';
-};
-
-export type PermissionDetailsLocationAndroid = {
-  scope: 'fine' | 'coarse' | 'none';
-};
-
-export interface PermissionResponse extends UMPermissionResponse {
-  ios?: PermissionDetailsLocationIOS;
-  android?: PermissionDetailsLocationAndroid;
-}
-
-interface LocationTaskOptions {
-  accuracy?: LocationAccuracy;
-  timeInterval?: number; // Android only
-  distanceInterval?: number;
-  showsBackgroundLocationIndicator?: boolean; // iOS only
-  deferredUpdatesDistance?: number;
-  deferredUpdatesTimeout?: number;
-  deferredUpdatesInterval?: number;
-
-  // iOS only
-  activityType?: LocationActivityType;
-  pausesUpdatesAutomatically?: boolean;
-
-  foregroundService?: {
-    notificationTitle: string;
-    notificationBody: string;
-    notificationColor?: string;
-  };
-}
-
-interface Region {
-  identifier?: string;
-  latitude: number;
-  longitude: number;
-  radius: number;
-  notifyOnEnter?: boolean;
-  notifyOnExit?: boolean;
-}
-
-type Subscription = {
-  remove: () => void;
-};
-type LocationCallback = (data: LocationData) => any;
-type HeadingCallback = (data: HeadingData) => any;
-
-enum LocationAccuracy {
-  Lowest = 1,
-  Low = 2,
-  Balanced = 3,
-  High = 4,
-  Highest = 5,
-  BestForNavigation = 6,
-}
-
-enum LocationActivityType {
-  Other = 1,
-  AutomotiveNavigation = 2,
-  Fitness = 3,
-  OtherNavigation = 4,
-  Airborne = 5,
-}
-
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
-
-export enum GeofencingEventType {
-  Enter = 1,
-  Exit = 2,
-}
-
-export enum GeofencingRegionState {
-  Unknown = 0,
-  Inside = 1,
-  Outside = 2,
-}
-
-let nextWatchId = 0;
-let headingId;
-function _getNextWatchId() {
-  nextWatchId++;
-  return nextWatchId;
-}
-function _getCurrentWatchId() {
-  return nextWatchId;
-}
-
-let watchCallbacks: {
-  [watchId: number]: LocationCallback | HeadingCallback;
-} = {};
-
-let deviceEventSubscription: Subscription | null;
-let headingEventSub: Subscription | null;
-let googleApiKey;
-const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
-
-export async function getProviderStatusAsync(): Promise<ProviderStatus> {
+export async function getProviderStatusAsync(): Promise<LocationProviderStatus> {
   return ExpoLocation.getProviderStatusAsync();
 }
 
@@ -175,337 +45,133 @@ export async function enableNetworkProviderAsync(): Promise<void> {
   }
 }
 
+/**
+ * Requests for one-time delivery of the user's current location.
+ * Depending on given `accuracy` option it may take some time to resolve,
+ * especially when you're inside a building.
+ */
 export async function getCurrentPositionAsync(
   options: LocationOptions = {}
-): Promise<LocationData> {
+): Promise<LocationObject> {
   return ExpoLocation.getCurrentPositionAsync(options);
 }
 
-export async function getLastKnownPositionAsync(): Promise<LocationData> {
-  return ExpoLocation.getLastKnownPositionAsync();
+/**
+ * Gets the last known position of the device or `null` if it's not available
+ * or doesn't match given requirements such as maximum age or required accuracy.
+ * It's considered to be faster than `getCurrentPositionAsync` as it doesn't request for the current location.
+ */
+export async function getLastKnownPositionAsync(
+  options: LocationLastKnownOptions = {}
+): Promise<LocationObject | null> {
+  return ExpoLocation.getLastKnownPositionAsync(options);
 }
 
-// Start Compass Module
-
-// To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait
-// for a couple of watch updates if the data has low accuracy
-export async function getHeadingAsync(): Promise<HeadingData> {
-  return new Promise<HeadingData>(async (resolve, reject) => {
-    try {
-      // If there is already a compass active (would be a watch)
-      if (headingEventSub) {
-        let tries = 0;
-        const headingSub = LocationEventEmitter.addListener(
-          'Expo.headingChanged',
-          ({ heading }: { heading: HeadingData }) => {
-            if (heading.accuracy > 1 || tries > 5) {
-              resolve(heading);
-              LocationEventEmitter.removeSubscription(headingSub);
-            } else {
-              tries += 1;
-            }
-          }
-        );
-      } else {
-        let done = false;
-        let subscription;
-        let tries = 0;
-        subscription = await watchHeadingAsync((heading: HeadingData) => {
-          if (!done) {
-            if (heading.accuracy > 1 || tries > 5) {
-              subscription.remove();
-              resolve(heading);
-              done = true;
-            } else {
-              tries += 1;
-            }
-          } else {
-            subscription.remove();
-          }
-        });
-
-        if (done) {
-          subscription.remove();
-        }
-      }
-    } catch (e) {
-      reject(e);
-    }
-  });
-}
-
-export async function watchHeadingAsync(
-  callback: HeadingCallback
-): Promise<{ remove: () => void }> {
-  // Check if there is already a compass event watch.
-  if (headingEventSub) {
-    _removeHeadingWatcher(headingId);
-  }
-
-  headingEventSub = LocationEventEmitter.addListener(
-    'Expo.headingChanged',
-    ({ watchId, heading }: { watchId: string; heading: HeadingData }) => {
-      const callback = watchCallbacks[watchId];
-      if (callback) {
-        callback(heading);
-      } else {
-        ExpoLocation.removeWatchAsync(watchId);
-      }
-    }
-  );
-
-  headingId = _getNextWatchId();
-  watchCallbacks[headingId] = callback;
-  await ExpoLocation.watchDeviceHeading(headingId);
-  return {
-    remove() {
-      _removeHeadingWatcher(headingId);
-    },
-  };
-}
-
-// Removes the compass listener and sub from JS and Native
-function _removeHeadingWatcher(watchId) {
-  if (!watchCallbacks[watchId]) {
-    return;
-  }
-  delete watchCallbacks[watchId];
-  ExpoLocation.removeWatchAsync(watchId);
-  if (headingEventSub) {
-    LocationEventEmitter.removeSubscription(headingEventSub);
-    headingEventSub = null;
-  }
-}
-// End Compass Module
-
-function _maybeInitializeEmitterSubscription() {
-  if (!deviceEventSubscription) {
-    deviceEventSubscription = LocationEventEmitter.addListener(
-      'Expo.locationChanged',
-      ({ watchId, location }: { watchId: string; location: LocationData }) => {
-        const callback = watchCallbacks[watchId];
-        if (callback) {
-          callback(location);
-        } else {
-          ExpoLocation.removeWatchAsync(watchId);
-        }
-      }
-    );
-  }
-}
-
-export async function geocodeAsync(address: string): Promise<Array<GeocodedLocation>> {
-  return ExpoLocation.geocodeAsync(address).catch(error => {
-    const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
-
-    if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
-      if (!googleApiKey) {
-        throw new CodedError(
-          error.code,
-          `${error.message} Please set a Google API Key to use geocoding.`
-        );
-      }
-      return _googleGeocodeAsync(address);
-    }
-    throw error;
-  });
-}
-
-export async function reverseGeocodeAsync(location: {
-  latitude: number;
-  longitude: number;
-}): Promise<Address[]> {
-  if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
-    throw new TypeError(
-      'Location should be an object with number properties `latitude` and `longitude`.'
-    );
-  }
-  return ExpoLocation.reverseGeocodeAsync(location).catch(error => {
-    const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
-
-    if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
-      if (!googleApiKey) {
-        throw new CodedError(
-          error.code,
-          `${error.message} Please set a Google API Key to use geocoding.`
-        );
-      }
-      return _googleReverseGeocodeAsync(location);
-    }
-    throw error;
-  });
-}
-
-export function setApiKey(apiKey: string) {
-  googleApiKey = apiKey;
-}
-
-async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]> {
-  const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
-  const resultObject = await result.json();
-
-  if (resultObject.status === 'ZERO_RESULTS') {
-    return [];
-  }
-
-  assertGeocodeResults(resultObject);
-
-  return resultObject.results.map(result => {
-    let location = result.geometry.location;
-    // TODO: This is missing a lot of props
-    return {
-      latitude: location.lat,
-      longitude: location.lng,
-    };
-  });
-}
-
-async function _googleReverseGeocodeAsync(options: {
-  latitude: number;
-  longitude: number;
-}): Promise<Address[]> {
-  const result = await fetch(
-    `${googleApiUrl}?key=${googleApiKey}&latlng=${options.latitude},${options.longitude}`
-  );
-  const resultObject = await result.json();
-
-  if (resultObject.status === 'ZERO_RESULTS') {
-    return [];
-  }
-
-  assertGeocodeResults(resultObject);
-
-  return resultObject.results.map(result => {
-    const address: any = {};
-
-    result.address_components.forEach(component => {
-      if (component.types.includes('locality')) {
-        address.city = component.long_name;
-      } else if (component.types.includes('street_address')) {
-        address.street = component.long_name;
-      } else if (component.types.includes('administrative_area_level_1')) {
-        address.region = component.long_name;
-      } else if (component.types.includes('country')) {
-        address.country = component.long_name;
-      } else if (component.types.includes('postal_code')) {
-        address.postalCode = component.long_name;
-      } else if (component.types.includes('point_of_interest')) {
-        address.name = component.long_name;
-      }
-    });
-    return address as Address;
-  });
-}
-
-// https://developers.google.com/maps/documentation/geocoding/intro
-function assertGeocodeResults(resultObject: any): void {
-  const { status, error_message } = resultObject;
-  if (status !== 'ZERO_RESULTS' && status !== 'OK') {
-    if (error_message) {
-      throw new CodedError(status, error_message);
-    } else if (status === 'UNKNOWN_ERROR') {
-      throw new CodedError(
-        status,
-        'the request could not be processed due to a server error. The request may succeed if you try again.'
-      );
-    }
-    throw new CodedError(status, `An error occurred during geocoding.`);
-  }
-}
-
-// Polyfill: navigator.geolocation.watchPosition
-function watchPosition(
-  success: GeoSuccessCallback,
-  error: GeoErrorCallback,
-  options: LocationOptions
-) {
-  _maybeInitializeEmitterSubscription();
-
-  const watchId = _getNextWatchId();
-  watchCallbacks[watchId] = success;
-
-  ExpoLocation.watchPositionImplAsync(watchId, options).catch(err => {
-    _removeWatcher(watchId);
-    error({ watchId, message: err.message, code: err.code });
-  });
-
-  return watchId;
-}
-
+/**
+ * Starts watching for location changes.
+ * Given callback will be called once the new location is available.
+ */
 export async function watchPositionAsync(options: LocationOptions, callback: LocationCallback) {
-  _maybeInitializeEmitterSubscription();
-
-  const watchId = _getNextWatchId();
-  watchCallbacks[watchId] = callback;
+  const watchId = LocationSubscriber.registerCallback(callback);
   await ExpoLocation.watchPositionImplAsync(watchId, options);
 
   return {
     remove() {
-      _removeWatcher(watchId);
+      LocationSubscriber.unregisterCallback(watchId);
     },
   };
 }
 
-// Polyfill: navigator.geolocation.clearWatch
-function clearWatch(watchId: number) {
-  _removeWatcher(watchId);
+/**
+ * Resolves to an object with current heading details.
+ * To simplify, it calls `watchHeadingAsync` and waits for a couple of updates
+ * and returns the one that is accurate enough.
+ */
+export async function getHeadingAsync(): Promise<LocationHeadingObject> {
+  return new Promise<LocationHeadingObject>(async resolve => {
+    let tries = 0;
+
+    const subscription = await watchHeadingAsync(heading => {
+      if (heading.accuracy > 1 || tries > 5) {
+        subscription.remove();
+        resolve(heading);
+      } else {
+        tries += 1;
+      }
+    });
+  });
 }
 
-function _removeWatcher(watchId) {
-  // Do nothing if we have already removed the subscription
-  if (!watchCallbacks[watchId]) {
-    return;
+/**
+ * Starts watching for heading changes.
+ * Given callback will be called once the new heading is available.
+ */
+export async function watchHeadingAsync(
+  callback: LocationHeadingCallback
+): Promise<LocationSubscription> {
+  const watchId = HeadingSubscriber.registerCallback(callback);
+  await ExpoLocation.watchDeviceHeading(watchId);
+
+  return {
+    remove() {
+      HeadingSubscriber.unregisterCallback(watchId);
+    },
+  };
+}
+
+/**
+ * Geocodes given address to an array of latitude-longitude coordinates.
+ */
+export async function geocodeAsync(
+  address: string,
+  options?: LocationGeocodingOptions
+): Promise<LocationGeocodedLocation[]> {
+  if (typeof address !== 'string') {
+    throw new TypeError(`Address to geocode must be a string. Got ${address} instead.`);
   }
-
-  ExpoLocation.removeWatchAsync(watchId);
-  delete watchCallbacks[watchId];
-  if (Object.keys(watchCallbacks).length === 0 && deviceEventSubscription) {
-    LocationEventEmitter.removeSubscription(deviceEventSubscription);
-    deviceEventSubscription = null;
+  if (options?.useGoogleMaps || Platform.OS === 'web') {
+    return await googleGeocodeAsync(address);
   }
+  return await ExpoLocation.geocodeAsync(address);
 }
 
-type GeoSuccessCallback = (data: LocationData) => void;
-type GeoErrorCallback = (error: any) => void;
-
-function getCurrentPosition(
-  success: GeoSuccessCallback,
-  error: GeoErrorCallback = () => {},
-  options: LocationOptions = {}
-): void {
-  invariant(typeof success === 'function', 'Must provide a valid success callback.');
-
-  invariant(typeof options === 'object', 'options must be an object.');
-
-  _getCurrentPositionAsyncWrapper(success, error, options);
-}
-
-// This function exists to let us continue to return undefined from getCurrentPosition, while still
-// using async/await for the internal implementation of it
-async function _getCurrentPositionAsyncWrapper(
-  success: GeoSuccessCallback,
-  error: GeoErrorCallback,
-  options: LocationOptions
-): Promise<any> {
-  try {
-    await ExpoLocation.requestPermissionsAsync();
-    const result = await getCurrentPositionAsync(options);
-    success(result);
-  } catch (e) {
-    error(e);
+/**
+ * The opposite behavior of `geocodeAsync` — translates location coordinates to an array of addresses.
+ */
+export async function reverseGeocodeAsync(
+  location: Pick<LocationGeocodedLocation, 'latitude' | 'longitude'>,
+  options?: LocationGeocodingOptions
+): Promise<LocationGeocodedAddress[]> {
+  if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
+    throw new TypeError(
+      'Location to reverse-geocode must be an object with number properties `latitude` and `longitude`.'
+    );
   }
+  if (options?.useGoogleMaps || Platform.OS === 'web') {
+    return await googleReverseGeocodeAsync(location);
+  }
+  return await ExpoLocation.reverseGeocodeAsync(location);
 }
 
-export async function getPermissionsAsync(): Promise<PermissionResponse> {
+/**
+ * Gets the current state of location permissions.
+ */
+export async function getPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+/**
+ * Requests the user to grant location permissions.
+ */
+export async function requestPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.requestPermissionsAsync();
 }
 
 // --- Location service
 
+/**
+ * Returns `true` if the device has location services enabled or `false` otherwise.
+ */
 export async function hasServicesEnabledAsync(): Promise<boolean> {
   return await ExpoLocation.hasServicesEnabledAsync();
 }
@@ -513,7 +179,9 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
 // --- Background location updates
 
 function _validateTaskName(taskName: string) {
-  invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
+  if (!taskName || typeof taskName !== 'string') {
+    throw new Error(`\`taskName\` must be a non-empty string. Got ${taskName} instead.`);
+  }
 }
 
 export async function isBackgroundLocationAvailableAsync(): Promise<boolean> {
@@ -541,7 +209,7 @@ export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<
 
 // --- Geofencing
 
-function _validateRegions(regions: Array<Region>) {
+function _validateRegions(regions: LocationRegion[]) {
   if (!regions || regions.length === 0) {
     throw new Error(
       'Regions array cannot be empty. Use `stopGeofencingAsync` if you want to stop geofencing all regions'
@@ -564,7 +232,7 @@ function _validateRegions(regions: Array<Region>) {
 
 export async function startGeofencingAsync(
   taskName: string,
-  regions: Array<Region> = []
+  regions: LocationRegion[] = []
 ): Promise<void> {
   _validateTaskName(taskName);
   _validateRegions(regions);
@@ -581,25 +249,26 @@ export async function hasStartedGeofencingAsync(taskName: string): Promise<boole
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
 
-export function installWebGeolocationPolyfill(): void {
-  if (Platform.OS !== 'web') {
-    // Polyfill navigator.geolocation for interop with the core react-native and web API approach to
-    // geolocation
-    // @ts-ignore
-    window.navigator.geolocation = {
-      getCurrentPosition,
-      watchPosition,
-      clearWatch,
-
-      // We don't polyfill stopObserving, this is an internal method that probably should not even exist
-      // in react-native docs
-      stopObserving: () => {},
-    };
-  }
+/**
+ * Deprecated as of SDK39
+ */
+export function setApiKey(apiKey: string): void {
+  console.warn("Location's method `setApiKey` is deprecated in favor of `setGoogleApiKey`.");
+  setGoogleApiKey(apiKey);
 }
 
+// For internal purposes
+export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
+
+// Export as namespaced types.
 export {
-  // For internal purposes
-  LocationEventEmitter as EventEmitter,
-  _getCurrentWatchId,
+  LocationAccuracy as Accuracy,
+  LocationActivityType as ActivityType,
+  LocationGeofencingEventType as GeofencingEventType,
+  LocationGeofencingRegionState as GeofencingRegionState,
+  PermissionStatus,
+  setGoogleApiKey,
 };
+
+export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
+export * from './Location.types';

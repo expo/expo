@@ -1,16 +1,21 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
-import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.events.EventDispatcher;
-
-import java.util.Map;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.EnumSet;
 
 public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
+  public SafeAreaViewManager() {
+    super();
+  }
+
   @Override
   @NonNull
   public String getName() {
@@ -24,21 +29,44 @@ public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
   }
 
   @Override
-  protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull final SafeAreaView view) {
-    final EventDispatcher dispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    view.setOnInsetsChangeListener(new SafeAreaView.OnInsetsChangeListener() {
-      @Override
-      public void onInsetsChange(SafeAreaView view, EdgeInsets insets) {
-        dispatcher.dispatchEvent(new InsetsChangeEvent(view.getId(), insets));
-      }
-    });
+  @NonNull
+  public SafeAreaViewShadowNode createShadowNodeInstance() {
+    return new SafeAreaViewShadowNode();
   }
 
   @Override
-  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(InsetsChangeEvent.EVENT_NAME, MapBuilder.of("registrationName", "onInsetsChange"))
-        .build();
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
+    return SafeAreaViewShadowNode.class;
+  }
+
+  @ReactProp(name = "mode")
+  public void setMode(SafeAreaView view, @Nullable String mode) {
+    if ("padding".equals(mode)) {
+      view.setMode(SafeAreaViewMode.PADDING);
+    } else if ("margin".equals(mode)) {
+      view.setMode(SafeAreaViewMode.MARGIN);
+    }
+  }
+
+  @ReactProp(name = "edges")
+  public void setEdges(SafeAreaView view, @Nullable ReadableArray propList) {
+    EnumSet<SafeAreaViewEdges> edges = EnumSet.noneOf(SafeAreaViewEdges.class);
+
+    if (propList != null) {
+      for (int i = 0; i < propList.size(); i += 1) {
+        String edgeName = propList.getString(i);
+        if ("top".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.TOP);
+        } else if ("right".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.RIGHT);
+        } else if ("bottom".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.BOTTOM);
+        } else if ("left".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.LEFT);
+        }
+      }
+    }
+
+    view.setEdges(edges);
   }
 }

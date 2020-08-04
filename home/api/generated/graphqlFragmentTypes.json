@@ -14,29 +14,14 @@
         ]
       },
       {
-        "kind": "UNION",
+        "kind": "INTERFACE",
         "name": "SearchResult",
         "possibleTypes": [
           {
-            "name": "UserSearchResult"
+            "name": "BaseSearchResult"
           },
-          {
-            "name": "AppSearchResult"
-          },
-          {
-            "name": "SnackSearchResult"
-          }
-        ]
-      },
-      {
-        "kind": "INTERFACE",
-        "name": "BaseSearchResult",
-        "possibleTypes": [
           {
             "name": "UserSearchResult"
-          },
-          {
-            "name": "AppSearchResult"
           },
           {
             "name": "SnackSearchResult"

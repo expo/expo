@@ -14,16 +14,10 @@ export default class RootErrorBoundary extends React.Component {
     }
     render() {
         if (this.state.error) {
-            return (<View style={styles.container}>
-          <Text style={styles.warningIcon}>⚠️</Text>
-          <Text style={[styles.paragraph, { color: '#000' }]}>
-            A fatal error was encountered while rendering the root component.
-          </Text>
-          <Text style={styles.paragraph}>
-            Review your application logs for more information, and reload the app when the issue is
-            resolved. In production, your app would have crashed.
-          </Text>
-        </View>);
+            return (React.createElement(View, { style: styles.container },
+                React.createElement(Text, { style: styles.warningIcon }, "\u26A0\uFE0F"),
+                React.createElement(Text, { style: [styles.paragraph, { color: '#000' }] }, "A fatal error was encountered while rendering the root component."),
+                React.createElement(Text, { style: styles.paragraph }, "Review your application logs for more information, and reload the app when the issue is resolved. In production, your app would have crashed.")));
         }
         else {
             return this.props.children;

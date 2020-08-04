@@ -1,8 +1,8 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
-import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
 import { requestUserMediaAsync } from './UserMediaManager';
+import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
 export function getImageSize(videoWidth, videoHeight, scale) {
     const width = videoWidth * scale;
     const ratio = videoWidth / width;
@@ -73,7 +73,7 @@ function getSupportedConstraints() {
     return null;
 }
 export function getIdealConstraints(preferredCameraType, width, height) {
-    let preferredConstraints = {
+    const preferredConstraints = {
         audio: false,
         video: {},
     };

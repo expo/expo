@@ -3,23 +3,22 @@ title: Location
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-location`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-location).
+<InstallSection packageName="expo-location" />
 
 ## Configuration
 
-In Managed apps, `Location` requires `Permissions.LOCATION`.
+In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
 
 In order to use [Background Location Methods](#background-location-methods), the following requirements apply:
 
@@ -35,11 +34,48 @@ In order to use [Geofencing Methods](#geofencing-methods), the following require
 
 ## Usage
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackEmbed snackId="@charliecruzan/basiclocationexample" />
+<SnackInline label='Linear Gradient' templateId='location' dependencies={['expo-location', 'expo-constants']}>
+
+```js
+import React, { useState, useEffect } from 'react';
+import { Platform, Text, View, StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+
+export default function App() {
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  });
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.paragraph}>{text}</Text>
+    </View>
+  );
+}
+```
+
+</SnackInline>
 
 ## API
 
@@ -53,7 +89,7 @@ import * as Location from 'expo-location';
 
 <TableOfContentSection title='Geofencing Methods' contents={['Location.startGeofencingAsync(taskName, regions)', 'Location.stopGeofencingAsync(taskName)', 'Location.hasStartedGeofencingAsync(taskName)']} />
 
-<TableOfContentSection title='Types' contents={['Location', 'Region', 'PermissionDetailsLocationIOS', 'PermissionDetailsLocationAndroid']} />
+<TableOfContentSection title='Types' contents={['Location', 'LocationRegion', 'PermissionDetailsLocationIOS', 'PermissionDetailsLocationAndroid']} />
 
 <TableOfContentSection title='Enums' contents={['Location.Accuracy', 'Location.ActivityType', 'Location.GeofencingEventType', 'Location.GeofencingRegionState']} />
 
@@ -102,6 +138,7 @@ Get the current position of the device.
 - **options (_object_)** -- A map of options:
   - **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
   - **maximumAge (_number_)** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
+  - **timeout (_number_)** -- (Android only). Specifies the duration of time in milliseconds to wait before timing out the location request.
 
 #### Returns
 
@@ -347,7 +384,7 @@ A promise resolving as soon as the task is registered.
 Geofencing task will be receiving following data:
 
 - **eventType : [Location.GeofencingEventType](#locationgeofencingeventtype)** -- Indicates the reason for calling the task, which can be triggered by entering or exiting the region. See [Location.GeofencingEventType](#locationgeofencingeventtype).
-- **region : [Region](#type-region)** -- Object containing details about updated region. See [Region](#type-region) for more details.
+- **region : [LocationRegion](#type-location-region)** -- Object containing details about updated region. See [LocationRegion](#type-region) for more details.
 
 ```javascript
 import * as Location from 'expo-location';
@@ -404,9 +441,9 @@ Object of type `Location` contains following keys:
   - **speed (_number_)** -- The instantaneous speed of the device in meters per second.
 - **timestamp (_number_)** -- The time at which this position information was obtained, in milliseconds since epoch.
 
-### `Region`
+### `LocationRegion`
 
-Object of type `Region` includes following fields:
+Object of type `LocationRegion` includes following fields:
 
 - **identifier (_string_)** -- The identifier of the region object passed to `startGeofencingAsync` or auto-generated.
 - **latitude (_number_)** -- The latitude in degress of region's center point.

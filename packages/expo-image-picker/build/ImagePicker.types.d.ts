@@ -1,4 +1,8 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'unimodules-permissions-interface';
+export { PermissionResponse as CameraPermissionResponse };
+export declare type CameraRollPermissionResponse = PermissionResponse & {
+    accessPrivileges?: 'all' | 'limited' | 'none';
+};
 export declare enum MediaTypeOptions {
     All = "All",
     Videos = "Videos",
@@ -41,10 +45,10 @@ export declare type ImagePickerOptions = {
     exif?: boolean;
     base64?: boolean;
     videoExportPreset?: VideoExportPreset;
+    videoMaxDuration?: number;
 };
 export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
     capture?: boolean;
     allowsMultipleSelection: boolean;
 };
-export { PermissionResponse, PermissionStatus };

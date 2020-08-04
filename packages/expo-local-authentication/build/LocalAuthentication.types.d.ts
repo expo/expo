@@ -6,9 +6,12 @@ export declare type LocalAuthenticationResult = {
 };
 export declare enum AuthenticationType {
     FINGERPRINT = 1,
-    FACIAL_RECOGNITION = 2
+    FACIAL_RECOGNITION = 2,
+    IRIS = 3
 }
-export declare type AuthOptions = {
+export declare type LocalAuthenticationOptions = {
     promptMessage?: string;
+    cancelLabel?: string;
+    disableDeviceFallback?: boolean;
     fallbackLabel?: string;
 };

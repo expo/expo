@@ -3,19 +3,18 @@ title: Reanimated
 sourceCodeUrl: 'https://github.com/kmagiera/react-native-reanimated'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`react-native-reanimated`** provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations. From the project's README:
 
 > It provides a more comprehensive, low level abstraction for the Animated library API to be built on top of and hence allow for much greater flexibility especially when it comes to gesture based interactions.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-reanimated`. In bare apps, you should also follow the [react-native-reanimated linking and configuration instructions](https://github.com/kmagiera/react-native-reanimated#getting-started).
+<InstallSection packageName="react-native-reanimated" href="https://github.com/kmagiera/react-native-reanimated#getting-started" />
 
 ## API Usage
 

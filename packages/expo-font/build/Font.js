@@ -1,7 +1,7 @@
 import { CodedError, UnavailabilityError } from '@unimodules/core';
-import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
+import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
 const loaded = {};
 const loadPromises = {};
 /**
@@ -55,7 +55,7 @@ export function isLoading(fontFamily) {
 }
 /**
  * Natively load a font for use with Text elements.
- * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://facebook.github.io/react-native/docs/text#style) style prop with React Native Text elements.
+ * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://reactnative.dev/docs/text#style) style prop with React Native Text elements.
  * @param source the font asset that should be loaded into the `fontFamily` namespace.
  */
 export async function loadAsync(fontFamilyOrFontMap, source) {

@@ -1,0 +1,92 @@
+/* Prompts a person to go to the URL listed to enter the confirmation code that is presented to them above the given string. */
+"DeviceLogin.LogInPrompt" = "%@ ਵਿੱਚ ਜਾਓ ਅਤੇ ਉੱਤੇ ਦਿਖਾਏ ਗਏ ਕੋਡ ਨੂੰ ਦਾਖ਼ਲ ਕਰੋ।";
+
+/* Prompts a person that the next thing they need to do to finish connecting their Smart TV and Facebook application is to navigate to their Facebook application on their mobile device and look through their notifications for a message about the connection being formed */
+"DeviceLogin.SmartLogInPrompt" = "ਆਪਣੇ ਖਾਤੇ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ, ਆਪਣੀ ਮੋਬਾਈਲ ਡਿਵਾਈਸ 'ਤੇ Facebook ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖੋ।";
+
+/* Displayed as a separator between two options. First option is on a line above this, and second option is below */
+"DeviceLogin.SmartLogInOrLabel" = "- ਜਾਂ -";
+
+/* The title of the label to dismiss the alert when presenting user facing error messages */
+"ErrorRecovery.Alert.OK" = "ਠੀਕ";
+
+/* The title of the label to decline attempting error recovery */
+"ErrorRecovery.Cancel" = "ਰੱਦ ਕਰੋ";
+
+/* The fallback message to display to recover invalidated tokens */
+"ErrorRecovery.Login.Suggestion" = "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ Facebook ਖਾਤੇ ਨਾਲ ਮੁੜ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇਸ ਐਪ ਵਿੱਚ ਦੁਬਾਰਾ ਲੌਗ ਇਨ ਕਰੋ।";
+
+/* The title of the label to start attempting error recovery */
+"ErrorRecovery.OK" = "ਠੀਕ";
+
+/* The fallback message to display to retry transient errors */
+"ErrorRecovery.Transient.Suggestion" = "ਇਹ ਸਰਵਰ ਅਸਥਾਈ ਰੂਪ ਵਿੱਚ ਵਿਅਸਤ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
+
+/* The label for the FBSDKLikeButton when the object is not currently liked. */
+"LikeButton.Like" = "ਪਸੰਦ ਕਰੋ";
+
+/* The label for the FBSDKLikeButton when the object is currently liked. */
+"LikeButton.Liked" = "ਪਸੰਦ ਕੀਤਾ ਗਿਆ";
+
+/* The label for the FBSDKLoginButton action sheet to cancel logging out */
+"LoginButton.CancelLogout" = "ਰੱਦ ਕਰੋ";
+
+/* The label for the FBSDKLoginButton action sheet to confirm logging out */
+"LoginButton.ConfirmLogOut" = "ਲੌਗ ਆਉਟ ਕਰੋ";
+
+/* The fallback string for the FBSDKLoginButton label when the user name is not available yet */
+"LoginButton.LoggedIn" = "Facebook ਦਾ ਉਪਯੋਗ ਕਰਕੇ ਲੌਗ ਇਨ ਕੀਤਾ ਗਿਆ";
+
+/* The format string for the FBSDKLoginButton label when the user is logged in */
+"LoginButton.LoggedInAs" = "%@ ਵੱਜੋਂ ਲੌਗ ਇਨ ਕੀਤਾ ਗਿਆ";
+
+/* The short label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogIn" = "ਲੌਗ ਇਨ ਕਰੋ";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInContinue" = "Facebook ਦੇ ਨਾਲ ਜਾਰੀ ਰੱਖੋ";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInLong" = "Facebook ਦੇ ਨਾਲ ਲੌਗ ਇਨ ਕਰੋ";
+
+/* The label for the FBSDKLoginButton when the user is currently logged in */
+"LoginButton.LogOut" = "ਲੌਗ ਆਉਟ ਕਰੋ";
+
+/* The user facing error message when the app slider has been disabled and login fails. */
+"LoginError.SystemAccount.Disabled" = "Facebook ਖਾਤੇ ਨੂੰ ਐਕਸੈਸ ਪ੍ਰਦਾਨ ਨਹੀਂ ਕੀਤੀ ਗਈ। ਡਿਵਾਈਸ ਸੈੱਟਿੰਗਜ਼ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।";
+
+/* The user facing error message when the Accounts framework encounters a network error. */
+"LoginError.SystemAccount.Network" = "Facebook ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥਿਤ ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
+
+/* The user facing error message when the device Facebook account password is incorrect and login fails. */
+"LoginError.SystemAccount.PasswordChange" = "ਤੁਹਾਡੇ Facebook ਪਾਸਵਰਡ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਆਪਣੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ, ਸੈੱਟਿੰਗਜ਼ &gt; Facebook ਖੋਲ੍ਹੋ ਅਤੇ ਆਪਣੇ ਨਾਂ ਨੂੰ ਟੈਪ ਕਰੋ।";
+
+/* The user facing error message when the device Facebook account is unavailable and login fails. */
+"LoginError.SystemAccount.Unavailable" = "Facebook ਖਾਤੇ ਨੂੰ ਡਿਵਾਈਸ 'ਤੇ ਕਨਫ਼ੀਗਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework becomes unconfirmed. */
+"LoginError.SystemAccount.UnconfirmedUser" = "ਤੁਹਾਡੇ ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਗਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ www.facebook.com ਵਿੱਚ ਲੌਗ ਇਨ ਕਰੋ ਅਤੇ ਹੇਠਾਂ ਦਿੱਤੇ ਨਿਰਦੇਸ਼ਾਂ ਦਾ ਪਾਲਣ ਕਰੋ।";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework has been checkpointed. */
+"LoginError.SystemAccount.UserCheckpointed" = "ਤੁਸੀਂ ਇਸ ਸਮੇਂ ਐਪ ਵਿੱਚ ਲੌਗ ਇਨ ਨਹੀਂ ਕਰ ਸਕਦੇ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ www.facebook.com ਵਿੱਚ ਲੌਗ ਇਨ ਕਰੋ ਅਤੇ ਹੇਠਾਂ ਦਿੱਤੇ ਨਿਰਦੇਸ਼ਾਂ ਦਾ ਪਾਲਣ ਕਰੋ।";
+
+/* The message of the FBSDKLoginTooltipView */
+"LoginTooltip.Message" = "ਤੁ\ਸੀਂ ਨਿਯੰਤਰਣ ਵਿੱਚ ਹੋ - ਉਹ ਜਾਣਕਾਰੀ ਚੁਣੋ ਜੋ ਤੁਸੀਂ ਐਪਸ ਦੇ ਨਾਲ ਸਾਂਝੀ ਕਰਨੀ ਚਾਹੁੰਦੇ ਹੋ।";
+
+/* Title of the web dialog that prompts the user to log in to Facebook. */
+"LoginWeb.LogInTitle" = "ਲੌਗ ਇਨ ਕਰੋ";
+
+/* The label for FBSDKSendButton */
+"SendButton.Send" = "ਸਾਂਝਾ ਕਰੋ";
+
+/* The label for FBSDKShareButton */
+"ShareButton.Share" = "ਭੇਜੋ";
+
+/* Prompts a person if this is their current account */
+"SmartLogin.NotYou" = "ਕੀ ਤੁਸੀਂ ਨਹੀਂ ਹੋ?";
+
+/* Text on a button that a person presses to confirm that they are finished with the login experience */
+"SmartLogin.ConfirmationTitle" = "ਲੌਗਇਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ";
+
+/* Text on a button that lets a person continue with their name linked to a Facebook account (Name = %@) */
+"SmartLogin.Continue" = "%@ ਵੱਜੋਂ ਜਾਰੀ ਰੱਖੋ";

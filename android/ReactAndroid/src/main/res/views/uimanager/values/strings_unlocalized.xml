@@ -13,6 +13,10 @@
     translatable="false"
     >Image</string>
   <string
+    name="reactandroid_button_description"
+    translatable="false"
+    >Button</string>
+  <string
     name="reactandroid_imagebutton_description"
     translatable="false"
     >Button, Image</string>

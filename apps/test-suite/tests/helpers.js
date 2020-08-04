@@ -1,10 +1,15 @@
 // @flow
 
-import React from 'react';
-import { isMatch } from 'lodash';
 import asyncRetry from 'async-retry';
+import { isMatch } from 'lodash';
+import React from 'react';
+import { Alert } from 'react-native';
 
 export const waitFor = millis => new Promise(resolve => setTimeout(resolve, millis));
+
+export const alertAndWaitForResponse = async message => {
+  return new Promise(resolve => Alert.alert(message, null, [{ text: 'OK', onPress: resolve }]));
+};
 
 export const retryForStatus = (object, status) =>
   asyncRetry(

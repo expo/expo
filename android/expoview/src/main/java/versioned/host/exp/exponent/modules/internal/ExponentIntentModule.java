@@ -8,17 +8,21 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.intent.IntentModule;
 
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.kernel.services.linking.LinkingKernelService;
 
+@ReactModule(name = ExponentIntentModule.NAME, canOverrideExistingModule = true)
 public class ExponentIntentModule extends IntentModule {
   @Inject
   protected ExpoKernelServiceRegistry mKernelServiceRegistry;
@@ -40,17 +44,17 @@ public class ExponentIntentModule extends IntentModule {
     return true;
   }
 
-  @ReactMethod
+  @Override
   public void getInitialURL(Promise promise) {
     try {
       promise.resolve(mExperienceProperties.get(KernelConstants.INTENT_URI_KEY));
     } catch (Exception e) {
       promise.reject(new JSApplicationIllegalArgumentException(
-          "Could not get the initial URL : " + e.getMessage()));
+        "Could not get the initial URL : " + e.getMessage()));
     }
   }
 
-  @ReactMethod
+  @Override
   public void openURL(String url, final Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
@@ -72,7 +76,7 @@ public class ExponentIntentModule extends IntentModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void canOpenURL(String url, Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));

@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Modules/RCTRedBox.h
+../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTRedBox.h

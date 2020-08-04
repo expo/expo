@@ -1,4 +1,19 @@
-// Definitions by: TeamworkGuy2 <https://github.com/TeamworkGuy2>
+// Definitions copied from `@types/websql` as we want
+// to expose a custom version of the API that:
+// - uses primitive `string` instead of `String`
+// - excludes some methods that are not exposed by our API.
+//
+// Original definitions by: TeamworkGuy2 <https://github.com/TeamworkGuy2>
+
+export interface Window {
+  openDatabase?: (
+    name: string,
+    version: string,
+    displayName: string,
+    estimatedSize: number,
+    creationCallback?: DatabaseCallback
+  ) => Database;
+}
 
 export interface DatabaseCallback {
   (database: Database): void;
@@ -35,7 +50,7 @@ export interface SQLTransactionErrorCallback {
 export interface SQLTransaction {
   executeSql(
     sqlStatement: string,
-    args?: Array<any>,
+    args?: any[],
     callback?: SQLStatementCallback,
     errorCallback?: SQLStatementErrorCallback
   ): void;
@@ -86,10 +101,10 @@ export interface ResultSetError {
 export interface ResultSet {
   insertId?: number;
   rowsAffected: number;
-  rows: Array<{ [column: string]: any }>;
+  rows: { [column: string]: any }[];
 }
 
 export type SQLiteCallback = (
   error?: Error | null,
-  resultSet?: Array<ResultSetError | ResultSet>
+  resultSet?: (ResultSetError | ResultSet)[]
 ) => void;

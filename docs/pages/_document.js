@@ -38,7 +38,6 @@ export default class MyDocument extends Document {
       <html lang="en">
         <Head>
           <Analytics.GoogleScript id="UA-107832480-3" />
-          <script src="/static/libs/prism/prism.js" />
           <script src="/static/libs/tippy/tippy.all.min.js" />
           <script src="/static/libs/nprogress/nprogress.js" />
 
@@ -51,6 +50,7 @@ export default class MyDocument extends Document {
           <style dangerouslySetInnerHTML={{ __html: globalTippy }} />
           <style dangerouslySetInnerHTML={{ __html: globalExtras }} />
           <link rel="stylesheet" href="/static/libs/algolia/algolia.min.css" />
+          <link rel="stylesheet" href="/static/libs/algolia/algolia-mobile.css" />
           <link
             rel="stylesheet"
             href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"

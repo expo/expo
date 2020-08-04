@@ -13,6 +13,8 @@
 - (void)setIsEnabled:(BOOL)enabled;
 - (void)setSettings:(NSDictionary *)settings;
 
+- (void)setPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
+
 - (void)maybeStartBarCodeScanning;
 - (void)stopBarCodeScanning;
 

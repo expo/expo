@@ -2,6 +2,11 @@ import gql from 'graphql-tag';
 import uuid from 'uuid';
 
 jest.mock('../ApiV2HttpClient');
+jest.mock('@react-native-community/async-storage', () => ({
+  setItem: jest.fn(() => new Promise(resolve => resolve(null))),
+  getItem: jest.fn(() => new Promise(resolve => resolve(null))),
+  removeItem: jest.fn(() => new Promise(resolve => resolve(null))),
+}));
 
 describe('User Authentication Flow', () => {
   let ApiV2HttpClient;

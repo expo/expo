@@ -51,9 +51,7 @@ export default class App extends React.Component {
       <View
         style={[
           styles.container,
-          this.state.modalVisible
-            ? { backgroundColor: '#b7b7b7' }
-            : { backgroundColor: 'white' },
+          this.state.modalVisible ? { backgroundColor: '#b7b7b7' } : { backgroundColor: 'white' },
         ]}>
         <Button
           title={
@@ -71,9 +69,7 @@ export default class App extends React.Component {
           }}
         />
 
-        {this.state.authenticated && (
-          <Text style={styles.text}>Authentication Successful! 🎉</Text>
-        )}
+        {this.state.authenticated && <Text style={styles.text}>Authentication Successful! 🎉</Text>}
 
         <Modal
           animationType="slide"

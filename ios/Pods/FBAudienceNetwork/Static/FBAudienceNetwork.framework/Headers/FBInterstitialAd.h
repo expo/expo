@@ -17,7 +17,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import <StoreKit/StoreKit.h>
 
 #import <FBAudienceNetwork/FBAdDefines.h>
 #import <FBAudienceNetwork/FBAdExtraHint.h>

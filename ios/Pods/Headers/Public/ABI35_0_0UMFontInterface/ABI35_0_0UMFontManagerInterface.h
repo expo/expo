@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/UMFontInterface/ABI35_0_0UMFontInterface/ABI35_0_0UMFontManagerInterface.h

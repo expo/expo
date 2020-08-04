@@ -1,8 +1,16 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, ScrollView, TouchableOpacityProps } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import * as MediaLibrary from 'expo-media-library';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
+
 import Photo from './Photo';
 
 interface State {
@@ -21,7 +29,7 @@ export default class GalleryScreen extends React.Component<
 
   componentDidMount = async () => {
     this.setState({ photos: this.props.photos.map(({ uri }) => uri) });
-  }
+  };
 
   toggleSelection = (uri: string, isSelected: boolean) => {
     let selected = this.state.selected;
@@ -31,7 +39,7 @@ export default class GalleryScreen extends React.Component<
       selected = selected.filter(item => item !== uri);
     }
     this.setState({ selected });
-  }
+  };
 
   saveToGallery = async () => {
     const photos = this.state.selected;
@@ -48,15 +56,15 @@ export default class GalleryScreen extends React.Component<
       });
 
       await Promise.all(promises);
-      alert('Successfully saved photos to user\'s gallery!');
+      alert("Successfully saved photos to user's gallery!");
     } else {
       alert('No photos to save!');
     }
-  }
+  };
 
   renderPhoto = (fileName: string) => (
     <Photo key={fileName} uri={fileName} onSelectionToggle={this.toggleSelection} />
-  )
+  );
 
   render() {
     return (

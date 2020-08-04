@@ -1,3 +1,5 @@
-import { NativeModulesProxy } from '@unimodules/core';
-export default NativeModulesProxy.NotificationsInstallationIdProvider;
+export default {
+    addListener: () => { },
+    removeListeners: () => { },
+};
 //# sourceMappingURL=InstallationIdProvider.js.map

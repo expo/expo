@@ -18,7 +18,6 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
 @interface UMExportedModule ()
 
 @property (nonatomic, strong) dispatch_queue_t methodQueue;
-@property (nonatomic, assign) dispatch_once_t methodQueueSetupOnce;
 @property (nonatomic, strong) NSDictionary<NSString *, NSString *> *exportedMethods;
 
 @end
@@ -55,14 +54,10 @@ static dispatch_once_t selectorRegularExpressionOnceToken = 0;
 
 - (dispatch_queue_t)methodQueue
 {
-  __weak UMExportedModule *weakSelf = self;
-  dispatch_once(&_methodQueueSetupOnce, ^{
-    __strong UMExportedModule *strongSelf = weakSelf;
-    if (strongSelf) {
-      NSString *queueName = [NSString stringWithFormat:@"org.unimodules.%@Queue", [[strongSelf class] exportedModuleName]];
-      strongSelf.methodQueue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
-    }
-  });
+  if (!_methodQueue) {
+    NSString *queueName = [NSString stringWithFormat:@"org.unimodules.%@Queue", [[self class] exportedModuleName]];
+    _methodQueue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+  }
   return _methodQueue;
 }
 

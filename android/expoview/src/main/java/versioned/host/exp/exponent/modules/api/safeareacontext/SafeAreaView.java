@@ -1,103 +1,158 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
-import android.view.Surface;
+import android.content.ContextWrapper;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
-import android.view.WindowManager;
 
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.view.ReactViewGroup;
+
+import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
 
-public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnGlobalLayoutListener {
-  public interface OnInsetsChangeListener {
-    void onInsetsChange(SafeAreaView view, EdgeInsets insets);
-  }
-
-  private @Nullable OnInsetsChangeListener mInsetsChangeListener;
-  private WindowManager mWindowManager;
-  private @Nullable EdgeInsets mLastInsets;
+@SuppressLint("ViewConstructor")
+public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnPreDrawListener {
+  private SafeAreaViewMode mMode = SafeAreaViewMode.PADDING;
+  private @Nullable EdgeInsets mInsets;
+  private @Nullable EnumSet<SafeAreaViewEdges> mEdges;
+  private @Nullable View mProviderView;
 
   public SafeAreaView(Context context) {
     super(context);
-
-    mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
   }
 
-  private EdgeInsets getSafeAreaInsets() {
-    // Window insets are parts of the window that are covered by system views (status bar,
-    // navigation bar, notches). There are no apis the get these values for android < M so we
-    // do a best effort polyfill.
-    EdgeInsets windowInsets;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      WindowInsets insets = getRootWindowInsets();
-      windowInsets = new EdgeInsets(
-          insets.getSystemWindowInsetTop(),
-          insets.getSystemWindowInsetRight(),
-          insets.getSystemWindowInsetBottom(),
-          insets.getSystemWindowInsetLeft());
-    } else {
-      int rotation = mWindowManager.getDefaultDisplay().getRotation();
-      int statusBarHeight = 0;
-      int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-      if (resourceId > 0) {
-        statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-      }
-      int navbarHeight = 0;
-      resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-      if (resourceId > 0) {
-        navbarHeight = getResources().getDimensionPixelSize(resourceId);
-      }
-
-      windowInsets = new EdgeInsets(
-          statusBarHeight,
-          rotation == Surface.ROTATION_90 ? navbarHeight : 0,
-          rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180 ? navbarHeight : 0,
-          rotation == Surface.ROTATION_270 ? navbarHeight : 0);
+  /**
+   * UIManagerHelper.getReactContext only exists in RN 0.63+ so vendor it here for a while.
+   */
+  private static ReactContext getReactContext(View view) {
+    Context context = view.getContext();
+    if (!(context instanceof ReactContext) && context instanceof ContextWrapper) {
+      context = ((ContextWrapper) context).getBaseContext();
     }
+    return (ReactContext) context;
+  }
 
-    // Calculate the part of the root view that overlaps with window insets.
-    View rootView = getRootView();
-    View contentView = rootView.findViewById(android.R.id.content);
-    float windowWidth = rootView.getWidth();
-    float windowHeight = rootView.getHeight();
-    int[] windowLocation = new int[2];
-    contentView.getLocationInWindow(windowLocation);
-    windowInsets.top = Math.max(windowInsets.top - windowLocation[1], 0);
-    windowInsets.left = Math.max(windowInsets.left - windowLocation[0], 0);
-    windowInsets.bottom = Math.max(windowLocation[1] + contentView.getHeight() + windowInsets.bottom - windowHeight, 0);
-    windowInsets.right = Math.max(windowLocation[0] + contentView.getWidth() + windowInsets.right - windowWidth, 0);
-    return windowInsets;
+  private void updateInsets() {
+    if (mInsets != null) {
+      EnumSet<SafeAreaViewEdges> edges = mEdges != null
+              ? mEdges
+              : EnumSet.allOf(SafeAreaViewEdges.class);
+
+      SafeAreaViewLocalData localData = new SafeAreaViewLocalData(mInsets, mMode, edges);
+
+      ReactContext reactContext = getReactContext(this);
+      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+      if (uiManager != null) {
+        uiManager.setViewLocalData(getId(), localData);
+        waitForReactLayout();
+      }
+    }
+  }
+
+  // 5 seconds
+  private static final long MAX_WAIT_TIME_NANO = 5000000000L;
+
+  private void waitForReactLayout() {
+    // Block the main thread until the native module thread is finished with
+    // its current tasks. To do this we use the done boolean as a lock and enqueue
+    // a task on the native modules thread. When the task runs we can unblock the
+    // main thread. This should be safe as long as the native modules thread
+    // does not block waiting on the main thread.
+    final AtomicBoolean done = new AtomicBoolean(false);
+    final long startTime = System.nanoTime();
+    long waitTime = 0L;
+    getReactContext(this).runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        synchronized (done) {
+          done.set(true);
+          done.notify();
+        }
+      }
+    });
+    synchronized (done) {
+      while (!done.get() && waitTime < MAX_WAIT_TIME_NANO) {
+        try {
+          done.wait(MAX_WAIT_TIME_NANO / 1000000L);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        waitTime = System.nanoTime() - startTime;
+      }
+      // Timed out waiting.
+      if (waitTime >= MAX_WAIT_TIME_NANO) {
+        Log.w("SafeAreaView", "Timed out waiting for layout.");
+      }
+    }
+  }
+
+  public void setMode(SafeAreaViewMode mode) {
+    mMode = mode;
+    updateInsets();
+  }
+
+  public void setEdges(EnumSet<SafeAreaViewEdges> edges) {
+    mEdges = edges;
+    updateInsets();
+  }
+
+  private boolean maybeUpdateInsets() {
+    if (mProviderView == null) {
+      return false;
+    }
+    EdgeInsets edgeInsets = SafeAreaUtils.getSafeAreaInsets(mProviderView);
+    if (edgeInsets != null && (mInsets == null || !mInsets.equalsToEdgeInsets(edgeInsets))) {
+      mInsets = edgeInsets;
+      updateInsets();
+      return true;
+    }
+    return false;
+  }
+
+  private View findProvider() {
+    ViewParent current = getParent();
+    while (current != null) {
+      if (current instanceof SafeAreaProvider) {
+        return (View) current;
+      }
+      current = current.getParent();
+    }
+    return this;
   }
 
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
 
-    getRootView().getViewTreeObserver().addOnGlobalLayoutListener(this);
+    mProviderView = findProvider();
+
+    mProviderView.getViewTreeObserver().addOnPreDrawListener(this);
+    maybeUpdateInsets();
   }
 
   @Override
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
 
-    getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    if (mProviderView != null) {
+      mProviderView.getViewTreeObserver().removeOnPreDrawListener(this);
+    }
+    mProviderView = null;
   }
 
   @Override
-  public void onGlobalLayout() {
-    EdgeInsets edgeInsets = getSafeAreaInsets();
-    if (mLastInsets == null || !mLastInsets.equalsToEdgeInsets(edgeInsets)) {
-      Assertions.assertNotNull(mInsetsChangeListener).onInsetsChange(this, edgeInsets);
-      mLastInsets = edgeInsets;
+  public boolean onPreDraw() {
+    boolean didUpdate = maybeUpdateInsets();
+    if (didUpdate) {
+      requestLayout();
     }
-  }
-
-  public void setOnInsetsChangeListener(OnInsetsChangeListener listener) {
-    mInsetsChangeListener = listener;
+    return !didUpdate;
   }
 }

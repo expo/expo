@@ -1,15 +1,7 @@
 import LogSerialization from '../LogSerialization';
 import RemoteLogging, { __waitForEmptyLogQueueAsync } from '../RemoteLogging';
 
-jest.mock('uuid-js', () => ({
-  create() {
-    return {
-      toString() {
-        return 'c0d50576-7ddc-4196-8b1d-01c2d1786631';
-      },
-    };
-  },
-}));
+jest.mock('uuid/v4', () => () => 'c0d50576-7ddc-4196-8b1d-01c2d1786631');
 
 jest.mock('../LogSerialization', () => ({
   serializeLogDataAsync: jest.fn(async data => {
@@ -103,7 +95,7 @@ it(`continues sending logs after a serialization failure`, async () => {
 
 describe('addTransportErrorListener', () => {
   let subscription;
-  let mockListener = jest.fn();
+  const mockListener = jest.fn();
 
   beforeAll(() => {
     subscription = RemoteLogging.addTransportErrorListener(mockListener);

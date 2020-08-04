@@ -1,10 +1,9 @@
-import React from 'react';
-import { ActivityIndicator, InteractionManager, StyleSheet, View } from 'react-native';
 import * as GL from 'expo-gl';
-
-import REGL from 'regl';
 import mat4 from 'gl-mat4';
 import hsv2rgb from 'hsv2rgb';
+import React from 'react';
+import { ActivityIndicator, InteractionManager, StyleSheet, View } from 'react-native';
+import REGL from 'regl';
 
 const NUM_POINTS = 1e4;
 const VERT_SIZE = 4 * (4 + 4 + 3);
@@ -140,5 +139,5 @@ export default class BasicScene extends React.Component {
       requestAnimationFrame(frame);
     };
     frame();
-  }
+  };
 }

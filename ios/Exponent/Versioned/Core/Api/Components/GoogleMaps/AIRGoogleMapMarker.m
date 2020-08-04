@@ -9,7 +9,7 @@
 
 #import "AIRGoogleMapMarker.h"
 #import <GoogleMaps/GoogleMaps.h>
-#import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTUtils.h>
 #import "AIRGMSMarker.h"
 #import "AIRGoogleMapCallout.h"
@@ -117,9 +117,9 @@ CGRect unionRect(CGRect a, CGRect b) {
 
 - (void)redraw {
   if (!_realMarker.iconView) return;
-  
+
   BOOL oldValue = _realMarker.tracksViewChanges;
-  
+
   if (oldValue == YES)
   {
     // Immediate refresh, like right now. Not waiting for next frame.
@@ -270,7 +270,7 @@ CGRect unionRect(CGRect a, CGRect b) {
     [self iconViewInsertSubview:_iconImageView atIndex:0];
   }
 
-  _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
+  _reloadImageCancellationBlock = [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
                                                                           size:self.bounds.size
                                                                          scale:RCTScreenScale()
                                                                        clipped:YES
@@ -327,7 +327,7 @@ CGRect unionRect(CGRect a, CGRect b) {
   }
 
   _reloadImageCancellationBlock =
-  [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_iconSrc]
+  [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:_iconSrc]
                                           size:self.bounds.size
                                          scale:RCTScreenScale()
                                        clipped:YES

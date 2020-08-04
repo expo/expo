@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE()
   AIRGoogleMap *map = [AIRGoogleMap new];
   map.bridge = self.bridge;
   map.delegate = self;
-  map.isAccessibilityElement = YES;
+  map.isAccessibilityElement = NO;
   map.accessibilityElementsHidden = NO;
   map.settings.consumesGesturesInView = NO;
   map.indoorDisplay.delegate = self;
@@ -65,6 +65,7 @@ RCT_EXPORT_MODULE()
   return map;
 }
 
+RCT_EXPORT_VIEW_PROPERTY(isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_EXPORT_VIEW_PROPERTY(initialCamera, GMSCameraPosition)
 RCT_REMAP_VIEW_PROPERTY(camera, cameraProp, GMSCameraPosition)

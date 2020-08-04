@@ -40,4 +40,21 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
+RCT_CUSTOM_VIEW_PROPERTY(textColor, UIColor, RNDateTimePicker)
+{
+  if (json) {
+    [view setValue:[RCTConvert UIColor:json] forKey:@"textColor"];
+    [view setValue:@(NO) forKey:@"highlightsToday"];
+  } else {
+    UIColor* defaultColor;
+    if (@available(iOS 13.0, *)) {
+        defaultColor = [UIColor labelColor];
+    } else {
+        defaultColor = [UIColor blackColor];
+    }
+    [view setValue:defaultColor forKey:@"textColor"];
+    [view setValue:@(YES) forKey:@"highlightsToday"];
+  }
+}
+
 @end

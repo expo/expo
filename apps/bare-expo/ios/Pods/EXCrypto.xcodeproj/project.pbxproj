@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F586B416ADE22EA518EC761DAD78B1D /* EXCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 94329D3F1A7993CB471BBB13DCC2AF05 /* EXCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		658DFED6C9D26D084091B7A4E29FC3B1 /* EXCrypto-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A7EE61883FBD133794E880F262B23899 /* EXCrypto-dummy.m */; };
-		DACF13D06C8C7990C5D9F078DC9987B9 /* EXCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE582CD1F5C6B0679750212838AC8F /* EXCrypto.m */; };
+		1669FA24B2978469057BFC527577343D /* EXCrypto-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E33CDA22424F925B64F6761A253865 /* EXCrypto-dummy.m */; };
+		2E6F9A6EF6E43D9623753539E1EC2141 /* EXCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 49FE0FE2364BFA326C41C25A2263E064 /* EXCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		77A6EB03BC629BBE0A803AA4D47DEB47 /* EXCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 97E782F865D7965C71A30A1A2F1A46A0 /* EXCrypto.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D004ACC1D0AE024D5EB731232235AAA5 /* PBXContainerItemProxy */ = {
+		D8FA97EE4E37DA1A7AD865BAC83CC0AC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3D7A5E962369B34F51EEF1F94DBCB390 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -23,18 +23,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2C32874CE7EE1DF6885B98AB8F4F67B4 /* EXCrypto.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCrypto.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		14438ACC7C88C3A5002E083620854A77 /* EXCrypto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCrypto.debug.xcconfig; sourceTree = "<group>"; };
 		30B62E217660987615685AC71312A31C /* libEXCrypto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXCrypto.a; path = libEXCrypto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D7A5E962369B34F51EEF1F94DBCB390 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		5E2ED916D56040ADF388082AAD65CFB7 /* EXCrypto.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCrypto.xcconfig; sourceTree = "<group>"; };
-		5ECE582CD1F5C6B0679750212838AC8F /* EXCrypto.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCrypto.m; path = EXCrypto/EXCrypto.m; sourceTree = "<group>"; };
-		78EEA5EFFC9A0D6120FAA285AAF58F31 /* EXCrypto-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCrypto-prefix.pch"; sourceTree = "<group>"; };
-		94329D3F1A7993CB471BBB13DCC2AF05 /* EXCrypto.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCrypto.h; path = EXCrypto/EXCrypto.h; sourceTree = "<group>"; };
-		A7EE61883FBD133794E880F262B23899 /* EXCrypto-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCrypto-dummy.m"; sourceTree = "<group>"; };
+		4865B4F1232D8D422BB581900BCBD627 /* EXCrypto-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCrypto-prefix.pch"; sourceTree = "<group>"; };
+		49FE0FE2364BFA326C41C25A2263E064 /* EXCrypto.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCrypto.h; path = EXCrypto/EXCrypto.h; sourceTree = "<group>"; };
+		65E33CDA22424F925B64F6761A253865 /* EXCrypto-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCrypto-dummy.m"; sourceTree = "<group>"; };
+		97E782F865D7965C71A30A1A2F1A46A0 /* EXCrypto.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCrypto.m; path = EXCrypto/EXCrypto.m; sourceTree = "<group>"; };
+		CEBDB2E1AA52861BDE7ADCCD650EFD28 /* EXCrypto.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCrypto.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F34CA6A1671CE7C544368ECFB361F692 /* EXCrypto.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCrypto.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CC567C1FDAA59DB3E6CCDE5DE5F04184 /* Frameworks */ = {
+		DEFA55DF076FA8E5820494092FE273AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -44,34 +45,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1D02BB0300B6362AA0BE5A9B0697D187 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				2C32874CE7EE1DF6885B98AB8F4F67B4 /* EXCrypto.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		1DFADF018444CC9CBEEF200AB2712E21 = {
 			isa = PBXGroup;
 			children = (
 				5592C6F8EF700739A6FC193C65B1863F /* Dependencies */,
-				4169C39789032AFCBD2690DF314BD0C9 /* EXCrypto */,
+				DBE04CDC408CB7DBE2DF8EAED87DEE87 /* EXCrypto */,
 				ADBFBFD0A4D96AECE4CC26C0C65415F4 /* Frameworks */,
 				72A399F52746ED3984FA17D3058AF4BE /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		4169C39789032AFCBD2690DF314BD0C9 /* EXCrypto */ = {
+		25739210D75D3ADC859FEAC7233A14FB /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				94329D3F1A7993CB471BBB13DCC2AF05 /* EXCrypto.h */,
-				5ECE582CD1F5C6B0679750212838AC8F /* EXCrypto.m */,
-				1D02BB0300B6362AA0BE5A9B0697D187 /* Pod */,
-				C567912913208FF1E8E910E1F6F4BCFB /* Support Files */,
+				65E33CDA22424F925B64F6761A253865 /* EXCrypto-dummy.m */,
+				4865B4F1232D8D422BB581900BCBD627 /* EXCrypto-prefix.pch */,
+				14438ACC7C88C3A5002E083620854A77 /* EXCrypto.debug.xcconfig */,
+				F34CA6A1671CE7C544368ECFB361F692 /* EXCrypto.release.xcconfig */,
 			);
-			name = EXCrypto;
-			path = "../../../../packages/expo-crypto/ios";
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXCrypto";
 			sourceTree = "<group>";
 		};
 		5592C6F8EF700739A6FC193C65B1863F /* Dependencies */ = {
@@ -97,25 +90,34 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		C567912913208FF1E8E910E1F6F4BCFB /* Support Files */ = {
+		DBE04CDC408CB7DBE2DF8EAED87DEE87 /* EXCrypto */ = {
 			isa = PBXGroup;
 			children = (
-				5E2ED916D56040ADF388082AAD65CFB7 /* EXCrypto.xcconfig */,
-				A7EE61883FBD133794E880F262B23899 /* EXCrypto-dummy.m */,
-				78EEA5EFFC9A0D6120FAA285AAF58F31 /* EXCrypto-prefix.pch */,
+				49FE0FE2364BFA326C41C25A2263E064 /* EXCrypto.h */,
+				97E782F865D7965C71A30A1A2F1A46A0 /* EXCrypto.m */,
+				EA9F474A7565B38095E96DB78B4C2B07 /* Pod */,
+				25739210D75D3ADC859FEAC7233A14FB /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXCrypto";
+			name = EXCrypto;
+			path = "../../../../packages/expo-crypto/ios";
+			sourceTree = "<group>";
+		};
+		EA9F474A7565B38095E96DB78B4C2B07 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				CEBDB2E1AA52861BDE7ADCCD650EFD28 /* EXCrypto.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		1441FE21056B792C82B9EABF27780905 /* Headers */ = {
+		D32834D5FFF3305589AC9AF462A9D949 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0F586B416ADE22EA518EC761DAD78B1D /* EXCrypto.h in Headers */,
+				2E6F9A6EF6E43D9623753539E1EC2141 /* EXCrypto.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		7313EAFC3221A55173D00B5135657D25 /* EXCrypto */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9A4F8034C3A18095C3231083603283CA /* Build configuration list for PBXNativeTarget "EXCrypto" */;
+			buildConfigurationList = 9E5A6763ECB3347FA643B16C61231049 /* Build configuration list for PBXNativeTarget "EXCrypto" */;
 			buildPhases = (
-				1441FE21056B792C82B9EABF27780905 /* Headers */,
-				54A418D934967902F9FA4F7A95DB97DB /* Sources */,
-				CC567C1FDAA59DB3E6CCDE5DE5F04184 /* Frameworks */,
+				D32834D5FFF3305589AC9AF462A9D949 /* Headers */,
+				BF50D9469EC3C6F7E9FB422CB4F22D96 /* Sources */,
+				DEFA55DF076FA8E5820494092FE273AA /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				72CFA8755E1DA9075A4B063D8730D3A8 /* PBXTargetDependency */,
+				E359DAC68316AC9413873019BFC128C1 /* PBXTargetDependency */,
 			);
 			name = EXCrypto;
 			productName = EXCrypto;
@@ -173,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		54A418D934967902F9FA4F7A95DB97DB /* Sources */ = {
+		BF50D9469EC3C6F7E9FB422CB4F22D96 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				658DFED6C9D26D084091B7A4E29FC3B1 /* EXCrypto-dummy.m in Sources */,
-				DACF13D06C8C7990C5D9F078DC9987B9 /* EXCrypto.m in Sources */,
+				1669FA24B2978469057BFC527577343D /* EXCrypto-dummy.m in Sources */,
+				77A6EB03BC629BBE0A803AA4D47DEB47 /* EXCrypto.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		72CFA8755E1DA9075A4B063D8730D3A8 /* PBXTargetDependency */ = {
+		E359DAC68316AC9413873019BFC128C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D004ACC1D0AE024D5EB731232235AAA5 /* PBXContainerItemProxy */;
+			targetProxy = D8FA97EE4E37DA1A7AD865BAC83CC0AC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -317,9 +319,9 @@
 			};
 			name = Release;
 		};
-		97E5F3031405A569C4B226F8B91C1395 /* Debug */ = {
+		BF014CC3F881BD7786806F4345A5283B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E2ED916D56040ADF388082AAD65CFB7 /* EXCrypto.xcconfig */;
+			baseConfigurationReference = 14438ACC7C88C3A5002E083620854A77 /* EXCrypto.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -337,13 +339,14 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		C99AB39C4945CD23F95EE203B69C9267 /* Release */ = {
+		F6006B451FDE0FB1558BD26A7E1C9768 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E2ED916D56040ADF388082AAD65CFB7 /* EXCrypto.xcconfig */;
+			baseConfigurationReference = F34CA6A1671CE7C544368ECFB361F692 /* EXCrypto.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -361,6 +364,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -369,11 +373,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9A4F8034C3A18095C3231083603283CA /* Build configuration list for PBXNativeTarget "EXCrypto" */ = {
+		9E5A6763ECB3347FA643B16C61231049 /* Build configuration list for PBXNativeTarget "EXCrypto" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				97E5F3031405A569C4B226F8B91C1395 /* Debug */,
-				C99AB39C4945CD23F95EE203B69C9267 /* Release */,
+				BF014CC3F881BD7786806F4345A5283B /* Debug */,
+				F6006B451FDE0FB1558BD26A7E1C9768 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

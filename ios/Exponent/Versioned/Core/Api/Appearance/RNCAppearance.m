@@ -75,14 +75,16 @@ RCT_EXPORT_MODULE();
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RNCUserInterfaceStyleDidChangeNotification
-                                               object:nil];
+                                               object:self.bridge];
   }
 }
 
 - (void)stopObserving
 {
   if (@available(iOS 13.0, *)) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:RNCUserInterfaceStyleDidChangeNotification
+                                                  object:self.bridge];
   }
 }
 

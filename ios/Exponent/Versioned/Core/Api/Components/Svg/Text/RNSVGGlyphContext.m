@@ -191,7 +191,10 @@
     CTFontDescriptorRef ctfd = (__bridge CTFontDescriptorRef)(uifd);
     CTFontDescriptorRef newfd = CTFontDescriptorCreateCopyWithVariation(ctfd, wght_id, (CGFloat)weight);
     CTFontRef newfont = CTFontCreateCopyWithAttributes(ref, size, nil, newfd);
-    return newfont;
+
+    CFRelease(newfd);
+
+    return (CTFontRef)CFAutorelease(newfont);
 }
 
 - (void)pushIndices

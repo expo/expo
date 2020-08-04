@@ -81,53 +81,59 @@ RCT_EXPORT_MODULE()
 - (void)connectionStateWatcher:(RNCConnectionStateWatcher *)connectionStateWatcher didUpdateState:(RNCConnectionState *)state
 {
   if (self.isObserving) {
-    NSDictionary *dictionary = [self currentDictionaryFromUpdateState:state];
+    NSDictionary *dictionary = [self currentDictionaryFromUpdateState:state withInterface:NULL];
     [self sendEventWithName:@"netInfo.networkStatusDidChange" body:dictionary];
   }
 }
 
 #pragma mark - Public API
 
-RCT_EXPORT_METHOD(getCurrentState:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolve:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
   RNCConnectionState *state = [self.connectionStateWatcher currentState];
-  resolve([self currentDictionaryFromUpdateState:state]);
+  resolve([self currentDictionaryFromUpdateState:state withInterface:requestedInterface]);
 }
 
 #pragma mark - Utilities
 
 // Converts the state into a dictionary to send over the bridge
-- (NSDictionary *)currentDictionaryFromUpdateState:(RNCConnectionState *)state
+- (NSDictionary *)currentDictionaryFromUpdateState:(RNCConnectionState *)state withInterface:(nullable NSString *)requestedInterface
 {
-  NSMutableDictionary *details = nil;
-  if (state.connected) {
-    details = [NSMutableDictionary new];
+  NSString *selectedInterface = requestedInterface ?: state.type;
+  NSMutableDictionary *details = [self detailsFromInterface:selectedInterface withState:state];
+  bool connected = [state.type isEqualToString:selectedInterface] && state.connected;
+  if (connected) {
     details[@"isConnectionExpensive"] = @(state.expensive);
-    
-    if ([state.type isEqualToString:RNCConnectionTypeCellular]) {
-      details[@"cellularGeneration"] = state.cellularGeneration ?: NSNull.null;
-      details[@"carrier"] = [self carrier] ?: NSNull.null;
-    } else if (
-      [state.type isEqualToString:RNCConnectionTypeWifi] ||
-      [state.type isEqualToString:RNCConnectionTypeEthernet]
-    ) {
-      details[@"ipAddress"] = [self ipAddress] ?: NSNull.null;
-      details[@"subnet"] = [self subnet] ?: NSNull.null;
-      details[@"ssid"] = [self ssid] ?: NSNull.null;
-    }
   }
-  
+
   return @{
-           @"type": state.type,
-           @"isConnected": @(state.connected),
-           @"details": details ?: NSNull.null
-           };
+    @"type": selectedInterface,
+    @"isConnected": @(connected),
+    @"details": details ?: NSNull.null
+  };
+}
+
+- (NSMutableDictionary *)detailsFromInterface:(nonnull NSString *)requestedInterface withState:(RNCConnectionState *)state
+{
+  NSMutableDictionary *details = [NSMutableDictionary new];
+  if ([requestedInterface isEqualToString: RNCConnectionTypeCellular]) {
+    details[@"cellularGeneration"] = state.cellularGeneration ?: NSNull.null;
+    details[@"carrier"] = [self carrier] ?: NSNull.null;
+  } else if ([requestedInterface isEqualToString: RNCConnectionTypeWifi] || [requestedInterface isEqualToString: RNCConnectionTypeEthernet]) {
+    details[@"ipAddress"] = [self ipAddress] ?: NSNull.null;
+    details[@"subnet"] = [self subnet] ?: NSNull.null;
+    #if !TARGET_OS_TV && !TARGET_OS_OSX
+    details[@"ssid"] = [self ssid] ?: NSNull.null;
+    details[@"bssid"] = [self bssid] ?: NSNull.null;
+    #endif
+  }
+  return details;
 }
 
 - (NSString *)carrier
 {
-#if (TARGET_OS_TV)
+#if (TARGET_OS_TV || TARGET_OS_OSX)
   return nil;
 #else
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
@@ -161,7 +167,7 @@ RCT_EXPORT_METHOD(getCurrentState:(RCTPromiseResolveBlock)resolve
           address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
         }
       }
-      
+
       temp_addr = temp_addr->ifa_next;
     }
   }
@@ -195,7 +201,7 @@ RCT_EXPORT_METHOD(getCurrentState:(RCTPromiseResolveBlock)resolve
           subnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
         }
       }
-      
+
       temp_addr = temp_addr->ifa_next;
     }
   }
@@ -204,6 +210,7 @@ RCT_EXPORT_METHOD(getCurrentState:(RCTPromiseResolveBlock)resolve
   return subnet;
 }
 
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 - (NSString *)ssid
 {
   NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
@@ -221,5 +228,22 @@ RCT_EXPORT_METHOD(getCurrentState:(RCTPromiseResolveBlock)resolve
   }
   return SSID;
 }
+
+- (NSString *)bssid
+{
+  NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+  NSDictionary *networkDetails;
+  NSString *BSSID = NULL;
+  for (NSString *interfaceName in interfaceNames) {
+      networkDetails = CFBridgingRelease(CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+      if (networkDetails.count > 0)
+      {
+          BSSID = networkDetails[(NSString *) kCNNetworkInfoKeyBSSID];
+          break;
+      }
+  }
+  return BSSID;
+}
+#endif
 
 @end

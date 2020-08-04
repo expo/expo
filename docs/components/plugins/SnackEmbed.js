@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import { SNACK_URL } from '../../common/snack';
+
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 
 export default class SnackEmbed extends React.Component {
@@ -9,7 +12,7 @@ export default class SnackEmbed extends React.Component {
     // inject script if it hasn't been loaded by a previous page
     if (!script) {
       script = document.createElement('script');
-      script.src = 'https://snack.expo.io/embed.js';
+      script.src = `${this.props.snackId ? 'https://snack.expo.io' : SNACK_URL}/embed.js`;
       script.async = true;
       script.id = 'snack';
 

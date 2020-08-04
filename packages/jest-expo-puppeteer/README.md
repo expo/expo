@@ -5,7 +5,7 @@ This library wraps [`jest-puppeteer`][jest-puppeteer] and reads info from your p
 
 ## Installation
 
-- `yarn add jest-expo-puppeteer --dev` or `npm i jest-expo-puppeteer --save-dev`
+- `yarn add jest-expo-puppeteer puppeteer --dev` or `npm i jest-expo-puppeteer puppeteer --save-dev`
 - Add the following config to `package.json`:
 
   ```js

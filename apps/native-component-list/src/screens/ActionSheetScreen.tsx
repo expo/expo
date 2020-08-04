@@ -14,7 +14,7 @@ const ActionSheetScreen = () => (
 
 ActionSheetScreen.navigationOptions = {
   title: 'Action Sheet',
-}
+};
 
 export default ActionSheetScreen;
 
@@ -29,7 +29,7 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
 
   _updateSelectionText = (selectedIndex: number) => {
     this.setState({ selectedIndex });
-  }
+  };
 
   _renderSelectionText() {
     const { selectedIndex } = this.state;
@@ -104,19 +104,17 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
 
   render() {
     return (
-        <ScrollView style={styles.flex} contentContainerStyle={styles.contentContainer}>
-          <Text style={styles.headerText}>
-            {
-              'Hello!\n\nThis is a simple example app to demonstrate @expo/react-native-action-sheet.'
-            }
-          </Text>
-          {this._renderButtons()}
-          {this._renderSelectionText()}
-          <Text style={styles.notes}>
-            Note: Icons and custom text styles are only available on Android and web. Separators can
-            only be toggled on Android or web; they always show on iOS.
-          </Text>
-        </ScrollView>
+      <ScrollView style={styles.flex} contentContainerStyle={styles.contentContainer}>
+        <Text style={styles.headerText}>
+          {'Hello!\n\nThis is a simple example app to demonstrate @expo/react-native-action-sheet.'}
+        </Text>
+        {this._renderButtons()}
+        {this._renderSelectionText()}
+        <Text style={styles.notes}>
+          Note: Icons and custom text styles are only available on Android and web. Separators can
+          only be toggled on Android or web; they always show on iOS.
+        </Text>
+      </ScrollView>
     );
   }
 }

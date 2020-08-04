@@ -1,0 +1,21 @@
+{
+  "name": "react-native-view-shot",
+  "version": "3.1.2",
+  "summary": "Capture a React Native view to an image",
+  "license": "MIT",
+  "authors": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
+  "homepage": "https://github.com/gre/react-native-view-shot",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/gre/react-native-view-shot.git",
+    "tag": "v3.1.2"
+  },
+  "source_files": "ios/**/*.{h,m}",
+  "dependencies": {
+    "React": [
+
+    ]
+  }
+}

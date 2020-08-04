@@ -1,0 +1,1 @@
+../../../../../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTAnimationPlugins.h

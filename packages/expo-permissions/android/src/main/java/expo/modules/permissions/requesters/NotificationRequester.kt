@@ -19,8 +19,10 @@ class NotificationRequester(private val context: Context) : PermissionRequester 
       val areEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
       putString(STATUS_KEY, if (areEnabled) PermissionsStatus.GRANTED.status else PermissionsStatus.DENIED.status)
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-      putBoolean(CAN_ASK_AGAIN_KEY, true)
-      putBoolean(GRANTED_KEY, true)
+      // If notifications aren't enabled, the user needs to activate them in system options. So, we should set `CAN_ASK_AGAIN_KEY` to if this is the case.
+      // Otherwise, it can be set to true.
+      putBoolean(CAN_ASK_AGAIN_KEY, areEnabled)
+      putBoolean(GRANTED_KEY, areEnabled)
     }
   }
 }

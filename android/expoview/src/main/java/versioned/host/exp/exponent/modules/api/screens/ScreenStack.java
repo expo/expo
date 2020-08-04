@@ -1,9 +1,14 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.content.Context;
+import android.view.View;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,15 +22,25 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
   private final Set<ScreenStackFragment> mDismissed = new HashSet<>();
 
   private ScreenStackFragment mTopScreen = null;
+  private boolean mRemovalTransitionStarted = false;
 
   private final FragmentManager.OnBackStackChangedListener mBackStackListener = new FragmentManager.OnBackStackChangedListener() {
     @Override
     public void onBackStackChanged() {
-      if (getFragmentManager().getBackStackEntryCount() == 0) {
+      if (mFragmentManager.getBackStackEntryCount() == 0) {
         // when back stack entry count hits 0 it means the user's navigated back using hw back
         // button. As the "fake" transaction we installed on the back stack does nothing we need
         // to handle back navigation on our own.
         dismiss(mTopScreen);
+      }
+    }
+  };
+
+  private final FragmentManager.FragmentLifecycleCallbacks mLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
+    @Override
+    public void onFragmentResumed(FragmentManager fm, Fragment f) {
+      if (mTopScreen == f) {
+        setupBackHandlerIfNeeded(mTopScreen);
       }
     }
   };
@@ -36,11 +51,11 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
   public void dismiss(ScreenStackFragment screenFragment) {
     mDismissed.add(screenFragment);
-    onUpdate();
+    markUpdated();
   }
 
   public Screen getTopScreen() {
-    return mTopScreen.getScreen();
+    return mTopScreen != null ? mTopScreen.getScreen() : null;
   }
 
   public Screen getRootScreen() {
@@ -60,35 +75,85 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
   @Override
   protected void onDetachedFromWindow() {
+    if (mFragmentManager != null) {
+      mFragmentManager.removeOnBackStackChangedListener(mBackStackListener);
+      mFragmentManager.unregisterFragmentLifecycleCallbacks(mLifecycleCallbacks);
+      if (!mFragmentManager.isStateSaved()) {
+        // state save means that the container where fragment manager was installed has been unmounted.
+        // This could happen as a result of dismissing nested stack. In such a case we don't need to
+        // reset back stack as it'd result in a crash caused by the fact the fragment manager is no
+        // longer attached.
+        mFragmentManager.popBackStack(BACK_STACK_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+      }
+    }
     super.onDetachedFromWindow();
-    getFragmentManager().removeOnBackStackChangedListener(mBackStackListener);
-    getFragmentManager().popBackStack(BACK_STACK_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
   }
 
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (mTopScreen != null) {
-      setupBackHandlerIfNeeded(mTopScreen);
+    mFragmentManager.registerFragmentLifecycleCallbacks(mLifecycleCallbacks, false);
+  }
+
+  @Override
+  public void startViewTransition(View view) {
+    super.startViewTransition(view);
+    mRemovalTransitionStarted = true;
+  }
+
+  @Override
+  public void endViewTransition(View view) {
+    super.endViewTransition(view);
+    if (mRemovalTransitionStarted) {
+      mRemovalTransitionStarted = false;
+      dispatchOnFinishTransitioning();
     }
+  }
+
+  public void onViewAppearTransitionEnd() {
+    if (!mRemovalTransitionStarted) {
+      dispatchOnFinishTransitioning();
+    }
+  }
+
+  private void dispatchOnFinishTransitioning() {
+    ((ReactContext) getContext())
+            .getNativeModule(UIManagerModule.class)
+            .getEventDispatcher()
+            .dispatchEvent(new StackFinishTransitioningEvent(getId()));
   }
 
   @Override
   protected void removeScreenAt(int index) {
     Screen toBeRemoved = getScreenAt(index);
-    mDismissed.remove(toBeRemoved);
+    mDismissed.remove(toBeRemoved.getFragment());
     super.removeScreenAt(index);
   }
 
   @Override
-  protected void onUpdate() {
+  protected void removeAllScreens() {
+    mDismissed.clear();
+    super.removeAllScreens();
+  }
+
+  @Override
+  protected boolean hasScreen(ScreenFragment screenFragment) {
+    return super.hasScreen(screenFragment) && !mDismissed.contains(screenFragment);
+  }
+
+  @Override
+  protected void performUpdate() {
     // remove all screens previously on stack
     for (ScreenStackFragment screen : mStack) {
       if (!mScreenFragments.contains(screen) || mDismissed.contains(screen)) {
         getOrCreateTransaction().remove(screen);
       }
     }
-    ScreenStackFragment newTop = null;
+
+    // When going back from a nested stack with a single screen on it, we may hit an edge case
+    // when all screens are dismissed and no screen is to be displayed on top. We need to gracefully
+    // handle the case of newTop being NULL, which happens in several places below
+    ScreenStackFragment newTop = null; // newTop is nullable, see the above comment ^
     ScreenStackFragment belowTop = null; // this is only set if newTop has TRANSPARENT_MODAL presentation mode
 
     for (int i = mScreenFragments.size() - 1; i >= 0; i--) {
@@ -106,35 +171,33 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
       }
     }
 
-
     for (ScreenStackFragment screen : mScreenFragments) {
-      // add all new views that weren't on stack before
-      if (!mStack.contains(screen) && !mDismissed.contains(screen)) {
-        getOrCreateTransaction().add(getId(), screen);
-      }
       // detach all screens that should not be visible
       if (screen != newTop && screen != belowTop && !mDismissed.contains(screen)) {
-        getOrCreateTransaction().hide(screen);
+        getOrCreateTransaction().remove(screen);
       }
     }
     // attach "below top" screen if set
-    if (belowTop != null) {
+    if (belowTop != null && !belowTop.isAdded()) {
       final ScreenStackFragment top = newTop;
-      getOrCreateTransaction().show(belowTop).runOnCommit(new Runnable() {
+      getOrCreateTransaction().add(getId(), belowTop).runOnCommit(new Runnable() {
         @Override
         public void run() {
           top.getScreen().bringToFront();
         }
       });
     }
-    getOrCreateTransaction().show(newTop);
+
+    if (newTop != null && !newTop.isAdded()) {
+      getOrCreateTransaction().add(getId(), newTop);
+    }
 
     if (!mStack.contains(newTop)) {
       // if new top screen wasn't on stack we do "open animation" so long it is not the very first screen on stack
-      if (mTopScreen != null) {
+      if (mTopScreen != null && newTop != null) {
         // there was some other screen attached before
         int transition = FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
-        switch (mTopScreen.getScreen().getStackAnimation()) {
+        switch (newTop.getScreen().getStackAnimation()) {
           case NONE:
             transition = FragmentTransaction.TRANSIT_NONE;
             break;
@@ -165,7 +228,9 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
     tryCommitTransaction();
 
-    setupBackHandlerIfNeeded(mTopScreen);
+    if (mTopScreen != null) {
+      setupBackHandlerIfNeeded(mTopScreen);
+    }
 
     for (ScreenStackFragment screen : mStack) {
       screen.onStackUpdate();
@@ -192,8 +257,14 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
    * that case we want the parent navigator or activity handler to take over.
    */
   private void setupBackHandlerIfNeeded(ScreenStackFragment topScreen) {
-    getFragmentManager().removeOnBackStackChangedListener(mBackStackListener);
-    getFragmentManager().popBackStack(BACK_STACK_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    if (!mTopScreen.isResumed()) {
+      // if the top fragment is not in a resumed state, adding back stack transaction would throw.
+      // In such a case we skip installing back handler and use FragmentLifecycleCallbacks to get
+      // notified when it gets resumed so that we can install the handler.
+      return;
+    }
+    mFragmentManager.removeOnBackStackChangedListener(mBackStackListener);
+    mFragmentManager.popBackStack(BACK_STACK_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     ScreenStackFragment firstScreen = null;
     for (int i = 0, size = mStack.size(); i < size; i++) {
       ScreenStackFragment screen = mStack.get(i);
@@ -203,13 +274,13 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
       }
     }
     if (topScreen != firstScreen && topScreen.isDismissable()) {
-      getFragmentManager()
+      mFragmentManager
               .beginTransaction()
-              .hide(topScreen)
               .show(topScreen)
               .addToBackStack(BACK_STACK_TAG)
+              .setPrimaryNavigationFragment(topScreen)
               .commitAllowingStateLoss();
-      getFragmentManager().addOnBackStackChangedListener(mBackStackListener);
+      mFragmentManager.addOnBackStackChangedListener(mBackStackListener);
     }
   }
 }

@@ -1,11 +1,11 @@
 {
   "name": "EXUpdates",
-  "version": "0.0.1-rc.0",
-  "summary": "ExpoUpdates standalone module",
-  "description": "ExpoUpdates standalone module",
+  "version": "0.2.11",
+  "summary": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
+  "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-updates",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/updates/",
   "platforms": {
     "ios": "10.0"
   },
@@ -18,6 +18,16 @@
   "dependencies": {
     "UMCore": [
 
+    ],
+    "React": [
+
     ]
-  }
+  },
+  "testspecs": [
+    {
+      "name": "Tests",
+      "test_type": "unit",
+      "source_files": "Tests/*.{h,m}"
+    }
+  ]
 }

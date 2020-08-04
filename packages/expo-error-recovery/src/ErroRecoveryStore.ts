@@ -1,6 +1,6 @@
-let recoveredPropsToSave: String | null = null;
+let recoveredPropsToSave: string | null = null;
 
-export function getRecoveryPropsToSave(): String | null {
+export function getRecoveryPropsToSave(): string | null {
   return recoveredPropsToSave;
 }
 

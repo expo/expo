@@ -3,19 +3,38 @@ title: Permissions
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-permissions'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 When it comes to adding functionality that can access potentially sensitive information on a user's device, such as their location, or possibly send them possibly unwanted push notifications, you will need to ask the user for their permission first. Unless you've already asked their permission, then no need. And so we have the **`expo-permissions`** module.
 
 If you are deploying your app to the Apple iTunes Store, you must add additional metadata to your app in order to customize the system permissions dialog, and more importantly, explain why your app requires permissions. **Without this explanation, your app may be rejected from the App Store.** See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-permissions`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-permissions).
+<InstallSection packageName="expo-permissions" />
+
+### Usage in bare workflow
+
+`expo-permissions` includes the shared infrastructure for handling system permissions, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
+
+The following table shows you which permissions correspond to which packages.
+
+| Permission type             | Packages                                  |
+| --------------------------- | ----------------------------------------- |
+| `NOTIFICATIONS`             | `expo-notifications`                      |
+| `USER_FACING_NOTIFICATIONS` | `expo-notifications`                      |
+| `LOCATION`                  | `expo-location`                           |
+| `CAMERA`                    | `expo-camera`, `expo-barcode-scanner`     |
+| `AUDIO_RECORDING`           | `expo-av`                                 |
+| `CONTACTS`                  | `expo-contacts`                           |
+| `CAMERA_ROLL`               | `expo-image-picker`, `expo-media-library` |
+| `CALENDAR`                  | `expo-calendar`                           |
+| `REMINDERS`                 | `expo-calendar`                           |
+| `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
+| `MOTION`                    | `expo-sensors`                            |
 
 ## Usage
 
@@ -23,13 +42,59 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 Often you want to be able to test what happens when you reject a permission to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions, you may need to uninstall and reinstall the Expo app. In the simulator this is as easy as deleting the app and expo-cli will automatically install it again next time you launch the project from it.
 
-## API
+# API
 
 ```js
 import * as Permissions from 'expo-permissions';
 ```
 
-### `Permissions.getAsync(...permissionTypes)`
+## Hooks
+
+### `usePermissions`
+
+```ts
+const [permission, askPermission, getPermission] = usePermissions(Permissions.CAMERA, { ... });
+```
+
+Get or ask permission for protected functionality within the app. This returns the result for the requested permissions. It also returns additional callback to interact based on user input.
+
+#### Arguments
+
+- **permissionTypes (_Type|Type[]_)** -- One or more types to get or ask permission for. After the permission status is fetched, you can show different UI based on the current status.
+- **permissionOptions** -- Optional configuration to change the behavior of the hook.
+  - **get (_boolean_)** -- Retrieves the permission status without interacting with the user, `true` by default.
+  - **ask (_boolean_)** -- Prompts the user with the requested permission directly. Without using the `askPermission` callback, `false` by default.
+
+#### Returns
+
+- **permission (_[PermissionsResponse](#permissions-response)|undefined_)** -- An object with information about the permissions, including status, expiration, and scope (if applicable).
+- **askPermission (_() => void_)** -- A callback to ask the user for permission.
+- **getPermission (_() => void_)** -- A callback to get the permission status without interacting with the user.
+
+#### Example: hook
+
+```tsx
+function App() {
+  const [permission, askForPermission] = usePermissions(Permissions.CAMERA, { ask: true });
+
+  if (!permission || permission.status !== 'granted') {
+    return (
+      <View>
+        <Text>Permission is not granted</Text>
+        <Button title="Grant permission" onPress={askForPermission} />
+      </View>
+    );
+  }
+
+  return (
+    <View>
+      <Camera />
+    </View>
+  );
+}
+```
+
+### `Permissions.getAsync(...types)`
 
 Determines whether your app has already been granted access to the provided permissions types.
 
@@ -39,35 +104,7 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Returns
 
-A `Promise` that is resolved with information about the permissions, including status, expiration, and scope (if applicable).
-The top-level `status`, `expires` and `canAskAgain` keys are a reduction of the values from each individual permission.
-If all single permissions have a `status` of `'denied'`, then that the top level `status` is `denied`; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. Otherwise, `status` is`undetermined`.
-If any single permission has a `status` different then `granted`, then top-level `granted` is `false`. Otherwise, it is `true`.
-Top-level `expires` has value of the earliest expirated permission.
-
-Examples `[...componentsValues] => topLevelStatus`:
-
-- `[granted, denied, granted] => denied`
-- `[granted, granted, granted] => granted`
-
-```javascript
-{
-  status, // combined status of all component permissions being asked for, if any of has status !== 'granted' then that status is propagated here
-  expires, // combined expires of all permissions being asked for, same as status
-  canAskAgain,
-  granted,
-  permissions: { // an object with an entry for each permission requested
-    [Permissions.TYPE]: {
-      status,
-      expires,
-      canAskAgain,
-      granted,
-      ... // any additional permission-specific fields
-    },
-    ...
-  },
-}
-```
+A `Promise` with a [`PermissionResponse`](#permissions-response) object.
 
 #### Example
 
@@ -85,7 +122,7 @@ async function checkMultiPermissions() {
     Permissions.CONTACTS
   );
   if (status !== 'granted') {
-    alert('Hey! You heve not enabled selected permissions');
+    alert('Hey! You have not enabled selected permissions');
   }
 }
 ```
@@ -100,7 +137,7 @@ Prompt the user for types of permissions. If they have already granted access, r
 
 #### Returns
 
-Same as for `Permissions.getAsync`
+A `Promise` with a [`PermissionResponse`](#permissions-response) object.
 
 #### Example
 
@@ -115,6 +152,58 @@ async function getLocationAsync() {
   }
 }
 ```
+
+## Permissions response
+
+An object with information about the permissions, including status, expiration, and scope (if applicable).
+
+```javascript
+{
+  status, // combined status of all component permissions being asked for
+  expires, // combined expires of all permissions being asked for, same as status
+  canAskAgain,
+  granted,
+  permissions: { // an object with an entry for each permission requested
+    [Permissions.TYPE]: {
+      status,
+      expires,
+      canAskAgain,
+      granted,
+      ... // any additional permission-specific fields
+    },
+    ...
+  },
+}
+```
+
+The top-level `status`, `expires`, `granted` and `canAskAgain` keys depend on the values returned for each of the individual permission requests:
+
+### `status`
+
+The status represents a combined status of all combined permissions, using the following rules:
+
+- If **one or more permissions** have a `status` of _undetermined_, the top level `status` is _undetermined_.
+- If **one or more permissions** have a `status` of _denied_ and none _undetermined_, then the top level `status` is _denied_.
+- If **all permissions** have a `status` of _granted_, then the top level `status` is _granted_.
+
+Examples for the `status` top level property:
+
+- `[granted, undetermined, undetermined] => undetermined`
+- `[granted, denied, undetermined] => undetermined`
+- `[granted, denied, granted] => denied`
+- `[granted, granted, granted] => granted`
+
+### `expires`
+
+The top-level `expires` field matches the value of the earliest expiring permission.
+
+### `granted`
+
+If every single permission has a `status` of _granted_, then the top level `granted` field is `true`. Otherwise, it is `false`.
+
+### `canAskAgain`
+
+If every single permission can be asked again, then the top level is `true`. Otherwise, it is `false`.
 
 ## Permissions types
 
@@ -138,16 +227,20 @@ The permission type for user-facing notifications. This does **not** register yo
 
 ### `Permissions.LOCATION`
 
-The permission type for location access.
+The permission type for location access. It contains additional field when returning:
+
+### `scope`
+
+Returns whether permission is granted only for location updates when app is in use (`whenInUse`), even when app is backgrounded (`always`) or when permission is not granted (`none`).
+On devices running Android in versions lower than 10, scope value is either `always` or `none` depending on permission being granted. There is no special background location permission on Android 9 and below.
 
 <!-- TODO: Permissions.LOCATION issue (search by this phrase) -->
 
 > **Note:** iOS is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
 > On iOS ask for this permission type individually.
 
-> **Note (iOS):** In Expo client this permission will always ask the user for permission to access location data while the app is in use.
+> **Note (iOS):** In Expo client on iOS this permission will always ask the user for permission to access location data while the app is in use.
 
-> **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { location: { ios } } }` where `ios` which is an object containing: `{ scope: 'whenInUse' | 'always' | 'none' }`
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 >
 > **What location usage descriptions should I provide?** Due to the design of the location permission API on iOS we aren't able to provide you with methods for asking for `whenInUse` or `always` location usage permission specifically. However, you can customize the behavior by providing the following sets of usage descriptions:
@@ -172,6 +265,12 @@ The permission type for reading contacts.
 
 The permission type for reading or writing to the camera roll.
 
+> **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { cameraRoll: { accessPrivileges } } }` where `accessPrivileges` can be:
+>
+> - `all` if the user granted your app access to the whole photo library
+> - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+> - `none` if user denied or hasn't yet granted the permission
+
 ### `Permissions.CALENDAR`
 
 The permission type for reading or writing to the calendar.
@@ -184,6 +283,10 @@ The permission type for reading or writing reminders.
 ### `Permissions.SYSTEM_BRIGHTNESS`
 
 The permissions type for changing brightness of the screen
+
+### `Permissions.MOTION`
+
+The permission for accessing `DeviceMotion` and `DeviceOrientation` in the web browser. This can only be requested from a website using HTTPS (`expo web --https`). This permission cannot be silently retrieved, you can only request it. This permission can only be requested with a user interaction i.e. a button press.
 
 ## Android: permissions equivalents inside `app.json`
 

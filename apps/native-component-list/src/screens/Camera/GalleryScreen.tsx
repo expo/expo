@@ -1,9 +1,17 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, ScrollView, TouchableOpacityProps } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import * as MediaLibrary from 'expo-media-library';
-import * as FileSystem from 'expo-file-system';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
+
 import Photo from './Photo';
 
 const PHOTOS_DIR = FileSystem.documentDirectory + 'photos';
@@ -22,7 +30,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
   componentDidMount = async () => {
     const photos = await FileSystem.readDirectoryAsync(PHOTOS_DIR);
     this.setState({ photos });
-  }
+  };
 
   toggleSelection = (uri: string, isSelected: boolean) => {
     let selected = this.state.selected;
@@ -32,7 +40,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
       selected = selected.filter(item => item !== uri);
     }
     this.setState({ selected });
-  }
+  };
 
   saveToGallery = async () => {
     const photos = this.state.selected;
@@ -49,11 +57,11 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
       });
 
       await Promise.all(promises);
-      alert('Successfully saved photos to user\'s gallery!');
+      alert("Successfully saved photos to user's gallery!");
     } else {
       alert('No photos to save!');
     }
-  }
+  };
 
   renderPhoto = (fileName: string) => (
     <Photo
@@ -61,7 +69,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
       uri={`${PHOTOS_DIR}/${fileName}`}
       onSelectionToggle={this.toggleSelection}
     />
-  )
+  );
 
   render() {
     return (

@@ -3,27 +3,25 @@ title: Battery
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-battery'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-battery`** provides battery information for the physical device (such as battery level, whether or not the device is charging, and more) as well as corresponding event listeners.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ❌            | ✅  |
+<PlatformsSection android emulator ios web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-battery`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-battery).
+<InstallSection packageName="expo-battery" />
 
 ## Example Usage
 
 <SnackInline label='Basic Battery Usage' templateId='battery' dependencies={['expo-battery']}>
 
 ```js
-import React from 'react';
+import * as React from 'react';
 import * as Battery from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -32,9 +30,7 @@ export default class App extends React.Component {
     batteryLevel: null,
   };
 
-  componentDidMount() {
-    let batteryLevel = await Battery.getBatteryLevelAsync();
-    this.setState({ batteryLevel });
+  componentDidMount() {  
     this._subscribe();
   }
 
@@ -42,17 +38,19 @@ export default class App extends React.Component {
     this._unsubscribe();
   }
 
-  _subscribe = () => {
+  async _subscribe() {
+    const batteryLevel = await Battery.getBatteryLevelAsync();
+    this.setState({ batteryLevel });
     this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
       this.setState({ batteryLevel });
       console.log('batteryLevel changed!', batteryLevel);
     });
-  };
+  }
 
-  _unsubscribe = () => {
+  _unsubscribe() {
     this._subscription && this._subscription.remove();
     this._subscription = null;
-  };
+  }
 
   render() {
     return (

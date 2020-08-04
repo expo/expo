@@ -3,21 +3,19 @@ title: MailComposer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-mail-composer'
 ---
 
-import Video from '../../../../components/plugins/Video'
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import Video from '~/components/plugins/Video'
 
 **`expo-mail-composer`** allows you to compose and send mail quickly and easily using the OS UI. This module can't be used on iOS Simulators since you can't sign into a mail account on them.
 
 <Video file={"sdk/mailcomposer.mp4"} loop={false} />
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ❌            | ✅  |
+<PlatformsSection android emulator ios web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-mail-composer`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-mail-composer).
+<InstallSection packageName="expo-mail-composer" />
 
 ## API
 

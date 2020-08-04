@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CONVERT_CONSTANTS_END;
@@ -69,11 +70,20 @@ public class JavaModuleWrapper {
     Class<? extends NativeModule> superClass =
         (Class<? extends NativeModule>) classForMethods.getSuperclass();
     if (ReactModuleWithSpec.class.isAssignableFrom(superClass)) {
-      // For java module that is based on generated flow-type spec, inspect the
-      // spec abstract class instead, which is the super class of the given java
-      // module.
-      classForMethods = superClass;
+      // Check if the parent class also conforms to ReactModuleWithSpec
+      // this accounts for cases when a module is extended i.e. Expo's sandbox AsyncStorage and Intent module.
+      Class<? extends NativeModule> superSuperClass =
+        (Class<? extends NativeModule>) superClass.getSuperclass();
+      if (ReactModuleWithSpec.class.isAssignableFrom(superSuperClass)) {
+        classForMethods = superSuperClass;
+      } else {
+        // For java module that is based on generated flow-type spec, inspect the
+        // spec abstract class instead, which is the super class of the given java
+        // module.
+        classForMethods = superClass;
+      }
     }
+
     Method[] targetMethods = classForMethods.getDeclaredMethods();
 
     for (Method targetMethod : targetMethods) {

@@ -7,20 +7,19 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
-import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
-import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import android.widget.TimePicker;
-
 import com.facebook.react.bridge.*;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 
-import javax.annotation.Nullable;
+import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnClickListener;
+import android.os.Bundle;
+import android.widget.TimePicker;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * {@link NativeModule} that allows JS to show a native time picker dialog and get called back when
@@ -41,7 +40,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     return FRAGMENT_TAG;
   }
 
-  private class TimePickerDialogListener implements OnTimeSetListener, OnDismissListener {
+  private class TimePickerDialogListener implements OnTimeSetListener, OnDismissListener, OnClickListener {
     private final Promise mPromise;
     private boolean mPromiseResolved = false;
 
@@ -66,6 +65,16 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
       if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_DISMISSED);
+        mPromise.resolve(result);
+        mPromiseResolved = true;
+      }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+        WritableMap result = new WritableNativeMap();
+        result.putString("action", RNConstants.ACTION_NEUTRAL_BUTTON);
         mPromise.resolve(result);
         mPromiseResolved = true;
       }
@@ -107,6 +116,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     final TimePickerDialogListener listener = new TimePickerDialogListener(promise);
     fragment.setOnDismissListener(listener);
     fragment.setOnTimeSetListener(listener);
+    fragment.setOnNeutralButtonActionListener(listener);
     fragment.show(fragmentManager, FRAGMENT_TAG);
   }
 
@@ -120,6 +130,9 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     }
     if (options.hasKey(RNConstants.ARG_DISPLAY) && !options.isNull(RNConstants.ARG_DISPLAY)) {
       args.putString(RNConstants.ARG_DISPLAY, options.getString(RNConstants.ARG_DISPLAY));
+    }
+    if (options.hasKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
+      args.putString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL, options.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL));
     }
     return args;
   }

@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -76,6 +78,19 @@ struct Transform {
  * Applies tranformation to the given point.
  */
 Point operator*(Point const &point, Transform const &transform);
+
+/*
+ * Applies tranformation to the given size.
+ */
+Size operator*(Size const &size, Transform const &transform);
+
+/*
+ * Applies tranformation to the given rect.
+ * ONLY SUPPORTS scale and translation transformation.
+ */
+Rect operator*(Rect const &rect, Transform const &transform);
+
+Vector operator*(Transform const &transform, Vector const &vector);
 
 } // namespace react
 } // namespace facebook

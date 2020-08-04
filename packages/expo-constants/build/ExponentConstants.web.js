@@ -1,15 +1,40 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import UAParser from 'ua-parser-js';
-import uuidv4 from 'uuid/v4';
-const parser = new UAParser();
+import { v4 as uuidv4 } from 'uuid';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
+function getBrowserName() {
+    if (canUseDOM) {
+        const agent = navigator.userAgent.toLowerCase();
+        if (agent.includes('edge')) {
+            return 'Edge';
+        }
+        else if (agent.includes('edg')) {
+            return 'Chromium Edge';
+        }
+        else if (agent.includes('opr') && !!window['opr']) {
+            return 'Opera';
+        }
+        else if (agent.includes('chrome') && !!window['chrome']) {
+            return 'Chrome';
+        }
+        else if (agent.includes('trident')) {
+            return 'IE';
+        }
+        else if (agent.includes('firefox')) {
+            return 'Firefox';
+        }
+        else if (agent.includes('safari')) {
+            return 'Safari';
+        }
+    }
+    return undefined;
+}
 export default {
     get name() {
         return 'ExponentConstants';
     },
     get appOwnership() {
-        return 'expo';
+        return null;
     },
     get installationId() {
         let installationId;
@@ -31,17 +56,16 @@ export default {
         return _sessionId;
     },
     get platform() {
-        return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
+        return { web: canUseDOM ? { ua: navigator.userAgent } : undefined };
     },
     get isHeadless() {
-        return false;
+        if (!canUseDOM)
+            return true;
+        return /\bHeadlessChrome\//.test(navigator.userAgent);
     },
     get isDevice() {
         // TODO: Bacon: Possibly want to add information regarding simulators
         return true;
-    },
-    get isDetached() {
-        return false;
     },
     get expoVersion() {
         return this.manifest.sdkVersion || null;
@@ -49,7 +73,8 @@ export default {
     get linkingUri() {
         if (canUseDOM) {
             // On native this is `exp://`
-            return location.origin + location.pathname;
+            // On web we should use the protocol and hostname (location.origin)
+            return location.origin;
         }
         else {
             return '';
@@ -59,8 +84,7 @@ export default {
         return this.expoVersion;
     },
     get deviceName() {
-        const { browser, engine, os: OS } = parser.getResult();
-        return browser.name || engine.name || OS.name || undefined;
+        return getBrowserName();
     },
     get nativeAppVersion() {
         return null;
@@ -86,7 +110,7 @@ export default {
     },
     get experienceUrl() {
         if (canUseDOM) {
-            return location.origin + location.pathname;
+            return location.origin;
         }
         else {
             return '';

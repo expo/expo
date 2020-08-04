@@ -1,14 +1,7 @@
-import React from 'react';
-import {
-  Alert,
-  Button,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { NavigationScreenProps } from 'react-navigation';
+import React from 'react';
+import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface RowProps {
   reminder: Calendar.Reminder;
@@ -17,22 +10,18 @@ interface RowProps {
   deleteReminder: (remidnerId: string) => void;
 }
 
-const ReminderRow: React.FunctionComponent<RowProps> = ({ reminder, getReminder, updateReminder, deleteReminder }) => (
+const ReminderRow: React.FunctionComponent<RowProps> = ({
+  reminder,
+  getReminder,
+  updateReminder,
+  deleteReminder,
+}) => (
   <View style={styles.reminderRow}>
     <Text style={styles.reminderName}>{reminder.title}</Text>
     <Text style={styles.reminderData}>{JSON.stringify(reminder)}</Text>
-    <Button
-      onPress={() => getReminder(reminder)}
-      title="Get Reminder Using ID"
-    />
-    <Button
-      onPress={() => updateReminder(reminder)}
-      title="Update Reminder"
-    />
-    <Button
-      onPress={() => deleteReminder(reminder.id!)}
-      title="Delete Reminder"
-    />
+    <Button onPress={() => getReminder(reminder)} title="Get Reminder Using ID" />
+    <Button onPress={() => updateReminder(reminder)} title="Update Reminder" />
+    <Button onPress={() => deleteReminder(reminder.id!)} title="Delete Reminder" />
   </View>
 );
 
@@ -40,10 +29,13 @@ interface State {
   reminders: Calendar.Reminder[];
 }
 
-export default class RemindersScreen extends React.Component<
-  NavigationScreenProps<{ calendar: Calendar.Calendar }>,
-  State
-> {
+type Links = {
+  Reminders: { calendar: Calendar.Calendar };
+};
+
+type Props = StackScreenProps<Links, 'Reminders'>;
+
+export default class RemindersScreen extends React.Component<Props, State> {
   static navigationOptions = {
     title: 'Reminders',
   };
@@ -53,7 +45,7 @@ export default class RemindersScreen extends React.Component<
   };
 
   componentDidMount() {
-    const { params } = this.props.navigation.state;
+    const { params } = this.props.route;
     if (params) {
       this._findReminders(params.calendar.id!);
     }
@@ -62,10 +54,10 @@ export default class RemindersScreen extends React.Component<
   _findReminders = async (id: string) => {
     const reminders = await Calendar.getRemindersAsync([id], null, new Date(), new Date());
     this.setState({ reminders });
-  }
+  };
 
   _addReminder = async () => {
-    const { calendar } = this.props.navigation.state.params!;
+    const { calendar } = this.props.route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -86,22 +78,19 @@ export default class RemindersScreen extends React.Component<
     } catch (e) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
-  }
+  };
 
   _getReminder = async (reminder: Calendar.Reminder) => {
     try {
       const newReminder = await Calendar.getReminderAsync(reminder.id!);
-      Alert.alert(
-        'Reminder found using getReminderAsync',
-        JSON.stringify(newReminder)
-      );
+      Alert.alert('Reminder found using getReminderAsync', JSON.stringify(newReminder));
     } catch (e) {
       Alert.alert('Error finding reminder', e.message);
     }
-  }
+  };
 
   _updateReminder = async (reminder: Calendar.Reminder) => {
-    const { calendar } = this.props.navigation.state.params!;
+    const { calendar } = this.props.route.params!;
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -117,18 +106,18 @@ export default class RemindersScreen extends React.Component<
     } catch (e) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
-  }
+  };
 
   _deleteReminder = async (reminderId: string) => {
     try {
-      const { calendar } = this.props.navigation.state.params!;
+      const { calendar } = this.props.route.params!;
       await Calendar.deleteReminderAsync(reminderId);
       Alert.alert('Reminder deleted successfully');
       this._findReminders(calendar.id!);
     } catch (e) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
-  }
+  };
 
   render() {
     if (this.state.reminders.length) {

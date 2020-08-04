@@ -71,7 +71,7 @@ it(`converts the data key from string to an object if necessary`, () => {
   const mockNotificationObjectWithDataString = { origin: 'selected', data };
   emitNativeNotification(mockNotificationObjectWithDataString);
 
-  let expectedResult = {
+  const expectedResult = {
     ...mockNotificationObjectWithDataString,
     data: JSON.parse(data),
   };
@@ -80,7 +80,7 @@ it(`converts the data key from string to an object if necessary`, () => {
 
 it(`stops receiving events when removed`, () => {
   const callback = jest.fn();
-  let subscription = Notifications.addListener(callback);
+  const subscription = Notifications.addListener(callback);
   emitNativeNotification(mockNotificationObject);
   expect(callback).toHaveBeenCalledTimes(1);
   subscription.remove();

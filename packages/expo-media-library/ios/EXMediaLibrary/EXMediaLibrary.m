@@ -24,6 +24,10 @@ NSString *const EXAssetMediaTypeAll = @"all";
 
 NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
+NSString *const EXMediaLibraryCachesDirectory = @"MediaLibrary";
+
+NSString *const EXMediaLibraryShouldDownloadFromNetworkKey = @"shouldDownloadFromNetwork";
+
 @interface EXMediaLibrary ()
 
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
@@ -121,26 +125,29 @@ UM_EXPORT_METHOD_AS(createAssetAsync,
     return;
   }
   
-  PHAssetMediaType assetType = [EXMediaLibrary _assetTypeForUri:localUri];
+  if ([[localUri pathExtension] length] == 0) {
+    reject(@"E_NO_FILE_EXTENSION", @"Could not get the file's extension.", nil);
+    return;
+  }
   
+  PHAssetMediaType assetType = [EXMediaLibrary _assetTypeForUri:localUri];
   if (assetType == PHAssetMediaTypeUnknown || assetType == PHAssetMediaTypeAudio) {
     reject(@"E_UNSUPPORTED_ASSET", @"This file type is not supported yet", nil);
     return;
   }
   
   NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
-  
   if (assetUrl == nil) {
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
     return;
   }
+  
   if (!([_fileSystem permissionsForURI:assetUrl] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
   }
   
   __block PHObjectPlaceholder *assetPlaceholder;
-  
   [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
     PHAssetChangeRequest *changeRequest = assetType == PHAssetMediaTypeVideo
                                         ? [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:assetUrl]
@@ -166,6 +173,12 @@ UM_EXPORT_METHOD_AS(saveToLibraryAsync,
   if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryAddUsageDescription"] == nil) {
     return reject(@"E_NO_PERMISSIONS", @"This app is missing NSPhotoLibraryAddUsageDescription. Add this entry to your bundle's Info.plist.", nil);
   }
+  
+  if ([[localUri pathExtension] length] == 0) {
+    reject(@"E_NO_FILE_EXTENSION", @"Could not get the file's extension.", nil);
+    return;
+  }
+  
   PHAssetMediaType assetType = [EXMediaLibrary _assetTypeForUri:localUri];
   NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
   UM_WEAKIFY(self)
@@ -382,6 +395,7 @@ UM_EXPORT_METHOD_AS(deleteAlbumsAsync,
   
 UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                     getAssetInfo:(nonnull NSString *)assetId
+                    withOptions:(nonnull NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -390,17 +404,20 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
   }
   
   PHAsset *asset = [EXMediaLibrary _getAssetById:assetId];
+    
+  BOOL shouldDownloadFromNetwork = [[options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] boolValue] ?: YES;
   
   if (asset) {
     NSMutableDictionary *result = [EXMediaLibrary _exportAssetInfo:asset];
     if (asset.mediaType == PHAssetMediaTypeImage) {
       PHContentEditingInputRequestOptions *options = [PHContentEditingInputRequestOptions new];
-      options.networkAccessAllowed = YES;
+      options.networkAccessAllowed = shouldDownloadFromNetwork;
 
       [asset requestContentEditingInputWithOptions:options
                                  completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
         result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
         result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
+        result[@"isNetworkAsset"] = [info objectForKey:PHContentEditingInputResultIsInCloudKey];
         
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;
@@ -408,14 +425,42 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
       }];
     } else {
       PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-      options.networkAccessAllowed = YES;
+      options.networkAccessAllowed = shouldDownloadFromNetwork;
 
       [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                       options:options
                                                 resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-        AVURLAsset *urlAsset = (AVURLAsset *)asset;
-        result[@"localUri"] = [[urlAsset URL] absoluteString];
-        resolve(result);
+        // Slow motion videos are returned as an AVComposition instance
+        if ([asset isKindOfClass:[AVComposition class]]) {
+            NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:EXMediaLibraryCachesDirectory];
+            [self.fileSystem ensureDirExistsWithPath:directory];
+            NSString *videoOutputFileName = [NSString stringWithFormat:@"slowMoVideo-%d.mov",arc4random() % 1000];
+            NSString *videoFileOutputPath = [directory stringByAppendingPathComponent:videoOutputFileName];
+            NSURL *videoFileOutputURL = [NSURL fileURLWithPath:videoFileOutputPath];
+            
+            AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:asset presetName:AVAssetExportPresetHighestQuality];
+            exporter.outputURL = videoFileOutputURL;
+            exporter.outputFileType = AVFileTypeQuickTimeMovie;
+            exporter.shouldOptimizeForNetworkUse = YES;
+                                
+            [exporter exportAsynchronouslyWithCompletionHandler:^{
+                if (exporter.status == AVAssetExportSessionStatusCompleted) {
+                    result[@"localUri"] = videoFileOutputURL.absoluteString;
+                    result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
+                    resolve(result);
+                } else if (exporter.status == AVAssetExportSessionStatusFailed) {
+                    reject(@"E_EXPORT_FAILED", @"Could not export the requested video.", nil);
+                } else if (exporter.status == AVAssetExportSessionStatusCancelled) {
+                    reject(@"E_EXPORT_CANCELLED", @"The video export operation is cancelled", nil);
+                }
+            }];
+            
+        } else {
+            AVURLAsset *urlAsset = (AVURLAsset *)asset;
+            result[@"localUri"] = [[urlAsset URL] absoluteString];
+            result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
+            resolve(result);
+        }
       }];
     }
   } else {
@@ -568,9 +613,11 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
       if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
         NSMutableArray *insertedAssets = [NSMutableArray new];
         NSMutableArray *deletedAssets = [NSMutableArray new];
+        NSMutableArray *updatedAssets = [NSMutableArray new];
         NSDictionary *body = @{
                                @"insertedAssets": insertedAssets,
                                @"deletedAssets": deletedAssets,
+                               @"updatedAssets": updatedAssets
                                };
         
         for (PHAsset *asset in changeDetails.insertedObjects) {
@@ -578,6 +625,9 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
         }
         for (PHAsset *asset in changeDetails.removedObjects) {
           [deletedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
+        }
+        for (PHAsset *asset in changeDetails.changedObjects) {
+          [updatedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
         }
         
         [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:body];

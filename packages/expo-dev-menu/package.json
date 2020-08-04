@@ -1,0 +1,54 @@
+{
+  "name": "expo-dev-menu",
+  "version": "0.1.0",
+  "description": "Expo/React Native module with the developer menu.",
+  "main": "build/DevMenu.js",
+  "types": "build/DevMenu.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "start": "./scripts/start.sh",
+    "bundle:dev:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev true --bundle-output assets/EXDevMenuApp.ios.js",
+    "bundle:prod:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "dev-menu",
+    "dev",
+    "menu"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-dev-menu"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.62.0"
+  },
+  "devDependencies": {
+    "@expo/vector-icons": "^10.1.0",
+    "@react-navigation/core": "^5.10.0",
+    "@react-navigation/native": "^5.5.1",
+    "@react-navigation/stack": "^5.4.1",
+    "expo-font": "~8.2.1",
+    "expo-module-scripts": "~1.2.0",
+    "react": "16.13.1",
+    "react-native": "0.63.2"
+  }
+}

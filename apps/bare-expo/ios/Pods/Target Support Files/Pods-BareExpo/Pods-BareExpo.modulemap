@@ -1,0 +1,6 @@
+module Pods_BareExpo {
+  umbrella header "Pods-BareExpo-umbrella.h"
+
+  export *
+  module * { export * }
+}

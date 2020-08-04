@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PersistableBundle;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,30 +21,30 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.core.MapHelper;
 import org.unimodules.core.arguments.MapArguments;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.Arguments;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
 import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import androidx.annotation.NonNull;
 import expo.modules.location.LocationHelpers;
 import expo.modules.location.services.LocationTaskService;
 
 public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
-  public static int VERSION = 1;
-
   private static final String TAG = "LocationTaskConsumer";
   private static final String FOREGROUND_SERVICE_KEY = "foregroundService";
+  public static int VERSION = 1;
   private static long sLastTimestamp = 0;
 
   private TaskInterface mTask;
@@ -303,7 +302,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
   }
 
   private boolean shouldReportDeferredLocations() {
-    if (mDeferredLocations.size() == 0) {
+    if (mDeferredLocations.size() == 0 || mTask == null) {
       return false;
     }
     if (!mIsHostPaused) {
@@ -325,7 +324,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
   }
 
   private void executeTaskWithLocationBundles(ArrayList<Bundle> locationBundles, TaskExecutionCallback callback) {
-    if (locationBundles.size() > 0) {
+    if (locationBundles.size() > 0 && mTask != null) {
       Bundle data = new Bundle();
       data.putParcelableArrayList("locations", locationBundles);
       mTask.execute(data, null, callback);

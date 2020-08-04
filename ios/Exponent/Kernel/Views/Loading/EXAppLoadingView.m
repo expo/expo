@@ -1,6 +1,5 @@
 #import "EXAppLoadingView.h"
 #import "EXAppLoadingCancelView.h"
-#import "EXAppLoadingProgressView.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
@@ -24,7 +23,6 @@
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicatorFromNib;
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, assign) BOOL usesSplashFromNSBundle;
-@property (nonatomic, strong) EXAppLoadingProgressView *vProgress;
 @property (nonatomic, strong) RCTImageView *vBackgroundImage;
 @property (nonatomic, strong) EXAppLoadingCancelView *vCancel;
 
@@ -47,11 +45,6 @@
   _loadingView.frame = self.bounds;
   _vBackgroundImage.frame = self.bounds;
   
-  CGFloat progressHeight = 36.0f;
-  if (@available(iOS 11.0, *)) {
-    progressHeight += self.safeAreaInsets.bottom;
-  }
-  _vProgress.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
   if (!_usesSplashFromNSBundle && !_manifest && _vCancel) {
     CGFloat vCancelY = CGRectGetMidY(self.bounds) - 64.0f;
     _vCancel.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
@@ -64,12 +57,6 @@
   [self _updateViewsWithManifest];
 }
 
-- (void)updateStatusWithProgress:(EXLoadingProgress *)progress
-{
-  [_vProgress updateStatusWithProgress:progress];
-  _vProgress.hidden = !(progress.total.floatValue > 0.0f);
-}
-
 #pragma mark - internal
 
 - (void)_setUpViews
@@ -78,16 +65,38 @@
   BOOL hasSplashScreen = NO;
   if (_usesSplashFromNSBundle) {
     // Display the launch screen behind the React view so that the React view appears to seamlessly load
-    NSArray *views;
+    NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+    UIView *view;
+    UIStoryboard *storyboard;
     @try {
-      NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-      views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
+      storyboard = [UIStoryboard storyboardWithName:launchScreen bundle:[NSBundle mainBundle]];
     } @catch (NSException *_) {
-      DDLogWarn(@"Expo LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
+      UMLogWarn([NSString stringWithFormat:@"'%@.storyboard' file is missing. Fallbacking to '%@.xib' file.", launchScreen, launchScreen]);
     }
-    if (views) {
-      self.loadingView = views.firstObject;
-      self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    if (storyboard) {
+      @try {
+        UIViewController *viewController = [storyboard instantiateInitialViewController];
+        view = viewController.view;
+      } @catch (NSException *_) {
+        @throw [NSException exceptionWithName:@"ERR_INVALID_SPLASH_SCREEN"
+                                       reason:[NSString stringWithFormat:@"'%@.storyboard' does not contain proper ViewController. Add correct ViewController to your '%@.storyboard' file.", launchScreen, launchScreen]
+                                     userInfo:nil];
+      }
+    } else {
+      NSArray *views;
+      @try {
+        views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
+      } @catch (NSException *_) {
+        UMLogWarn([NSString stringWithFormat:@"Expo %@.xib is missing. Unexpected loading behavior may occur.", launchScreen]);
+      }
+      if (views) {
+        view = views.firstObject;
+        view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+      }
+    }
+    
+    if (view) {
+      self.loadingView = view;
       [self addSubview:self.loadingView];
       
       _loadingIndicatorFromNib = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
@@ -106,9 +115,6 @@
       [self addSubview:_vCancel];
     }
   }
-  _vProgress = [[EXAppLoadingProgressView alloc] init];
-  _vProgress.hidden = YES;
-  [self addSubview:_vProgress];
   [self setNeedsLayout];
   [self setNeedsDisplay];
 }
@@ -180,7 +186,6 @@
   }
   
   _loadingView.backgroundColor = backgroundColor;
-  [self bringSubviewToFront:_vProgress];
 }
 
 - (BOOL)_isCancelAvailable

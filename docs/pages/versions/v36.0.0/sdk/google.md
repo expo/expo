@@ -3,13 +3,11 @@ title: Google
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-google-app-auth'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
 
 ### How it works
 
@@ -21,7 +19,7 @@ In the [managed workflow][managed-workflow], native Google Sign-In functionality
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `pod install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
 
 ## API
 
@@ -68,6 +66,7 @@ The difference between this method and native authentication are very sparce. Go
 | [androidClientId][g-creds]              | `string | undefined`              | The Android client id registered with Google for use in the Expo client app.                                                                          |
 | [iosStandaloneAppClientId][g-creds]     | `string | undefined`              | The iOS client id registered with Google for use in a standalone app.                                                                                 |
 | [androidStandaloneAppClientId][g-creds] | `string | undefined`              | The Android client id registered with Google for use in a standalone app.                                                                             |
+| [clientId][g-creds]                     | `string | undefined`              | If the platform-appropriate client ID is not provided, this will be used instead.                                                                     |
 | scopes                                  | `string[] = ['profile', 'email']` | The scopes to ask for from Google for this login ([more information here][g-using-apis])                                                              |
 | redirectUrl                             | `string | undefined`              | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below. |
 | behavior                                | `'system' | 'web'`                | **DEPRECATED** use `expo-google-sign-in` for system authentication.                                                                                   |
@@ -289,7 +288,7 @@ let result = await AuthSession.startAsync({
 });
 ```
 
-[rn-fetch]: https://facebook.github.io/react-native/docs/network.html#fetch
+[rn-fetch]: https://reactnative.dev/docs/network.html#fetch
 [google-api-explorer]: https://developers.google.com/apis-explorer/
 [managed-workflow]: ../../introduction/managed-vs-bare/#managed-workflow
 [bare-workflow]: ../../introduction/managed-vs-bare/#bare-workflow

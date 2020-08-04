@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Modules/RCTSourceCode.h
+../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTSourceCode.h

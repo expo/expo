@@ -11,9 +11,9 @@ export default {
         }
     },
     async getNetworkStateAsync() {
-        let type = navigator.onLine ? NetworkStateType.UNKNOWN : NetworkStateType.NONE;
-        let isConnected = navigator.onLine;
-        let isInternetReachable = isConnected;
+        const type = navigator.onLine ? NetworkStateType.UNKNOWN : NetworkStateType.NONE;
+        const isConnected = navigator.onLine;
+        const isInternetReachable = isConnected;
         return {
             type,
             isConnected,

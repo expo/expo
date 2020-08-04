@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI35_0_0/ReactCommon/ABI35_0_0jsiexecutor/jsireact/ABI35_0_0JSIExecutor.h

@@ -19,7 +19,7 @@ export async function getIpAddressAsync(): Promise<string> {
   return await ExpoNetwork.getIpAddressAsync();
 }
 
-export async function getMacAddressAsync(interfaceName?: string): Promise<string> {
+export async function getMacAddressAsync(interfaceName: string | null = null): Promise<string> {
   if (!ExpoNetwork.getMacAddressAsync) {
     throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
   }

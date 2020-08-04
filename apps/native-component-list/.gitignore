@@ -2,9 +2,6 @@ node_modules/**/*
 .DS_Store
 jsconfig.json
 
-/web-build/
-/web-build-stats.json
-
 #amplify
 amplify/\#current-cloud-backend
 amplify/.config/local-*

@@ -12,7 +12,9 @@ import com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
@@ -25,8 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule;
+import versioned.host.exp.exponent.modules.internal.DevMenuModule;
 import host.exp.exponent.kernel.ExperienceId;
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
@@ -44,6 +49,8 @@ import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearancePackage;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage;
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage;
+import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackage;
+import versioned.host.exp.exponent.modules.api.components.slider.ReactSliderPackage;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
@@ -58,12 +65,8 @@ import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
-import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaViewManager;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
-import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
-import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
-import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
@@ -99,12 +102,20 @@ public class ExponentPackage implements ReactPackage {
       packages = ExperiencePackagePicker.packages(manifest);
     }
     // Delegate may not be null only when the app is detached
-    if (delegate != null) {
-      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
-    } else {
-      mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
-    }
+    mModuleRegistryAdapter = createModuleRegistryAdapter(delegate, singletonModules, packages);
   }
+
+  private ScopedModuleRegistryAdapter createModuleRegistryAdapter(ExponentPackageDelegate delegate, List<SingletonModule> singletonModules, List<Package> packages) {
+    ScopedModuleRegistryAdapter registryAdapter = null;
+    if (delegate != null) {
+      registryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
+    }
+    if (registryAdapter == null) {
+      registryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
+    }
+    return registryAdapter;
+  }
+
 
   public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
@@ -158,8 +169,7 @@ public class ExponentPackage implements ReactPackage {
         new URLHandlerModule(reactContext),
         new ShakeModule(reactContext),
         new KeyboardModule(reactContext),
-        new UpdatesModule(reactContext, mExperienceProperties, mManifest),
-        new ExponentIntentModule(reactContext, mExperienceProperties)
+        new UpdatesModule(reactContext, mExperienceProperties, mManifest)
     ));
 
     if (mIsKernel) {
@@ -167,13 +177,16 @@ public class ExponentPackage implements ReactPackage {
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
       // WHEN_VERSIONING_REMOVE_TO_HERE
     }
+    if (!mIsKernel && !Constants.isStandaloneApp()) {
+      // We need DevMenuModule only in non-home and non-standalone apps.
+      nativeModules.add(new DevMenuModule(reactContext, mExperienceProperties, mManifest));
+    }
 
     if (isVerified) {
       try {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
-        nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -186,10 +199,21 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
-        nativeModules.add(new ExpoAppearanceModule(reactContext));
+
+        // @tsapeta: Using ExpoAppearanceModule in home app causes some issues with the dev menu,
+        // when home's setting is set to automatic and the system theme is different
+        // than this supported by the experience in which we opened the dev menu.
+        if (mIsKernel) {
+          nativeModules.add(new RNCAppearanceModule(reactContext));
+        } else {
+          nativeModules.add(new ExpoAppearanceModule(reactContext));
+        }
 
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
+
+        MapsPackage mapsPackage = new MapsPackage();
+        nativeModules.addAll(mapsPackage.createNativeModules(reactContext));
 
         RNDateTimePickerPackage dateTimePickerPackage = new RNDateTimePickerPackage();
         nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext));
@@ -201,8 +225,6 @@ public class ExponentPackage implements ReactPackage {
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
-    } else {
-      nativeModules.add(new ExponentUnsignedAsyncStorageModule(reactContext));
     }
 
     return nativeModules;
@@ -224,6 +246,8 @@ public class ExponentPackage implements ReactPackage {
         new RNSharedElementPackage(),
         new RNDateTimePickerPackage(),
         new RNCMaskedViewPackage(),
+        new RNCPickerPackage(),
+        new ReactSliderPackage(),
         new RNCViewPagerPackage(),
         new ExpoAppearancePackage()
     ));

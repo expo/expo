@@ -51,7 +51,7 @@ This document will guide you through the process of creating a new version of `e
 
     **Why:** Until now any changes were being made on staging, we now may want to push the changes to production.
 
-    **How:** This may be a subject to change, but right now go to `universe` repo and use PowerTools to _promote versions to production_ — run `pt promote-versions-to-prod`.
+    **How:** Run `et promote-versions`, verify that you consent the changes that are to be applied, and accept the diff.
 
 7. **Deploy Turtle to production**
 

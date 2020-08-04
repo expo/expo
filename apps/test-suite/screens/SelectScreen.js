@@ -1,37 +1,24 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
-import {
-  Alert,
-  FlatList,
-  Linking,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
-import { getTestModules } from '../TestUtils';
-
-const prefix = Platform.select({ default: 'md', ios: 'ios' });
 
 function ListItem({ title, onPressItem, selected, id }) {
   function onPress() {
     onPressItem(id);
   }
 
-  const checkBox = selected ? 'checkbox' : 'checkbox-outline';
-
   return (
     <PlatformTouchable onPress={onPress}>
       <View style={styles.listItem}>
         <Text style={styles.label}>{title}</Text>
-        <Ionicons
+        <MaterialCommunityIcons
           color={selected ? Colors.tintColor : 'black'}
-          name={`${prefix}-${checkBox}`}
+          name={selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
           size={24}
         />
       </View>
@@ -39,9 +26,21 @@ function ListItem({ title, onPressItem, selected, id }) {
   );
 }
 
+function createQueryString(tests) {
+  if (!Array.isArray(tests) || !tests.every(v => typeof v === 'string')) {
+    throw new Error(
+      `test-suite: Cannot create query string for runner. Expected array of strings, instead got: ${tests}`
+    );
+  }
+  const uniqueTests = [...new Set(tests)];
+  // Skip encoding or React Navigation will encode twice
+  return uniqueTests.join(' ');
+}
+
 export default class SelectScreen extends React.PureComponent {
   state = {
     selected: new Set(),
+    modules: [],
   };
 
   constructor(props) {
@@ -65,7 +64,6 @@ export default class SelectScreen extends React.PureComponent {
         }
       });
     }
-    this.modules = getTestModules();
   }
 
   componentWillUnmount() {
@@ -73,24 +71,41 @@ export default class SelectScreen extends React.PureComponent {
   }
 
   checkLinking = incomingTests => {
-    if (incomingTests) {
-      const testNames = incomingTests.split(',').map(v => v.trim());
-      const selected = this.modules.filter(m => testNames.includes(m.name));
-      if (!selected.length) {
-        console.log('[TEST_SUITE]', 'No selected modules', testNames);
-      }
-      this.props.navigation.navigate('RunTests', {
-        selected: this.modules.filter(m => testNames.includes(m.name)),
-      });
-    }
+    // TODO(Bacon): bare-expo should pass a space-separated string.
+    const tests = incomingTests.split(',').map(v => v.trim());
+    const query = createQueryString(tests);
+    this.props.navigation.navigate('run', { tests: query });
   };
 
   _handleOpenURL = ({ url }) => {
-    setTimeout(() => {
-      if (url && url.includes('select/')) {
-        this.checkLinking(url.split('/').pop());
+    url = url || '';
+    // TODO: Use Expo Linking library once parseURL is implemented for web
+    if (url.includes('/select/')) {
+      const selectedTests = url.split('/').pop();
+      if (selectedTests) {
+        this.checkLinking(selectedTests);
+        return;
       }
-    }, 100);
+    }
+
+    if (url.includes('/all')) {
+      // Test all available modules
+      const query = createQueryString(getTestModules().map(m => m.name));
+
+      this.props.navigation.navigate('run', {
+        tests: query,
+      });
+      return;
+    }
+
+    // Application wasn't started from a deep link which we handle. So, we can load test modules.
+    this._loadTestModules();
+  };
+
+  _loadTestModules = () => {
+    this.setState({
+      modules: getTestModules(),
+    });
   };
 
   componentDidMount() {
@@ -99,20 +114,9 @@ export default class SelectScreen extends React.PureComponent {
     Linking.getInitialURL()
       .then(url => {
         this._handleOpenURL({ url });
-        // TODO: Use Expo Linking library once parseURL is implemented for web
-        if (url && url.indexOf('/all') > -1) {
-          // Test all available modules
-          this.props.navigation.navigate('RunTests', {
-            selected: this.modules,
-          });
-        }
       })
       .catch(err => console.error('Failed to load initial URL', err));
   }
-
-  static navigationOptions = {
-    title: 'Expo Test Suite',
-  };
 
   _keyExtractor = ({ name }) => name;
 
@@ -136,37 +140,33 @@ export default class SelectScreen extends React.PureComponent {
 
   _selectAll = () => {
     this.setState(state => {
-      if (state.selected.size === this.modules.length) {
+      if (state.selected.size === this.state.modules.length) {
         return { selected: new Set() };
       }
-      return { selected: new Set(this.modules.map(item => item.name)) };
+      return { selected: new Set(this.state.modules.map(item => item.name)) };
     });
   };
 
-  _getSelected = () => {
-    const { selected } = this.state;
-    const selectedModules = this.modules.filter(m => selected.has(m.name));
-    return selectedModules;
-  };
-
   _navigateToTests = () => {
-    const selected = this._getSelected();
+    const { selected } = this.state;
     if (selected.length === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
-      this.props.navigation.navigate('RunTests', { selected });
+      const query = createQueryString([...selected]);
+
+      this.props.navigation.navigate('run', { tests: query });
       this.setState({ selected: new Set() });
     }
   };
 
   render() {
     const { selected } = this.state;
-    const allSelected = selected.size === this.modules.length;
+    const allSelected = selected.size === this.state.modules.length;
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
     return (
       <React.Fragment>
         <FlatList
-          data={this.modules}
+          data={this.state.modules}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
@@ -186,10 +186,15 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
-  const paddingVertical = (bottom || 12) + 8;
+  const isRunningInDetox = !!global.DETOX;
+  const paddingVertical = 16;
 
   return (
-    <View style={[styles.buttonRow, { paddingLeft: left, paddingRight: right }]}>
+    <View
+      style={[
+        styles.buttonRow,
+        { paddingBottom: isRunningInDetox ? 0 : bottom, paddingLeft: left, paddingRight: right },
+      ]}>
       <FooterButton
         style={{ paddingVertical, alignItems: 'flex-start' }}
         title={buttonTitle}

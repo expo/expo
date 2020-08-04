@@ -1,0 +1,92 @@
+/* Prompts a person to go to the URL listed to enter the confirmation code that is presented to them above the given string. */
+"DeviceLogin.LogInPrompt" = "Consultez la page %@ et saisissez le code indiqué ci-dessus.";
+
+/* Prompts a person that the next thing they need to do to finish connecting their Smart TV and Facebook application is to navigate to their Facebook application on their mobile device and look through their notifications for a message about the connection being formed */
+"DeviceLogin.SmartLogInPrompt" = "Pour connecter votre compte, lancez l’application Facebook sur votre appareil mobile et consultez les notifications.";
+
+/* Displayed as a separator between two options. First option is on a line above this, and second option is below */
+"DeviceLogin.SmartLogInOrLabel" = "- OU -";
+
+/* The title of the label to dismiss the alert when presenting user facing error messages */
+"ErrorRecovery.Alert.OK" = "OK";
+
+/* The title of the label to decline attempting error recovery */
+"ErrorRecovery.Cancel" = "Annuler";
+
+/* The fallback message to display to recover invalidated tokens */
+"ErrorRecovery.Login.Suggestion" = "Veuillez vous connecter à nouveau à cette application pour reconnecter votre compte Facebook.";
+
+/* The title of the label to start attempting error recovery */
+"ErrorRecovery.OK" = "OK";
+
+/* The fallback message to display to retry transient errors */
+"ErrorRecovery.Transient.Suggestion" = "Le serveur est temporairement occupé. Veuillez réessayer plus tard.";
+
+/* The label for the FBSDKLikeButton when the object is not currently liked. */
+"LikeButton.Like" = "J’aime";
+
+/* The label for the FBSDKLikeButton when the object is currently liked. */
+"LikeButton.Liked" = "J’aime déjà";
+
+/* The label for the FBSDKLoginButton action sheet to cancel logging out */
+"LoginButton.CancelLogout" = "Annuler";
+
+/* The label for the FBSDKLoginButton action sheet to confirm logging out */
+"LoginButton.ConfirmLogOut" = "Déconnexion";
+
+/* The fallback string for the FBSDKLoginButton label when the user name is not available yet */
+"LoginButton.LoggedIn" = "Connecté(e) à l’aide de Facebook";
+
+/* The format string for the FBSDKLoginButton label when the user is logged in */
+"LoginButton.LoggedInAs" = "Connecté(e) en tant que %@";
+
+/* The short label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogIn" = "Connexion";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInContinue" = "Continuer avec Facebook";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInLong" = "Connexion avec Facebook";
+
+/* The label for the FBSDKLoginButton when the user is currently logged in */
+"LoginButton.LogOut" = "Déconnexion";
+
+/* The user facing error message when the app slider has been disabled and login fails. */
+"LoginError.SystemAccount.Disabled" = "L’accès au compte Facebook n’a pas été autorisé. Vérifiez les paramètres de l’appareil.";
+
+/* The user facing error message when the Accounts framework encounters a network error. */
+"LoginError.SystemAccount.Network" = "Connexion à Facebook impossible. Vérifiez votre connexion avant de réessayer.";
+
+/* The user facing error message when the device Facebook account password is incorrect and login fails. */
+"LoginError.SystemAccount.PasswordChange" = "Votre mot de passe Facebook a changé. Pour confirmer votre mot de passe, ouvrez Paramètres &gt; Facebook et saisissez votre nom.";
+
+/* The user facing error message when the device Facebook account is unavailable and login fails. */
+"LoginError.SystemAccount.Unavailable" = "Le compte Facebook n’a pas été configuré sur l’appareil.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework becomes unconfirmed. */
+"LoginError.SystemAccount.UnconfirmedUser" = "Votre compte n’est pas confirmé. Veuillez vous connecter à www.facebook.com et suivre les instructions indiquées.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework has been checkpointed. */
+"LoginError.SystemAccount.UserCheckpointed" = "Vous ne pouvez pas vous connecter à des applications pour le moment. Veuillez vous connecter à www.facebook.com et suivre les instructions indiquées.";
+
+/* The message of the FBSDKLoginTooltipView */
+"LoginTooltip.Message" = "Vous gardez le contrôle. Choisissez les informations que vous souhaitez partager avec les applications.";
+
+/* Title of the web dialog that prompts the user to log in to Facebook. */
+"LoginWeb.LogInTitle" = "Connexion";
+
+/* The label for FBSDKSendButton */
+"SendButton.Send" = "Envoyer";
+
+/* The label for FBSDKShareButton */
+"ShareButton.Share" = "Partager";
+
+/* Prompts a person if this is their current account */
+"SmartLogin.NotYou" = "Ce n’est pas vous ?";
+
+/* Text on a button that a person presses to confirm that they are finished with the login experience */
+"SmartLogin.ConfirmationTitle" = "Confirmer la connexion";
+
+/* Text on a button that lets a person continue with their name linked to a Facebook account (Name = %@) */
+"SmartLogin.Continue" = "Continuer en tant que %@";

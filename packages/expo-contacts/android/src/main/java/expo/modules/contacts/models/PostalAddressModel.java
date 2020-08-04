@@ -60,17 +60,22 @@ public class PostalAddressModel extends BaseModel {
   }
 
   @Override
-  public ContentProviderOperation getOperation() {
-    ContentProviderOperation.Builder op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-        .withValue(EXColumns.MIMETYPE, getContentType())
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, getType())
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"));
-    return op.build();
+  public ContentProviderOperation getInsertOperation(String rawId) {
+    ContentProviderOperation.Builder op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
+    if (rawId == null) {
+      op.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0);
+    } else {
+      op.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId);
+    }
+
+    return op.withValue(EXColumns.MIMETYPE, getContentType())
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, getType())
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"))
+      .build();
   }
 
   @Override

@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -12,7 +11,7 @@ class Example extends React.Component {
     },
   };
 
-  props: { x: string };
+  props;
 
   static getInitialProps() {}
 

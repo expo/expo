@@ -3,15 +3,13 @@ title: Branch
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-branch'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 > **Android Support Update:** You now have the option to include Branch in your Android builds built with SDK34+. Please follow the configuration steps below to do so. We previously had removed Branch support for Android builds which you can more about in [this blog post](https://blog.expo.io/changes-to-expo-branch-support-d002c4bc564e).
 
 **`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referalls and attribution with deep links.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
