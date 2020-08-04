@@ -20,6 +20,7 @@
     "@react-navigation/stack": "~5.6.1",
     "@use-expo/permissions": "^2.0.0",
     "date-format": "^2.0.0",
+    "deep-object-diff": "^1.1.0",
     "expo": "~38.0.0",
     "expo-ads-admob": "~8.2.1",
     "expo-ads-facebook": "~8.3.0",
