@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-community/viewpager` from `3.3.0` to `4.1.3`. ([#9535](https://github.com/expo/expo/pull/9535) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
