@@ -8,6 +8,8 @@ import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.runs
+import io.mockk.unmockkConstructor
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -33,6 +35,11 @@ internal class GetAssetsTest {
 
     mockkStatic(MediaLibraryUtils::class)
     every { MediaLibraryUtils.putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs
+  }
+
+  @After
+  fun tearDown() {
+    unmockkConstructor(GetQueryInfo::class)
   }
 
   @Test

@@ -1,11 +1,9 @@
 package org.unimodules.test.core
 
 import android.os.Bundle
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import junit.framework.ComparisonFailure
-import org.junit.Assert.assertNull
-import org.unimodules.core.Promise
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.unimodules.core.arguments.MapArguments
 import org.unimodules.core.arguments.ReadableArguments
 
@@ -42,7 +40,7 @@ fun promiseResolved(promise: PromiseMock, with: (Bundle) -> Unit) {
 
 inline fun <reified T>promiseResolvedWithType(promise: PromiseMock, with: (T) -> Unit) {
   assertResolved(promise)
-  assertTrue(promise.resolveValue is T)
+  assertTrue("Promise resolved with incorrect type", promise.resolveValue is T)
   with(promise.resolveValue as T)
 }
 
