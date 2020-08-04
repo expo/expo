@@ -16,6 +16,7 @@ import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import java.util.List;
 
 import dev.expo.payments.generated.BasePackageList;
+import expo.modules.devmenu.DevMenuManager;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
@@ -36,7 +37,6 @@ public class MainApplication extends Application implements ReactApplication {
       return packages;
     }
 
-
     @Override
     protected String getJSMainModuleName() {
       return "index";
@@ -52,5 +52,7 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+
+    DevMenuManager.INSTANCE.initDevMenuHost(this);
   }
 }

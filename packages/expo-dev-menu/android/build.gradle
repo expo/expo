@@ -59,6 +59,16 @@ android {
   }
 }
 
+task copyAssets(type: Copy) {
+  from '../assets'
+  into 'src/main/assets'
+}
+
+project.afterEvaluate {
+  packageDebugAssets.dependsOn copyAssets
+  packageReleaseAssets.dependsOn copyAssets
+}
+
 repositories {
   // ref: https://www.baeldung.com/maven-local-repository
   mavenLocal()
@@ -72,8 +82,26 @@ repositories {
   }
 }
 
-dependencies {
-  implementation 'com.facebook.react:react-native:+'  // From node_modules
+if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
+  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
+} else {
+  throw new GradleException(
+      "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
+}
 
-  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41"
+dependencies {
+  unimodule 'unimodules-core'
+  unimodule 'unimodules-react-native-adapter'
+
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+  implementation project(':react-native-gesture-handler')
+  // Fixes
+  // Cannot access 'androidx....' which is a supertype of 'expo.modules.devmenu.DevMenuActivity'.
+  // Check your module classpath for missing or conflicting dependencies
+  api "androidx.appcompat:appcompat:1.1.0"
+  api "androidx.lifecycle:lifecycle-extensions:2.2.0"
+
+  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.3.50')}"
 }

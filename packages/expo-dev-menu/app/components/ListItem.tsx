@@ -1,10 +1,10 @@
 import React from 'react';
-import { PixelRatio, StyleSheet, TouchableHighlight } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
 
-import Colors from '../constants/Colors';
 import { StyledText } from '../components/Text';
 import { StyledView } from '../components/Views';
-import { TouchableOpacity } from './Touchables';
+import Colors from '../constants/Colors';
+import { TouchableHighlight } from './Touchables';
 
 type Props = {
   title?: string;
