@@ -8,17 +8,7 @@ import { addMultipleGifs, deleteAllGifs, getSingleGif } from './GifManagement';
 // but if you have Giphy API key - you can use findGifs() from gifFetching.ts
 const gifIds = ['YsTs5ltWtEhnq', 'cZ7rmKfFYOvYI', '11BCDu2iUc8Nvhryl7'];
 
-export default function App() {
-  if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.header}>
-          FileSystem doesn&#39;t support web. Run this on Android or iOS
-        </Text>
-      </View>
-    );
-  }
-
+function AppMain() {
   //download all gifs at startup
   React.useEffect(() => {
     (async () => {
@@ -83,3 +73,17 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
 });
+
+function UnsupportedPlatform() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>
+        FileSystem doesn&#39;t support web. Run this on Android or iOS
+      </Text>
+    </View>
+  );
+}
+
+export default function App() {
+  return Platform.OS === 'android' || Platform.OS === 'ios' ? <AppMain /> : <UnsupportedPlatform />;
+}
