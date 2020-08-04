@@ -993,7 +993,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
         useProxy,
       }),
       scopes: ['openid', 'profile'],
@@ -1078,7 +1078,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
         useProxy,
       }),
       scopes: ['openid', 'profile'],
@@ -1189,7 +1189,7 @@ export default function App() {
       /* @end */
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
         useProxy,
       }),
       scopes: [
