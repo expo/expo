@@ -156,3 +156,9 @@ The [Expo push notification tool](https://expo.io/notifications) is also useful 
 - **What browsers does Expo for Web's push notifications support?** It works on all browsers that support Push API such as Chrome and Firefox. Check the full list here: https://caniuse.com/#feat=push-api.
 
 - **How do I handle expired push notification credentials?** When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+
+- **What delivery guarantees are there for push notifications?** Expo makes a best effort to deliver notifications to the push notification services operated by Apple and Google. Expo's infrastructure is designed for at-least-once delivery to the underlying push notification services; it is more likely for a notification to be delivered to Apple or Google more than once rather than not at all, though both are uncommon but possible.
+
+After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful; a push receipt denotes whether the underlying push notification service received the notification.
+
+Finally, the push notification services from Apple, Google, etc... make a best effort to deliver the notification to the device according to their own policies.
