@@ -513,7 +513,7 @@ Access token type [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
 
 ## Providers
 
-AuthSession has built-in support for some popular providers to make usage as easy as possible. These allow you to skip repetitive things like defining endpoints and abstract common features like `language` and `selectAccount`.
+AuthSession has built-in support for some popular providers to make usage as easy as possible. These allow you to skip repetitive things like defining endpoints and abstract common features like `language`.
 
 ### Google
 

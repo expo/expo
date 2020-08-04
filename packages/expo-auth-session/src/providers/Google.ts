@@ -1,7 +1,7 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 import { useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
@@ -40,7 +40,10 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    * If the user has approved access for this app in the past then auth may return without any further interaction.
    */
   loginHint?: string;
-
+  /**
+   * When `true`, the service will allow the user to switch between accounts (if possible). Defaults to `false`.
+   */
+  selectAccount?: boolean;
   /**
    * Proxy client ID for use in the Expo client on iOS and Android.
    *

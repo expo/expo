@@ -915,7 +915,7 @@ This can only be used in Standalone, custom clients, and bare-workflow apps. Thi
 - Give it a name (e.g. "Android App").
 - **Package name**: Must match the value of `android.package` in your `app.json`.
 - **Signing-certificate fingerprint**: Run `openssl rand -base64 32 | openssl sha1 -c` for the results, it will output a string that looks like `A1:B2:C3` but longer.
-- Your app needs to conform to the URI scheme matching your android package.
+- Your app needs to conform to the URI scheme matching your android package (ex. `com.myname.mycoolapp:/`).
   - **Standalone**: Automatically added, do nothing.
   - **Bare-workflow**: Run `npx uri-scheme add <your android package> --android`
 - To test this you can eject to bare-workflow (`expo eject`). Whenever you change the values in `app.json` you'll need to rebuild the native app.

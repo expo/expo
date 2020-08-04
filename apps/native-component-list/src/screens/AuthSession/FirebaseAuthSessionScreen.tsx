@@ -101,12 +101,12 @@ function Google({ language, selectAccount }: ProviderProps) {
   );
 }
 
-function Facebook({ language, selectAccount }: ProviderProps) {
+function Facebook({ language }: ProviderProps) {
   const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
     {
       clientId: '145668956753819',
       language,
-      selectAccount,
+      // selectAccount,
       responseType: AuthSession.ResponseType.Token,
     },
     {

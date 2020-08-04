@@ -8,6 +8,10 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      */
     loginHint?: string;
     /**
+     * When `true`, the service will allow the user to switch between accounts (if possible). Defaults to `false`.
+     */
+    selectAccount?: boolean;
+    /**
      * Proxy client ID for use in the Expo client on iOS and Android.
      *
      * This Google Client ID must be setup as follows:

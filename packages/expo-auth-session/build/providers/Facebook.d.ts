@@ -1,6 +1,6 @@
+import { AuthRequestConfig } from '../AuthRequest.types';
 import { AuthRequest, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
 import { ProviderAuthRequestConfig } from './Provider.types';
-import { AuthRequestConfig } from '../AuthRequest.types';
 export declare const discovery: DiscoveryDocument;
 export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
     webClientId?: string;
@@ -10,7 +10,7 @@ export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
 }
 declare class FacebookAuthRequest extends AuthRequest {
     nonce?: string;
-    constructor({ language, selectAccount, extraParams, clientSecret, ...config }: FacebookAuthRequestConfig);
+    constructor({ language, extraParams, clientSecret, ...config }: FacebookAuthRequestConfig);
     /**
      * Load and return a valid auth request based on the input config.
      */

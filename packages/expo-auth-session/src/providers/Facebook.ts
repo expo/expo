@@ -1,6 +1,8 @@
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 import { useMemo } from 'react';
+import { Platform } from 'react-native';
+
+import { AuthRequestConfig } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
   AuthRequest,
@@ -11,9 +13,8 @@ import {
   makeRedirectUri,
   ResponseType,
 } from '../AuthSession';
-import { ProviderAuthRequestConfig } from './Provider.types';
-import { AuthRequestConfig } from '../AuthRequest.types';
 import { generateHexStringAsync } from '../PKCE';
+import { ProviderAuthRequestConfig } from './Provider.types';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },
@@ -45,7 +46,7 @@ class FacebookAuthRequest extends AuthRequest {
 
   constructor({
     language,
-    selectAccount,
+    // Account selection cannot be reliably emulated on Facebook.
     extraParams = {},
     clientSecret,
     ...config
@@ -56,9 +57,6 @@ class FacebookAuthRequest extends AuthRequest {
     };
     if (language) {
       inputParams.locale = language;
-    }
-    if (selectAccount && typeof inputParams.auth_type === 'undefined') {
-      inputParams.auth_type = 'reauthorize';
     }
 
     // Apply the default scopes
@@ -162,11 +160,8 @@ export function useAuthRequest(
     if (config.language) {
       output.locale = config.language;
     }
-    if (config.selectAccount) {
-      output.auth_type = 'reauthorize';
-    }
     return output;
-  }, [config.extraParams, config.language, config.selectAccount]);
+  }, [config.extraParams, config.language]);
 
   const request = useLoadedAuthRequest(
     {
