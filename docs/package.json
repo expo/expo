@@ -10,8 +10,7 @@
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
     "prettier": "prettier --write '**/*.{js,ts,tsx}'",
-    "test": "jest",
-    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js"
+    "test": "jest"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.5.0",
