@@ -1,18 +1,17 @@
 package expo.modules.medialibrary
 
-import android.content.ContentResolver
-import android.database.Cursor
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.exifinterface.media.ExifInterface
-import expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION
-import expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT
+import expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MediaLibraryConstants.exifTags
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkClass
-import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
-import io.mockk.spyk
+import io.mockk.runs
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.Assert.assertArrayEquals
@@ -22,14 +21,19 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.fakes.RoboCursor
+import org.unimodules.test.core.PromiseMock
+import org.unimodules.test.core.assertListsEqual
+import org.unimodules.test.core.assertRejected
+import org.unimodules.test.core.promiseRejected
+import org.unimodules.test.core.promiseResolved
+import org.unimodules.test.core.promiseResolvedWithType
 import java.io.File
+import java.io.IOException
 import java.lang.IllegalArgumentException
-import java.nio.channels.FileChannel
 
 
 @RunWith(RobolectricTestRunner::class)
-internal class MediaLibraryUtilsTest {
+internal class MediaLibraryUtilsTests {
 
   @Test
   fun `getInPart() should return correct result`() {
@@ -223,40 +227,4 @@ internal class MediaLibraryUtilsTest {
 
     //assert throw
   }
-
-  @Test
-  fun `putAssetsInfo returns correct response when fullInfo=false`() {
-    //arrange
-    val cursor = mockCursor(arrayOf(
-      MockData.mockVideo.toColumnArray(),
-      MockData.mockAudio.toColumnArray()
-    ))
-
-    val contentResolver = mockContentResolver(cursor)
-
-    mockkStatic(MediaLibraryUtils::class)
-    every {
-      MediaLibraryUtils.getSizeFromCursor(contentResolver, any(), cursor, any(), any())
-    } returns intArrayOf(0, 0) andThen intArrayOf(100, 200)
-
-
-    //act
-    val result = arrayListOf<Bundle>()
-    MediaLibraryUtils.putAssetsInfo(contentResolver, cursor, result, 5, 0, false)
-
-
-    //assert
-    verify(exactly = 0) {
-      MediaLibraryUtils.getExifLocation(any(), any())
-      MediaLibraryUtils.getExifLocation(any(), any())
-    }
-
-    assertEquals(2, result.size)
-
-    assertEquals(MockData.mockVideo.id.toString(), result[0].getString("id"))
-    assertEquals("file://${MockData.mockVideo.path}", result[0].getString("uri"))
-
-    assertNull(result[0].getString("localUri"))
-  }
-
 }

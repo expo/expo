@@ -10,7 +10,7 @@ import java.lang.ClassCastException
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @RunWith(RobolectricTestRunner::class)
-internal class GetQueryInfoTest {
+internal class GetQueryInfoTests {
 
   @Test
   fun `test if proper values are handled properly`() {

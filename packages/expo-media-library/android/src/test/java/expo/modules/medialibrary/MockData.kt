@@ -30,9 +30,6 @@ internal data class MockAsset(
   )
 }
 
-
-
-
 internal object MockData {
   val mockImage = MockAsset(
     1L,
@@ -59,7 +56,6 @@ internal object MockData {
     3000,
     "album23"
   )
-
 
   val mockAudio = MockAsset(
     3L,
