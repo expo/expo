@@ -5,12 +5,21 @@ const semver = require('semver');
 
 const { version } = require('./package.json');
 
+const { schema_sync } = require('./scripts/schema-sync');
+
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
 const vLatest = join('pages', 'versions', `v${version}/`);
 const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
+
+// Starting with version 38, download xdl schema at build time
+// (and when starting a dev server)
+for (let i = 38; i <= parseInt(version, 10); i++) {
+  schema_sync(i);
+}
+schema_sync('unversioned');
 
 module.exports = withCSS({
   // Rather than use `@zeit/next-mdx`, we replicate it
