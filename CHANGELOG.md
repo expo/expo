@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-community/segmented-control` from `1.6.1` to `2.1.0`. ([`ae45e23`](https://github.com/expo/expo/commit/ae45e23931745e6973e9d5221bf6837757031ef5), [#9534](https://github.com/expo/expo/pull/9534) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
