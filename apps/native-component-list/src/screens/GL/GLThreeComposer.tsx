@@ -10,10 +10,12 @@ import TitledSwitch from '../../components/TitledSwitch';
 
 export default function GLThreeComposer() {
   const [isComposerEnabled, setComposerEnabled] = React.useState(false);
+  const [hasGL, setHasGL] = React.useState(false);
 
   const animationFrameId = React.useRef(-1);
   const gl = React.useRef<null | ExpoWebGLRenderingContext>(null);
   const camera = React.useRef<null | PerspectiveCamera>(null);
+  const glitchPass = React.useRef<null | GlitchPass>(null);
   const scene = React.useRef<null | Scene>(null);
   const renderer = React.useRef<null | Renderer>(null);
   const composer = React.useRef<null | EffectComposer>(null);
@@ -21,36 +23,14 @@ export default function GLThreeComposer() {
 
   React.useEffect(() => {
     return () => {
-      if (animationFrameId.current >= 0) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = 0;
     };
   }, []);
 
-  const animate = React.useCallback(() => {
-    animationFrameId.current = requestAnimationFrame(animate);
-    cubes.current.forEach(({ mesh, angularVelocity }) => {
-      mesh.rotation.x += angularVelocity.x;
-      mesh.rotation.y += angularVelocity.y;
-    });
-
-    if (isComposerEnabled) {
-      if (composer.current) composer.current.render();
-    } else {
-      if (renderer.current && scene.current && camera.current)
-        renderer.current.render(scene.current, camera.current);
-    }
-    if (gl.current) {
-      gl.current.endFrameEXP();
-    }
-  }, [isComposerEnabled]);
-
   React.useEffect(() => {
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current);
-      animate();
-    }
-  }, [animate]);
+    if (glitchPass.current) glitchPass.current.enabled = isComposerEnabled;
+  }, [isComposerEnabled, glitchPass.current]);
 
   React.useEffect(() => {
     if (!gl.current || scene.current) {
@@ -71,8 +51,9 @@ export default function GLThreeComposer() {
 
     composer.current = new EffectComposer(renderer.current);
     composer.current.addPass(new RenderPass(scene.current, camera.current));
-    const glitchPass = new GlitchPass();
-    composer.current.addPass(glitchPass);
+    glitchPass.current = new GlitchPass();
+    glitchPass.current.enabled = false;
+    composer.current.addPass(glitchPass.current);
 
     const geometry = new BoxGeometry(1, 1, 1);
     const material = new MeshBasicMaterial({
@@ -97,10 +78,23 @@ export default function GLThreeComposer() {
 
     camera.current.position.z = 3;
 
+    const animate = () => {
+      animationFrameId.current = requestAnimationFrame(animate);
+      cubes.current.forEach(({ mesh, angularVelocity }) => {
+        mesh.rotation.x += angularVelocity.x;
+        mesh.rotation.y += angularVelocity.y;
+      });
+
+      if (composer.current) composer.current.render();
+      if (gl.current) {
+        gl.current.endFrameEXP();
+      }
+    };
+
     animate();
     renderer.current.render(scene.current, camera.current);
     gl.current.endFrameEXP();
-  }, [gl.current, animate]);
+  }, [gl.current, hasGL]);
 
   const onLayout = React.useCallback(({ nativeEvent: { layout } }: LayoutChangeEvent) => {
     if (camera.current) {
@@ -116,16 +110,16 @@ export default function GLThreeComposer() {
     }
   }, []);
 
-  const onContextCreate = React.useCallback(
-    async (context: ExpoWebGLRenderingContext) => {
-      gl.current = context;
-    },
-    [animate]
-  );
-
   return (
     <View style={styles.flex}>
-      <GLView style={styles.flex} onLayout={onLayout} onContextCreate={onContextCreate} />
+      <GLView
+        style={styles.flex}
+        onLayout={onLayout}
+        onContextCreate={(context: ExpoWebGLRenderingContext) => {
+          gl.current = context;
+          setHasGL(true);
+        }}
+      />
       <TitledSwitch
         style={{ position: 'absolute', justifyContent: 'flex-end', top: 0, left: 8, right: 8 }}
         title="Use Composer"
