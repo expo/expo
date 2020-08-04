@@ -1,5 +1,6 @@
 import './BeforePIXI';
 
+import * as React from 'react';
 import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import * as PIXI from 'pixi.js';
