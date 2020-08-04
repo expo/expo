@@ -137,6 +137,7 @@ PODS:
     - UMCore
     - UMPermissionsInterface
   - expo-development-client (1.0.0):
+    - EXDevMenu
     - React
   - EXPrint (9.0.2):
     - UMCore
@@ -938,7 +939,7 @@ SPEC CHECKSUMS:
   EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
   EXNotifications: ff56c1dda5d77f3212005bd66c57f306423b905c
   EXPermissions: 9daf039546113d8f2f0a62db1c75d2d9206e5e4e
-  expo-development-client: 545ee610b499fe17bbd100c1d2d6bdccedc4eddc
+  expo-development-client: 0d2df880d586af100af63960be993d0036cc6621
   EXPrint: edff21b0746bc0c2d2912b21efcb47e8d500b8c9
   EXRandom: a375fb6bed8a0919a795766b8d5218b1200538b7
   EXScreenCapture: ed9b1813758bf0057fc3780043bfa4dc0956a9b5

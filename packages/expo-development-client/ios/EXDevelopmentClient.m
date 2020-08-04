@@ -9,6 +9,10 @@
 
 #import "EXDevelopmentClientBundle.h"
 
+//#if __has_include("EXDevMenu.h") // NOTE: Replace with working discovery of `EXDevMenu`
+@import EXDevMenu;
+#define HAVE_EX_DEV_MENU
+//#endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
 //#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
@@ -70,7 +74,9 @@ EXDevelopmentClientBundleSourceCreate(NSURL *url, NSData *data, int64_t length) 
 
 @interface EXDevelopmentClientController ()
 
+@property (nonatomic, weak) UIWindow *window;
 @property (nonatomic, weak) id <EXDevelopmentClientControllerDelegate> delegate;
+@property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, strong) RCTBridge *launcherBridge;
 @property (nonatomic, strong) EDUMModuleRegistryAdapter *moduleRegistryAdapter;
@@ -139,16 +145,23 @@ EXDevelopmentClientBundleSourceCreate(NSURL *url, NSData *data, int64_t length) 
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevelopmentClientControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   self.delegate = delegate;
-  self.launcherBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  self.launchOptions = launchOptions;
+  self.window = window;
+
+  [self navigateToLauncher];
+}
+
+- (void)navigateToLauncher {
+  self.launcherBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.launcherBridge
                                                    moduleName:@"main"
-                                             initialProperties:nil];
+                                            initialProperties:nil];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
-  window.rootViewController = rootViewController;
-  [window makeKeyAndVisible];
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];
 }
 
 @end
@@ -210,3 +223,56 @@ RCT_EXPORT_METHOD(loadApp:(NSURL *)url
 }
 
 @end
+
+
+//
+// EXDevelopmentClientDevMenuExtensions
+//
+
+#ifdef HAVE_EX_DEV_MENU
+
+@interface EXDevelopmentClientDevMenuExtensions : NSObject <RCTBridgeModule, DevMenuExtensionProtocol>
+
+@end
+
+@implementation EXDevelopmentClientDevMenuExtensions
+
+// Need to explicitly define `moduleName` here for dev menu to pick it up
+RCT_EXTERN void RCTRegisterModule(Class);
++(NSString *)moduleName
+{
+  return @"ExpoDevelopmentClientDevMenuExtensions";
+}
++(void)load
+{
+  RCTRegisterModule(self);
+}
+
+- (instancetype)init {
+  if (self = [super init]) {
+  }
+  return self;
+}
+
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
+-(NSArray<DevMenuItem *> *)devMenuItems {
+  DevMenuAction *backToLauncher = [[DevMenuAction alloc] initWithId:@"backToLauncher" action:^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+      EXDevelopmentClientController *controller = [EXDevelopmentClientController sharedInstance];
+      [controller navigateToLauncher];
+    });
+  }];
+  backToLauncher.label = ^{ return @"Back to launcher"; };
+  backToLauncher.glyphName = ^{ return @"exit-to-app"; };
+  backToLauncher.importance = DevMenuItemImportanceHigh;
+
+  return @[backToLauncher];
+}
+
+@end
+
+#endif
+
