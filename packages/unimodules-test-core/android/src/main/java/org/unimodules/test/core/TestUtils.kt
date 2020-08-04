@@ -51,6 +51,13 @@ fun promiseRejected(promise: PromiseMock, with: (PromiseMock) -> Unit) {
   with(promise)
 }
 
+fun assertRejectedWithCode(promise: PromiseMock, rejectCode: String) {
+  promiseRejected(promise) {
+    assertTrue("Promise has no rejection code", it.rejectCodeSet)
+    assertEquals(it.rejectCode, rejectCode)
+  }
+}
+
 fun readableArgumentsOf(values: Map<String, Any>): ReadableArguments {
   return MapArguments(values)
 }

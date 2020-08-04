@@ -6,8 +6,8 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
-import io.mockk.verify
-import org.junit.Assert
+import io.mockk.slot
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,12 +15,12 @@ import org.robolectric.RobolectricTestRunner
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
 import org.unimodules.test.core.assertRejected
-import org.unimodules.test.core.promiseRejected
+import org.unimodules.test.core.assertRejectedWithCode
 import org.unimodules.test.core.promiseResolvedWithType
 import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
-internal class AssetsContentResolverTests {
+internal class GetAssetInfoTests {
 
   private lateinit var promise: PromiseMock
   private lateinit var mockContext: MockContext
@@ -32,38 +32,31 @@ internal class AssetsContentResolverTests {
   }
 
   @Test
-  fun `putAssetsInfo returns correct response when fullInfo=false`() {
+  fun `GetAssetInfo should call queryAssetInfo`() {
     //arrange
-    val cursor = mockCursor(arrayOf(
-      MockData.mockVideo.toColumnArray(),
-      MockData.mockAudio.toColumnArray()
-    ))
-
-    val contentResolver = mockContentResolver(cursor)
+    val context = mockContext.get()
+    val selectionSlot = slot<String>()
+    val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(MediaLibraryUtils::class)
-    every {
-      MediaLibraryUtils.getSizeFromCursor(contentResolver, any(), cursor, any(), any())
-    } returns intArrayOf(0, 0) andThen intArrayOf(100, 200)
+    every { MediaLibraryUtils.queryAssetInfo(
+      context,
+      capture(selectionSlot),
+      capture(selectionArgsSlot),
+      true,
+      promise
+    ) } just runs
 
+    val expectedSelection = "${MediaStore.Images.Media._ID}=?"
+    val assetId = "testAssetId"
 
     //act
-    val result = arrayListOf<Bundle>()
-    MediaLibraryUtils.putAssetsInfo(contentResolver, cursor, result, 5, 0, false)
-
+    GetAssetInfo(context, assetId, promise).doInBackground()
 
     //assert
-    verify(exactly = 0) {
-      MediaLibraryUtils.getExifLocation(any(), any())
-      MediaLibraryUtils.getExifLocation(any(), any())
-    }
-
-    Assert.assertEquals(2, result.size)
-
-    Assert.assertEquals(MockData.mockVideo.id.toString(), result[0].getString("id"))
-    Assert.assertEquals("file://${MockData.mockVideo.path}", result[0].getString("uri"))
-
-    Assert.assertNull(result[0].getString("localUri"))
+    assertEquals(expectedSelection, selectionSlot.captured)
+    assertEquals(1, selectionArgsSlot.captured.size)
+    assertEquals(assetId, selectionArgsSlot.captured[0])
   }
 
   @Test
@@ -111,9 +104,7 @@ internal class AssetsContentResolverTests {
     MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
 
     //assert
-    promiseRejected(promise) {
-      Assert.assertEquals(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION, it.rejectCode)
-    }
+    assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
@@ -125,8 +116,6 @@ internal class AssetsContentResolverTests {
     MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
 
     //assert
-    promiseRejected(promise) {
-      Assert.assertEquals(MediaLibraryConstants.ERROR_IO_EXCEPTION, it.rejectCode)
-    }
+    assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_IO_EXCEPTION)
   }
 }

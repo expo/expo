@@ -29,7 +29,6 @@ fun mockContentResolver(cursor: Cursor?): ContentResolver {
 fun mockContentResolverForResult(cursorResults: CursorResults)
   = mockContentResolver(mockCursor(cursorResults))
 
-
 fun throwableContentResolver(throwable: Throwable): ContentResolver {
   val contentResolver = mockk<ContentResolver>()
   every { contentResolver.query(any(), any(), any(), any(),any()) } throws throwable
@@ -44,4 +43,5 @@ class MockContext {
     return context
   }
 
+  fun get() = context
 }

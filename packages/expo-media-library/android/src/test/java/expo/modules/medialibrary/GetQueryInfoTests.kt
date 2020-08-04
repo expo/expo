@@ -1,13 +1,10 @@
 package expo.modules.medialibrary
 
 import android.provider.MediaStore
-import android.text.TextUtils
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.lang.ClassCastException
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @RunWith(RobolectricTestRunner::class)
 internal class GetQueryInfoTests {

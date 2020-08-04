@@ -60,7 +60,7 @@ class GetAssets extends AsyncTask<Void, Void, Void> {
       mPromise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
           "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
-      Log.e(ERROR_UNABLE_TO_LOAD, "Could not read file or parse EXIF tags", e);
+      mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file or parse EXIF tags", e);
     }
     return null;
   }

@@ -1,17 +1,12 @@
 package expo.modules.medialibrary
 
 import android.os.Bundle
-import android.provider.MediaStore
 import androidx.exifinterface.media.ExifInterface
-import expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION
-import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MediaLibraryConstants.exifTags
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.mockkStatic
-import io.mockk.runs
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.Assert.assertArrayEquals
@@ -21,19 +16,47 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertListsEqual
-import org.unimodules.test.core.assertRejected
-import org.unimodules.test.core.promiseRejected
-import org.unimodules.test.core.promiseResolved
-import org.unimodules.test.core.promiseResolvedWithType
 import java.io.File
-import java.io.IOException
-import java.lang.IllegalArgumentException
 
 
 @RunWith(RobolectricTestRunner::class)
 internal class MediaLibraryUtilsTests {
+
+  @Test
+  fun `putAssetsInfo returns correct response when fullInfo=false`() {
+    //arrange
+    val cursor = mockCursor(arrayOf(
+      MockData.mockVideo.toColumnArray(),
+      MockData.mockAudio.toColumnArray()
+    ))
+
+    val contentResolver = mockContentResolver(cursor)
+
+    mockkStatic(MediaLibraryUtils::class)
+    every {
+      MediaLibraryUtils.getSizeFromCursor(contentResolver, any(), cursor, any(), any())
+    } returns intArrayOf(0, 0) andThen intArrayOf(100, 200)
+
+
+    //act
+    val result = arrayListOf<Bundle>()
+    MediaLibraryUtils.putAssetsInfo(contentResolver, cursor, result, 5, 0, false)
+
+
+    //assert
+    verify(exactly = 0) {
+      MediaLibraryUtils.getExifLocation(any(), any())
+      MediaLibraryUtils.getExifLocation(any(), any())
+    }
+
+    assertEquals(2, result.size)
+
+    assertEquals(MockData.mockVideo.id.toString(), result[0].getString("id"))
+    assertEquals("file://${MockData.mockVideo.path}", result[0].getString("uri"))
+
+    assertNull(result[0].getString("localUri"))
+  }
+
 
   @Test
   fun `getInPart() should return correct result`() {
@@ -62,12 +85,12 @@ internal class MediaLibraryUtilsTests {
     MediaLibraryUtils.getExifLocation(exifInterface, assetBundle)
 
     //assert
-    assertTrue(assetBundle.containsKey("location"))
+    assertTrue("Result bundle is missing 'location' key", assetBundle.containsKey("location"))
     val locationBundle = assetBundle.getParcelable<Bundle>("location")!!
-    assertTrue(locationBundle.containsKey("latitude"))
-    assertTrue(locationBundle.containsKey("longitude"))
-    assertTrue(lat.equals(locationBundle.getDouble("latitude")))
-    assertTrue(lng.equals(locationBundle.getDouble("longitude")))
+    assertTrue("Result is missing 'latitude' key", locationBundle.containsKey("latitude"))
+    assertTrue("Result is missing 'latitude' key", locationBundle.containsKey("longitude"))
+    assertEquals(lat, locationBundle.getDouble("latitude"), 0.001)
+    assertEquals(lng, locationBundle.getDouble("longitude"), 0.001)
   }
 
   @Test
@@ -97,7 +120,7 @@ internal class MediaLibraryUtilsTests {
     val result = MediaLibraryUtils.getExifFullInfo(exifInterface, response)
 
     //assert
-    assertTrue(response.containsKey("exif"))
+    assertTrue("Response has no exif value", response.containsKey("exif"))
   }
 
   @Test
