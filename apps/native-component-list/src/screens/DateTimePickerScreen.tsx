@@ -1,4 +1,7 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, {
+  AndroidNativeProps,
+  IOSNativeProps,
+} from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -8,19 +11,19 @@ import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 
 
 const DateTimePickerScreen = () => {
   const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState('date');
+  const [mode, setMode] = useState<IOSNativeProps['mode'] | AndroidNativeProps['mode']>('date');
   const [show, setShow] = useState(false);
-  const [color, setColor] = useState();
+  const [color, setColor] = useState<string | undefined>();
   const [display, setDisplay] = useState('default');
 
-  const onChange = (event, selectedDate) => {
+  const onChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || date;
 
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
   };
 
-  const showMode = currentMode => {
+  const showMode = (currentMode: IOSNativeProps['mode'] | AndroidNativeProps['mode']) => {
     setShow(true);
     setMode(currentMode);
   };
@@ -47,7 +50,7 @@ const DateTimePickerScreen = () => {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      {global.HermesInternal == null ? null : (
+      {(global as any).HermesInternal == null ? null : (
         <View style={styles.engine}>
           <Text testID="hermesIndicator" style={styles.footer}>
             Engine: Hermes
@@ -107,8 +110,9 @@ const DateTimePickerScreen = () => {
               timeZoneOffsetInMinutes={0}
               value={date}
               mode={mode}
-              is24Hour
-              display={display}
+              {...(mode === 'time' ? { is24Hour: true } : {})}
+              {...(Platform.OS === 'android' ? { display } : {})}
+              minuteInterval={15}
               onChange={onChange}
               style={styles.iOsPicker}
               textColor={color || undefined}
