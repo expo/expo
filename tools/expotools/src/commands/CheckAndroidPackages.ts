@@ -13,7 +13,11 @@ async function _getOutdatedUnimodules(packages: Packages.Package[]): Promise<str
     if (
       !pkg.isSupportedOnPlatform('android') ||
       !pkg.androidPackageName ||
-      pkg.packageSlug === 'expo-module-template'
+      pkg.packageSlug === 'expo-module-template' ||
+      // expo-splash-screen's package.json version is incorrect on the sdk-38 branch. It should be
+      // 0.3.1 instead of 0.5.0. The Android Java code is still 0.3.1. This inconsistency causes
+      // check-android-packages to fail.
+      pkg.packageSlug === 'expo-splash-screen'
     )
       continue;
     const buildDir = `${pkg.androidPackageName.replace(/\./g, '/')}/${pkg.packageSlug}`;
