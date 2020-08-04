@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-webview` from `9.4.0` to `10.3.3`. ([#9549](https://github.com/expo/expo/pull/9549) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
