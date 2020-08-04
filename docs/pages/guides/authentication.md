@@ -1756,6 +1756,7 @@ WebBrowser.maybeCompleteAuthSession();
 const discovery = {
   authorizationEndpoint: 'https://www.strava.com/oauth/mobile/authorize',
   tokenEndpoint: 'https://www.strava.com/oauth/token',
+  revocationEndpoint: 'https://www.strava.com/oauth/deauthorize',
 };
 
 export default function App() {
