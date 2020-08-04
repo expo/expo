@@ -4,12 +4,17 @@ import CameraModule from './CameraModule/CameraModule';
 export default class ExponentCamera extends React.Component<CameraNativeProps> {
     video?: number | null;
     camera?: CameraModule;
+    canvas?: HTMLCanvasElement;
     state: {
         type: null;
     };
     componentWillUnmount(): void;
     componentDidUpdate(nextProps: any): void;
     _updateCameraProps: ({ type, pictureSize, ...webCameraSettings }: CameraNativeProps) => Promise<void>;
+    private updateScanner;
+    private setCanvasRef;
+    private updateCameraCanvas;
+    private shouldRenderIndicator;
     getCamera: () => CameraModule;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;

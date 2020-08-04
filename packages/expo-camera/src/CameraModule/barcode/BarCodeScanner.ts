@@ -1,7 +1,7 @@
 import * as Utils from '../CameraUtils';
 import { WebWorker } from './WorkerUtils';
 import BarcodeScannerWorker from './BarCodeScannerWorker';
-import { PictureOptions, BarCodeSettings } from '../../Camera.types';
+import { CameraPictureOptions, BarCodeSettings } from '../../Camera.types';
 
 export default class BarCodeScanner {
   canvas?: HTMLCanvasElement;
@@ -12,7 +12,7 @@ export default class BarCodeScanner {
 
   constructor(private videoElement: HTMLVideoElement) {}
 
-  private scanForBarcodes(types: string[], config: PictureOptions = {}) {
+  private scanForBarcodes(types: string[], config: CameraPictureOptions = {}) {
     if (!this.webWorker) {
       throw new Error('Cannot process a barcode before the worker has been created.');
     }

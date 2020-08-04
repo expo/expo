@@ -74,11 +74,16 @@ export declare type CameraNativeProps = {
     zoom?: number;
     whiteBalance?: number | string;
     pictureSize?: string;
-    barCodeScannerSettings?: object;
+    barCodeScannerSettings?: BarCodeSettings;
     barCodeScannerEnabled?: boolean;
     faceDetectorEnabled?: boolean;
     faceDetectorSettings?: object;
     ratio?: string;
     useCamera2Api?: boolean;
+};
+export declare type BarCodeSettings = {
+    barCodeTypes: string[];
+    interval?: number;
+    shouldRenderIndicator?: boolean;
 };
 export { PermissionResponse, PermissionStatus, PermissionExpiration };

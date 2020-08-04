@@ -1,5 +1,5 @@
 import { CameraPictureOptions } from './../Camera.types';
-import { CameraType, ImageSize, ImageType } from './CameraModule.types';
+import { CameraType, CaptureOptions, ImageSize, ImageType } from './CameraModule.types';
 interface ConstrainLongRange {
     max?: number;
     min?: number;
@@ -9,8 +9,16 @@ interface ConstrainLongRange {
 export declare function getImageSize(videoWidth: number, videoHeight: number, scale: number): ImageSize;
 export declare function toDataURL(canvas: HTMLCanvasElement, imageType: ImageType, quality: number): string;
 export declare function hasValidConstraints(preferredCameraType?: CameraType, width?: number | ConstrainLongRange, height?: number | ConstrainLongRange): boolean;
+export declare function captureImageContext(video: HTMLVideoElement, config: CaptureOptions): HTMLCanvasElement;
 export declare function captureImage(video: HTMLVideoElement, pictureOptions: CameraPictureOptions): string;
 export declare function getIdealConstraints(preferredCameraType: CameraType, width?: number | ConstrainLongRange, height?: number | ConstrainLongRange): MediaStreamConstraints;
 export declare function getStreamDevice(preferredCameraType: CameraType, preferredWidth?: number | ConstrainLongRange, preferredHeight?: number | ConstrainLongRange): Promise<MediaStream>;
 export declare function isWebKit(): boolean;
+export declare function drawBarcodeBounds(context: CanvasRenderingContext2D, { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner }: {
+    topLeftCorner: any;
+    topRightCorner: any;
+    bottomRightCorner: any;
+    bottomLeftCorner: any;
+}, options?: any): void;
+export declare function captureImageData(video: HTMLVideoElement, pictureOptions?: CameraPictureOptions): ImageData | null;
 export {};
