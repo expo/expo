@@ -45,6 +45,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
   <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
   <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
+  <SocialGridItem title="Strava" protocol={['OAuth 2']} href="#strava" image="/static/images/sdk/auth-session/strava.png" />
   <SocialGridItem title="Twitch" protocol={['OAuth 2']} href="#twitch" image="/static/images/sdk/auth-session/twitch.png" />
   <SocialGridItem title="Uber" protocol={['OAuth 2']} href="#uber" image="/static/images/sdk/auth-session/uber.png" />
 </SocialGrid>
@@ -316,7 +317,7 @@ export default function App() {
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
         native: 'your.app://redirect',
-        useProxy
+        useProxy,
       }),
     },
     discovery
@@ -398,7 +399,7 @@ export default function App() {
     }
   }, [response]);
 
-   return (
+  return (
     <Button
       /* @info Disable the button until the request is loaded asynchronously. */
       disabled={!request}
@@ -475,7 +476,7 @@ export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile','email', 'user_likes'],
+      scopes: ['public_profile', 'email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -510,9 +511,9 @@ export default function App() {
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({
-        /* @end */
+          /* @end */
           useProxy,
-          windowFeatures: { width: 700, height: 600 }
+          windowFeatures: { width: 700, height: 600 },
         });
       }}
     />
@@ -553,7 +554,7 @@ export default function App() {
       responseType: ResponseType.Token,
       /* @end */
       clientId: '<YOUR FBID>',
-      scopes: ['public_profile','email', 'user_likes'],
+      scopes: ['public_profile', 'email', 'user_likes'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
@@ -588,9 +589,9 @@ export default function App() {
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({
-        /* @end */
+          /* @end */
           useProxy,
-          windowFeatures: { width: 700, height: 600 }
+          windowFeatures: { width: 700, height: 600 },
         });
       }}
     />
@@ -672,7 +673,7 @@ export default function App() {
       const credential = firebase.auth.FacebookAuthProvider.credential(access_token);
       /* @end */
       // Sign in with the credential from the Facebook user.
-      firebase.auth().signInWithCredential(credential)
+      firebase.auth().signInWithCredential(credential);
     }
   }, [response]);
 
@@ -685,9 +686,9 @@ export default function App() {
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync({
-        /* @end */
+          /* @end */
           useProxy,
-          windowFeatures: { width: 700, height: 600 }
+          windowFeatures: { width: 700, height: 600 },
         });
       }}
     />
@@ -1048,7 +1049,13 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest, useAutoDiscovery, Prompt } from 'expo-auth-session';
+import {
+  makeRedirectUri,
+  ResponseType,
+  useAuthRequest,
+  useAutoDiscovery,
+  Prompt,
+} from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -1267,7 +1274,7 @@ import { Button, Platform } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-const useProxy = Platform.select({ web: false, default: true })
+const useProxy = Platform.select({ web: false, default: true });
 
 export default function App() {
   // Endpoint
@@ -1716,6 +1723,108 @@ export default function App() {
 
 <!-- End Spotify -->
 
+### Strava
+
+<CreateAppButton name="Strava" href="https://www.strava.com/settings/apps" />
+
+| Website                     | Provider  | PKCE      | Auto Discovery |
+| --------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-strava] | OAuth 2.0 | Supported | Not Available  |
+
+[c-strava]: https://www.strava.com/settings/apps
+
+- Learn more about the [Strava API](http://developers.strava.com/docs/reference/).
+- The "Authorization Callback Domain" refers to the final path component of your redirect URI. Ex: In the URI `com.bacon.myapp://redirect` the domain would be `redirect`.
+- No Implicit auth flow is provided by Strava.
+
+<AuthMethodTabSwitcher tabs={["Auth Code"]}>
+<AuthCodeTab>
+
+<SnackInline label='Strava Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.strava.com/oauth/mobile/authorize',
+  tokenEndpoint: 'https://www.strava.com/oauth/token',
+  revocationEndpoint: 'https://www.strava.com/oauth/deauthorize',
+};
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['activity:read_all'],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        // the "redirect" must match your "Authorization Callback Domain" in the Strava dev console.
+        native: 'your.app://redirect',
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+Strava doesn't provide an implicit auth flow, you should send the code to a server or serverless function to perform the access token exchange.
+For **debugging** purposes, you can perform the exchange client-side using the following method:
+
+```tsx
+const { accessToken } = await AuthSession.exchangeCodeAsync(
+  {
+    clientId: request?.clientId,
+    redirectUri,
+    code: result.params.code,
+    extraParams: {
+      // You must use the extraParams variation of clientSecret.
+      // Never store your client secret on the client.
+      client_secret: 'CLIENT_SECRET',
+    },
+  },
+  { tokenEndpoint: 'https://www.strava.com/oauth/token' }
+);
+```
+
+</SnackInline>
+
+</AuthCodeTab>
+
+</AuthMethodTabSwitcher>
+
+<!-- End Strava -->
+
 ### Twitch
 
 <CreateAppButton name="Twitch" href="https://dev.twitch.tv/console/apps/create" />
@@ -1774,7 +1883,7 @@ export default function App() {
     }
   }, [response]);
 
-   return (
+  return (
     <Button
       /* @info Disable the button until the request is loaded asynchronously. */
       disabled={!request}
@@ -1840,7 +1949,7 @@ export default function App() {
     }
   }, [response]);
 
-   return (
+  return (
     <Button
       /* @info Disable the button until the request is loaded asynchronously. */
       disabled={!request}
@@ -1988,7 +2097,7 @@ export default function App() {
     }
   }, [response]);
 
-   return (
+  return (
     <Button
       /* @info Disable the button until the request is loaded asynchronously. */
       disabled={!request}
