@@ -47,6 +47,7 @@ jobs:
           fi
       - run: echo "::add-path::$(pwd)/bin"
       - run: expotools ios-generate-dynamic-macros
+      - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
       - name: bundler cache
         uses: actions/cache@v1
