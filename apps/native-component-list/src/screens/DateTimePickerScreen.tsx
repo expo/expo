@@ -1,5 +1,8 @@
 /* eslint-disable */
 // @ts-nocheck
+import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -12,13 +15,9 @@ import {
   TextInput,
   useColorScheme,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import React, { useState } from 'react';
-import moment from 'moment';
-
 // This example is a refactored copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
 // Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const ThemedText = props => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -37,7 +36,6 @@ export default () => {
   const [show, setShow] = useState(false);
   const [color, setColor] = useState();
   const [display, setDisplay] = useState('default');
-  const [interval, setMinInterval] = useState(undefined);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -68,19 +66,6 @@ export default () => {
 
   const showTimepickerSpinner = () => {
     showMode('time');
-    setMinInterval(undefined);
-    setDisplay('spinner');
-  };
-
-  const showTimepickerClockModeWithInterval = () => {
-    showMode('time');
-    setMinInterval(5);
-    setDisplay('clock');
-  };
-
-  const showTimepickerSpinnerWithInterval = () => {
-    showMode('time');
-    setMinInterval(5);
     setDisplay('spinner');
   };
 
@@ -144,27 +129,10 @@ export default () => {
               title="Show time picker spinner!"
             />
           </View>
-          <View style={styles.button}>
-            <Button
-              testID="timePickerDefaultIntervalButton"
-              onPress={showTimepickerClockModeWithInterval}
-              title="Show time picker as clock (with 5 min interval)!"
-            />
-          </View>
-          <View style={styles.button}>
-            <Button
-              testID="timePickerSpinnerIntervalButton"
-              onPress={showTimepickerSpinnerWithInterval}
-              title="Show time picker as spinner (with 5 min interval)!"
-            />
-          </View>
           <View style={styles.header}>
-            <ThemedText testID="dateText" style={styles.dateTimeText}>
-              {moment.utc(date).format('MM/DD/YYYY')}
-            </ThemedText>
-            <Text> </Text>
-            <ThemedText testID="timeText" style={styles.dateTimeText}>
-              {moment.utc(date).format('HH:mm')}
+            <ThemedText testID="dateTimeText" style={styles.dateTimeText}>
+              {mode === 'time' && moment.utc(date).format('HH:mm')}
+              {mode === 'date' && moment.utc(date).format('MM/DD/YYYY')}
             </ThemedText>
             <Button testID="hidePicker" onPress={() => setShow(false)} title="hide picker" />
           </View>
@@ -172,7 +140,6 @@ export default () => {
             <DateTimePicker
               testID="dateTimePicker"
               timeZoneOffsetInMinutes={0}
-              minuteInterval={interval}
               value={date}
               mode={mode}
               is24Hour
