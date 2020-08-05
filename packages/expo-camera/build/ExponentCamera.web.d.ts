@@ -1,6 +1,12 @@
 import * as React from 'react';
-import { CameraNativeProps } from './Camera.types';
+import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions } from './Camera.types';
+export declare type ExponentCameraRef = {
+    getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
+    takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
+    resumePreview: () => Promise<void>;
+    pausePreview: () => Promise<void>;
+};
 declare const ExponentCamera: React.ForwardRefExoticComponent<Pick<CameraNativeProps & {
     children?: any;
-}, "autoFocus" | "flashMode" | "whiteBalance" | "zoom" | "onCameraReady" | "onMountError" | "type" | "pictureSize" | "pointerEvents" | "style" | "onBarCodeScanned" | "onFacesDetected" | "onFaceDetectionError" | "onPictureSaved" | "focusDepth" | "barCodeScannerSettings" | "barCodeScannerEnabled" | "faceDetectorEnabled" | "faceDetectorSettings" | "ratio" | "useCamera2Api" | "children"> & React.RefAttributes<unknown>>;
+}, "type" | "pictureSize" | "pointerEvents" | "style" | "onCameraReady" | "onMountError" | "onBarCodeScanned" | "onFacesDetected" | "onFaceDetectionError" | "onPictureSaved" | "flashMode" | "autoFocus" | "focusDepth" | "zoom" | "whiteBalance" | "barCodeScannerSettings" | "barCodeScannerEnabled" | "faceDetectorEnabled" | "faceDetectorSettings" | "ratio" | "useCamera2Api" | "children"> & React.RefAttributes<ExponentCameraRef>>;
 export default ExponentCamera;

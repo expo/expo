@@ -6,12 +6,12 @@ declare type OnCameraReadyListener = () => void;
 declare type OnMountErrorListener = (event: {
     nativeEvent: Error;
 }) => void;
-export declare function useCameraStream(video: React.MutableRefObject<HTMLVideoElement | null>, type: CameraType, settings: Record<string, any>, { onCameraReady, onMountError, }: {
+export declare function useCameraStream(video: React.MutableRefObject<HTMLVideoElement | null>, preferredType: CameraType, settings: Record<string, any>, { onCameraReady, onMountError, }: {
     onCameraReady?: OnCameraReadyListener;
     onMountError?: OnMountErrorListener;
 }): {
     type: CameraType | null;
-    resume: () => Promise<void>;
-    stop: () => void;
-    capture: (config: CameraPictureOptions) => CapturedPicture;
+    resumeAsync: () => Promise<void>;
+    stopAsync: () => void;
+    captureAsync: (config: CameraPictureOptions) => CapturedPicture;
 };

@@ -56,7 +56,7 @@ function useLoadedVideo(
 
 export function useCameraStream(
   video: React.MutableRefObject<HTMLVideoElement | null>,
-  type: CameraType,
+  preferredType: CameraType,
   settings: Record<string, any>,
   {
     onCameraReady,
@@ -64,9 +64,9 @@ export function useCameraStream(
   }: { onCameraReady?: OnCameraReadyListener; onMountError?: OnMountErrorListener }
 ): {
   type: CameraType | null;
-  resume: () => Promise<void>;
-  stop: () => void;
-  capture: (config: CameraPictureOptions) => CapturedPicture;
+  resumeAsync: () => Promise<void>;
+  stopAsync: () => void;
+  captureAsync: (config: CameraPictureOptions) => CapturedPicture;
 } {
   const stream = React.useRef<MediaStream | null>(null);
   const streamSettings = React.useRef<MediaTrackSettings | null>(null);
@@ -77,23 +77,22 @@ export function useCameraStream(
     zoom: 1,
   });
   const isStartingCamera = React.useRef<boolean | null>(false);
-  const [realType, setRealType] = React.useState<CameraType | null>(null);
+  const [type, setType] = React.useState<CameraType | null>(null);
 
   useLoadedVideo(video, () => {
-    Utils.syncTrackCapabilities(type, stream.current, capabilities.current);
+    Utils.syncTrackCapabilities(preferredType, stream.current, capabilities.current);
   });
 
   React.useEffect(() => {
     return () => {
-      console.log('dismount');
       // unmount
       stopAsync();
     };
   }, []);
 
   React.useEffect(() => {
-    resumePreview();
-  }, [type]);
+    resumeAsync();
+  }, [preferredType]);
 
   React.useEffect(() => {
     const changes: WebCameraSettings = {};
@@ -111,7 +110,7 @@ export function useCameraStream(
 
     const nextWebCameraSettings = { ...capabilities.current, ...changes };
     if (hasChanges) {
-      Utils.syncTrackCapabilities(type, stream.current, changes);
+      Utils.syncTrackCapabilities(preferredType, stream.current, changes);
     }
 
     capabilities.current = nextWebCameraSettings;
@@ -135,11 +134,10 @@ export function useCameraStream(
     if (streamSettings.current) {
       // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
       const { facingMode = 'user' } = streamSettings.current;
-      setRealType(FacingModeToCameraType[facingMode]);
+      setType(FacingModeToCameraType[facingMode]);
     } else {
-      setRealType(null);
+      setType(null);
     }
-    console.log('update settings: ', streamSettings.current);
   }, [stream.current]);
 
   React.useEffect(() => {
@@ -150,20 +148,18 @@ export function useCameraStream(
   }, [stream.current, video.current]);
 
   const stopAsync = (): void => {
-    console.log('stop', stream.current);
     Utils.stopMediaStream(stream.current);
     stream.current = null;
   };
 
-  const resumePreview = async (): Promise<void> => {
-    console.log('resume', isStartingCamera.current);
+  const resumeAsync = async (): Promise<void> => {
     if (isStartingCamera.current) {
       return;
     }
     isStartingCamera.current = true;
     let streamDevice: MediaStream | null;
     try {
-      streamDevice = await Utils.getStreamDevice(type);
+      streamDevice = await Utils.getStreamDevice(preferredType);
     } catch (error) {
       // this can happen when the requested mode is not supported.
       isStartingCamera.current = false;
@@ -184,10 +180,10 @@ export function useCameraStream(
   };
 
   return {
-    type: realType,
-    resume: resumePreview,
-    stop: stopAsync,
-    capture(config: CameraPictureOptions): CapturedPicture {
+    type,
+    resumeAsync: resumeAsync,
+    stopAsync: stopAsync,
+    captureAsync(config: CameraPictureOptions): CapturedPicture {
       return Utils.capture(video.current!, streamSettings.current!, config);
     },
   };

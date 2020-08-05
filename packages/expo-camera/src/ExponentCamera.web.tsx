@@ -7,8 +7,18 @@ import { CameraType, useCameraStream } from './CameraModule/CameraModule';
 import { PictureSizes } from './CameraModule/constants';
 import CameraManager from './ExponentCameraManager.web';
 
+export type ExponentCameraRef = {
+  getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
+  takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
+  resumePreview: () => Promise<void>;
+  pausePreview: () => Promise<void>;
+};
+
 const ExponentCamera = React.forwardRef(
-  ({ type, pictureSize, ...props }: CameraNativeProps & { children?: any }, ref) => {
+  (
+    { type, pictureSize, ...props }: CameraNativeProps & { children?: any },
+    ref: React.Ref<ExponentCameraRef>
+  ) => {
     const video = React.useRef<HTMLVideoElement | null>(null);
 
     const native = useCameraStream(video, type as CameraType, props, {
@@ -23,21 +33,20 @@ const ExponentCamera = React.forwardRef(
           return PictureSizes;
         },
         async takePicture(options: CameraPictureOptions): Promise<CameraCapturedPicture> {
-          return native.capture({
+          return native.captureAsync({
             ...options,
             // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
             onPictureSaved: props.onPictureSaved,
           });
         },
         async resumePreview(): Promise<void> {
-          await native.resume();
+          await native.resumeAsync();
         },
-
         async pausePreview(): Promise<void> {
-          await native.stop();
+          await native.stopAsync();
         },
       }),
-      [native.capture, native.stop, native.resume, props.onPictureSaved]
+      [native.captureAsync, native.stopAsync, native.resumeAsync, props.onPictureSaved]
     );
 
     // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.

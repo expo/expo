@@ -15,19 +15,19 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) =
             return PictureSizes;
         },
         async takePicture(options) {
-            return native.capture({
+            return native.captureAsync({
                 ...options,
                 // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
                 onPictureSaved: props.onPictureSaved,
             });
         },
         async resumePreview() {
-            await native.resume();
+            await native.resumeAsync();
         },
         async pausePreview() {
-            await native.stop();
+            await native.stopAsync();
         },
-    }), [native.capture, native.stop, native.resume, props.onPictureSaved]);
+    }), [native.captureAsync, native.stopAsync, native.resumeAsync, props.onPictureSaved]);
     // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
     // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
     const isMuted = true;

@@ -5,7 +5,7 @@ import {
   isBackCameraAvailableAsync,
   isFrontCameraAvailableAsync,
 } from './CameraModule/UserMediaManager';
-import ExponentCamera from './ExponentCamera.web';
+import { ExponentCameraRef } from './ExponentCamera.web';
 
 export default {
   get name(): string {
@@ -52,14 +52,14 @@ export default {
   // stopRecording(): Promise<void>
   async takePicture(
     options: CameraPictureOptions,
-    camera: typeof ExponentCamera
+    camera: ExponentCameraRef
   ): Promise<CameraCapturedPicture> {
     return await camera.takePicture(options);
   },
-  async pausePreview(camera: typeof ExponentCamera): Promise<void> {
+  async pausePreview(camera: ExponentCameraRef): Promise<void> {
     await camera.pausePreview();
   },
-  async resumePreview(camera: typeof ExponentCamera): Promise<any> {
+  async resumePreview(camera: ExponentCameraRef): Promise<any> {
     return await camera.resumePreview();
   },
   async getAvailableCameraTypesAsync(): Promise<string[]> {
@@ -74,7 +74,7 @@ export default {
 
     return types.filter(Boolean) as string[];
   },
-  async getAvailablePictureSizes(ratio: string, camera: typeof ExponentCamera): Promise<string[]> {
+  async getAvailablePictureSizes(ratio: string, camera: ExponentCameraRef): Promise<string[]> {
     return await camera.getAvailablePictureSizes(ratio);
   },
 };
