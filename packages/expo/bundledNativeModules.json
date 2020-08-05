@@ -100,7 +100,7 @@
   "expo-notifications": "~0.6.0",
   "expo-splash-screen": "~0.5.0",
   "firebase": "7.9.0",
-  "@react-native-community/picker": "1.6.0",
+  "@react-native-community/picker": "1.6.5",
   "@react-native-community/slider": "3.0.3",
   "expo-status-bar": "~1.0.2"
 }
