@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix progress events when no playback is active on Android. ([#9545](https://github.com/expo/expo/pull/9545) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Fix resizeMode not updated on Android. ([#9567](https://github.com/expo/expo/pull/9567) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ## 8.4.1 — 2020-07-29
 
