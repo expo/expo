@@ -77,6 +77,7 @@ function AuthSessionProviders(props: {
 
   const providers = [
     Facebook,
+    Imgur,
     Spotify,
     Strava,
     Twitch,
@@ -305,6 +306,59 @@ function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
       request={request}
       result={result}
       promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+// Imgur Docs https://api.imgur.com/oauth2
+// Create app https://api.imgur.com/oauth2/addclient
+function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
+  let clientId: string;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      clientId = '5287e6c03ffac8b';
+    } else {
+      // Normalize the host to `localhost` for other testers
+      // Expects: exp://127.0.0.1:19000/--/redirect
+      clientId = '7ab2f3cc75427a0';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      clientId = '181b22d17a3743e';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      clientId = 'd839d91135a16cc';
+    }
+  }
+
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId,
+      responseType: AuthSession.ResponseType.Token,
+      redirectUri,
+      scopes: [],
+      usePKCE,
+      prompt,
+    },
+    // discovery
+    {
+      authorizationEndpoint: 'https://api.imgur.com/oauth2/authorize',
+      tokenEndpoint: 'https://api.imgur.com/oauth2/token',
+    }
+  );
+
+  return (
+    <AuthSection
+      title="imgur"
+      request={request}
+      result={result}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 500, height: 750 } })}
       useProxy={useProxy}
     />
   );

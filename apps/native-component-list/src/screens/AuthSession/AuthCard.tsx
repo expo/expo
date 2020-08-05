@@ -15,6 +15,12 @@ const providers: Record<string, any> = {
       'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/facebook.png?raw=true',
     color: '#1877F2',
   },
+  imgur: {
+    name: 'Imgur',
+    image:
+      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/imgur.png?raw=true',
+    color: '#1BB76E',
+  },
   uber: {
     name: 'Uber',
     image:

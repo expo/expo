@@ -41,6 +41,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
   <SocialGridItem title="Github" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
   <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
+  <SocialGridItem title="Imgur" protocol={['OAuth 2']} href="#imgur" image="/static/images/sdk/auth-session/imgur.png" />
   <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
   <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
   <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
@@ -1245,6 +1246,151 @@ export default function App() {
 </AuthMethodTabSwitcher>
 
 <!-- End Google -->
+
+### Imgur
+
+<CreateAppButton name="Imgur" href="https://api.imgur.com/oauth2/addclient" />
+
+| Website                    | Provider  | PKCE      | Auto Discovery |
+| -------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-imgur] | OAuth 2.0 | Supported | Not Available  |
+
+[c-imgur]: https://api.imgur.com/oauth2/addclient
+
+- You will need to create a different provider app for each platform (dynamically choosing your `clientId`).
+- Learn more here: [imgur.com/oauth2](https://api.imgur.com/oauth2)
+
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<AuthCodeTab>
+
+<SnackInline label='Imgur Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+const discovery = {
+  authorizationEndpoint: 'https://api.imgur.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.imgur.com/oauth2/token',
+};
+
+export default function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      clientSecret: 'CLIENT_SECRET',
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.myname.myapp://redirect',
+      }),
+      // imgur requires an empty array
+      scopes: [],
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</AuthCodeTab>
+
+<ImplicitTab>
+
+<SnackInline label='Imgur Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+const discovery = {
+  authorizationEndpoint: 'https://api.imgur.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.imgur.com/oauth2/token',
+};
+
+export default function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
+      clientId: 'CLIENT_ID',
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.myname.myapp://redirect',
+      }),
+      scopes: [],
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</ImplicitTab>
+
+</AuthMethodTabSwitcher>
+
+<!-- End Imgur -->
 
 ### Okta
 
