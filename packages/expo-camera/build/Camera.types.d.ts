@@ -56,16 +56,18 @@ export declare type CameraNativeProps = {
     style?: any;
     ref?: Function;
     onCameraReady?: () => void;
-    onMountError?: ({ nativeEvent }: {
+    onMountError?: (event: {
         nativeEvent: CameraMountError;
     }) => void;
-    onBarCodeScanned?: ({ nativeEvent }: {
+    onBarCodeScanned?: (event: {
         nativeEvent: BarCodeScanningResult;
     }) => void;
-    onFacesDetected?: ({ nativeEvent }: {
+    onFacesDetected?: (event: {
         nativeEvent: FaceDetectionResult;
     }) => void;
-    onFaceDetectionError?: () => void;
+    onFaceDetectionError?: (event: {
+        nativeEvent: Error;
+    }) => void;
     onPictureSaved?: (event: {
         nativeEvent: {
             data: CameraCapturedPicture;
