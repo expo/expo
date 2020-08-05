@@ -146,7 +146,7 @@ static NSDictionary* customCertificatesForHost;
     selector:@selector(appDidBecomeActive)
         name:UIApplicationDidBecomeActiveNotification
       object:nil];
-    
+
     [[NSNotificationCenter defaultCenter]addObserver:self
     selector:@selector(appWillResignActive)
         name:UIApplicationWillResignActiveNotification
@@ -174,7 +174,7 @@ static NSDictionary* customCertificatesForHost;
                                                selector:@selector(hideFullScreenVideoStatusBars)
                                                    name:UIWindowDidBecomeHiddenNotification
                                                  object:nil];
-      
+
   }
 #endif // !TARGET_OS_OSX
   return self;
@@ -207,6 +207,10 @@ static NSDictionary* customCertificatesForHost;
   }
   if (_allowFileAccessFromFileURLs) {
     [prefs setValue:@TRUE forKey:@"allowFileAccessFromFileURLs"];
+    _prefsUsed = YES;
+  }
+  if (_javaScriptCanOpenWindowsAutomatically) {
+    [prefs setValue:@TRUE forKey:@"javaScriptCanOpenWindowsAutomatically"];
     _prefsUsed = YES;
   }
   if (_prefsUsed) {
@@ -242,7 +246,7 @@ static NSDictionary* customCertificatesForHost;
   if (_applicationNameForUserAgent) {
       wkWebViewConfig.applicationNameForUserAgent = [NSString stringWithFormat:@"%@ %@", wkWebViewConfig.applicationNameForUserAgent, _applicationNameForUserAgent];
   }
-  
+
   return wkWebViewConfig;
 }
 
@@ -307,6 +311,10 @@ static NSDictionary* customCertificatesForHost;
         _webView.scrollView.delegate = nil;
 #endif // !TARGET_OS_OSX
         _webView = nil;
+        if (_onContentProcessDidTerminate) {
+          NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+          _onContentProcessDidTerminate(event);
+        }
     }
 
     [super removeFromSuperview];
@@ -1102,7 +1110,7 @@ static NSDictionary* customCertificatesForHost;
   if (_ignoreSilentHardwareSwitch) {
     [self forceIgnoreSilentHardwareSwitch:true];
   }
-    
+
   if (_onLoadingFinish) {
     _onLoadingFinish([self baseEvent]);
   }
@@ -1155,11 +1163,11 @@ static NSDictionary* customCertificatesForHost;
 
 - (void)setInjectedJavaScript:(NSString *)source {
   _injectedJavaScript = source;
-  
+
   self.atEndScript = source == nil ? nil : [[WKUserScript alloc] initWithSource:source
       injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
     forMainFrameOnly:_injectedJavaScriptForMainFrameOnly];
-  
+
   if(_webView != nil){
     [self resetupScripts:_webView.configuration];
   }
@@ -1167,11 +1175,11 @@ static NSDictionary* customCertificatesForHost;
 
 - (void)setInjectedJavaScriptBeforeContentLoaded:(NSString *)source {
   _injectedJavaScriptBeforeContentLoaded = source;
-  
+
   self.atStartScript = source == nil ? nil : [[WKUserScript alloc] initWithSource:source
        injectionTime:WKUserScriptInjectionTimeAtDocumentStart
     forMainFrameOnly:_injectedJavaScriptBeforeContentLoadedForMainFrameOnly];
-  
+
   if(_webView != nil){
     [self resetupScripts:_webView.configuration];
   }
@@ -1189,7 +1197,7 @@ static NSDictionary* customCertificatesForHost;
 
 - (void)setMessagingEnabled:(BOOL)messagingEnabled {
   _messagingEnabled = messagingEnabled;
-  
+
   self.postMessageScript = _messagingEnabled ?
   [
    [WKUserScript alloc]
@@ -1209,7 +1217,7 @@ static NSDictionary* customCertificatesForHost;
    forMainFrameOnly:YES
    ] :
   nil;
-  
+
   if(_webView != nil){
     [self resetupScripts:_webView.configuration];
   }
@@ -1218,7 +1226,7 @@ static NSDictionary* customCertificatesForHost;
 - (void)resetupScripts:(WKWebViewConfiguration *)wkWebViewConfig {
   [wkWebViewConfig.userContentController removeAllUserScripts];
   [wkWebViewConfig.userContentController removeScriptMessageHandlerForName:MessageHandlerName];
-  
+
   NSString *html5HistoryAPIShimSource = [NSString stringWithFormat:
     @"(function(history) {\n"
     "  function notify(type) {\n"
@@ -1241,7 +1249,7 @@ static NSDictionary* customCertificatesForHost;
   ];
   WKUserScript *script = [[WKUserScript alloc] initWithSource:html5HistoryAPIShimSource injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
   [wkWebViewConfig.userContentController addUserScript:script];
-  
+
   if(_sharedCookiesEnabled) {
     // More info to sending cookies with WKWebView
     // https://stackoverflow.com/questions/26573137/can-i-set-the-cookies-to-be-used-by-a-wkwebview/26577303#26577303
@@ -1303,7 +1311,7 @@ static NSDictionary* customCertificatesForHost;
       [wkWebViewConfig.userContentController addUserScript:cookieInScript];
     }
   }
-  
+
   if(_messagingEnabled){
     if (self.postMessageScript){
       [wkWebViewConfig.userContentController addScriptMessageHandler:[[RNCWeakScriptMessageDelegate alloc] initWithDelegate:self]
