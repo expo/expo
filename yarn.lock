@@ -2635,25 +2635,25 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-5.9.2.tgz#0e9df9717f292cd54fa9de322205b6263a1cb8e2"
   integrity sha512-YPN6Qi9Sf64GlE3muLi4u4p4LaFP/65PTS0xssiGEaBAwSmZoUhzihhW1AptNe66ZQK9PxXfKIJDiLnYveK1aw==
 
-"@react-native-community/picker@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/picker/-/picker-1.6.0.tgz#ddb2b04ca251b79980e3052ece4e685b7abf0444"
-  integrity sha512-ijB33rCW3m9vu8jbXAcEh+icCmK0pyvCXiGfAwPgGSaFLsmE27dsle3022EbE+dqqQgpxUNtOkrd5C3B+/dcuA==
+"@react-native-community/picker@1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@react-native-community/picker/-/picker-1.6.5.tgz#9489fdb6d0b4b5877491101e0c3185ea9511d1aa"
+  integrity sha512-mwt0sBaFdURJWkq6wFf2BrYh7fzB1CKK4/gx20zmDYDmahvk3CVUQVlkINDDyXE9m0lYZ9V8rBZBBAJy9W3GkQ==
 
 "@react-native-community/segmented-control@2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/segmented-control/-/segmented-control-2.1.0.tgz#8741953c8e60f393809468cfb64251b51fb482d4"
   integrity sha512-bB1FWHrAoM5fWeLyEpK9o8jRnZWr+z8kYxSagkDreKgpgPt/pQdtv6QisFBMClbKDQ6HH68qhoDpvUnTtROztg==
 
-"@react-native-community/slider@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-3.0.0.tgz#ffbf78689fc0572fb5c1e2ccb61b2ef074d3dcd2"
-  integrity sha512-deNc3JHBHz24YN+0DTAocXfrYFIFc1DvsIriMJSsJlR/MvsLzoq2+qwaEN+0/LJ37pstv85wZWY0pNugk4e41g==
+"@react-native-community/slider@3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-3.0.3.tgz#830167fd757ba70ac638747ba3169b2dbae60330"
+  integrity sha512-8IeHfDwJ9/CTUwFs6x90VlobV3BfuPgNLjTgC6dRZovfCWigaZwVNIFFJnHBakK3pW2xErAPwhdvNR4JeNoYbw==
 
-"@react-native-community/viewpager@3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-3.3.0.tgz#e613747a43a31a6f3278f817ba96fdaaa7941f23"
-  integrity sha512-tyzh79l4t/hxiyS9QD3LRmWMs8KVkZzjrkQ8U8+8To1wmvVCBtp8BenvNsDLTBO7CpO/YmiThpmIdEZMr1WuVw==
+"@react-native-community/viewpager@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.1.3.tgz#9b6bbad1b5631b4adb4a5836476b3be0c8b89b85"
+  integrity sha512-+Q4xiTOaFRvH3/9uRBCs3RIZm7hHofYDx9mi8cW2nZG7eUAOU0ne57Jl/LnBc4ex9B3mjEz9KvR5DSXtl2ET+Q==
 
 "@react-navigation/bottom-tabs@~5.6.1":
   version "5.6.1"
@@ -6447,6 +6447,11 @@ deep-is@^0.1.3, deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
+
+deep-object-diff@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/deep-object-diff/-/deep-object-diff-1.1.0.tgz#d6fabf476c2ed1751fc94d5ca693d2ed8c18bc5a"
+  integrity sha512-b+QLs5vHgS+IoSNcUE4n9HP2NwcHj7aqnJWsjPtuG75Rh5TOaGt0OjAYInh77d5T16V5cRDC+Pw/6ZZZiETBGw==
 
 deep-scope-analyser@^1.6.0:
   version "1.7.0"
@@ -15048,10 +15053,10 @@ react-native-redash@^14.1.1:
     normalize-svg-path "^1.0.1"
     parse-svg-path "^0.1.2"
 
-react-native-safe-area-context@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-3.0.2.tgz#95dd7e56bc89bcc4f3f7bb5fada30c98420328b2"
-  integrity sha512-x3yVMsxwe9GyvIkv0Q5jy2CWYN7VO0/CJTFGG5kSiMo8FFTQJbWtuWGANFqxDzEH5NEV7/SfK+qTgAh931KyUw==
+react-native-safe-area-context@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-3.1.1.tgz#9b04d1154766e6c1132030aca8f4b0336f561ccd"
+  integrity sha512-Iqb41OT5+QxFn0tpTbbHgz8+3VU/F9OH2fTeeoU7oZCzojOXQbC6sp6mN7BlsAoTKhngWoJLMcSosL58uRaLWQ==
 
 react-native-safe-area-view@^0.14.8, react-native-safe-area-view@^0.14.9:
   version "0.14.9"
@@ -15111,10 +15116,10 @@ react-native-web@~0.13.0:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
-react-native-webview@9.4.0:
-  version "9.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-9.4.0.tgz#108da34a6c7e1c032dcabc942b7e4947ca1d8028"
-  integrity sha512-BBOFUuza0p04+7fNi7TJmB0arpDJzGxHYwTCgI4vj5n/fl7u4jbm7ETp88mf7lo9lP6C6HGLo38KnEy1aXCQkg==
+react-native-webview@10.3.3:
+  version "10.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-10.3.3.tgz#ab1cd1fdc800f4897362f80d97e2d9156dfabd22"
+  integrity sha512-RSBgwZ48/CfmBgmiEUUTfG4vbOHt6rPDC/O+dH6ivwRb8ymp00/0GO1zJql52LhUs2suz+MjwFen7QH/zy4TJA==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
