@@ -181,8 +181,8 @@ export function useCameraStream(
 
   return {
     type,
-    resumeAsync: resumeAsync,
-    stopAsync: stopAsync,
+    resumeAsync,
+    stopAsync,
     captureAsync(config: CameraPictureOptions): CapturedPicture {
       return Utils.capture(video.current!, streamSettings.current!, config);
     },
