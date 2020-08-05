@@ -36,3 +36,18 @@ export type CapturedPicture = {
   base64?: string;
   exif?: any;
 };
+
+export type WebCameraSettings = Partial<{
+  autoFocus: string;
+  flashMode: string;
+  whiteBalance: string;
+  exposureCompensation: number;
+  colorTemperature: number;
+  iso: number;
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  sharpness: number;
+  focusDistance: number;
+  zoom: number;
+}>;
