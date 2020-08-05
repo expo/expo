@@ -7,7 +7,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Updated `@react-native-community/datetimepicker` from `2.4.0` to `2.6.1`. ([#9543](https://github.com/expo/expo/pull/9543) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `@react-native-community/datetimepicker` from `2.4.0` to `2.4.3`. ([#9543](https://github.com/expo/expo/pull/9543) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🛠 Breaking changes
 
