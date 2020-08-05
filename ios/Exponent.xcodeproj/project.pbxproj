@@ -354,6 +354,10 @@
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
 		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
+		E076A3A138374780BD9CAEA0 /* RCTOnPageScrollEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		807A6CE3FB55427E8D995580 /* RCTOnPageScrollStateChanged.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DEE22713D4641DCBA13071A /* RCTOnPageScrollStateChanged.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		5E91B590D3BD401FB31B6D2D /* RCTOnPageSelected.m in Sources */ = {isa = PBXBuildFile; fileRef = 1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		6D0D4DF0D549439499086EC6 /* UIViewController+CreateExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1083,6 +1087,14 @@
 		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
 		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
 		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
+		FC6F6FF789A84FD7AEAFAD5E /* RCTOnPageScrollEvent.h */ = {isa = PBXFileReference; name = "RCTOnPageScrollEvent.h"; path = "RCTOnPageScrollEvent.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */ = {isa = PBXFileReference; name = "RCTOnPageScrollEvent.m"; path = "RCTOnPageScrollEvent.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		5A6A19B126BB4312B36E0274 /* RCTOnPageScrollStateChanged.h */ = {isa = PBXFileReference; name = "RCTOnPageScrollStateChanged.h"; path = "RCTOnPageScrollStateChanged.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		6DEE22713D4641DCBA13071A /* RCTOnPageScrollStateChanged.m */ = {isa = PBXFileReference; name = "RCTOnPageScrollStateChanged.m"; path = "RCTOnPageScrollStateChanged.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		574312068E2240349CC816A0 /* RCTOnPageSelected.h */ = {isa = PBXFileReference; name = "RCTOnPageSelected.h"; path = "RCTOnPageSelected.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */ = {isa = PBXFileReference; name = "RCTOnPageSelected.m"; path = "RCTOnPageSelected.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		7A2EAF5D0C4245019A94A807 /* UIViewController+CreateExtension.h */ = {isa = PBXFileReference; name = "UIViewController+CreateExtension.h"; path = "UIViewController+CreateExtension.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */ = {isa = PBXFileReference; name = "UIViewController+CreateExtension.m"; path = "UIViewController+CreateExtension.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1306,6 +1318,14 @@
 				01D6195E420E433AA7BB8584 /* ReactNativePageView.m */,
 				D47B9E6257F1413387F5CD67 /* ReactViewPagerManager.h */,
 				36D368D781234C37BC0979B5 /* ReactViewPagerManager.m */,
+				FC6F6FF789A84FD7AEAFAD5E /* RCTOnPageScrollEvent.h */,
+				AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */,
+				5A6A19B126BB4312B36E0274 /* RCTOnPageScrollStateChanged.h */,
+				6DEE22713D4641DCBA13071A /* RCTOnPageScrollStateChanged.m */,
+				574312068E2240349CC816A0 /* RCTOnPageSelected.h */,
+				1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */,
+				7A2EAF5D0C4245019A94A807 /* UIViewController+CreateExtension.h */,
+				96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */,
 			);
 			path = ViewPager;
 			sourceTree = "<group>";
@@ -3059,6 +3079,10 @@
 				ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */,
 				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
+				E076A3A138374780BD9CAEA0 /* RCTOnPageScrollEvent.m in Sources */,
+				807A6CE3FB55427E8D995580 /* RCTOnPageScrollStateChanged.m in Sources */,
+				5E91B590D3BD401FB31B6D2D /* RCTOnPageSelected.m in Sources */,
+				6D0D4DF0D549439499086EC6 /* UIViewController+CreateExtension.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

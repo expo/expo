@@ -1,21 +1,19 @@
 import './BeforePIXI';
 
-import { Asset } from 'expo-asset';
+import * as React from 'react';
 import { Platform } from '@unimodules/core';
+import { Asset } from 'expo-asset';
 import * as PIXI from 'pixi.js';
-import { Dimensions, PixelRatio } from 'react-native';
+import { Dimensions } from 'react-native';
 
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
-
-import { Renderer, TextureLoader, THREE } from 'expo-three';
-import GLWrap from './GLWrap';
+import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import GLMaskScreen from './GLMaskScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
-import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
-import ProcessingWrap from './ProcessingWrap';
+import GLThreeComposer from './GLThreeComposer';
 import GLThreeDepthStencilBuffer from './GLThreeDepthStencilBuffer';
+import GLThreeSprite from './GLThreeSprite';
+import GLWrap from './GLWrap';
+import ProcessingWrap from './ProcessingWrap';
 
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
@@ -133,153 +131,16 @@ const GLScreens: Screens = {
     screen: GLSnapshotsScreen,
   },
 
-  THREEBasic: {
-    screen: GLWrap('Basic three.js use', async gl => {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        gl.drawingBufferWidth / gl.drawingBufferHeight,
-        0.1,
-        1000
-      );
-
-      const renderer = new Renderer({ gl });
-      renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-      renderer.setClearColor(0xffffff);
-
-      const geometry = new THREE.BoxGeometry(1, 1, 1);
-      const material = new THREE.MeshBasicMaterial({
-        transparent: true,
-        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
-      });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-
-      camera.position.z = 3;
-
-      return {
-        onLayout({ nativeEvent: { layout } }) {
-          const scale = PixelRatio.get();
-          camera.aspect = layout.width / layout.height;
-          camera.updateProjectionMatrix();
-          renderer.setSize(layout.width * scale, layout.height * scale);
-        },
-        onTick() {
-          cube.rotation.x += 0.04;
-          cube.rotation.y += 0.07;
-
-          renderer.render(scene, camera);
-
-          gl.endFrameEXP();
-        },
-      };
-    }),
+  THREEComposer: {
+    screen: GLThreeComposer,
   },
 
   THREEDepthStencilBuffer: {
     screen: GLThreeDepthStencilBuffer,
   },
 
-  THREEGlitchFilm: {
-    screen: GLWrap('three.js glitch and film effects', async gl => {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        gl.drawingBufferWidth / gl.drawingBufferHeight,
-        0.1,
-        1000
-      );
-
-      const renderer = new Renderer({ gl });
-      renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-      renderer.setClearColor(0xffffff);
-
-      const composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      const glitchPass = new GlitchPass();
-      composer.addPass(glitchPass);
-
-      const geometry = new THREE.BoxGeometry(1, 1, 1);
-      const material = new THREE.MeshBasicMaterial({
-        transparent: true,
-        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
-      });
-
-      const cubes = Array(24)
-        .fill(0)
-        .map(() => {
-          const mesh = new THREE.Mesh(geometry, material);
-          scene.add(mesh);
-          mesh.position.x = 3 - 6 * Math.random();
-          mesh.position.y = 3 - 6 * Math.random();
-          mesh.position.z = -5 * Math.random();
-          const angularVelocity = {
-            x: 0.1 * Math.random(),
-            y: 0.1 * Math.random(),
-          };
-          return { mesh, angularVelocity };
-        });
-
-      camera.position.z = 3;
-
-      return {
-        onLayout({ nativeEvent: { layout } }) {
-          const scale = PixelRatio.get();
-          camera.aspect = layout.width / layout.height;
-          camera.updateProjectionMatrix();
-          renderer.setSize(layout.width * scale, layout.height * scale);
-          composer.setSize(layout.width, layout.height);
-        },
-        onTick() {
-          cubes.forEach(({ mesh, angularVelocity }) => {
-            mesh.rotation.x += angularVelocity.x;
-            mesh.rotation.y += angularVelocity.y;
-          });
-
-          composer.render();
-
-          gl.endFrameEXP();
-        },
-      };
-    }),
-  },
-
   THREESprite: {
-    screen: GLWrap('three.js sprite rendering', async gl => {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        gl.drawingBufferWidth / gl.drawingBufferHeight,
-        0.1,
-        1000
-      );
-
-      const renderer = new Renderer({ gl });
-      renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-      renderer.setClearColor(0xffffff);
-
-      const spriteMaterial = new THREE.SpriteMaterial({
-        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
-        color: 0xffffff,
-      });
-      const sprite = new THREE.Sprite(spriteMaterial);
-      scene.add(sprite);
-
-      camera.position.z = 3;
-
-      return {
-        onLayout({ nativeEvent: { layout } }) {
-          const scale = PixelRatio.get();
-          camera.aspect = layout.width / layout.height;
-          camera.updateProjectionMatrix();
-          renderer.setSize(layout.width * scale, layout.height * scale);
-        },
-        onTick() {
-          renderer.render(scene, camera);
-          gl.endFrameEXP();
-        },
-      };
-    }),
+    screen: GLThreeSprite,
   },
 
   ProcessingInAndOut: {
