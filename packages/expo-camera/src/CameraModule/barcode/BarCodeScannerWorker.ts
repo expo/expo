@@ -19,7 +19,8 @@ export default () => {
         return;
       }
 
-      for (const type of types) {
+      for (let i = 0; i < types.length; i++) {
+        const type = types[i];
         switch (type) {
           // TODO: Bacon: Add pdf417
           case 'qr':

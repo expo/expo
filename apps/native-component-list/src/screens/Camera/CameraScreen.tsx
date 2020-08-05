@@ -105,13 +105,12 @@ export default class CameraScreen extends React.Component<{}, State> {
   camera?: Camera;
 
   async componentDidMount() {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ permission: status, permissionsGranted: status === 'granted' });
 
+    if (Platform.OS === 'web') {
+      return;
+    }
     try {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
     } catch (error) {
@@ -331,6 +330,7 @@ export default class CameraScreen extends React.Component<{}, State> {
           tracking: true,
         }}
         barCodeScannerSettings={{
+          shouldRenderIndicator: true,
           barCodeTypes: [
             BarCodeScanner.Constants.BarCodeType.qr,
             BarCodeScanner.Constants.BarCodeType.pdf417,
