@@ -1,9 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
- * <p>
+ *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- * </p>
  */
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
@@ -17,10 +16,9 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import android.text.format.DateFormat;
 
 import java.util.Locale;
 
@@ -57,11 +55,6 @@ public class RNTimePickerDialogFragment extends DialogFragment {
     final int minute = date.minute();
     boolean is24hour = DateFormat.is24HourFormat(activityContext);
 
-    int minuteInterval = RNConstants.DEFAULT_TIME_PICKER_INTERVAL;
-    if (args != null && MinuteIntervalSnappableTimePickerDialog.isValidMinuteInterval(args.getInt(RNConstants.ARG_INTERVAL))) {
-      minuteInterval = args.getInt(RNConstants.ARG_INTERVAL);
-    }
-
     RNTimePickerDisplay display = RNTimePickerDisplay.DEFAULT;
     if (args != null && args.getString(RNConstants.ARG_DISPLAY, null) != null) {
       display = RNTimePickerDisplay.valueOf(args.getString(RNConstants.ARG_DISPLAY).toUpperCase(Locale.US));
@@ -88,20 +81,18 @@ public class RNTimePickerDialogFragment extends DialogFragment {
                   onTimeSetListener,
                   hour,
                   minute,
-                  minuteInterval,
                   is24hour,
                   display
           );
       }
     }
     return new RNDismissableTimePickerDialog(
-      activityContext,
-      onTimeSetListener,
-      hour,
-      minute,
-      minuteInterval,
-      is24hour,
-      display
+            activityContext,
+            onTimeSetListener,
+            hour,
+            minute,
+            is24hour,
+            display
     );
   }
 
