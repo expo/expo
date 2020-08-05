@@ -50,6 +50,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     final Matrix matrix = new ScaleManager(viewSize, videoSize).getScaleMatrix(resizeMode);
     if (matrix != null) {
       setTransform(matrix);
+      invalidate();
     }
   }
 
