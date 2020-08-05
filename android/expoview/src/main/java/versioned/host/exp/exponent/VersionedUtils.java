@@ -8,12 +8,14 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.shell.MainReactPackage;
 
 import host.exp.expoview.Exponent;
+import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 public class VersionedUtils {
 
   public static ReactInstanceManagerBuilder getReactInstanceManagerBuilder(Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties) {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
         .setApplication(instanceManagerBuilderProperties.application)
+        .setJSIModulesPackage(new ReanimatedJSIModulePackage())
         .addPackage(new MainReactPackage())
         .addPackage(new ExponentPackage(
                 instanceManagerBuilderProperties.experienceProperties,

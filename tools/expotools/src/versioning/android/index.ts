@@ -296,7 +296,7 @@ async function renameJniLibsAsync(version: string) {
     glob(path.join(versionedReactCommonPath, '**/*.mk')),
     glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
   ]);
-  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles];
+  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles]; 
   await Promise.all(filenames.map((filename) => processMkFileAsync(filename, abiVersion)));
 
   // Rename references to JNI libs in Java code

@@ -29,6 +29,7 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule;
+import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.internal.DevMenuModule;
 import host.exp.exponent.kernel.ExperienceId;
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -59,7 +60,6 @@ import versioned.host.exp.exponent.modules.api.components.sharedelement.RNShared
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
