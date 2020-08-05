@@ -1,6 +1,7 @@
-import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import * as React from 'react';
+import { ActivityIndicator, StyleSheet, View, ScrollView } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { H2 } from '@expo/html-elements';
 
 interface MessageEvent {
   nativeEvent: {
@@ -10,38 +11,69 @@ interface MessageEvent {
 
 const injectedJavaScript = `window.ReactNativeWebView.postMessage(JSON.stringify(window.location));`;
 
-export default class WebViewScreen extends React.Component {
-  static navigationOptions = {
-    title: 'WebView',
-  };
+export default function WebViewScreen() {
+  return (
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
+      <WebViewRemoteSource />
+      <WebViewInlineSource />
+    </ScrollView>
+  );
+}
 
-  state = {
-    loading: true,
-  };
+WebViewScreen.navigationOptions = {
+  title: 'WebView',
+};
 
-  handleLoadEnd = () => this.setState({ loading: false });
+function WebViewRemoteSource() {
+  const [isLoading, setLoading] = React.useState(true);
 
-  handleMessage = ({ nativeEvent: { data } }: MessageEvent) => {
-    console.log('Got a message from WebView: ', JSON.parse(data));
-  };
+  return (
+    <View style={styles.container}>
+      <H2 style={styles.header}>Remote Source</H2>
+      <WebView
+        source={{ uri: 'https://expo.io/' }}
+        onLoadEnd={() => setLoading(false)}
+        onMessage={({ nativeEvent: { data } }: MessageEvent) => {
+          console.log('Got a message from WebView: ', JSON.parse(data));
+        }}
+        injectedJavaScript={injectedJavaScript}
+      />
+      {isLoading && <ActivityIndicator style={StyleSheet.absoluteFill} />}
+    </View>
+  );
+}
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <WebView
-          source={{ uri: 'https://expo.io/' }}
-          onLoadEnd={this.handleLoadEnd}
-          onMessage={this.handleMessage}
-          injectedJavaScript={injectedJavaScript}
-        />
-        {this.state.loading && <ActivityIndicator style={StyleSheet.absoluteFill} />}
-      </View>
-    );
-  }
+function WebViewInlineSource() {
+  return (
+    <View style={styles.container}>
+      <H2 style={styles.header}>Inline Source</H2>
+      <WebView
+        style={{ width: '100%', height: 250 }}
+        source={{
+          html: `
+    <h2>You can always use a WebView if you need to!</h2>
+    <p>
+      <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
+      <input type="text" placeholder="Disagree? why?"></input>
+      <input type="submit">
+    </p>
+    <p>
+      <a href="https://expo.io">expo.io</a>
+    </p>
+  `,
+        }}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    minHeight: '50%',
+    overflow: 'hidden',
+  },
+  header: {
+    marginLeft: 8,
   },
 });

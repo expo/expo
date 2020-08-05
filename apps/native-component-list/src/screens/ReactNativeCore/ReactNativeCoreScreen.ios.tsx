@@ -31,7 +31,6 @@ import { SliderExample } from './Slider';
 import { StatusBarExample } from './StatusBar';
 import { SwitchExample } from './Switch';
 import { TouchableBounceExample } from './TouchableBounce';
-import { WebViewExample } from './WebView';
 
 export default class ReactNativeCoreScreen extends React.Component<{}> {
   state = {
@@ -54,7 +53,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
       { title: 'StatusBar', data: [() => <StatusBarExample />] },
       { title: 'Alert', data: [() => <AlertExample />] },
       { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
-      { title: 'WebView', data: [() => <WebViewExample />] },
       { title: 'ProgressViewIOS', data: [() => <ProgressViewIOSExample />] },
       { title: 'Pressable', data: [() => <PressableExample />] },
       { title: 'Clipboard', data: [() => <ClipboardExample />] },

@@ -1,7 +1,7 @@
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { NavigationContainer, useTheme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
@@ -9,10 +9,12 @@ import { Platform, StyleSheet } from 'react-native';
 import CloseButton from '../components/CloseButton';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
+import ShareProjectButton from '../components/ShareProjectButton';
 import UserSettingsButton from '../components/UserSettingsButton';
 import * as Themes from '../constants/Themes';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import ExperienceScreen from '../screens/ExperienceScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
@@ -222,37 +224,50 @@ function TabNavigator(props: { theme: string }) {
   );
 }
 
+const ModalStack = createStackNavigator();
+
 export default (props: { theme: string }) => (
   <NavigationContainer theme={Themes[props.theme]}>
-    <RootStack.Navigator initialRouteName="Tabs" mode="modal">
-      <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
-        {() => <TabNavigator theme={props.theme} />}
-      </RootStack.Screen>
-      <RootStack.Screen
-        name="SignIn"
-        component={SignInScreen}
-        options={{
-          title: 'Sign In',
-          headerLeft: () => <CloseButton />,
-        }}
-      />
-      <RootStack.Screen
-        name="SignUp"
-        component={SignUpScreen}
-        options={{
-          title: 'Sign Up',
-          headerLeft: () => <CloseButton />,
-        }}
-      />
-      <RootStack.Screen
-        name="QRCode"
-        component={QRCodeScreen}
-        options={{
-          headerShown: false,
-          // stackPresentation: 'modal',
-        }}
-      />
-    </RootStack.Navigator>
+    <ModalStack.Navigator
+      initialRouteName="RootStack"
+      screenOptions={({ route, navigation }) => ({
+        headerShown: false,
+        gestureEnabled: true,
+        cardOverlayEnabled: true,
+        cardStyle: { backgroundColor: 'transparent' },
+        headerStatusBarHeight:
+          navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+        ...TransitionPresets.ModalPresentationIOS,
+      })}
+      mode="modal">
+      <ModalStack.Screen name="RootStack">
+        {() => (
+          <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+            <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
+              {() => <TabNavigator theme={props.theme} />}
+            </RootStack.Screen>
+            <RootStack.Screen
+              name="SignIn"
+              component={SignInScreen}
+              options={{
+                title: 'Sign In',
+                headerLeft: () => <CloseButton />,
+              }}
+            />
+            <RootStack.Screen
+              name="SignUp"
+              component={SignUpScreen}
+              options={{
+                title: 'Sign Up',
+                headerLeft: () => <CloseButton />,
+              }}
+            />
+          </RootStack.Navigator>
+        )}
+      </ModalStack.Screen>
+      <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
+      <ModalStack.Screen name="Experience" component={ExperienceScreen} />
+    </ModalStack.Navigator>
   </NavigationContainer>
 );
 

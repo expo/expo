@@ -47,6 +47,7 @@ export type ImagePickerOptions = {
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
+  videoMaxDuration?: number;
 };
 
 export type OpenFileBrowserOptions = {

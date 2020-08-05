@@ -109,6 +109,10 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
       }
 
       if (shouldCheckForUpdate) {
+        if (self->_delegate &&
+            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+          return;
+        }
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
