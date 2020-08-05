@@ -22,7 +22,7 @@
     "@expo/vector-icons": "^10.0.6",
     "@react-native-community/async-storage": "~1.11.0",
     "@react-native-community/masked-view": "0.1.10",
-    "@react-native-community/netinfo": "5.9.2",
+    "@react-native-community/netinfo": "5.9.5",
     "@react-navigation/bottom-tabs": "~5.8.0",
     "@react-navigation/material-bottom-tabs": "~5.2.16",
     "@react-navigation/native": "~5.7.3",
