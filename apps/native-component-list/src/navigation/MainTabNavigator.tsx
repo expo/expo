@@ -4,30 +4,14 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import * as React from 'react';
-import { Dimensions, Platform, ScaledSize, ScrollViewProps, StyleSheet } from 'react-native';
+import { Platform, ScrollViewProps, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import { Colors } from '../constants';
 import createTabNavigator from './createTabNavigator';
 import Screens from './MainNavigators';
-import { useSafeArea } from 'react-native-safe-area-context';
 
 const Tab = createTabNavigator();
-
-// TODO: Replace in RN 63 + RNW 13
-function useWindowDimensions(): ScaledSize {
-  const [dimensions, setDimensions] = React.useState(Dimensions.get('window'));
-
-  React.useEffect(() => {
-    const onDimensionsChange = ({ window }: { window: ScaledSize }) => {
-      setDimensions(window);
-    };
-
-    Dimensions.addEventListener('change', onDimensionsChange);
-
-    return () => Dimensions.removeEventListener('change', onDimensionsChange);
-  }, []);
-  return dimensions;
-}
 
 const Drawer = createDrawerNavigator();
 

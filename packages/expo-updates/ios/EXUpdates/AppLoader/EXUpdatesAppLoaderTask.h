@@ -12,6 +12,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXUpdatesAppLoaderTaskDelegate <NSObject>
 
+
+/**
+ * This method gives the calling class an opportunity to abort the task early if, for
+ * example, we need to restart with a different configuration after getting the initial
+ * manifest.
+ *
+ * Return value should indicate whether to continue loading this app. `YES` will continue
+ * loading with the provided configuration, `NO` will abort the task and no other delegate
+ * methods will be fired.
+ */
+- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update;
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update;
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher;
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error;

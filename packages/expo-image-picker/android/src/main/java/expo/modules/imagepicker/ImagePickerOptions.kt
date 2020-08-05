@@ -7,7 +7,8 @@ data class ImagePickerOptions(val quality: Int,
                               val forceAspect: List<*>?,
                               val isBase64: Boolean,
                               val mediaTypes: MediaTypes,
-                              val isExif: Boolean) {
+                              val isExif: Boolean,
+                              val videoMaxDuration: Int) {
   companion object {
     fun optionsFromMap(options: Map<String, Any?>, promise: Promise): ImagePickerOptions? {
       val quality = options[ImagePickerConstants.OPTION_QUALITY]?.let {
@@ -39,7 +40,16 @@ data class ImagePickerOptions(val quality: Int,
       }
       val isExif = options[ImagePickerConstants.OPTION_EXIF] as? Boolean ?: false
 
-      return ImagePickerOptions(quality, isAllowsEditing, forceAspect, isBase64, mediaTypes, isExif)
+      val videoMaxDuration = options[ImagePickerConstants.OPTION_VIDEO_MAX_DURATION]?.let {
+        if (it is Number && it.toInt() >= 0) {
+          return@let it.toInt()
+        }
+
+        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "videoMaxDuration must be a non-negative integer")
+        return null
+      } ?: 0
+
+      return ImagePickerOptions(quality, isAllowsEditing, forceAspect, isBase64, mediaTypes, isExif, videoMaxDuration)
     }
   }
 }

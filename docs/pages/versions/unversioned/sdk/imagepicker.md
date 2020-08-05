@@ -181,6 +181,10 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   Option for videos:
 
+  - **videoMaxDuration (_number_)** -- Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit. Defaults to 0 (no limit).
+    - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes. This limit is applied automatically, if `0` or no value is specified.
+    - **On Android**, effect of this option depends on support of installed camera app.
+    - **On Web** this option has no effect - the limit is browser-dependant.
   - **videoExportPreset (_[ImagePicker.VideoExportPreset](#imagepickervideoexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.VideoExportPreset.Passthrough`.
 
 #### Returns
