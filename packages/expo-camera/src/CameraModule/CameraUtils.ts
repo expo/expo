@@ -180,7 +180,9 @@ export function isWebKit(): boolean {
 }
 
 export function compareStreams(a: MediaStream | null, b: MediaStream | null): boolean {
-  if (!a || !b) return false;
+  if (!a || !b) {
+    return false;
+  }
   const settingsA = a.getTracks()[0].getSettings();
   const settingsB = b.getTracks()[0].getSettings();
   return settingsA.deviceId === settingsB.deviceId;
@@ -208,9 +210,7 @@ export function capture(
     capturedPicture.exif = settings;
   }
 
-  if (config.onPictureSaved) {
-    config.onPictureSaved({ nativeEvent: { data: capturedPicture, id: config.id } });
-  }
+  config.onPictureSaved?.({ nativeEvent: { data: capturedPicture, id: config.id } });
   return capturedPicture;
 }
 
@@ -275,7 +275,6 @@ async function onCapabilitiesReady(
     );
   }
 
-  console.log('can use torch: ', capabilities.torch);
 
   if (capabilities.torch && settings.flashMode !== undefined) {
     constraints.torch = _validatedConstrainedValue(
@@ -293,15 +292,22 @@ async function onCapabilitiesReady(
     );
   }
 
-  console.log('apply constraints: ', constraints);
   await track.applyConstraints({ advanced: [constraints] as any });
 }
 
 export function stopMediaStream(stream: MediaStream | null) {
-  if (!stream) return;
-  if (stream.getAudioTracks) stream.getAudioTracks().forEach(track => track.stop());
-  if (stream.getVideoTracks) stream.getVideoTracks().forEach(track => track.stop());
-  if (isMediaStreamTrack(stream)) stream.stop();
+  if (!stream) {
+    return;
+  }
+  if (stream.getAudioTracks) {
+    stream.getAudioTracks().forEach(track => track.stop());
+  }
+  if (stream.getVideoTracks) { 
+    stream.getVideoTracks().forEach(track => track.stop());
+  }
+  if (isMediaStreamTrack(stream)) { 
+    stream.stop();
+  }
 }
 
 export function setVideoSource(
@@ -325,13 +331,7 @@ export function isCapabilityAvailable(video: HTMLVideoElement, keyName: string):
   if (stream instanceof MediaStream) {
     const videoTrack = stream.getVideoTracks()[0];
 
-    if (typeof videoTrack.getCapabilities === 'undefined') {
-      return false;
-    }
-
-    const capabilities: any = videoTrack.getCapabilities();
-
-    return !!capabilities[keyName];
+    return Boolean(videoTrack.getCapabilities.?()[keyName]);
   }
 
   return false;
@@ -342,7 +342,9 @@ function isMediaStreamTrack(input: any): input is MediaStreamTrack {
 }
 
 function convertNormalizedSetting(range: MediaSettingsRange, value?: number): number | undefined {
-  if (!value) return;
+  if (!value) { 
+    return;
+  }
   // convert the normalized incoming setting to the native camera zoom range
   const converted = convertRange(value, [range.min, range.max]);
   // clamp value so we don't get an error
