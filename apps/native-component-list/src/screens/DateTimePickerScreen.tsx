@@ -1,7 +1,32 @@
+/* eslint-disable */
+// @ts-nocheck
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import React, { useState } from 'react';
-import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  StatusBar,
+  Button,
+  Platform,
+  TextInput,
+  useColorScheme,
+} from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+
+const ThemedText = props => {
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const textColorByMode = { color: isDarkMode ? Colors.white : Colors.black };
+
+  const TextElement = React.createElement(Text, props);
+  return React.cloneElement(TextElement, {
+    style: [props.style, textColorByMode],
+  });
+};
 
 // This example is a refactored copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
 // Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
@@ -45,22 +70,33 @@ const DateTimePickerScreen = () => {
     setDisplay('spinner');
   };
 
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.dark : Colors.lighter,
+  };
+
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic">
-      {global.HermesInternal == null ? null : (
-        <View style={styles.engine}>
-          <Text testID="hermesIndicator" style={styles.footer}>
-            Engine: Hermes
-          </Text>
-        </View>
-      )}
-      <View>
-        <View testID="appRootView" style={styles.container}>
+    <SafeAreaView style={[backgroundStyle, { flex: 1 }]}>
+      <StatusBar barStyle="dark-content" />
+      <ScrollView>
+        {global.HermesInternal != null && (
+          <View style={styles.engine}>
+            <Text testID="hermesIndicator" style={styles.footer}>
+              Engine: Hermes
+            </Text>
+          </View>
+        )}
+        <View
+          testID="appRootView"
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
           <View style={styles.header}>
-            <Text style={styles.text}>Example DateTime Picker</Text>
+            <ThemedText style={styles.text}>Example DateTime Picker</ThemedText>
           </View>
           <View style={styles.header}>
-            <Text style={{ margin: 10, flex: 1 }}>text color (iOS only)</Text>
+            <ThemedText style={{ margin: 10, flex: 1 }}>text color (iOS only)</ThemedText>
             <TextInput
               value={color}
               style={{ height: 60, flex: 1 }}
@@ -95,10 +131,10 @@ const DateTimePickerScreen = () => {
             />
           </View>
           <View style={styles.header}>
-            <Text testID="dateTimeText" style={styles.dateTimeText}>
+            <ThemedText testID="dateTimeText" style={styles.dateTimeText}>
               {mode === 'time' && moment.utc(date).format('HH:mm')}
               {mode === 'date' && moment.utc(date).format('MM/DD/YYYY')}
-            </Text>
+            </ThemedText>
             <Button testID="hidePicker" onPress={() => setShow(false)} title="hide picker" />
           </View>
           {show && (
@@ -115,17 +151,24 @@ const DateTimePickerScreen = () => {
             />
           )}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    backgroundColor: Colors.lighter,
+  },
   engine: {
     position: 'absolute',
     right: 0,
   },
+  body: {
+    backgroundColor: Colors.white,
+  },
   footer: {
+    color: Colors.dark,
     fontSize: 12,
     fontWeight: '600',
     padding: 4,
@@ -136,6 +179,14 @@ const styles = StyleSheet.create({
     marginTop: 32,
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  containerWindows: {
+    marginTop: 32,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
   header: {
     justifyContent: 'center',
@@ -154,12 +205,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dateTimeText: {
-    paddingRight: 20,
     fontSize: 16,
     fontWeight: 'normal',
   },
   iOsPicker: {
     flex: 1,
+  },
+  windowsPicker: {
+    flex: 1,
+    paddingTop: 10,
+    width: 350,
   },
 });
 
