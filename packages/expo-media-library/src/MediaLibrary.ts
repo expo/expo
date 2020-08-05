@@ -375,6 +375,14 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new Error('Option "album" must be a string!');
   }
 
+  if (Platform.OS === 'android' && isNaN(parseInt(getId(after) as string, 10))) {
+    throw new Error('Option "after" must be a valid ID!');
+  }
+
+  if (first != null && first < 0) {
+    throw new Error('Option "first" must be a positive integer!');
+  }
+
   options.sortBy.forEach(checkSortBy);
   options.mediaType.forEach(checkMediaType);
 
