@@ -1,6 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcher.h"
+#import "EXAppLoaderExpoUpdates.h"
 #import "EXClientReleaseType.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -8,7 +9,7 @@
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXSession.h"
-#import "EXAppLoaderExpoUpdates.h"
+#import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
 
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
@@ -220,8 +221,30 @@ NS_ASSUME_NONNULL_BEGIN
   return [components URL];
 }
 
+- (BOOL)_initializeDatabase
+{
+  EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
+  BOOL success = updatesDatabaseManager.isDatabaseOpen;
+  if (!updatesDatabaseManager.isDatabaseOpen) {
+    success = [updatesDatabaseManager openDatabase];
+  }
+
+  if (!success) {
+    _error = updatesDatabaseManager.error;
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return NO;
+  } else {
+    return YES;
+  }
+}
+
 - (void)_beginRequest
 {
+  if (![self _initializeDatabase]) {
+    return;
+  }
   // if we're in dev mode, don't try loading cached manifest
   if ([_httpManifestUrl.host isEqualToString:@"localhost"]) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
@@ -244,19 +267,12 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
 
-  NSError *fsError;
-  NSURL *updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
-  __block NSError *dbError;
-  EXUpdatesDatabase *database = [[EXUpdatesDatabase alloc] init];
-  dispatch_sync(database.databaseQueue, ^{
-    [database openDatabaseInDirectory:updatesDirectory withError:&dbError];
-  });
-
+  EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
   EXUpdatesSelectionPolicyNewest *selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersions:[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion]];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:config
-                                                                             database:database
-                                                                            directory:updatesDirectory
+                                                                             database:updatesDatabaseManager.database
+                                                                            directory:updatesDatabaseManager.updatesDirectory
                                                                       selectionPolicy:selectionPolicy
                                                                         delegateQueue:_appLoaderQueue];
   loaderTask.delegate = self;
@@ -276,8 +292,9 @@ NS_ASSUME_NONNULL_BEGIN
   }];
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
-  // TODO: database and cache directory
-  [fileDownloader downloadManifestFromURL:httpManifestUrl withDatabase:[[EXUpdatesDatabase alloc] init] cacheDirectory:[EXUpdatesUtils initializeUpdatesDirectoryWithError:nil] successBlock:^(EXUpdatesUpdate * _Nonnull update) {
+  EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
+
+  [fileDownloader downloadManifestFromURL:httpManifestUrl withDatabase:updatesDatabaseManager.database cacheDirectory:updatesDatabaseManager.updatesDirectory successBlock:^(EXUpdatesUpdate * _Nonnull update) {
     self.optimisticManifest = update.rawManifest;
     self.confirmedManifest = self.optimisticManifest;
     if (self.delegate) {
