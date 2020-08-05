@@ -30,6 +30,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 @property (nonatomic, assign) BOOL isReadyToLaunch;
 @property (nonatomic, assign) BOOL isTimerFinished;
 @property (nonatomic, assign) BOOL hasLaunched;
+@property (nonatomic, assign) BOOL hasAborted;
 @property (nonatomic, strong) dispatch_queue_t loaderTaskQueue;
 
 
@@ -49,6 +50,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
     _directory = directory;
     _selectionPolicy = selectionPolicy;
     _delegateQueue = delegateQueue;
+    _hasAborted = NO;
     _loaderTaskQueue = dispatch_queue_create("expo.loader.LoaderTaskQueue", DISPATCH_QUEUE_SERIAL);
   }
   return self;
@@ -109,8 +111,9 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
       }
 
       if (shouldCheckForUpdate) {
-        if (self->_delegate &&
-            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+        if (success && self->_aborterDelegate &&
+            ![self->_aborterDelegate appLoaderTask:self shouldLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+          self->_hasAborted = YES;
           return;
         }
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
@@ -125,7 +128,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 {
   dispatch_assert_queue(_loaderTaskQueue);
 
-  if (_hasLaunched) {
+  if (_hasLaunched || _hasAborted) {
     // we've already fired once, don't do it again
     return;
   }
@@ -198,12 +201,19 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 {
   _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+    if (self->_aborterDelegate) {
+      dispatch_sync(self->_delegateQueue, ^{
+        self->_hasAborted = ![self->_aborterDelegate appLoaderTask:self shouldLoadRemoteUpdate:update];
+      });
+    }
+
     if (self->_delegate) {
       dispatch_async(self->_delegateQueue, ^{
         [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
       });
     }
-    return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate];
+
+    return !self->_hasAborted && [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate];
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {
@@ -213,6 +223,10 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 
 - (void)_handleRemoteUpdateLoaded:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
+  if (_hasAborted) {
+    return;
+  }
+
   // If the app has not yet been launched (because the timer is still running),
   // create a new launcher so that we can launch with the newly downloaded update.
   // Otherwise, we've already launched. Send an event to the notify JS of the new update.
