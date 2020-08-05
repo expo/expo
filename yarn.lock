@@ -14960,10 +14960,10 @@ react-native-appearance@~0.3.3:
     invariant "^2.2.4"
     use-subscription "^1.0.0"
 
-react-native-branch@4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-4.2.1.tgz#3ed1a071c053b420d11af8aa368142b19e2d5129"
-  integrity sha512-wwBCsj3VslS0zG8UAZjx+nNrWgd3CuA24r5muFDzS38oQ4S9oB0NJPafEcWcUT7TPxw/rfpdPLb+JccGvS2/Lg==
+react-native-branch@5.0.0-rc.1:
+  version "5.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.0.0-rc.1.tgz#b8739c6a08d9edb8bf025dfa101462ae8bead666"
+  integrity sha512-d9+PKw44KfGqsi+3+QGCktcTOiIwZ4ua8FOpdII0fAOUn/TKKOojvqTSEOEFn+nGZj3HvMh2fofgoMEVierXPw==
 
 react-native-bundle-visualizer@^2.2.1:
   version "2.2.1"
