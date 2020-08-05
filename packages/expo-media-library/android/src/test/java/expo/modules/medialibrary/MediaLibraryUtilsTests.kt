@@ -37,11 +37,9 @@ internal class MediaLibraryUtilsTests {
       MediaLibraryUtils.getSizeFromCursor(contentResolver, any(), cursor, any(), any())
     } returns intArrayOf(0, 0) andThen intArrayOf(100, 200)
 
-
     //act
     val result = arrayListOf<Bundle>()
     MediaLibraryUtils.putAssetsInfo(contentResolver, cursor, result, 5, 0, false)
-
 
     //assert
     verify(exactly = 0) {
@@ -56,7 +54,6 @@ internal class MediaLibraryUtilsTests {
 
     assertNull(result[0].getString("localUri"))
   }
-
 
   @Test
   fun `getInPart() should return correct result`() {
@@ -167,8 +164,6 @@ internal class MediaLibraryUtilsTests {
       src.delete()
     }
   }
-
-  //TODO: safeCopyFile test
 
   @Test
   fun `maybeRotateAssetSize returns correct values`() {

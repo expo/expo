@@ -31,7 +31,7 @@ internal class GetAssetsTest {
     promise = PromiseMock()
     mockContext = MockContext()
 
-    mockGetQueryInfo(selection="", order="", limit=10, offset=0)
+    mockGetQueryInfo(selection = "", order = "", limit = 10, offset = 0)
 
     mockkStatic(MediaLibraryUtils::class)
     every { MediaLibraryUtils.putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs

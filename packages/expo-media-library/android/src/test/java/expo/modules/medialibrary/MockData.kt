@@ -32,41 +32,41 @@ internal data class MockAsset(
 
 internal object MockData {
   val mockImage = MockAsset(
-    1L,
-    "img1.jpg",
-    "images/img1.jpg",
-    MEDIA_TYPE_IMAGE,
-    100, 200,
-    12345678,
-    23456789,
-    0,
-    null,
-    "album12"
+    id = 1L,
+    name = "img1.jpg",
+    path = "images/img1.jpg",
+    mediaType = MEDIA_TYPE_IMAGE,
+    width = 100, height = 200,
+    createdDate = 12345678,
+    modifiedDate = 23456789,
+    orientation = 0,
+    duration = null,
+    albumId = "album12"
   )
 
   val mockVideo = MockAsset(
-    2L,
-    "vid2.mp4",
-    "videos/vid2.mp4",
-    MEDIA_TYPE_VIDEO,
-    200, 300,
-    12345678,
-    23456789,
-    0,
-    3000,
-    "album23"
+    id = 2L,
+    name = "vid2.mp4",
+    path = "videos/vid2.mp4",
+    mediaType = MEDIA_TYPE_VIDEO,
+    width = 200, height = 300,
+    createdDate = 12345678,
+    modifiedDate = 23456789,
+    orientation = 0,
+    duration = 3000,
+    albumId = "album23"
   )
 
   val mockAudio = MockAsset(
-    3L,
-    "song3.mp3",
-    "audio/song3.mp3",
-    MEDIA_TYPE_AUDIO,
-    0, 0,
-    12345678,
-    23456789,
-    null,
-    10000,
-    null
+    id = 3L,
+    name = "song3.mp3",
+    path = "audio/song3.mp3",
+    mediaType = MEDIA_TYPE_AUDIO,
+    width = 0, height = 0,
+    createdDate = 12345678,
+    modifiedDate = 23456789,
+    orientation = null,
+    duration = 10000,
+    albumId = null
   )
 }

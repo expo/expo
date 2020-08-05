@@ -64,9 +64,6 @@ internal class GetQueryInfoTests {
     assertEquals(MediaStore.Images.Media.DEFAULT_SORT_ORDER, queryInfo.order)
   }
 
-  /**
-   * First is passed
-   */
   @Test
   fun `test if invalid arguments fall back to defaults`() {
     // arrange
