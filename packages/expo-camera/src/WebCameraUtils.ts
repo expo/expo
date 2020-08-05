@@ -1,18 +1,19 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 
-import { CameraPictureOptions } from './../Camera.types';
 import {
   CameraType,
-  WebCameraSettings,
-  CaptureOptions,
   CapturedPicture,
   ImageSize,
   ImageType,
-} from './CameraModule.types';
-import { requestUserMediaAsync } from './UserMediaManager';
-import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
-import * as CapabilityUtils from './CapabilityUtils';
+  WebCameraSettings,
+  CameraPictureOptions,
+} from './Camera.types';
+
+import * as CapabilityUtils from './WebCapabilityUtils';
+import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
+import { requestUserMediaAsync } from './WebUserMediaManager';
+
 interface ConstrainLongRange {
   max?: number;
   min?: number;
@@ -63,7 +64,7 @@ export function hasValidConstraints(
   return preferredCameraType !== undefined && width !== undefined && height !== undefined;
 }
 
-function ensureCaptureOptions(config: any): CaptureOptions {
+function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPictureOptions {
   const captureOptions = {
     scale: 1,
     imageType: ImageType.png,
@@ -84,11 +85,11 @@ export function captureImage(
   video: HTMLVideoElement,
   pictureOptions: CameraPictureOptions
 ): string {
-  const config = ensureCaptureOptions(pictureOptions);
+  const config = ensureCameraPictureOptions(pictureOptions);
   const { scale, imageType, quality = DEFAULT_QUALITY, isImageMirror } = config;
 
   const { videoWidth, videoHeight } = video;
-  const { width, height } = getImageSize(videoWidth, videoHeight, scale);
+  const { width, height } = getImageSize(videoWidth, videoHeight, scale!);
 
   // Build the canvas size and draw the camera image to the context from video
   const canvas = document.createElement('canvas');
@@ -96,8 +97,10 @@ export function captureImage(
   canvas.height = height;
   const context = canvas.getContext('2d');
 
-  //TODO: Bacon: useless
-  if (!context) throw new Error('Context is not defined');
+  if (!context) {
+    // Should never be called
+    throw new Error('Context is not defined');
+  }
   // Flip horizontally (as css transform: rotateY(180deg))
   if (isImageMirror) {
     context.setTransform(-1, 0, 0, 1, canvas.width, 0);
@@ -105,7 +108,7 @@ export function captureImage(
 
   context.drawImage(video, 0, 0, width, height);
 
-  const base64 = toDataURL(canvas, imageType, quality);
+  const base64 = toDataURL(canvas, imageType!, quality);
   return base64;
 }
 
@@ -131,7 +134,7 @@ export function getIdealConstraints(
   }
 
   const supports = getSupportedConstraints();
-  // TODO: Bacon: Test this
+  // TODO(Bacon): Test this
   if (!supports || !supports.facingMode || !supports.width || !supports.height)
     return MinimumConstraints;
 
@@ -206,11 +209,10 @@ export function capture(
     const { width = 0, height = 0 } = settings;
     capturedPicture.width = width;
     capturedPicture.height = height;
-    // TODO: Bacon: verify/enforce exif shape.
     capturedPicture.exif = settings;
   }
 
-  config.onPictureSaved?.({ nativeEvent: { data: capturedPicture, id: config.id } });
+  config.onPictureSaved?.({ nativeEvent: { data: capturedPicture, id: config.id ?? Date.now() } });
   return capturedPicture;
 }
 
@@ -232,13 +234,12 @@ async function onCapabilitiesReady(
   track: MediaStreamTrack,
   settings: WebCameraSettings = {}
 ): Promise<void> {
-  console.log('sync: ', cameraType, settings);
   const capabilities = track.getCapabilities();
 
   // Create an empty object because if you set a constraint that isn't available an error will be thrown.
   const constraints: MediaTrackConstraintSet = {};
 
-  // TODO: Bacon: Add `pointsOfInterest` support
+  // TODO(Bacon): Add `pointsOfInterest` support
   const clampedValues = [
     'exposureCompensation',
     'colorTemperature',
@@ -257,27 +258,32 @@ async function onCapabilitiesReady(
     }
   }
 
-  const _validatedConstrainedValue = (key, propName, converter) =>
-    validatedConstrainedValue(
-      key,
-      propName,
-      converter(settings[propName]),
+  function validatedInternalConstrainedValue<IConvertedType>(
+    constraintKey: string,
+    settingsKey: string,
+    converter: (settingValue: any) => IConvertedType
+  ) {
+    const convertedSetting = converter(settings[settingsKey]);
+    return validatedConstrainedValue({
+      constraintKey,
+      settingsKey,
+      convertedSetting,
       capabilities,
       settings,
-      cameraType
-    );
+      cameraType,
+    });
+  }
 
   if (capabilities.focusMode && settings.autoFocus !== undefined) {
-    constraints.focusMode = _validatedConstrainedValue(
+    constraints.focusMode = validatedInternalConstrainedValue<MediaTrackConstraintSet['focusMode']>(
       'focusMode',
       'autoFocus',
       CapabilityUtils.convertAutoFocusJSONToNative
     );
   }
 
-
   if (capabilities.torch && settings.flashMode !== undefined) {
-    constraints.torch = _validatedConstrainedValue(
+    constraints.torch = validatedInternalConstrainedValue<MediaTrackConstraintSet['torch']>(
       'torch',
       'flashMode',
       CapabilityUtils.convertFlashModeJSONToNative
@@ -285,14 +291,12 @@ async function onCapabilitiesReady(
   }
 
   if (capabilities.whiteBalanceMode && settings.whiteBalance !== undefined) {
-    constraints.whiteBalanceMode = _validatedConstrainedValue(
-      'whiteBalanceMode',
-      'whiteBalance',
-      CapabilityUtils.convertWhiteBalanceJSONToNative
-    );
+    constraints.whiteBalanceMode = validatedInternalConstrainedValue<
+      MediaTrackConstraintSet['whiteBalanceMode']
+    >('whiteBalanceMode', 'whiteBalance', CapabilityUtils.convertWhiteBalanceJSONToNative);
   }
 
-  await track.applyConstraints({ advanced: [constraints] as any });
+  await track.applyConstraints({ advanced: [constraints] });
 }
 
 export function stopMediaStream(stream: MediaStream | null) {
@@ -302,10 +306,10 @@ export function stopMediaStream(stream: MediaStream | null) {
   if (stream.getAudioTracks) {
     stream.getAudioTracks().forEach(track => track.stop());
   }
-  if (stream.getVideoTracks) { 
+  if (stream.getVideoTracks) {
     stream.getVideoTracks().forEach(track => track.stop());
   }
-  if (isMediaStreamTrack(stream)) { 
+  if (isMediaStreamTrack(stream)) {
     stream.stop();
   }
 }
@@ -330,8 +334,7 @@ export function isCapabilityAvailable(video: HTMLVideoElement, keyName: string):
 
   if (stream instanceof MediaStream) {
     const videoTrack = stream.getVideoTracks()[0];
-
-    return Boolean(videoTrack.getCapabilities.?()[keyName]);
+    return Boolean(videoTrack.getCapabilities?.()?.[keyName]);
   }
 
   return false;
@@ -342,7 +345,7 @@ function isMediaStreamTrack(input: any): input is MediaStreamTrack {
 }
 
 function convertNormalizedSetting(range: MediaSettingsRange, value?: number): number | undefined {
-  if (!value) { 
+  if (!value) {
     return;
   }
   // convert the normalized incoming setting to the native camera zoom range
@@ -355,23 +358,34 @@ function convertRange(value: number, r2: number[], r1: number[] = [0, 1]): numbe
   return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
 }
 
-function validatedConstrainedValue(
-  constraintKey: string,
-  settingsKey: string,
-  convertedSetting: any,
-  capabilities: MediaTrackCapabilities,
-  settings: any,
-  cameraType: string
-): any {
+function validatedConstrainedValue<T>(props: {
+  constraintKey: string;
+  settingsKey: string;
+  convertedSetting: T;
+  capabilities: MediaTrackCapabilities;
+  settings: WebCameraSettings;
+  cameraType: string;
+}): T | undefined {
+  const {
+    constraintKey,
+    settingsKey,
+    convertedSetting,
+    capabilities,
+    settings,
+    cameraType,
+  } = props;
   const setting = settings[settingsKey];
   if (
     Array.isArray(capabilities[constraintKey]) &&
     convertedSetting &&
     !capabilities[constraintKey].includes(convertedSetting)
   ) {
-    console.warn(
-      ` { ${settingsKey}: "${setting}" } (converted to "${convertedSetting}" in the browser) is not supported for camera type "${cameraType}" in your browser. Using the default value instead.`
-    );
+    if (__DEV__) {
+      // Only warn in dev mode.
+      console.warn(
+        ` { ${settingsKey}: "${setting}" } (converted to "${convertedSetting}" in the browser) is not supported for camera type "${cameraType}" in your browser. Using the default value instead.`
+      );
+    }
     return undefined;
   }
   return convertedSetting;

@@ -1,5 +1,5 @@
-import { CameraType } from './CameraModule/CameraModule.types';
-import { canGetUserMedia, isBackCameraAvailableAsync, isFrontCameraAvailableAsync, } from './CameraModule/UserMediaManager';
+import { CameraType } from './Camera.types';
+import { canGetUserMedia, isBackCameraAvailableAsync, isFrontCameraAvailableAsync, } from './WebUserMediaManager';
 export default {
     get name() {
         return 'ExponentCameraManager';
@@ -39,9 +39,6 @@ export default {
     async isAvailableAsync() {
         return canGetUserMedia();
     },
-    // TODO: Bacon: Is video possible?
-    // record(options): Promise
-    // stopRecording(): Promise<void>
     async takePicture(options, camera) {
         return await camera.takePicture(options);
     },

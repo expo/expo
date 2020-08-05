@@ -1,11 +1,51 @@
 import { ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+export declare enum CameraType {
+    front = "front",
+    back = "back"
+}
+export declare enum ImageType {
+    png = "png",
+    jpg = "jpg"
+}
+export declare type ImageParameters = {
+    imageType: ImageType;
+    quality: number | null;
+};
+export declare type ImageSize = {
+    width: number;
+    height: number;
+};
+export declare type WebCameraSettings = Partial<{
+    autoFocus: string;
+    flashMode: string;
+    whiteBalance: string;
+    exposureCompensation: number;
+    colorTemperature: number;
+    iso: number;
+    brightness: number;
+    contrast: number;
+    saturation: number;
+    sharpness: number;
+    focusDistance: number;
+    zoom: number;
+}>;
+export declare type CapturedPicture = {
+    width: number;
+    height: number;
+    uri: string;
+    base64?: string;
+    exif?: Partial<MediaTrackSettings>;
+};
 export declare type CameraPictureOptions = {
     quality?: number;
     base64?: boolean;
     exif?: boolean;
+    onPictureSaved?: PictureSavedListener;
     skipProcessing?: boolean;
-    onPictureSaved?: Function;
+    scale?: number;
+    imageType?: ImageType;
+    isImageMirror?: boolean;
     id?: number;
     fastMode?: boolean;
 };
@@ -23,6 +63,16 @@ export declare type CameraCapturedPicture = {
     base64?: string;
     exif?: any;
 };
+export declare type PictureSavedListener = (event: {
+    nativeEvent: {
+        data: CapturedPicture;
+        id: number;
+    };
+}) => void;
+export declare type CameraReadyListener = () => void;
+export declare type MountErrorListener = (event: {
+    nativeEvent: CameraMountError;
+}) => void;
 export declare type CameraMountError = {
     message: string;
 };
@@ -55,10 +105,8 @@ export declare type CameraNativeProps = {
     pointerEvents?: any;
     style?: any;
     ref?: Function;
-    onCameraReady?: () => void;
-    onMountError?: (event: {
-        nativeEvent: CameraMountError;
-    }) => void;
+    onCameraReady?: CameraReadyListener;
+    onMountError?: MountErrorListener;
     onBarCodeScanned?: (event: {
         nativeEvent: BarCodeScanningResult;
     }) => void;
@@ -68,12 +116,7 @@ export declare type CameraNativeProps = {
     onFaceDetectionError?: (event: {
         nativeEvent: Error;
     }) => void;
-    onPictureSaved?: (event: {
-        nativeEvent: {
-            data: CameraCapturedPicture;
-            id: number;
-        };
-    }) => void;
+    onPictureSaved?: PictureSavedListener;
     type?: number | string;
     flashMode?: number | string;
     autoFocus?: string | boolean | number;

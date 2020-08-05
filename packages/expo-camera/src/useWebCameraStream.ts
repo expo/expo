@@ -1,21 +1,16 @@
 /* eslint-env browser */
 import * as React from 'react';
 
-import { CameraPictureOptions } from '../Camera.types';
 import {
   CameraType,
   CapturedPicture,
   WebCameraSettings,
-  CaptureOptions,
-  ImageType,
-} from './CameraModule.types';
-import * as Utils from './CameraUtils';
-import { FacingModeToCameraType } from './constants';
-
-export { ImageType, CameraType, CaptureOptions };
-
-type OnCameraReadyListener = () => void;
-type OnMountErrorListener = (event: { nativeEvent: Error }) => void;
+  CameraPictureOptions,
+  CameraReadyListener,
+  MountErrorListener,
+} from './Camera.types';
+import * as Utils from './WebCameraUtils';
+import { FacingModeToCameraType } from './WebConstants';
 
 const VALID_SETTINGS_KEYS = [
   'autoFocus',
@@ -54,14 +49,14 @@ function useLoadedVideo(
   }, [video.current]);
 }
 
-export function useCameraStream(
+export function useWebCameraStream(
   video: React.MutableRefObject<HTMLVideoElement | null>,
   preferredType: CameraType,
   settings: Record<string, any>,
   {
     onCameraReady,
     onMountError,
-  }: { onCameraReady?: OnCameraReadyListener; onMountError?: OnMountErrorListener }
+  }: { onCameraReady?: CameraReadyListener; onMountError?: MountErrorListener }
 ): {
   type: CameraType | null;
   resumeAsync: () => Promise<void>;
@@ -160,10 +155,10 @@ export function useCameraStream(
     let streamDevice: MediaStream | null;
     try {
       streamDevice = await Utils.getStreamDevice(preferredType);
-    } catch (error) {
+    } catch (nativeEvent) {
       // this can happen when the requested mode is not supported.
       isStartingCamera.current = false;
-      onMountError?.({ nativeEvent: error });
+      onMountError?.({ nativeEvent });
       return;
     }
     if (Utils.compareStreams(streamDevice, stream.current)) {

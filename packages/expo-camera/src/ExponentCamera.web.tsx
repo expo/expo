@@ -1,18 +1,23 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
-import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions } from './Camera.types';
-import { CameraType, useCameraStream } from './CameraModule/CameraModule';
-import { PictureSizes } from './CameraModule/constants';
+import {
+  CameraCapturedPicture,
+  CameraNativeProps,
+  CameraPictureOptions,
+  CameraType,
+} from './Camera.types';
 import CameraManager from './ExponentCameraManager.web';
+import { useWebCameraStream } from './useWebCameraStream';
+import { PictureSizes } from './WebConstants';
 
-export type ExponentCameraRef = {
+export interface ExponentCameraRef {
   getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
   takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
   resumePreview: () => Promise<void>;
   pausePreview: () => Promise<void>;
-};
+}
 
 const ExponentCamera = React.forwardRef(
   (
@@ -21,7 +26,7 @@ const ExponentCamera = React.forwardRef(
   ) => {
     const video = React.useRef<HTMLVideoElement | null>(null);
 
-    const native = useCameraStream(video, type as CameraType, props, {
+    const native = useWebCameraStream(video, type as CameraType, props, {
       onCameraReady: props.onCameraReady,
       onMountError: props.onMountError,
     });
@@ -49,11 +54,11 @@ const ExponentCamera = React.forwardRef(
       [native.captureAsync, native.stopAsync, native.resumeAsync, props.onPictureSaved]
     );
 
-    // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
+    // TODO(Bacon): Create a universal prop, on native the microphone is only used when recording videos.
     // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
     const isMuted = true;
 
-    const style = React.useMemo(() => {
+    const style = React.useMemo<StyleProp<ViewStyle>>(() => {
       const isFrontFacingCamera = native.type === CameraManager.Type.front;
       return [
         StyleSheet.absoluteFill,
@@ -84,7 +89,16 @@ const ExponentCamera = React.forwardRef(
 
 export default ExponentCamera;
 
-const Video: any = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
+const Video = React.forwardRef(
+  (
+    props: React.ComponentProps<typeof View> & {
+      autoPlay?: boolean;
+      playsInline?: boolean;
+      muted?: boolean;
+    },
+    ref: React.Ref<HTMLVideoElement>
+  ) => createElement('video', { ...props, ref })
+);
 
 const styles = StyleSheet.create({
   videoWrapper: {

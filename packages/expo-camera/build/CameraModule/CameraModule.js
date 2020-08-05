@@ -1,9 +1,7 @@
 /* eslint-env browser */
 import * as React from 'react';
-import { CameraType, ImageType, } from './CameraModule.types';
 import * as Utils from './CameraUtils';
-import { FacingModeToCameraType } from './constants';
-export { ImageType, CameraType };
+import { FacingModeToCameraType } from './WebConstants';
 const VALID_SETTINGS_KEYS = [
     'autoFocus',
     'flashMode',
@@ -120,10 +118,10 @@ export function useCameraStream(video, preferredType, settings, { onCameraReady,
         try {
             streamDevice = await Utils.getStreamDevice(preferredType);
         }
-        catch (error) {
+        catch (nativeEvent) {
             // this can happen when the requested mode is not supported.
             isStartingCamera.current = false;
-            onMountError?.({ nativeEvent: error });
+            onMountError?.({ nativeEvent });
             return;
         }
         if (Utils.compareStreams(streamDevice, stream.current)) {

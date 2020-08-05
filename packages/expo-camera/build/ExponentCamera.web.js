@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
-import { useCameraStream } from './CameraModule/CameraModule';
-import { PictureSizes } from './CameraModule/constants';
 import CameraManager from './ExponentCameraManager.web';
+import { useWebCameraStream } from './useWebCameraStream';
+import { PictureSizes } from './WebConstants';
 const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) => {
     const video = React.useRef(null);
-    const native = useCameraStream(video, type, props, {
+    const native = useWebCameraStream(video, type, props, {
         onCameraReady: props.onCameraReady,
         onMountError: props.onMountError,
     });
@@ -28,7 +28,7 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) =
             await native.stopAsync();
         },
     }), [native.captureAsync, native.stopAsync, native.resumeAsync, props.onPictureSaved]);
-    // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
+    // TODO(Bacon): Create a universal prop, on native the microphone is only used when recording videos.
     // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
     const isMuted = true;
     const style = React.useMemo(() => {

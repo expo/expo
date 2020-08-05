@@ -1,4 +1,4 @@
-import { CameraType, ImageType } from './CameraModule.types';
+import { CameraType, ImageType } from './Camera.types';
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/aspectRatio
 export const VIDEO_ASPECT_RATIOS = {

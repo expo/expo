@@ -28,7 +28,7 @@ export declare type CapturedPicture = {
     height: number;
     uri: string;
     base64?: string;
-    exif?: any;
+    exif?: Partial<MediaTrackSettings>;
 };
 export declare type WebCameraSettings = Partial<{
     autoFocus: string;
@@ -44,3 +44,9 @@ export declare type WebCameraSettings = Partial<{
     focusDistance: number;
     zoom: number;
 }>;
+export interface ConstrainLongRange {
+    max?: number;
+    min?: number;
+    exact?: number;
+    ideal?: number;
+}

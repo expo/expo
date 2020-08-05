@@ -27,7 +27,7 @@ declare const _default: {
     isAvailableAsync(): Promise<boolean>;
     takePicture(options: CameraPictureOptions, camera: ExponentCameraRef): Promise<CameraCapturedPicture>;
     pausePreview(camera: ExponentCameraRef): Promise<void>;
-    resumePreview(camera: ExponentCameraRef): Promise<any>;
+    resumePreview(camera: ExponentCameraRef): Promise<void>;
     getAvailableCameraTypesAsync(): Promise<string[]>;
     getAvailablePictureSizes(ratio: string, camera: ExponentCameraRef): Promise<string[]>;
 };

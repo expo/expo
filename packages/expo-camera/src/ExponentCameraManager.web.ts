@@ -1,10 +1,9 @@
-import { CameraCapturedPicture, CameraPictureOptions } from './Camera.types';
-import { CameraType } from './CameraModule/CameraModule.types';
+import { CameraCapturedPicture, CameraPictureOptions, CameraType } from './Camera.types';
 import {
   canGetUserMedia,
   isBackCameraAvailableAsync,
   isFrontCameraAvailableAsync,
-} from './CameraModule/UserMediaManager';
+} from './WebUserMediaManager';
 import { ExponentCameraRef } from './ExponentCamera.web';
 
 export default {
@@ -46,10 +45,6 @@ export default {
   async isAvailableAsync(): Promise<boolean> {
     return canGetUserMedia();
   },
-
-  // TODO: Bacon: Is video possible?
-  // record(options): Promise
-  // stopRecording(): Promise<void>
   async takePicture(
     options: CameraPictureOptions,
     camera: ExponentCameraRef
@@ -59,7 +54,7 @@ export default {
   async pausePreview(camera: ExponentCameraRef): Promise<void> {
     await camera.pausePreview();
   },
-  async resumePreview(camera: ExponentCameraRef): Promise<any> {
+  async resumePreview(camera: ExponentCameraRef): Promise<void> {
     return await camera.resumePreview();
   },
   async getAvailableCameraTypesAsync(): Promise<string[]> {
@@ -77,4 +72,8 @@ export default {
   async getAvailablePictureSizes(ratio: string, camera: ExponentCameraRef): Promise<string[]> {
     return await camera.getAvailablePictureSizes(ratio);
   },
+
+  // TODO(Bacon): Is video possible?
+  // record(options): Promise
+  // stopRecording(): Promise<void>
 };
