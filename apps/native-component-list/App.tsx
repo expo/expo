@@ -7,26 +7,6 @@ import { enableScreens } from 'react-native-screens';
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
-if (Platform.OS === 'web') {
-  const originalWarn = console.warn;
-  console.warn = (...props: any[]) => {
-    // Mute the warnings about react-native-web 11 for now.
-    // This warning is thrown whenever ScrollView or TouchableWithoutFeedback are used.
-    // Remove this after support for react-native-web@0.12 has landed.
-    for (const message of props) {
-      if (
-        typeof message === 'string' &&
-        message.includes(
-          'has been renamed, and is not recommended for use. See https://fb.me/react-unsafe-component-lifecycles'
-        )
-      ) {
-        return;
-      }
-    }
-    originalWarn(...props);
-  };
-}
-
 if (Platform.OS === 'android') {
   enableScreens(true);
 }

@@ -11,7 +11,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import com.facebook.infer.annotation.Assertions;
@@ -36,16 +36,14 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
 
   @ReactProp(name = "items")
   public void setItems(ReactPicker view, @Nullable ReadableArray items) {
-    if (items != null) {
-      ReadableMap[] data = new ReadableMap[items.size()];
-      for (int i = 0; i < items.size(); i++) {
-        data[i] = items.getMap(i);
-      }
-      ReactPickerAdapter adapter = new ReactPickerAdapter(view.getContext(), data);
+    ReactPickerAdapter adapter = (ReactPickerAdapter) view.getAdapter();
+
+    if (adapter == null) {
+      adapter = new ReactPickerAdapter(view.getContext(), items);
       adapter.setPrimaryTextColor(view.getPrimaryColor());
       view.setAdapter(adapter);
     } else {
-      view.setAdapter(null);
+      adapter.setItems(items);
     }
   }
 
@@ -89,16 +87,39 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
                     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
   }
 
-  private static class ReactPickerAdapter extends ArrayAdapter<ReadableMap> {
-
+  private static class ReactPickerAdapter extends BaseAdapter {
     private final LayoutInflater mInflater;
     private @Nullable Integer mPrimaryTextColor;
+    private @Nullable ReadableArray mItems;
 
-    public ReactPickerAdapter(Context context, ReadableMap[] data) {
-      super(context, 0, data);
+    public ReactPickerAdapter(Context context, @Nullable ReadableArray items) {
+      super();
 
+      mItems = items;
       mInflater = (LayoutInflater) Assertions.assertNotNull(
           context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+    }
+
+    public void setItems(@Nullable ReadableArray items) {
+      mItems = items;
+      notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+      if (mItems == null) return 0;
+      return mItems.size();
+    }
+
+    @Override
+    public ReadableMap getItem(int position) {
+      if (mItems == null) return null;
+      return mItems.getMap(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+      return position;
     }
 
     @Override
