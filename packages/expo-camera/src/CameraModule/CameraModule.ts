@@ -1,16 +1,11 @@
 /* eslint-env browser */
-import invariant from 'invariant';
+import * as React from 'react';
 
 import { CameraPictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
-import {
-  isBackCameraAvailableAsync,
-  isFrontCameraAvailableAsync,
-  canGetUserMedia,
-} from './UserMediaManager';
-import { FacingModeToCameraType, PictureSizes } from './constants';
+import { FacingModeToCameraType } from './constants';
 
 export { ImageType, CameraType, CaptureOptions };
 
@@ -47,42 +42,76 @@ const VALID_SETTINGS_KEYS = [
   'zoom',
 ];
 
-class CameraModule {
-  public onCameraReady: OnCameraReadyListener = () => {};
-  public onMountError: OnMountErrorListener = () => {};
-  private stream: MediaStream | null = null;
-  private settings: MediaTrackSettings | null = null;
-  private pictureSize?: string;
-  private isStartingCamera = false;
-  private cameraType: CameraType = CameraType.front;
-  private webCameraSettings: WebCameraSettings = {
+function useLoadedVideo(
+  video: React.MutableRefObject<HTMLVideoElement | null>,
+  onLoaded: () => void
+) {
+  React.useEffect(() => {
+    let mounted = true;
+    video.current?.addEventListener?.('loadedmetadata', () => {
+      // without this async block the constraints aren't properly applied to the camera,
+      // this means that if you were to turn on the torch and swap to the front camera,
+      // then swap back to the rear camera the torch setting wouldn't be applied.
+      requestAnimationFrame(() => {
+        if (mounted) {
+          onLoaded();
+        }
+      });
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [video.current]);
+}
+
+export function useCameraStream(
+  video: React.MutableRefObject<HTMLVideoElement | null>,
+  type: CameraType,
+  settings: Record<string, any>,
+  {
+    onCameraReady,
+    onMountError,
+  }: { onCameraReady?: OnCameraReadyListener; onMountError?: OnMountErrorListener }
+): {
+  type: CameraType | null;
+  resume: () => Promise<MediaStream | null>;
+  stop: () => void;
+  capture: (config: CameraPictureOptions) => CapturedPicture;
+} {
+  const stream = React.useRef<MediaStream | null>(null);
+  const streamSettings = React.useRef<MediaTrackSettings | null>(null);
+  const capabilities = React.useRef<WebCameraSettings>({
     autoFocus: 'continuous',
     flashMode: 'off',
     whiteBalance: 'continuous',
     zoom: 1,
-  };
+  });
+  const isStartingCamera = React.useRef<boolean | null>(false);
+  const [realType, setRealType] = React.useState<CameraType | null>(null);
 
-  public get type(): CameraType {
-    return this.cameraType;
-  }
+  useLoadedVideo(video, () => {
+    syncTrackCapabilities(type, stream.current, capabilities.current);
+  });
 
-  constructor(private videoElement: HTMLVideoElement) {
-    if (this.videoElement) {
-      this.videoElement.addEventListener('loadedmetadata', () => {
-        this.syncTrackCapabilities();
-      });
-    }
-  }
+  React.useEffect(() => {
+    return () => {
+      console.log('dismount');
+      // unmount
+      stopAsync();
+    };
+  }, []);
 
-  public async updateWebCameraSettingsAsync(nextSettings: {
-    [key: string]: any;
-  }): Promise<boolean> {
+  React.useEffect(() => {
+    resumePreview();
+  }, [type]);
+
+  React.useEffect(() => {
     const changes: WebCameraSettings = {};
 
-    for (const key of Object.keys(nextSettings)) {
+    for (const key of Object.keys(settings)) {
       if (!VALID_SETTINGS_KEYS.includes(key)) continue;
-      const nextValue = nextSettings[key];
-      if (nextValue !== this.webCameraSettings[key]) {
+      const nextValue = settings[key];
+      if (nextValue !== capabilities.current[key]) {
         changes[key] = nextValue;
       }
     }
@@ -90,226 +119,206 @@ class CameraModule {
     // Only update the native camera if changes were found
     const hasChanges = !!Object.keys(changes).length;
 
-    this.webCameraSettings = { ...this.webCameraSettings, ...changes };
+    const nextWebCameraSettings = { ...capabilities.current, ...changes };
     if (hasChanges) {
-      await this.syncTrackCapabilities(changes);
+      syncTrackCapabilities(type, stream.current, changes);
     }
 
-    return hasChanges;
-  }
+    capabilities.current = nextWebCameraSettings;
+  }, [
+    settings.autoFocus,
+    settings.flashMode,
+    settings.exposureCompensation,
+    settings.colorTemperature,
+    settings.iso,
+    settings.brightness,
+    settings.contrast,
+    settings.saturation,
+    settings.sharpness,
+    settings.focusDistance,
+    settings.whiteBalance,
+    settings.zoom,
+  ]);
 
-  public async setTypeAsync(value: CameraType) {
-    if (value === this.cameraType) {
-      return;
-    }
-    this.cameraType = value;
-
-    await this.resumePreview();
-  }
-
-  public setPictureSize(value: string) {
-    if (value === this.pictureSize) {
-      return;
-    }
-    invariant(
-      PictureSizes.includes(value),
-      `expo-camera: CameraModule.setPictureSize(): invalid size supplied ${value}, expected one of: ${PictureSizes.join(
-        ', '
-      )}`
-    );
-
-    // TODO: Bacon: IMP
-    // const [width, height] = value.split('x');
-    // const aspectRatio = parseFloat(width) / parseFloat(height);
-
-    this.pictureSize = value;
-  }
-
-  public isTorchAvailable(): boolean {
-    return isCapabilityAvailable(this.videoElement, 'torch');
-  }
-
-  public isZoomAvailable(): boolean {
-    return isCapabilityAvailable(this.videoElement, 'zoom');
-  }
-
-  // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
-  private async onCapabilitiesReady(
-    track: MediaStreamTrack,
-    settings: WebCameraSettings = {}
-  ): Promise<void> {
-    const capabilities = track.getCapabilities();
-
-    // Create an empty object because if you set a constraint that isn't available an error will be thrown.
-    const constraints: MediaTrackConstraintSet = {};
-
-    // TODO: Bacon: Add `pointsOfInterest` support
-    const clampedValues = [
-      'exposureCompensation',
-      'colorTemperature',
-      'iso',
-      'brightness',
-      'contrast',
-      'saturation',
-      'sharpness',
-      'focusDistance',
-      'zoom',
-    ];
-
-    for (const property of clampedValues) {
-      if (capabilities[property]) {
-        constraints[property] = convertNormalizedSetting(
-          capabilities[property],
-          settings[property]
-        );
-      }
-    }
-
-    const _validatedConstrainedValue = (key, propName, converter) =>
-      validatedConstrainedValue(
-        key,
-        propName,
-        converter(settings[propName]),
-        capabilities,
-        settings,
-        this.cameraType
-      );
-
-    if (capabilities.focusMode && settings.autoFocus !== undefined) {
-      constraints.focusMode = _validatedConstrainedValue(
-        'focusMode',
-        'autoFocus',
-        CapabilityUtils.convertAutoFocusJSONToNative
-      );
-    }
-
-    if (capabilities.torch && settings.flashMode !== undefined) {
-      constraints.torch = _validatedConstrainedValue(
-        'torch',
-        'flashMode',
-        CapabilityUtils.convertFlashModeJSONToNative
-      );
-    }
-
-    if (capabilities.whiteBalanceMode && settings.whiteBalance !== undefined) {
-      constraints.whiteBalanceMode = _validatedConstrainedValue(
-        'whiteBalanceMode',
-        'whiteBalance',
-        CapabilityUtils.convertWhiteBalanceJSONToNative
-      );
-    }
-
-    await track.applyConstraints({ advanced: [constraints] as any });
-  }
-
-  private async applyVideoConstraints(constraints: { [key: string]: any }): Promise<boolean> {
-    if (!this.stream || !this.stream.getVideoTracks) {
-      return false;
-    }
-    return await applyConstraints(this.stream.getVideoTracks(), constraints);
-  }
-
-  private async applyAudioConstraints(constraints: { [key: string]: any }): Promise<boolean> {
-    if (!this.stream || !this.stream.getAudioTracks) {
-      return false;
-    }
-    return await applyConstraints(this.stream.getAudioTracks(), constraints);
-  }
-
-  private async syncTrackCapabilities(settings: WebCameraSettings = {}): Promise<void> {
-    if (this.stream && this.stream.getVideoTracks) {
-      await Promise.all(
-        this.stream.getVideoTracks().map(track => this.onCapabilitiesReady(track, settings))
-      );
-    }
-  }
-
-  private setStream(stream: MediaStream | null): void {
-    this.stream = stream;
-    this.settings = stream ? stream.getTracks()[0].getSettings() : null;
-    setVideoSource(this.videoElement, stream);
-  }
-
-  public getActualCameraType(): CameraType | null {
-    if (this.settings) {
+  React.useEffect(() => {
+    streamSettings.current = stream.current ? stream.current.getTracks()[0].getSettings() : null;
+    if (streamSettings.current) {
       // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
-      const { facingMode = 'user' } = this.settings;
-      return FacingModeToCameraType[facingMode];
+      const { facingMode = 'user' } = streamSettings.current;
+      setRealType(FacingModeToCameraType[facingMode]);
+    } else {
+      setRealType(null);
     }
-    return null;
-  }
+    console.log('update settings: ', streamSettings.current);
+  }, [stream.current]);
 
-  public async ensureCameraIsRunningAsync(): Promise<void> {
-    if (!this.stream) {
-      await this.resumePreview();
+  React.useEffect(() => {
+    if (!video.current) {
+      return;
     }
-  }
+    setVideoSource(video.current, stream.current);
+  }, [stream.current, video.current]);
 
-  public async resumePreview(): Promise<MediaStream | null> {
-    if (this.isStartingCamera) {
-      return null;
-    }
-    this.isStartingCamera = true;
-    try {
-      this.stopAsync();
-      const stream = await Utils.getStreamDevice(this.type);
-      this.setStream(stream);
-      this.isStartingCamera = false;
-      this.onCameraReady();
-      return stream;
-    } catch (error) {
-      this.isStartingCamera = false;
-      this.onMountError({ nativeEvent: error });
-    }
-    return null;
-  }
-
-  public takePicture(config: CameraPictureOptions): CapturedPicture {
-    const base64 = Utils.captureImage(this.videoElement, config);
-
-    const capturedPicture: CapturedPicture = {
-      uri: base64,
-      base64,
-      width: 0,
-      height: 0,
-    };
-
-    if (this.settings) {
-      const { width = 0, height = 0 } = this.settings;
-      capturedPicture.width = width;
-      capturedPicture.height = height;
-      // TODO: Bacon: verify/enforce exif shape.
-      capturedPicture.exif = this.settings;
-    }
-
-    if (config.onPictureSaved) {
-      config.onPictureSaved({ nativeEvent: { data: capturedPicture, id: config.id } });
-    }
-    return capturedPicture;
-  }
-
-  public stopAsync(): void {
-    stopMediaStream(this.stream);
-    this.setStream(null);
-  }
-
-  // TODO: Bacon: we don't even use ratio in native...
-  public getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
-    return PictureSizes;
+  const stopAsync = (): void => {
+    console.log('stop', stream.current);
+    stopMediaStream(stream.current);
+    stream.current = null;
   };
 
-  static async getAvailableCameraTypesAsync(): Promise<string[]> {
-    if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) return [];
+  const resumePreview = async (): Promise<void> => {
+    console.log('resume', isStartingCamera.current);
+    if (isStartingCamera.current) {
+      return;
+    }
+    isStartingCamera.current = true;
+    let streamDevice: MediaStream | null;
+    try {
+      streamDevice = await Utils.getStreamDevice(type);
+    } catch (error) {
+      // this can happen when the requested mode is not supported.
+      isStartingCamera.current = false;
+      onMountError?.({ nativeEvent: error });
+      return;
+    }
+    if (compareStreams(streamDevice, stream.current)) {
+      // Do nothing if the streams are the same.
+      // This happens when the device only supports one camera (i.e. desktop) and the mode was toggled between front/back while already active.
+      // Without this check there is a screen flash while the video switches.
+      return;
+    }
+    stopAsync();
+    stream.current = streamDevice; //await Utils.getStreamDevice(type);
+    // syncTrackCapabilities(type, stream.current, capabilities.current);
+    isStartingCamera.current = false;
+    onCameraReady?.();
+  };
 
-    const devices = await navigator.mediaDevices.enumerateDevices();
+  return {
+    type: realType,
+    resume: resumePreview,
+    stop: stopAsync,
+    capture(config: CameraPictureOptions): CapturedPicture {
+      return capture(video.current!, streamSettings.current!, config);
+    },
+  };
+}
 
-    const types: (string | null)[] = await Promise.all([
-      (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
-      (await isBackCameraAvailableAsync()) && CameraType.back,
-    ]);
+function compareStreams(a: MediaStream | null, b: MediaStream | null): boolean {
+  if (!a || !b) return false;
+  const settingsA = a.getTracks()[0].getSettings();
+  const settingsB = b.getTracks()[0].getSettings();
+  return settingsA.deviceId === settingsB.deviceId;
+}
 
-    return types.filter(Boolean) as string[];
+function capture(
+  video: HTMLVideoElement,
+  settings: MediaTrackSettings,
+  config: CameraPictureOptions
+): CapturedPicture {
+  const base64 = Utils.captureImage(video, config);
+
+  const capturedPicture: CapturedPicture = {
+    uri: base64,
+    base64,
+    width: 0,
+    height: 0,
+  };
+
+  if (settings) {
+    const { width = 0, height = 0 } = settings;
+    capturedPicture.width = width;
+    capturedPicture.height = height;
+    // TODO: Bacon: verify/enforce exif shape.
+    capturedPicture.exif = settings;
   }
+
+  if (config.onPictureSaved) {
+    config.onPictureSaved({ nativeEvent: { data: capturedPicture, id: config.id } });
+  }
+  return capturedPicture;
+}
+
+async function syncTrackCapabilities(
+  cameraType: CameraType,
+  stream: MediaStream | null,
+  settings: WebCameraSettings = {}
+): Promise<void> {
+  if (stream?.getVideoTracks) {
+    await Promise.all(
+      stream.getVideoTracks().map(track => onCapabilitiesReady(cameraType, track, settings))
+    );
+  }
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
+async function onCapabilitiesReady(
+  cameraType: CameraType,
+  track: MediaStreamTrack,
+  settings: WebCameraSettings = {}
+): Promise<void> {
+  console.log('sync: ', cameraType, settings);
+  const capabilities = track.getCapabilities();
+
+  // Create an empty object because if you set a constraint that isn't available an error will be thrown.
+  const constraints: MediaTrackConstraintSet = {};
+
+  // TODO: Bacon: Add `pointsOfInterest` support
+  const clampedValues = [
+    'exposureCompensation',
+    'colorTemperature',
+    'iso',
+    'brightness',
+    'contrast',
+    'saturation',
+    'sharpness',
+    'focusDistance',
+    'zoom',
+  ];
+
+  for (const property of clampedValues) {
+    if (capabilities[property]) {
+      constraints[property] = convertNormalizedSetting(capabilities[property], settings[property]);
+    }
+  }
+
+  const _validatedConstrainedValue = (key, propName, converter) =>
+    validatedConstrainedValue(
+      key,
+      propName,
+      converter(settings[propName]),
+      capabilities,
+      settings,
+      cameraType
+    );
+
+  if (capabilities.focusMode && settings.autoFocus !== undefined) {
+    constraints.focusMode = _validatedConstrainedValue(
+      'focusMode',
+      'autoFocus',
+      CapabilityUtils.convertAutoFocusJSONToNative
+    );
+  }
+
+  console.log('can use torch: ', capabilities.torch);
+
+  if (capabilities.torch && settings.flashMode !== undefined) {
+    constraints.torch = _validatedConstrainedValue(
+      'torch',
+      'flashMode',
+      CapabilityUtils.convertFlashModeJSONToNative
+    );
+  }
+
+  if (capabilities.whiteBalanceMode && settings.whiteBalance !== undefined) {
+    constraints.whiteBalanceMode = _validatedConstrainedValue(
+      'whiteBalanceMode',
+      'whiteBalance',
+      CapabilityUtils.convertWhiteBalanceJSONToNative
+    );
+  }
+
+  console.log('apply constraints: ', constraints);
+  await track.applyConstraints({ advanced: [constraints] as any });
 }
 
 function stopMediaStream(stream: MediaStream | null) {
@@ -325,28 +334,12 @@ function setVideoSource(
 ): void {
   try {
     video.srcObject = stream;
-  } catch (_) {
+  } catch {
     if (stream) {
       video.src = window.URL.createObjectURL(stream);
     } else if (typeof video.src === 'string') {
       window.URL.revokeObjectURL(video.src);
     }
-  }
-}
-
-async function applyConstraints(
-  tracks: MediaStreamTrack[],
-  constraints: { [key: string]: any }
-): Promise<boolean> {
-  try {
-    await Promise.all(
-      tracks.map(async track => {
-        await track.applyConstraints({ advanced: [constraints] as any });
-      })
-    );
-    return true;
-  } catch (_) {
-    return false;
   }
 }
 
@@ -405,5 +398,3 @@ function validatedConstrainedValue(
   }
   return convertedSetting;
 }
-
-export default CameraModule;

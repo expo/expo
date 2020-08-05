@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { CameraPictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 export { ImageType, CameraType, CaptureOptions };
@@ -19,36 +20,12 @@ export declare type WebCameraSettings = Partial<{
     focusDistance: number;
     zoom: number;
 }>;
-declare class CameraModule {
-    private videoElement;
-    onCameraReady: OnCameraReadyListener;
-    onMountError: OnMountErrorListener;
-    private stream;
-    private settings;
-    private pictureSize?;
-    private isStartingCamera;
-    private cameraType;
-    private webCameraSettings;
-    get type(): CameraType;
-    constructor(videoElement: HTMLVideoElement);
-    updateWebCameraSettingsAsync(nextSettings: {
-        [key: string]: any;
-    }): Promise<boolean>;
-    setTypeAsync(value: CameraType): Promise<void>;
-    setPictureSize(value: string): void;
-    isTorchAvailable(): boolean;
-    isZoomAvailable(): boolean;
-    private onCapabilitiesReady;
-    private applyVideoConstraints;
-    private applyAudioConstraints;
-    private syncTrackCapabilities;
-    private setStream;
-    getActualCameraType(): CameraType | null;
-    ensureCameraIsRunningAsync(): Promise<void>;
-    resumePreview(): Promise<MediaStream | null>;
-    takePicture(config: CameraPictureOptions): CapturedPicture;
-    stopAsync(): void;
-    getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
-    static getAvailableCameraTypesAsync(): Promise<string[]>;
-}
-export default CameraModule;
+export declare function useCameraStream(video: React.MutableRefObject<HTMLVideoElement | null>, type: CameraType, settings: Record<string, any>, { onCameraReady, onMountError, }: {
+    onCameraReady?: OnCameraReadyListener;
+    onMountError?: OnMountErrorListener;
+}): {
+    type: CameraType | null;
+    resume: () => Promise<MediaStream | null>;
+    stop: () => void;
+    capture: (config: CameraPictureOptions) => CapturedPicture;
+};

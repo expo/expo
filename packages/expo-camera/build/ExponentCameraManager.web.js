@@ -1,5 +1,5 @@
-import CameraModule from './CameraModule/CameraModule';
-import { canGetUserMedia } from './CameraModule/UserMediaManager';
+import { CameraType } from './CameraModule/CameraModule.types';
+import { canGetUserMedia, isBackCameraAvailableAsync, isFrontCameraAvailableAsync, } from './CameraModule/UserMediaManager';
 export default {
     get name() {
         return 'ExponentCameraManager';
@@ -52,7 +52,14 @@ export default {
         return await camera.resumePreview();
     },
     async getAvailableCameraTypesAsync() {
-        return await CameraModule.getAvailableCameraTypesAsync();
+        if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices)
+            return [];
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const types = await Promise.all([
+            (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+            (await isBackCameraAvailableAsync()) && CameraType.back,
+        ]);
+        return types.filter(Boolean);
     },
     async getAvailablePictureSizes(ratio, camera) {
         return await camera.getAvailablePictureSizes(ratio);

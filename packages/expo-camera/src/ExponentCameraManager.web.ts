@@ -1,6 +1,10 @@
 import { CameraCapturedPicture, CameraPictureOptions } from './Camera.types';
-import CameraModule from './CameraModule/CameraModule';
-import { canGetUserMedia } from './CameraModule/UserMediaManager';
+import { CameraType } from './CameraModule/CameraModule.types';
+import {
+  canGetUserMedia,
+  isBackCameraAvailableAsync,
+  isFrontCameraAvailableAsync,
+} from './CameraModule/UserMediaManager';
 import ExponentCamera from './ExponentCamera.web';
 
 export default {
@@ -48,20 +52,29 @@ export default {
   // stopRecording(): Promise<void>
   async takePicture(
     options: CameraPictureOptions,
-    camera: ExponentCamera
+    camera: typeof ExponentCamera
   ): Promise<CameraCapturedPicture> {
     return await camera.takePicture(options);
   },
-  async pausePreview(camera: ExponentCamera): Promise<void> {
+  async pausePreview(camera: typeof ExponentCamera): Promise<void> {
     await camera.pausePreview();
   },
-  async resumePreview(camera: ExponentCamera): Promise<any> {
+  async resumePreview(camera: typeof ExponentCamera): Promise<any> {
     return await camera.resumePreview();
   },
   async getAvailableCameraTypesAsync(): Promise<string[]> {
-    return await CameraModule.getAvailableCameraTypesAsync();
+    if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) return [];
+
+    const devices = await navigator.mediaDevices.enumerateDevices();
+
+    const types: (string | null)[] = await Promise.all([
+      (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+      (await isBackCameraAvailableAsync()) && CameraType.back,
+    ]);
+
+    return types.filter(Boolean) as string[];
   },
-  async getAvailablePictureSizes(ratio: string, camera: ExponentCamera): Promise<string[]> {
+  async getAvailablePictureSizes(ratio: string, camera: typeof ExponentCamera): Promise<string[]> {
     return await camera.getAvailablePictureSizes(ratio);
   },
 };

@@ -55,7 +55,7 @@ export declare type CameraNativeProps = {
     pointerEvents?: any;
     style?: any;
     ref?: Function;
-    onCameraReady?: Function;
+    onCameraReady?: () => void;
     onMountError?: ({ nativeEvent }: {
         nativeEvent: CameraMountError;
     }) => void;
@@ -65,8 +65,13 @@ export declare type CameraNativeProps = {
     onFacesDetected?: ({ nativeEvent }: {
         nativeEvent: FaceDetectionResult;
     }) => void;
-    onFaceDetectionError?: Function;
-    onPictureSaved?: Function;
+    onFaceDetectionError?: () => void;
+    onPictureSaved?: (event: {
+        nativeEvent: {
+            data: CameraCapturedPicture;
+            id: number;
+        };
+    }) => void;
     type?: number | string;
     flashMode?: number | string;
     autoFocus?: string | boolean | number;

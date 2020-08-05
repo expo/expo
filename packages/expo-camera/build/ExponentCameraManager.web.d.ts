@@ -25,10 +25,10 @@ declare const _default: {
     };
     readonly VideoQuality: {};
     isAvailableAsync(): Promise<boolean>;
-    takePicture(options: CameraPictureOptions, camera: ExponentCamera): Promise<CameraCapturedPicture>;
-    pausePreview(camera: ExponentCamera): Promise<void>;
-    resumePreview(camera: ExponentCamera): Promise<any>;
+    takePicture(options: CameraPictureOptions, camera: typeof ExponentCamera): Promise<CameraCapturedPicture>;
+    pausePreview(camera: typeof ExponentCamera): Promise<void>;
+    resumePreview(camera: typeof ExponentCamera): Promise<any>;
     getAvailableCameraTypesAsync(): Promise<string[]>;
-    getAvailablePictureSizes(ratio: string, camera: ExponentCamera): Promise<string[]>;
+    getAvailablePictureSizes(ratio: string, camera: typeof ExponentCamera): Promise<string[]>;
 };
 export default _default;

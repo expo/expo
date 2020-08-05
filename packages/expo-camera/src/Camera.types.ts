@@ -61,12 +61,12 @@ export type CameraNativeProps = {
   pointerEvents?: any;
   style?: any;
   ref?: Function;
-  onCameraReady?: Function;
+  onCameraReady?: () => void;
   onMountError?: ({ nativeEvent }: { nativeEvent: CameraMountError }) => void;
   onBarCodeScanned?: ({ nativeEvent }: { nativeEvent: BarCodeScanningResult }) => void;
   onFacesDetected?: ({ nativeEvent }: { nativeEvent: FaceDetectionResult }) => void;
-  onFaceDetectionError?: Function;
-  onPictureSaved?: Function;
+  onFaceDetectionError?: () => void;
+  onPictureSaved?: (event: { nativeEvent: { data: CameraCapturedPicture; id: number } }) => void;
   type?: number | string;
   flashMode?: number | string;
   autoFocus?: string | boolean | number;
