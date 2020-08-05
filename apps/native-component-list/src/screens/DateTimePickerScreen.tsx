@@ -15,8 +15,6 @@ import {
   TextInput,
   useColorScheme,
 } from 'react-native';
-// This example is a refactored copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
-// Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const ThemedText = props => {
@@ -30,7 +28,10 @@ const ThemedText = props => {
   });
 };
 
-export default () => {
+// This example is a refactored copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
+// Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
+
+const DateTimePickerScreen = () => {
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
@@ -216,3 +217,9 @@ const styles = StyleSheet.create({
     width: 350,
   },
 });
+
+DateTimePickerScreen.navigationOptions = {
+  title: 'DateTimePicker',
+};
+
+export default DateTimePickerScreen;
