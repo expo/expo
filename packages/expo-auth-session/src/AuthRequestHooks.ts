@@ -14,16 +14,16 @@ export function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discover
   const [discovery, setDiscovery] = useState<DiscoveryDocument | null>(null);
 
   useEffect(() => {
-    let isHookStillRelevant = true;
+    let isHookMounted = true;
 
     resolveDiscoveryAsync(issuerOrDiscovery).then((discovery) => {
-      if (isHookStillRelevant) {
+      if (isHookMounted) {
         setDiscovery(discovery);
       }
     });
 
     return () => {
-      isHookStillRelevant = false;
+      isHookMounted = false;
     };
   }, [issuerOrDiscovery]);
 
@@ -73,19 +73,19 @@ export function useAuthRequest(
   );
 
   useEffect(() => {
-    let isHookStillRelevant = true;
+    let isHookMounted = true;
 
     if (config && discovery) {
       const request = new AuthRequest(config);
       request.makeAuthUrlAsync(discovery).then(() => {
-        if (isHookStillRelevant) {
+        if (isHookMounted) {
           setRequest(request);
         }
       });
     }
 
     return () => {
-      isHookStillRelevant = false;
+      isHookMounted = false;
     };
   }, [
     discovery?.authorizationEndpoint,
