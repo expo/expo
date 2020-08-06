@@ -30,6 +30,7 @@ interface Props {
   playAsync: () => void;
   pauseAsync: () => void;
   replayAsync: () => void;
+  nextAsync?: () => void;
   setRateAsync: (rate: number, shouldCorrectPitch: boolean) => void;
   setIsMutedAsync: (isMuted: boolean) => void;
   setPositionAsync: (position: number) => Promise<any>;
@@ -80,6 +81,10 @@ export default class Player extends React.Component<Props, State> {
 
   _toggleShouldCorrectPitch = () =>
     this.props.setRateAsync(this.props.rate, !this.props.shouldCorrectPitch);
+
+  _seekForward = () => this.props.setPositionAsync(this.props.positionMillis + 5000);
+
+  _seekBackward = () => this.props.setPositionAsync(Math.max(0, this.props.positionMillis - 5000));
 
   _renderPlayPauseButton = () => {
     let onPress = this._pause;
@@ -176,6 +181,20 @@ export default class Player extends React.Component<Props, State> {
             active: this.props.isLooping,
           })}
           {this._renderAuxiliaryButton({
+            iconName: 'volume-off',
+            title: 'Mute',
+            onPress: this._toggleIsMuted,
+            active: this.props.isMuted,
+          })}
+          {this._renderAuxiliaryButton({
+            disable: Platform.OS === 'web',
+            iconName: 'stats',
+            title: 'Correct pitch',
+            onPress: this._toggleShouldCorrectPitch,
+            active: this.props.shouldCorrectPitch,
+          })}
+
+          {this._renderAuxiliaryButton({
             iconName: 'hourglass',
             title: 'Slower',
             onPress: this._toggleSlowRate,
@@ -187,24 +206,30 @@ export default class Player extends React.Component<Props, State> {
             onPress: this._toggleFastRate,
             active: this.props.rate > 1,
           })}
-          {this._renderAuxiliaryButton({
-            disable: Platform.OS === 'web',
-            iconName: 'stats',
-            title: 'Correct pitch',
-            onPress: this._toggleShouldCorrectPitch,
-            active: this.props.shouldCorrectPitch,
-          })}
-          {this._renderAuxiliaryButton({
-            iconName: 'volume-off',
-            title: 'Mute',
-            onPress: this._toggleIsMuted,
-            active: this.props.isMuted,
-          })}
+        </View>
+        <View style={[styles.container, styles.buttonsContainer]}>
           {this._renderAuxiliaryButton({
             iconName: 'refresh',
             title: 'Replay',
             onPress: this.props.replayAsync,
             active: false,
+          })}
+          {this.props.nextAsync &&
+            this._renderAuxiliaryButton({
+              iconName: 'skip-forward',
+              title: 'Next',
+              onPress: this.props.nextAsync,
+              active: false,
+            })}
+          {this._renderAuxiliaryButton({
+            iconName: 'rewind',
+            title: 'Seek Backward',
+            onPress: this._seekBackward,
+          })}
+          {this._renderAuxiliaryButton({
+            iconName: 'fastforward',
+            title: 'Seek Forward',
+            onPress: this._seekForward,
           })}
         </View>
         <View style={[styles.container, styles.buttonsContainer]}>

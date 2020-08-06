@@ -116,6 +116,7 @@ export default class VideoPlayer extends React.Component<
         playAsync={this._playAsync}
         pauseAsync={this._pauseAsync}
         replayAsync={this._replayAsync}
+        nextAsync={this._changeSource}
         setPositionAsync={this._setPositionAsync}
         setIsLoopingAsync={this._setIsLoopingAsync}
         setIsMutedAsync={this._setIsMutedAsync}
@@ -147,14 +148,8 @@ export default class VideoPlayer extends React.Component<
           },
           {
             iconName: 'resize',
-            title: 'Open fullscreen',
+            title: 'Open full screen',
             onPress: this._openFullscreen,
-            active: false,
-          },
-          {
-            iconName: 'skip-forward',
-            title: 'Change source',
-            onPress: this._changeSource,
             active: false,
           },
         ]}
