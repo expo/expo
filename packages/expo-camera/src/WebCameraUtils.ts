@@ -211,7 +211,9 @@ export function capture(
     capturedPicture.exif = settings;
   }
 
-  config.onPictureSaved?.(capturedPicture);
+  if (config.onPictureSaved) {
+    config.onPictureSaved(capturedPicture);
+  }
   return capturedPicture;
 }
 

@@ -134,7 +134,9 @@ export function capture(video, settings, config) {
         capturedPicture.height = height;
         capturedPicture.exif = settings;
     }
-    config.onPictureSaved?.(capturedPicture);
+    if (config.onPictureSaved) {
+        config.onPictureSaved(capturedPicture);
+    }
     return capturedPicture;
 }
 export async function syncTrackCapabilities(cameraType, stream, settings = {}) {

@@ -19,8 +19,12 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) =
                 ...options,
                 // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
                 onPictureSaved(picture) {
-                    options.onPictureSaved?.(picture);
-                    props.onPictureSaved?.({ nativeEvent: { data: picture, id: -1 } });
+                    if (options.onPictureSaved) {
+                        options.onPictureSaved(picture);
+                    }
+                    if (props.onPictureSaved) {
+                        props.onPictureSaved({ nativeEvent: { data: picture, id: -1 } });
+                    }
                 },
             });
         },

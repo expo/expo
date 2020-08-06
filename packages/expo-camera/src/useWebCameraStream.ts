@@ -33,16 +33,18 @@ function useLoadedVideo(
 ) {
   React.useEffect(() => {
     let mounted = true;
-    video.current?.addEventListener?.('loadedmetadata', () => {
-      // without this async block the constraints aren't properly applied to the camera,
-      // this means that if you were to turn on the torch and swap to the front camera,
-      // then swap back to the rear camera the torch setting wouldn't be applied.
-      requestAnimationFrame(() => {
-        if (mounted) {
-          onLoaded();
-        }
+    if (video.current) {
+      video.current.addEventListener('loadedmetadata', () => {
+        // without this async block the constraints aren't properly applied to the camera,
+        // this means that if you were to turn on the torch and swap to the front camera,
+        // then swap back to the rear camera the torch setting wouldn't be applied.
+        requestAnimationFrame(() => {
+          if (mounted) {
+            onLoaded();
+          }
+        });
       });
-    });
+    }
     return () => {
       mounted = false;
     };
@@ -158,7 +160,9 @@ export function useWebCameraStream(
     } catch (nativeEvent) {
       // this can happen when the requested mode is not supported.
       isStartingCamera.current = false;
-      onMountError?.({ nativeEvent });
+      if (onMountError) {
+        onMountError({ nativeEvent });
+      }
       return;
     }
     if (Utils.compareStreams(streamDevice, stream.current)) {
@@ -171,7 +175,9 @@ export function useWebCameraStream(
     stream.current = streamDevice; //await Utils.getStreamDevice(type);
     // syncTrackCapabilities(type, stream.current, capabilities.current);
     isStartingCamera.current = false;
-    onCameraReady?.();
+    if (onCameraReady) {
+      onCameraReady();
+    }
   };
 
   return {
