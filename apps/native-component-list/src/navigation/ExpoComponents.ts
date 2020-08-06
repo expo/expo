@@ -63,6 +63,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
     screen.navigationOptions = {
       title: screen.title,
     };
+    screen.route = `gl/${screenName.toLowerCase()}`;
     return {
       ...prev,
       [screenName]: screen,
@@ -107,6 +108,7 @@ export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>
 );
 
 export const Routes = Object.entries(Screens).reduce<RoutesObjectType>((acc, [key, screen]) => {
-  acc[key] = key.toLowerCase();
+  // @ts-ignore: route not available
+  acc[key] = screen.route ?? key.toLowerCase();
   return acc;
 }, {});
