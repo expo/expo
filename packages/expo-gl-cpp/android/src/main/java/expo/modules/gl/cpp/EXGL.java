@@ -8,7 +8,6 @@ public class EXGL {
     SoLoader.loadLibrary("expo-gl");
   }
   public static native int EXGLContextCreate(long jsCtxPtr);
-  public static native int EXGLContextCreateV2(long jsCtxPtr); // react-native >= 0.59
 
   public static native void EXGLContextDestroy(int exglCtxId);
   public static native void EXGLContextFlush(int exglCtxId);

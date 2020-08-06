@@ -10,7 +10,7 @@
 extern "C" {
 
 JNIEXPORT jint JNICALL
-Java_expo_modules_gl_cpp_EXGL_EXGLContextCreateV2
+Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
 (JNIEnv *env, jclass clazz, jlong jsiPtr) {
   return UEXGLContextCreate((void*) jsiPtr);
 }
