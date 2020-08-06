@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [web] Add permission support. ([#9576](https://github.com/expo/expo/pull/9576) by [@EvanBacon](https://github.com/EvanBacon))
+- Added permissions support for web. ([#9576](https://github.com/expo/expo/pull/9576) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
