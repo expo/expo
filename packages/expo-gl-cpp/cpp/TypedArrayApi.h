@@ -3,6 +3,8 @@
 #include <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
+namespace expo {
+namespace gl_cpp {
 
 enum class TypedArrayKind {
   Int8Array,
@@ -143,4 +145,6 @@ TypedArray<T> TypedArrayBase::as(jsi::Runtime &runtime) && {
     throw jsi::JSError(runtime, "Object is not a TypedArray");
   }
   return std::move(*this).get<T>(runtime);
+}
+}
 }

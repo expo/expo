@@ -2,6 +2,8 @@
 
 #ifdef __APPLE__
 
+namespace expo {
+namespace gl_cpp {
 void EXiOSLog(const char *msg, ...) __attribute__((format(printf, 1, 2)));
 
 typedef struct {
@@ -11,6 +13,8 @@ typedef struct {
 } EXiOSOperatingSystemVersion;
 
 EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion(void);
+}
+}
 
 #endif
 
@@ -30,4 +34,3 @@ EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion(void);
 #else
 #define EXGLSysLog(...)
 #endif
-

@@ -37,6 +37,9 @@
 #define GL_DEPTH_STENCIL 0x84F9
 #define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
 
+namespace expo {
+namespace gl_cpp {
+
 // --- EXGLContext -------------------------------------------------------------
 
 // Class of the C++ object representing an EXGL rendering context.
@@ -267,5 +270,6 @@ class EXGLContext {
 #undef NATIVE_METHOD
 #undef NATIVE_WEBGL2_METHOD
 };
-
+}
+}
 #include "EXGLContext-inl.h"

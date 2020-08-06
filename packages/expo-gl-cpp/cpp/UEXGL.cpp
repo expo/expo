@@ -1,6 +1,8 @@
 #include "UEXGL.h"
 #include "EXGLContext.h"
 
+using namespace expo::gl_cpp;
+
 UEXGLContextId UEXGLContextCreate(void *jsiPtr) {
   return EXGLContext::ContextCreate(*reinterpret_cast<jsi::Runtime *>(jsiPtr));
 }

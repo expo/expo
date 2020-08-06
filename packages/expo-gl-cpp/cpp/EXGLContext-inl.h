@@ -12,6 +12,9 @@
 
 #include <jsi/jsi.h>
 
+namespace expo {
+namespace gl_cpp {
+
 template <typename Func>
 inline jsi::Value EXGLContext::exglGetActiveInfo(
     jsi::Runtime &runtime,
@@ -79,4 +82,6 @@ template <typename Func, typename T>
 inline jsi::Value EXGLContext::exglVertexAttribv(Func func, GLuint index, std::vector<T> &&data) {
   addToNextBatch([=, data{std::move(data)}] { func(index, data.data()); });
   return nullptr;
+}
+}
 }

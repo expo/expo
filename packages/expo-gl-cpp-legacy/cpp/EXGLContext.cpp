@@ -2,7 +2,10 @@
 
 #include <JavaScriptCore/JSContextRef.h>
 
+#ifndef __APPLE__
+// this header should already be loaded in expo-gl-cpp
 #define STB_IMAGE_IMPLEMENTATION
+#endif
 #include "stb_image.h"
 
 static std::unordered_map<UEXGLContextId, EXGLContext *> EXGLContextMap;

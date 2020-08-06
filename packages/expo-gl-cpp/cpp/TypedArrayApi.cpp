@@ -2,6 +2,9 @@
 
 #include <unordered_map>
 
+namespace expo {
+namespace gl_cpp {
+
 template <TypedArrayKind T>
 using ContentType = typename typedArrayTypeMap<T>::type;
 
@@ -276,3 +279,6 @@ template class TypedArray<TypedArrayKind::Uint16Array>;
 template class TypedArray<TypedArrayKind::Uint32Array>;
 template class TypedArray<TypedArrayKind::Float32Array>;
 template class TypedArray<TypedArrayKind::Float64Array>;
+
+}
+}

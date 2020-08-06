@@ -11,6 +11,9 @@
 #include <jsi/jsi.h>
 #include <vector>
 
+namespace expo {
+namespace gl_cpp {
+
 GLuint bytesPerPixel(GLenum type, GLenum format);
 
 void flipPixels(GLubyte *pixels, size_t bytesPerRow, size_t rows);
@@ -21,3 +24,5 @@ std::shared_ptr<uint8_t> loadImage(
     int *fileWidth,
     int *fileHeight,
     int *fileComp);
+}
+}

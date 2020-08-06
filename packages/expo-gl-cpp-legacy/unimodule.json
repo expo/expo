@@ -1,5 +1,5 @@
 {
-  "name": "expo-gl-cpp",
+  "name": "expo-gl-cpp-legacy",
   "platforms": ["ios", "android"],
   "ios": {
     "subdirectory": "cpp"

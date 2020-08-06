@@ -182,7 +182,7 @@ android {
 
     ndk {
       abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-      moduleName 'expo-gl'
+      moduleName 'expo-gl-legacy'
     }
 
     sourceSets.main {

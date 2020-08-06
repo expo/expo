@@ -1,6 +1,6 @@
 APP_BUILD_SCRIPT := Android.mk
 
-APP_ABI := arm64-v8a # armeabi-v7a x86 arm64-v8a x86_64 # TODO(wkozyra95) uncomment
+APP_ABI := armeabi-v7a x86 arm64-v8a x86_64
 APP_PLATFORM := android-18
 
 APP_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))

@@ -17,6 +17,8 @@
 #include "EXJSIUtils.h"
 
 namespace jsi = facebook::jsi;
+namespace expo {
+namespace gl_cpp {
 
 //
 // unpackArg function is set of function overload and explicit specialization used to convert
@@ -258,4 +260,6 @@ auto generateNativeMethod(
   // bind tuple values as consecutive function arguments
   return methodHelper::generateNativeMethodBind(
       fn, std::move(argTuple), std::make_index_sequence<sizeof...(T)>());
+}
+}
 }

@@ -1,5 +1,4 @@
 
-<manifest package="expo.modules.gl.cpp">
+<manifest package="expo.modules.gl.cpp.legacy">
 
 </manifest>
-  

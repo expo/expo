@@ -6,6 +6,8 @@
 #include "EXPlatformUtils.h"
 #include "TypedArrayApi.h"
 
+namespace expo {
+namespace gl_cpp {
 namespace jsi = facebook::jsi;
 
 template <typename T>
@@ -77,3 +79,5 @@ inline jsi::Value unsupportedWebGL2(
   throw std::runtime_error("EXGL: This device doesn't support WebGL2 method: " + name + "()!");
 }
 
+}
+}
