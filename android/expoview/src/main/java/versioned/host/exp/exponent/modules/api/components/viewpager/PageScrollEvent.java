@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package versioned.host.exp.exponent.modules.api.components.viewpager.event;
+package versioned.host.exp.exponent.modules.api.components.viewpager;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -13,20 +13,29 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
- * Event emitted by {@link ReactViewPager} when selected page changes.
+ * Event emitted by {@link ReactViewPager} when user scrolls between pages (or when animating
+ * between pages).
  *
  * Additional data provided by this event:
- *  - position - index of page that has been selected
+ *  - position - index of first page from the left that is currently visible
+ *  - offset - value from range [0,1) describing stage between page transitions. Value x means that
+ *    (1 - x) fraction of the page at "position" index is visible, and x fraction of the next page
+ *    is visible.
  */
-public class PageSelectedEvent extends Event<PageSelectedEvent> {
+/* package */ class PageScrollEvent extends Event<PageScrollEvent> {
 
-  public static final String EVENT_NAME = "topPageSelected";
+  public static final String EVENT_NAME = "topPageScroll";
 
   private final int mPosition;
+  private final float mOffset;
 
-  public PageSelectedEvent(int viewTag, int position) {
+  protected PageScrollEvent(int viewTag, int position, float offset) {
     super(viewTag);
     mPosition = position;
+
+    // folly::toJson default options don't support serialize NaN or Infinite value
+    mOffset = (Float.isInfinite(offset) || Float.isNaN(offset))
+      ? 0.0f : offset;
   }
 
   @Override
@@ -42,6 +51,7 @@ public class PageSelectedEvent extends Event<PageSelectedEvent> {
   private WritableMap serializeEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putInt("position", mPosition);
+    eventData.putDouble("offset", mOffset);
     return eventData;
   }
 }
