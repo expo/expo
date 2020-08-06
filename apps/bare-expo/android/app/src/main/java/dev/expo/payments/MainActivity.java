@@ -1,20 +1,16 @@
 package dev.expo.payments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.util.UUID;
 
-import expo.modules.devmenu.DevMenuActivity;
-import expo.modules.devmenu.DevMenuManager;
+import expo.modules.devmenu.managers.DevMenuManager;
 
 public class MainActivity extends ReactActivity {
 

@@ -1,22 +1,43 @@
-package expo.modules.devmenu
+package expo.modules.devmenu.managers
 
 import android.app.Activity
 import android.app.Application
-import android.content.Intent
+import android.os.Bundle
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
+import expo.modules.devmenu.BuildConfig
+import expo.modules.devmenu.DevMenuDelegateProtocol
+import expo.modules.devmenu.DevMenuSession
+import expo.modules.devmenu.extensions.DevMenuExtensionProtocol
+import expo.modules.devmenu.extensions.items.DevMenuAction
+import expo.modules.devmenu.extensions.items.DevMenuItem
 import expo.modules.devmenu.modules.DevMenuHost
 import org.unimodules.adapters.react.ModuleRegistryAdapter
 import org.unimodules.adapters.react.ReactModuleRegistryProvider
 import org.unimodules.core.interfaces.Package
-import java.lang.ref.WeakReference
 
 object DevMenuManager {
-  private var devServerPort = AndroidInfoHelpers.sDevServerPortOverride
+  private val devMenuActivityManager =
+    if (BuildConfig.DEBUG) {
+      DebugDevMenuActivityManager()
+    } else {
+      DevMenuActivityManager()
+    }
+  private var session: DevMenuSession? = null
+  private var delegate: DevMenuDelegateProtocol? = null
+  private val extensions: Collection<DevMenuExtensionProtocol>
+    get() {
+      return delegate?.reactInstanceManager()?.currentReactContext?.catalystInstance?.nativeModules?.filterIsInstance<DevMenuExtensionProtocol>()
+        ?: emptyList()
+    }
+  private val devMenuItems: List<DevMenuItem>
+    get() {
+      return extensions.map {
+        it.devMenuItems() ?: emptyList()
+      }.flatten()
+    }
   private lateinit var devMenuHost: DevMenuHost
-  private var currentDevMenuActivity: WeakReference<DevMenuActivity?> = WeakReference(null)
 
   @Suppress("UNCHECKED_CAST")
   fun initDevMenuHost(application: Application) {
@@ -29,33 +50,46 @@ object DevMenuManager {
   fun getDevMenuHost() = devMenuHost
 
   fun openMenu(activity: Activity) {
-    devServerPort = AndroidInfoHelpers.sDevServerPortOverride;
-    AndroidInfoHelpers.sDevServerPortOverride = 2137
-    activity.startActivity(Intent(activity, DevMenuActivity::class.java))
+    session = DevMenuSession(delegate!!.reactInstanceManager(), delegate!!.appInfo())
+    devMenuActivityManager.openMenu(activity)
   }
+
+  fun getSession() = session
 
   fun closeMenu() {
     devMenuHost.reactInstanceManager.currentReactContext
-      ?.catalystInstance
       ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       ?.emit("closeDevMenu", null)
   }
 
+  fun getDevMenuLifecycleHandler() = devMenuActivityManager
+
   fun hideMenu() {
-    currentDevMenuActivity.get()?.let {
-      it.finish()
+    devMenuActivityManager.hideMenu()
+  }
+
+  fun runWithApplicationBundler(action: () -> Unit) = synchronized(this) {
+    devMenuActivityManager.switchBundler()
+    action()
+    devMenuActivityManager.switchBundler()
+  }
+
+  fun setDelegate(newDelegate: DevMenuDelegateProtocol) {
+    delegate = newDelegate
+  }
+
+  fun serializedDevMenuItems(): List<Bundle> = devMenuItems.map { it.serialize() }
+
+  fun dispatchAction(actionId: String) {
+    devMenuItems.forEach {
+      if (it is DevMenuAction && it.actionId == actionId) {
+        it.action()
+        return
+      }
     }
   }
-
-  fun devMenuHasBeenDestroyed() {
-    currentDevMenuActivity = WeakReference(null)
-    AndroidInfoHelpers.sDevServerPortOverride = devServerPort
-  }
-
-  fun devMenuHasOpened(devMenuActivity: DevMenuActivity) {
-    currentDevMenuActivity = WeakReference(devMenuActivity)
-  }
 }
+
 
 fun getExpoModules(application: Application): List<*> {
   val basePackageListClass = Class.forName(application.packageName + ".generated.BasePackageList")

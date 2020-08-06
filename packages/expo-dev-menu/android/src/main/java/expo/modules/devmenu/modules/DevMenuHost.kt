@@ -19,6 +19,4 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 
   override fun getJSMainModuleName() = "index"
-
-
 }

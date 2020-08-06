@@ -1,15 +1,12 @@
 package expo.modules.devmenu
 
-import android.app.Application
-import android.content.ContentResolver
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
+import expo.modules.devmenu.managers.DevMenuManager
 import java.util.*
 
 
@@ -17,7 +14,7 @@ class DevMenuActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    DevMenuManager.devMenuHasOpened(this)
+    DevMenuManager.getDevMenuLifecycleHandler().devMenuHasBeenOpened(this)
   }
 
   override fun getMainComponentName() = "main"
@@ -32,9 +29,9 @@ class DevMenuActivity : ReactActivity() {
         val bundle = Bundle()
         bundle.putBoolean("enableDevelopmentTools", true)
         bundle.putBoolean("showOnboardingView", false)
-        bundle.putParcelableArray("devMenuItems", arrayOfNulls<Bundle>(0))
+        bundle.putParcelableArray("devMenuItems", DevMenuManager.serializedDevMenuItems().toTypedArray())
         bundle.putString("uuid", UUID.randomUUID().toString())
-        bundle.putBundle("appInfo", guessAppInfo(application))
+        bundle.putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
         return bundle
       }
 
@@ -44,7 +41,7 @@ class DevMenuActivity : ReactActivity() {
 
   override fun onDestroy() {
     super.onDestroy()
-    DevMenuManager.devMenuHasBeenDestroyed()
+    DevMenuManager.getDevMenuLifecycleHandler().devMenuHasBeenDestroyed()
   }
 
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -61,26 +58,4 @@ class DevMenuActivity : ReactActivity() {
     super.onPause()
     overridePendingTransition(0, 0)
   }
-}
-
-fun guessAppInfo(application: Application): Bundle {
-  return Bundle().apply {
-    putCharSequence("appName", application.packageManager.getApplicationLabel(application.applicationInfo))
-    putInt("appVersion", BuildConfig.VERSION_CODE) // todo: pass app version not dev menu version
-//    application.packageManager.getApplicationIcon(application.applicationInfo)
-//    application.applicationInfo.loadIcon(application.packageManager)
-    putString("appIcon", resourceToUri(application, application.applicationInfo.icon).toString())
-    putString("hostUrl", null)
-//    "appName": infoDictionary["CFBundleDisplayName"] ?? infoDictionary["CFBundleExecutable"],
-//    "appVersion": infoDictionary["CFBundleVersion"],
-//    "appIcon": findAppIconPath(),
-//    "hostUrl": bridge.bundleURL?.absoluteString ?? NSNull(),
-  }
-}
-
-fun resourceToUri(context: Context, resID: Int): Uri? {
-  return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
-    context.resources.getResourcePackageName(resID) + '/' +
-    context.resources.getResourceTypeName(resID) + '/' +
-    context.resources.getResourceEntryName(resID))
 }

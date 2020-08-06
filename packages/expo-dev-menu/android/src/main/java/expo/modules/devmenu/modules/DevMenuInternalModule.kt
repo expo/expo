@@ -6,7 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import expo.modules.devmenu.DevMenuManager
+import expo.modules.devmenu.managers.DevMenuManager
 
 
 class DevMenuInternalModule(reactContext: ReactApplicationContext)
@@ -14,7 +14,12 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
   override fun getName() = "ExpoDevMenuInternal"
 
   @ReactMethod
-  fun dispatchActionAsync(actionId: String, promise: Promise) {
+  fun dispatchActionAsync(actionId: String?, promise: Promise) {
+    if (actionId == null) {
+      promise.reject("ERR_DEVMENU_ACTION_FAILED", "Action ID not provided.")
+      return
+    }
+    DevMenuManager.dispatchAction(actionId)
     promise.resolve(null)
   }
 
