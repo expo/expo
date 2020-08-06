@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed bug, where sorting contacts by `firstName` or `lastName` could cause crash on Android. ([#9582](https://github.com/expo/expo/pull/9582) by [@barthap](https://github.com/barthap))
+
 ## 8.3.0 — 2020-07-27
 
 ### 🐛 Bug fixes
