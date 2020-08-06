@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import ExpoKeepAwake, { isAvailable } from './ExpoKeepAwake';
+import ExpoKeepAwake from './ExpoKeepAwake';
 import { KeepAwakeEventType } from './ExpoKeepAwake.types';
 
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
@@ -15,19 +15,35 @@ function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
 }
 
 async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
-  if (isAvailable() && ExpoKeepAwake.activate) {
+  if (!(await ExpoKeepAwake.isAvailableAsync())) {
+    if (__DEV__) {
+      console.warn(
+        `KeepAwake.activateKeepAwake() was invoked on a device that doesn't support the KeepAwake API.`
+      );
+    }
+    return;
+  }
+  if (ExpoKeepAwake.activate) {
     await ExpoKeepAwake.activate(tag);
   }
 }
 
 async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
-  if (isAvailable() && ExpoKeepAwake.deactivate) {
+  if (!(await ExpoKeepAwake.isAvailableAsync())) {
+    if (__DEV__) {
+      console.warn(
+        `KeepAwake.activateKeepAwake() was invoked on a device that doesn't support the KeepAwake API.`
+      );
+    }
+    return;
+  }
+  if (ExpoKeepAwake.deactivate) {
     await ExpoKeepAwake.deactivate(tag);
   }
 }
 
 function addEventListener(tag: string, listener: (eventType: KeepAwakeEventType) => void) {
-  if (isAvailable() && ExpoKeepAwake.addListener) {
+  if (ExpoKeepAwake.addListener) {
     ExpoKeepAwake.addListener(tag, listener);
   }
 }
