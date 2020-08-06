@@ -31,7 +31,7 @@ function LinkButton({
   action,
   children,
   ...rest
-}: React.ComponentProps<typeof Link> & { children?: React.ReactNode }) {
+}: React.ComponentProps<typeof Link> & { disabled?: boolean; children?: React.ReactNode }) {
   const { onPress, ...props } = useLinkProps({ to, action });
 
   const [isPressed, setIsPressed] = React.useState(false);
@@ -43,6 +43,7 @@ function LinkButton({
     // You can add hover effects using `onMouseEnter` and `onMouseLeave`
     return (
       <Pressable
+        pointerEvents={rest.disabled === true ? 'none' : 'auto'}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
         onClick={onPress}
@@ -78,7 +79,7 @@ function ComponentListScreen(props: Props) {
   const _renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
     return (
-      <LinkButton to={route ?? exampleName} style={[styles.rowTouchable]}>
+      <LinkButton disabled={!isAvailable} to={route ?? exampleName} style={[styles.rowTouchable]}>
         <View
           pointerEvents="none"
           style={[styles.row, !isAvailable && styles.disabledRow, { paddingRight: 10 + right }]}>
