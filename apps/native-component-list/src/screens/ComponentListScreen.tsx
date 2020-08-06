@@ -1,5 +1,5 @@
 import { EvilIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { Link, useLinkProps, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
@@ -10,6 +10,8 @@ import {
   Text,
   TouchableHighlight,
   View,
+  Platform,
+  Pressable,
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
@@ -24,6 +26,50 @@ interface Props {
   renderItemRight?: (props: ListElement) => React.ReactNode;
 }
 
+function LinkButton({
+  to,
+  action,
+  children,
+  ...rest
+}: React.ComponentProps<typeof Link> & { children?: React.ReactNode }) {
+  const { onPress, ...props } = useLinkProps({ to, action });
+
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [isPressed, setIsPressed] = React.useState(false);
+
+  if (Platform.OS === 'web') {
+    // It's important to use a `View` or `Text` on web instead of `TouchableX`
+    // Otherwise React Native for Web omits the `onClick` prop that's passed
+    // You'll also need to pass `onPress` as `onClick` to the `View`
+    // You can add hover effects using `onMouseEnter` and `onMouseLeave`
+    return (
+      <Pressable
+        onPressIn={() => setIsPressed(true)}
+        onPressOut={() => setIsPressed(false)}
+        onClick={onPress}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        {...props}
+        {...rest}
+        style={[
+          {
+            transitionDuration: '150ms',
+            backgroundColor: isHovered ? (isPressed ? '#dddddd' : '#f7f7f7') : undefined,
+          },
+          rest.style,
+        ]}>
+        {children}
+      </Pressable>
+    );
+  }
+
+  return (
+    <TouchableHighlight underlayColor="#dddddd" onPress={onPress} {...props} {...rest}>
+      {children}
+    </TouchableHighlight>
+  );
+}
+
 function ComponentListScreen(props: Props) {
   const navigation = useNavigation();
   React.useEffect(() => {
@@ -36,10 +82,9 @@ function ComponentListScreen(props: Props) {
   const _renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
     return (
-      <TouchableHighlight
-        underlayColor="#dddddd"
-        style={[styles.rowTouchable, { paddingRight: 10 + right }]}
-        onPress={isAvailable ? () => navigation.navigate(route ?? exampleName) : undefined}>
+      <LinkButton
+        to={route ?? exampleName}
+        style={[styles.rowTouchable, { paddingRight: 10 + right }]}>
         <View style={[styles.row, !isAvailable && styles.disabledRow]}>
           {props.renderItemRight && props.renderItemRight(item)}
           <Text style={styles.rowLabel}>{exampleName}</Text>
@@ -47,7 +92,7 @@ function ComponentListScreen(props: Props) {
             <EvilIcons name="chevron-right" size={24} color="#595959" />
           </Text>
         </View>
-      </TouchableHighlight>
+      </LinkButton>
     );
   };
 

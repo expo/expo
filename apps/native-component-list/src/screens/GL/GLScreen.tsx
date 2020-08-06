@@ -5,7 +5,8 @@ import GLScreens from './GLScreens';
 
 const screens = Object.keys(GLScreens).map(name => ({
   name: GLScreens[name].screen.title ?? name,
-  route: name,
+  // route: name,
+  route: `/components/gl/${name.toLowerCase()}`,
   isAvailable: true,
 }));
 export default function GLScreen() {
