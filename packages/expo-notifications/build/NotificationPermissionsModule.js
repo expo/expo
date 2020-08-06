@@ -25,7 +25,7 @@ function convertPermissionStatus(status) {
             };
     }
 }
-async function resolvePermissionAsync(shouldAsk) {
+async function resolvePermissionAsync({ shouldAsk, }) {
     if (!canUseDOM) {
         return convertPermissionStatus('denied');
     }
@@ -37,9 +37,8 @@ async function resolvePermissionAsync(shouldAsk) {
         }
         return convertPermissionStatus(status);
     }
-    else if (typeof navigator === 'undefined' ||
-        typeof navigator.permissions === 'undefined' ||
-        typeof navigator.permissions.query === 'undefined') {
+    else if (typeof navigator !== 'undefined' && navigator?.permissions?.query) {
+        // TODO(Bacon): Support `push` in the future when it's stable.
         const query = await navigator.permissions.query({ name: 'notifications' });
         return convertPermissionStatus(query.state);
     }
@@ -50,10 +49,10 @@ export default {
     addListener: () => { },
     removeListeners: () => { },
     async getPermissionsAsync() {
-        return resolvePermissionAsync(false);
+        return resolvePermissionAsync({ shouldAsk: false });
     },
     async requestPermissionsAsync(request) {
-        return resolvePermissionAsync(true);
+        return resolvePermissionAsync({ shouldAsk: true });
     },
 };
 //# sourceMappingURL=NotificationPermissionsModule.js.map

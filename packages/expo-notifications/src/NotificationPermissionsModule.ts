@@ -35,7 +35,11 @@ function convertPermissionStatus(
   }
 }
 
-async function resolvePermissionAsync(shouldAsk: boolean): Promise<NotificationPermissionsStatus> {
+async function resolvePermissionAsync({
+  shouldAsk,
+}: {
+  shouldAsk: boolean;
+}): Promise<NotificationPermissionsStatus> {
   if (!canUseDOM) {
     return convertPermissionStatus('denied');
   }
@@ -47,11 +51,8 @@ async function resolvePermissionAsync(shouldAsk: boolean): Promise<NotificationP
       status = await Notification.requestPermission();
     }
     return convertPermissionStatus(status);
-  } else if (
-    typeof navigator === 'undefined' ||
-    typeof navigator.permissions === 'undefined' ||
-    typeof navigator.permissions.query === 'undefined'
-  ) {
+  } else if (typeof navigator !== 'undefined' && navigator?.permissions?.query) {
+    // TODO(Bacon): Support `push` in the future when it's stable.
     const query = await navigator.permissions.query({ name: 'notifications' });
     return convertPermissionStatus(query.state);
   }
@@ -63,11 +64,11 @@ export default {
   addListener: () => {},
   removeListeners: () => {},
   async getPermissionsAsync(): Promise<NotificationPermissionsStatus> {
-    return resolvePermissionAsync(false);
+    return resolvePermissionAsync({ shouldAsk: false });
   },
   async requestPermissionsAsync(
     request: NativeNotificationPermissionsRequest
   ): Promise<NotificationPermissionsStatus> {
-    return resolvePermissionAsync(true);
+    return resolvePermissionAsync({ shouldAsk: true });
   },
 } as NotificationPermissionsModule;
