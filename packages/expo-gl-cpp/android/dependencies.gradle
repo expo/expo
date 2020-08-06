@@ -151,7 +151,7 @@ task prepareJSI() {
   copy {
     from("../../../android/ReactCommon/jsi")
     into "$thirdPartyNdkDir/jsi"
-  }  
+  }
 }
 
 task downloadNdkBuildDependencies {
@@ -217,8 +217,8 @@ def findNdkBuildFullPath() {
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
-  if (System.getenv("ANDROID_NDK") != null) {
-    def ndkDir = System.getenv("ANDROID_NDK")
+  if (System.getenv("ANDROID_NDK_HOME") != null) {
+    def ndkDir = System.getenv("ANDROID_NDK_HOME")
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
