@@ -8,6 +8,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 📚 3rd party library updates
 
 - Updated `@react-native-community/datetimepicker` from `2.4.0` to `2.4.3`. ([#9543](https://github.com/expo/expo/pull/9543) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `@react-native-community/netinfo` from `5.9.2` to `5.9.5`. ([#9564](https://github.com/expo/expo/pull/9564) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `@react-native-community/picker` from `1.6.0` to `1.6.5`. ([#9533](https://github.com/expo/expo/pull/9533) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `@react-native-community/segmented-control` from `1.6.1` to `2.1.0`. ([`ae45e23`](https://github.com/expo/expo/commit/ae45e23931745e6973e9d5221bf6837757031ef5), [#9534](https://github.com/expo/expo/pull/9534) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `@react-native-community/slider` from `3.0.0` to `3.0.3`. ([#9532](https://github.com/expo/expo/pull/9532) by [@sjchmiela](https://github.com/sjchmiela))

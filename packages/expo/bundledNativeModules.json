@@ -1,6 +1,6 @@
 {
   "@expo/vector-icons": "^10.0.0",
-  "@react-native-community/netinfo": "5.9.2",
+  "@react-native-community/netinfo": "5.9.5",
   "@react-native-community/async-storage": "~1.11.0",
   "@unimodules/core": "~5.3.0",
   "@unimodules/react-native-adapter": "~5.4.0",
