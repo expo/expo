@@ -134,7 +134,7 @@ export function capture(video, settings, config) {
         capturedPicture.height = height;
         capturedPicture.exif = settings;
     }
-    config.onPictureSaved?.({ nativeEvent: { data: capturedPicture, id: config.id ?? Date.now() } });
+    config.onPictureSaved?.(capturedPicture);
     return capturedPicture;
 }
 export async function syncTrackCapabilities(cameraType, stream, settings = {}) {

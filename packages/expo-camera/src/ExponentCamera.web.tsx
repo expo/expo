@@ -41,7 +41,10 @@ const ExponentCamera = React.forwardRef(
           return native.captureAsync({
             ...options,
             // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
-            onPictureSaved: props.onPictureSaved,
+            onPictureSaved(picture) {
+              options.onPictureSaved?.(picture);
+              props.onPictureSaved?.({ nativeEvent: { data: picture, id: -1 } });
+            },
           });
         },
         async resumePreview(): Promise<void> {

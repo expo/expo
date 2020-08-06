@@ -41,7 +41,7 @@ export declare type CameraPictureOptions = {
     quality?: number;
     base64?: boolean;
     exif?: boolean;
-    onPictureSaved?: PictureSavedListener;
+    onPictureSaved?: (picture: CameraCapturedPicture) => void;
     skipProcessing?: boolean;
     scale?: number;
     imageType?: ImageType;

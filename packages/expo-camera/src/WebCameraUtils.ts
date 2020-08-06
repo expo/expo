@@ -212,7 +212,7 @@ export function capture(
     capturedPicture.exif = settings;
   }
 
-  config.onPictureSaved?.({ nativeEvent: { data: capturedPicture, id: config.id ?? Date.now() } });
+  config.onPictureSaved?.(capturedPicture);
   return capturedPicture;
 }
 

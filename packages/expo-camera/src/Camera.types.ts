@@ -53,7 +53,7 @@ export type CameraPictureOptions = {
   quality?: number;
   base64?: boolean;
   exif?: boolean;
-  onPictureSaved?: PictureSavedListener;
+  onPictureSaved?: (picture: CameraCapturedPicture) => void;
   // TODO(Bacon): Is it possible to implement this in the browser?
   skipProcessing?: boolean;
   // Web-only
