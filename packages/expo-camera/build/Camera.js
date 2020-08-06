@@ -9,7 +9,7 @@ const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 function ensurePictureOptions(options) {
-    let pictureOptions = !options || typeof options !== 'object' ? {} : options;
+    const pictureOptions = !options || typeof options !== 'object' ? {} : options;
     if (!pictureOptions.quality) {
         pictureOptions.quality = 1;
     }

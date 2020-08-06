@@ -9,8 +9,8 @@ import {
   CameraType,
 } from './Camera.types';
 import CameraManager from './ExponentCameraManager.web';
-import { useWebCameraStream } from './useWebCameraStream';
 import { PictureSizes } from './WebConstants';
+import { useWebCameraStream } from './useWebCameraStream';
 
 export interface ExponentCameraRef {
   getAvailablePictureSizes: (ratio: string) => Promise<string[]>;

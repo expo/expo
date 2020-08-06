@@ -9,7 +9,6 @@ import {
   WebCameraSettings,
   CameraPictureOptions,
 } from './Camera.types';
-
 import * as CapabilityUtils from './WebCapabilityUtils';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
 import { requestUserMediaAsync } from './WebUserMediaManager';

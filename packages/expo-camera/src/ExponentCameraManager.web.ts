@@ -1,10 +1,10 @@
 import { CameraCapturedPicture, CameraPictureOptions, CameraType } from './Camera.types';
+import { ExponentCameraRef } from './ExponentCamera.web';
 import {
   canGetUserMedia,
   isBackCameraAvailableAsync,
   isFrontCameraAvailableAsync,
 } from './WebUserMediaManager';
-import { ExponentCameraRef } from './ExponentCamera.web';
 
 export default {
   get name(): string {
