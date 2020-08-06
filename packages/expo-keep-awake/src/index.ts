@@ -5,6 +5,13 @@ import { KeepAwakeEventType } from './ExpoKeepAwake.types';
 
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
+export async function isAvailableAsync(): Promise<boolean> {
+  if (ExpoKeepAwake.isAvailableAsync) {
+    return await ExpoKeepAwake.isAvailableAsync();
+  }
+  return false;
+}
+
 export function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
   useEffect(() => {
     activateKeepAwake(tag);
@@ -15,7 +22,7 @@ export function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
 }
 
 export async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
-  if (!(await ExpoKeepAwake.isAvailableAsync())) {
+  if (!(await isAvailableAsync())) {
     if (__DEV__) {
       console.warn(
         `KeepAwake.activateKeepAwake() was invoked on a device that doesn't support the KeepAwake API.`
@@ -29,7 +36,7 @@ export async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise
 }
 
 export async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
-  if (!(await ExpoKeepAwake.isAvailableAsync())) {
+  if (!(await isAvailableAsync())) {
     if (__DEV__) {
       console.warn(
         `KeepAwake.activateKeepAwake() was invoked on a device that doesn't support the KeepAwake API.`
