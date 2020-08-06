@@ -6,5 +6,5 @@ export interface ExponentCameraRef {
     resumePreview: () => Promise<void>;
     pausePreview: () => Promise<void>;
 }
-declare const ExponentCamera: React.ForwardRefExoticComponent<Pick<CameraNativeProps, "type" | "pictureSize" | "pointerEvents" | "style" | "onCameraReady" | "onMountError" | "onBarCodeScanned" | "onFacesDetected" | "onFaceDetectionError" | "onPictureSaved" | "flashMode" | "autoFocus" | "focusDepth" | "zoom" | "whiteBalance" | "barCodeScannerSettings" | "barCodeScannerEnabled" | "faceDetectorEnabled" | "faceDetectorSettings" | "ratio" | "useCamera2Api"> & React.RefAttributes<ExponentCameraRef>>;
+declare const ExponentCamera: React.ForwardRefExoticComponent<Pick<CameraNativeProps, "pointerEvents" | "style" | "zoom" | "ratio" | "focusDepth" | "type" | "onCameraReady" | "useCamera2Api" | "flashMode" | "whiteBalance" | "autoFocus" | "pictureSize" | "onMountError" | "barCodeScannerSettings" | "onBarCodeScanned" | "faceDetectorSettings" | "onFacesDetected" | "onFaceDetectionError" | "onPictureSaved" | "barCodeScannerEnabled" | "faceDetectorEnabled"> & React.RefAttributes<ExponentCameraRef>>;
 export default ExponentCamera;
