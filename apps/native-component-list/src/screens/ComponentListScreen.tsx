@@ -34,7 +34,6 @@ function LinkButton({
 }: React.ComponentProps<typeof Link> & { children?: React.ReactNode }) {
   const { onPress, ...props } = useLinkProps({ to, action });
 
-  const [isHovered, setIsHovered] = React.useState(false);
   const [isPressed, setIsPressed] = React.useState(false);
 
   if (Platform.OS === 'web') {
@@ -47,14 +46,12 @@ function LinkButton({
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
         onClick={onPress}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         {...props}
         {...rest}
         style={[
           {
             transitionDuration: '150ms',
-            backgroundColor: isHovered ? (isPressed ? '#dddddd' : '#f7f7f7') : undefined,
+            backgroundColor: isPressed ? '#dddddd' : undefined,
           },
           rest.style,
         ]}>
@@ -71,7 +68,6 @@ function LinkButton({
 }
 
 function ComponentListScreen(props: Props) {
-  const navigation = useNavigation();
   React.useEffect(() => {
     StatusBar.setHidden(false);
   }, []);
@@ -82,10 +78,10 @@ function ComponentListScreen(props: Props) {
   const _renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
     return (
-      <LinkButton
-        to={route ?? exampleName}
-        style={[styles.rowTouchable, { paddingRight: 10 + right }]}>
-        <View style={[styles.row, !isAvailable && styles.disabledRow]}>
+      <LinkButton to={route ?? exampleName} style={[styles.rowTouchable]}>
+        <View
+          pointerEvents="none"
+          style={[styles.row, !isAvailable && styles.disabledRow, { paddingRight: 10 + right }]}>
           {props.renderItemRight && props.renderItemRight(item)}
           <Text style={styles.rowLabel}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
@@ -118,6 +114,8 @@ const styles = StyleSheet.create({
     paddingTop: 100,
   },
   row: {
+    paddingHorizontal: 10,
+    paddingVertical: 14,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -127,8 +125,6 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   rowTouchable: {
-    paddingHorizontal: 10,
-    paddingVertical: 14,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#dddddd',
   },
