@@ -1,4 +1,4 @@
-#include <EXGL_CPP/EXiOSUtils.h>
+#include <EXGL_CPP/EXPlatformUtils.h>
 
 void EXiOSLog(const char *msg, ...) {
   va_list args;

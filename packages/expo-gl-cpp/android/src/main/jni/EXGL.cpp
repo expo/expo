@@ -4,36 +4,15 @@
 #include <thread>
 #include <android/log.h>
 
-#include <JavaScriptCore/JSContextRef.h>
-
-
+#include <jsi/jsi.h>
 #include "UEXGL.h"
 
-#ifdef __cplusplus
 extern "C" {
-#endif
-
-JNIEXPORT jint JNICALL
-Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
-(JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
-  JSGlobalContextRef jsCtx = (JSGlobalContextRef) (intptr_t) jsCtxPtr;
-  if (jsCtx) {
-    return UEXGLContextCreate(jsCtx);
-  }
-  return 0;
-}
 
 JNIEXPORT jint JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextCreateV2
-(JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
-  // In react-native 0.59 jsCtxPtr is pointing to runtime object (in case of JSC it's JSCRuntime class)
-  // implementing JSI interface. Real JSC context ref is extracted by offset from that object.
-  // WARNING: This is temporary solution that may break with new react-native releases.
-  JSGlobalContextRef jsCtx = *(reinterpret_cast<JSGlobalContextRef*>(jsCtxPtr)+1);
-  if (jsCtx) {
-    return UEXGLContextCreate(jsCtx);
-  }
-  return 0;
+(JNIEnv *env, jclass clazz, jlong jsiPtr) {
+  return UEXGLContextCreate((void*) jsiPtr);
 }
 
 JNIEXPORT void JNICALL
@@ -97,6 +76,4 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextDrawEnded
   UEXGLContextDrawEnded(exglCtxId);
 }
 
-#ifdef __cplusplus
 }
-#endif
