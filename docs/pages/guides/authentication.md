@@ -44,6 +44,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
   <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
   <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
+  <SocialGridItem title="Splitwise" protocol={['OAuth 2']} href="#splitwise" image="/static/images/sdk/auth-session/splitwise.png" />
   <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
   <SocialGridItem title="Strava" protocol={['OAuth 2']} href="#strava" image="/static/images/sdk/auth-session/strava.png" />
   <SocialGridItem title="Twitch" protocol={['OAuth 2']} href="#twitch" image="/static/images/sdk/auth-session/twitch.png" />
@@ -1573,6 +1574,93 @@ export default function App() {
 </AuthMethodTabSwitcher>
 
 <!-- End Slack -->
+
+### Splitwise
+
+<CreateAppButton name="Splitwise" href="https://secure.splitwise.com/apps/new" />
+
+| Website                        | Provider  | PKCE      | Auto Discovery |
+| ------------------------------ | --------- | --------- | -------------- |
+| [Get Your Config][c-splitwise] | OAuth 2.0 | Supported | Not Available  |
+
+[c-splitwise]: https://secure.splitwise.com/apps/new
+
+- Splitwise apps only allow for 1 callback URL, you'll need a different provider app for each workflow/platform.
+- For more info on setup, see [expo/9597](https://github.com/expo/expo/discussions/9597)
+
+<AuthMethodTabSwitcher tabs={["Implicit"]}>
+<AuthCodeTab>
+
+<SnackInline label='Splitwise Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://secure.splitwise.com/oauth/authorize',
+  tokenEndpoint: 'https://secure.splitwise.com/oauth/token',
+};
+
+const useProxy = false;
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
+      scopes: [],
+      // For usage in managed apps using the proxy
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        // the "redirect" must match your "Authorization Callback Domain" in the Strava dev console.
+        native: 'your.app://redirect',
+        useProxy,
+      }),
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy, windowFeatures: { width: 960, height: 500 } });
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</AuthCodeTab>
+
+</AuthMethodTabSwitcher>
+
+<!-- End Splitwise -->
 
 ### Spotify
 

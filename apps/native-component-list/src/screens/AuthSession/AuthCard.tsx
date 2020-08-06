@@ -15,6 +15,12 @@ const providers: Record<string, any> = {
       'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/facebook.png?raw=true',
     color: '#1877F2',
   },
+  splitwise: {
+    name: 'Splitwise',
+    image:
+      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/splitwise.png?raw=true',
+    color: '#5bc5a7',
+  },
   uber: {
     name: 'Uber',
     image:
@@ -160,7 +166,11 @@ export default function AuthCard({
   status?: string;
   onPress: any;
 }) {
-  const provider = providers[name];
+  const provider = providers[name] || {
+    name,
+    image: 'https://via.placeholder.com/48',
+    color: 'gray',
+  };
   const subtitle = statusToSubtitle[status];
 
   return (

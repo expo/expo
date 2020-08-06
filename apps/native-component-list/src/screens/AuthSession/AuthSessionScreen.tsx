@@ -15,6 +15,33 @@ maybeCompleteAuthSession();
 
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
+function getClientIdForPlatform({
+  // Client without proxy `exp://localhost:19000/--/`
+  clientDev,
+  // Client in prod without proxy `https://auth.expo.io/@you/your-app`
+  clientProd,
+  // web apps with uri scheme `https://localhost:19006`
+  webDev,
+  // web apps deployed to any web URL `https://mywebsite.com`
+  webProd,
+  // Native bare apps with uri scheme `bareexpo://`
+  native,
+}: {
+  native?: string;
+  webDev?: string;
+  webProd?: string;
+  clientDev?: string;
+  clientProd?: string;
+}): string | undefined {
+  if (Platform.OS === 'web') {
+    return __DEV__ ? webDev : webProd;
+  } else if (Constants.appOwnership === 'expo') {
+    // in client
+    return __DEV__ ? clientDev : clientProd;
+  }
+  return native;
+}
+
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
@@ -88,6 +115,7 @@ function AuthSessionProviders(props: {
     Uber,
     Slack,
     FitBit,
+    Splitwise,
     Okta,
     Identity,
     // Azure,
@@ -708,6 +736,47 @@ function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
       request={request}
       result={result}
       promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+// Create app https://secure.splitwise.com/apps/new
+function Splitwise({ redirectUri, prompt, usePKCE, useProxy }: any) {
+  const clientId = getClientIdForPlatform({
+    webDev: 'jrrHYjDzXAfpUZrv6SerhWNlVw4Nkoab7fRGli7O',
+    webProd: 'umlaupQIqy717ULLKKae1hPcP2d2SGy6iHDplec6',
+    native: '88itMpw11Txs0vrXRMXa7u8HYUU2Wq3uTAnpAoWG',
+    clientDev: 'GVAsnKSCQTW4zH7S9ps7LJpXu9TiGhPJSM9fRIGh',
+    clientProd: 'TDbR0DfjlhsAOQP8f6YFrE7TLMf43mkKi0AAlB3B',
+  });
+  if (!clientId) {
+    console.warn('Splitwise is not configured for this platform');
+    return null;
+  }
+
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId,
+      responseType: AuthSession.ResponseType.Token,
+      redirectUri,
+      scopes: [],
+      usePKCE,
+      prompt,
+    },
+    // discovery
+    {
+      authorizationEndpoint: 'https://secure.splitwise.com/oauth/authorize',
+      tokenEndpoint: 'https://secure.splitwise.com/oauth/token',
+    }
+  );
+
+  return (
+    <AuthSection
+      title="splitwise"
+      request={request}
+      result={result}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 960, height: 500 } })}
       useProxy={useProxy}
     />
   );
