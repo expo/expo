@@ -43,9 +43,9 @@
   },
   "devDependencies": {
     "@expo/vector-icons": "^10.1.0",
-    "@react-navigation/core": "^5.10.0",
-    "@react-navigation/native": "^5.5.1",
-    "@react-navigation/stack": "^5.4.1",
+    "@react-navigation/core": "^5.12.3",
+    "@react-navigation/native": "^5.7.3",
+    "@react-navigation/stack": "^5.9.0",
     "expo-font": "~8.2.1",
     "expo-module-scripts": "~1.2.0",
     "react": "16.13.1",

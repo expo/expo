@@ -414,7 +414,7 @@ final class MediaLibraryUtils {
 
   static String getInPart(String assetsId[]) {
     int length = assetsId.length;
-    String array[] = new String[length];
+    String[] array = new String[length];
     Arrays.fill(array, "?");
     return TextUtils.join(",", array);
   }

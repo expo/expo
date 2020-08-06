@@ -203,7 +203,8 @@ export default class CameraScreen extends React.Component<{}, State> {
   };
 
   renderGallery() {
-    return <GalleryScreen onPress={this.toggleView} />;
+    const localPhotos = photos.map(photo => photo.uri);
+    return <GalleryScreen onPress={this.toggleView} photos={localPhotos} />;
   }
 
   renderFaces = () => (

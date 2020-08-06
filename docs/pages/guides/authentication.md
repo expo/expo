@@ -993,7 +993,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
         useProxy,
       }),
       scopes: ['openid', 'profile'],
@@ -1078,7 +1078,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
         useProxy,
       }),
       scopes: ['openid', 'profile'],
@@ -1189,7 +1189,7 @@ export default function App() {
       /* @end */
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
         useProxy,
       }),
       scopes: [
@@ -1725,13 +1725,13 @@ export default function App() {
 
 ### Strava
 
-<CreateAppButton name="Strava" href="https://www.strava.com/settings/apps" />
+<CreateAppButton name="Strava" href="https://www.strava.com/settings/api" />
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
 | [Get Your Config][c-strava] | OAuth 2.0 | Supported | Not Available  |
 
-[c-strava]: https://www.strava.com/settings/apps
+[c-strava]: https://www.strava.com/settings/api
 
 - Learn more about the [Strava API](http://developers.strava.com/docs/reference/).
 - The "Authorization Callback Domain" refers to the final path component of your redirect URI. Ex: In the URI `com.bacon.myapp://redirect` the domain would be `redirect`.

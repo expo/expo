@@ -85,7 +85,7 @@ const screens = [
 export default function ExpoApisScreen() {
   const apis = React.useMemo(() => {
     return screens
-      .map(name => ({ name, isAvailable: !!Screens[name] }))
+      .map(name => ({ name, route: `/apis/${name.toLowerCase()}`, isAvailable: !!Screens[name] }))
       .sort((a, b) => {
         if (a.isAvailable !== b.isAvailable) {
           if (a.isAvailable) {

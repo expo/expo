@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- Fixed validation for input arguments of `getAssetsAsync`. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
+- Fixed bug, where `getAssetsAsync` did not reject on error on Android. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
+
 ## 8.5.0 — 2020-07-29
 
 ### 🎉 New features

@@ -171,6 +171,10 @@ public class ExponentManifest {
     };
   }
 
+  public Uri httpManifestUrl(String manifestUrl) {
+    return httpManifestUrlBuilder(manifestUrl).build();
+  }
+
   private Uri.Builder httpManifestUrlBuilder(String manifestUrl) {
     String realManifestUrl = manifestUrl;
     if (manifestUrl.contains(REDIRECT_SNIPPET)) {

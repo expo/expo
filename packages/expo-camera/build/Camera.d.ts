@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError } from './Camera.types';
+import { BarCodeScanningResult, CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, FaceDetectionResult, PermissionExpiration, PermissionResponse, PermissionStatus } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     static isAvailableAsync(): Promise<boolean>;
     static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
