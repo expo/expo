@@ -2,11 +2,11 @@ package expo.modules.devmenu.managers
 
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 
-class DebugDevMenuActivityManager : DevMenuActivityManager() {
+class DebugBundlerManager {
   private var devServerPort = AndroidInfoHelpers.sDevServerPortOverride
   private var applicationBundler = true
 
-  override fun switchBundler() = synchronized(this) {
+  fun switchBundler() = synchronized(this) {
     if (applicationBundler) {
       devServerPort = AndroidInfoHelpers.sDevServerPortOverride
       AndroidInfoHelpers.sDevServerPortOverride = 2137

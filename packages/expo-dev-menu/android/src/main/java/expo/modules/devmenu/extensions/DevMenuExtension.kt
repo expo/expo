@@ -9,7 +9,7 @@ import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
 import expo.modules.devmenu.extensions.items.ItemImportance
 import expo.modules.devmenu.managers.DevMenuManager
-
+import expo.modules.devmenu.protocoles.DevMenuExtensionProtocol
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionProtocol {
@@ -32,11 +32,14 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
         getDevSupportManager()?.toggleElementInspector()
       }
     }.apply {
-      isEnabled = { !(getDevSupportManager()?.devSettings?.isElementInspectorEnabled ?: true) }
+      isEnabled = {
+        getDevSupportManager()?.devSettings?.isElementInspectorEnabled ?: false
+      }
       label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
       glyphName = { "border-style" }
       importance = ItemImportance.HIGH.value
     }
+
 
     val performanceMonitorAction = DevMenuAction("performance-monitor") {
       runWithDevSettingEnabled {
@@ -44,8 +47,9 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
         getDevSupportManager()?.setFpsDebugEnabled(!fpsDebug)
       }
     }.apply {
-      val fpsDebug = getDevSupportManager()?.devSettings?.isFpsDebugEnabled ?: false
-      isEnabled = { fpsDebug }
+      isEnabled = {
+        getDevSupportManager()?.devSettings?.isFpsDebugEnabled ?: false
+      }
       label = { if (isEnabled()) "Hide Performance Monitor" else "Show Performance Monitor" }
       glyphName = { "speedometer" }
       importance = ItemImportance.HIGH.value
@@ -61,7 +65,9 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
         }
       }
     }.apply {
-      isEnabled = { getDevSupportManager()?.devSettings?.isRemoteJSDebugEnabled ?: false }
+      isEnabled = {
+        getDevSupportManager()?.devSettings?.isRemoteJSDebugEnabled ?: false
+      }
       label = { if (isEnabled()) "Stop Remote Debugging" else "Debug Remote JS" }
       glyphName = { "remote-desktop" }
       importance = ItemImportance.LOW.value
@@ -75,10 +81,10 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
         }
       }
     }.apply {
-      val isHotModuleEnable = (getDevSupportManager()?.devSettings as? DevInternalSettings)?.isHotModuleReplacementEnabled
-        ?: false
-
-      isEnabled = { isHotModuleEnable }
+      isEnabled = {
+        (getDevSupportManager()?.devSettings as? DevInternalSettings)?.isHotModuleReplacementEnabled
+          ?: false
+      }
       label = { if (isEnabled()) "Disable Fast Refresh" else "Enable Fast Refresh" }
       glyphName = { "run-fast" }
       importance = ItemImportance.LOW.value

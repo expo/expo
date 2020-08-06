@@ -2,27 +2,31 @@ package expo.modules.devmenu.managers
 
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.modules.devmenu.BuildConfig
-import expo.modules.devmenu.DevMenuDelegateProtocol
+import expo.modules.devmenu.DevMenuActivity
 import expo.modules.devmenu.DevMenuSession
-import expo.modules.devmenu.extensions.DevMenuExtensionProtocol
+import expo.modules.devmenu.modules.DevMenuSettings
 import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
-import expo.modules.devmenu.modules.DevMenuHost
+import expo.modules.devmenu.DevMenuHost
+import expo.modules.devmenu.protocoles.DevMenuDelegateProtocol
+import expo.modules.devmenu.protocoles.DevMenuExtensionProtocol
 import org.unimodules.adapters.react.ModuleRegistryAdapter
 import org.unimodules.adapters.react.ReactModuleRegistryProvider
 import org.unimodules.core.interfaces.Package
 
-object DevMenuManager {
-  private val devMenuActivityManager =
+object DevMenuManager : LifecycleEventListener {
+  private val bundlerManager =
     if (BuildConfig.DEBUG) {
-      DebugDevMenuActivityManager()
+      DebugBundlerManager()
     } else {
-      DevMenuActivityManager()
+      null
     }
   private var session: DevMenuSession? = null
   private var delegate: DevMenuDelegateProtocol? = null
@@ -45,13 +49,18 @@ object DevMenuManager {
     val packages = getReactModules(devMenuHost).toMutableList()
     packages.add(ModuleRegistryAdapter(ReactModuleRegistryProvider(getExpoModules(application) as List<Package>)))
     devMenuHost.setPackages(packages as List<ReactPackage>)
+
+    devMenuHost.reactInstanceManager.addReactInstanceEventListener {
+      it.addLifecycleEventListener(this)
+    }
   }
 
   fun getDevMenuHost() = devMenuHost
 
   fun openMenu(activity: Activity) {
     session = DevMenuSession(delegate!!.reactInstanceManager(), delegate!!.appInfo())
-    devMenuActivityManager.openMenu(activity)
+    bundlerManager?.switchBundler()
+    activity.startActivity(Intent(activity, DevMenuActivity::class.java))
   }
 
   fun getSession() = session
@@ -62,20 +71,25 @@ object DevMenuManager {
       ?.emit("closeDevMenu", null)
   }
 
-  fun getDevMenuLifecycleHandler() = devMenuActivityManager
-
   fun hideMenu() {
-    devMenuActivityManager.hideMenu()
+    devMenuHost.reactInstanceManager?.currentReactContext?.currentActivity?.finish()
   }
 
   fun runWithApplicationBundler(action: () -> Unit) = synchronized(this) {
-    devMenuActivityManager.switchBundler()
+    bundlerManager?.switchBundler()
     action()
-    devMenuActivityManager.switchBundler()
+    bundlerManager?.switchBundler()
   }
 
   fun setDelegate(newDelegate: DevMenuDelegateProtocol) {
     delegate = newDelegate
+    delegate?.reactInstanceManager()?.addReactInstanceEventListener {
+      if (it.getNativeModule(DevMenuSettings::class.java).showsAtLaunch) {
+        delegate?.reactInstanceManager()?.currentReactContext?.currentActivity?.let { activity ->
+          openMenu(activity)
+        }
+      }
+    }
   }
 
   fun serializedDevMenuItems(): List<Bundle> = devMenuItems.map { it.serialize() }
@@ -88,8 +102,15 @@ object DevMenuManager {
       }
     }
   }
-}
 
+  override fun onHostResume() = Unit
+
+  override fun onHostPause() = Unit
+
+  override fun onHostDestroy() {
+    bundlerManager?.switchBundler()
+  }
+}
 
 fun getExpoModules(application: Application): List<*> {
   val basePackageListClass = Class.forName(application.packageName + ".generated.BasePackageList")

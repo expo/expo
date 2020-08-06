@@ -1,4 +1,4 @@
-package expo.modules.devmenu.extensions
+package expo.modules.devmenu.protocoles
 
 import expo.modules.devmenu.extensions.items.DevMenuItem
 

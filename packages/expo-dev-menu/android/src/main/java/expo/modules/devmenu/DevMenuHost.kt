@@ -1,9 +1,8 @@
-package expo.modules.devmenu.modules
+package expo.modules.devmenu
 
 import android.app.Application
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import expo.modules.devmenu.BuildConfig
 
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
   private lateinit var reactPackages: List<ReactPackage>

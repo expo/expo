@@ -9,14 +9,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
 import expo.modules.devmenu.managers.DevMenuManager
 import java.util.*
 
-
 class DevMenuActivity : ReactActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    DevMenuManager.getDevMenuLifecycleHandler().devMenuHasBeenOpened(this)
-  }
-
   override fun getMainComponentName() = "main"
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
@@ -39,11 +32,6 @@ class DevMenuActivity : ReactActivity() {
     }
   }
 
-  override fun onDestroy() {
-    super.onDestroy()
-    DevMenuManager.getDevMenuLifecycleHandler().devMenuHasBeenDestroyed()
-  }
-
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
     when (keyCode) {
       KeyEvent.KEYCODE_T -> {
@@ -58,4 +46,5 @@ class DevMenuActivity : ReactActivity() {
     super.onPause()
     overridePendingTransition(0, 0)
   }
+
 }

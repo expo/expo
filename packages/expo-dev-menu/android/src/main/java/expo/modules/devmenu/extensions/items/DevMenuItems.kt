@@ -2,7 +2,6 @@ package expo.modules.devmenu.extensions.items
 
 import android.os.Bundle
 
-
 sealed class DevMenuItem {
   var isAvailable = { true }
   var isEnabled = { false }
