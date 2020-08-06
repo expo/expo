@@ -93,6 +93,10 @@ export default class NotificationScreen extends React.Component<
             {JSON.stringify(this.state.lastNotifications, null, 2)}
           </MonoText>
         )}
+
+        <HeadingText>Notification Permissions</HeadingText>
+        <ListButton onPress={this.getPermissionsAsync} title="Get permissions" />
+        <ListButton onPress={this.requestPermissionsAsync} title="Request permissions" />
       </ScrollView>
     );
   }
@@ -112,6 +116,17 @@ export default class NotificationScreen extends React.Component<
     // if after backgrounding the app and then clicking on a notification
     // to foreground the app
     setTimeout(() => Alert.alert('You clicked on the notification 🥇'), 1000);
+  };
+
+  private getPermissionsAsync = async () => {
+    const permission = await Notifications.getPermissionsAsync();
+    console.log('Get permission: ', permission);
+    alert(`Status: ${permission.status}`);
+  };
+
+  private requestPermissionsAsync = async () => {
+    const permission = await Notifications.requestPermissionsAsync();
+    alert(`Status: ${permission.status}`);
   };
 
   _obtainUserFacingNotifPermissionsAsync = async () => {
