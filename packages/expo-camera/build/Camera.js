@@ -4,17 +4,12 @@ import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 import { PermissionStatus, } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
-import _CameraManager from './ExponentCameraManager';
-// TODO: Bacon: Fix multiplatform
-const CameraManager = _CameraManager;
+import CameraManager from './ExponentCameraManager';
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 function ensurePictureOptions(options) {
-    let pictureOptions = options || {};
-    if (!pictureOptions || typeof pictureOptions !== 'object') {
-        pictureOptions = {};
-    }
+    const pictureOptions = !options || typeof options !== 'object' ? {} : options;
     if (!pictureOptions.quality) {
         pictureOptions.quality = 1;
     }
@@ -45,7 +40,9 @@ function ensureNativeProps(options) {
     const propsKeys = Object.keys(newProps);
     // barCodeTypes is deprecated
     if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-        console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
+        if (__DEV__) {
+            console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
+        }
         newProps.barCodeScannerSettings = {
             // @ts-ignore
             barCodeTypes: newProps.barCodeTypes,
@@ -110,7 +107,7 @@ let Camera = /** @class */ (() => {
             this._setReference = (ref) => {
                 if (ref) {
                     this._cameraRef = ref;
-                    // TODO: Bacon: Unify these
+                    // TODO(Bacon): Unify these - perhaps with hooks?
                     if (Platform.OS === 'web') {
                         this._cameraHandle = ref;
                     }

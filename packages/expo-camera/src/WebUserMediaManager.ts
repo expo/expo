@@ -1,7 +1,11 @@
 /* eslint-env browser */
+/**
+ * A web-only module for ponyfilling the UserMedia API.
+ */
 import { Platform } from '@unimodules/core';
 
 export const userMediaRequested: boolean = false;
+
 export const mountedInstances: any[] = [];
 
 async function requestLegacyUserMediaAsync(props): Promise<any[]> {

@@ -15,4 +15,3 @@ export {
   FaceDetectionResult,
   CameraMountError,
 } from './Camera';
-export * from './CameraModule/CameraModule.types';

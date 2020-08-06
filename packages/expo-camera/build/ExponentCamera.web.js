@@ -1,103 +1,62 @@
-import React, { forwardRef } from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
+import * as React from 'react';
+import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
-import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
-export default class ExponentCamera extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.state = { type: null };
-        this._updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }) => {
-            const { camera } = this;
-            if (!camera) {
-                return;
-            }
-            await camera.setTypeAsync(type);
-            await camera.updateWebCameraSettingsAsync(webCameraSettings);
-            // await camera.setPictureSize(pictureSize as string);
-            await camera.ensureCameraIsRunningAsync();
-            const actualCameraType = camera.getActualCameraType();
-            if (actualCameraType !== this.state.type) {
-                this.setState({ type: actualCameraType });
-            }
-        };
-        this.getCamera = () => {
-            if (this.camera) {
-                return this.camera;
-            }
-            throw new Error('Camera is not defined yet!');
-        };
-        this.getAvailablePictureSizes = async (ratio) => {
-            const camera = this.getCamera();
-            return camera.getAvailablePictureSizes(ratio);
-        };
-        this.takePicture = async (options) => {
-            const camera = this.getCamera();
-            return camera.takePicture({
+import { PictureSizes } from './WebConstants';
+import { useWebCameraStream } from './useWebCameraStream';
+const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) => {
+    const video = React.useRef(null);
+    const native = useWebCameraStream(video, type, props, {
+        onCameraReady: props.onCameraReady,
+        onMountError: props.onMountError,
+    });
+    React.useImperativeHandle(ref, () => ({
+        async getAvailablePictureSizes(ratio) {
+            return PictureSizes;
+        },
+        async takePicture(options) {
+            return native.captureAsync({
                 ...options,
                 // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
-                onPictureSaved: this.props.onPictureSaved,
+                onPictureSaved(picture) {
+                    if (options.onPictureSaved) {
+                        options.onPictureSaved(picture);
+                    }
+                    if (props.onPictureSaved) {
+                        props.onPictureSaved({ nativeEvent: { data: picture, id: -1 } });
+                    }
+                },
             });
-        };
-        this.resumePreview = async () => {
-            const camera = this.getCamera();
-            await camera.resumePreview();
-        };
-        this.pausePreview = async () => {
-            const camera = this.getCamera();
-            await camera.stopAsync();
-        };
-        this.onCameraReady = () => {
-            if (this.props.onCameraReady) {
-                this.props.onCameraReady();
-            }
-        };
-        this.onMountError = ({ nativeEvent }) => {
-            if (this.props.onMountError) {
-                this.props.onMountError({ nativeEvent });
-            }
-        };
-        this._setRef = ref => {
-            if (!ref) {
-                this.video = null;
-                if (this.camera) {
-                    this.camera.stopAsync();
-                    this.camera = undefined;
-                }
-                return;
-            }
-            this.video = findNodeHandle(ref);
-            this.video.webkitPlaysinline = true;
-            this.camera = new CameraModule(ref);
-            this.camera.onCameraReady = this.onCameraReady;
-            this.camera.onMountError = this.onMountError;
-            this._updateCameraProps(this.props);
-        };
-    }
-    componentWillUnmount() {
-        if (this.camera) {
-            this.camera.stopAsync();
-        }
-    }
-    componentDidUpdate(nextProps) {
-        this._updateCameraProps(nextProps);
-    }
-    render() {
-        const { pointerEvents } = this.props;
-        // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
-        // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
-        const isMuted = true;
-        const isFrontFacingCamera = this.state.type === CameraManager.Type.front;
-        const style = {
-            // Flip the camera
-            transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
-        };
-        return (React.createElement(View, { pointerEvents: "box-none", style: [styles.videoWrapper, this.props.style] },
-            React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, pointerEvents: pointerEvents, ref: this._setRef, style: [StyleSheet.absoluteFill, styles.video, style] }),
-            this.props.children));
-    }
-}
-const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
+        },
+        async resumePreview() {
+            await native.resumeAsync();
+        },
+        async pausePreview() {
+            await native.stopAsync();
+        },
+    }), [native.captureAsync, native.stopAsync, native.resumeAsync, props.onPictureSaved]);
+    // TODO(Bacon): Create a universal prop, on native the microphone is only used when recording videos.
+    // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
+    const isMuted = true;
+    const style = React.useMemo(() => {
+        const isFrontFacingCamera = native.type === CameraManager.Type.front;
+        return [
+            StyleSheet.absoluteFill,
+            styles.video,
+            {
+                // Flip the camera
+                transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
+            },
+        ];
+    }, [native.type]);
+    return (React.createElement(View, { pointerEvents: "box-none", style: [styles.videoWrapper, props.style] },
+        React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, 
+            // webkitPlaysinline
+            pointerEvents: props.pointerEvents, ref: video, style: style }),
+        props.children));
+});
+export default ExponentCamera;
+const Video = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
 const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,
