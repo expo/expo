@@ -105,13 +105,12 @@ export default class CameraScreen extends React.Component<{}, State> {
   camera?: Camera;
 
   async componentDidMount() {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ permission: status, permissionsGranted: status === 'granted' });
 
+    if (Platform.OS === 'web') {
+      return;
+    }
     try {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
     } catch (error) {
@@ -204,7 +203,8 @@ export default class CameraScreen extends React.Component<{}, State> {
   };
 
   renderGallery() {
-    return <GalleryScreen onPress={this.toggleView} />;
+    const localPhotos = photos.map(photo => photo.uri);
+    return <GalleryScreen onPress={this.toggleView} photos={localPhotos} />;
   }
 
   renderFaces = () => (

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
   View,
+  Platform,
 } from 'react-native';
 
 import Photo from './Photo';
@@ -17,19 +18,39 @@ import Photo from './Photo';
 const PHOTOS_DIR = FileSystem.documentDirectory + 'photos';
 
 interface State {
-  photos: string[];
   selected: string[];
 }
 
-export default class GalleryScreen extends React.Component<TouchableOpacityProps, State> {
-  readonly state: State = {
-    photos: [],
-    selected: [],
-  };
+function useLoadedPhotos() {
+  const [photos, setPhotos] = React.useState<string[]>([]);
 
-  componentDidMount = async () => {
-    const photos = await FileSystem.readDirectoryAsync(PHOTOS_DIR);
-    this.setState({ photos });
+  React.useEffect(() => {
+    let isMounted = true;
+    if (Platform.OS !== 'web') {
+      FileSystem.readDirectoryAsync(PHOTOS_DIR).then(photos => {
+        if (isMounted) {
+          setPhotos(photos);
+        }
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+  return photos;
+}
+
+export default function GalleryScreen(props: TouchableOpacityProps & { photos?: string[] }) {
+  const photos = useLoadedPhotos();
+  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : props.photos ?? []} />;
+}
+
+class LoadedGalleryScreen extends React.Component<
+  TouchableOpacityProps & { photos: string[] },
+  State
+> {
+  readonly state: State = {
+    selected: [],
   };
 
   toggleSelection = (uri: string, isSelected: boolean) => {
@@ -66,7 +87,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
   renderPhoto = (fileName: string) => (
     <Photo
       key={fileName}
-      uri={`${PHOTOS_DIR}/${fileName}`}
+      uri={Platform.select({ web: fileName, default: `${PHOTOS_DIR}/${fileName}` })}
       onSelectionToggle={this.toggleSelection}
     />
   );
@@ -83,7 +104,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
           </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={{ flex: 1 }}>
-          <View style={styles.pictures}>{this.state.photos.map(this.renderPhoto)}</View>
+          <View style={styles.pictures}>{this.props.photos.map(this.renderPhoto)}</View>
         </ScrollView>
       </View>
     );
