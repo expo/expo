@@ -456,17 +456,17 @@ PODS:
     - React
   - react-native-netinfo (5.9.2):
     - React
-  - react-native-safe-area-context (3.0.2):
+  - react-native-safe-area-context (3.1.1):
     - React
-  - react-native-segmented-control (1.6.1):
+  - react-native-segmented-control (2.1.0):
     - React
-  - react-native-slider (3.0.0):
+  - react-native-slider (3.0.3):
     - React
   - react-native-view-shot (3.1.2):
     - React
-  - react-native-viewpager (3.3.0):
+  - react-native-viewpager (4.1.3):
     - React
-  - react-native-webview (9.4.0):
+  - react-native-webview (10.3.3):
     - React
   - React-RCTActionSheet (0.63.2):
     - React-Core/RCTActionSheetHeaders (= 0.63.2)
@@ -532,9 +532,9 @@ PODS:
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPicker (1.6.0):
+  - RNCPicker (1.6.5):
     - React
-  - RNDateTimePicker (2.4.0):
+  - RNDateTimePicker (2.4.3):
     - React
   - RNGestureHandler (1.6.1):
     - React
@@ -1040,12 +1040,12 @@ SPEC CHECKSUMS:
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
   react-native-netinfo: cb74e17062b2af5a16a4b137f32495f241df1a8e
-  react-native-safe-area-context: b11a34881faac509cad5578726c98161ad4d275c
-  react-native-segmented-control: d7c444e5cc5f526da766f8ff24346898b7ac7be5
-  react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
+  react-native-safe-area-context: 344b969c45af3d8464d36e8dea264942992ef033
+  react-native-segmented-control: 4ce904755f67bf17d5250d265d57e40db045ac34
+  react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
-  react-native-viewpager: a7b438ca32c57b2614ece2a123e7fe116f743131
-  react-native-webview: cf5527893252b3b036eea024a1da6996f7344c74
+  react-native-viewpager: fdf68386dfb6fc4e702f32d054e662ae9a7f11c2
+  react-native-webview: 136107c8fc07efc95be59e519710cdc05822ad40
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
   React-RCTBlob: 39cf0ece1927996c4466510e25d2105f67010e13
@@ -1058,8 +1058,8 @@ SPEC CHECKSUMS:
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPicker: bab63e6fed69ac6122fcd9993209b6854de46d0b
-  RNDateTimePicker: c4285bfdd87430f1e575b81a4742b7586a09d53e
+  RNCPicker: 55b9b4240d0a9eba8733d02616775d4040de2e7d
+  RNDateTimePicker: 6cba311a3ba473624d97cc762fd270b2a3cfca49
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNReanimated: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
