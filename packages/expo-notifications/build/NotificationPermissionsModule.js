@@ -29,6 +29,7 @@ async function resolvePermissionAsync(shouldAsk) {
     if (!canUseDOM) {
         return convertPermissionStatus('denied');
     }
+    const { Notification = {} } = window;
     if (typeof Notification.requestPermission !== 'undefined') {
         let status = Notification.permission;
         if (shouldAsk) {

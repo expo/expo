@@ -40,6 +40,7 @@ async function resolvePermissionAsync(shouldAsk: boolean): Promise<NotificationP
     return convertPermissionStatus('denied');
   }
 
+  const { Notification = {} } = window as any;
   if (typeof Notification.requestPermission !== 'undefined') {
     let status = Notification.permission;
     if (shouldAsk) {
