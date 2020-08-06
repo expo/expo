@@ -79,8 +79,9 @@ export function getIdealConstraints(preferredCameraType, width, height) {
     }
     const supports = getSupportedConstraints();
     // TODO(Bacon): Test this
-    if (!supports || !supports.facingMode || !supports.width || !supports.height)
+    if (!supports || !supports.facingMode || !supports.width || !supports.height) {
         return MinimumConstraints;
+    }
     if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
         const facingMode = CameraTypeToFacingMode[preferredCameraType];
         if (isWebKit()) {

@@ -95,7 +95,9 @@ export function useWebCameraStream(
     const changes: WebCameraSettings = {};
 
     for (const key of Object.keys(settings)) {
-      if (!VALID_SETTINGS_KEYS.includes(key)) continue;
+      if (!VALID_SETTINGS_KEYS.includes(key)) {
+        continue;
+      }
       const nextValue = settings[key];
       if (nextValue !== capabilities.current[key]) {
         changes[key] = nextValue;

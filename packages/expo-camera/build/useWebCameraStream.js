@@ -62,8 +62,9 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
     React.useEffect(() => {
         const changes = {};
         for (const key of Object.keys(settings)) {
-            if (!VALID_SETTINGS_KEYS.includes(key))
+            if (!VALID_SETTINGS_KEYS.includes(key)) {
                 continue;
+            }
             const nextValue = settings[key];
             if (nextValue !== capabilities.current[key]) {
                 changes[key] = nextValue;
