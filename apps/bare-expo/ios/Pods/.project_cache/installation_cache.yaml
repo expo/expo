@@ -1830,7 +1830,7 @@ CACHE_KEYS:
       react-native-netinfo:
         :debug: 258e261d8f10e84f941138cfdc4fb9c3
         :release: 258e261d8f10e84f941138cfdc4fb9c3
-    CHECKSUM: cb74e17062b2af5a16a4b137f32495f241df1a8e
+    CHECKSUM: a53b00d949b6456913aaf507d9dba90c4008c611
     FILES:
       - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionState.h"
       - "../../../../node_modules/@react-native-community/netinfo/ios/RNCConnectionState.m"
@@ -1842,7 +1842,7 @@ CACHE_KEYS:
       - "../../../../node_modules/@react-native-community/netinfo/README.md"
     PROJECT_NAME: react-native-netinfo
     SPECS:
-      - react-native-netinfo (5.9.2)
+      - react-native-netinfo (5.9.5)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context:
