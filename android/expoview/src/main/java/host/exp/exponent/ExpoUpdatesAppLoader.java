@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.facebook.react.bridge.WritableMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,8 +16,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -33,16 +30,12 @@ import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.analytics.Analytics;
-import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.expoview.ExpoViewBuildConfig;
-import host.exp.expoview.Exponent;
 
 public abstract class ExpoUpdatesAppLoader {
 
@@ -128,38 +121,6 @@ public abstract class ExpoUpdatesAppLoader {
     startLoaderTask(configuration, directory, selectionPolicy);
   }
 
-  private void startDevelopmentLoad() {
-    Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
-
-    HashMap<String, Object> configMap = new HashMap<>();
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
-
-    UpdatesConfiguration configuration = new UpdatesConfiguration();
-    configuration.loadValuesFromMap(configMap);
-
-    FileDownloader.downloadManifest(configuration, mContext, new FileDownloader.ManifestDownloadCallback() {
-      @Override
-      public void onFailure(String message, Exception e) {
-        onError(e);
-      }
-
-      @Override
-      public void onSuccess(Manifest manifest) {
-        try {
-          JSONObject manifestJson = processAndSaveManifest(manifest.getRawManifestJson());
-          onManifestCompleted(manifestJson);
-          // ReactAndroid will load the bundle on its own in development mode, so we don't need to
-          // call onBundleCompleted()
-        } catch (Exception e) {
-          onError(e);
-        }
-      }
-    });
-  }
-
   private void startLoaderTask(final UpdatesConfiguration configuration, final File directory, final SelectionPolicy selectionPolicy) {
     new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
       @Override
@@ -195,8 +156,21 @@ public abstract class ExpoUpdatesAppLoader {
       }
 
       @Override
-      public void onRemoteManifestLoaded(Manifest manifest) {
+      public boolean onRemoteManifestLoaded(Manifest manifest) {
+        if (isDevelopmentMode(manifest.getRawManifestJson())) {
+          try {
+            JSONObject manifestJson = processAndSaveManifest(manifest.getRawManifestJson());
+            onManifestCompleted(manifestJson);
+            // ReactAndroid will load the bundle on its own in development mode, so we don't need to
+            // call onBundleCompleted()
+          } catch (Exception e) {
+            onError(e);
+          }
+          return false;
+        }
+
         onOptimisticManifest(manifest.getRawManifestJson());
+        return true;
       }
 
       @Override
@@ -230,6 +204,38 @@ public abstract class ExpoUpdatesAppLoader {
         }
       }
     }).start(mContext);
+  }
+
+  private void startDevelopmentLoad() {
+    Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
+
+    HashMap<String, Object> configMap = new HashMap<>();
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
+
+    UpdatesConfiguration configuration = new UpdatesConfiguration();
+    configuration.loadValuesFromMap(configMap);
+
+    FileDownloader.downloadManifest(configuration, mContext, new FileDownloader.ManifestDownloadCallback() {
+      @Override
+      public void onFailure(String message, Exception e) {
+        onError(e);
+      }
+
+      @Override
+      public void onSuccess(Manifest manifest) {
+        try {
+          JSONObject manifestJson = processAndSaveManifest(manifest.getRawManifestJson());
+          onManifestCompleted(manifestJson);
+          // ReactAndroid will load the bundle on its own in development mode, so we don't need to
+          // call onBundleCompleted()
+        } catch (Exception e) {
+          onError(e);
+        }
+      }
+    });
   }
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
