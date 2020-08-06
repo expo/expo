@@ -97,9 +97,12 @@ public class SegmentModule extends ExportedModule {
       String integrationKey = integration.getKey();
       if (integration.getValue() instanceof Map) {
         Map integrationOptions = (Map) integration.getValue();
-        if (integrationOptions.get("enabled") instanceof Double) {
-          boolean enabled = (Double) integrationOptions.get("enabled") > 0;
+        if (integrationOptions.get("enabled") instanceof Boolean) {
+          boolean enabled = (Boolean) integrationOptions.get("enabled");
           options.setIntegration(integrationKey, enabled);
+        } else if (integrationOptions.get("enabled") instanceof String) {
+          String enabled = (String) integrationOptions.get("enabled");
+          options.setIntegration(integrationKey, Boolean.valueOf(enabled));
         }
         if (integrationOptions.get("options") instanceof Map) {
           Map<String, Object> jsonOptions = coalesceAnonymousMapToJsonObject((Map) integrationOptions.get("options"));
