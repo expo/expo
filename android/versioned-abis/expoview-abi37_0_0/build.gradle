@@ -40,7 +40,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 1
     versionName "1.0"
   }
@@ -111,7 +111,7 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
-  
+
   // react-native-screens
   api 'androidx.fragment:fragment:1.2.2'
   api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'

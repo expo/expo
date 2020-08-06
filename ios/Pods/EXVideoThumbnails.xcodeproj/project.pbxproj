@@ -213,30 +213,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		22AB9D3F6DD85960B5794724638EA783 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7FB6916DBB84A9AC54A01EC4EBE9BF1E /* EXVideoThumbnails.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXVideoThumbnails;
-				PRODUCT_NAME = EXVideoThumbnails;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		30C9E94EF4C6F58194539B5F317E2E1B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -297,7 +273,32 @@
 			};
 			name = Release;
 		};
-		9EF04D0476FBEFCB1FB8B5F968FE5F0A /* Release */ = {
+		597BEFE8649B68E53C477AE73F3AD755 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7FB6916DBB84A9AC54A01EC4EBE9BF1E /* EXVideoThumbnails.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXVideoThumbnails;
+				PRODUCT_NAME = EXVideoThumbnails;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E8403E7B2020C38004F4309D86CAEEB4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 94F6A6A49B9500417A2818639F506903 /* EXVideoThumbnails.release.xcconfig */;
 			buildSettings = {
@@ -317,6 +318,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -392,8 +394,8 @@
 		763B63C6701CEFABF4822347C37A33C9 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				22AB9D3F6DD85960B5794724638EA783 /* Debug */,
-				9EF04D0476FBEFCB1FB8B5F968FE5F0A /* Release */,
+				597BEFE8649B68E53C477AE73F3AD755 /* Debug */,
+				E8403E7B2020C38004F4309D86CAEEB4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

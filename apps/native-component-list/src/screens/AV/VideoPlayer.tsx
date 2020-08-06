@@ -1,3 +1,4 @@
+import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { Video, AVPlaybackStatus, VideoFullscreenUpdateEvent } from 'expo-av';
 import React from 'react';
@@ -41,12 +42,17 @@ export default class VideoPlayer extends React.Component<
   };
 
   _video?: Video;
+  private prevStatus?: AVPlaybackStatus;
 
   _handleError = (errorMessage: string) => this.setState({ errorMessage });
 
   _handleVideoMount = (ref: Video) => (this._video = ref);
 
-  _handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => this.setState({ status });
+  _handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    console.log('onPlaybackStatusUpdate: ', diff(this.prevStatus || {}, status));
+    this.prevStatus = status;
+    this.setState({ status });
+  };
 
   _handleFullScreenUpdate = (event: VideoFullscreenUpdateEvent) =>
     console.log('onFullscreenUpdate', event);

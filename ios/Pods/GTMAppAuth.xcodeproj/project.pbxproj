@@ -231,7 +231,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		8E2CFCF185FA7849054CF3ABFFFC4779 /* Release */ = {
+		166AB7B62FAA0D8F1B9A6D12F4A90150 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5964196DCDA18D9250CF3071358A7C66 /* GTMAppAuth.release.xcconfig */;
 			buildSettings = {
@@ -250,10 +250,35 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		2C7FC14F25A3A65CE98A305E915F45B7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CD0C4562A616134A54C890ADCFD443C1 /* GTMAppAuth.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/GTMAppAuth/GTMAppAuth-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = GTMAppAuth;
+				PRODUCT_NAME = GTMAppAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		ADEAB9CE2A4D51ED27559F51F4D50648 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -314,29 +339,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		DA462EB2A9D0A68C4CC128F19ED8B49F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD0C4562A616134A54C890ADCFD443C1 /* GTMAppAuth.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/GTMAppAuth/GTMAppAuth-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = GTMAppAuth;
-				PRODUCT_NAME = GTMAppAuth;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		FAFC3E8DA10DE6E8631D300B19BB4125 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -417,8 +419,8 @@
 		A2C25B2304AAC87D7EAAF8071E103817 /* Build configuration list for PBXNativeTarget "GTMAppAuth" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DA462EB2A9D0A68C4CC128F19ED8B49F /* Debug */,
-				8E2CFCF185FA7849054CF3ABFFFC4779 /* Release */,
+				2C7FC14F25A3A65CE98A305E915F45B7 /* Debug */,
+				166AB7B62FAA0D8F1B9A6D12F4A90150 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

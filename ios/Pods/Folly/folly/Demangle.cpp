@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include <cstring>
 
 #include <folly/detail/Demangle.h>
+#include <folly/lang/CString.h>
 #include <folly/portability/Config.h>
 
 #if FOLLY_DETAIL_HAVE_DEMANGLE_H
@@ -33,6 +34,9 @@ namespace folly {
 #if FOLLY_DETAIL_HAVE_DEMANGLE_H
 
 fbstring demangle(const char* name) {
+  if (!name) {
+    return fbstring();
+  }
 #ifdef FOLLY_DEMANGLE_MAX_SYMBOL_SIZE
   // GCC's __cxa_demangle() uses on-stack data structures for the
   // parser state which are linear in the number of components of the
@@ -117,15 +121,5 @@ size_t demangle(const char* name, char* out, size_t outSize) {
 }
 
 #endif
-
-size_t strlcpy(char* dest, const char* const src, size_t size) {
-  size_t len = strlen(src);
-  if (size != 0) {
-    size_t n = std::min(len, size - 1); // always null terminate!
-    memcpy(dest, src, n);
-    dest[n] = '\0';
-  }
-  return len;
-}
 
 } // namespace folly

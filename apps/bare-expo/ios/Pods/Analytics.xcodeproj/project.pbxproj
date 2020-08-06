@@ -7,121 +7,125 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E360B32E86E256161A29F61E1BC291 /* SEGIdentifyPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BD026AC14A77DB93F4FBD5DFC7FBAF1 /* SEGIdentifyPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		041C02633E8872004E248780365F9C0B /* SEGMiddleware.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DFB3EAA5D1FF4212E2CD4E07D135135 /* SEGMiddleware.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		05371FB90A12A7D346B4F843A5AE3609 /* SEGAnalyticsConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D6440F0C776855F85810F3D881A0760 /* SEGAnalyticsConfiguration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		06E3ED7D20567C343DEFC817B4B11302 /* SEGUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E7AA7315FABF64681E1487EA3856C037 /* SEGUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		075268674B36513E653896EF5E740AFB /* SEGHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 81500655E5D2611FB888228941BA6AFD /* SEGHTTPClient.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		10664163639AC1FEE77AEB8556CFF96C /* SEGSegmentIntegration.m in Sources */ = {isa = PBXBuildFile; fileRef = AD2C98DB0C7A6DC6133E685AAEB0C71D /* SEGSegmentIntegration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		13E25849C098F379676046D161EB7E33 /* SEGStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 396914E424FE4DDF3C8697AEFC29733F /* SEGStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		192C8A0887B6DC67FBC05CE52606673B /* SEGIntegrationsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A07A6DA05A7C000181F0557862526BE /* SEGIntegrationsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2A2D5CA4F69E8C3382BE091878054F04 /* SEGAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = D0716FFC24025F639CEC5755D64F9727 /* SEGAnalytics.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2B3C0DBA580E61FAD27AD677752464B5 /* Analytics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 66B6795DF3D4DE33DBD6EA2668BA7834 /* Analytics-dummy.m */; };
-		32BF8ACBAE6358ABA5680398E1A50601 /* SEGAES256Crypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E982311E63D4C1B67A74F0107F91CF3 /* SEGAES256Crypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		35C55037EBD6144A64BA6A0CE5489C42 /* SEGAnalyticsConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 30FE1315AD9692DC707C005A87687A78 /* SEGAnalyticsConfiguration.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3816AB69BC6C3B1E72112103255AD868 /* SEGIntegrationFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 189CE04764EC3BE3568694C63CDB8FB7 /* SEGIntegrationFactory.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		40128566E7ADAB6AE8C5424BC65BE0BE /* SEGSegmentIntegration.h in Headers */ = {isa = PBXBuildFile; fileRef = D532AAF70BB2064FFB8FD6EACAA25996 /* SEGSegmentIntegration.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4041A8CE7092B316052081E7354D35CC /* SEGAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = DF28A51C602D9342223E1A8373424DB0 /* SEGAnalytics.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		43C3F6B2571AA4011560D8AD6D7C2567 /* SEGSerializableValue.h in Headers */ = {isa = PBXBuildFile; fileRef = D7595C2FB4B4E77AE87AF121138DF6E6 /* SEGSerializableValue.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		446A6F807898F296DEE00CA10D809626 /* SEGTrackPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D62077F618144DE5D97C976ABB6AA08 /* SEGTrackPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4F31C45BDF64DD4EF366CBED5D681B91 /* SEGUserDefaultsStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = CE7ABD02508A642E271F079E5384EF2E /* SEGUserDefaultsStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		58BB1A75EC72D4C03876C5B7CF987FC7 /* SEGAliasPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 395F97E041E0EDCE59932300D8EC1248 /* SEGAliasPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5FF23193496FCABD2E4E3ED4FAD078F9 /* SEGContext.h in Headers */ = {isa = PBXBuildFile; fileRef = E9CA54EC2B3293E40C3B6E7E0CB7537A /* SEGContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		66489E763B7D77D1C44AFFD33C3D5967 /* SEGSegmentIntegrationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3960D03617D124CCB857914C5EF60FA3 /* SEGSegmentIntegrationFactory.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6C26D31379BE80E4E1098D36912B4AFC /* SEGContext.m in Sources */ = {isa = PBXBuildFile; fileRef = CF9B4E2CC1CDD4403470645361B71662 /* SEGContext.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6D409D560A41464BA6596074E4A09A3D /* SEGUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A9A65631E0548CFB70AF41A0A1F02E5 /* SEGUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		722C54810ECD8554BD0C4F1A10A1A563 /* NSData+SEGGZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 86C02C56E697DE473E0339A9C5D45E39 /* NSData+SEGGZIP.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		73373C9B53CB444419427A061CF42B14 /* UIViewController+SEGScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = E08EA0DECF510FA2087746782ED8603D /* UIViewController+SEGScreen.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7975197F6C8D7DDB50CA9BE68AE20848 /* SEGPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A5BB2F66377ADEBE31ADA1D0D9511E7 /* SEGPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		797610220FA036EAB1D5E7F933F3E2BE /* SEGCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = A4D3EFCBBD269E32531636F8DB42E824 /* SEGCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		83A39E8F44D386AAF503A41EBA392321 /* SEGScreenPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DFEC65726FA8A74438FE99EBFF917EB /* SEGScreenPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		83C2656E40551E4F15E194036E8C577C /* SEGFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = A329F138324220070C52863E4D17A376 /* SEGFileStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8C18951FDA09FD401C93CD5778977BB5 /* SEGAliasPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 095C5C5C5BA18A89DB15C72957BA39F8 /* SEGAliasPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8C600ACAC692696391230BAC4F49D7FA /* SEGMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = BA4A6C51BB158EE57F4149E64B2E0803 /* SEGMiddleware.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8FF4B493B0A68AFAD59D25C0C9F161AC /* SEGTrackPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = D190516DD5A6C21E50162A2815625762 /* SEGTrackPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		90A62A10BD54D07E559834D745E046E9 /* SEGAES256Crypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BCDE47DE3FA46A5B9B904D4D271DAA /* SEGAES256Crypto.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		90FCD954E037DFD7EF1E75CE5D1C4D01 /* SEGIdentifyPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 1ED04E2095DEE74BA5875F7B60A44019 /* SEGIdentifyPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		927492645BAEF6FC4EADC7F7838BD874 /* SEGAnalyticsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDC67D210F55F9D92C967DA182B8950 /* SEGAnalyticsUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		95A7946CA50D0F4AA4900D17AAA4A627 /* SEGAnalyticsUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 558468E30C5D71EF1F3F71A2EF0BB5E2 /* SEGAnalyticsUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		99F3F8885823E0E346833AB5401DF482 /* SEGStoreKitTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A9112EE0C42B21E329067EAF68D953 /* SEGStoreKitTracker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9D5F00C5C60DEEBF78448D97567BC359 /* NSData+SEGGZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 87973E4CC841D32625B7584E7923184C /* NSData+SEGGZIP.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A9442F6ADC4DD58B0C73B8659FE11FFA /* SEGSegmentIntegrationFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B1787FB998ADA1193E150256C152755 /* SEGSegmentIntegrationFactory.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AC7380436A16508127FF220C4681F453 /* SEGUserDefaultsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C5D2D723D328F2323986EE43E6765 /* SEGUserDefaultsStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		AF408A820C6C2DE049423528B5531962 /* SEGGroupPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CAA16E3B9364EBB778599AA5A6E71E1 /* SEGGroupPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C0BBF50DCF86209FE054A7B1F14975EF /* SEGHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C69FD89FF348F85F9B4F10CA9138BD /* SEGHTTPClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C5A549E631E5DD39891D22903306C099 /* SEGPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = B10F35382FD762DEEA00AB1BB5142216 /* SEGPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C78C172A712F4D6AF755EA7D8F6D9F28 /* SEGGroupPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = E5EF0AADA7FB015FB1F692D0E459D2E8 /* SEGGroupPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D3A520AC9B1D585CAEFF9C8557BD46D2 /* SEGFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A975BF1754D7666959CAC88505D4322 /* SEGFileStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DA9972F7C703D2BD592E5BCC3E658770 /* SEGReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 7543DA43234936F832FD1FF6CBAC757F /* SEGReachability.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DAEB3081BDF9FBC097DAD82B5253E303 /* SEGIntegrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7AF6645525A4D3465AF63D9D7232DF /* SEGIntegrationsManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DE7AF9411C23DBAB22C7BF7290A45755 /* SEGScreenPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 9FB5BE259D72DA355076DF5B0A272DA4 /* SEGScreenPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E3C9B95A7878F1A99DEE3AA0052A3F1C /* SEGReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = D546585E77202D3C2193570DDD31F0AD /* SEGReachability.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F2E20BCA1BA12471CA70E4DFD1212AD6 /* UIViewController+SEGScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CF4D2A82C4094BDD1E07C72B7D28D /* UIViewController+SEGScreen.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F464A749621317B2FF027914DD0AD3EF /* SEGStoreKitTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7D6593DEDFA8F9151A7EFF25889363 /* SEGStoreKitTracker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FEBB3A818F157281F5B7FC599C3F1A3B /* SEGIntegration.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DDDC692492018C5E12E9A154543D1DC /* SEGIntegration.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0C98D7DC840E0CEB86C643137B4C766D /* SEGUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 6220D6FF558346B355499D993C55943D /* SEGUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		12C186C16C8FBD3F9A34D245E62BFDD5 /* SEGScreenPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 77E3CC94E0C693286A7ABFFAB48C1D1E /* SEGScreenPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1999A4EF474004407F182D045AE987F1 /* SEGUserDefaultsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFA27B236C11604C90CE5EC6C0EA0B7 /* SEGUserDefaultsStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1ADA07DB6EEB47EC3B79782475084C7C /* SEGIntegrationFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 9770726BC4107FEBF3071E12335DCA6C /* SEGIntegrationFactory.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1CB251F2890FBC21E40B400A519B7647 /* SEGSegmentIntegrationFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = AFEF0FBBCA87C1FDFC955E8428D86219 /* SEGSegmentIntegrationFactory.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1D013DD939FA49E6DC34F42FA66484A7 /* NSData+SEGGZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 71B83C4AC3A3D6EDAFFF42CFBF210441 /* NSData+SEGGZIP.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2CC0E9A80596C20C024B520F33C7EBB2 /* SEGIntegrationsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CF5DFC46BF7A12E5B713512544AA46E /* SEGIntegrationsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		30BE973C9B11ADDC14C51E546B6028FA /* SEGGroupPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 473D500875A4150C6B8E08FD35441311 /* SEGGroupPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		30D687693136C187A2F7BC02A8E23A65 /* SEGFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CD7D74FEAF1C71BEF899A1CE631B1D7 /* SEGFileStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		335C213A579CB81F1C9CADBBC17690AE /* SEGSegmentIntegration.h in Headers */ = {isa = PBXBuildFile; fileRef = 5274EECF13CB8461072F574D9802E425 /* SEGSegmentIntegration.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3B01D0400C114CBC1EBFB30AC92B5F05 /* SEGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = B32FC3AE0D63EBC79B907C9012C4593D /* SEGMacros.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3BD9460A7E7121CA835C3587DF2F745C /* SEGMiddleware.m in Sources */ = {isa = PBXBuildFile; fileRef = 633CBAC4E4D8968BF3E5F8CC5105C797 /* SEGMiddleware.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3ED30E8CE7BCB4CE535B32E3EA9DD668 /* SEGHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 3038970ADBAAD3CE7DEC6BA8BF8EA1E9 /* SEGHTTPClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4FE57AF2604CD55B1CFE0B4B7CB2E6D7 /* SEGSerializableValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FF8422FDB6492435F179BFAE8F4699B /* SEGSerializableValue.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		519DA461F3359E4EDE34237CE833066F /* SEGIntegration.h in Headers */ = {isa = PBXBuildFile; fileRef = 9657E11893483007D075E0D869300265 /* SEGIntegration.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		583BA668F43B394419030A33CDE90BC5 /* SEGTrackPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 7FDD4E607A1BA1EF97554C8CD2922363 /* SEGTrackPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		58649D7415F901EA76DC6BA7F443D559 /* SEGStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = A08D2B9B9A538068857083097E8E4139 /* SEGStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5A4959C4421BE95BB04651927493C975 /* SEGAliasPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 91B1A8CAFE3680CB94DEFB2DF9C7778D /* SEGAliasPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5E0355630083E3AB8BB3973B84378D6B /* SEGCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = C3DE178DC113A2EF00C80B8CAA509D98 /* SEGCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6DB9D767B4EE26FD10EE1574ECA8E324 /* SEGSegmentIntegrationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 7812F200CC851DD0CC51BBC917F4386C /* SEGSegmentIntegrationFactory.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		797773EDB5F07FF7DB18D19380D5F5CA /* SEGUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 69964D65886BDF9AE753F64A4A8A58C2 /* SEGUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		837A51FCEDDA393D47B73666C379DB31 /* SEGMiddleware.h in Headers */ = {isa = PBXBuildFile; fileRef = 912FE49E770E630D73D2E5BB4A6CE339 /* SEGMiddleware.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8A011727EF4EBC88699D5464DF8B1790 /* SEGScreenReporting.h in Headers */ = {isa = PBXBuildFile; fileRef = 8E342C4991575FCE8779322CF8A85030 /* SEGScreenReporting.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8D8DCEDEE0AF1EC5EF2EC535D11104BC /* SEGScreenPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 02BED06CBA41BCCDE54BF152626F9CD7 /* SEGScreenPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8FFAE8D2A03091F249C626D18358E514 /* SEGAnalyticsConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 075AAA9990615516BD1D84CD4D4B53DB /* SEGAnalyticsConfiguration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		90FED71764B0E26465D7F2509D13FB72 /* SEGFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B53B5B5963673C13298E30E1922ACE36 /* SEGFileStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		91EEC5293EA07769380F2EDA45194B18 /* Analytics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D43AEA47164A61D268755923B06E1BF0 /* Analytics-dummy.m */; };
+		94EEDBD4332DC4001CD905C5E8FDD839 /* SEGGroupPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E48949C5972C0FBBA351BECF9001610 /* SEGGroupPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		98EED74686A3092E3594E5244B0A4477 /* SEGAES256Crypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 6441E1EF680AC0809E358874251AB4B5 /* SEGAES256Crypto.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9969A950BA2D4B7DCE57EEB440088D97 /* SEGHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = CFE0F1C721AAF3A4573160E257C0D805 /* SEGHTTPClient.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9EFCAFD0FFA4992E218E0F6C5C28E1AC /* SEGUserDefaultsStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = EE701F5E8089805799A0863CDADE4ADE /* SEGUserDefaultsStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A06CEAB4D3372AA61DD9FA0FAC5D07A9 /* SEGStoreKitTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F17D63FA4F8B9724393C7FA17780926 /* SEGStoreKitTracker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A33560B7A607B97776F3FC92B580B5E5 /* SEGAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 586BC9DCAD2B9D557FCE50B291FBA915 /* SEGAnalytics.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A771735E523B19824AF1A884C1D816E6 /* SEGPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = A4CADA0B62023100513E40F2A31B7A83 /* SEGPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A93B7ADE75ED1752F8E68069D309597B /* SEGAliasPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 7362A505545A3C205C11166F260147F1 /* SEGAliasPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B213880A196CD8BAC349349931E00152 /* SEGAnalyticsUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7B9343C3D873932548BF9DB0042C3B /* SEGAnalyticsUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B794BC0252E2F52DE5E891F884734818 /* SEGAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = C900D36502ADB21EF5EBA0DDF0BD51BA /* SEGAnalytics.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B7F877813EF2085B2E27276DF952C747 /* SEGPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CBE14D014B38542DD303F514A54084B /* SEGPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B92195D43ECBB825175C5007BEE71F99 /* SEGAES256Crypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 94B6D5B2B000792B140E6A95C1C2B9F9 /* SEGAES256Crypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B9ED87BECE782F6F225A0C2027271E48 /* SEGIdentifyPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 084659354366C3B0893D880D59E33B40 /* SEGIdentifyPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BA45B42DE40EE823F5249C27D62E3DCE /* SEGSegmentIntegration.m in Sources */ = {isa = PBXBuildFile; fileRef = 11BE47006E98291D498C661A1FFDFC0A /* SEGSegmentIntegration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BBD29AE541D97929206AF78963FE934C /* SEGContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 78C34129FF260500BC0DD65027B7C45D /* SEGContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BC417E7052076505CCA39A56B3214ECF /* SEGAnalyticsConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 6527BBA1DA880B19C080B17460EB7B9D /* SEGAnalyticsConfiguration.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BE72639E86FA8282DFE72084F6CA466A /* SEGAnalyticsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4392650DF81C5B4B1E6A9F7D1C65FBB4 /* SEGAnalyticsUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CD08BB731B83B5B6B945A85566FC185F /* SEGIdentifyPayload.h in Headers */ = {isa = PBXBuildFile; fileRef = E6EEB8B0493462CBB46A871E74373501 /* SEGIdentifyPayload.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D2116E07B412CF7C3693C6F2214370B6 /* UIViewController+SEGScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5E94BFE3C8D37EBDCD8381EE300A7B /* UIViewController+SEGScreen.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E30DF2CC05E47E859CC38CE6ADC02DB4 /* SEGContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C719606E06E2AA272123F6015B7511D /* SEGContext.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E85CFE5E49EA0C86125141074D3436B8 /* SEGTrackPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 1173AF19327ECF78CCCB5E8D4532AD29 /* SEGTrackPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E8FE2C387D95F9C39FC17C6DD11D2717 /* UIViewController+SEGScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A78A4F972AA8AD2F85014904920D76E /* UIViewController+SEGScreen.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EA26ECB350CD3841E80826225052ADE0 /* SEGIntegrationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C843D27463705459367E5289FBA27DE1 /* SEGIntegrationsManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EE061E4727E6F68F3BC2EBA5C4844113 /* SEGReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F5841794211F46E22219B18028FE4FF /* SEGReachability.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EF00D9F104435D8A30F359206F9BA0FB /* NSData+SEGGZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 091AD2F0E244177686EA5C6B63578DC3 /* NSData+SEGGZIP.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F7A65421B60425B646720E3B5F9F5159 /* SEGStoreKitTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC3DAC14B761BBB956988E6D1C5B240 /* SEGStoreKitTracker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FA51BF0F94CE44BEDA9B2B1041F9650D /* SEGReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = A184D66F1A1D66B4E713BA6EC7B1EDCB /* SEGReachability.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		095C5C5C5BA18A89DB15C72957BA39F8 /* SEGAliasPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAliasPayload.m; path = Analytics/Classes/Integrations/SEGAliasPayload.m; sourceTree = "<group>"; };
-		0D62077F618144DE5D97C976ABB6AA08 /* SEGTrackPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGTrackPayload.m; path = Analytics/Classes/Integrations/SEGTrackPayload.m; sourceTree = "<group>"; };
-		0E982311E63D4C1B67A74F0107F91CF3 /* SEGAES256Crypto.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAES256Crypto.h; path = Analytics/Classes/Crypto/SEGAES256Crypto.h; sourceTree = "<group>"; };
-		189CE04764EC3BE3568694C63CDB8FB7 /* SEGIntegrationFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIntegrationFactory.h; path = Analytics/Classes/Integrations/SEGIntegrationFactory.h; sourceTree = "<group>"; };
-		1A9A65631E0548CFB70AF41A0A1F02E5 /* SEGUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGUtils.m; path = Analytics/Classes/Internal/SEGUtils.m; sourceTree = "<group>"; };
-		1CAA16E3B9364EBB778599AA5A6E71E1 /* SEGGroupPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGGroupPayload.h; path = Analytics/Classes/Integrations/SEGGroupPayload.h; sourceTree = "<group>"; };
-		1DFB3EAA5D1FF4212E2CD4E07D135135 /* SEGMiddleware.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGMiddleware.h; path = Analytics/Classes/Middlewares/SEGMiddleware.h; sourceTree = "<group>"; };
-		1ED04E2095DEE74BA5875F7B60A44019 /* SEGIdentifyPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIdentifyPayload.h; path = Analytics/Classes/Integrations/SEGIdentifyPayload.h; sourceTree = "<group>"; };
-		30FE1315AD9692DC707C005A87687A78 /* SEGAnalyticsConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAnalyticsConfiguration.h; path = Analytics/Classes/SEGAnalyticsConfiguration.h; sourceTree = "<group>"; };
-		34C69FD89FF348F85F9B4F10CA9138BD /* SEGHTTPClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGHTTPClient.h; path = Analytics/Classes/Internal/SEGHTTPClient.h; sourceTree = "<group>"; };
-		395F97E041E0EDCE59932300D8EC1248 /* SEGAliasPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAliasPayload.h; path = Analytics/Classes/Integrations/SEGAliasPayload.h; sourceTree = "<group>"; };
-		3960D03617D124CCB857914C5EF60FA3 /* SEGSegmentIntegrationFactory.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGSegmentIntegrationFactory.m; path = Analytics/Classes/Internal/SEGSegmentIntegrationFactory.m; sourceTree = "<group>"; };
-		396914E424FE4DDF3C8697AEFC29733F /* SEGStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGStorage.h; path = Analytics/Classes/Internal/SEGStorage.h; sourceTree = "<group>"; };
-		3D6440F0C776855F85810F3D881A0760 /* SEGAnalyticsConfiguration.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAnalyticsConfiguration.m; path = Analytics/Classes/SEGAnalyticsConfiguration.m; sourceTree = "<group>"; };
-		3D7D6593DEDFA8F9151A7EFF25889363 /* SEGStoreKitTracker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGStoreKitTracker.h; path = Analytics/Classes/Internal/SEGStoreKitTracker.h; sourceTree = "<group>"; };
-		3DFEC65726FA8A74438FE99EBFF917EB /* SEGScreenPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGScreenPayload.m; path = Analytics/Classes/Integrations/SEGScreenPayload.m; sourceTree = "<group>"; };
-		4B3305E57DD7F60842D7725C23A4BF2B /* Analytics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Analytics.debug.xcconfig; sourceTree = "<group>"; };
-		4B7CF4D2A82C4094BDD1E07C72B7D28D /* UIViewController+SEGScreen.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+SEGScreen.m"; path = "Analytics/Classes/Internal/UIViewController+SEGScreen.m"; sourceTree = "<group>"; };
-		558468E30C5D71EF1F3F71A2EF0BB5E2 /* SEGAnalyticsUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAnalyticsUtils.h; path = Analytics/Classes/Internal/SEGAnalyticsUtils.h; sourceTree = "<group>"; };
-		57BCDE47DE3FA46A5B9B904D4D271DAA /* SEGAES256Crypto.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAES256Crypto.m; path = Analytics/Classes/Crypto/SEGAES256Crypto.m; sourceTree = "<group>"; };
-		5A07A6DA05A7C000181F0557862526BE /* SEGIntegrationsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIntegrationsManager.h; path = Analytics/Classes/Integrations/SEGIntegrationsManager.h; sourceTree = "<group>"; };
-		5A975BF1754D7666959CAC88505D4322 /* SEGFileStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGFileStorage.m; path = Analytics/Classes/Internal/SEGFileStorage.m; sourceTree = "<group>"; };
-		5BD026AC14A77DB93F4FBD5DFC7FBAF1 /* SEGIdentifyPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGIdentifyPayload.m; path = Analytics/Classes/Integrations/SEGIdentifyPayload.m; sourceTree = "<group>"; };
-		66B6795DF3D4DE33DBD6EA2668BA7834 /* Analytics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Analytics-dummy.m"; sourceTree = "<group>"; };
-		6CDC67D210F55F9D92C967DA182B8950 /* SEGAnalyticsUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAnalyticsUtils.m; path = Analytics/Classes/Internal/SEGAnalyticsUtils.m; sourceTree = "<group>"; };
-		7543DA43234936F832FD1FF6CBAC757F /* SEGReachability.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGReachability.m; path = Analytics/Vendor/SEGReachability.m; sourceTree = "<group>"; };
-		7D5C5D2D723D328F2323986EE43E6765 /* SEGUserDefaultsStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGUserDefaultsStorage.m; path = Analytics/Classes/Internal/SEGUserDefaultsStorage.m; sourceTree = "<group>"; };
-		7DDDC692492018C5E12E9A154543D1DC /* SEGIntegration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIntegration.h; path = Analytics/Classes/Integrations/SEGIntegration.h; sourceTree = "<group>"; };
-		81500655E5D2611FB888228941BA6AFD /* SEGHTTPClient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGHTTPClient.m; path = Analytics/Classes/Internal/SEGHTTPClient.m; sourceTree = "<group>"; };
+		02BED06CBA41BCCDE54BF152626F9CD7 /* SEGScreenPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGScreenPayload.m; path = Analytics/Classes/Integrations/SEGScreenPayload.m; sourceTree = "<group>"; };
+		075AAA9990615516BD1D84CD4D4B53DB /* SEGAnalyticsConfiguration.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAnalyticsConfiguration.m; path = Analytics/Classes/SEGAnalyticsConfiguration.m; sourceTree = "<group>"; };
+		084659354366C3B0893D880D59E33B40 /* SEGIdentifyPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGIdentifyPayload.m; path = Analytics/Classes/Integrations/SEGIdentifyPayload.m; sourceTree = "<group>"; };
+		091AD2F0E244177686EA5C6B63578DC3 /* NSData+SEGGZIP.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+SEGGZIP.h"; path = "Analytics/Classes/Internal/NSData+SEGGZIP.h"; sourceTree = "<group>"; };
+		0BFA27B236C11604C90CE5EC6C0EA0B7 /* SEGUserDefaultsStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGUserDefaultsStorage.m; path = Analytics/Classes/Internal/SEGUserDefaultsStorage.m; sourceTree = "<group>"; };
+		1173AF19327ECF78CCCB5E8D4532AD29 /* SEGTrackPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGTrackPayload.m; path = Analytics/Classes/Integrations/SEGTrackPayload.m; sourceTree = "<group>"; };
+		11BE47006E98291D498C661A1FFDFC0A /* SEGSegmentIntegration.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGSegmentIntegration.m; path = Analytics/Classes/Internal/SEGSegmentIntegration.m; sourceTree = "<group>"; };
+		1C719606E06E2AA272123F6015B7511D /* SEGContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGContext.m; path = Analytics/Classes/Middlewares/SEGContext.m; sourceTree = "<group>"; };
+		1CBE14D014B38542DD303F514A54084B /* SEGPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGPayload.m; path = Analytics/Classes/Integrations/SEGPayload.m; sourceTree = "<group>"; };
+		1D70B26A6B32F194D80E1B4F1081DB0F /* Analytics-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Analytics-prefix.pch"; sourceTree = "<group>"; };
+		3038970ADBAAD3CE7DEC6BA8BF8EA1E9 /* SEGHTTPClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGHTTPClient.h; path = Analytics/Classes/Internal/SEGHTTPClient.h; sourceTree = "<group>"; };
+		3A7B9343C3D873932548BF9DB0042C3B /* SEGAnalyticsUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAnalyticsUtils.h; path = Analytics/Classes/Internal/SEGAnalyticsUtils.h; sourceTree = "<group>"; };
+		3F17D63FA4F8B9724393C7FA17780926 /* SEGStoreKitTracker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGStoreKitTracker.h; path = Analytics/Classes/Internal/SEGStoreKitTracker.h; sourceTree = "<group>"; };
+		4392650DF81C5B4B1E6A9F7D1C65FBB4 /* SEGAnalyticsUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAnalyticsUtils.m; path = Analytics/Classes/Internal/SEGAnalyticsUtils.m; sourceTree = "<group>"; };
+		473D500875A4150C6B8E08FD35441311 /* SEGGroupPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGGroupPayload.m; path = Analytics/Classes/Integrations/SEGGroupPayload.m; sourceTree = "<group>"; };
+		482B7AE35456C1EDCEB59C31E9A60A25 /* Analytics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Analytics.release.xcconfig; sourceTree = "<group>"; };
+		4FF8422FDB6492435F179BFAE8F4699B /* SEGSerializableValue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGSerializableValue.h; path = Analytics/Classes/SEGSerializableValue.h; sourceTree = "<group>"; };
+		5274EECF13CB8461072F574D9802E425 /* SEGSegmentIntegration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGSegmentIntegration.h; path = Analytics/Classes/Internal/SEGSegmentIntegration.h; sourceTree = "<group>"; };
+		52DE542B271315BC44669BCA7FBBE9EF /* Analytics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Analytics.debug.xcconfig; sourceTree = "<group>"; };
+		586BC9DCAD2B9D557FCE50B291FBA915 /* SEGAnalytics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAnalytics.m; path = Analytics/Classes/SEGAnalytics.m; sourceTree = "<group>"; };
+		5E48949C5972C0FBBA351BECF9001610 /* SEGGroupPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGGroupPayload.h; path = Analytics/Classes/Integrations/SEGGroupPayload.h; sourceTree = "<group>"; };
+		5F5841794211F46E22219B18028FE4FF /* SEGReachability.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGReachability.h; path = Analytics/Vendor/SEGReachability.h; sourceTree = "<group>"; };
+		6220D6FF558346B355499D993C55943D /* SEGUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGUtils.m; path = Analytics/Classes/Internal/SEGUtils.m; sourceTree = "<group>"; };
+		633CBAC4E4D8968BF3E5F8CC5105C797 /* SEGMiddleware.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGMiddleware.m; path = Analytics/Classes/Middlewares/SEGMiddleware.m; sourceTree = "<group>"; };
+		6441E1EF680AC0809E358874251AB4B5 /* SEGAES256Crypto.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAES256Crypto.m; path = Analytics/Classes/Crypto/SEGAES256Crypto.m; sourceTree = "<group>"; };
+		6527BBA1DA880B19C080B17460EB7B9D /* SEGAnalyticsConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAnalyticsConfiguration.h; path = Analytics/Classes/SEGAnalyticsConfiguration.h; sourceTree = "<group>"; };
+		69964D65886BDF9AE753F64A4A8A58C2 /* SEGUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGUtils.h; path = Analytics/Classes/Internal/SEGUtils.h; sourceTree = "<group>"; };
+		71B83C4AC3A3D6EDAFFF42CFBF210441 /* NSData+SEGGZIP.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+SEGGZIP.m"; path = "Analytics/Classes/Internal/NSData+SEGGZIP.m"; sourceTree = "<group>"; };
+		7362A505545A3C205C11166F260147F1 /* SEGAliasPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAliasPayload.m; path = Analytics/Classes/Integrations/SEGAliasPayload.m; sourceTree = "<group>"; };
+		77E3CC94E0C693286A7ABFFAB48C1D1E /* SEGScreenPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGScreenPayload.h; path = Analytics/Classes/Integrations/SEGScreenPayload.h; sourceTree = "<group>"; };
+		7812F200CC851DD0CC51BBC917F4386C /* SEGSegmentIntegrationFactory.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGSegmentIntegrationFactory.m; path = Analytics/Classes/Internal/SEGSegmentIntegrationFactory.m; sourceTree = "<group>"; };
+		78C34129FF260500BC0DD65027B7C45D /* SEGContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGContext.h; path = Analytics/Classes/Middlewares/SEGContext.h; sourceTree = "<group>"; };
+		7CD7D74FEAF1C71BEF899A1CE631B1D7 /* SEGFileStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGFileStorage.h; path = Analytics/Classes/Internal/SEGFileStorage.h; sourceTree = "<group>"; };
+		7CF5DFC46BF7A12E5B713512544AA46E /* SEGIntegrationsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIntegrationsManager.h; path = Analytics/Classes/Integrations/SEGIntegrationsManager.h; sourceTree = "<group>"; };
+		7FDD4E607A1BA1EF97554C8CD2922363 /* SEGTrackPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGTrackPayload.h; path = Analytics/Classes/Integrations/SEGTrackPayload.h; sourceTree = "<group>"; };
 		81A35F366C93A423544DB1E168884A74 /* libAnalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libAnalytics.a; path = libAnalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		86C02C56E697DE473E0339A9C5D45E39 /* NSData+SEGGZIP.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+SEGGZIP.h"; path = "Analytics/Classes/Internal/NSData+SEGGZIP.h"; sourceTree = "<group>"; };
-		87973E4CC841D32625B7584E7923184C /* NSData+SEGGZIP.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+SEGGZIP.m"; path = "Analytics/Classes/Internal/NSData+SEGGZIP.m"; sourceTree = "<group>"; };
-		8A5BB2F66377ADEBE31ADA1D0D9511E7 /* SEGPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGPayload.m; path = Analytics/Classes/Integrations/SEGPayload.m; sourceTree = "<group>"; };
-		9B1787FB998ADA1193E150256C152755 /* SEGSegmentIntegrationFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGSegmentIntegrationFactory.h; path = Analytics/Classes/Internal/SEGSegmentIntegrationFactory.h; sourceTree = "<group>"; };
-		9C91FEE18D331F33D183AC9C1E0CB18D /* Analytics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Analytics.release.xcconfig; sourceTree = "<group>"; };
-		9FB5BE259D72DA355076DF5B0A272DA4 /* SEGScreenPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGScreenPayload.h; path = Analytics/Classes/Integrations/SEGScreenPayload.h; sourceTree = "<group>"; };
-		A329F138324220070C52863E4D17A376 /* SEGFileStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGFileStorage.h; path = Analytics/Classes/Internal/SEGFileStorage.h; sourceTree = "<group>"; };
-		A4D3EFCBBD269E32531636F8DB42E824 /* SEGCrypto.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGCrypto.h; path = Analytics/Classes/Crypto/SEGCrypto.h; sourceTree = "<group>"; };
-		AD2C98DB0C7A6DC6133E685AAEB0C71D /* SEGSegmentIntegration.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGSegmentIntegration.m; path = Analytics/Classes/Internal/SEGSegmentIntegration.m; sourceTree = "<group>"; };
-		B10F35382FD762DEEA00AB1BB5142216 /* SEGPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGPayload.h; path = Analytics/Classes/Integrations/SEGPayload.h; sourceTree = "<group>"; };
-		B394236D1760702091411E481758F181 /* Analytics-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Analytics-prefix.pch"; sourceTree = "<group>"; };
-		BA4A6C51BB158EE57F4149E64B2E0803 /* SEGMiddleware.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGMiddleware.m; path = Analytics/Classes/Middlewares/SEGMiddleware.m; sourceTree = "<group>"; };
-		CA7AF6645525A4D3465AF63D9D7232DF /* SEGIntegrationsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGIntegrationsManager.m; path = Analytics/Classes/Integrations/SEGIntegrationsManager.m; sourceTree = "<group>"; };
-		CE7ABD02508A642E271F079E5384EF2E /* SEGUserDefaultsStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGUserDefaultsStorage.h; path = Analytics/Classes/Internal/SEGUserDefaultsStorage.h; sourceTree = "<group>"; };
-		CF9B4E2CC1CDD4403470645361B71662 /* SEGContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGContext.m; path = Analytics/Classes/Middlewares/SEGContext.m; sourceTree = "<group>"; };
-		D0716FFC24025F639CEC5755D64F9727 /* SEGAnalytics.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAnalytics.h; path = Analytics/Classes/SEGAnalytics.h; sourceTree = "<group>"; };
-		D190516DD5A6C21E50162A2815625762 /* SEGTrackPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGTrackPayload.h; path = Analytics/Classes/Integrations/SEGTrackPayload.h; sourceTree = "<group>"; };
-		D532AAF70BB2064FFB8FD6EACAA25996 /* SEGSegmentIntegration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGSegmentIntegration.h; path = Analytics/Classes/Internal/SEGSegmentIntegration.h; sourceTree = "<group>"; };
-		D546585E77202D3C2193570DDD31F0AD /* SEGReachability.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGReachability.h; path = Analytics/Vendor/SEGReachability.h; sourceTree = "<group>"; };
-		D7595C2FB4B4E77AE87AF121138DF6E6 /* SEGSerializableValue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGSerializableValue.h; path = Analytics/Classes/SEGSerializableValue.h; sourceTree = "<group>"; };
-		DF28A51C602D9342223E1A8373424DB0 /* SEGAnalytics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGAnalytics.m; path = Analytics/Classes/SEGAnalytics.m; sourceTree = "<group>"; };
-		E08EA0DECF510FA2087746782ED8603D /* UIViewController+SEGScreen.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+SEGScreen.h"; path = "Analytics/Classes/Internal/UIViewController+SEGScreen.h"; sourceTree = "<group>"; };
-		E5EF0AADA7FB015FB1F692D0E459D2E8 /* SEGGroupPayload.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGGroupPayload.m; path = Analytics/Classes/Integrations/SEGGroupPayload.m; sourceTree = "<group>"; };
-		E7AA7315FABF64681E1487EA3856C037 /* SEGUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGUtils.h; path = Analytics/Classes/Internal/SEGUtils.h; sourceTree = "<group>"; };
-		E9CA54EC2B3293E40C3B6E7E0CB7537A /* SEGContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGContext.h; path = Analytics/Classes/Middlewares/SEGContext.h; sourceTree = "<group>"; };
-		F6A9112EE0C42B21E329067EAF68D953 /* SEGStoreKitTracker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGStoreKitTracker.m; path = Analytics/Classes/Internal/SEGStoreKitTracker.m; sourceTree = "<group>"; };
+		8A78A4F972AA8AD2F85014904920D76E /* UIViewController+SEGScreen.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+SEGScreen.h"; path = "Analytics/Classes/Internal/UIViewController+SEGScreen.h"; sourceTree = "<group>"; };
+		8E342C4991575FCE8779322CF8A85030 /* SEGScreenReporting.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGScreenReporting.h; path = Analytics/Classes/Internal/SEGScreenReporting.h; sourceTree = "<group>"; };
+		912FE49E770E630D73D2E5BB4A6CE339 /* SEGMiddleware.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGMiddleware.h; path = Analytics/Classes/Middlewares/SEGMiddleware.h; sourceTree = "<group>"; };
+		91B1A8CAFE3680CB94DEFB2DF9C7778D /* SEGAliasPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAliasPayload.h; path = Analytics/Classes/Integrations/SEGAliasPayload.h; sourceTree = "<group>"; };
+		94B6D5B2B000792B140E6A95C1C2B9F9 /* SEGAES256Crypto.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAES256Crypto.h; path = Analytics/Classes/Crypto/SEGAES256Crypto.h; sourceTree = "<group>"; };
+		9657E11893483007D075E0D869300265 /* SEGIntegration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIntegration.h; path = Analytics/Classes/Integrations/SEGIntegration.h; sourceTree = "<group>"; };
+		9770726BC4107FEBF3071E12335DCA6C /* SEGIntegrationFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIntegrationFactory.h; path = Analytics/Classes/Integrations/SEGIntegrationFactory.h; sourceTree = "<group>"; };
+		A08D2B9B9A538068857083097E8E4139 /* SEGStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGStorage.h; path = Analytics/Classes/Internal/SEGStorage.h; sourceTree = "<group>"; };
+		A184D66F1A1D66B4E713BA6EC7B1EDCB /* SEGReachability.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGReachability.m; path = Analytics/Vendor/SEGReachability.m; sourceTree = "<group>"; };
+		A4CADA0B62023100513E40F2A31B7A83 /* SEGPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGPayload.h; path = Analytics/Classes/Integrations/SEGPayload.h; sourceTree = "<group>"; };
+		AFEF0FBBCA87C1FDFC955E8428D86219 /* SEGSegmentIntegrationFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGSegmentIntegrationFactory.h; path = Analytics/Classes/Internal/SEGSegmentIntegrationFactory.h; sourceTree = "<group>"; };
+		B32FC3AE0D63EBC79B907C9012C4593D /* SEGMacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGMacros.h; path = Analytics/Classes/Internal/SEGMacros.h; sourceTree = "<group>"; };
+		B53B5B5963673C13298E30E1922ACE36 /* SEGFileStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGFileStorage.m; path = Analytics/Classes/Internal/SEGFileStorage.m; sourceTree = "<group>"; };
+		C3DE178DC113A2EF00C80B8CAA509D98 /* SEGCrypto.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGCrypto.h; path = Analytics/Classes/Crypto/SEGCrypto.h; sourceTree = "<group>"; };
+		C843D27463705459367E5289FBA27DE1 /* SEGIntegrationsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGIntegrationsManager.m; path = Analytics/Classes/Integrations/SEGIntegrationsManager.m; sourceTree = "<group>"; };
+		C900D36502ADB21EF5EBA0DDF0BD51BA /* SEGAnalytics.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGAnalytics.h; path = Analytics/Classes/SEGAnalytics.h; sourceTree = "<group>"; };
+		CDC3DAC14B761BBB956988E6D1C5B240 /* SEGStoreKitTracker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGStoreKitTracker.m; path = Analytics/Classes/Internal/SEGStoreKitTracker.m; sourceTree = "<group>"; };
+		CE5E94BFE3C8D37EBDCD8381EE300A7B /* UIViewController+SEGScreen.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+SEGScreen.m"; path = "Analytics/Classes/Internal/UIViewController+SEGScreen.m"; sourceTree = "<group>"; };
+		CFE0F1C721AAF3A4573160E257C0D805 /* SEGHTTPClient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SEGHTTPClient.m; path = Analytics/Classes/Internal/SEGHTTPClient.m; sourceTree = "<group>"; };
+		D43AEA47164A61D268755923B06E1BF0 /* Analytics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Analytics-dummy.m"; sourceTree = "<group>"; };
+		E6EEB8B0493462CBB46A871E74373501 /* SEGIdentifyPayload.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGIdentifyPayload.h; path = Analytics/Classes/Integrations/SEGIdentifyPayload.h; sourceTree = "<group>"; };
+		EE701F5E8089805799A0863CDADE4ADE /* SEGUserDefaultsStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SEGUserDefaultsStorage.h; path = Analytics/Classes/Internal/SEGUserDefaultsStorage.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5B36B4E4F6B727974F3BA3626E760801 /* Frameworks */ = {
+		410CFE456463C8A9598DC675DA9A8246 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -131,6 +135,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		92AD5EEB0C1ADA1B6589DC2B6616B3A3 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				D43AEA47164A61D268755923B06E1BF0 /* Analytics-dummy.m */,
+				1D70B26A6B32F194D80E1B4F1081DB0F /* Analytics-prefix.pch */,
+				52DE542B271315BC44669BCA7FBBE9EF /* Analytics.debug.xcconfig */,
+				482B7AE35456C1EDCEB59C31E9A60A25 /* Analytics.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/Analytics";
+			sourceTree = "<group>";
+		};
 		9567C3203A8BA93A396CDC914E81C896 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -139,10 +155,72 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9EC9B4B6DEA3534373FDD64B3A991C9F /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				091AD2F0E244177686EA5C6B63578DC3 /* NSData+SEGGZIP.h */,
+				71B83C4AC3A3D6EDAFFF42CFBF210441 /* NSData+SEGGZIP.m */,
+				94B6D5B2B000792B140E6A95C1C2B9F9 /* SEGAES256Crypto.h */,
+				6441E1EF680AC0809E358874251AB4B5 /* SEGAES256Crypto.m */,
+				91B1A8CAFE3680CB94DEFB2DF9C7778D /* SEGAliasPayload.h */,
+				7362A505545A3C205C11166F260147F1 /* SEGAliasPayload.m */,
+				C900D36502ADB21EF5EBA0DDF0BD51BA /* SEGAnalytics.h */,
+				586BC9DCAD2B9D557FCE50B291FBA915 /* SEGAnalytics.m */,
+				6527BBA1DA880B19C080B17460EB7B9D /* SEGAnalyticsConfiguration.h */,
+				075AAA9990615516BD1D84CD4D4B53DB /* SEGAnalyticsConfiguration.m */,
+				3A7B9343C3D873932548BF9DB0042C3B /* SEGAnalyticsUtils.h */,
+				4392650DF81C5B4B1E6A9F7D1C65FBB4 /* SEGAnalyticsUtils.m */,
+				78C34129FF260500BC0DD65027B7C45D /* SEGContext.h */,
+				1C719606E06E2AA272123F6015B7511D /* SEGContext.m */,
+				C3DE178DC113A2EF00C80B8CAA509D98 /* SEGCrypto.h */,
+				7CD7D74FEAF1C71BEF899A1CE631B1D7 /* SEGFileStorage.h */,
+				B53B5B5963673C13298E30E1922ACE36 /* SEGFileStorage.m */,
+				5E48949C5972C0FBBA351BECF9001610 /* SEGGroupPayload.h */,
+				473D500875A4150C6B8E08FD35441311 /* SEGGroupPayload.m */,
+				3038970ADBAAD3CE7DEC6BA8BF8EA1E9 /* SEGHTTPClient.h */,
+				CFE0F1C721AAF3A4573160E257C0D805 /* SEGHTTPClient.m */,
+				E6EEB8B0493462CBB46A871E74373501 /* SEGIdentifyPayload.h */,
+				084659354366C3B0893D880D59E33B40 /* SEGIdentifyPayload.m */,
+				9657E11893483007D075E0D869300265 /* SEGIntegration.h */,
+				9770726BC4107FEBF3071E12335DCA6C /* SEGIntegrationFactory.h */,
+				7CF5DFC46BF7A12E5B713512544AA46E /* SEGIntegrationsManager.h */,
+				C843D27463705459367E5289FBA27DE1 /* SEGIntegrationsManager.m */,
+				B32FC3AE0D63EBC79B907C9012C4593D /* SEGMacros.h */,
+				912FE49E770E630D73D2E5BB4A6CE339 /* SEGMiddleware.h */,
+				633CBAC4E4D8968BF3E5F8CC5105C797 /* SEGMiddleware.m */,
+				A4CADA0B62023100513E40F2A31B7A83 /* SEGPayload.h */,
+				1CBE14D014B38542DD303F514A54084B /* SEGPayload.m */,
+				5F5841794211F46E22219B18028FE4FF /* SEGReachability.h */,
+				A184D66F1A1D66B4E713BA6EC7B1EDCB /* SEGReachability.m */,
+				77E3CC94E0C693286A7ABFFAB48C1D1E /* SEGScreenPayload.h */,
+				02BED06CBA41BCCDE54BF152626F9CD7 /* SEGScreenPayload.m */,
+				8E342C4991575FCE8779322CF8A85030 /* SEGScreenReporting.h */,
+				5274EECF13CB8461072F574D9802E425 /* SEGSegmentIntegration.h */,
+				11BE47006E98291D498C661A1FFDFC0A /* SEGSegmentIntegration.m */,
+				AFEF0FBBCA87C1FDFC955E8428D86219 /* SEGSegmentIntegrationFactory.h */,
+				7812F200CC851DD0CC51BBC917F4386C /* SEGSegmentIntegrationFactory.m */,
+				4FF8422FDB6492435F179BFAE8F4699B /* SEGSerializableValue.h */,
+				A08D2B9B9A538068857083097E8E4139 /* SEGStorage.h */,
+				3F17D63FA4F8B9724393C7FA17780926 /* SEGStoreKitTracker.h */,
+				CDC3DAC14B761BBB956988E6D1C5B240 /* SEGStoreKitTracker.m */,
+				7FDD4E607A1BA1EF97554C8CD2922363 /* SEGTrackPayload.h */,
+				1173AF19327ECF78CCCB5E8D4532AD29 /* SEGTrackPayload.m */,
+				EE701F5E8089805799A0863CDADE4ADE /* SEGUserDefaultsStorage.h */,
+				0BFA27B236C11604C90CE5EC6C0EA0B7 /* SEGUserDefaultsStorage.m */,
+				69964D65886BDF9AE753F64A4A8A58C2 /* SEGUtils.h */,
+				6220D6FF558346B355499D993C55943D /* SEGUtils.m */,
+				8A78A4F972AA8AD2F85014904920D76E /* UIViewController+SEGScreen.h */,
+				CE5E94BFE3C8D37EBDCD8381EE300A7B /* UIViewController+SEGScreen.m */,
+				92AD5EEB0C1ADA1B6589DC2B6616B3A3 /* Support Files */,
+			);
+			name = Analytics;
+			path = Analytics;
+			sourceTree = "<group>";
+		};
 		B0B83EE600B4D172F1CED89733B4D0BA = {
 			isa = PBXGroup;
 			children = (
-				DBEE5751C7E8C14ECDF399D1EEC348D4 /* Analytics */,
+				9EC9B4B6DEA3534373FDD64B3A991C9F /* Analytics */,
 				C63062663611515520493BA1973BFBE6 /* Frameworks */,
 				9567C3203A8BA93A396CDC914E81C896 /* Products */,
 			);
@@ -155,113 +233,43 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		DBEE5751C7E8C14ECDF399D1EEC348D4 /* Analytics */ = {
-			isa = PBXGroup;
-			children = (
-				86C02C56E697DE473E0339A9C5D45E39 /* NSData+SEGGZIP.h */,
-				87973E4CC841D32625B7584E7923184C /* NSData+SEGGZIP.m */,
-				0E982311E63D4C1B67A74F0107F91CF3 /* SEGAES256Crypto.h */,
-				57BCDE47DE3FA46A5B9B904D4D271DAA /* SEGAES256Crypto.m */,
-				395F97E041E0EDCE59932300D8EC1248 /* SEGAliasPayload.h */,
-				095C5C5C5BA18A89DB15C72957BA39F8 /* SEGAliasPayload.m */,
-				D0716FFC24025F639CEC5755D64F9727 /* SEGAnalytics.h */,
-				DF28A51C602D9342223E1A8373424DB0 /* SEGAnalytics.m */,
-				30FE1315AD9692DC707C005A87687A78 /* SEGAnalyticsConfiguration.h */,
-				3D6440F0C776855F85810F3D881A0760 /* SEGAnalyticsConfiguration.m */,
-				558468E30C5D71EF1F3F71A2EF0BB5E2 /* SEGAnalyticsUtils.h */,
-				6CDC67D210F55F9D92C967DA182B8950 /* SEGAnalyticsUtils.m */,
-				E9CA54EC2B3293E40C3B6E7E0CB7537A /* SEGContext.h */,
-				CF9B4E2CC1CDD4403470645361B71662 /* SEGContext.m */,
-				A4D3EFCBBD269E32531636F8DB42E824 /* SEGCrypto.h */,
-				A329F138324220070C52863E4D17A376 /* SEGFileStorage.h */,
-				5A975BF1754D7666959CAC88505D4322 /* SEGFileStorage.m */,
-				1CAA16E3B9364EBB778599AA5A6E71E1 /* SEGGroupPayload.h */,
-				E5EF0AADA7FB015FB1F692D0E459D2E8 /* SEGGroupPayload.m */,
-				34C69FD89FF348F85F9B4F10CA9138BD /* SEGHTTPClient.h */,
-				81500655E5D2611FB888228941BA6AFD /* SEGHTTPClient.m */,
-				1ED04E2095DEE74BA5875F7B60A44019 /* SEGIdentifyPayload.h */,
-				5BD026AC14A77DB93F4FBD5DFC7FBAF1 /* SEGIdentifyPayload.m */,
-				7DDDC692492018C5E12E9A154543D1DC /* SEGIntegration.h */,
-				189CE04764EC3BE3568694C63CDB8FB7 /* SEGIntegrationFactory.h */,
-				5A07A6DA05A7C000181F0557862526BE /* SEGIntegrationsManager.h */,
-				CA7AF6645525A4D3465AF63D9D7232DF /* SEGIntegrationsManager.m */,
-				1DFB3EAA5D1FF4212E2CD4E07D135135 /* SEGMiddleware.h */,
-				BA4A6C51BB158EE57F4149E64B2E0803 /* SEGMiddleware.m */,
-				B10F35382FD762DEEA00AB1BB5142216 /* SEGPayload.h */,
-				8A5BB2F66377ADEBE31ADA1D0D9511E7 /* SEGPayload.m */,
-				D546585E77202D3C2193570DDD31F0AD /* SEGReachability.h */,
-				7543DA43234936F832FD1FF6CBAC757F /* SEGReachability.m */,
-				9FB5BE259D72DA355076DF5B0A272DA4 /* SEGScreenPayload.h */,
-				3DFEC65726FA8A74438FE99EBFF917EB /* SEGScreenPayload.m */,
-				D532AAF70BB2064FFB8FD6EACAA25996 /* SEGSegmentIntegration.h */,
-				AD2C98DB0C7A6DC6133E685AAEB0C71D /* SEGSegmentIntegration.m */,
-				9B1787FB998ADA1193E150256C152755 /* SEGSegmentIntegrationFactory.h */,
-				3960D03617D124CCB857914C5EF60FA3 /* SEGSegmentIntegrationFactory.m */,
-				D7595C2FB4B4E77AE87AF121138DF6E6 /* SEGSerializableValue.h */,
-				396914E424FE4DDF3C8697AEFC29733F /* SEGStorage.h */,
-				3D7D6593DEDFA8F9151A7EFF25889363 /* SEGStoreKitTracker.h */,
-				F6A9112EE0C42B21E329067EAF68D953 /* SEGStoreKitTracker.m */,
-				D190516DD5A6C21E50162A2815625762 /* SEGTrackPayload.h */,
-				0D62077F618144DE5D97C976ABB6AA08 /* SEGTrackPayload.m */,
-				CE7ABD02508A642E271F079E5384EF2E /* SEGUserDefaultsStorage.h */,
-				7D5C5D2D723D328F2323986EE43E6765 /* SEGUserDefaultsStorage.m */,
-				E7AA7315FABF64681E1487EA3856C037 /* SEGUtils.h */,
-				1A9A65631E0548CFB70AF41A0A1F02E5 /* SEGUtils.m */,
-				E08EA0DECF510FA2087746782ED8603D /* UIViewController+SEGScreen.h */,
-				4B7CF4D2A82C4094BDD1E07C72B7D28D /* UIViewController+SEGScreen.m */,
-				E59A7BFDD0FF60ABDD0EE0E2683D5CBB /* Support Files */,
-			);
-			name = Analytics;
-			path = Analytics;
-			sourceTree = "<group>";
-		};
-		E59A7BFDD0FF60ABDD0EE0E2683D5CBB /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				66B6795DF3D4DE33DBD6EA2668BA7834 /* Analytics-dummy.m */,
-				B394236D1760702091411E481758F181 /* Analytics-prefix.pch */,
-				4B3305E57DD7F60842D7725C23A4BF2B /* Analytics.debug.xcconfig */,
-				9C91FEE18D331F33D183AC9C1E0CB18D /* Analytics.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/Analytics";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		73CFAFE27B261DE8DEE025C6AFE6F1DA /* Headers */ = {
+		85A489F64B90C0E7195AF0D275A711DE /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				722C54810ECD8554BD0C4F1A10A1A563 /* NSData+SEGGZIP.h in Headers */,
-				32BF8ACBAE6358ABA5680398E1A50601 /* SEGAES256Crypto.h in Headers */,
-				58BB1A75EC72D4C03876C5B7CF987FC7 /* SEGAliasPayload.h in Headers */,
-				2A2D5CA4F69E8C3382BE091878054F04 /* SEGAnalytics.h in Headers */,
-				35C55037EBD6144A64BA6A0CE5489C42 /* SEGAnalyticsConfiguration.h in Headers */,
-				95A7946CA50D0F4AA4900D17AAA4A627 /* SEGAnalyticsUtils.h in Headers */,
-				5FF23193496FCABD2E4E3ED4FAD078F9 /* SEGContext.h in Headers */,
-				797610220FA036EAB1D5E7F933F3E2BE /* SEGCrypto.h in Headers */,
-				83C2656E40551E4F15E194036E8C577C /* SEGFileStorage.h in Headers */,
-				AF408A820C6C2DE049423528B5531962 /* SEGGroupPayload.h in Headers */,
-				C0BBF50DCF86209FE054A7B1F14975EF /* SEGHTTPClient.h in Headers */,
-				90FCD954E037DFD7EF1E75CE5D1C4D01 /* SEGIdentifyPayload.h in Headers */,
-				FEBB3A818F157281F5B7FC599C3F1A3B /* SEGIntegration.h in Headers */,
-				3816AB69BC6C3B1E72112103255AD868 /* SEGIntegrationFactory.h in Headers */,
-				192C8A0887B6DC67FBC05CE52606673B /* SEGIntegrationsManager.h in Headers */,
-				041C02633E8872004E248780365F9C0B /* SEGMiddleware.h in Headers */,
-				C5A549E631E5DD39891D22903306C099 /* SEGPayload.h in Headers */,
-				E3C9B95A7878F1A99DEE3AA0052A3F1C /* SEGReachability.h in Headers */,
-				DE7AF9411C23DBAB22C7BF7290A45755 /* SEGScreenPayload.h in Headers */,
-				40128566E7ADAB6AE8C5424BC65BE0BE /* SEGSegmentIntegration.h in Headers */,
-				A9442F6ADC4DD58B0C73B8659FE11FFA /* SEGSegmentIntegrationFactory.h in Headers */,
-				43C3F6B2571AA4011560D8AD6D7C2567 /* SEGSerializableValue.h in Headers */,
-				13E25849C098F379676046D161EB7E33 /* SEGStorage.h in Headers */,
-				F464A749621317B2FF027914DD0AD3EF /* SEGStoreKitTracker.h in Headers */,
-				8FF4B493B0A68AFAD59D25C0C9F161AC /* SEGTrackPayload.h in Headers */,
-				4F31C45BDF64DD4EF366CBED5D681B91 /* SEGUserDefaultsStorage.h in Headers */,
-				06E3ED7D20567C343DEFC817B4B11302 /* SEGUtils.h in Headers */,
-				73373C9B53CB444419427A061CF42B14 /* UIViewController+SEGScreen.h in Headers */,
+				EF00D9F104435D8A30F359206F9BA0FB /* NSData+SEGGZIP.h in Headers */,
+				B92195D43ECBB825175C5007BEE71F99 /* SEGAES256Crypto.h in Headers */,
+				5A4959C4421BE95BB04651927493C975 /* SEGAliasPayload.h in Headers */,
+				B794BC0252E2F52DE5E891F884734818 /* SEGAnalytics.h in Headers */,
+				BC417E7052076505CCA39A56B3214ECF /* SEGAnalyticsConfiguration.h in Headers */,
+				B213880A196CD8BAC349349931E00152 /* SEGAnalyticsUtils.h in Headers */,
+				BBD29AE541D97929206AF78963FE934C /* SEGContext.h in Headers */,
+				5E0355630083E3AB8BB3973B84378D6B /* SEGCrypto.h in Headers */,
+				30D687693136C187A2F7BC02A8E23A65 /* SEGFileStorage.h in Headers */,
+				94EEDBD4332DC4001CD905C5E8FDD839 /* SEGGroupPayload.h in Headers */,
+				3ED30E8CE7BCB4CE535B32E3EA9DD668 /* SEGHTTPClient.h in Headers */,
+				CD08BB731B83B5B6B945A85566FC185F /* SEGIdentifyPayload.h in Headers */,
+				519DA461F3359E4EDE34237CE833066F /* SEGIntegration.h in Headers */,
+				1ADA07DB6EEB47EC3B79782475084C7C /* SEGIntegrationFactory.h in Headers */,
+				2CC0E9A80596C20C024B520F33C7EBB2 /* SEGIntegrationsManager.h in Headers */,
+				3B01D0400C114CBC1EBFB30AC92B5F05 /* SEGMacros.h in Headers */,
+				837A51FCEDDA393D47B73666C379DB31 /* SEGMiddleware.h in Headers */,
+				A771735E523B19824AF1A884C1D816E6 /* SEGPayload.h in Headers */,
+				EE061E4727E6F68F3BC2EBA5C4844113 /* SEGReachability.h in Headers */,
+				12C186C16C8FBD3F9A34D245E62BFDD5 /* SEGScreenPayload.h in Headers */,
+				8A011727EF4EBC88699D5464DF8B1790 /* SEGScreenReporting.h in Headers */,
+				335C213A579CB81F1C9CADBBC17690AE /* SEGSegmentIntegration.h in Headers */,
+				1CB251F2890FBC21E40B400A519B7647 /* SEGSegmentIntegrationFactory.h in Headers */,
+				4FE57AF2604CD55B1CFE0B4B7CB2E6D7 /* SEGSerializableValue.h in Headers */,
+				58649D7415F901EA76DC6BA7F443D559 /* SEGStorage.h in Headers */,
+				A06CEAB4D3372AA61DD9FA0FAC5D07A9 /* SEGStoreKitTracker.h in Headers */,
+				583BA668F43B394419030A33CDE90BC5 /* SEGTrackPayload.h in Headers */,
+				9EFCAFD0FFA4992E218E0F6C5C28E1AC /* SEGUserDefaultsStorage.h in Headers */,
+				797773EDB5F07FF7DB18D19380D5F5CA /* SEGUtils.h in Headers */,
+				E8FE2C387D95F9C39FC17C6DD11D2717 /* UIViewController+SEGScreen.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,11 +278,11 @@
 /* Begin PBXNativeTarget section */
 		428EE321470913F61A7C253ACF3B4D53 /* Analytics */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 07366879B35BBAB998D0BF55B53D5942 /* Build configuration list for PBXNativeTarget "Analytics" */;
+			buildConfigurationList = E7D3EEB74832CA174B7FEE309FE97573 /* Build configuration list for PBXNativeTarget "Analytics" */;
 			buildPhases = (
-				73CFAFE27B261DE8DEE025C6AFE6F1DA /* Headers */,
-				00CAA364D0AC278CB02338DE7DD36B90 /* Sources */,
-				5B36B4E4F6B727974F3BA3626E760801 /* Frameworks */,
+				85A489F64B90C0E7195AF0D275A711DE /* Headers */,
+				81E6BF42BA12A338B19515AAB68D6D3B /* Sources */,
+				410CFE456463C8A9598DC675DA9A8246 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -313,67 +321,43 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		00CAA364D0AC278CB02338DE7DD36B90 /* Sources */ = {
+		81E6BF42BA12A338B19515AAB68D6D3B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B3C0DBA580E61FAD27AD677752464B5 /* Analytics-dummy.m in Sources */,
-				9D5F00C5C60DEEBF78448D97567BC359 /* NSData+SEGGZIP.m in Sources */,
-				90A62A10BD54D07E559834D745E046E9 /* SEGAES256Crypto.m in Sources */,
-				8C18951FDA09FD401C93CD5778977BB5 /* SEGAliasPayload.m in Sources */,
-				4041A8CE7092B316052081E7354D35CC /* SEGAnalytics.m in Sources */,
-				05371FB90A12A7D346B4F843A5AE3609 /* SEGAnalyticsConfiguration.m in Sources */,
-				927492645BAEF6FC4EADC7F7838BD874 /* SEGAnalyticsUtils.m in Sources */,
-				6C26D31379BE80E4E1098D36912B4AFC /* SEGContext.m in Sources */,
-				D3A520AC9B1D585CAEFF9C8557BD46D2 /* SEGFileStorage.m in Sources */,
-				C78C172A712F4D6AF755EA7D8F6D9F28 /* SEGGroupPayload.m in Sources */,
-				075268674B36513E653896EF5E740AFB /* SEGHTTPClient.m in Sources */,
-				00E360B32E86E256161A29F61E1BC291 /* SEGIdentifyPayload.m in Sources */,
-				DAEB3081BDF9FBC097DAD82B5253E303 /* SEGIntegrationsManager.m in Sources */,
-				8C600ACAC692696391230BAC4F49D7FA /* SEGMiddleware.m in Sources */,
-				7975197F6C8D7DDB50CA9BE68AE20848 /* SEGPayload.m in Sources */,
-				DA9972F7C703D2BD592E5BCC3E658770 /* SEGReachability.m in Sources */,
-				83A39E8F44D386AAF503A41EBA392321 /* SEGScreenPayload.m in Sources */,
-				10664163639AC1FEE77AEB8556CFF96C /* SEGSegmentIntegration.m in Sources */,
-				66489E763B7D77D1C44AFFD33C3D5967 /* SEGSegmentIntegrationFactory.m in Sources */,
-				99F3F8885823E0E346833AB5401DF482 /* SEGStoreKitTracker.m in Sources */,
-				446A6F807898F296DEE00CA10D809626 /* SEGTrackPayload.m in Sources */,
-				AC7380436A16508127FF220C4681F453 /* SEGUserDefaultsStorage.m in Sources */,
-				6D409D560A41464BA6596074E4A09A3D /* SEGUtils.m in Sources */,
-				F2E20BCA1BA12471CA70E4DFD1212AD6 /* UIViewController+SEGScreen.m in Sources */,
+				91EEC5293EA07769380F2EDA45194B18 /* Analytics-dummy.m in Sources */,
+				1D013DD939FA49E6DC34F42FA66484A7 /* NSData+SEGGZIP.m in Sources */,
+				98EED74686A3092E3594E5244B0A4477 /* SEGAES256Crypto.m in Sources */,
+				A93B7ADE75ED1752F8E68069D309597B /* SEGAliasPayload.m in Sources */,
+				A33560B7A607B97776F3FC92B580B5E5 /* SEGAnalytics.m in Sources */,
+				8FFAE8D2A03091F249C626D18358E514 /* SEGAnalyticsConfiguration.m in Sources */,
+				BE72639E86FA8282DFE72084F6CA466A /* SEGAnalyticsUtils.m in Sources */,
+				E30DF2CC05E47E859CC38CE6ADC02DB4 /* SEGContext.m in Sources */,
+				90FED71764B0E26465D7F2509D13FB72 /* SEGFileStorage.m in Sources */,
+				30BE973C9B11ADDC14C51E546B6028FA /* SEGGroupPayload.m in Sources */,
+				9969A950BA2D4B7DCE57EEB440088D97 /* SEGHTTPClient.m in Sources */,
+				B9ED87BECE782F6F225A0C2027271E48 /* SEGIdentifyPayload.m in Sources */,
+				EA26ECB350CD3841E80826225052ADE0 /* SEGIntegrationsManager.m in Sources */,
+				3BD9460A7E7121CA835C3587DF2F745C /* SEGMiddleware.m in Sources */,
+				B7F877813EF2085B2E27276DF952C747 /* SEGPayload.m in Sources */,
+				FA51BF0F94CE44BEDA9B2B1041F9650D /* SEGReachability.m in Sources */,
+				8D8DCEDEE0AF1EC5EF2EC535D11104BC /* SEGScreenPayload.m in Sources */,
+				BA45B42DE40EE823F5249C27D62E3DCE /* SEGSegmentIntegration.m in Sources */,
+				6DB9D767B4EE26FD10EE1574ECA8E324 /* SEGSegmentIntegrationFactory.m in Sources */,
+				F7A65421B60425B646720E3B5F9F5159 /* SEGStoreKitTracker.m in Sources */,
+				E85CFE5E49EA0C86125141074D3436B8 /* SEGTrackPayload.m in Sources */,
+				1999A4EF474004407F182D045AE987F1 /* SEGUserDefaultsStorage.m in Sources */,
+				0C98D7DC840E0CEB86C643137B4C766D /* SEGUtils.m in Sources */,
+				D2116E07B412CF7C3693C6F2214370B6 /* UIViewController+SEGScreen.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1789EB6D3DCC8D4E91739DBEC00EC466 /* Debug */ = {
+		554E5E85AEA29DEE870A4E60D4952921 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B3305E57DD7F60842D7725C23A4BF2B /* Analytics.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/Analytics/Analytics-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Analytics;
-				PRODUCT_NAME = Analytics;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		8B988CE135507FCBE527274F7BDFD95B /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9C91FEE18D331F33D183AC9C1E0CB18D /* Analytics.release.xcconfig */;
+			baseConfigurationReference = 482B7AE35456C1EDCEB59C31E9A60A25 /* Analytics.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -520,23 +504,47 @@
 			};
 			name = Debug;
 		};
+		DEBE552E4669E27DD3782EE75A5D2EEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 52DE542B271315BC44669BCA7FBBE9EF /* Analytics.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/Analytics/Analytics-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Analytics;
+				PRODUCT_NAME = Analytics;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		07366879B35BBAB998D0BF55B53D5942 /* Build configuration list for PBXNativeTarget "Analytics" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1789EB6D3DCC8D4E91739DBEC00EC466 /* Debug */,
-				8B988CE135507FCBE527274F7BDFD95B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		8176F1FC40389E4935A577C115BED6C2 /* Build configuration list for PBXProject "Analytics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DE81BEC45C82A99E1A470E79C6952FF6 /* Debug */,
 				A604D7CB8D01833894E49A28C67D60EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E7D3EEB74832CA174B7FEE309FE97573 /* Build configuration list for PBXNativeTarget "Analytics" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEBE552E4669E27DD3782EE75A5D2EEA /* Debug */,
+				554E5E85AEA29DEE870A4E60D4952921 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

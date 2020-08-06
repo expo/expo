@@ -143,6 +143,16 @@ export declare type LocationHeadingObject = {
  */
 export declare type LocationHeadingCallback = (location: LocationHeadingObject) => any;
 /**
+ * An object of options for forward and reverse geocoding.
+ */
+export declare type LocationGeocodingOptions = {
+    /**
+     * Whether to force using Google Maps API instead of the native implementation.
+     * Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
+     */
+    useGoogleMaps?: boolean;
+};
+/**
  * Type representing a result of `geocodeAsync`.
  */
 export declare type LocationGeocodedLocation = {
@@ -155,13 +165,16 @@ export declare type LocationGeocodedLocation = {
  * Type representing a result of `reverseGeocodeAsync`.
  */
 export declare type LocationGeocodedAddress = {
-    city: string;
-    street: string;
-    region: string;
-    country: string;
-    postalCode: string;
-    name: string;
+    city: string | null;
+    district: string | null;
+    street: string | null;
+    region: string | null;
+    subregion: string | null;
+    country: string | null;
+    postalCode: string | null;
+    name: string | null;
     isoCountryCode: string | null;
+    timezone: string | null;
 };
 /**
  * Represents subscription object returned by methods watching for new locations or headings.

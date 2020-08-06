@@ -42,8 +42,10 @@ const MyProjectsQuery = gql`
         iconUrl
         lastPublishedTime
         name
+        packageUsername
         packageName
         privacy
+        sdkVersion
       }
     }
   }
@@ -140,6 +142,7 @@ const OtherProjectsQuery = gql`
           packageUsername
           description
           lastPublishedTime
+          sdkVersion
         }
       }
     }

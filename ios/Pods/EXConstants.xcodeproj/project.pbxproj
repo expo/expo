@@ -221,7 +221,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		9E53142D575F07386C534DF6EADC030C /* Release */ = {
+		8E140A486F9A4A417FB4FC922DEFBAA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A0785C481E31219874DE4E1D5D5625D3 /* EXConstants.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXConstants/EXConstants-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXConstants;
+				PRODUCT_NAME = EXConstants;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CFF8B470823BE3B7B42F46B84D824C36 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0429C693701D6303308DA91BC233FC35 /* EXConstants.release.xcconfig */;
 			buildSettings = {
@@ -241,6 +266,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -370,30 +396,6 @@
 			};
 			name = Debug;
 		};
-		FC8A282DC29D8E7CD8AF95A592136132 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A0785C481E31219874DE4E1D5D5625D3 /* EXConstants.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXConstants/EXConstants-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXConstants;
-				PRODUCT_NAME = EXConstants;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -409,8 +411,8 @@
 		F03AF8CCC2C5596C6ECDA018962480F7 /* Build configuration list for PBXNativeTarget "EXConstants" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FC8A282DC29D8E7CD8AF95A592136132 /* Debug */,
-				9E53142D575F07386C534DF6EADC030C /* Release */,
+				8E140A486F9A4A417FB4FC922DEFBAA4 /* Debug */,
+				CFF8B470823BE3B7B42F46B84D824C36 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

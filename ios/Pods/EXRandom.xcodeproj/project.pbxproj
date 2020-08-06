@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		24775954E5B6A49A4ED6B77E7192D614 /* Debug */ = {
+		0C54F6831DCA3BEC36AF70BA1FE695D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C7A324C557D5242205C0775EFE3EB37 /* EXRandom.debug.xcconfig */;
 			buildSettings = {
@@ -215,6 +215,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -283,31 +284,6 @@
 			};
 			name = Debug;
 		};
-		777366036D44C3DBC5BE1359EDFD362D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXRandom;
-				PRODUCT_NAME = EXRandom;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		7E3223FFA731463206A0217DA17610E5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -368,14 +344,40 @@
 			};
 			name = Release;
 		};
+		DFEA9A646AAC3AA991D090754F659CAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXRandom;
+				PRODUCT_NAME = EXRandom;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		9F9B00B953B16BEFB7A472A49D295319 /* Build configuration list for PBXNativeTarget "EXRandom" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				24775954E5B6A49A4ED6B77E7192D614 /* Debug */,
-				777366036D44C3DBC5BE1359EDFD362D /* Release */,
+				0C54F6831DCA3BEC36AF70BA1FE695D8 /* Debug */,
+				DFEA9A646AAC3AA991D090754F659CAE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

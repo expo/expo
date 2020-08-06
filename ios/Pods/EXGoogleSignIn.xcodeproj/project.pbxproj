@@ -237,30 +237,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		31D8651CD395FC2150AC1A4914E1AA14 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D7E3967386337674F982FB48ADAD63C /* EXGoogleSignIn.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXGoogleSignIn/EXGoogleSignIn-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXGoogleSignIn;
-				PRODUCT_NAME = EXGoogleSignIn;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		408DFC25068500F5B628C49822CA5E22 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -321,9 +297,9 @@
 			};
 			name = Release;
 		};
-		C21813443CCD9F591B003450E915AEB7 /* Release */ = {
+		CAF85128D0A7AB3838AAAE8BDF9B6B0B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EF239A421C2DD4BF58E13A68118E0F40 /* EXGoogleSignIn.release.xcconfig */;
+			baseConfigurationReference = 3D7E3967386337674F982FB48ADAD63C /* EXGoogleSignIn.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -341,10 +317,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		D2AB5D46DD02E812AC57732ACF5716DA /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -410,14 +386,40 @@
 			};
 			name = Debug;
 		};
+		E76CD4BD8A2021F1D137A07C483A90BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EF239A421C2DD4BF58E13A68118E0F40 /* EXGoogleSignIn.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXGoogleSignIn/EXGoogleSignIn-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXGoogleSignIn;
+				PRODUCT_NAME = EXGoogleSignIn;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		241E2E8DEB7518AFC774C7053B9382B5 /* Build configuration list for PBXNativeTarget "EXGoogleSignIn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				31D8651CD395FC2150AC1A4914E1AA14 /* Debug */,
-				C21813443CCD9F591B003450E915AEB7 /* Release */,
+				CAF85128D0A7AB3838AAAE8BDF9B6B0B /* Debug */,
+				E76CD4BD8A2021F1D137A07C483A90BF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

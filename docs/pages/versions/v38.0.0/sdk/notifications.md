@@ -32,6 +32,8 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <InstallSection packageName="expo-notifications" />
 
+> Note: We're actively identifying and fixing bugs since this is a brand new module. Please take a look [here](https://github.com/expo/expo/issues?q=is%3Aopen+is%3Aissue+label%3ANotifications) at the open issues for `expo-notifications` before opening a new one. If you hit a blocking issue that we haven't resolved yet, please use the [`legacy Notifications module`](../legacy-notifications/) which will remain available until SDK 40.
+
 ### Android
 
 Open your `app.json` and add the following inside of the "expo" field:
@@ -154,33 +156,23 @@ export default function App() {
         <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
       </View>
       <Button
-        title="Press to Send Notification"
+        title="Press to schedule a notification"
         onPress={async () => {
-          await sendPushNotification(expoPushToken);
+          await schedulePushNotification();
         }}
       />
     </View>
   );
 }
 
-// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
 async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: expoPushToken,
-    sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
-    data: { data: 'goes here' },
-  };
-
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "You've got mail! 📬",
+      body: 'Here is the notification body',
+      data: { data: 'goes here' },
     },
-    body: JSON.stringify(message),
+    trigger: { seconds: 2 },
   });
 }
 
@@ -218,7 +210,7 @@ async function registerForPushNotificationsAsync() {
 
 </SnackInline>
 
-> **Note** this demo might not fully work when you run it from the snack, because `app.json` needs to contain `useNextNotificationsApi` flag. Unfortunately, the snack doesn't support custom `app.json`.
+> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom `app.json` files.
 
 ## Android push notification payload specification
 
@@ -1014,7 +1006,8 @@ export type NotificationContent = {
       vibrationPattern?: number[];
       // Format: '#AARRGGBB'
       color?: string;
-    });
+    }
+);
 ```
 
 ### `NotificationContentInput`

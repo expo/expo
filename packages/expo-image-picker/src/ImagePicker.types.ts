@@ -4,7 +4,7 @@ export { PermissionResponse as CameraPermissionResponse };
 
 export type CameraRollPermissionResponse = PermissionResponse & {
   // iOS only
-  scope?: 'all' | 'limited' | 'none';
+  accessPrivileges?: 'all' | 'limited' | 'none';
 };
 
 export enum MediaTypeOptions {
@@ -47,6 +47,7 @@ export type ImagePickerOptions = {
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
+  videoMaxDuration?: number;
 };
 
 export type OpenFileBrowserOptions = {

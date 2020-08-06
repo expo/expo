@@ -237,7 +237,7 @@ function ProfileHeader({ data }: Pick<Props, 'data'>) {
 
 function ProfileProjectsSection({
   data: {
-    user: { apps, appCount },
+    user: { apps, appCount, ...user },
   },
   isOwnProfile,
   navigation,
@@ -250,6 +250,8 @@ function ProfileProjectsSection({
     });
   };
 
+  const currentUsername = username || user.username;
+
   const renderApp = (app: any, i: number) => {
     return (
       <ProjectListItem
@@ -258,7 +260,9 @@ function ProfileProjectsSection({
         unlisted={app.privacy === 'unlisted'}
         image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
         title={app.name}
+        sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
+        experienceInfo={{ username: app.username || currentUsername, slug: app.packageName }}
       />
     );
   };

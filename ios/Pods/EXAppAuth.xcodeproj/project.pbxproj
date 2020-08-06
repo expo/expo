@@ -301,9 +301,9 @@
 			};
 			name = Debug;
 		};
-		26678D4697B3FCA2036B3464BEC6C884 /* Release */ = {
+		3E0E20170A503B8C551153E0B252D32A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BB37AED009C654E797CCF262639C1F2F /* EXAppAuth.release.xcconfig */;
+			baseConfigurationReference = 1EECDCA63FEFAC518F8BCF0FFDDB0DD8 /* EXAppAuth.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -321,10 +321,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		5C30F58F1450877906628FE66A497904 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -386,9 +386,9 @@
 			};
 			name = Release;
 		};
-		9779B11E429D51CB381BE14FB95BEB4D /* Debug */ = {
+		F21500B81AF4395F3A5761CC10A91396 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1EECDCA63FEFAC518F8BCF0FFDDB0DD8 /* EXAppAuth.debug.xcconfig */;
+			baseConfigurationReference = BB37AED009C654E797CCF262639C1F2F /* EXAppAuth.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -406,9 +406,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -425,8 +427,8 @@
 		4DAEDC235277BFD5CE3F2D91F40EDE21 /* Build configuration list for PBXNativeTarget "EXAppAuth" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9779B11E429D51CB381BE14FB95BEB4D /* Debug */,
-				26678D4697B3FCA2036B3464BEC6C884 /* Release */,
+				3E0E20170A503B8C551153E0B252D32A /* Debug */,
+				F21500B81AF4395F3A5761CC10A91396 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -21,6 +21,7 @@ typedef NSMutableDictionary<SDImageCoderOption, id> SDImageCoderMutableOptions;
  @note works for `SDImageCoder`.
  */
 FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderDecodeFirstFrameOnly;
+
 /**
  A CGFloat value which is greater than or equal to 1.0. This value specify the image scale factor for decoding. If not provide, use 1.0. (NSNumber)
  @note works for `SDImageCoder`, `SDProgressiveImageCoder`, `SDAnimatedImageCoder`.
@@ -37,6 +38,7 @@ FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderDecodePreserveAs
 /**
  A CGSize value indicating whether or not to generate the thumbnail images (or bitmap images from vector format). When this value is provided, the decoder will generate a thumbnail image which pixel size is smaller than or equal to (depends the `.preserveAspectRatio`) the value size.
  Defaults to CGSizeZero, which means no thumbnail generation at all.
+ @note Supports for animated image as well.
  @note When you pass `.preserveAspectRatio == NO`, the thumbnail image is stretched to match each dimension. When `.preserveAspectRatio == YES`, the thumbnail image's width is limited to pixel size's width, the thumbnail image's height is limited to pixel size's height. For common cases, you can just pass a square size to limit both.
  @note works for `SDImageCoder`, `SDProgressiveImageCoder`, `SDAnimatedImageCoder`.
  */
@@ -56,12 +58,42 @@ FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeFirstFrame
 FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeCompressionQuality;
 
 /**
+ A UIColor(NSColor) value to used for non-alpha image encoding when the input image has alpha channel, the background color will be used to compose the alpha one. If not provide, use white color.
+ @note works for `SDImageCoder`
+ */
+FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeBackgroundColor;
+
+/**
+ A CGSize value indicating the max image resolution in pixels during encoding. For vector image, this also effect the output vector data information about width and height. The encoder will not generate the encoded image larger than this limit. Note it always use the aspect ratio of input image..
+ Defaults to CGSizeZero, which means no max size limit at all.
+ @note Supports for animated image as well.
+ @note The output image's width is limited to pixel size's width, the output image's height is limited to pixel size's height. For common cases, you can just pass a square size to limit both.
+ @note works for `SDImageCoder`
+ */
+FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeMaxPixelSize;
+
+/**
+ A NSUInteger value specify the max output data bytes size after encoding. Some lossy format like JPEG/HEIF supports the hint for codec to automatically reduce the quality and match the file size you want. Note this option will override the `SDImageCoderEncodeCompressionQuality`, because now the quality is decided by the encoder. (NSNumber)
+ @note This is a hint, no guarantee for output size because of compression algorithm limit. And this options does not works for vector images.
+ @note works for `SDImageCoder`
+ */
+FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeMaxFileSize;
+
+/**
+ A Boolean value indicating the encoding format should contains a thumbnail image into the output data. Only some of image format (like JPEG/HEIF/AVIF) support this behavior. The embed thumbnail will be used during next time thumbnail decoding (provided `.thumbnailPixelSize`), which is faster than full image thumbnail decoding. (NSNumber)
+ Defaults to NO, which does not embed any thumbnail.
+ @note The thumbnail image's pixel size is not defined, the encoder can choose the proper pixel size which is suitable for encoding quality.
+ @note works for `SDImageCoder`
+ */
+FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeEmbedThumbnail;
+
+/**
  A SDWebImageContext object which hold the original context options from top-level API. (SDWebImageContext)
  This option is ignored for all built-in coders and take no effect.
- But this may be useful for some custom coders, because some business logic may dependent on things other than image or image data inforamtion only.
+ But this may be useful for some custom coders, because some business logic may dependent on things other than image or image data information only.
  See `SDWebImageContext` for more detailed information.
  */
-FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderWebImageContext;
+FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderWebImageContext API_DEPRECATED("The coder component will be seperated from Core subspec in the future. Update your code to not rely on this context option.", macos(10.10, API_TO_BE_DEPRECATED), ios(8.0, API_TO_BE_DEPRECATED), tvos(9.0, API_TO_BE_DEPRECATED), watchos(2.0, API_TO_BE_DEPRECATED));;
 
 #pragma mark - Coder
 /**

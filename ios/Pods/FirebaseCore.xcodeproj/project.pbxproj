@@ -495,7 +495,7 @@
 			};
 			name = Release;
 		};
-		978C812759D24062F932AEAA468F4DF1 /* Debug */ = {
+		9F7584563D7D252CEED033DB9A18A27C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B0DB3D3582E0AFEF0D5C72AFCCFEFCB3 /* FirebaseCore.debug.xcconfig */;
 			buildSettings = {
@@ -513,11 +513,12 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		C8FE5AB41C79402A3F006B8F5E8EF815 /* Release */ = {
+		FAC36AC10DE70B11C3B91FE7B1B78C7C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4DD78EE9FA2DA6E18BBE549E0C43558B /* FirebaseCore.release.xcconfig */;
 			buildSettings = {
@@ -535,6 +536,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -555,8 +557,8 @@
 		C78E75FB6066C181A5DE6726788C4C76 /* Build configuration list for PBXNativeTarget "FirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				978C812759D24062F932AEAA468F4DF1 /* Debug */,
-				C8FE5AB41C79402A3F006B8F5E8EF815 /* Release */,
+				9F7584563D7D252CEED033DB9A18A27C /* Debug */,
+				FAC36AC10DE70B11C3B91FE7B1B78C7C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

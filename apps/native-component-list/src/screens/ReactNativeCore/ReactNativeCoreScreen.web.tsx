@@ -1,26 +1,29 @@
-import Slider from '@react-native-community/slider';
-import React from 'react';
+import * as React from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   Image,
-  Picker,
   RefreshControl,
   ScrollView,
   SectionList,
-  StatusBar,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   TouchableHighlight,
   TouchableOpacity,
-  TouchableOpacityProps,
   View,
 } from 'react-native';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
+import { ActivityIndicatorExample } from './ActivityIndicator';
+import { AlertExample } from './Alert';
+import { ButtonExample } from './Button';
+import { CheckBoxExample } from './CheckBox';
+import { ClipboardExample } from './Clipboard';
+import { PickerExample } from './Picker';
+import { PressableExample } from './Pressable';
+import { SliderExample } from './Slider';
+import { StatusBarExample } from './StatusBar';
+import { SwitchExample } from './Switch';
 
 export default class ReactNativeCoreScreen extends React.Component {
   state = {
@@ -42,14 +45,18 @@ export default class ReactNativeCoreScreen extends React.Component {
         removeClippedSubviews={false}
         contentContainerStyle={{ backgroundColor: '#fff' }}
         sections={[
+          { title: 'CheckBox', data: [() => <CheckBoxExample />] },
+          { title: 'Switch', data: [() => <SwitchExample />] },
+          { title: 'Button', data: [() => <ButtonExample />] },
+          { title: 'ActivityIndicator', data: [() => <ActivityIndicatorExample />] },
+          { title: 'Slider', data: [() => <SliderExample />] },
+          { title: 'Picker', data: [() => <PickerExample />] },
+          { title: 'StatusBar', data: [() => <StatusBarExample />] },
+          { title: 'Alert', data: [() => <AlertExample />] },
+          { title: 'Pressable', data: [() => <PressableExample />] },
+          { title: 'Clipboard', data: [() => <ClipboardExample />] },
           { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
-          { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
-          { title: 'Alert', data: [this._renderAlert] },
           { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
-          { title: 'Picker', data: [this._renderPicker] },
-          { title: 'Slider', data: [this._renderSlider] },
-          { title: 'StatusBar', data: [this._renderStatusBar] },
-          { title: 'Switch', data: [this._renderSwitch] },
           { title: 'Text', data: [this._renderText] },
           { title: 'TextInput', data: [this._renderTextInput] },
           { title: 'Touchables', data: [this._renderTouchables] },
@@ -83,58 +90,6 @@ export default class ReactNativeCoreScreen extends React.Component {
     </View>
   );
 
-  _renderActivityIndicator = () => {
-    const Spacer = () => <View style={{ marginRight: 10 }} />;
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <ActivityIndicator size="small" />
-        <Spacer />
-        <ActivityIndicator size="large" />
-        <Spacer />
-        <ActivityIndicator size="small" color={Colors.tintColor} />
-        <Spacer />
-        <ActivityIndicator size="large" color={Colors.tintColor} />
-        <Spacer />
-        <ActivityIndicator size="small" animating={false} hidesWhenStopped={false} />
-        <Spacer />
-        <ActivityIndicator size="large" animating={false} hidesWhenStopped={false} />
-      </View>
-    );
-  };
-
-  _renderAlert = () => {
-    const showPrompt = () => {};
-
-    const showAlert = () => {
-      Alert.alert('Alert Title', 'My Alert Msg', [
-        {
-          text: 'Ask me later',
-          onPress: () => console.log('Ask me later pressed'),
-        },
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
-    };
-
-    return (
-      <View
-        style={{
-          flexDirection: Layout.isSmallDevice ? 'column' : 'row',
-          padding: 10,
-        }}>
-        <Button onPress={showPrompt}>Prompt for a value</Button>
-
-        {Layout.isSmallDevice && <View style={{ marginBottom: 10 }} />}
-
-        <Button onPress={showAlert}>Give me some options</Button>
-      </View>
-    );
-  };
-
   _renderHorizontalScrollView = () => {
     const imageStyle = {
       width: Layout.window.width,
@@ -160,44 +115,6 @@ export default class ReactNativeCoreScreen extends React.Component {
         />
       </ScrollView>
     );
-  };
-
-  _renderPicker = () => {
-    return <PickerExample />;
-  };
-
-  _renderSlider = () => {
-    return (
-      <View style={{ padding: 10 }}>
-        <SliderExample />
-      </View>
-    );
-  };
-
-  _renderStatusBar = () => {
-    const randomAnimation = () => {
-      return Math.random() > 0.5 ? 'slide' : 'fade';
-    };
-
-    const hide = () => {
-      StatusBar.setHidden(true, randomAnimation());
-    };
-
-    const show = () => {
-      StatusBar.setHidden(false, randomAnimation());
-    };
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Button onPress={hide}>Hide</Button>
-
-        <Button onPress={show}>Show</Button>
-      </View>
-    );
-  };
-
-  _renderSwitch = () => {
-    return <SwitchExample />;
   };
 
   _renderText = () => {
@@ -259,84 +176,6 @@ export default class ReactNativeCoreScreen extends React.Component {
   );
 }
 
-class PickerExample extends React.Component {
-  state = {
-    language: 'js',
-  };
-
-  render() {
-    return (
-      <Picker
-        selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}>
-        <Picker.Item label="Java" value="java" />
-        <Picker.Item label="JavaScript" value="js" />
-        <Picker.Item label="Objective C" value="objc" />
-        <Picker.Item label="Swift" value="swift" />
-      </Picker>
-    );
-  }
-}
-
-interface SliderExampleProps {
-  value?: number;
-}
-
-interface SliderExampleState {
-  value: number;
-}
-
-class SliderExample extends React.Component<SliderExampleProps, SliderExampleState> {
-  static defaultProps = {
-    value: 0,
-  };
-
-  constructor(props: SliderExampleProps) {
-    super(props);
-
-    this.state = {
-      value: props.value!,
-    };
-  }
-
-  render() {
-    const textStyle = {
-      color: this.state.value === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.9)',
-      marginBottom: -2,
-    };
-
-    return (
-      <View>
-        <Text style={textStyle}>Value: {this.state.value && +this.state.value.toFixed(3)}</Text>
-        <Slider {...this.props} onValueChange={value => this.setState({ value })} />
-      </View>
-    );
-  }
-}
-
-class SwitchExample extends React.Component {
-  state = {
-    trueSwitchIsOn: true,
-    falseSwitchIsOn: false,
-  };
-
-  render() {
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Switch
-          onValueChange={value => this.setState({ falseSwitchIsOn: value })}
-          style={{ marginBottom: 10, marginRight: 10 }}
-          value={this.state.falseSwitchIsOn}
-        />
-        <Switch
-          onValueChange={value => this.setState({ trueSwitchIsOn: value })}
-          value={this.state.trueSwitchIsOn}
-        />
-      </View>
-    );
-  }
-}
-
 class TextInputExample extends React.Component {
   state = {
     singleLineValue: '',
@@ -378,12 +217,6 @@ class TextInputExample extends React.Component {
     );
   }
 }
-
-const Button: React.FunctionComponent<TouchableOpacityProps> = props => (
-  <TouchableOpacity onPress={props.onPress} style={styles.button}>
-    <Text style={styles.buttonText}>{props.children}</Text>
-  </TouchableOpacity>
-);
 
 const styles = StyleSheet.create({
   container: {

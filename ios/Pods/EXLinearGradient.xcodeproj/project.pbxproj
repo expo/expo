@@ -211,6 +211,57 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		58AF2A2358A306D108EB3CADC545F17D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A0773ECFBA4949B699E2BA5F4521EA4 /* EXLinearGradient.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLinearGradient;
+				PRODUCT_NAME = EXLinearGradient;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5CB076215BF69C3BBB19BBD768D11A06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A9050A7CBBC95395B6E80A52935335E0 /* EXLinearGradient.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLinearGradient;
+				PRODUCT_NAME = EXLinearGradient;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		861C1C473E98B9E6F9FC5696D095FA07 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -275,31 +326,6 @@
 			};
 			name = Debug;
 		};
-		CBE3AC3269D4B58CE791C30073385AC1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2A0773ECFBA4949B699E2BA5F4521EA4 /* EXLinearGradient.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLinearGradient;
-				PRODUCT_NAME = EXLinearGradient;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		D1B9107A533FCBD3B0FA577EA5EC3BD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -360,30 +386,6 @@
 			};
 			name = Release;
 		};
-		E9E8D5E524A8E59C782E1D4BA1308F9D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A9050A7CBBC95395B6E80A52935335E0 /* EXLinearGradient.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLinearGradient;
-				PRODUCT_NAME = EXLinearGradient;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -399,8 +401,8 @@
 		AD1E4CC5BC01FDE00E8E7250F6853001 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9E8D5E524A8E59C782E1D4BA1308F9D /* Debug */,
-				CBE3AC3269D4B58CE791C30073385AC1 /* Release */,
+				5CB076215BF69C3BBB19BBD768D11A06 /* Debug */,
+				58AF2A2358A306D108EB3CADC545F17D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

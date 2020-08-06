@@ -306,9 +306,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		30937D554BD0162319A236B7FD8198D7 /* Release */ = {
+		2ECAA92D1A2B4139E0FC8265B5A997E1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DBB745477E179ECA4702CB94409E1044 /* EXBarCodeScanner.release.xcconfig */;
+			baseConfigurationReference = 59B2090954D55A6F9ABD72BF3722D024 /* EXBarCodeScanner.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -326,10 +326,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		70CE0B01E5B39B954D44D935CB2A22D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -395,9 +395,9 @@
 			};
 			name = Debug;
 		};
-		AE9F36BFF49ED995FB975259CDD8EDC0 /* Debug */ = {
+		7E12CBED4A22F3143223F652597C6F3D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 59B2090954D55A6F9ABD72BF3722D024 /* EXBarCodeScanner.debug.xcconfig */;
+			baseConfigurationReference = DBB745477E179ECA4702CB94409E1044 /* EXBarCodeScanner.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -415,9 +415,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		F38C9A0B667F8CD66ACA02CF0FB05800 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -485,8 +487,8 @@
 		56C97EAD1743F2AD524BD2CF884F36F8 /* Build configuration list for PBXNativeTarget "EXBarCodeScanner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AE9F36BFF49ED995FB975259CDD8EDC0 /* Debug */,
-				30937D554BD0162319A236B7FD8198D7 /* Release */,
+				2ECAA92D1A2B4139E0FC8265B5A997E1 /* Debug */,
+				7E12CBED4A22F3143223F652597C6F3D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

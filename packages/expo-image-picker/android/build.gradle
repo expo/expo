@@ -51,7 +51,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 16
     versionName "8.4.0"
   }

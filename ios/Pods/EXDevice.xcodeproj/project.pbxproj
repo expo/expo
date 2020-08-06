@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		449B7331E7969C50528017ABC7A74C4D /* Debug */ = {
+		04DBDFC1BC9D19A3BFBD6F3A2CC9D1D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AB00F0A9E95F14FA49C2176AE081C776 /* EXDevice.debug.xcconfig */;
 			buildSettings = {
@@ -215,11 +215,12 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		D638692D3D849FB161CC1C4AB14CC36D /* Release */ = {
+		2E273C6275A965AC168AA1CAB3EF5C43 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2D6ACAA221407789D5BDC78F5E61FB92 /* EXDevice.release.xcconfig */;
 			buildSettings = {
@@ -239,6 +240,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -383,8 +385,8 @@
 		BAF279E15649BA88F4031E1BA13D1A40 /* Build configuration list for PBXNativeTarget "EXDevice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				449B7331E7969C50528017ABC7A74C4D /* Debug */,
-				D638692D3D849FB161CC1C4AB14CC36D /* Release */,
+				04DBDFC1BC9D19A3BFBD6F3A2CC9D1D0 /* Debug */,
+				2E273C6275A965AC168AA1CAB3EF5C43 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

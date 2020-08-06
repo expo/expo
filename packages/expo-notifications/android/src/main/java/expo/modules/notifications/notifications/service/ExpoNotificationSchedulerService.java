@@ -24,6 +24,7 @@ import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -42,10 +43,10 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   private static final String NOTIFICATION_REMOVE_ALL_ACTION = "expo.modules.notifications.REMOVE_ALL_EVENTS";
 
   private static final List<String> SETUP_ACTIONS = Arrays.asList(
-      Intent.ACTION_BOOT_COMPLETED,
-      Intent.ACTION_REBOOT,
-      "android.intent.action.QUICKBOOT_POWERON",
-      "com.htc.intent.action.QUICKBOOT_POWERON"
+    Intent.ACTION_BOOT_COMPLETED,
+    Intent.ACTION_REBOOT,
+    "android.intent.action.QUICKBOOT_POWERON",
+    "com.htc.intent.action.QUICKBOOT_POWERON"
   );
 
   // Known result codes
@@ -60,6 +61,8 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
 
   private static final int JOB_ID = ExpoNotificationSchedulerService.class.getName().hashCode();
   private static final int REQUEST_CODE = JOB_ID;
+
+  private NotificationsHelper mNotificationsHelper;
 
   /**
    * Fetches all scheduled notifications asynchronously.
@@ -156,6 +159,8 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
     enqueueWork(context, intent);
   }
 
+  private AlarmManager mAlarmManager;
+  private SharedPreferencesNotificationsStore mStore;
 
   /**
    * Enqueue work to this {@link JobIntentService}.
@@ -167,14 +172,16 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
     enqueueWork(context, ExpoNotificationSchedulerService.class, JOB_ID, intent);
   }
 
-  private AlarmManager mAlarmManager;
-  private SharedPreferencesNotificationsStore mStore;
-
   @Override
   public void onCreate() {
     super.onCreate();
     mStore = new SharedPreferencesNotificationsStore(this);
     mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+    mNotificationsHelper = createNotificationHelper();
+  }
+
+  protected NotificationsHelper createNotificationHelper() {
+    return new NotificationsHelper(this, NotificationsScoper.create(this).createReconstructor());
   }
 
   /**
@@ -190,8 +197,8 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
       Bundle resultData = null;
       if (NOTIFICATION_SCHEDULE_ACTION.equals(intent.getAction())) {
         scheduleNotification(
-            this,
-            intent.<NotificationRequest>getParcelableExtra(NOTIFICATION_REQUEST_KEY)
+          this,
+          intent.getParcelableExtra(NOTIFICATION_REQUEST_KEY)
         );
       } else if (NOTIFICATION_TRIGGER_ACTION.equals(intent.getAction())) {
         onNotificationTriggered(this, intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
@@ -270,7 +277,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   }
 
   /**
-   * Handle notification to schedule. If trigger is null or isn't {@link SchedulableNotificationTrigger}, hands the request immediately to {@link BaseNotificationsService}.
+   * Handle notification to schedule. If trigger is null, hands the request immediately to {@link NotificationsHelper}.
    *
    * @param context             Context this is being called from
    * @param notificationRequest Notification request
@@ -278,10 +285,10 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   protected void scheduleNotification(Context context, NotificationRequest notificationRequest) {
     NotificationTrigger trigger = notificationRequest.getTrigger();
 
-    // If the trigger is empty, enqueue receive immediately and return.
+    // If the trigger is empty, handle receive immediately and return.
     if (!(trigger instanceof SchedulableNotificationTrigger)) {
       Notification notification = new Notification(notificationRequest);
-      BaseNotificationsService.enqueueReceive(context, notification, null);
+      mNotificationsHelper.notificationReceived(notification, null);
       return;
     }
 
@@ -309,7 +316,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
 
   /**
    * Handle notification triggered by the alarm. Fetches notification info from the store,
-   * enqueues it to {@link BaseNotificationsService} and enqueues rescheduling in case the trigger repeats.
+   * enqueues it to {@link NotificationsHelper} and enqueues rescheduling in case the trigger repeats.
    * <p>
    * If the storage could not return a valid notification, the notification is removed.
    *
@@ -321,7 +328,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
     try {
       NotificationRequest notificationRequest = mStore.getNotificationRequest(identifier);
       Notification notification = new Notification(notificationRequest);
-      BaseNotificationsService.enqueueReceive(context, notification);
+      mNotificationsHelper.notificationReceived(notification);
       enqueueSchedule(context, notificationRequest);
     } catch (ClassNotFoundException | InvalidClassException e) {
       Log.e("expo-notifications", "An exception occurred while triggering notification " + identifier + ", removing. " + e.getMessage());
@@ -344,7 +351,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   /**
    * Remove selected notifications from storage and cancel any pending alarms.
    *
-   * @param context Context this is being called from
+   * @param context     Context this is being called from
    * @param identifiers Notification identifiers
    */
   protected void removeSelectedNotifications(Context context, String[] identifiers) {

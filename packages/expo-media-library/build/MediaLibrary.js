@@ -117,13 +117,13 @@ export async function deleteAssetsAsync(assets) {
     checkAssetIds(assetIds);
     return await MediaLibrary.deleteAssetsAsync(assetIds);
 }
-export async function getAssetInfoAsync(asset) {
+export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNetwork: true }) {
     if (!MediaLibrary.getAssetInfoAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
     }
     const assetId = getId(asset);
     checkAssetIds([assetId]);
-    const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+    const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId, options);
     if (Array.isArray(assetInfo)) {
         // Android returns an array with asset info, we need to pick the first item
         return assetInfo[0];
@@ -198,6 +198,12 @@ export async function getAssetsAsync(assetsOptions = {}) {
     }
     if (album != null && typeof options.album !== 'string') {
         throw new Error('Option "album" must be a string!');
+    }
+    if (Platform.OS === 'android' && isNaN(parseInt(getId(after), 10))) {
+        throw new Error('Option "after" must be a valid ID!');
+    }
+    if (first != null && first < 0) {
+        throw new Error('Option "first" must be a positive integer!');
     }
     options.sortBy.forEach(checkSortBy);
     options.mediaType.forEach(checkMediaType);

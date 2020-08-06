@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SDWebImageCompat.h"
 
-// This is used for operation management, but not for operation queue execute
+/// This is used for operation management, but not for operation queue execute
 @interface SDImageCachesManagerOperation : NSOperation
 
 @property (nonatomic, assign, readonly) NSUInteger pendingCount;

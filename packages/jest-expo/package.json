@@ -31,9 +31,9 @@
     "preset": "jest-expo/universal"
   },
   "peerDependencies": {
-    "react": "~16.11.0",
+    "react": "16.13.1",
     "react-native": "*",
-    "react-native-web": "~0.12.0"
+    "react-native-web": "~0.13.0"
   },
   "dependencies": {
     "@expo/config": "^3.2.3",
@@ -44,9 +44,6 @@
     "json5": "^2.1.0",
     "lodash": "^4.5.0",
     "react-test-renderer": "~16.11.0"
-  },
-  "devDependencies": {
-    "react": "16.11.0"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

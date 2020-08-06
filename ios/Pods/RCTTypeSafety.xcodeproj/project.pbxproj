@@ -257,10 +257,11 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		57E7468FD228AEB5284A77EC4D862F37 /* Debug */ = {
+		246B24565088CD20081299CD529927C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8EC907730BF070259D8CAB86BD5D9081 /* RCTTypeSafety.debug.xcconfig */;
+			baseConfigurationReference = 19B3478AB6BC74D79FA09DC18EECDC52 /* RCTTypeSafety.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -276,11 +277,13 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
-		5F90B448D2F938B5645DC82D408C1C32 /* Release */ = {
+		5B2E6D6CD06654412BB027B635042DEC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -328,7 +331,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -340,7 +343,32 @@
 			};
 			name = Release;
 		};
-		E20C554616936D99F3EA66AA4073C9FA /* Debug */ = {
+		A03F5B7CED9F4067CF6E75937ED335A7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8EC907730BF070259D8CAB86BD5D9081 /* RCTTypeSafety.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RCTTypeSafety/RCTTypeSafety-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTTypeSafety;
+				PRODUCT_NAME = RCTTypeSafety;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AF9FFD400157C5188EE18154D3D12A41 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -391,7 +419,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -404,38 +432,14 @@
 			};
 			name = Debug;
 		};
-		FC2EDBBD0A1F09E4907A945E050A12E0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 19B3478AB6BC74D79FA09DC18EECDC52 /* RCTTypeSafety.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RCTTypeSafety/RCTTypeSafety-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTTypeSafety;
-				PRODUCT_NAME = RCTTypeSafety;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		3C8182703279D1537DF11EEC9DFC2192 /* Build configuration list for PBXProject "RCTTypeSafety" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E20C554616936D99F3EA66AA4073C9FA /* Debug */,
-				5F90B448D2F938B5645DC82D408C1C32 /* Release */,
+				AF9FFD400157C5188EE18154D3D12A41 /* Debug */,
+				5B2E6D6CD06654412BB027B635042DEC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -443,8 +447,8 @@
 		D80997530F283A1BF6F1BC6F7937B1E7 /* Build configuration list for PBXNativeTarget "RCTTypeSafety" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				57E7468FD228AEB5284A77EC4D862F37 /* Debug */,
-				FC2EDBBD0A1F09E4907A945E050A12E0 /* Release */,
+				A03F5B7CED9F4067CF6E75937ED335A7 /* Debug */,
+				246B24565088CD20081299CD529927C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

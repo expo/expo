@@ -296,31 +296,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2039D79CA04D3B0FCF43DD4DFB41274A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DA52B96F00BD6F2646EC21D58252414E /* EXFaceDetector.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFaceDetector/EXFaceDetector-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFaceDetector;
-				PRODUCT_NAME = EXFaceDetector;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		383BC676965B2AF43A1B50F8A4BD3BC7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -385,7 +360,33 @@
 			};
 			name = Debug;
 		};
-		511C3974970A8021A799CFDDC0F64C9F /* Debug */ = {
+		4C39B0A280C0E1686C07533F9908E4C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA52B96F00BD6F2646EC21D58252414E /* EXFaceDetector.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFaceDetector/EXFaceDetector-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFaceDetector;
+				PRODUCT_NAME = EXFaceDetector;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		93D0BBF60A615DC5866942AF11AC060D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 41ECBC05B366CE01DEDFC758735C5448 /* EXFaceDetector.debug.xcconfig */;
 			buildSettings = {
@@ -405,6 +406,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -484,8 +486,8 @@
 		EE0624CD9557DF51BC5BE0B0E3F0EA91 /* Build configuration list for PBXNativeTarget "EXFaceDetector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				511C3974970A8021A799CFDDC0F64C9F /* Debug */,
-				2039D79CA04D3B0FCF43DD4DFB41274A /* Release */,
+				93D0BBF60A615DC5866942AF11AC060D /* Debug */,
+				4C39B0A280C0E1686C07533F9908E4C0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

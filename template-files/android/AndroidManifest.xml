@@ -51,6 +51,7 @@
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
     android:largeHeap="true"
+    android:requestLegacyExternalStorage="true"
     android:usesCleartextTraffic="true">
 
     <activity
@@ -299,38 +300,6 @@
     <service android:name="com.google.android.gms.analytics.AnalyticsService"
              android:enabled="true"
              android:exported="false"/>
-
-    <!-- GCM -->
-    <receiver
-      android:name="com.google.android.gms.gcm.GcmReceiver"
-      android:exported="true"
-      android:permission="com.google.android.c2dm.permission.SEND">
-      <intent-filter>
-        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
-
-        <category android:name="host.exp.exponent"/>
-      </intent-filter>
-    </receiver>
-
-    <service
-      android:name=".gcm.ExponentGcmListenerService"
-      android:exported="false">
-      <intent-filter>
-        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-      </intent-filter>
-    </service>
-    <service
-      android:name=".gcm.ExponentInstanceIDListenerService"
-      android:exported="false">
-      <intent-filter>
-        <action android:name="com.google.android.gms.iid.InstanceID"/>
-      </intent-filter>
-    </service>
-    <service
-      android:name=".gcm.GcmRegistrationIntentService"
-      android:exported="false">
-    </service>
 
     <!-- FCM -->
     <service

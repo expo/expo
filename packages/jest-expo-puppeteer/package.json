@@ -37,8 +37,7 @@
   },
   "devDependencies": {
     "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "~1.2.0",
-    "react": "16.11.0"
+    "expo-module-scripts": "~1.2.0"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

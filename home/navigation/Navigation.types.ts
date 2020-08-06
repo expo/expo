@@ -11,4 +11,5 @@ export type AllStackRoutes = {
   ExploreAndSearch: object;
   ProjectsForUser: { username: string; belongsToCurrentUser?: boolean };
   SnacksForUser: { username: string; belongsToCurrentUser?: boolean };
+  Experience: { username: string; slug: string };
 } & ModalStackRoutes;

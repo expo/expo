@@ -23,6 +23,8 @@ const DIR_MAPPING = {
   expokit: 'ExpoKit',
   'regulatory-compliance': 'Regulatory Compliance',
   'push-notifications': 'Push Notifications',
+  preview: 'Preview',
+  build: 'Build',
 };
 
 const processUrl = path => {
@@ -119,6 +121,9 @@ const referenceDirectories = fs
 // A manual list of directories to pull in to the getting started tutorial
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 
+// A manual list of directories to pull in to the preview section
+const previewDirectories = ['preview', 'build'];
+
 // Find any directories that aren't reference or starting directories. Also exclude the api
 // directory, which is just a shortcut.
 const ROOT_PATH_PREFIX = './pages';
@@ -126,15 +131,24 @@ const generalDirectories = fs
   .readdirSync(ROOT_PATH_PREFIX, { withFileTypes: true })
   .filter(f => f.isDirectory())
   .map(f => f.name)
-  .filter(name => name !== 'api' && name !== 'versions' && !startingDirectories.includes(name));
+  .filter(
+    name =>
+      name !== 'api' &&
+      name !== 'versions' &&
+      ![...startingDirectories, ...previewDirectories].includes(name)
+  );
 
 module.exports = {
   startingDirectories,
   generalDirectories,
+  previewDirectories,
   starting: startingDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
   general: generalDirectories.map(directory =>
+    generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
+  ),
+  preview: previewDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
   reference: referenceDirectories.reduce(

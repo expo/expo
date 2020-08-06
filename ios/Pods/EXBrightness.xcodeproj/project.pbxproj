@@ -281,32 +281,7 @@
 			};
 			name = Release;
 		};
-		79392A779CDDC722650A92C2C4EF3A58 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 92921C49C4B4F36EAC804FCE81A5DA72 /* EXBrightness.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBrightness;
-				PRODUCT_NAME = EXBrightness;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		8DA353C04CE018E33278AE229C317831 /* Debug */ = {
+		4EED656AAFA44199BBF3E56CE3D1584F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 49A10F1EF6330BA5CC3967FD29837F84 /* EXBrightness.debug.xcconfig */;
 			buildSettings = {
@@ -326,9 +301,36 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		ECB50E7AB92DD35390E1E651716A40AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92921C49C4B4F36EAC804FCE81A5DA72 /* EXBrightness.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBrightness;
+				PRODUCT_NAME = EXBrightness;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		F3A0E4DD7CC163EBD5F3A0EB78078541 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -400,8 +402,8 @@
 		DD004EE9BB6F41E9F295ABDEA544B59E /* Build configuration list for PBXNativeTarget "EXBrightness" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8DA353C04CE018E33278AE229C317831 /* Debug */,
-				79392A779CDDC722650A92C2C4EF3A58 /* Release */,
+				4EED656AAFA44199BBF3E56CE3D1584F /* Debug */,
+				ECB50E7AB92DD35390E1E651716A40AE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

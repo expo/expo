@@ -367,7 +367,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_header_description));
       final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
           AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
       nodeInfo.setCollectionItemInfo(itemInfo);

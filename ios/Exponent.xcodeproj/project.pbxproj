@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -208,12 +207,12 @@
 		78C832ED23546BD400448582 /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C832E323546BD400448582 /* RNNativeViewHandler.m */; };
 		78C832EE23546BD400448582 /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C832E523546BD400448582 /* RNPinchHandler.m */; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
-		78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */; };
 		78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */; };
 		78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
 		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -355,6 +354,10 @@
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
 		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
+		E076A3A138374780BD9CAEA0 /* RCTOnPageScrollEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		807A6CE3FB55427E8D995580 /* RCTOnPageScrollStateChanged.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DEE22713D4641DCBA13071A /* RCTOnPageScrollStateChanged.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		5E91B590D3BD401FB31B6D2D /* RCTOnPageSelected.m in Sources */ = {isa = PBXBuildFile; fileRef = 1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		6D0D4DF0D549439499086EC6 /* UIViewController+CreateExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -796,7 +799,6 @@
 		78C832E623546BD400448582 /* RNRotationHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNRotationHandler.h; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Exponent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Exponent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		78CEE2D31ACD07D70095B124 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		78D82525204E8F9C00CBD9D9 /* EXApiV2Client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Client.h; sourceTree = "<group>"; };
 		78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Client.m; sourceTree = "<group>"; };
 		78D82528204F826700CBD9D9 /* EXApiV2Result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Result.h; sourceTree = "<group>"; };
@@ -811,6 +813,7 @@
 		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionItem.m; sourceTree = "<group>"; };
 		7F6CB974983B435DB3C2F7BE /* RNSVGForeignObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObject.h; sourceTree = "<group>"; };
 		80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNodeManager.m; sourceTree = "<group>"; };
+		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressWindowController.h; sourceTree = "<group>"; };
 		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
 		8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObjectManager.m; sourceTree = "<group>"; };
@@ -1084,6 +1087,14 @@
 		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
 		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
 		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
+		FC6F6FF789A84FD7AEAFAD5E /* RCTOnPageScrollEvent.h */ = {isa = PBXFileReference; name = "RCTOnPageScrollEvent.h"; path = "RCTOnPageScrollEvent.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */ = {isa = PBXFileReference; name = "RCTOnPageScrollEvent.m"; path = "RCTOnPageScrollEvent.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		5A6A19B126BB4312B36E0274 /* RCTOnPageScrollStateChanged.h */ = {isa = PBXFileReference; name = "RCTOnPageScrollStateChanged.h"; path = "RCTOnPageScrollStateChanged.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		6DEE22713D4641DCBA13071A /* RCTOnPageScrollStateChanged.m */ = {isa = PBXFileReference; name = "RCTOnPageScrollStateChanged.m"; path = "RCTOnPageScrollStateChanged.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		574312068E2240349CC816A0 /* RCTOnPageSelected.h */ = {isa = PBXFileReference; name = "RCTOnPageSelected.h"; path = "RCTOnPageSelected.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */ = {isa = PBXFileReference; name = "RCTOnPageSelected.m"; path = "RCTOnPageSelected.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		7A2EAF5D0C4245019A94A807 /* UIViewController+CreateExtension.h */ = {isa = PBXFileReference; name = "UIViewController+CreateExtension.h"; path = "UIViewController+CreateExtension.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */ = {isa = PBXFileReference; name = "UIViewController+CreateExtension.m"; path = "UIViewController+CreateExtension.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1307,6 +1318,14 @@
 				01D6195E420E433AA7BB8584 /* ReactNativePageView.m */,
 				D47B9E6257F1413387F5CD67 /* ReactViewPagerManager.h */,
 				36D368D781234C37BC0979B5 /* ReactViewPagerManager.m */,
+				FC6F6FF789A84FD7AEAFAD5E /* RCTOnPageScrollEvent.h */,
+				AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */,
+				5A6A19B126BB4312B36E0274 /* RCTOnPageScrollStateChanged.h */,
+				6DEE22713D4641DCBA13071A /* RCTOnPageScrollStateChanged.m */,
+				574312068E2240349CC816A0 /* RCTOnPageSelected.h */,
+				1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */,
+				7A2EAF5D0C4245019A94A807 /* UIViewController+CreateExtension.h */,
+				96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */,
 			);
 			path = ViewPager;
 			sourceTree = "<group>";
@@ -1660,7 +1679,7 @@
 				B5E49B521D1346FA00AA6436 /* Supporting */,
 				B5812C331C9CD59200A10345 /* Versioned */,
 				78CEE2D01ACD07D70095B124 /* Images.xcassets */,
-				78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */,
+				8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */,
 			);
 			path = Exponent;
 			sourceTree = "<group>";
@@ -2579,8 +2598,8 @@
 				B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */,
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
-				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
+				8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
 			);
@@ -2659,6 +2678,7 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -2670,6 +2690,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3058,6 +3079,10 @@
 				ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */,
 				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
+				E076A3A138374780BD9CAEA0 /* RCTOnPageScrollEvent.m in Sources */,
+				807A6CE3FB55427E8D995580 /* RCTOnPageScrollStateChanged.m in Sources */,
+				5E91B590D3BD401FB31B6D2D /* RCTOnPageSelected.m in Sources */,
+				6D0D4DF0D549439499086EC6 /* UIViewController+CreateExtension.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3104,12 +3129,12 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */ = {
+		8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				78CEE2D31ACD07D70095B124 /* Base */,
+				8746D75D24D04B2300BFAD22 /* Base */,
 			);
-			name = LaunchScreen.xib;
+			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDScopes.h
+../../../AppAuth/Source/AppAuthCore/OIDScopes.h

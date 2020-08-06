@@ -40,7 +40,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 1
     versionName "1.0"
   }
@@ -111,10 +111,10 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
-  
+
   // react-native-screens
   api "com.google.android.material:material:1.0.0"
-  api'androidx.coordinatorlayout:coordinatorlayout:1.0.0'
+  api 'androidx.coordinatorlayout:coordinatorlayout:1.0.0'
 
   api 'com.google.firebase:firebase-core:16.0.9'
   api 'com.google.firebase:firebase-messaging:18.0.0'

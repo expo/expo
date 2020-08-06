@@ -291,6 +291,32 @@
 			};
 			name = Release;
 		};
+		1D59CB4EC75D3B66FAE13EF608F93D5D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 583C214BF27F76F76C20575176670555 /* EXAmplitude.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAmplitude;
+				PRODUCT_NAME = EXAmplitude;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		5048970C4393CAFEF945925D5B243242 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -355,7 +381,7 @@
 			};
 			name = Debug;
 		};
-		D12EEC01C6A668F1B5DC3C5342B7E013 /* Debug */ = {
+		FD9E780CFF400B999A255B3A47C9F9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6A608CF24870EE595A9DD0571BE23D0D /* EXAmplitude.debug.xcconfig */;
 			buildSettings = {
@@ -375,34 +401,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		FEFD95E96CC5430E10DA16829BFDA547 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 583C214BF27F76F76C20575176670555 /* EXAmplitude.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAmplitude;
-				PRODUCT_NAME = EXAmplitude;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -410,8 +412,8 @@
 		5184269E3AFE53B5379962720E6D30CC /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D12EEC01C6A668F1B5DC3C5342B7E013 /* Debug */,
-				FEFD95E96CC5430E10DA16829BFDA547 /* Release */,
+				FD9E780CFF400B999A255B3A47C9F9CD /* Debug */,
+				1D59CB4EC75D3B66FAE13EF608F93D5D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

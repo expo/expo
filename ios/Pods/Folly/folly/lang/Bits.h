@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,10 @@
  *    find last (most significant) bit set in a value of an integral type,
  *    1-based.  0 = no bits are set (x == 0)
  *    for x != 0, findLastSet(x) == 1 + floor(log2(x))
+ *
+ * extractFirstSet(x)  [constexpr]
+ *    extract first (least significant) bit set in a value of an integral
+ *    type, 0 = no bits are set (x == 0)
  *
  * nextPowTwo(x)  [constexpr]
  *    Finds the next power of two >= x.
@@ -55,11 +59,34 @@
 
 #include <folly/ConstexprMath.h>
 #include <folly/Portability.h>
+#include <folly/Traits.h>
 #include <folly/Utility.h>
 #include <folly/lang/Assume.h>
 #include <folly/portability/Builtins.h>
 
 namespace folly {
+
+#if __cpp_lib_bit_cast
+
+using std::bit_cast;
+
+#else
+
+//  mimic: std::bit_cast, C++20
+template <
+    typename To,
+    typename From,
+    std::enable_if_t<
+        sizeof(From) == sizeof(To) && is_trivially_copyable<To>::value &&
+            is_trivially_copyable<From>::value,
+        int> = 0>
+To bit_cast(const From& src) noexcept {
+  aligned_storage_for_t<To> storage;
+  std::memcpy(&storage, &src, sizeof(From));
+  return reinterpret_cast<To&>(storage);
+}
+
+#endif
 
 namespace detail {
 template <typename Dst, typename Src>
@@ -121,6 +148,18 @@ inline constexpr unsigned int findLastSet(T const v) {
       sizeof(T) <= sizeof(U2) ? __builtin_clzll(bits_to_unsigned<U2>(v)) :
       0)) : 0u;
   // clang-format on
+}
+
+/// extractFirstSet
+///
+/// Return a value where all the bits but the least significant are cleared.
+template <typename T>
+inline constexpr T extractFirstSet(T const v) {
+  static_assert(std::is_integral<T>::value, "non-integral type");
+  static_assert(std::is_unsigned<T>::value, "signed type");
+  static_assert(!std::is_same<T, bool>::value, "bool type");
+
+  return v & -v;
 }
 
 /// popcount
@@ -202,15 +241,11 @@ struct EndianInt {
           std::is_floating_point<T>::value,
       "template type parameter must be non-bool integral or floating point");
   static T swap(T x) {
-    // we implement this with memcpy because that is defined behavior in C++
-    // we rely on compilers to optimize away the memcpy calls
+    // we implement this with bit_cast because that is defined behavior in C++
+    // we rely on compilers to optimize away the bit_cast calls
     constexpr auto s = sizeof(T);
     using B = typename uint_types_by_size<s>::type;
-    B b;
-    std::memcpy(&b, &x, s);
-    b = byteswap_gen(b);
-    std::memcpy(&x, &b, s);
-    return x;
+    return bit_cast<T>(byteswap_gen(bit_cast<B>(x)));
   }
   static T big(T x) {
     return kIsLittleEndian ? EndianInt::swap(x) : x;
