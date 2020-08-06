@@ -2,15 +2,19 @@ import React from 'react';
 import {
   Text,
   View,
-  TouchableOpacity,
   NativeModules,
   Alert,
   SafeAreaView,
   StatusBar,
+  StyleSheet,
+  Button,
 } from 'react-native';
 import { BarCodeScanner } from './BarCodeScanner';
 
 const DevelopmentClient = NativeModules.EXDevelopmentClient;
+
+// Use development client native module to load app at given URL, notifying of
+// errors
 
 const loadAppFromUrl = async (url: string) => {
   url = url.replace(/^exp:\/\//, 'http://');
@@ -32,6 +36,12 @@ const loadAppFromUrl = async (url: string) => {
   }
 };
 
+//
+// Super barebones UI supporting at least loading an app from a QR
+// code, while we figure out what the design for this screen should be / decide
+// on features to support
+//
+
 const App = () => {
   const [scanning, setScanning] = React.useState(false);
 
@@ -48,62 +58,63 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: '#F5FCFF',
-      }}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      <View
-        style={{
-          flex: 1,
-          paddingTop: 24,
-          paddingHorizontal: 24,
-        }}>
+      <View style={styles.container}>
         {scanning ? (
           <React.Fragment>
-            <View
-              style={{
-                width: '100%',
-                aspectRatio: 1,
-                borderRadius: 8,
-                overflow: 'hidden',
-              }}>
-              <BarCodeScanner onBarCodeScanned={onBarCodeScanned} style={{ flex: 1 }} />
+            <View style={styles.barCodeScannerContainer}>
+              <BarCodeScanner onBarCodeScanned={onBarCodeScanned} style={styles.barCodeScanner} />
             </View>
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#eee',
-                marginTop: 20,
-                padding: 12,
-                borderRadius: 6,
-              }}>
-              <Text style={{ fontSize: 20 }} onPress={onPressCancelScan}>
-                Cancel
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <Button onPress={onPressCancelScan} title="Cancel" />
+            </View>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Text style={{ fontSize: 32 }} onPress={onPressScan}>
+            <Text style={styles.headingText} onPress={onPressScan}>
               Expo Development Client
             </Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#eee',
-                marginTop: 20,
-                padding: 12,
-                borderRadius: 6,
-              }}>
-              <Text style={{ fontSize: 20 }} onPress={onPressScan}>
-                Scan QR code
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <Button onPress={onPressScan} title="Scan QR code" />
+            </View>
           </React.Fragment>
         )}
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F5FCFF',
+  },
+  container: {
+    flex: 1,
+    paddingTop: 24,
+    paddingHorizontal: 24,
+  },
+
+  barCodeScannerContainer: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  barCodeScanner: {
+    flex: 1,
+  },
+
+  buttonContainer: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    fontSize: 24,
+  },
+
+  headingText: {
+    fontSize: 32,
+  },
+});
 
 export default App;
