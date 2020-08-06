@@ -520,6 +520,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     if (mPlayerData != null) {
       mPlayerData.onResume();
     }
+    mVideoTextureView.onResume();
   }
 
   // FullscreenPresenter
