@@ -22,12 +22,13 @@ import org.unimodules.adapters.react.ReactModuleRegistryProvider
 import org.unimodules.core.interfaces.Package
 
 object DevMenuManager : LifecycleEventListener {
-  private val bundlerManager =
-    if (BuildConfig.DEBUG) {
-      DebugBundlerManager()
-    } else {
-      null
-    }
+  private val bundlerManager: DebugBundlerManager? = null
+
+  //    if (BuildConfig.DEBUG) {
+//      DebugBundlerManager()
+//    } else {
+//      null
+//    }
   private var session: DevMenuSession? = null
   private var delegate: DevMenuDelegateProtocol? = null
   private val extensions: Collection<DevMenuExtensionProtocol>
@@ -36,11 +37,11 @@ object DevMenuManager : LifecycleEventListener {
         ?: emptyList()
     }
   private val devMenuItems: List<DevMenuItem>
-    get() {
-      return extensions.map {
-        it.devMenuItems() ?: emptyList()
-      }.flatten()
-    }
+    get() = extensions
+      .map { it.devMenuItems() ?: emptyList() }
+      .flatten()
+      .sortedByDescending { it.importance }
+
   private lateinit var devMenuHost: DevMenuHost
 
   @Suppress("UNCHECKED_CAST")

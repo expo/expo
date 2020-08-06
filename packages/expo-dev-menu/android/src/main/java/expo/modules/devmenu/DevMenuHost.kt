@@ -13,7 +13,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
   override fun getPackages(): MutableList<ReactPackage> = reactPackages.toMutableList()
 
-  override fun getUseDeveloperSupport() = BuildConfig.DEBUG
+  override fun getUseDeveloperSupport() = false
 
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 

@@ -3,6 +3,7 @@ package expo.modules.devmenu.extensions
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.devmenu.extensions.items.DevMenuAction
@@ -16,10 +17,18 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
   override fun getName() = "ExpoDevMenuExtensions"
 
   override fun devMenuItems(): List<DevMenuItem>? {
+    val reactDevManager = getDevSupportManager()
+    val devSettings = reactDevManager?.devSettings
+
+    if (reactDevManager == null || devSettings == null) {
+      return emptyList()
+    }
+
     val reloadAction = DevMenuAction("reload") {
-      // todo: run on ui thread
-      DevMenuManager.runWithApplicationBundler {
-        getDevSupportManager()?.handleReloadJS()
+      UiThreadUtil.runOnUiThread {
+        DevMenuManager.runWithApplicationBundler {
+          reactDevManager.handleReloadJS()
+        }
       }
     }.apply {
       label = { "Reload" }
@@ -29,68 +38,67 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
 
     val elementInspectorAction = DevMenuAction("inspector") {
       runWithDevSettingEnabled {
-        getDevSupportManager()?.toggleElementInspector()
+        reactDevManager.toggleElementInspector()
       }
     }.apply {
-      isEnabled = {
-        getDevSupportManager()?.devSettings?.isElementInspectorEnabled ?: false
-      }
+      isEnabled = { devSettings.isElementInspectorEnabled }
       label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
       glyphName = { "border-style" }
       importance = ItemImportance.HIGH.value
     }
 
-
     val performanceMonitorAction = DevMenuAction("performance-monitor") {
       runWithDevSettingEnabled {
-        val fpsDebug = getDevSupportManager()?.devSettings?.isFpsDebugEnabled ?: false
-        getDevSupportManager()?.setFpsDebugEnabled(!fpsDebug)
+        reactDevManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
       }
     }.apply {
-      isEnabled = {
-        getDevSupportManager()?.devSettings?.isFpsDebugEnabled ?: false
-      }
+      isEnabled = { devSettings.isFpsDebugEnabled }
       label = { if (isEnabled()) "Hide Performance Monitor" else "Show Performance Monitor" }
       glyphName = { "speedometer" }
       importance = ItemImportance.HIGH.value
     }
 
     val remoteDebugAction = DevMenuAction("remote-debug") {
-      runWithDevSettingEnabled {
+      UiThreadUtil.runOnUiThread {
         DevMenuManager.runWithApplicationBundler {
-          val isRemoteJsEnable = getDevSupportManager()?.devSettings?.isRemoteJSDebugEnabled
-          if (isRemoteJsEnable != null) {
-            getDevSupportManager()?.setRemoteJSDebugEnabled(!isRemoteJsEnable)
-          }
+          val isRemoteJsEnable = devSettings.isRemoteJSDebugEnabled
+          devSettings.isRemoteJSDebugEnabled = !isRemoteJsEnable
+          reactDevManager.handleReloadJS()
         }
       }
     }.apply {
       isEnabled = {
-        getDevSupportManager()?.devSettings?.isRemoteJSDebugEnabled ?: false
+        devSettings.isRemoteJSDebugEnabled
       }
       label = { if (isEnabled()) "Stop Remote Debugging" else "Debug Remote JS" }
       glyphName = { "remote-desktop" }
       importance = ItemImportance.LOW.value
     }
 
-    val fastRefreshAction = DevMenuAction("fast-refresh") {
-      val devSettings = getDevSupportManager()?.devSettings as? DevInternalSettings
-      if (devSettings != null) {
+
+    val result = mutableListOf(
+      reloadAction,
+      elementInspectorAction,
+      remoteDebugAction,
+      performanceMonitorAction
+    )
+
+    if (devSettings is DevInternalSettings) {
+      val fastRefreshAction = DevMenuAction("fast-refresh") {
         DevMenuManager.runWithApplicationBundler {
           devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
         }
+      }.apply {
+        isEnabled = { devSettings.isHotModuleReplacementEnabled }
+        label = { if (isEnabled()) "Disable Fast Refresh" else "Enable Fast Refresh" }
+        glyphName = { "run-fast" }
+        importance = ItemImportance.LOW.value
       }
-    }.apply {
-      isEnabled = {
-        (getDevSupportManager()?.devSettings as? DevInternalSettings)?.isHotModuleReplacementEnabled
-          ?: false
-      }
-      label = { if (isEnabled()) "Disable Fast Refresh" else "Enable Fast Refresh" }
-      glyphName = { "run-fast" }
-      importance = ItemImportance.LOW.value
+
+      result.add(fastRefreshAction)
     }
 
-    return listOf(reloadAction, elementInspectorAction, remoteDebugAction, fastRefreshAction, performanceMonitorAction)
+    return result
   }
 
   private fun runWithDevSettingEnabled(action: () -> Unit) = synchronized(DevMenuManager) {
