@@ -36,7 +36,11 @@ const screens = [
 export default function ExpoComponentsScreen() {
   const apis = React.useMemo(() => {
     return screens
-      .map(name => ({ name, isAvailable: !!Screens[name] }))
+      .map(name => ({
+        name,
+        route: `/components/${name.toLowerCase()}`,
+        isAvailable: !!Screens[name],
+      }))
       .sort((a, b) => {
         if (a.isAvailable !== b.isAvailable) {
           if (a.isAvailable) {
