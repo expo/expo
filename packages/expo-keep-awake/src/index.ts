@@ -5,7 +5,7 @@ import { KeepAwakeEventType } from './ExpoKeepAwake.types';
 
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
-function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
+export function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
   useEffect(() => {
     activateKeepAwake(tag);
     return () => {
@@ -14,7 +14,7 @@ function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
   }, [tag]);
 }
 
-async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
+export async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
   if (!(await ExpoKeepAwake.isAvailableAsync())) {
     if (__DEV__) {
       console.warn(
@@ -28,7 +28,7 @@ async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> 
   }
 }
 
-async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
+export async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
   if (!(await ExpoKeepAwake.isAvailableAsync())) {
     if (__DEV__) {
       console.warn(
@@ -42,16 +42,10 @@ async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void
   }
 }
 
-function addEventListener(tag: string, listener: (eventType: KeepAwakeEventType) => void) {
+export function addEventListener(tag: string, listener: (eventType: KeepAwakeEventType) => void) {
   if (ExpoKeepAwake.addListener) {
     ExpoKeepAwake.addListener(tag, listener);
   }
 }
 
-export {
-  addEventListener,
-  activateKeepAwake,
-  deactivateKeepAwake,
-  useKeepAwake,
-  KeepAwakeEventType,
-};
+export { KeepAwakeEventType };
