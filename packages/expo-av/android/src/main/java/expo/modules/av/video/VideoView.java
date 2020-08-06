@@ -399,9 +399,11 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   }
 
   void setResizeMode(final ScalableType resizeMode) {
-    mResizeMode = resizeMode;
-    if (mPlayerData != null) {
-      mVideoTextureView.scaleVideoSize(mPlayerData.getVideoWidthHeight(), mResizeMode);
+    if (mResizeMode != resizeMode) {
+      mResizeMode = resizeMode;
+      if (mPlayerData != null) {
+        mVideoTextureView.scaleVideoSize(mPlayerData.getVideoWidthHeight(), mResizeMode);
+      }
     }
   }
 
