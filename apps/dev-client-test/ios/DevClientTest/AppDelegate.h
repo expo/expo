@@ -5,7 +5,7 @@
 
 #import <UMCore/UMAppDelegateWrapper.h>
 
-#import <EXDevelopmentClient.h>
+#import <EXDevelopmentClientController.h>
 @import EXDevMenu;
 
 @interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate, EXDevelopmentClientControllerDelegate, DevMenuDelegateProtocol>
