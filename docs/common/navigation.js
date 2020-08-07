@@ -19,7 +19,7 @@ const GROUPS = {
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
   Preview: ['Preview'],
-  Build: ['Build'],
+  'EAS Builds': ['EAS Builds'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -29,8 +29,8 @@ const sections = [
     reference: ['Introduction', 'Support and feedback'],
   },
   {
-    name: 'Build',
-    reference: ['Introduction', 'Setup', 'iOS', 'Android'],
+    name: 'EAS Builds',
+    reference: ['Introduction', 'EAS Builds in 5 Minutes', 'Setup', 'iOS', 'Android'],
   },
   {
     name: 'Get Started',

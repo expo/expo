@@ -24,7 +24,7 @@ const DIR_MAPPING = {
   'regulatory-compliance': 'Regulatory Compliance',
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
-  build: 'Build',
+  build: 'EAS Builds',
 };
 
 const processUrl = path => {
@@ -82,7 +82,6 @@ const generateReferenceNavLinks = (path_, arr = []) => {
 
       // Make sure to add '/' at the end of index pages so that relative links in the markdown work correctly
       const href = fs.existsSync(path.join(filePath, 'index.md')) ? processUrl(filePath) + '/' : '';
-
       arr.push({
         name: DIR_MAPPING[name.toLowerCase()],
         href,
