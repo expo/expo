@@ -13,8 +13,8 @@ typedef struct {
 } EXiOSOperatingSystemVersion;
 
 EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion(void);
-}
-}
+} // namespace gl_cpp
+} // namespace expo
 
 #endif
 

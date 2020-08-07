@@ -24,5 +24,5 @@ std::shared_ptr<uint8_t> loadImage(
     int *fileWidth,
     int *fileHeight,
     int *fileComp);
-}
-}
+} // namespace gl_cpp
+} // namespace expo

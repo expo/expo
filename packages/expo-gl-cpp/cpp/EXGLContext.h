@@ -270,6 +270,6 @@ class EXGLContext {
 #undef NATIVE_METHOD
 #undef NATIVE_WEBGL2_METHOD
 };
-}
-}
+} // namespace gl_cpp
+} // namespace expo
 #include "EXGLContext-inl.h"

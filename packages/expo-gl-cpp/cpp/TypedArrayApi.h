@@ -146,5 +146,5 @@ TypedArray<T> TypedArrayBase::as(jsi::Runtime &runtime) && {
   }
   return std::move(*this).get<T>(runtime);
 }
-}
-}
+} // namespace gl_cpp
+} // namespace expo

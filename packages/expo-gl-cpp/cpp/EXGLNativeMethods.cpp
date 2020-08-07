@@ -1569,5 +1569,5 @@ NATIVE_METHOD(flushEXP) {
   addBlockingToNextBatch([&] {});
   return nullptr;
 }
-}
-}
+} // namespace gl_cpp
+} // namespace expo

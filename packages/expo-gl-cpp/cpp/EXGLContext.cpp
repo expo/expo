@@ -140,5 +140,5 @@ jsi::Value EXGLContext::exglDeleteObject(
 jsi::Value EXGLContext::exglUnimplemented(std::string name) {
   throw std::runtime_error("EXGL: " + name + "() isn't implemented yet!");
 }
-}
-}
+} // namespace gl_cpp
+} // namespace expo

@@ -13,8 +13,8 @@
 #include <jsi/jsi.h>
 #include <type_traits>
 
-#include "TypedArrayApi.h"
 #include "EXJSIUtils.h"
+#include "TypedArrayApi.h"
 
 namespace jsi = facebook::jsi;
 namespace expo {
@@ -101,9 +101,7 @@ inline jsi::Array unpackArg<jsi::Array>(jsi::Runtime &runtime, const jsi::Value 
 }
 
 template <>
-inline TypedArrayBase unpackArg<TypedArrayBase>(
-    jsi::Runtime &runtime,
-    const jsi::Value *jsArgv) {
+inline TypedArrayBase unpackArg<TypedArrayBase>(jsi::Runtime &runtime, const jsi::Value *jsArgv) {
   return getTypedArray(runtime, jsArgv->asObject(runtime));
 }
 
@@ -161,10 +159,13 @@ inline std::enable_if_t<is_supported_vector<T>, T> unpackArg(
           .as<TypedArrayKind::Uint32Array>(runtime)
           .toVector(runtime);
     } else if constexpr (std::is_same_v<typename T::value_type, int32_t>) {
-      return getTypedArray(runtime, std::move(jsObj)).as<TypedArrayKind::Int32Array>(runtime).toVector(runtime);
+      return getTypedArray(runtime, std::move(jsObj))
+          .as<TypedArrayKind::Int32Array>(runtime)
+          .toVector(runtime);
     } else if constexpr (std::is_same_v<typename T::value_type, float>) {
-      return getTypedArray(runtime, std::move(jsObj)).as<TypedArrayKind::Float32Array>(runtime).toVector(
-          runtime);
+      return getTypedArray(runtime, std::move(jsObj))
+          .as<TypedArrayKind::Float32Array>(runtime)
+          .toVector(runtime);
     }
   }
   throw std::runtime_error("unsupported type");
@@ -261,5 +262,5 @@ auto generateNativeMethod(
   return methodHelper::generateNativeMethodBind(
       fn, std::move(argTuple), std::make_index_sequence<sizeof...(T)>());
 }
-}
-}
+} // namespace gl_cpp
+} // namespace expo

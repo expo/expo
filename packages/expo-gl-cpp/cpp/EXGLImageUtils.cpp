@@ -130,11 +130,10 @@ std::shared_ptr<uint8_t> loadImage(
     decodeURI(localPath, localUri.c_str() + 7);
 
     return std::shared_ptr<uint8_t>(
-        stbi_load(localPath, fileWidth, fileHeight, fileComp, STBI_rgb_alpha), [](void *data) {
-          stbi_image_free(data);
-        });
+        stbi_load(localPath, fileWidth, fileHeight, fileComp, STBI_rgb_alpha),
+        [](void *data) { stbi_image_free(data); });
   }
   return std::shared_ptr<uint8_t>(nullptr);
 }
-}
-}
+} // namespace gl_cpp
+} // namespace expo

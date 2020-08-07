@@ -255,15 +255,15 @@ jsi::PropNameID PropNameIDCache::createProp(jsi::Runtime &runtime, Prop prop) {
 }
 
 std::unordered_map<std::string, TypedArrayKind> nameToKindMap = {
-  { "Int8Array", TypedArrayKind::Int8Array },
-  { "Int16Array", TypedArrayKind::Int16Array },
-  { "Int32Array", TypedArrayKind::Int32Array },
-  { "Uint8Array", TypedArrayKind::Uint8Array },
-  { "Uint8ClampedArray", TypedArrayKind::Uint8ClampedArray },
-  { "Uint16Array", TypedArrayKind::Uint16Array },
-  { "Uint32Array", TypedArrayKind::Uint32Array },
-  { "Float32Array", TypedArrayKind::Float32Array },
-  { "Float64Array", TypedArrayKind::Float64Array },
+    {"Int8Array", TypedArrayKind::Int8Array},
+    {"Int16Array", TypedArrayKind::Int16Array},
+    {"Int32Array", TypedArrayKind::Int32Array},
+    {"Uint8Array", TypedArrayKind::Uint8Array},
+    {"Uint8ClampedArray", TypedArrayKind::Uint8ClampedArray},
+    {"Uint16Array", TypedArrayKind::Uint16Array},
+    {"Uint32Array", TypedArrayKind::Uint32Array},
+    {"Float32Array", TypedArrayKind::Float32Array},
+    {"Float64Array", TypedArrayKind::Float64Array},
 };
 
 TypedArrayKind getTypedArrayKindForName(const std::string &name) {
@@ -280,5 +280,5 @@ template class TypedArray<TypedArrayKind::Uint32Array>;
 template class TypedArray<TypedArrayKind::Float32Array>;
 template class TypedArray<TypedArrayKind::Float64Array>;
 
-}
-}
+} // namespace gl_cpp
+} // namespace expo

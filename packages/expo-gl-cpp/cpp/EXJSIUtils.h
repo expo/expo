@@ -79,5 +79,5 @@ inline jsi::Value unsupportedWebGL2(
   throw std::runtime_error("EXGL: This device doesn't support WebGL2 method: " + name + "()!");
 }
 
-}
-}
+} // namespace gl_cpp
+} // namespace expo

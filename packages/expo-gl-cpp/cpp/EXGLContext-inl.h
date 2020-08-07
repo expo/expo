@@ -83,5 +83,5 @@ inline jsi::Value EXGLContext::exglVertexAttribv(Func func, GLuint index, std::v
   addToNextBatch([=, data{std::move(data)}] { func(index, data.data()); });
   return nullptr;
 }
-}
-}
+} // namespace gl_cpp
+} // namespace expo
