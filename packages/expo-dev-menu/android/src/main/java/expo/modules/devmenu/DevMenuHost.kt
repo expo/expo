@@ -1,6 +1,7 @@
 package expo.modules.devmenu
 
 import android.app.Application
+import android.content.Context
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 
@@ -18,4 +19,6 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 
   override fun getJSMainModuleName() = "index"
+
+  fun getContext(): Context = super.getApplication()
 }
