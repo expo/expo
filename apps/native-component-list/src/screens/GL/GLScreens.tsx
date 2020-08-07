@@ -123,6 +123,10 @@ const GLScreens: Screens = {
     }),
   },
 
+  GLViewScreen: {
+    screen: GLViewScreen,
+  },
+
   Mask: {
     screen: GLMaskScreen,
   },

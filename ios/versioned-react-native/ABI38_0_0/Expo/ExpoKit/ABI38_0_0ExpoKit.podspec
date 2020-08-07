@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI38_0_0EXFirebaseAnalytics"
     ss.dependency         "ABI38_0_0EXFirebaseCore"
     ss.dependency         "ABI38_0_0EXFont"
-    ss.dependency         "EXGL_CPP"
+    ss.dependency         "EXGL_CPP_LEGACY"
     ss.dependency         "ABI38_0_0EXGL"
     ss.dependency         "ABI38_0_0EXGoogleSignIn"
     ss.dependency         "ABI38_0_0EXHaptics"
