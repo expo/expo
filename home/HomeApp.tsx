@@ -1,9 +1,9 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
-import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { useColorScheme } from 'react-native-appearance';
@@ -19,20 +19,45 @@ import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
 
+function useSplashScreenWhileLoadingResources(loadResources: () => Promise<void>) {
+  const [isSplashScreenShown, setSplashScreenShown] = React.useState(true);
+  React.useEffect(() => {
+    const preventAutoHideAndLoadResources = async () => {
+      try {
+        const result = await (SplashScreen.preventAutoHideAsync || SplashScreen.preventAutoHide)();
+        console.log(`SplashScreen.preventAutoHideAsync returned: ${result}`);
+      } catch (error) {
+        console.warn(`SplashScreen.preventAutoHideAsync threw: ${error}`);
+      }
+      await loadResources();
+      setSplashScreenShown(false);
+      try {
+        const result = await (SplashScreen.hideAsync || SplashScreen.hide)();
+        console.log(`SplashScreen.hideAsync returned: ${result}`);
+      } catch (error) {
+        console.warn(`SplashScreen.hideAsync threw: ${error}`);
+      }
+    };
+    preventAutoHideAndLoadResources();
+  }, []);
+  return isSplashScreenShown;
+}
+
 export default function HomeApp() {
   const colorScheme = useColorScheme();
   const preferredAppearance = useSelector(data => data.settings.preferredAppearance);
   const dispatch = useDispatch();
 
-  const [isReady, setReady] = React.useState(false);
+  const isShowingSplashScreen = useSplashScreenWhileLoadingResources(async () => {
+    await initStateAsync();
+  });
 
   React.useEffect(() => {
-    initStateAsync();
     addProjectHistoryListener();
   }, []);
 
   React.useEffect(() => {
-    if (isReady && Platform.OS === 'ios') {
+    if (!isShowingSplashScreen && Platform.OS === 'ios') {
       // if expo client is opened via deep linking, we'll get the url here
       Linking.getInitialURL().then(initialUrl => {
         if (initialUrl) {
@@ -40,7 +65,7 @@ export default function HomeApp() {
         }
       });
     }
-  }, [isReady]);
+  }, [isShowingSplashScreen]);
 
   const addProjectHistoryListener = () => {
     addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
@@ -69,12 +94,12 @@ export default function HomeApp() {
         await Promise.all([Font.loadAsync(Ionicons.font), Font.loadAsync(MaterialIcons.font)]);
       }
     } finally {
-      setReady(true);
+      return;
     }
   };
 
-  if (!isReady) {
-    return <AppLoading />;
+  if (isShowingSplashScreen) {
+    return null;
   }
 
   let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
