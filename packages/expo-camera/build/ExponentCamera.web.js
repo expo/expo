@@ -1,14 +1,26 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
+import { CameraType, } from './Camera.types';
 import CameraManager from './ExponentCameraManager.web';
 import { PictureSizes } from './WebConstants';
 import { useWebCameraStream } from './useWebCameraStream';
+import { useWebQRScanner } from './useWebQRScanner';
 const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) => {
     const video = React.useRef(null);
     const native = useWebCameraStream(video, type, props, {
         onCameraReady: props.onCameraReady,
         onMountError: props.onMountError,
+    });
+    const isQRScannerEnabled = React.useMemo(() => {
+        return !!(props.barCodeScannerSettings?.barCodeTypes.includes('qr') && !!props.onBarCodeScanned);
+    }, [props.barCodeScannerSettings?.barCodeTypes, props.onBarCodeScanned]);
+    useWebQRScanner(video, {
+        interval: props.barCodeScannerSettings?.interval,
+        isEnabled: isQRScannerEnabled,
+        captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
+        onScanned: props.onBarCodeScanned,
+        onError: props.onMountError,
     });
     React.useImperativeHandle(ref, () => ({
         async getAvailablePictureSizes(ratio) {

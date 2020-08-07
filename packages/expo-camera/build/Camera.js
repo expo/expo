@@ -48,12 +48,6 @@ function ensureNativeProps(options) {
             barCodeTypes: newProps.barCodeTypes,
         };
     }
-    if (props.onBarCodeScanned) {
-        newProps.barCodeScannerEnabled = true;
-    }
-    if (props.onFacesDetected) {
-        newProps.faceDetectorEnabled = true;
-    }
     if (Platform.OS !== 'android') {
         delete newProps.ratio;
         delete newProps.useCamera2Api;
@@ -182,7 +176,9 @@ let Camera = /** @class */ (() => {
         }
         render() {
             const nativeProps = ensureNativeProps(this.props);
-            const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+            const onBarCodeScanned = this.props.onBarCodeScanned
+                ? this._onObjectDetected(this.props.onBarCodeScanned)
+                : undefined;
             const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
             return (React.createElement(ExponentCamera, Object.assign({}, nativeProps, { ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved })));
         }

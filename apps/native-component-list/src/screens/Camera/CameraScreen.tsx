@@ -6,7 +6,7 @@ import {
   Octicons,
 } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Camera } from 'expo-camera';
+import { Camera, BarCodeScanningResult } from 'expo-camera';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import * as Permissions from 'expo-permissions';
@@ -166,7 +166,8 @@ export default class CameraScreen extends React.Component<{}, State> {
     this.setState({ newPhotos: true });
   };
 
-  onBarCodeScanned = (code: { type: string; data: string }) => {
+  onBarCodeScanned = (code: BarCodeScanningResult) => {
+    console.log('Found: ', code);
     this.setState({ barcodeScanning: !this.state.barcodeScanning }, () =>
       Alert.alert(`Barcode found: ${code.data}`)
     );
@@ -331,6 +332,7 @@ export default class CameraScreen extends React.Component<{}, State> {
           tracking: true,
         }}
         barCodeScannerSettings={{
+          shouldRenderIndicator: true,
           barCodeTypes: [
             BarCodeScanner.Constants.BarCodeType.qr,
             BarCodeScanner.Constants.BarCodeType.pdf417,
