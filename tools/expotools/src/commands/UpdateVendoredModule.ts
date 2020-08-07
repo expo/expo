@@ -131,13 +131,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
   },
   'amazon-cognito-identity-js': {
-    repoUrl: 'https://github.com/aws/amazon-cognito-identity-js.git',
+    repoUrl: 'https://github.com/aws-amplify/amplify-js.git',
     installableInManagedApps: false,
     steps: [
       {
-        sourceIosPath: 'ios',
+        sourceIosPath: 'packages/amazon-cognito-identity-js/ios',
         targetIosPath: 'Api/Cognito',
-        sourceAndroidPath: 'android/src/main/java/com/amazonaws',
+        sourceAndroidPath: 'packages/amazon-cognito-identity-js/android/src/main/java/com/amazonaws',
         targetAndroidPath: 'modules/api/cognito',
         sourceAndroidPackage: 'com.amazonaws',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.cognito',
