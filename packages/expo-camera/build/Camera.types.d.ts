@@ -76,9 +76,15 @@ export declare type MountErrorListener = (event: {
 export declare type CameraMountError = {
     message: string;
 };
+export declare type BarCodePoint = {
+    x: number;
+    y: number;
+};
 export declare type BarCodeScanningResult = {
     type: string;
     data: string;
+    /** @platform web */
+    cornerPoints?: BarCodePoint[];
 };
 export declare type FaceDetectionResult = {
     faces: any[];
@@ -125,8 +131,6 @@ export declare type CameraNativeProps = {
     whiteBalance?: number | string;
     pictureSize?: string;
     barCodeScannerSettings?: BarCodeSettings;
-    barCodeScannerEnabled?: boolean;
-    faceDetectorEnabled?: boolean;
     faceDetectorSettings?: object;
     ratio?: string;
     useCamera2Api?: boolean;

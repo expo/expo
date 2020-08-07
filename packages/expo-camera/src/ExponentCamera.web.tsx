@@ -11,6 +11,7 @@ import {
 import CameraManager from './ExponentCameraManager.web';
 import { PictureSizes } from './WebConstants';
 import { useWebCameraStream } from './useWebCameraStream';
+import { useWebQRScanner } from './useWebQRScanner';
 
 export interface ExponentCameraRef {
   getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
@@ -29,6 +30,20 @@ const ExponentCamera = React.forwardRef(
     const native = useWebCameraStream(video, type as CameraType, props, {
       onCameraReady: props.onCameraReady,
       onMountError: props.onMountError,
+    });
+
+    const isQRScannerEnabled = React.useMemo<boolean>(() => {
+      return !!(
+        props.barCodeScannerSettings?.barCodeTypes.includes('qr') && !!props.onBarCodeScanned
+      );
+    }, [props.barCodeScannerSettings?.barCodeTypes, props.onBarCodeScanned]);
+
+    useWebQRScanner(video, {
+      interval: props.barCodeScannerSettings?.interval,
+      isEnabled: isQRScannerEnabled,
+      captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
+      onScanned: props.onBarCodeScanned,
+      onError: props.onMountError,
     });
 
     React.useImperativeHandle(
@@ -77,29 +92,6 @@ const ExponentCamera = React.forwardRef(
       ];
     }, [native.type]);
 
-    // private updateScanner = () => {
-    //   if (!this.camera) return;
-    //   const { barCodeScannerSettings, onBarCodeScanned } = this.props;
-    //   if (onBarCodeScanned && barCodeScannerSettings) {
-    //     this.camera.barCodeScanner.startScanner(
-    //       {
-    //         // Default barcode scanning update interval, same as is defined in the API layer.
-    //         interval: this.shouldRenderIndicator() ? -1 : 500,
-    //         ...barCodeScannerSettings,
-    //       },
-    //       nativeEvent => {
-    //         if (this.props.onBarCodeScanned) {
-    //           this.props.onBarCodeScanned({ nativeEvent });
-    //           return;
-    //         }
-    //         this.updateScanner();
-    //       }
-    //     );
-    //   } else {
-    //     this.camera.barCodeScanner.stopScanner();
-    //   }
-    // };
-
     return (
       <View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
         <Video
@@ -111,7 +103,7 @@ const ExponentCamera = React.forwardRef(
           ref={video}
           style={style}
         />
-        {/* {this.shouldRenderIndicator() && <Canvas ref={this.setCanvasRef} style={styles.canvas} />} */}
+
         {props.children}
       </View>
     );
@@ -119,8 +111,6 @@ const ExponentCamera = React.forwardRef(
 );
 
 export default ExponentCamera;
-
-// const Canvas: any = React.forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
 
 const Video = React.forwardRef(
   (
@@ -142,10 +132,5 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-  },
-  canvas: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
   },
 });

@@ -91,7 +91,17 @@ export type MountErrorListener = (event: { nativeEvent: CameraMountError }) => v
 
 export type CameraMountError = { message: string };
 
-export type BarCodeScanningResult = { type: string; data: string };
+export type BarCodePoint = {
+  x: number;
+  y: number;
+};
+
+export type BarCodeScanningResult = {
+  type: string;
+  data: string;
+  /** @platform web */
+  cornerPoints?: BarCodePoint[];
+};
 
 export type FaceDetectionResult = { faces: any[] };
 
@@ -132,8 +142,6 @@ export type CameraNativeProps = {
   whiteBalance?: number | string;
   pictureSize?: string;
   barCodeScannerSettings?: BarCodeSettings;
-  barCodeScannerEnabled?: boolean;
-  faceDetectorEnabled?: boolean;
   faceDetectorSettings?: object;
   // Android
   ratio?: string;

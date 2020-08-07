@@ -1,4 +1,5 @@
 /* eslint-env browser */
+import { CodedError } from '@unimodules/core';
 import * as React from 'react';
 import * as Utils from './WebCameraUtils';
 import { FacingModeToCameraType } from './WebConstants';
@@ -148,6 +149,9 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
         resumeAsync,
         stopAsync,
         captureAsync(config) {
+            if (video.current?.readyState !== video.current?.HAVE_ENOUGH_DATA) {
+                throw new CodedError('ERR_CAMERA_NOT_READY', 'HTMLVideoElement does not have enough camera data to construct an image yet.');
+            }
             return Utils.capture(video.current, streamSettings.current, config);
         },
     };

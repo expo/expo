@@ -42,24 +42,25 @@ function ensureCameraPictureOptions(config) {
 }
 const DEFAULT_QUALITY = 0.92;
 export function captureImageData(video, pictureOptions = {}) {
-    const config = ensureCameraPictureOptions(pictureOptions);
-    const canvas = captureImageContext(video, config);
-    const context = canvas.getContext('2d');
+    if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+        return null;
+    }
+    const canvas = captureImageContext(video, pictureOptions);
+    const context = canvas.getContext('2d', { alpha: false });
     if (!context || !canvas.width || !canvas.height) {
         return null;
     }
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     return imageData;
 }
-export function captureImageContext(video, config) {
-    const { scale, isImageMirror } = config;
+export function captureImageContext(video, { scale = 1, isImageMirror = false }) {
     const { videoWidth, videoHeight } = video;
     const { width, height } = getImageSize(videoWidth, videoHeight, scale);
     // Build the canvas size and draw the camera image to the context from video
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { alpha: false });
     if (!context) {
         // Should never be called
         throw new Error('Context is not defined');

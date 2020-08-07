@@ -81,13 +81,15 @@ function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPicture
 const DEFAULT_QUALITY = 0.92;
 
 export function captureImageData(
-  video: HTMLVideoElement,
-  pictureOptions: CameraPictureOptions = {}
+  video: HTMLVideoElement | null,
+  pictureOptions: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'> = {}
 ): ImageData | null {
-  const config = ensureCameraPictureOptions(pictureOptions);
-  const canvas = captureImageContext(video, config);
+  if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+    return null;
+  }
+  const canvas = captureImageContext(video, pictureOptions);
 
-  const context = canvas.getContext('2d');
+  const context = canvas.getContext('2d', { alpha: false });
   if (!context || !canvas.width || !canvas.height) {
     return null;
   }
@@ -98,10 +100,8 @@ export function captureImageData(
 
 export function captureImageContext(
   video: HTMLVideoElement,
-  config: CameraPictureOptions
+  { scale = 1, isImageMirror = false }: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'>
 ): HTMLCanvasElement {
-  const { scale, isImageMirror } = config;
-
   const { videoWidth, videoHeight } = video;
   const { width, height } = getImageSize(videoWidth, videoHeight, scale!);
 
@@ -109,7 +109,7 @@ export function captureImageContext(
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
-  const context = canvas.getContext('2d');
+  const context = canvas.getContext('2d', { alpha: false });
 
   if (!context) {
     // Should never be called
