@@ -30,6 +30,11 @@ public class Screen extends ViewGroup {
     FADE
   }
 
+  public enum ReplaceAnimation {
+    PUSH,
+    POP
+  }
+
   private static OnAttachStateChangeListener sShowSoftKeyboardOnAttach = new OnAttachStateChangeListener() {
 
     @Override
@@ -51,8 +56,17 @@ public class Screen extends ViewGroup {
   private boolean mActive;
   private boolean mTransitioning;
   private StackPresentation mStackPresentation = StackPresentation.PUSH;
+  private ReplaceAnimation mReplaceAnimation = ReplaceAnimation.POP;
   private StackAnimation mStackAnimation = StackAnimation.DEFAULT;
   private boolean mGestureEnabled = true;
+
+  @Override
+  protected void onAnimationStart() {
+    super.onAnimationStart();
+    if (mFragment != null) {
+      mFragment.onViewAnimationStart();
+    }
+  }
 
   @Override
   protected void onAnimationEnd() {
@@ -148,12 +162,20 @@ public class Screen extends ViewGroup {
     mStackAnimation = stackAnimation;
   }
 
+  public void setReplaceAnimation(ReplaceAnimation replaceAnimation) {
+    mReplaceAnimation = replaceAnimation;
+  }
+
   public void setGestureEnabled(boolean gestureEnabled) {
     mGestureEnabled = gestureEnabled;
   }
 
   public StackAnimation getStackAnimation() {
     return mStackAnimation;
+  }
+
+  public ReplaceAnimation getReplaceAnimation() {
+    return mReplaceAnimation;
   }
 
   public StackPresentation getStackPresentation() {
