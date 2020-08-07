@@ -76,14 +76,6 @@ function ensureNativeProps(options?: CameraProps): CameraNativeProps {
     };
   }
 
-  if (props.onBarCodeScanned) {
-    newProps.barCodeScannerEnabled = true;
-  }
-
-  if (props.onFacesDetected) {
-    newProps.faceDetectorEnabled = true;
-  }
-
   if (Platform.OS !== 'android') {
     delete newProps.ratio;
     delete newProps.useCamera2Api;
@@ -274,7 +266,9 @@ export default class Camera extends React.Component<CameraProps> {
   render() {
     const nativeProps = ensureNativeProps(this.props);
 
-    const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+    const onBarCodeScanned = this.props.onBarCodeScanned
+      ? this._onObjectDetected(this.props.onBarCodeScanned)
+      : undefined;
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (

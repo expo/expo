@@ -1,4 +1,5 @@
 /* eslint-env browser */
+import { CodedError } from '@unimodules/core';
 import * as React from 'react';
 
 import {
@@ -187,6 +188,12 @@ export function useWebCameraStream(
     resumeAsync,
     stopAsync,
     captureAsync(config: CameraPictureOptions): CapturedPicture {
+      if (video.current?.readyState !== video.current?.HAVE_ENOUGH_DATA) {
+        throw new CodedError(
+          'ERR_CAMERA_NOT_READY',
+          'HTMLVideoElement does not have enough camera data to construct an image yet.'
+        );
+      }
       return Utils.capture(video.current!, streamSettings.current!, config);
     },
   };
