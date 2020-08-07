@@ -17,7 +17,7 @@ export default class Example extends React.Component {
   ref?: any = React.createRef();
 
   render() {
-    const transition = <Transition.Change interpolation="easeInOut" />;
+    const transition = <Transition.Change interpolation="easeInOut" durationMs={400} />;
 
     const { perc } = this.state;
 
