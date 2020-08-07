@@ -228,7 +228,9 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
 
   @Override
   public void onFullscreenPlayerDidPresent() {
-    mMediaController.updateControls();
+    if (mMediaController != null) {
+      mMediaController.updateControls();
+    }
     callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_DID_PRESENT);
 
     if (mFullscreenPlayerPresentationChangeProgressListener != null) {
@@ -248,7 +250,9 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
 
   @Override
   public void onFullscreenPlayerDidDismiss() {
-    mMediaController.updateControls();
+    if (mMediaController != null) {
+      mMediaController.updateControls();
+    }
     callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_DID_DISMISS);
 
     if (mFullscreenPlayerPresentationChangeProgressListener != null) {
@@ -396,6 +400,10 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
         }
 
         mPlayerData.setStatusUpdateListener(mStatusUpdateListener);
+
+        if (mMediaController == null) {
+          mMediaController = new MediaController(VideoView.this.getContext());
+        }
         mMediaController.setMediaPlayer(new PlayerDataControl(mPlayerData));
         mMediaController.setAnchorView(VideoView.this);
         maybeUpdateMediaControllerForUseNativeControls(false);
