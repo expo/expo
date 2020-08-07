@@ -4,9 +4,9 @@
 
 ### 🛠 Breaking changes
 
-- Upgraded Segment Analytics iOS to 4.0.4. **This removes the IDFA code that was previously included with the Segment library.** If you would like to collect the IDFA, you must be in the bare workflow or use SDK < 39.
+- Upgraded Segment Analytics iOS to 4.0.4. **This removes the IDFA code that was previously included with the Segment library.** If you would like to collect the IDFA, you must be in the bare workflow or use SDK < 39. ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)).
 
-- The `options` argument for `Segment.alias` now accepts context configuration as well as integration configuration. Previously, this expected just the `integrations` configuration. The expected format now is:
+- The `options` argument for `Segment.alias` now accepts context configuration as well as integration configuration. Previously, this expected just the `integrations` configuration. ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)). The expected format now is:
 
 ```json
 {
@@ -24,7 +24,7 @@
 
 ### 🎉 New features
 
-- You can now pass in custom options to `identifyWithTraits`, `groupWithTraits`, `alias`, `trackWithProperties`, and `screenWithProperties`. This allows you to set [these common fields](https://segment.com/docs/connections/spec/common/).
+- You can now pass in custom options to `identifyWithTraits`, `groupWithTraits`, `alias`, `trackWithProperties`, and `screenWithProperties`. This allows you to set [these common fields](https://segment.com/docs/connections/spec/common/). ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)).
 
 ### 🐛 Bug fixes
 

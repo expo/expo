@@ -80,7 +80,7 @@ public class SegmentModule extends ExportedModule {
       for (Map.Entry<String, Object> entry : properties.entrySet()) {
         String keyName = entry.getKey();
         if (keyName.equals("context") && entry.getValue() != null) {
-          Map<String,Object> contexts = (Map) entry.getValue();
+          Map<String, Object> contexts = (Map) entry.getValue();
           for (Map.Entry<String, Object> context : contexts.entrySet()) {
             options.putContext(context.getKey(), context.getValue());
           }
