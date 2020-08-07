@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'React'
-  s.dependency 'Branch', '0.29.0'
+  s.dependency 'Branch', '0.34.0'
 end
