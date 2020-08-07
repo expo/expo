@@ -179,6 +179,15 @@ UM_REGISTER_MODULE();
   return nil;
 }
 
+- (void *)javaScriptRuntimePointer
+{
+  if ([_bridge respondsToSelector:@selector(runtime)]) {
+    return _bridge.runtime;
+  } else {
+    return nil;
+  }
+}
+
 # pragma mark - App state observing
 
 - (void)startObserving
@@ -190,7 +199,7 @@ UM_REGISTER_MODULE();
                            UIApplicationWillEnterForegroundNotification,
                            RCTContentDidAppearNotification,
                            RCTBridgeWillReloadNotification]) {
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
                                                  name:name

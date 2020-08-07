@@ -67,29 +67,29 @@
 {
   id<UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
   id<UMJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMJavaScriptContextProvider)];
-  
-  JSGlobalContextRef jsContextRef = [jsContextProvider javaScriptContextRef];
-  
-  if (jsContextRef) {
+
+  void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
+
+  if (jsRuntimePtr) {
     __weak __typeof__(self) weakSelf = self;
     __weak __typeof__(uiManager) weakUIManager = uiManager;
-    
+
     [uiManager dispatchOnClientThread:^{
       EXGLContext *self = weakSelf;
       id<UMUIManager> uiManager = weakUIManager;
-      
+
       if (!self || !uiManager) {
         BLOCK_SAFE_RUN(callback, NO);
         return;
       }
-      
-      self->_contextId = UEXGLContextCreate(jsContextRef);
+
+      self->_contextId = UEXGLContextCreate(jsRuntimePtr);
       [self->_objectManager saveContext:self];
-      
+
       UEXGLContextSetFlushMethodObjc(self->_contextId, ^{
         [self flush];
       });
-      
+
       if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
         [self.delegate glContextInitialized:self];
       }
@@ -144,7 +144,7 @@
                          reject:(UMPromiseRejectBlock)reject
 {
   [self flush];
-  
+
   [self runAsync:^{
     NSDictionary *rect = options[@"rect"] ?: [self currentViewport];
     BOOL flip = options[@"flip"] != nil && [options[@"flip"] boolValue];
@@ -169,7 +169,7 @@
       // headless context doesn't have default framebuffer, so we use the current one
       sourceFramebuffer = [self defaultFramebuffer] || prevFramebuffer;
     }
-    
+
     if (sourceFramebuffer == 0) {
       reject(
              @"E_GL_NO_FRAMEBUFFER",
@@ -186,7 +186,7 @@
              );
       return;
     }
-    
+
     // Bind source framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, sourceFramebuffer);
 
@@ -229,7 +229,7 @@
     // Write image to file
     NSData *imageData;
     NSString *extension;
-    
+
     if ([format isEqualToString:@"webp"]) {
       UMLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
       imageData = UIImagePNGRepresentation(image);
@@ -246,7 +246,7 @@
       imageData = UIImageJPEGRepresentation(image, compress);
       extension = @".jpeg";
     }
-    
+
     NSString *filePath = [self generateSnapshotPathWithExtension:extension];
     [imageData writeToFile:filePath atomically:YES];
 
@@ -287,7 +287,7 @@
   id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
-  
+
   [fileSystem ensureDirExistsWithPath:directory];
 
   return [directory stringByAppendingPathComponent:fileName];

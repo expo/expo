@@ -90,7 +90,7 @@ public class GLContext {
       public void run() {
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
-          mEXGLCtxId = shouldUseContextCreateV2(environment) ? EXGLContextCreateV2(jsContextRef) : EXGLContextCreate(jsContextRef);
+          mEXGLCtxId = EXGLContextCreate(jsContextRef);
         }
         EXGLContextSetFlushMethod(mEXGLCtxId, glContext);
         mManager.saveContext(glContext);
@@ -447,18 +447,5 @@ public class GLContext {
       return ((Double) value).intValue();
     }
     return (Integer) value;
-  }
-
-  private boolean shouldUseContextCreateV2(RuntimeEnvironmentInterface environment) {
-    // As of react-native@0.59.0, JavaScriptContext ref is no longer pointing to a JSC context object,
-    // but to JSCRuntime object implementing JSI interface.
-    // That means, we need to use different EXGLContextCreate (v2) method that knows how to
-    // pick the correct JSC context object. See `EXGL.cpp` from `expo-gl-cpp` for more details.
-
-    if (environment == null || !environment.platformName().equals("React Native")) {
-      return false;
-    }
-    RuntimeEnvironmentInterface.PlatformVersion platformVersion = environment.platformVersion();
-    return platformVersion.major() >= 0 && platformVersion.minor() >= 59;
   }
 }
