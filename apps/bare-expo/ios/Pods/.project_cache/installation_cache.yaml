@@ -16,10 +16,10 @@ CACHE_KEYS:
       Analytics:
         :debug: 4b3b6704130da311e34f2609627e9c55
         :release: 4b3b6704130da311e34f2609627e9c55
-    CHECKSUM: 67cce2129e4b0df5b532bf0c043043f292b32f5f
+    CHECKSUM: 231b01fdaa9704105881dc82def7b7b1d6571edb
     PROJECT_NAME: Analytics
     SPECS:
-      - Analytics (3.9.0)
+      - Analytics (4.0.4)
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
       AppAuth:
@@ -872,7 +872,7 @@ CACHE_KEYS:
       EXSegment:
         :debug: 8eebb5a12fba89d199dea131ac094a2f
         :release: 8eebb5a12fba89d199dea131ac094a2f
-    CHECKSUM: 7f9fd99f88f5b1ff06d323a153873d2105d390f4
+    CHECKSUM: 853e00760287d751cdf88e09c4fe2f23cffbd6f2
     FILES:
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.m"
