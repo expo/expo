@@ -2,7 +2,7 @@
 /**
  * A web-only module for ponyfilling the UserMedia API.
  */
-import { Platform } from '@unimodules/core';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 export const userMediaRequested = false;
 export const mountedInstances = [];
 async function requestLegacyUserMediaAsync(props) {
@@ -83,7 +83,7 @@ export async function getUserMediaAsync(constraints) {
 export function canGetUserMedia() {
     return (
     // SSR
-    Platform.isDOMAvailable &&
+    canUseDOM &&
         // Has any form of media API
         !!((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
             navigator['mozGetUserMedia'] ||
