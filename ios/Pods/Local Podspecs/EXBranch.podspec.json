@@ -15,6 +15,7 @@
   "source_files": "EXBranch/**/*.{h,m}",
   "preserve_paths": "EXBranch/**/*.{h,m}",
   "requires_arc": true,
+  "compiler_flags": "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\"",
   "dependencies": {
     "UMCore": [
 

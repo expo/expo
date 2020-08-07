@@ -7740,7 +7740,7 @@ CACHE_KEYS:
       EXBranch:
         :debug: a2a7a793c27f88a63feac1a8a5851249
         :release: a2a7a793c27f88a63feac1a8a5851249
-    CHECKSUM: c8304c9cda0a4750cefbe90da265cc40c3be3c9d
+    CHECKSUM: 7511ad43362e358a1fdbc2af73cd50da83834b3a
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.m"
