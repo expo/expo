@@ -143,6 +143,36 @@ public class OperatorNode extends Node {
       return Math.round(x);
     }
   };
+  private static final Operator ABS = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.abs(x);
+    }
+  };
+  private static final Operator FLOOR = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.floor(x);
+    }
+  };
+  private static final Operator CEIL = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.ceil(x);
+    }
+  };
+  private static final Operator MIN = new ReduceOperator() {
+    @Override
+    public double reduce(Double x, Double y) {
+      return Math.min(x, y);
+    }
+  };
+  private static final Operator MAX = new ReduceOperator() {
+    @Override
+    public double reduce(Double x, Double y) {
+      return Math.max(x, y);
+    }
+  };
 
   // logical
   private static final Operator AND = new Operator() {
@@ -291,6 +321,16 @@ public class OperatorNode extends Node {
       mOperator = GREATER_OR_EQ;
     } else if ("neq".equals(op)) {
       mOperator = NEQ;
+    } else if ("abs".equals(op)) {
+      mOperator = ABS;
+    }else if ("floor".equals(op)) {
+      mOperator = FLOOR;
+    }else if ("ceil".equals(op)) {
+      mOperator = CEIL;
+    }else if ("max".equals(op)) {
+      mOperator = MAX;
+    }else if ("min".equals(op)) {
+      mOperator = MIN;
     } else {
       throw new JSApplicationIllegalArgumentException("Unrecognized operator " + op);
     }
