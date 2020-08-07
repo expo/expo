@@ -101,7 +101,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         String testKey = config.getTestKey();
         boolean useTest = config.getUseTestInstance();
 
-        Branch.registerPlugin(PLUGIN_NAME, io.branch.rnbranch.BuildConfig.RNBRANCH_VERSION);
+        Branch.registerPlugin(PLUGIN_NAME, expo.modules.branch.BuildConfig.RNBRANCH_VERSION);
 
         if (branchKey != null) {
             Branch.getAutoInstance(context, branchKey);
