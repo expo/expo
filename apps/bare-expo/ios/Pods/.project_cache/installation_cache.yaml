@@ -461,8 +461,8 @@ CACHE_KEYS:
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
       EXGL:
-        :debug: b21ff559aacb62ac621d51e446f9cbce
-        :release: b21ff559aacb62ac621d51e446f9cbce
+        :debug: e2693ac9b23793b0d76b54ea5efb250c
+        :release: e2693ac9b23793b0d76b54ea5efb250c
     CHECKSUM: 5ab2299d0bae290b81ca24fc70e8f1697affbef5
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
@@ -483,28 +483,53 @@ CACHE_KEYS:
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP:
-        :debug: e5c21be87c49c4ea22fb524158d76c6f
-        :release: e5c21be87c49c4ea22fb524158d76c6f
-    CHECKSUM: 03b30fb5012eee6f4231b6667d97256716e7e13b
+        :debug: 2048fe04f075c294e3d06750bdb6e79a
+        :release: 2048fe04f075c294e3d06750bdb6e79a
+    CHECKSUM: 6ef005841e3e556604f57f4654d43586f4cd118a
     FILES:
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.h"
-      - "../../../../packages/expo-gl-cpp/cpp/EXGLInstallConstants.cpp"
-      - "../../../../packages/expo-gl-cpp/cpp/EXGLInstallMethods.cpp"
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLImageUtils.cpp"
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLImageUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLNativeMethods.cpp"
-      - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.h"
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLNativeMethodsUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.mm"
-      - "../../../../packages/expo-gl-cpp/cpp/EXJSConvertTypedArray.c"
-      - "../../../../packages/expo-gl-cpp/cpp/EXJSConvertTypedArray.h"
-      - "../../../../packages/expo-gl-cpp/cpp/EXJSUtils.c"
-      - "../../../../packages/expo-gl-cpp/cpp/EXJSUtils.h"
+      - "../../../../packages/expo-gl-cpp/cpp/EXJSIUtils.h"
+      - "../../../../packages/expo-gl-cpp/cpp/EXPlatformUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/stb_image.h"
+      - "../../../../packages/expo-gl-cpp/cpp/TypedArrayApi.cpp"
+      - "../../../../packages/expo-gl-cpp/cpp/TypedArrayApi.h"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
       - EXGL_CPP (8.4.0)
-      - EXGL_CPP/EXGLContext (8.4.0)
+  EXGL_CPP_LEGACY:
+    BUILD_SETTINGS_CHECKSUM:
+      EXGL_CPP_LEGACY:
+        :debug: 0b110bcca18cdfdb18b5035cfe215bcd
+        :release: 0b110bcca18cdfdb18b5035cfe215bcd
+    CHECKSUM: 53e09fa405bf392e3d24b3c4fd62080f340a7429
+    FILES:
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXGLContext.cpp"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXGLContext.h"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXGLInstallConstants.cpp"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXGLInstallMethods.cpp"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXGLNativeMethods.cpp"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXiOSUtils.h"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXiOSUtils.mm"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXJSConvertTypedArray.c"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXJSConvertTypedArray.h"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXJSUtils.c"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/EXJSUtils.h"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/stb_image.h"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/UEXGL.cpp"
+      - "../../../../packages/expo-gl-cpp-legacy/cpp/UEXGL.h"
+    PROJECT_NAME: EXGL_CPP_LEGACY
+    SPECS:
+      - EXGL_CPP_LEGACY (8.4.0)
+      - EXGL_CPP_LEGACY/EXGLContext (8.4.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn:
@@ -1204,8 +1229,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: bb122f88dfe7b3698156c1de7b111448
-      Release: bb122f88dfe7b3698156c1de7b111448
+      Debug: 476003a47bb2b7b9f113b3dc740bba4c
+      Release: 476003a47bb2b7b9f113b3dc740bba4c
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1217,8 +1242,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 99c32e541eb5df02123fe71813e04308
-      Release: 99c32e541eb5df02123fe71813e04308
+      Debug: d52f63f6e68d84946cca2011a85050d9
+      Release: d52f63f6e68d84946cca2011a85050d9
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
