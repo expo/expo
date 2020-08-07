@@ -24,7 +24,6 @@ target 'Exponent' do
       'expo-module-template',
       'expo-in-app-purchases',
       'expo-payments-stripe',
-      'expo-splash-screen',
     ],
     flags: {
       :inhibit_warnings => false
