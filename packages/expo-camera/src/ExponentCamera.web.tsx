@@ -103,7 +103,6 @@ const ExponentCamera = React.forwardRef(
           ref={video}
           style={style}
         />
-
         {props.children}
       </View>
     );

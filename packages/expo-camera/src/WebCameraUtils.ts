@@ -138,32 +138,6 @@ export function captureImage(
   return toDataURL(canvas, imageType!, quality);
 }
 
-function drawLine(
-  context: CanvasRenderingContext2D,
-  points: { x: number; y: number }[],
-  options: any = {}
-): void {
-  const { color = '#4630EB', lineWidth = 4 } = options;
-  const [start, end] = points;
-  context.beginPath();
-  context.moveTo(start.x, start.y);
-  context.lineTo(end.x, end.y);
-  context.lineWidth = lineWidth;
-  context.strokeStyle = color;
-  context.stroke();
-}
-
-export function drawBarcodeBounds(
-  context: CanvasRenderingContext2D,
-  { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner },
-  options: any = {}
-): void {
-  drawLine(context, [topLeftCorner, topRightCorner], options);
-  drawLine(context, [topRightCorner, bottomRightCorner], options);
-  drawLine(context, [bottomRightCorner, bottomLeftCorner], options);
-  drawLine(context, [bottomLeftCorner, topLeftCorner], options);
-}
-
 function getSupportedConstraints(): MediaTrackSupportedConstraints | null {
   if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
     return navigator.mediaDevices.getSupportedConstraints();

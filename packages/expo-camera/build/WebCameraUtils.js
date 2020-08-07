@@ -80,22 +80,6 @@ export function captureImage(video, pictureOptions) {
     const { imageType, quality = DEFAULT_QUALITY } = config;
     return toDataURL(canvas, imageType, quality);
 }
-function drawLine(context, points, options = {}) {
-    const { color = '#4630EB', lineWidth = 4 } = options;
-    const [start, end] = points;
-    context.beginPath();
-    context.moveTo(start.x, start.y);
-    context.lineTo(end.x, end.y);
-    context.lineWidth = lineWidth;
-    context.strokeStyle = color;
-    context.stroke();
-}
-export function drawBarcodeBounds(context, { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner }, options = {}) {
-    drawLine(context, [topLeftCorner, topRightCorner], options);
-    drawLine(context, [topRightCorner, bottomRightCorner], options);
-    drawLine(context, [bottomRightCorner, bottomLeftCorner], options);
-    drawLine(context, [bottomLeftCorner, topLeftCorner], options);
-}
 function getSupportedConstraints() {
     if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
         return navigator.mediaDevices.getSupportedConstraints();

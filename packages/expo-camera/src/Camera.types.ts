@@ -151,7 +151,6 @@ export type CameraNativeProps = {
 export type BarCodeSettings = {
   barCodeTypes: string[];
   interval?: number;
-  shouldRenderIndicator?: boolean;
 };
 
 export { PermissionResponse, PermissionStatus, PermissionExpiration };

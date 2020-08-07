@@ -11,12 +11,6 @@ export declare function hasValidConstraints(preferredCameraType?: CameraType, wi
 export declare function captureImageData(video: HTMLVideoElement | null, pictureOptions?: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'>): ImageData | null;
 export declare function captureImageContext(video: HTMLVideoElement, { scale, isImageMirror }: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'>): HTMLCanvasElement;
 export declare function captureImage(video: HTMLVideoElement, pictureOptions: CameraPictureOptions): string;
-export declare function drawBarcodeBounds(context: CanvasRenderingContext2D, { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner }: {
-    topLeftCorner: any;
-    topRightCorner: any;
-    bottomRightCorner: any;
-    bottomLeftCorner: any;
-}, options?: any): void;
 export declare function getIdealConstraints(preferredCameraType: CameraType, width?: number | ConstrainLongRange, height?: number | ConstrainLongRange): MediaStreamConstraints;
 export declare function getStreamDevice(preferredCameraType: CameraType, preferredWidth?: number | ConstrainLongRange, preferredHeight?: number | ConstrainLongRange): Promise<MediaStream>;
 export declare function isWebKit(): boolean;
