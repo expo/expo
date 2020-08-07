@@ -2392,7 +2392,7 @@ CACHE_KEYS:
       RNScreens:
         :debug: 6ebdf10223b1d4ac13afddf80d913920
         :release: 6ebdf10223b1d4ac13afddf80d913920
-    CHECKSUM: c526239bbe0e957b988dacc8d75ac94ec9cb19da
+    CHECKSUM: b748efec66e095134c7166ca333b628cd7e6f3e2
     FILES:
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.m"
@@ -2406,7 +2406,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-screens/README.md"
     PROJECT_NAME: RNScreens
     SPECS:
-      - RNScreens (2.9.0)
+      - RNScreens (2.10.1)
   RNSharedElement:
     BUILD_SETTINGS_CHECKSUM:
       RNSharedElement:
