@@ -13,7 +13,7 @@
 /packages/expo-apple-authentication             @esamelson @tsapeta
 /packages/expo-application                      @ide
 /packages/expo-asset                            @tsapeta
-/packages/expo-av                               @bbarthec @bbarthec
+/packages/expo-av                               @bbarthec @IjzerenHein
 /packages/expo-background-fetch                 @tsapeta
 /packages/expo-barcode-scanner                  @bbarthec @lukmccall
 /packages/expo-battery                          @tsapeta
