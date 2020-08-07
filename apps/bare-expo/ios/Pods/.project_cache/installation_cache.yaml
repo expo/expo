@@ -2300,7 +2300,7 @@ CACHE_KEYS:
       RNReanimated:
         :debug: 295b770b9201200ddd557942fcbd2e06
         :release: 295b770b9201200ddd557942fcbd2e06
-    CHECKSUM: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
+    CHECKSUM: 7de2dca51deacff78bb880f63c1389a24311b376
     FILES:
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.h"
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.m"
@@ -2361,7 +2361,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/README.md"
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.9.0)
+      - RNReanimated (1.10.2)
   RNScreens:
     BUILD_SETTINGS_CHECKSUM:
       RNScreens:
