@@ -30,7 +30,14 @@ const sections = [
   },
   {
     name: 'EAS Builds',
-    reference: ['Introduction', 'EAS Builds in 5 Minutes', 'Setup', 'iOS', 'Android'],
+    reference: [
+      'Introduction',
+      'EAS Builds in 5 Minutes',
+      'Configuring with eas.json',
+      'Setup',
+      'iOS',
+      'Android',
+    ],
   },
   {
     name: 'Get Started',

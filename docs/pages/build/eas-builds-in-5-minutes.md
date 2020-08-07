@@ -6,7 +6,7 @@ Let's get started by building Android and iOS app binaries for a fresh bare proj
 
 ## Prerequisites
 
-- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). *If you already have it, make sure you're using the latest version.* EAS Builds is in alpha and it's changing rapidly, so the only way to ensure that you will have a good experience is to use the latest expo-cli version. **This tutorial assumes you're using `expo-cli@3.23.2` or newer.**
+- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). _If you already have it, make sure you're using the latest version._ EAS Builds is in alpha and it's changing rapidly, so the only way to ensure that you will have a good experience is to use the latest expo-cli version. **This tutorial assumes you're using `expo-cli@3.23.2` or newer.**
 - Sign in with `expo login` or sign up with `expo register` if you don't have an Expo account yet. You can check if you're logged in by running `expo whoami`.
 
 ## Initialize a New Project
@@ -57,7 +57,7 @@ After creating the file, make another commit:
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/04-eas-json.png" /></center>
 
-If you want to learn more about `eas.json` see the [Configuring with eas.json](https://todo) page.
+If you want to learn more about `eas.json` see the [Configuring with eas.json](../eas-json/) page.
 
 Once you've created `eas.json`, new Expo CLI commands should become available for you:
 
