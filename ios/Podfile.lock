@@ -223,7 +223,7 @@ PODS:
   - ABI36_0_0EXSegment (7.0.0):
     - ABI36_0_0UMConstantsInterface
     - ABI36_0_0UMCore
-    - Analytics (~> 3.7)
+    - Analytics
   - ABI36_0_0EXSensors (7.0.0):
     - ABI36_0_0UMCore
     - ABI36_0_0UMSensorsInterface
@@ -722,7 +722,7 @@ PODS:
   - ABI37_0_0EXSegment (8.0.0):
     - ABI37_0_0UMConstantsInterface
     - ABI37_0_0UMCore
-    - Analytics (~> 3.7)
+    - Analytics
   - ABI37_0_0EXSensors (8.0.0):
     - ABI37_0_0UMCore
     - ABI37_0_0UMSensorsInterface
@@ -1225,7 +1225,7 @@ PODS:
   - ABI38_0_0EXSegment (8.2.1):
     - ABI38_0_0UMConstantsInterface
     - ABI38_0_0UMCore
-    - Analytics (~> 3.7)
+    - Analytics
   - ABI38_0_0EXSensors (9.0.1):
     - ABI38_0_0UMCore
     - ABI38_0_0UMSensorsInterface
@@ -1503,7 +1503,7 @@ PODS:
   - ABI38_0_0UMTaskManagerInterface (5.2.1)
   - ABI38_0_0Yoga (1.14.0)
   - Amplitude-iOS (4.7.1)
-  - Analytics (3.7.0)
+  - Analytics (4.0.4)
   - AppAuth (1.2.0):
     - AppAuth/Core (= 1.2.0)
     - AppAuth/ExternalUserAgent (= 1.2.0)
@@ -1679,7 +1679,7 @@ PODS:
   - EXSecureStore (9.2.0):
     - UMCore
   - EXSegment (8.2.1):
-    - Analytics (~> 3.7)
+    - Analytics (~> 4.0)
     - UMConstantsInterface
     - UMCore
   - EXSensors (9.1.0):
@@ -3402,7 +3402,7 @@ SPEC CHECKSUMS:
   ABI36_0_0EXPrint: df3e520026b059e3d85e01bb3c970dfc5c44e467
   ABI36_0_0EXRandom: e6d60a4f2bbda8c195e5be722c208bfef6c6f5be
   ABI36_0_0EXSecureStore: b5d6aea3dc7958a5fb720571ad02899436523e28
-  ABI36_0_0EXSegment: 7728ffbb10de2a3d41ce432765116fb454d8081f
+  ABI36_0_0EXSegment: 76ee2b8c015a58c911bc4daffd0292b344b2050e
   ABI36_0_0EXSensors: 8240634ad629ab82ff94547b3c5c43f3ad075f49
   ABI36_0_0EXSharing: 5b7013d8e1584faa890b11d77d236dbd2772aa79
   ABI36_0_0EXSMS: a7bd69be76a4a4927cecce4948cbe4a0b2a78476
@@ -3498,7 +3498,7 @@ SPEC CHECKSUMS:
   ABI37_0_0EXRandom: c41d8e27bc5d5954c0133c32fa08b909650bd5e5
   ABI37_0_0EXScreenOrientation: afe890516ee48c308e5a156f59bf296fd673c96d
   ABI37_0_0EXSecureStore: 8f69a0e3e12909f0eaa8ad2348bc8639afb0879d
-  ABI37_0_0EXSegment: dc2cd224a0bc99dd938ab90ce3aaf771e7792cf5
+  ABI37_0_0EXSegment: 6f184eb375066d30b3a0e41a558f359cbb3a77aa
   ABI37_0_0EXSensors: a434a9f5aef682589a05c086869fca147c60e216
   ABI37_0_0EXSharing: 1828b7f7bcf92b456727f0938346766448895e7d
   ABI37_0_0EXSMS: c6e7c8e337f97f63159c0684b606f86ab430e4e5
@@ -3595,7 +3595,7 @@ SPEC CHECKSUMS:
   ABI38_0_0EXScreenCapture: 536bb9191edf6e07684825cf974a55fd89395f84
   ABI38_0_0EXScreenOrientation: 20877b749f2e722daf18dd2ecdd59fcb78f30e8e
   ABI38_0_0EXSecureStore: 09b284103e761d2c785ca1da0971bcdb91dbc157
-  ABI38_0_0EXSegment: ece221567ec23f0ebbe2281716df28ea2d0f61f4
+  ABI38_0_0EXSegment: 4403e515245d227765142635a346d69de183862f
   ABI38_0_0EXSensors: dfcd839fd00c63420ace6a5e5edafa5a6c692959
   ABI38_0_0EXSharing: 10822fededc0d31cd1f5fa092cb519b05291efb7
   ABI38_0_0EXSMS: d7f23223dc935b4c9272574882fa3bd88812b799
@@ -3642,7 +3642,7 @@ SPEC CHECKSUMS:
   ABI38_0_0UMTaskManagerInterface: 26dcad5c9e8a4bf6c6a2caa71dd418034cc120b1
   ABI38_0_0Yoga: b5cdb5cd24cced7ad15b84a6a7500e8f4098a250
   Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
-  Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
+  Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
@@ -3697,10 +3697,10 @@ SPEC CHECKSUMS:
   EXPrint: edff21b0746bc0c2d2912b21efcb47e8d500b8c9
   EXRandom: a375fb6bed8a0919a795766b8d5218b1200538b7
   EXScreenCapture: ed9b1813758bf0057fc3780043bfa4dc0956a9b5
-  EXScreenOrientation: 9110f49798fae74322f6fa959eab1da5d4805cf0
-  EXSecureStore: 579cbccd9cd093e6f4336aba073b059008bd78e0
+  EXScreenOrientation: c9cfb33eaff7ce83330c5238eba523d027b9eb53
+  EXSecureStore: 321ee488c66ef1af2aa73701f01cdd512f69ecdf
   EXSegment: 7f9fd99f88f5b1ff06d323a153873d2105d390f4
-  EXSensors: 352c8d17c066765517e9e73c05d68491f2cfa7b6
+  EXSensors: 761f6bd03eb13ff7dfffe955de7edce3b73306c4
   EXSharing: 05c66cc124b0ea49a0525ba0e9816c5f39d368f9
   EXSMS: 62b990a7d9e6132904062b2438002f09418b4f0b
   EXSpeech: 688c85808df422fda01ea6ecedf54009da2db2fe
@@ -3723,7 +3723,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
   FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
   FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
-  FirebaseMLVisionFaceModel: d6ba42000f263df52187aee936262bc2002b3389
+  FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875

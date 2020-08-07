@@ -1210,7 +1210,7 @@ CACHE_KEYS:
       ABI36_0_0EXSegment:
         :debug: 2618b6d3b4e0a2356e91c10105d15875
         :release: 2618b6d3b4e0a2356e91c10105d15875
-    CHECKSUM: 7728ffbb10de2a3d41ce432765116fb454d8081f
+    CHECKSUM: 76ee2b8c015a58c911bc4daffd0292b344b2050e
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXSegment/ABI36_0_0EXSegment/ABI36_0_0EXSegment.h"
       - "../versioned-react-native/ABI36_0_0/Expo/EXSegment/ABI36_0_0EXSegment/ABI36_0_0EXSegment.m"
@@ -3676,7 +3676,7 @@ CACHE_KEYS:
       ABI37_0_0EXSegment:
         :debug: 3fe595c07a6cb0e514c45f7db15f35e2
         :release: 3fe595c07a6cb0e514c45f7db15f35e2
-    CHECKSUM: dc2cd224a0bc99dd938ab90ce3aaf771e7792cf5
+    CHECKSUM: 6f184eb375066d30b3a0e41a558f359cbb3a77aa
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXSegment/ABI37_0_0EXSegment/ABI37_0_0EXSegment.h"
       - "../versioned-react-native/ABI37_0_0/Expo/EXSegment/ABI37_0_0EXSegment/ABI37_0_0EXSegment.m"
@@ -6238,7 +6238,7 @@ CACHE_KEYS:
       ABI38_0_0EXSegment:
         :debug: 4b6b58dd0dac09ce006809ea13a79c56
         :release: 4b6b58dd0dac09ce006809ea13a79c56
-    CHECKSUM: ece221567ec23f0ebbe2281716df28ea2d0f61f4
+    CHECKSUM: 4403e515245d227765142635a346d69de183862f
     FILES:
       - "../versioned-react-native/ABI38_0_0/Expo/EXSegment/ABI38_0_0EXSegment/ABI38_0_0EXSegment.h"
       - "../versioned-react-native/ABI38_0_0/Expo/EXSegment/ABI38_0_0EXSegment/ABI38_0_0EXSegment.m"
@@ -7478,10 +7478,10 @@ CACHE_KEYS:
       Analytics:
         :debug: 4b3b6704130da311e34f2609627e9c55
         :release: 4b3b6704130da311e34f2609627e9c55
-    CHECKSUM: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
+    CHECKSUM: 231b01fdaa9704105881dc82def7b7b1d6571edb
     PROJECT_NAME: Analytics
     SPECS:
-      - Analytics (3.7.0)
+      - Analytics (4.0.4)
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
       AppAuth:
@@ -8430,7 +8430,7 @@ CACHE_KEYS:
       EXSegment:
         :debug: 0f984c746cda9e3c417625be5487217c
         :release: 0f984c746cda9e3c417625be5487217c
-    CHECKSUM: 7f9fd99f88f5b1ff06d323a153873d2105d390f4
+    CHECKSUM: 853e00760287d751cdf88e09c4fe2f23cffbd6f2
     FILES:
       - "../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
       - "../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.m"
@@ -8759,7 +8759,7 @@ CACHE_KEYS:
       FirebaseMLVisionFaceModel:
         :debug: be561dec23d92ce53122582403370726
         :release: be561dec23d92ce53122582403370726
-    CHECKSUM: d6ba42000f263df52187aee936262bc2002b3389
+    CHECKSUM: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
     PROJECT_NAME: FirebaseMLVisionFaceModel
     SPECS:
       - FirebaseMLVisionFaceModel (0.19.0)
