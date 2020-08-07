@@ -70,13 +70,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (![_lastLoopID objectForKey:_updateContext.callID] || [[_lastLoopID objectForKey:_updateContext.callID] longValue] < [_updateContext.loopID longValue]) {
     [_lastLoopID setObject:_updateContext.loopID forKey:_updateContext.callID];
     id val = [self evaluate];
-    if (val == 0) {
-      val = [[NSNumber alloc] initWithInt:0];
-    }
-    [_memoizedValue setObject:val forKey:_updateContext.callID];
+    [_memoizedValue setObject:(val == nil ? [NSNull null] : val) forKey:_updateContext.callID];
     return val;
   }
-  return [_memoizedValue objectForKey:_updateContext.callID];
+  id memoizedValue = [_memoizedValue objectForKey:_updateContext.callID];
+  return [memoizedValue isKindOfClass:[NSNull class]] ? nil : memoizedValue;
 }
 
 - (void)addChild:(REANode *)child
