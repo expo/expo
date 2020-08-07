@@ -31,8 +31,6 @@ enum class Prop {
 
 class PropNameIDCache {
  public:
-  std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>> props;
-
   const jsi::PropNameID &get(jsi::Runtime &runtime, Prop prop) {
     if (!this->props[prop]) {
       this->props[prop] = std::make_unique<jsi::PropNameID>(createProp(runtime, prop));
@@ -42,12 +40,23 @@ class PropNameIDCache {
 
   const jsi::PropNameID &getConstructorNameProp(jsi::Runtime &runtime, TypedArrayKind kind);
 
+  void invalidate() {
+    props.erase(props.begin(), props.end());
+  }
  private:
+  std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>> props;
+
   jsi::PropNameID createProp(jsi::Runtime &runtime, Prop prop);
 };
-TypedArrayKind getTypedArrayKindForName(const std::string &name);
 
 PropNameIDCache propNameIDCache;
+
+void invalidateJsiPropNameIDCache() {
+  propNameIDCache.invalidate();
+}
+
+TypedArrayKind getTypedArrayKindForName(const std::string &name);
+
 
 TypedArrayBase::TypedArrayBase(jsi::Runtime &runtime, size_t size, TypedArrayKind kind)
     : TypedArrayBase(

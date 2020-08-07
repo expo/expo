@@ -19,6 +19,7 @@
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <EXGL_CPP/UEXGL.h>
 
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
@@ -348,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager
 {
-
+  UEXGLInvalidateJsiCache();
 }
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
