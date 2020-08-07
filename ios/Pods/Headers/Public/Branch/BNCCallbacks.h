@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCCallbacks.h
+../../../Branch/Branch-SDK/BNCCallbacks.h

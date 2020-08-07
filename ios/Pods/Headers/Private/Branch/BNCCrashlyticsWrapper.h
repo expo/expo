@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCCrashlyticsWrapper.h
+../../../Branch/Branch-SDK/BNCCrashlyticsWrapper.h
