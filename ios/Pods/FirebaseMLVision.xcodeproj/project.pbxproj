@@ -9,63 +9,63 @@
 /* Begin PBXAggregateTarget section */
 		3D5358053745F186EF3299093007AD97 /* FirebaseMLVision */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = DD5A34157D6823F7B7359C79A041A7C6 /* Build configuration list for PBXAggregateTarget "FirebaseMLVision" */;
+			buildConfigurationList = 735F001D879FE9207C7867293A786F67 /* Build configuration list for PBXAggregateTarget "FirebaseMLVision" */;
 			buildPhases = (
 			);
 			dependencies = (
-				789F67810FD66B0CA6F2924699641094 /* PBXTargetDependency */,
-				74D13C73D6BBBBE4F94579CBD745D0DB /* PBXTargetDependency */,
-				06890C6951330352501CF1D6A5C8876D /* PBXTargetDependency */,
-				53BD6695F5D04AA375CE598C7B11548F /* PBXTargetDependency */,
-				7E0DDF43D8B448E4A3AE71E0230F0C3E /* PBXTargetDependency */,
-				E54F6FDDD0713533AF28DFC0A7EC6447 /* PBXTargetDependency */,
+				CD4E94B43ABDF3D4E07C4352AF664AC6 /* PBXTargetDependency */,
+				70F0F26A2B3CE6DD87CEDE81AECBF49E /* PBXTargetDependency */,
+				0B45A1359A4B1636706B3C692D28A3BD /* PBXTargetDependency */,
+				02727E2ECE121144D9FE9806C9C9F17B /* PBXTargetDependency */,
+				98CADBEA3ABE664FFBE8B1D1E7DEC056 /* PBXTargetDependency */,
+				51549DA03021FB314F522D322AEE56C0 /* PBXTargetDependency */,
 			);
 			name = FirebaseMLVision;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		15994D214F2FAE70F1610E53106B1576 /* PBXContainerItemProxy */ = {
+		1624949605F09B881E96FF6767EADECA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1AA7AA87A2CBC46FA11A04D4AA97DDE0 /* GoogleToolboxForMac.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6A6C31AF5480BB69EDDFCD50D28967CD;
 			remoteInfo = GoogleToolboxForMac;
 		};
-		5C11D1CDD6C5680EF246B454D39042B5 /* PBXContainerItemProxy */ = {
+		2F73DE738907E87B7B99901A7C67C264 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A6BAAFB1D9943896529BDFA08080A07 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
 		};
-		87E2B97F9516EE8ABDE2A969F9639DF1 /* PBXContainerItemProxy */ = {
+		3D6B2F4BA12323B56419BDE14FF4901B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 59CC0097B401FFB7B7BDC2903B72BB29 /* FirebaseMLCommon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 655B4D5DC1C1034B3458073E51ECD859;
+			remoteInfo = FirebaseMLCommon;
+		};
+		628BA983E2C93C2697FBACA1718BDE28 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FB851AA01EB86F9DF256C69E7C60B142 /* GoogleAPIClientForREST.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E899E01EE94E3AAE44DBC0A0C183AD70;
 			remoteInfo = GoogleAPIClientForREST;
 		};
-		AD05346EE123AC51C96165956026C9B6 /* PBXContainerItemProxy */ = {
+		79599E0CF76956B3F3141D5680CFE24F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3CE09663017C990D605E18352B9D139F /* Protobuf.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF47F3270E009392526FDEE0C3BA42AD;
 			remoteInfo = Protobuf;
 		};
-		C445F3CF34803B678EBE7BD7F540B2CA /* PBXContainerItemProxy */ = {
+		DF41DAC3BCA69E03F2A619E504D0E5B0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D845C838BDB0408F82716678DDCF5FC0 /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
 			remoteInfo = GTMSessionFetcher;
-		};
-		DA680F4B9F333D08F02F4F53953A0E4E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 59CC0097B401FFB7B7BDC2903B72BB29 /* FirebaseMLCommon.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 655B4D5DC1C1034B3458073E51ECD859;
-			remoteInfo = FirebaseMLCommon;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -195,42 +195,42 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		06890C6951330352501CF1D6A5C8876D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GoogleAPIClientForREST;
-			targetProxy = 87E2B97F9516EE8ABDE2A969F9639DF1 /* PBXContainerItemProxy */;
-		};
-		53BD6695F5D04AA375CE598C7B11548F /* PBXTargetDependency */ = {
+		02727E2ECE121144D9FE9806C9C9F17B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleToolboxForMac;
-			targetProxy = 15994D214F2FAE70F1610E53106B1576 /* PBXContainerItemProxy */;
+			targetProxy = 1624949605F09B881E96FF6767EADECA /* PBXContainerItemProxy */;
 		};
-		74D13C73D6BBBBE4F94579CBD745D0DB /* PBXTargetDependency */ = {
+		0B45A1359A4B1636706B3C692D28A3BD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = FirebaseMLCommon;
-			targetProxy = DA680F4B9F333D08F02F4F53953A0E4E /* PBXContainerItemProxy */;
+			name = GoogleAPIClientForREST;
+			targetProxy = 628BA983E2C93C2697FBACA1718BDE28 /* PBXContainerItemProxy */;
 		};
-		789F67810FD66B0CA6F2924699641094 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseCore;
-			targetProxy = 5C11D1CDD6C5680EF246B454D39042B5 /* PBXContainerItemProxy */;
-		};
-		7E0DDF43D8B448E4A3AE71E0230F0C3E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GTMSessionFetcher;
-			targetProxy = C445F3CF34803B678EBE7BD7F540B2CA /* PBXContainerItemProxy */;
-		};
-		E54F6FDDD0713533AF28DFC0A7EC6447 /* PBXTargetDependency */ = {
+		51549DA03021FB314F522D322AEE56C0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Protobuf;
-			targetProxy = AD05346EE123AC51C96165956026C9B6 /* PBXContainerItemProxy */;
+			targetProxy = 79599E0CF76956B3F3141D5680CFE24F /* PBXContainerItemProxy */;
+		};
+		70F0F26A2B3CE6DD87CEDE81AECBF49E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseMLCommon;
+			targetProxy = 3D6B2F4BA12323B56419BDE14FF4901B /* PBXContainerItemProxy */;
+		};
+		98CADBEA3ABE664FFBE8B1D1E7DEC056 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GTMSessionFetcher;
+			targetProxy = DF41DAC3BCA69E03F2A619E504D0E5B0 /* PBXContainerItemProxy */;
+		};
+		CD4E94B43ABDF3D4E07C4352AF664AC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseCore;
+			targetProxy = 2F73DE738907E87B7B99901A7C67C264 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		01CB6A3626BB06FCF017E2B61200E062 /* Release */ = {
+		0DB5AEAF95849CA6DCB414A9002D20FD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 77D7A8AB62C5B2049068E12C8B5F5F2A /* FirebaseMLVision.release.xcconfig */;
+			baseConfigurationReference = 14D0EB0248A1DEE7CEDD4EBC9AAFA2EB /* FirebaseMLVision.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -238,9 +238,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		288BB2350F270612D1A30E4C18341B75 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -301,19 +300,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		5CF9583CE41F8D81A8CC7B8C48AA9242 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14D0EB0248A1DEE7CEDD4EBC9AAFA2EB /* FirebaseMLVision.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		952BD0BC8A3B6FAA9893DDEBFD60C30F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -379,23 +365,37 @@
 			};
 			name = Debug;
 		};
+		BEC31E2430924C498FDF9A5BC26FCB3F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 77D7A8AB62C5B2049068E12C8B5F5F2A /* FirebaseMLVision.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		735F001D879FE9207C7867293A786F67 /* Build configuration list for PBXAggregateTarget "FirebaseMLVision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0DB5AEAF95849CA6DCB414A9002D20FD /* Debug */,
+				BEC31E2430924C498FDF9A5BC26FCB3F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C1AF0B4A0FA5A11906E8105ACC34AFEC /* Build configuration list for PBXProject "FirebaseMLVision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				952BD0BC8A3B6FAA9893DDEBFD60C30F /* Debug */,
 				288BB2350F270612D1A30E4C18341B75 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DD5A34157D6823F7B7359C79A041A7C6 /* Build configuration list for PBXAggregateTarget "FirebaseMLVision" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				5CF9583CE41F8D81A8CC7B8C48AA9242 /* Debug */,
-				01CB6A3626BB06FCF017E2B61200E062 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,3 +1,4 @@
+import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { Video, AVPlaybackStatus, VideoFullscreenUpdateEvent } from 'expo-av';
 import React from 'react';
@@ -41,12 +42,17 @@ export default class VideoPlayer extends React.Component<
   };
 
   _video?: Video;
+  private prevStatus?: AVPlaybackStatus;
 
   _handleError = (errorMessage: string) => this.setState({ errorMessage });
 
   _handleVideoMount = (ref: Video) => (this._video = ref);
 
-  _handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => this.setState({ status });
+  _handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    console.log('onPlaybackStatusUpdate: ', diff(this.prevStatus || {}, status));
+    this.prevStatus = status;
+    this.setState({ status });
+  };
 
   _handleFullScreenUpdate = (event: VideoFullscreenUpdateEvent) =>
     console.log('onFullscreenUpdate', event);
@@ -110,6 +116,7 @@ export default class VideoPlayer extends React.Component<
         playAsync={this._playAsync}
         pauseAsync={this._pauseAsync}
         replayAsync={this._replayAsync}
+        nextAsync={this._changeSource}
         setPositionAsync={this._setPositionAsync}
         setIsLoopingAsync={this._setIsLoopingAsync}
         setIsMutedAsync={this._setIsMutedAsync}
@@ -141,14 +148,8 @@ export default class VideoPlayer extends React.Component<
           },
           {
             iconName: 'resize',
-            title: 'Open fullscreen',
+            title: 'Open full screen',
             onPress: this._openFullscreen,
-            active: false,
-          },
-          {
-            iconName: 'skip-forward',
-            title: 'Change source',
-            onPress: this._changeSource,
             active: false,
           },
         ]}

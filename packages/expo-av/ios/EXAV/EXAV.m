@@ -791,11 +791,15 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
     _audioRecorderIsPreparing = true;
     error = [self promoteAudioSessionIfNecessary];
     if (error) {
+      _audioRecorderIsPreparing = false;
+      [self _removeAudioRecorder:YES];
       reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: audio session not activated!", error);
+      return;
     } else if ([_audioRecorder prepareToRecord]) {
       resolve(@{@"uri": [[_audioRecorder url] absoluteString],
                 @"status": [self _getAudioRecorderStatus]});
     } else {
+      [self _removeAudioRecorder:YES];
       reject(@"E_AUDIO_RECORDERNOTCREATED", nil, UMErrorWithMessage(@"Prepare encountered an error: recorder not prepared."));
     }
     _audioRecorderIsPreparing = false;

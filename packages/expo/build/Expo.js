@@ -4,13 +4,12 @@ import * as Logs from './logs/Logs';
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as Notifications } from './Notifications/Notifications';
 // The following should all be extracted from this package
 export { SplashScreen };
 export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
 // @ts-ignore
-export { Updates, Linking } from './deprecated';
+export { Updates, Linking, Notifications } from './deprecated';
 // @ts-ignore
 export { 
 // @ts-ignore

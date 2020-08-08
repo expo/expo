@@ -1,13 +1,10 @@
 #include "UEXGL.h"
-
-#include <JavaScriptCore/JSContextRef.h>
-#include <JavaScriptCore/JSObjectRef.h>
-#include <JavaScriptCore/JSValueRef.h>
-
 #include "EXGLContext.h"
 
-UEXGLContextId UEXGLContextCreate(JSGlobalContextRef jsCtx) {
-  return EXGLContext::ContextCreate(jsCtx);
+using namespace expo::gl_cpp;
+
+UEXGLContextId UEXGLContextCreate(void *jsiPtr) {
+  return EXGLContext::ContextCreate(*reinterpret_cast<jsi::Runtime *>(jsiPtr));
 }
 
 void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
@@ -19,9 +16,7 @@ void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(voi
 
 #ifdef __APPLE__
 void UEXGLContextSetFlushMethodObjc(UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod) {
-  UEXGLContextSetFlushMethod(exglCtxId, [flushMethod] {
-    flushMethod();
-  });
+  UEXGLContextSetFlushMethod(exglCtxId, [flushMethod] { flushMethod(); });
 }
 #endif
 
@@ -57,7 +52,6 @@ void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuff
     exglCtx->setDefaultFramebuffer(framebuffer);
   }
 }
-
 
 UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId) {
   auto exglCtx = EXGLContext::ContextGet(exglCtxId);

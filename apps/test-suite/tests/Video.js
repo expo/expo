@@ -341,7 +341,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.status.isLoaded).toBe(true);
       });
 
-      t.it("gets called for HLS streams", async () => {
+      t.it('gets called for HLS streams', async () => {
         const props = {
           style,
           source: { uri: hlsStreamUri },
@@ -592,6 +592,39 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             resolve();
           }, 1000);
         });
+      });
+
+      t.it('gets called periodically when playing', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+        const props = {
+          onPlaybackStatusUpdate,
+          source,
+          style,
+          ref: refSetter,
+          progressUpdateIntervalMillis: 10,
+        };
+        await mountAndWaitFor(<Video {...props} />);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await retryForStatus(instance, { isBuffering: false, isLoaded: true });
+        // Verify that status-update doesn't get called periodically when not started
+        const beforeCount = onPlaybackStatusUpdate.calls.count();
+        t.expect(beforeCount).toBeLessThan(6);
+
+        const status = await instance.getStatusAsync();
+        await instance.setStatusAsync({
+          shouldPlay: true,
+          positionMillis: status.durationMillis - 500,
+        });
+        await retryForStatus(instance, { isPlaying: true });
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await retryForStatus(instance, { isPlaying: false });
+        const duringCount = onPlaybackStatusUpdate.calls.count() - beforeCount;
+        t.expect(duringCount).toBeGreaterThan(50);
+
+        // Wait a bit longer and verify it doesn't get called anymore
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const afterCount = onPlaybackStatusUpdate.calls.count() - beforeCount - duringCount;
+        t.expect(afterCount).toBeLessThan(3);
       });
     });
 

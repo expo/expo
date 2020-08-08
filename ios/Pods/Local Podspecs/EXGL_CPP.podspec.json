@@ -14,17 +14,15 @@
   },
   "source_files": "**/*.{h,c,cpp,mm}",
   "preserve_paths": "**/*.{h,c,cpp,mm}",
-  "exclude_files": "**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*",
+  "compiler_flags": "-x objective-c++ -std=c++1z",
   "requires_arc": true,
   "pod_target_xcconfig": {
     "CLANG_WARN_COMMA": "NO",
     "CLANG_WARN_UNGUARDED_AVAILABILITY": "NO"
   },
-  "subspecs": [
-    {
-      "name": "EXGLContext",
-      "source_files": "**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*",
-      "compiler_flags": "-x objective-c++"
-    }
-  ]
+  "dependencies": {
+    "React-jsi": [
+
+    ]
+  }
 }

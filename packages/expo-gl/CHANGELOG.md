@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Full rewrite of expo-gl-cpp, migration to JSI ([#7948](https://github.com/expo/expo/pull/7948) by [@wkozyra95](https://github.com/wkozyra95))
+
 ### 🐛 Bug fixes
 
 ## 8.4.0 — 2020-07-17

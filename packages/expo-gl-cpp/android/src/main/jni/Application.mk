@@ -5,11 +5,10 @@ APP_PLATFORM := android-18
 
 APP_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-NDK_MODULE_PATH := .$(HOST_DIRSEP)$(JSC_DIR)
+NDK_MODULE_PATH := $(THIRD_PARTY_NDK_DIR)
 
 APP_STL := c++_shared
-APP_CPPFLAGS := -std=c++1y -fexceptions -pthread
-
+APP_CPPFLAGS := -std=c++1z -fexceptions -pthread
 # Make sure every shared lib includes a .note.gnu.build-id header
 APP_LDFLAGS := -Wl,--build-id
 APP_LDFLAGS += -llog

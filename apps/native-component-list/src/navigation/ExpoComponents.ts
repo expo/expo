@@ -12,6 +12,7 @@ const BarCodeScanner = optionalRequire(() => require('../screens/BarCodeScannerS
 const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScreen'));
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
+const QRCode = optionalRequire(() => require('../screens/QRCodeScreen'));
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
 const GestureHandlerList = optionalRequire(() => require('../screens/GestureHandlerListScreen'));
 const GestureHandlerPinch = optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
@@ -55,6 +56,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
+  QRCode,
   DateTimePicker,
   GL,
   ...Object.keys(GLScreens ?? {}).reduce((prev, screenName) => {
@@ -63,6 +65,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
     screen.navigationOptions = {
       title: screen.title,
     };
+    screen.route = `gl/${screenName.toLowerCase()}`;
     return {
       ...prev,
       [screenName]: screen,
@@ -107,6 +110,7 @@ export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>
 );
 
 export const Routes = Object.entries(Screens).reduce<RoutesObjectType>((acc, [key, screen]) => {
-  acc[key] = key.toLowerCase();
+  // @ts-ignore: route not available
+  acc[key] = screen.route ?? key.toLowerCase();
   return acc;
 }, {});

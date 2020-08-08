@@ -1,4 +1,5 @@
 expo.modules.gl.cpp
+expo.modules.gl.cpp.legacy
 org.unimodules.apploader
 org.unimodules.interfaces.taskManager
 org.unimodules.core.interfaces.Consumer

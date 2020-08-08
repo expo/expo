@@ -174,6 +174,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     Exponent.initialize(this, getApplication());
     NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
     mSplashScreenKernelService = mExpoKernelServiceRegistry.getSplashScreenKernelService();
+    mSplashScreenKernelService.reset();
 
     // Can't call this here because subclasses need to do other initialization
     // before their listener methods are called.

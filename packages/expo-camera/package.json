@@ -37,13 +37,14 @@
     "@unimodules/core": "~5.1.2",
     "react": "*",
     "react-native": "*",
-    "unimodules-camera-interface": "*",
     "unimodules-barcode-scanner-interface": "*",
-    "unimodules-file-system-interface": "*",
+    "unimodules-camera-interface": "*",
     "unimodules-face-detector-interface": "*",
+    "unimodules-file-system-interface": "*",
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
+    "@koale/useworker": "^3.2.1",
     "invariant": "2.2.4",
     "lodash": "^4.6.0"
   },

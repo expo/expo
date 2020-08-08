@@ -89,7 +89,7 @@ PODS:
     - ABI36_0_0UMCameraInterface
     - ABI36_0_0UMCore
     - ABI36_0_0UMFileSystemInterface
-    - EXGL_CPP
+    - EXGL_CPP_LEGACY
   - ABI36_0_0EXGoogleSignIn (7.0.0):
     - ABI36_0_0UMCore
     - GoogleSignIn (~> 5.0.2)
@@ -201,7 +201,7 @@ PODS:
     - AppAuth
     - Branch
     - EXBranch
-    - EXGL_CPP
+    - EXGL_CPP_LEGACY
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -574,7 +574,7 @@ PODS:
     - ABI37_0_0UMCameraInterface
     - ABI37_0_0UMCore
     - ABI37_0_0UMFileSystemInterface
-    - EXGL_CPP
+    - EXGL_CPP_LEGACY
   - ABI37_0_0EXGoogleSignIn (8.0.0):
     - ABI37_0_0UMCore
     - GoogleSignIn (~> 5.0.2)
@@ -697,7 +697,7 @@ PODS:
     - AppAuth
     - Branch
     - EXBranch
-    - EXGL_CPP
+    - EXGL_CPP_LEGACY
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -1068,7 +1068,7 @@ PODS:
     - ABI38_0_0UMCameraInterface
     - ABI38_0_0UMCore
     - ABI38_0_0UMFileSystemInterface
-    - EXGL_CPP
+    - EXGL_CPP_LEGACY
   - ABI38_0_0EXGoogleSignIn (8.2.1):
     - ABI38_0_0UMCore
     - GoogleSignIn (~> 5.0.2)
@@ -1198,7 +1198,7 @@ PODS:
     - AppAuth
     - Branch
     - EXBranch
-    - EXGL_CPP
+    - EXGL_CPP_LEGACY
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -1616,8 +1616,10 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXGL_CPP (8.4.0):
-    - EXGL_CPP/EXGLContext (= 8.4.0)
-  - EXGL_CPP/EXGLContext (8.4.0)
+    - React-jsi
+  - EXGL_CPP_LEGACY (8.4.0):
+    - EXGL_CPP_LEGACY/EXGLContext (= 8.4.0)
+  - EXGL_CPP_LEGACY/EXGLContext (8.4.0)
   - EXGoogleSignIn (8.2.1):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -1701,6 +1703,9 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
+  - EXUpdates (0.2.11):
+    - React
+    - UMCore
   - EXVideoThumbnails (4.2.1):
     - UMCore
     - UMFileSystemInterface
@@ -2461,6 +2466,7 @@ DEPENDENCIES:
   - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
+  - EXGL_CPP_LEGACY (from `../packages/expo-gl-cpp-legacy/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXHaptics (from `../packages/expo-haptics/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
@@ -2489,6 +2495,7 @@ DEPENDENCIES:
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../packages/expo-store-review/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
+  - EXUpdates (from `../packages/expo-updates/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -3207,6 +3214,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl/ios"
   EXGL_CPP:
     :path: "../packages/expo-gl-cpp/cpp"
+  EXGL_CPP_LEGACY:
+    :path: "../packages/expo-gl-cpp-legacy/cpp"
   EXGoogleSignIn:
     :path: "../packages/expo-google-sign-in/ios"
   EXHaptics:
@@ -3263,6 +3272,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-store-review/ios"
   EXTaskManager:
     :path: "../packages/expo-task-manager/ios"
+  EXUpdates:
+    :path: "../packages/expo-updates/ios"
   EXVideoThumbnails:
     :path: "../packages/expo-video-thumbnails/ios"
   EXWebBrowser:
@@ -3372,7 +3383,7 @@ SPEC CHECKSUMS:
   ABI36_0_0EXFaceDetector: 49619204936a326d481032ae700f538a8d2bc908
   ABI36_0_0EXFileSystem: e70160bed834e5b693b70839e7e497c52b19ede4
   ABI36_0_0EXFont: 82b60dab83d5610e00e34fa42eabca61387b8139
-  ABI36_0_0EXGL: 71f2b05f8e48945b776455cbd18deeb6bb390c6c
+  ABI36_0_0EXGL: d9a79aae270aa8b911fc9f9cea6c01d82c69413d
   ABI36_0_0EXGoogleSignIn: afd4c7954deb2b4475056514c598ac9790989ede
   ABI36_0_0EXHaptics: cd1c188e30bf362321d9a21862b5e221a3148462
   ABI36_0_0EXImageManipulator: 69b9aa62bc06dcca4cba3faba3cfcee81fbca059
@@ -3387,7 +3398,7 @@ SPEC CHECKSUMS:
   ABI36_0_0EXMediaLibrary: 01e603a68a28ed1f93015fec078985efda618e2f
   ABI36_0_0EXNetwork: 7a4a42d6ce730271bdcb74e64bea3e875713de9b
   ABI36_0_0EXPermissions: c9038e520aadea3fdf58a345537906eca18553be
-  ABI36_0_0ExpoKit: f344371316472b028b0d11c6c60f0741d95a9da1
+  ABI36_0_0ExpoKit: 733b64bf1be2fe0b6c0a4415de226a8d165495ef
   ABI36_0_0EXPrint: df3e520026b059e3d85e01bb3c970dfc5c44e467
   ABI36_0_0EXRandom: e6d60a4f2bbda8c195e5be722c208bfef6c6f5be
   ABI36_0_0EXSecureStore: b5d6aea3dc7958a5fb720571ad02899436523e28
@@ -3465,7 +3476,7 @@ SPEC CHECKSUMS:
   ABI37_0_0EXFirebaseAnalytics: 4e0c72081998159551c1518a7f6cf60169eab196
   ABI37_0_0EXFirebaseCore: 8b09912b278f2b026d647d4c0845c8c67d58ed1c
   ABI37_0_0EXFont: f92e29961ff75ae30a0df3490756e6a90b9a5f95
-  ABI37_0_0EXGL: 057137bfc60ce9fd914031a67f2860c5d1a28617
+  ABI37_0_0EXGL: 278764120385d50507d12f2725a190831d0b2ee0
   ABI37_0_0EXGoogleSignIn: ac67ff76d5042ee8b1ffbda393d0daaaf95680a6
   ABI37_0_0EXHaptics: 530884ed3365d47d2c3321b15606ed993da0db99
   ABI37_0_0EXImageLoader: 53e6592593845b3d87d2d28383043de108700dfa
@@ -3482,7 +3493,7 @@ SPEC CHECKSUMS:
   ABI37_0_0EXModuleTemplate: 4bf6d16d0e1a175ae15bd8f2b6bad76232fffa36
   ABI37_0_0EXNetwork: 23a2ba8ba90956eddec839532f790c54dd778233
   ABI37_0_0EXPermissions: 419eb72b484505cd327c026f624bb8514d363804
-  ABI37_0_0ExpoKit: e0cc33210bf3deb522600babb1df88487e737e83
+  ABI37_0_0ExpoKit: d50f54055a875dc83b936aa3add923ec9a7a6c8f
   ABI37_0_0EXPrint: e41f4d13cd747215b42f629b4d6f7ca99e550bc3
   ABI37_0_0EXRandom: c41d8e27bc5d5954c0133c32fa08b909650bd5e5
   ABI37_0_0EXScreenOrientation: afe890516ee48c308e5a156f59bf296fd673c96d
@@ -3560,7 +3571,7 @@ SPEC CHECKSUMS:
   ABI38_0_0EXFirebaseAnalytics: 7da8d4a243932f637d4ac0859369791c5fc4e568
   ABI38_0_0EXFirebaseCore: df61e244e0fc459fff89f79ab7878cd166bf1a27
   ABI38_0_0EXFont: bec752800b812571ffb77a919a48c2be464bcf38
-  ABI38_0_0EXGL: ec9268159498b53ec5033c1ca269ac0cc0945f18
+  ABI38_0_0EXGL: 979a4684c1a78fef4af57c74f6804ced1deb5e0d
   ABI38_0_0EXGoogleSignIn: 0ea7f8181a364cc2aa3807d6dd4013f08603f60c
   ABI38_0_0EXHaptics: 88db1539c03c825dbf204c22d1068110d2a45994
   ABI38_0_0EXImageLoader: 7d5d6ed14f510431a57043d2ae1f49f41d0b9268
@@ -3578,7 +3589,7 @@ SPEC CHECKSUMS:
   ABI38_0_0EXNetwork: f4232f717bb866690bbfd9be0cb67bb831caf9c1
   ABI38_0_0EXNotifications: 478a2998bd524c65e254a6f5ab85cc4011659895
   ABI38_0_0EXPermissions: e7a5cbe07c89f0accaadd599a7ae180ca558f64c
-  ABI38_0_0ExpoKit: 70fa49052dba74233bec2bf6cc5c001a9c34096a
+  ABI38_0_0ExpoKit: 827f7dd14c2d11aff3600176ab260673598693c0
   ABI38_0_0EXPrint: 6ad34604d84744a9ed2d0ebda2873d0eb6ebd694
   ABI38_0_0EXRandom: c211900ed39eae32cbad83a69493f0d40ef5243c
   ABI38_0_0EXScreenCapture: 536bb9191edf6e07684825cf974a55fd89395f84
@@ -3636,7 +3647,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: b3d7cc9bfd445ecb145b5ce19b3973ab2a075292
   EXAdsFacebook: 5d87debb8df7a2cf0c7613f8a41ecf75157b095a
   EXAmplitude: 9232a37c556ab739c42adcbd0b239b5c1ac61f10
@@ -3666,7 +3677,8 @@ SPEC CHECKSUMS:
   EXFirebaseCore: 7e720f6f3725795b960b9e59dfcd46e674b30774
   EXFont: e583875d5d37a9e272d1cdba7f383bd576952919
   EXGL: 5ab2299d0bae290b81ca24fc70e8f1697affbef5
-  EXGL_CPP: 03b30fb5012eee6f4231b6667d97256716e7e13b
+  EXGL_CPP: 6ef005841e3e556604f57f4654d43586f4cd118a
+  EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
   EXGoogleSignIn: 02f0db1efb39c8e2508832a0175319f0ce08a80f
   EXHaptics: 5428b344a216ca5d9df6ca8f65720b2a1ad9f109
   EXImageLoader: 02ca02c9cd5cc8a97b423207a73a791e0a86bea5
@@ -3695,6 +3707,7 @@ SPEC CHECKSUMS:
   EXSQLite: 601f14b74257682303afe30eda34620afec27807
   EXStoreReview: b74c5e58e7ab74f28eaaefb1dfd4659e80a22c91
   EXTaskManager: 556abb392e1b2f3ab3fa7ee81479e95d3fbd65b3
+  EXUpdates: 9dd77b2e9e33d4347ae8ca81cc771cd16170e5af
   EXVideoThumbnails: f70bdc5511749f3181028f5000bcb7be203c631d
   EXWebBrowser: 9ff6477661a885eba99ba77f5039e5ad01fd1dc8
   FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
@@ -3712,7 +3725,7 @@ SPEC CHECKSUMS:
   FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
   FirebaseMLVisionFaceModel: d6ba42000f263df52187aee936262bc2002b3389
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: f206aff290f26fde422495c6cd187e50efbed57e
   GoogleAPIClientForREST: 4acfffd77f1c3c8741b6be9eaed0e603278efbde
@@ -3765,6 +3778,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 633ceb8c8031dbe4544ef9594b769dff9785bacc
+PODFILE CHECKSUM: 3e1c89d612793859b4d66931727d093438ba4300
 
 COCOAPODS: 1.9.3
