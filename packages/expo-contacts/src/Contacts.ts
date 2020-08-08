@@ -236,12 +236,12 @@ export type Container = {
 export { PermissionStatus, PermissionResponse };
 
 /**
- * Returns whether the Contacts API is enabled on the platform or device. This does not consider user permissions, that must be checked separately.
+ * Returns whether the Contacts API is enabled on the current device. This does not check the app permissions.
  *
- * @returns Async `boolean`, indicating whether the Contacts API is available on this device. Currently this only returns `false` in the web browser.
+ * @returns Async `boolean`, indicating whether the Contacts API is available on the current device. Currently this resolves to `true` on iOS and Android only.
  */
 export async function isAvailableAsync(): Promise<boolean> {
-  return Platform.OS !== 'web';
+  return !!ExpoContacts.getContactsAsync;
 }
 
 export async function shareContactAsync(
