@@ -4,6 +4,14 @@ import { PermissionStatus } from 'unimodules-permissions-interface';
 import uuidv4 from 'uuid/v4';
 import ExpoContacts from './ExpoContacts';
 export { PermissionStatus };
+/**
+ * Returns whether the Contacts API is enabled on the platform or device. This does not consider user permissions, that must be checked separately.
+ *
+ * @returns Async `boolean`, indicating whether the Contacts API is available on this device. Currently this only returns `false` in the web browser.
+ */
+export async function isAvailableAsync() {
+    return Platform.OS !== 'web';
+}
 export async function shareContactAsync(contactId, message, shareOptions = {}) {
     if (Platform.OS === 'ios') {
         const url = await writeContactToFileAsync({

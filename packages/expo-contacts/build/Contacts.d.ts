@@ -150,6 +150,12 @@ export declare type Container = {
     type: ContainerType;
 };
 export { PermissionStatus, PermissionResponse };
+/**
+ * Returns whether the Contacts API is enabled on the platform or device. This does not consider user permissions, that must be checked separately.
+ *
+ * @returns Async `boolean`, indicating whether the Contacts API is available on this device. Currently this only returns `false` in the web browser.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
 export declare function shareContactAsync(contactId: string, message: string, shareOptions?: object): Promise<any>;
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
