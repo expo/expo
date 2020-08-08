@@ -421,7 +421,7 @@ export default function Container({ navigation }) {
   React.useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       const url = response.notification.request.content.data.url;
-      Linking.openUrl(url);
+      Linking.openURL(url);
     });
     return () => subscription.remove();
   }, [navigation]);
