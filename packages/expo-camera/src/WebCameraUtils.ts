@@ -191,6 +191,32 @@ function isMediaTrackConstraints(input: any): input is MediaTrackConstraints {
   return input && typeof input.video !== 'boolean';
 }
 
+/**
+ * Invoke getStreamDevice a second time with the opposing camera type if the preferred type cannot be retrieved.
+ *
+ * @param preferredCameraType
+ * @param preferredWidth
+ * @param preferredHeight
+ */
+export async function getPreferredStreamDevice(
+  preferredCameraType: CameraType,
+  preferredWidth?: number | ConstrainLongRange,
+  preferredHeight?: number | ConstrainLongRange
+): Promise<MediaStream> {
+  try {
+    return await getStreamDevice(preferredCameraType, preferredWidth, preferredHeight);
+  } catch (error) {
+    // A hack on desktop browsers to ensure any camera is used.
+    // eslint-disable-next-line no-undef
+    if (error instanceof OverconstrainedError && error.constraint === 'facingMode') {
+      const nextCameraType =
+        preferredCameraType === CameraType.back ? CameraType.front : CameraType.back;
+      return await getStreamDevice(nextCameraType, preferredWidth, preferredHeight);
+    }
+    throw error;
+  }
+}
+
 export async function getStreamDevice(
   preferredCameraType: CameraType,
   preferredWidth?: number | ConstrainLongRange,
@@ -347,13 +373,21 @@ export function setVideoSource(
   video: HTMLVideoElement,
   stream: MediaStream | MediaSource | Blob | null
 ): void {
-  try {
+  const createObjectURL = window.URL.createObjectURL ?? window.webkitURL.createObjectURL;
+
+  if (typeof video.srcObject !== 'undefined') {
     video.srcObject = stream;
-  } catch {
-    if (stream) {
-      video.src = window.URL.createObjectURL(stream);
-    } else if (typeof video.src === 'string') {
-      window.URL.revokeObjectURL(video.src);
+  } else if (typeof (video as any).mozSrcObject !== 'undefined') {
+    (video as any).mozSrcObject = stream;
+  } else if (stream && createObjectURL) {
+    video.src = createObjectURL(stream);
+  }
+
+  if (!stream) {
+    const revokeObjectURL = window.URL.revokeObjectURL ?? window.webkitURL.revokeObjectURL;
+    const source = video.src ?? video.srcObject ?? (video as any).mozSrcObject;
+    if (revokeObjectURL && typeof source === 'string') {
+      revokeObjectURL(source);
     }
   }
 }
@@ -363,7 +397,7 @@ export function isCapabilityAvailable(video: HTMLVideoElement, keyName: string):
 
   if (stream instanceof MediaStream) {
     const videoTrack = stream.getVideoTracks()[0];
-    return Boolean(videoTrack.getCapabilities?.()?.[keyName]);
+    return videoTrack.getCapabilities?.()?.[keyName];
   }
 
   return false;

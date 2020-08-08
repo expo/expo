@@ -1,14 +1,11 @@
 /* eslint-env browser */
-import { CodedError } from '@unimodules/core';
 import * as React from 'react';
 
 import {
-  CameraType,
-  CapturedPicture,
-  WebCameraSettings,
-  CameraPictureOptions,
   CameraReadyListener,
+  CameraType,
   MountErrorListener,
+  WebCameraSettings,
 } from './Camera.types';
 import * as Utils from './WebCameraUtils';
 import { FacingModeToCameraType } from './WebConstants';
@@ -28,28 +25,19 @@ const VALID_SETTINGS_KEYS = [
   'zoom',
 ];
 
-function useLoadedVideo(
-  video: React.MutableRefObject<HTMLVideoElement | null>,
-  onLoaded: () => void
-) {
+function useLoadedVideo(video: HTMLVideoElement | null, onLoaded: () => void) {
   React.useEffect(() => {
-    let mounted = true;
-    if (video.current) {
-      video.current.addEventListener('loadedmetadata', () => {
+    if (video) {
+      video.addEventListener('loadedmetadata', () => {
         // without this async block the constraints aren't properly applied to the camera,
         // this means that if you were to turn on the torch and swap to the front camera,
         // then swap back to the rear camera the torch setting wouldn't be applied.
         requestAnimationFrame(() => {
-          if (mounted) {
-            onLoaded();
-          }
+          onLoaded();
         });
       });
     }
-    return () => {
-      mounted = false;
-    };
-  }, [video.current]);
+  }, [video]);
 }
 
 export function useWebCameraStream(
@@ -62,36 +50,87 @@ export function useWebCameraStream(
   }: { onCameraReady?: CameraReadyListener; onMountError?: MountErrorListener }
 ): {
   type: CameraType | null;
-  resumeAsync: () => Promise<void>;
-  stopAsync: () => void;
-  captureAsync: (config: CameraPictureOptions) => CapturedPicture;
+  mediaTrackSettings: MediaTrackSettings | null;
 } {
-  const stream = React.useRef<MediaStream | null>(null);
-  const streamSettings = React.useRef<MediaTrackSettings | null>(null);
+  const isStartingCamera = React.useRef<boolean | null>(false);
+  const activeStreams = React.useRef<MediaStream[]>([]);
   const capabilities = React.useRef<WebCameraSettings>({
     autoFocus: 'continuous',
     flashMode: 'off',
     whiteBalance: 'continuous',
     zoom: 1,
   });
-  const isStartingCamera = React.useRef<boolean | null>(false);
-  const [type, setType] = React.useState<CameraType | null>(null);
+  const [stream, setStream] = React.useState<MediaStream | null>(null);
 
-  useLoadedVideo(video, () => {
-    Utils.syncTrackCapabilities(preferredType, stream.current, capabilities.current);
-  });
+  const mediaTrackSettings = React.useMemo(() => {
+    return stream ? stream.getTracks()[0].getSettings() : null;
+  }, [stream]);
+
+  // The actual camera type - this can be different from the incoming camera type.
+  const type = React.useMemo(() => {
+    if (!mediaTrackSettings) {
+      return null;
+    }
+    // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
+    const { facingMode = 'user' } = mediaTrackSettings;
+    return FacingModeToCameraType[facingMode];
+  }, [mediaTrackSettings]);
+
+  const getStreamDeviceAsync = React.useCallback(async (): Promise<MediaStream | null> => {
+    try {
+      return await Utils.getPreferredStreamDevice(preferredType);
+    } catch (nativeEvent) {
+      if (__DEV__) {
+        console.warn(`Error requesting UserMedia for type "${preferredType}":`, nativeEvent);
+      }
+      if (onMountError) {
+        onMountError({ nativeEvent });
+      }
+      return null;
+    }
+  }, [preferredType, onMountError]);
+
+  const resumeAsync = React.useCallback(async (): Promise<boolean> => {
+    const nextStream = await getStreamDeviceAsync();
+    if (Utils.compareStreams(nextStream, stream)) {
+      // Do nothing if the streams are the same.
+      // This happens when the device only supports one camera (i.e. desktop) and the mode was toggled between front/back while already active.
+      // Without this check there is a screen flash while the video switches.
+      return false;
+    }
+
+    // Save a history of all active streams (usually 2+) so we can close them later.
+    // Keeping them open makes swapping camera types much faster.
+    if (!activeStreams.current.some(value => value.id === nextStream?.id)) {
+      activeStreams.current.push(nextStream!);
+    }
+
+    // Set the new stream -> update the video, settings, and actual camera type.
+    setStream(nextStream);
+    if (onCameraReady) {
+      onCameraReady();
+    }
+    return false;
+  }, [getStreamDeviceAsync, setStream, onCameraReady, stream, activeStreams.current]);
 
   React.useEffect(() => {
-    return () => {
-      // unmount
-      stopAsync();
-    };
-  }, []);
+    // Restart the camera and guard concurrent actions.
+    if (isStartingCamera.current) {
+      return;
+    }
+    isStartingCamera.current = true;
 
-  React.useEffect(() => {
-    resumeAsync();
+    resumeAsync()
+      .then(isStarting => {
+        isStartingCamera.current = isStarting;
+      })
+      .catch(() => {
+        // ensure the camera can be started again.
+        isStartingCamera.current = false;
+      });
   }, [preferredType]);
 
+  // Update the native camera with any custom capabilities.
   React.useEffect(() => {
     const changes: WebCameraSettings = {};
 
@@ -110,7 +149,7 @@ export function useWebCameraStream(
 
     const nextWebCameraSettings = { ...capabilities.current, ...changes };
     if (hasChanges) {
-      Utils.syncTrackCapabilities(preferredType, stream.current, changes);
+      Utils.syncTrackCapabilities(preferredType, stream, changes);
     }
 
     capabilities.current = nextWebCameraSettings;
@@ -130,71 +169,34 @@ export function useWebCameraStream(
   ]);
 
   React.useEffect(() => {
-    streamSettings.current = stream.current ? stream.current.getTracks()[0].getSettings() : null;
-    if (streamSettings.current) {
-      // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
-      const { facingMode = 'user' } = streamSettings.current;
-      setType(FacingModeToCameraType[facingMode]);
-    } else {
-      setType(null);
-    }
-  }, [stream.current]);
-
-  React.useEffect(() => {
+    // set or unset the video source.
     if (!video.current) {
       return;
     }
-    Utils.setVideoSource(video.current, stream.current);
-  }, [stream.current, video.current]);
+    Utils.setVideoSource(video.current, stream);
+  }, [video.current, stream]);
 
-  const stopAsync = (): void => {
-    Utils.stopMediaStream(stream.current);
-    stream.current = null;
-  };
-
-  const resumeAsync = async (): Promise<void> => {
-    if (isStartingCamera.current) {
-      return;
-    }
-    isStartingCamera.current = true;
-    let streamDevice: MediaStream | null;
-    try {
-      streamDevice = await Utils.getStreamDevice(preferredType);
-    } catch (nativeEvent) {
-      // this can happen when the requested mode is not supported.
-      isStartingCamera.current = false;
-      if (onMountError) {
-        onMountError({ nativeEvent });
+  React.useEffect(() => {
+    return () => {
+      // Clean up on dismount, this is important for making sure the camera light goes off when the component is removed.
+      for (const stream of activeStreams.current) {
+        // Close all open streams.
+        Utils.stopMediaStream(stream);
       }
-      return;
-    }
-    if (Utils.compareStreams(streamDevice, stream.current)) {
-      // Do nothing if the streams are the same.
-      // This happens when the device only supports one camera (i.e. desktop) and the mode was toggled between front/back while already active.
-      // Without this check there is a screen flash while the video switches.
-      return;
-    }
-    stopAsync();
-    stream.current = streamDevice; //await Utils.getStreamDevice(type);
-    // syncTrackCapabilities(type, stream.current, capabilities.current);
-    isStartingCamera.current = false;
-    if (onCameraReady) {
-      onCameraReady();
-    }
-  };
+      if (video.current) {
+        // Invalidate the video source.
+        Utils.setVideoSource(video.current, stream);
+      }
+    };
+  }, []);
+
+  // Update props when the video loads.
+  useLoadedVideo(video.current, () => {
+    Utils.syncTrackCapabilities(preferredType, stream, capabilities.current);
+  });
 
   return {
     type,
-    resumeAsync,
-    stopAsync,
-    captureAsync(config: CameraPictureOptions): CapturedPicture {
-      if (video.current?.readyState !== video.current?.HAVE_ENOUGH_DATA) {
-        throw new CodedError(
-          'ERR_CAMERA_NOT_READY',
-          'HTMLVideoElement does not have enough camera data to construct an image yet.'
-        );
-      }
-      return Utils.capture(video.current!, streamSettings.current!, config);
-    },
+    mediaTrackSettings,
   };
 }
