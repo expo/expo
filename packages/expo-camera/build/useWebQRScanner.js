@@ -1,5 +1,5 @@
 import { useWorker } from '@koale/useworker';
-import { useEffect, useRef } from 'react';
+import * as React from 'react';
 import { captureImageData } from './WebCameraUtils';
 const qrWorkerMethod = ({ data, width, height }) => {
     // eslint-disable-next-line no-undef
@@ -37,8 +37,8 @@ function useRemoteJsQR() {
     });
 }
 export function useWebQRScanner(video, { isEnabled, captureOptions, interval, onScanned, onError, }) {
-    const isRunning = useRef(false);
-    const timeout = useRef(undefined);
+    const isRunning = React.useRef(false);
+    const timeout = React.useRef(undefined);
     const [decode, clearWorker] = useRemoteJsQR();
     async function scanAsync() {
         // If interval is 0 then only scan once.
@@ -68,7 +68,7 @@ export function useWebQRScanner(video, { isEnabled, captureOptions, interval, on
                 stop();
                 return;
             }
-            const intervalToUse = !interval || interval < 0 ? 5 : interval;
+            const intervalToUse = !interval || interval < 0 ? 16 : interval;
             // @ts-ignore: Type 'Timeout' is not assignable to type 'number'
             timeout.current = setTimeout(() => {
                 scanAsync();
@@ -79,7 +79,7 @@ export function useWebQRScanner(video, { isEnabled, captureOptions, interval, on
         isRunning.current = false;
         clearTimeout(timeout.current);
     }
-    useEffect(() => {
+    React.useEffect(() => {
         if (isEnabled) {
             isRunning.current = true;
             scanAsync();
@@ -88,7 +88,7 @@ export function useWebQRScanner(video, { isEnabled, captureOptions, interval, on
             stop();
         }
     }, [isEnabled]);
-    useEffect(() => {
+    React.useEffect(() => {
         return () => {
             stop();
             clearWorker.kill();

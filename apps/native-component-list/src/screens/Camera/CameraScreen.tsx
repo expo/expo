@@ -332,7 +332,6 @@ export default class CameraScreen extends React.Component<{}, State> {
           tracking: true,
         }}
         barCodeScannerSettings={{
-          shouldRenderIndicator: true,
           barCodeTypes: [
             BarCodeScanner.Constants.BarCodeType.qr,
             BarCodeScanner.Constants.BarCodeType.pdf417,
