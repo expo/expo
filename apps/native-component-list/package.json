@@ -12,7 +12,7 @@
     "tsc": "tsc --noEmit --watch -p ./tsconfig.json"
   },
   "dependencies": {
-    "@expo/react-native-action-sheet": "^2.0.1",
+    "@expo/react-native-action-sheet": "^3.8.0",
     "@react-navigation/bottom-tabs": "~5.8.0",
     "@react-navigation/drawer": "~5.9.0",
     "@react-navigation/material-bottom-tabs": "~5.2.16",
