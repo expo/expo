@@ -12,6 +12,7 @@ const BarCodeScanner = optionalRequire(() => require('../screens/BarCodeScannerS
 const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScreen'));
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
+const QRCode = optionalRequire(() => require('../screens/QRCodeScreen'));
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
 const GestureHandlerList = optionalRequire(() => require('../screens/GestureHandlerListScreen'));
 const GestureHandlerPinch = optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
@@ -55,6 +56,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
+  QRCode,
   DateTimePicker,
   GL,
   ...Object.keys(GLScreens ?? {}).reduce((prev, screenName) => {

@@ -9,6 +9,7 @@ const screens = [
   'BarCodeScanner',
   'BlurView',
   'Camera',
+  'QRCode',
   'DateTimePicker',
   'FacebookAds',
   'GestureHandlerList',
