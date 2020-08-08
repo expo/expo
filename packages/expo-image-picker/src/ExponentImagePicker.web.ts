@@ -5,10 +5,9 @@ import {
   ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
-  ImagePickerOptions,
   ImagePickerMultipleResult,
   ImageInfo,
-  ExpandImagePickerOptions,
+  ExpandImagePickerResult,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -74,10 +73,6 @@ function permissionGrantedResponse(): PermissionResponse {
   };
 }
 
-function openFileBrowserAsync({
-  mediaTypes,
-  capture = false,
-  allowsMultipleSelection = false,
 function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
   mediaTypes,
   capture = false,
@@ -106,16 +101,16 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
           resolve({
             cancelled: false,
             ...img,
-          });
+          } as ExpandImagePickerResult<T>);
         } else {
           const imgs: ImageInfo[] = await Promise.all(Array.from(input.files).map(readFile));
           resolve({
             cancelled: false,
             selected: imgs,
-          });
+          } as ExpandImagePickerResult<T>);
         }
       } else {
-        resolve({ cancelled: true });
+        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
       }
       document.body.removeChild(input);
     });

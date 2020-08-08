@@ -59,15 +59,6 @@ export async function requestCameraRollPermissionsAsync(): Promise<CameraRollPer
   return ExponentImagePicker.requestCameraRollPermissionsAsync();
 }
 
-export async function launchImageLibraryAsync(
-  options: ImagePickerOptions = {}
-): Promise<ImagePickerResult> {
-  if (!ExponentImagePicker.launchImageLibraryAsync) {
-    throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
-  }
-  return await ExponentImagePicker.launchImageLibraryAsync(validateOptions(options));
-}
-
 export async function launchCameraAsync(
   options: ImagePickerOptions = {}
 ): Promise<ImagePickerResult> {

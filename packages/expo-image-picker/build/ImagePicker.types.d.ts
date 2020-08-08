@@ -51,15 +51,13 @@ export declare type ImagePickerOptions = {
     base64?: boolean;
     videoExportPreset?: VideoExportPreset;
     allowsMultipleSelection?: boolean;
+    videoMaxDuration?: number;
 };
 export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
     capture?: boolean;
     allowsMultipleSelection: boolean;
 };
-export declare type ExpandImagePickerOptions = (ImagePickerOptions & {
-    allowsMultipleSelection: true;
-}) | ImagePickerOptions;
-export declare type ExpandImagePickerResult<T> = T extends ImagePickerOptions & {
+export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
     allowsMultipleSelection: true;
 } ? ImagePickerMultipleResult : ImagePickerResult;
