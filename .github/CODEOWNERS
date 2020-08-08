@@ -17,7 +17,6 @@
 /packages/expo-background-fetch                 @tsapeta
 /packages/expo-barcode-scanner                  @bbarthec @lukmccall
 /packages/expo-battery                          @tsapeta
-/packages/expo-bluetooth                        @EvanBacon
 /packages/expo-blur                             @sjchmiela
 /packages/expo-branch                           @sjchmiela
 /packages/expo-brightness                       @sjchmiela

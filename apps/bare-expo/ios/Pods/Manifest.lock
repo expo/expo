@@ -583,7 +583,6 @@ DEPENDENCIES:
   - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXBattery (from `../../../packages/expo-battery/ios`)
-  - EXBluetooth (from `../../../packages/expo-bluetooth/ios`)
   - EXBlur (from `../../../packages/expo-blur/ios`)
   - EXBrightness (from `../../../packages/expo-brightness/ios`)
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
@@ -735,8 +734,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-barcode-scanner/ios"
   EXBattery:
     :path: "../../../packages/expo-battery/ios"
-  EXBluetooth:
-    :path: "../../../packages/expo-bluetooth/ios"
   EXBlur:
     :path: "../../../packages/expo-blur/ios"
   EXBrightness:
