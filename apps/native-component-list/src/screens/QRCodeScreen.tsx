@@ -17,16 +17,20 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
+  Pressable,
 } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
+import Slider from '@react-native-community/slider';
 
 import Colors from '../constants/Colors';
 
 function useCameraTypes(): CameraType[] | null {
+  if (Platform.OS !== 'web') return [CameraType.front, CameraType.back];
   const [types, setTypes] = React.useState<CameraType[] | null>(null);
 
   React.useEffect(() => {
     let isMounted = true;
+    // TODO: This method isn't supported on native
     Camera.getAvailableCameraTypesAsync().then(types => {
       if (isMounted) {
         setTypes(types as CameraType[]);
@@ -73,11 +77,14 @@ function useToggleCameraType(
 
   return { type, toggle, types };
 }
+
 function useCameraAvailable(): boolean {
+  if (Platform.OS !== 'web') return true;
   const [isAvailable, setAvailable] = React.useState(false);
 
   React.useEffect(() => {
     let isMounted = true;
+    // TODO: This method isn't supported on native
     Camera.isAvailableAsync().then(isAvailable => {
       if (isMounted) {
         setAvailable(isAvailable);
@@ -116,49 +123,123 @@ QRCodeScreen.navigationOptions = {
 function QRCodeView() {
   const [data, setData] = React.useState<string | null>(null);
   const [isLit, setLit] = React.useState(false);
+  const [zoom, setZoom] = React.useState(0);
   const { type, toggle } = useToggleCameraType(CameraType.back);
 
   const onFlashToggle = React.useCallback(() => {
     setLit(isLit => !isLit);
   }, []);
 
+  // hide footer when no actions are possible -- i.e. desktop web
+  const showFooter = !!toggle || type === CameraType.back;
+
+  // TODO(Bacon): We need a way to determine if the current camera supports certain capabilities (like zooming).
+  const supportsZoom = true;
+
   return (
     <View style={styles.container}>
       {type && (
-        <Camera
-          type={type}
-          barCodeScannerSettings={{
-            interval: 1000,
-            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
-          }}
-          onBarCodeScanned={incoming => {
-            if (data !== incoming.data) {
-              console.log('found: ', incoming.data);
-              setData(incoming.data);
-            }
-          }}
+        <OverlayView
           style={StyleSheet.absoluteFill}
-          flashMode={isLit ? 'torch' : 'off'}
-        />
+          renderOverlay={() => (
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 8,
+                left: 24,
+                right: 24,
+                alignItems: 'center',
+              }}>
+              <Slider
+                disabled={!supportsZoom}
+                minimumTrackTintColor={Colors.tintColor}
+                thumbTintColor={Colors.tintColor}
+                value={zoom}
+                onValueChange={setZoom}
+                style={{ flex: 1, maxWidth: 560, width: '95%' }}
+              />
+            </View>
+          )}>
+          <Camera
+            type={type}
+            zoom={zoom}
+            barCodeScannerSettings={{
+              interval: 1000,
+              barCodeTypes: [
+                BarCodeScanner.Constants.BarCodeType.qr,
+                BarCodeScanner.Constants.BarCodeType.pdf417,
+              ],
+            }}
+            onBarCodeScanned={incoming => {
+              if (data !== incoming.data) {
+                console.log('found: ', incoming);
+                setData(incoming.data);
+              }
+            }}
+            style={{ flex: 1 }}
+            flashMode={isLit ? 'torch' : 'off'}
+          />
+        </OverlayView>
       )}
 
-      <View style={[styles.header, { top: 40 }]}>
-        <Hint>Scan a QR Code</Hint>
+      <View pointerEvents="none" style={[styles.header, { top: 40 }]}>
+        {data && <Hint>{data}</Hint>}
       </View>
 
       <QRIndicator />
 
-      <View style={[styles.footer, { bottom: 30 }]}>
-        <QRFooterButton disabled={!toggle} onPress={toggle} iconName="ios-reverse-camera" />
-        {data && <Hint>{data}</Hint>}
-        <QRFooterButton
-          disabled={type !== CameraType.back}
-          onPress={onFlashToggle}
-          isActive={isLit}
-          iconName="ios-flashlight"
-        />
-      </View>
+      {showFooter && (
+        <View pointerEvents="box-none" style={[styles.footer, { bottom: 30 }]}>
+          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="ios-reverse-camera" />
+          <QRFooterButton
+            disabled={type !== CameraType.back}
+            onPress={onFlashToggle}
+            isActive={isLit}
+            iconName="ios-flashlight"
+          />
+        </View>
+      )}
     </View>
+  );
+}
+
+function OverlayView({
+  style,
+  renderOverlay,
+  ...props
+}: React.ComponentProps<typeof View> & {
+  renderOverlay: () => React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  const [isOverlayActive, setOverlayActive] = React.useState(false);
+  const timer = React.useRef<number | undefined>();
+  const opacity = React.useRef(new Animated.Value(0));
+
+  React.useEffect(() => {
+    Animated.timing(opacity.current, {
+      toValue: isOverlayActive ? 1 : 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [isOverlayActive]);
+
+  const onPress = () => {
+    clearTimeout(timer.current);
+    setOverlayActive(true);
+    timer.current = setTimeout(() => {
+      setOverlayActive(() => false);
+    }, 5000);
+  };
+
+  return (
+    <Pressable style={style} onPress={onPress}>
+      {props.children}
+      <Animated.View
+        pointerEvents={isOverlayActive ? 'box-none' : 'none'}
+        style={[StyleSheet.absoluteFill, { opacity: opacity.current }]}>
+        {renderOverlay()}
+      </Animated.View>
+    </Pressable>
   );
 }
 
@@ -204,6 +285,7 @@ function QRIndicator() {
 
   return (
     <AnimatedScanner
+      pointerEvents="none"
       style={[
         // shadow is only properly supported on iOS
         Platform.OS === 'ios' && styles.scanner,
