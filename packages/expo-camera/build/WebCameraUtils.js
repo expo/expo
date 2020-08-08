@@ -135,6 +135,7 @@ export async function getPreferredStreamDevice(preferredCameraType, preferredWid
     }
     catch (error) {
         // A hack on desktop browsers to ensure any camera is used.
+        // eslint-disable-next-line no-undef
         if (error instanceof OverconstrainedError && error.constraint === 'facingMode') {
             const nextCameraType = preferredCameraType === CameraType.back ? CameraType.front : CameraType.back;
             return await getStreamDevice(nextCameraType, preferredWidth, preferredHeight);
@@ -263,7 +264,7 @@ export function isCapabilityAvailable(video, keyName) {
     const stream = video.srcObject;
     if (stream instanceof MediaStream) {
         const videoTrack = stream.getVideoTracks()[0];
-        return Boolean(videoTrack.getCapabilities?.()?.[keyName]);
+        return videoTrack.getCapabilities?.()?.[keyName];
     }
     return false;
 }

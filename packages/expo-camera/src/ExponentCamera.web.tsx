@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import * as React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
@@ -9,11 +10,10 @@ import {
   CameraType,
 } from './Camera.types';
 import CameraManager from './ExponentCameraManager.web';
+import { capture } from './WebCameraUtils';
 import { PictureSizes } from './WebConstants';
 import { useWebCameraStream } from './useWebCameraStream';
 import { useWebQRScanner } from './useWebQRScanner';
-import { CodedError } from '@unimodules/core';
-import { capture } from './WebCameraUtils';
 
 export interface ExponentCameraRef {
   getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
@@ -90,10 +90,14 @@ const ExponentCamera = React.forwardRef(
           });
         },
         async resumePreview(): Promise<void> {
-          video.current?.play();
+          if (video.current) {
+            video.current.play();
+          }
         },
         async pausePreview(): Promise<void> {
-          video.current?.pause();
+          if (video.current) {
+            video.current.pause();
+          }
         },
       }),
       [native.mediaTrackSettings, props.onPictureSaved]
