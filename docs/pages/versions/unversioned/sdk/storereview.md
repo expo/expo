@@ -5,10 +5,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-store-rev
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, allowing you to ask the user to rate your app without ever having to leave the app itself.
 
-> If this is used in Android the device will attempt to link to the Play Store using native `Linking` and the `android.playStoreUrl` from `app.config.js` or `app.json` instead.
+> If this is used in Android the device will attempt to link to the Play Store using `Linking` API and the `android.playStoreUrl` from the `app.json` instead.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -24,10 +25,16 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as StoreReview from 'expo-store-review';
 ```
 
+<TableOfContentSection title='Error Codes' contents={['ERR_STORE_REVIEW_UNSUPPORTED']} />
+
 ### `StoreReview.requestReview()`
 
 In the ideal circumstance this will open a native modal and allow the user to select a star rating that will then be applied to the App Store without leaving the app.
 If the users device is running a version of iOS lower than 10.3, or the user is on an Android device, this will attempt to get the store URL and link the user to it.
+
+#### Error Codes
+
+- [`ERR_STORE_REVIEW_UNSUPPORTED`](#err_store_review_unsupported)
 
 #### Example
 
@@ -68,6 +75,12 @@ if (await StoreReview.hasAction()) {
 }
 ```
 
+## Error Codes
+
+### `E_STORE_REVIEW_UNSUPPORTED`
+
+Requesting an App Store review is not supported on this device. The device must be iOS 10.3 or greater. Android and web are not supported. Be sure to check for support with `isAvailableAsync()` to avoid this error.
+
 ---
 
 ## Usage
@@ -79,3 +92,14 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 - Don't call `StoreReview.requestReview()` from a button - instead try calling it after the user has finished some signature interaction in the app.
 - Don't spam the user
 - Don't request a review when the user is doing something time sensitive like navigating.
+
+### Write iOS Reviews
+
+You can redirect someone to the "Write a Review" screen for an app in the iOS App Store by using the query parameter `action=write-review`. For example:
+
+```ts
+const itunesItemId = 982107779;
+Linking.openURL(`https://apps.apple.com/app/apple-store/id${itunesItemId}?action=write-review`);
+```
+
+This can occur when the options were invalid, when the network connection is weak, or when the preview is dismissed before the content could finish loading.
