@@ -8,8 +8,9 @@ import React from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
-import * as ContactUtils from './ContactUtils';
+import { useResolvedValue } from '../../utilities/useResolvedValue';
 import ContactsList from './ContactsList';
+import * as ContactUtils from './ContactUtils';
 
 type StackParams = {
   ContactDetail: { id: string };
@@ -22,12 +23,28 @@ type Props = {
 const CONTACT_PAGE_SIZE = 500;
 
 export default function ContactsScreen({ navigation }: Props) {
+  const [isAvailable, error] = useResolvedValue(Contacts.isAvailableAsync);
   const [permission] = usePermissions(Permissions.CONTACTS, { ask: true });
 
-  if (!permission) {
+  const warning = React.useMemo(() => {
+    if (error) {
+      return `An unknown error occurred while checking the API availability: ${error.message}`;
+    } else if (isAvailable === null) {
+      return 'Checking availability...';
+    } else if (isAvailable === false) {
+      return 'Contacts API is not available on this platform.';
+    } else if (permission?.status === 'denied') {
+      return 'Contacts permission has not been granted for this app. Grant permission in the Settings app to continue.';
+    } else if (permission?.status === 'granted') {
+      return null;
+    }
+    return 'Pending user permission...';
+  }, [error, permission, isAvailable]);
+
+  if (warning) {
     return (
       <View style={styles.permissionContainer}>
-        <Text>No Contact Permission</Text>
+        <Text>{warning}</Text>
       </View>
     );
   }
