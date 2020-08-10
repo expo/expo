@@ -1,5 +1,9 @@
 package expo.modules.devmenu.extensions
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.view.KeyEvent
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactApplicationContext
@@ -50,6 +54,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
     }
 
     val performanceMonitorAction = DevMenuAction("performance-monitor") {
+      requestOverlaysPermission()
       runWithDevSettingEnabled {
         reactDevManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
       }
@@ -99,6 +104,27 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
     }
 
     return result
+  }
+
+  /**
+   * Requests for the permission that allows the app to draw overlays on other apps.
+   * Such permission is required for example to enable performance monitor.
+   */
+  private fun requestOverlaysPermission() {
+    val context = currentActivity ?: return
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      // Get permission to show debug overlay in dev builds.
+      if (!Settings.canDrawOverlays(context)) {
+        val intent = Intent(
+          Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+          Uri.parse("package:" + context.packageName))
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        if (intent.resolveActivity(context.packageManager) != null) {
+          context.startActivity(intent)
+        }
+      }
+    }
   }
 
   private fun runWithDevSettingEnabled(action: () -> Unit) = synchronized(DevMenuManager) {
