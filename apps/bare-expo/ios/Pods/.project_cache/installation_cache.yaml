@@ -169,20 +169,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXBattery
     SPECS:
       - EXBattery (2.2.1)
-  EXBluetooth:
-    BUILD_SETTINGS_CHECKSUM:
-      EXBluetooth:
-        :debug: c7cd39fe92009048c03ff1b68c9b793d
-        :release: c7cd39fe92009048c03ff1b68c9b793d
-    CHECKSUM: 9600be8656fa874217f168b6dc8b879f8f288c82
-    FILES:
-      - "../../../../packages/expo-bluetooth/ios/EXBluetooth/EXBluetooth+JSON.h"
-      - "../../../../packages/expo-bluetooth/ios/EXBluetooth/EXBluetooth+JSON.m"
-      - "../../../../packages/expo-bluetooth/ios/EXBluetooth/EXBluetooth.h"
-      - "../../../../packages/expo-bluetooth/ios/EXBluetooth/EXBluetooth.m"
-    PROJECT_NAME: EXBluetooth
-    SPECS:
-      - EXBluetooth (1.0.0)
   EXBlur:
     BUILD_SETTINGS_CHECKSUM:
       EXBlur:
@@ -1229,8 +1215,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 476003a47bb2b7b9f113b3dc740bba4c
-      Release: 476003a47bb2b7b9f113b3dc740bba4c
+      Debug: 9184484a21be9ed9a9f876300d40939b
+      Release: 9184484a21be9ed9a9f876300d40939b
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1242,8 +1228,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: d52f63f6e68d84946cca2011a85050d9
-      Release: d52f63f6e68d84946cca2011a85050d9
+      Debug: 0531aed66de38cccd84f332899442e3b
+      Release: 0531aed66de38cccd84f332899442e3b
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

@@ -32,8 +32,6 @@ PODS:
     - ZXingObjC/PDF417
   - EXBattery (2.2.1):
     - UMCore
-  - EXBluetooth (1.0.0):
-    - UMCore
   - EXBlur (8.1.2):
     - UMCore
   - EXBrightness (8.2.1):
@@ -583,7 +581,6 @@ DEPENDENCIES:
   - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXBattery (from `../../../packages/expo-battery/ios`)
-  - EXBluetooth (from `../../../packages/expo-bluetooth/ios`)
   - EXBlur (from `../../../packages/expo-blur/ios`)
   - EXBrightness (from `../../../packages/expo-brightness/ios`)
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
@@ -735,8 +732,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-barcode-scanner/ios"
   EXBattery:
     :path: "../../../packages/expo-battery/ios"
-  EXBluetooth:
-    :path: "../../../packages/expo-bluetooth/ios"
   EXBlur:
     :path: "../../../packages/expo-blur/ios"
   EXBrightness:
@@ -961,7 +956,6 @@ SPEC CHECKSUMS:
   EXBackgroundFetch: b773f1114c5ecbfa79daf228854184e307f9f760
   EXBarCodeScanner: 02c41a2bb7c0747dc96a96ee30b0aa80a0fc4168
   EXBattery: 367aef7eba65f488587610564224952411f1b48b
-  EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
   EXBlur: b622dc0f8a8fe74f05fb437cfb1c5ee16259dab1
   EXBrightness: e02018c74baedcb51825cd91e16886973c81d029
   EXCalendar: 2ddc3ad70875ba1c74243b03618543c7526ca64a

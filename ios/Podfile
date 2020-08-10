@@ -22,7 +22,6 @@ target 'Exponent' do
     modules_paths: ['../packages'],
     exclude: [
       'expo-module-template',
-      'expo-bluetooth',
       'expo-in-app-purchases',
       'expo-payments-stripe',
       'expo-splash-screen',
