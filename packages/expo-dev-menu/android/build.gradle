@@ -60,7 +60,9 @@ android {
 }
 
 task copyAssets(type: Copy) {
-  from '../assets'
+  from('../assets') {
+    exclude "*.ios.js"
+  }
   into 'src/main/assets'
 }
 

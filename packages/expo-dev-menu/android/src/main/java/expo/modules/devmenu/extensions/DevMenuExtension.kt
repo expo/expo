@@ -28,9 +28,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
 
     val reloadAction = DevMenuAction("reload") {
       UiThreadUtil.runOnUiThread {
-        DevMenuManager.runWithApplicationBundler {
-          reactDevManager.handleReloadJS()
-        }
+        reactDevManager.handleReloadJS()
       }
     }.apply {
       label = { "Reload" }
@@ -65,11 +63,9 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
 
     val remoteDebugAction = DevMenuAction("remote-debug") {
       UiThreadUtil.runOnUiThread {
-        DevMenuManager.runWithApplicationBundler {
-          val isRemoteJsEnable = devSettings.isRemoteJSDebugEnabled
-          devSettings.isRemoteJSDebugEnabled = !isRemoteJsEnable
-          reactDevManager.handleReloadJS()
-        }
+        val isRemoteJsEnable = devSettings.isRemoteJSDebugEnabled
+        devSettings.isRemoteJSDebugEnabled = !isRemoteJsEnable
+        reactDevManager.handleReloadJS()
       }
     }.apply {
       isEnabled = {
@@ -90,9 +86,8 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
 
     if (devSettings is DevInternalSettings) {
       val fastRefreshAction = DevMenuAction("fast-refresh") {
-        DevMenuManager.runWithApplicationBundler {
-          devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
-        }
+        devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
+
       }.apply {
         isEnabled = { devSettings.isHotModuleReplacementEnabled }
         label = { if (isEnabled()) "Disable Fast Refresh" else "Enable Fast Refresh" }

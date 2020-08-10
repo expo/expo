@@ -12,16 +12,14 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import expo.modules.devmenu.BuildConfig
-import expo.modules.devmenu.DevHostLifecycleEventListener
 import expo.modules.devmenu.DevMenuActivity
+import expo.modules.devmenu.DevMenuHost
 import expo.modules.devmenu.DevMenuSession
-import expo.modules.devmenu.modules.DevMenuSettings
+import expo.modules.devmenu.ShakeDetector
 import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
-import expo.modules.devmenu.DevMenuHost
-import expo.modules.devmenu.ShakeDetector
 import expo.modules.devmenu.extensions.items.KeyCommand
+import expo.modules.devmenu.modules.DevMenuSettings
 import expo.modules.devmenu.protocoles.DevMenuDelegateProtocol
 import expo.modules.devmenu.protocoles.DevMenuExtensionProtocol
 import org.unimodules.adapters.react.ModuleRegistryAdapter
@@ -30,15 +28,6 @@ import org.unimodules.core.interfaces.Package
 
 object DevMenuManager : LifecycleEventListener {
   private var shakeDetector: ShakeDetector? = null
-  private val bundlerManager: DebugBundlerManager? = null
-//    if (BuildConfig.DEBUG) {
-//      DebugBundlerManager()
-//    } else {
-//      null
-//    }
-  private val devHostLifecycleEventListener = DevHostLifecycleEventListener(bundlerManager)
-
-
   private var session: DevMenuSession? = null
   var settings: DevMenuSettings? = null
     private set
@@ -69,17 +58,12 @@ object DevMenuManager : LifecycleEventListener {
     val packages = getReactModules(devMenuHost).toMutableList()
     packages.add(ModuleRegistryAdapter(ReactModuleRegistryProvider(getExpoModules(application) as List<Package>)))
     devMenuHost.setPackages(packages as List<ReactPackage>)
-
-    devMenuHost.reactInstanceManager.addReactInstanceEventListener {
-      it.addLifecycleEventListener(devHostLifecycleEventListener)
-    }
   }
 
   fun getDevMenuHost() = devMenuHost
 
   fun openMenu(activity: Activity) {
     session = DevMenuSession(delegate!!.reactInstanceManager(), delegate!!.appInfo())
-    bundlerManager?.switchBundler()
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
   }
 
@@ -113,12 +97,6 @@ object DevMenuManager : LifecycleEventListener {
     }
 
     return false
-  }
-
-  fun runWithApplicationBundler(action: () -> Unit) = synchronized(this) {
-    bundlerManager?.switchBundler()
-    action()
-    bundlerManager?.switchBundler()
   }
 
   fun setDelegate(newDelegate: DevMenuDelegateProtocol) {
