@@ -23,6 +23,16 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-network
 ```
 
+### Configure for Android
+
+This module requires permissions to access the network and Wi-Fi state. The `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE` permissions are added automatically.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
