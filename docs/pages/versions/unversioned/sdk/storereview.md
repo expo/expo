@@ -25,6 +25,8 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import * as StoreReview from 'expo-store-review';
 ```
 
+<TableOfContentSection title='Methods' contents={['requestReview()', 'isAvailableAsync()', 'storeUrl()', 'hasAction()']} />
+
 <TableOfContentSection title='Error Codes' contents={['ERR_STORE_REVIEW_UNSUPPORTED']} />
 
 ### `StoreReview.requestReview()`
@@ -93,13 +95,32 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 - Don't spam the user
 - Don't request a review when the user is doing something time sensitive like navigating.
 
-### Write iOS Reviews
+### Write Reviews
+
+#### iOS
 
 You can redirect someone to the "Write a Review" screen for an app in the iOS App Store by using the query parameter `action=write-review`. For example:
 
 ```ts
 const itunesItemId = 982107779;
+// Open the iOS App Store in the browser -> redirects to App Store on iOS
 Linking.openURL(`https://apps.apple.com/app/apple-store/id${itunesItemId}?action=write-review`);
+// Open the iOS App Store directly
+Linking.openURL(
+  `itms-apps://itunes.apple.com/app/viewContentsUserReviews/id${itunesItemId}?action=write-review`
+);
 ```
 
-This can occur when the options were invalid, when the network connection is weak, or when the preview is dismissed before the content could finish loading.
+#### Android
+
+There is no equivalent redirect on Android, you can still open the Play Store to the reviews sections using the query parameter `showAllReviews=true` like this:
+
+```ts
+const androidPackageName = 'host.exp.exponent';
+// Open the Android Play Store in the browser -> redirects to Play Store on Android
+Linking.openURL(
+  `https://play.google.com/store/apps/details?id=${androidPackageName}?showAllReviews=true`
+);
+// Open the Android Play Store directly
+Linking.openURL(`market://details?id=${androidPackageName}?showAllReviews=true`);
+```
