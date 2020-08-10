@@ -21,7 +21,7 @@ class DevMenuActivity : ReactActivity() {
       override fun getLaunchOptions(): Bundle? {
         val bundle = Bundle()
         bundle.putBoolean("enableDevelopmentTools", true)
-        bundle.putBoolean("showOnboardingView", false)
+        bundle.putBoolean("showOnboardingView", DevMenuManager.settings?.isOnboardingFinished != true)
         bundle.putParcelableArray("devMenuItems", DevMenuManager.serializedDevMenuItems().toTypedArray())
         bundle.putString("uuid", UUID.randomUUID().toString())
         bundle.putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
