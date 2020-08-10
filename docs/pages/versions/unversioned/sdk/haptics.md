@@ -27,6 +27,10 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 
 <InstallSection packageName="expo-haptics" />
 
+## Configuration
+
+On Android, this module requires permission to control vibration on the device. The `VIBRATE` permission is added automatically.
+
 ## API
 
 ```js
