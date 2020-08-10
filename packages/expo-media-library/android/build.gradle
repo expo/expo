@@ -59,6 +59,8 @@ android {
     abortOnError false
   }
   compileOptions {
+    coreLibraryDesugaringEnabled true
+
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
   }
@@ -79,4 +81,6 @@ dependencies {
   testImplementation "org.robolectric:robolectric:4.3.1"
 
   api "androidx.exifinterface:exifinterface:1.0.0"
+
+  coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
 }

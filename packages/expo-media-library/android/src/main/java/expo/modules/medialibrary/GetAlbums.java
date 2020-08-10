@@ -6,10 +6,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.unimodules.core.Promise;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION;
@@ -26,39 +28,69 @@ class GetAlbums extends AsyncTask<Void, Void, Void> {
 
   @Override
   protected Void doInBackground(Void... params) {
-    List result = new ArrayList();
-    final String countColumn = "COUNT(*)";
-    final String[] projection = {MediaStore.Images.Media.BUCKET_ID, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, countColumn};
-    final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE + ") GROUP BY (" + MediaStore.Images.Media.BUCKET_ID;
 
-    try (Cursor albums = mContext.getContentResolver().query(
+    final String[] projection = {MediaStore.Images.Media.BUCKET_ID, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
+    final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE;
+
+    Map<String, Album> albums = new HashMap<>();
+
+    try (Cursor asset = mContext.getContentResolver().query(
         EXTERNAL_CONTENT,
         projection,
         selection,
         null,
         MediaStore.Images.Media.BUCKET_DISPLAY_NAME)) {
 
-      if (albums == null) {
+      if (asset == null) {
         mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get albums. Query returns null.");
       } else {
-        final int bucketIdIndex = albums.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
-        final int bucketDisplayNameIndex = albums.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-        final int numOfItemsIndex = albums.getColumnIndex(countColumn);
+        final int bucketIdIndex = asset.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
+        final int bucketDisplayNameIndex = asset.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
-        while (albums.moveToNext()) {
-          Bundle album = new Bundle();
-          album.putString("id", albums.getString(bucketIdIndex));
-          album.putString("title", albums.getString(bucketDisplayNameIndex));
-          album.putParcelable("type", null);
-          album.putInt("assetCount", albums.getInt(numOfItemsIndex));
-          result.add(album);
+        while (asset.moveToNext()) {
+          final String id = asset.getString(bucketIdIndex);
+          if (!albums.containsKey(id)) {
+            final String title = asset.getString(bucketDisplayNameIndex);
+            albums.put(id, new Album(id, title));
+          } else {
+            albums.get(id).incrementCount();
+          }
         }
+
+        List<Bundle> result = albums.values().stream().map(Album::toBundle).collect(Collectors.toList());
         mPromise.resolve(result);
       }
     } catch (SecurityException e) {
       mPromise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
+        "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
+    } catch (IllegalArgumentException e) {
+      mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get albums.", e);
     }
     return null;
+  }
+
+  private class Album {
+    private String id;
+    private String title;
+    private int count;
+
+    Album(String id, String title) {
+      this.id = id;
+      this.title = title;
+      this.count = 1;
+    }
+
+    void incrementCount() {
+      this.count++;
+    }
+
+    Bundle toBundle() {
+      Bundle album = new Bundle();
+      album.putString("id", this.id);
+      album.putString("title", this.title);
+      album.putParcelable("type", null);
+      album.putInt("assetCount", this.count);
+      return album;
+    }
   }
 }
