@@ -82,11 +82,6 @@ public abstract class ExpoUpdatesAppLoader {
   public void start() {
     Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
 
-    if ("localhost".equals(manifestUrl.getHost()) || "10.0.2.2".equals(manifestUrl.getHost())) {
-      startDevelopmentLoad();
-      return;
-    }
-
     HashMap<String, Object> configMap = new HashMap<>();
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
     // TODO: if we want to use a scopeKey from the manifest here,

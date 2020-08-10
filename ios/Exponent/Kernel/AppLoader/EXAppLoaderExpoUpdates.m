@@ -245,13 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (![self _initializeDatabase]) {
     return;
   }
-  // if we're in dev mode, don't try loading cached manifest
-  if ([_httpManifestUrl.host isEqualToString:@"localhost"]) {
-    // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    [self _startDevelopmentModeLoad];
-  } else {
-    [self _startLoaderTask];
-  }
+  [self _startLoaderTask];
 }
 
 - (void)_startLoaderTask
