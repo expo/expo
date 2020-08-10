@@ -14,6 +14,10 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-network" />
 
+## Configuration
+
+On Android, this module requires permissions to access the network and Wi-Fi state. The permissions `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE` are added automatically.
+
 ## API
 
 ```js
