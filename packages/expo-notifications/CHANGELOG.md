@@ -8,8 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Added docs about Android permissions. ([#9497](https://github.com/expo/expo/pull/9497) by [@bycedric](https://github.com/bycedric))
-
 ## 0.6.0 — 2020-07-29
 
 ### 🎉 New features
