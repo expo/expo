@@ -31,18 +31,13 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
     return super.dispatchTouchEvent(ev)
   }
 
-  override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    when (keyCode) {
-      KeyEvent.KEYCODE_T -> {
-        DevMenuManager.openMenu(this)
-        return true
-      }
-      KeyEvent.KEYCODE_M -> {
-        reactInstanceManager.devSupportManager.showDevOptionsDialog()
-        return true
-      }
+  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    if (keyCode == KeyEvent.KEYCODE_MENU) {
+      DevMenuManager.openMenu(this)
+      return true
     }
-    return super.onKeyDown(keyCode, event)
+
+    return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyDown(keyCode, event)
   }
 
 }

@@ -6,11 +6,13 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.KeyEvent
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.devmenu.BuildConfig
 import expo.modules.devmenu.DevHostLifecycleEventListener
 import expo.modules.devmenu.DevMenuActivity
 import expo.modules.devmenu.DevMenuSession
@@ -19,6 +21,7 @@ import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
 import expo.modules.devmenu.DevMenuHost
 import expo.modules.devmenu.ShakeDetector
+import expo.modules.devmenu.extensions.items.KeyCommand
 import expo.modules.devmenu.protocoles.DevMenuDelegateProtocol
 import expo.modules.devmenu.protocoles.DevMenuExtensionProtocol
 import org.unimodules.adapters.react.ModuleRegistryAdapter
@@ -28,13 +31,14 @@ import org.unimodules.core.interfaces.Package
 object DevMenuManager : LifecycleEventListener {
   private var shakeDetector: ShakeDetector? = null
   private val bundlerManager: DebugBundlerManager? = null
-  private val devHostLifecycleEventListener = DevHostLifecycleEventListener(bundlerManager)
-
-  //    if (BuildConfig.DEBUG) {
+//    if (BuildConfig.DEBUG) {
 //      DebugBundlerManager()
 //    } else {
 //      null
 //    }
+  private val devHostLifecycleEventListener = DevHostLifecycleEventListener(bundlerManager)
+
+
   private var session: DevMenuSession? = null
   var settings: DevMenuSettings? = null
     private set
@@ -53,6 +57,9 @@ object DevMenuManager : LifecycleEventListener {
       .map { it.devMenuItems() ?: emptyList() }
       .flatten()
       .sortedByDescending { it.importance }
+
+  private val devMenuAction: List<DevMenuAction>
+    get() = devMenuItems.filterIsInstance<DevMenuAction>()
 
   private lateinit var devMenuHost: DevMenuHost
 
@@ -94,6 +101,18 @@ object DevMenuManager : LifecycleEventListener {
     } else {
       openMenu(activity)
     }
+  }
+
+  fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean {
+    val keyCommand = KeyCommand(keyCode, event.modifiers)
+    devMenuAction.forEach {
+      if (it.keyCommand == keyCommand) {
+        it.action()
+        return true
+      }
+    }
+
+    return false
   }
 
   fun runWithApplicationBundler(action: () -> Unit) = synchronized(this) {

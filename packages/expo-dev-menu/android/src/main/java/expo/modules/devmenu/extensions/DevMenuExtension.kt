@@ -1,5 +1,6 @@
 package expo.modules.devmenu.extensions
 
+import android.view.KeyEvent
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -9,6 +10,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
 import expo.modules.devmenu.extensions.items.ItemImportance
+import expo.modules.devmenu.extensions.items.KeyCommand
 import expo.modules.devmenu.managers.DevMenuManager
 import expo.modules.devmenu.protocoles.DevMenuExtensionProtocol
 
@@ -33,6 +35,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
     }.apply {
       label = { "Reload" }
       glyphName = { "reload" }
+      keyCommand = KeyCommand(KeyEvent.KEYCODE_R, 0)
       importance = ItemImportance.HIGHEST.value
     }
 
@@ -44,6 +47,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       isEnabled = { devSettings.isElementInspectorEnabled }
       label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
       glyphName = { "border-style" }
+      keyCommand = KeyCommand(KeyEvent.KEYCODE_I, 0)
       importance = ItemImportance.HIGH.value
     }
 
@@ -55,6 +59,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       isEnabled = { devSettings.isFpsDebugEnabled }
       label = { if (isEnabled()) "Hide Performance Monitor" else "Show Performance Monitor" }
       glyphName = { "speedometer" }
+      keyCommand = KeyCommand(KeyEvent.KEYCODE_P, 0)
       importance = ItemImportance.HIGH.value
     }
 

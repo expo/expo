@@ -1,6 +1,9 @@
 package expo.modules.devmenu.extensions.items
 
 import android.os.Bundle
+import android.view.KeyCharacterMap
+
+val keyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD)
 
 sealed class DevMenuItem {
   var isAvailable = { true }
@@ -24,10 +27,18 @@ sealed class DevMenuItem {
 
 class DevMenuAction(val actionId: String, val action: () -> Unit) : DevMenuItem() {
   override fun getExportedType() = 1
+  var keyCommand: KeyCommand? = null
 
   override fun serialize() = super.serialize().apply {
+
     putString("actionId", actionId)
-    putBundle("keyCommand", null)
+
+    putBundle("keyCommand", keyCommand?.let { keyCommand ->
+      Bundle().apply {
+        putString("input", keyCharacterMap.getDisplayLabel(keyCommand.code).toString())
+        putInt("modifiers", keyCommand.modifiers)
+      }
+    })
   }
 }
 
