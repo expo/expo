@@ -95,7 +95,17 @@ function BrightnessView() {
       </View>
     );
   });
-  return <ScrollView style={{ flex: 1 }}>{views}</ScrollView>;
+  return (
+    <ScrollView style={{ flex: 1 }}>
+      {views}
+      <View style={{ padding: 20 }}>
+        <HeadingText>Permission</HeadingText>
+        {systemBrightnessPermissionGranted && (
+          <Text>{JSON.stringify(systemBrightnessPermissionGranted, null, 2)}</Text>
+        )}
+      </View>
+    </ScrollView>
+  );
 }
 
 BrightnessScreen.navigationOptions = {
