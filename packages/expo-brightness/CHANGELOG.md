@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Create `isAvailableAsync` method. ([#9667](https://github.com/expo/expo/pull/9667) by [@EvanBacon](https://github.com/EvanBacon))
+- Create `isAvailableAsync` method. ([#9668](https://github.com/expo/expo/pull/9668) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
