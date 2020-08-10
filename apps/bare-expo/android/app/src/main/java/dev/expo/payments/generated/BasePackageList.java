@@ -15,7 +15,6 @@ public class BasePackageList {
         new expo.modules.backgroundfetch.BackgroundFetchPackage(),
         new expo.modules.barcodescanner.BarCodeScannerPackage(),
         new expo.modules.battery.BatteryPackage(),
-        new expo.modules.bluetooth.BluetoothPackage(),
         new expo.modules.brightness.BrightnessPackage(),
         new expo.modules.calendar.CalendarPackage(),
         new expo.modules.cellular.CellularPackage(),
