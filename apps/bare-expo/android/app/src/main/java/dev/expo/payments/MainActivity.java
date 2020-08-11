@@ -28,15 +28,6 @@ public class MainActivity extends DevMenuAwareReactActivity {
       protected ReactRootView createRootView() {
         return new RNGestureHandlerEnabledRootView(MainActivity.this);
       }
-
-      protected Bundle getLaunchOptions() {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("enableDevelopmentTools", true);
-        bundle.putBoolean("showOnboardingView", false);
-        bundle.putParcelableArray("devMenuItems", new Bundle[0]);
-        bundle.putString("uuid", UUID.randomUUID().toString());
-        return bundle;
-      }
     };
   }
 
