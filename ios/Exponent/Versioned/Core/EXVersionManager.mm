@@ -312,12 +312,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     [extraModules addObject:homeModule];
   }
 
-  if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {
-    [extraModules addObject:[[RCTDevMenu alloc] init]];
-  } else {
-    // non-kernel, or non-development kernel, uses expo menu instead of RCTDevMenu
-    [extraModules addObject:[[EXDisabledDevMenu alloc] init]];
-  }
   if (!isDeveloper) {
     // user-facing (not debugging).
     // additionally disable RCTRedBox
@@ -381,6 +375,12 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 {
   if (std::string(name) == "DevSettings") {
     return EXDevSettings.class;
+  }
+  if (std::string(name) == "DevMenu") {
+    if (![_params[@"isStandardDevMenuAllowed"] boolValue] || ![_params[@"isDeveloper"] boolValue]) {
+      // non-kernel, or non-development kernel, uses expo menu instead of RCTDevMenu
+      return EXDisabledDevMenu.class;
+    }
   }
   return RCTCoreModulesClassProvider(name);
 }
