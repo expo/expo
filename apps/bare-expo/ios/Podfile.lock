@@ -553,13 +553,13 @@ PODS:
   - UMBarCodeScannerInterface (5.2.1)
   - UMCameraInterface (5.2.1)
   - UMConstantsInterface (5.2.1)
-  - UMCore (5.3.0)
+  - UMCore (5.5.0)
   - UMFileSystemInterface (5.2.1)
   - UMFontInterface (5.2.1)
   - UMImageLoaderInterface (5.2.1)
   - UMPermissionsInterface (5.2.1):
     - UMCore
-  - UMReactNativeAdapter (5.4.0):
+  - UMReactNativeAdapter (5.5.0):
     - React-Core
     - UMCore
     - UMFontInterface
@@ -1070,12 +1070,12 @@ SPEC CHECKSUMS:
   UMBarCodeScannerInterface: e5e4c87797d3d01214e25cd1618866caf5d4f17f
   UMCameraInterface: 415ac060034edecacdbbaa739c223e3f276e0056
   UMConstantsInterface: 1a52f2d884c95e8829439da13e36b7669a1a8fb4
-  UMCore: d98083b522b08c0a8ba3992bc263c624ae5d887c
+  UMCore: 28d7a74260813f906738533ad7dce4529d3d24ee
   UMFileSystemInterface: 303d696ede28102a7e11d111808bd2ed2c5eb62f
   UMFontInterface: 6edf1ee8bc55d2030766f8cf0a7b20a5d5a913b0
   UMImageLoaderInterface: 9cdbf3bab6a513bddd88505cb2340fe02d6a11c0
   UMPermissionsInterface: 019170ad655f464e3f8d23d2a8bcbda2e645cde4
-  UMReactNativeAdapter: 538efe92e781b5d7678cf95b34c46f2d0989a557
+  UMReactNativeAdapter: 3ea819190be592add3ecc3feb45c2cf1fab8664c
   UMSensorsInterface: cb5bf31d52c4349f0ff9e3c049bbe4df0d80d383
   UMTaskManagerInterface: 80653f25c55d9e6d79d6a0a65589fa213feaee11
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
