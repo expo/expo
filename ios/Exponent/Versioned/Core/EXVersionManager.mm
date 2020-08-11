@@ -285,12 +285,10 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
-  BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && !manifest[@"developer"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
                                     [[EXAppState alloc] init],
-                                    [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:(!isOpeningHomeInProductionMode && isDeveloper)],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXStatusBarManager alloc] init],
                                     ]];
@@ -389,6 +387,9 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (Class)getModuleClassFromName:(const char *)name
 {
+  if (std::string(name) == "DevSettings") {
+    return EXDevSettings.class;
+  }
   return RCTCoreModulesClassProvider(name);
 }
 
@@ -420,7 +421,23 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     }];
   }
 
+  // Expo-specific
+  if (moduleClass == EXDevSettings.class) {
+    BOOL isDevelopment = ![self _isOpeningHomeInProductionMode] && [_params[@"isDeveloper"] boolValue];
+    return [[moduleClass alloc] initWithExperienceId:[self _experienceId] isDevelopment:isDevelopment];
+  }
+
   return [moduleClass new];
+}
+
+- (NSString *)_experienceId
+{
+  return _params[@"manifest"][@"id"];
+}
+
+- (BOOL)_isOpeningHomeInProductionMode
+{
+  return _params[@"browserModuleClass"] && !_params[@"manifest"][@"developer"];
 }
 
 @end
