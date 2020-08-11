@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A23D210652BD0D21B6C7D3746A54F38 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1374349D0E836C64B65F183EA2080CB5 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		27724F2234DB72177EB23F9E321E5AF5 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = B9275AF056D3B083B50F751C9E31CC29 /* EXReactNativeUserNotificationCenterProxy.m */; };
-		4017BF8294202561C08DC7E18F3D3E53 /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EFA564918D632948268C87BC3F9B8F /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5085245D9107E45A7CC8889A35504EF4 /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = C8124CFADB3D70F262EAF763C67CEFAE /* EXPermissions.m */; };
-		D5B1DC98572EFC142934E4D63860D8E1 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9000553D3806EBCA262535E20286238C /* EXPermissions-dummy.m */; };
+		2F533F71A67F99363DC6EF446EA5F494 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9000553D3806EBCA262535E20286238C /* EXPermissions-dummy.m */; };
+		679A8A43BC6B1CB4BA02F838379A2380 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = B9275AF056D3B083B50F751C9E31CC29 /* EXReactNativeUserNotificationCenterProxy.m */; };
+		6B74CDB306DFA31D0BBAD92BBAC64B5F /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EFA564918D632948268C87BC3F9B8F /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BE46AD4921D603F6AA23A29F7397FED3 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1374349D0E836C64B65F183EA2080CB5 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D5E98CDD6E618071618CC4E3F2655B6F /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = C8124CFADB3D70F262EAF763C67CEFAE /* EXPermissions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		33BA94C64DA81952E385E73BB27CB76C /* PBXContainerItemProxy */ = {
+		4635D83349F17C1FBAC062A2D590C9C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
-		540C8B570BC905347B09A373784A0A15 /* PBXContainerItemProxy */ = {
+		915CDA177F42F7183F2BF82A5B3789A7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D2058653576C4016C65A58703057E384 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -47,7 +47,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3C704873D4D77A6511D2D0EDB8A801F6 /* Frameworks */ = {
+		C0D82D499717142E163B95CF0D6F73AE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,12 +128,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		BAA60E0A9FFEF2C453C8852914E30EAB /* Headers */ = {
+		23DF97D7524845ACD563FFF2BBE7D4F2 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A23D210652BD0D21B6C7D3746A54F38 /* EXPermissions.h in Headers */,
-				4017BF8294202561C08DC7E18F3D3E53 /* EXReactNativeUserNotificationCenterProxy.h in Headers */,
+				BE46AD4921D603F6AA23A29F7397FED3 /* EXPermissions.h in Headers */,
+				6B74CDB306DFA31D0BBAD92BBAC64B5F /* EXReactNativeUserNotificationCenterProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,17 +142,17 @@
 /* Begin PBXNativeTarget section */
 		488F0C19AB92FC4B503EB55CC688FCF5 /* EXPermissions */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 049C0B70B5B379EE9D98867307A48E8C /* Build configuration list for PBXNativeTarget "EXPermissions" */;
+			buildConfigurationList = 2395E9E43D24EA4D5617188E0A57A578 /* Build configuration list for PBXNativeTarget "EXPermissions" */;
 			buildPhases = (
-				BAA60E0A9FFEF2C453C8852914E30EAB /* Headers */,
-				FF5BC9F31FB5B1491FCAB4BA948272E0 /* Sources */,
-				3C704873D4D77A6511D2D0EDB8A801F6 /* Frameworks */,
+				23DF97D7524845ACD563FFF2BBE7D4F2 /* Headers */,
+				47FDE5CA437422130BD69E6A6CC43D4B /* Sources */,
+				C0D82D499717142E163B95CF0D6F73AE /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				79CCB521EE6E01D7C4AD4623624B7F9E /* PBXTargetDependency */,
-				84A7B3099C3450467A0E24A09CC09643 /* PBXTargetDependency */,
+				CECD489D0917F42F962165C9ADE90B16 /* PBXTargetDependency */,
+				A7CC02A4C58ACCA861AFFAFFD4DA1B6D /* PBXTargetDependency */,
 			);
 			name = EXPermissions;
 			productName = EXPermissions;
@@ -195,28 +195,28 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FF5BC9F31FB5B1491FCAB4BA948272E0 /* Sources */ = {
+		47FDE5CA437422130BD69E6A6CC43D4B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5B1DC98572EFC142934E4D63860D8E1 /* EXPermissions-dummy.m in Sources */,
-				5085245D9107E45A7CC8889A35504EF4 /* EXPermissions.m in Sources */,
-				27724F2234DB72177EB23F9E321E5AF5 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
+				2F533F71A67F99363DC6EF446EA5F494 /* EXPermissions-dummy.m in Sources */,
+				D5E98CDD6E618071618CC4E3F2655B6F /* EXPermissions.m in Sources */,
+				679A8A43BC6B1CB4BA02F838379A2380 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		79CCB521EE6E01D7C4AD4623624B7F9E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 540C8B570BC905347B09A373784A0A15 /* PBXContainerItemProxy */;
-		};
-		84A7B3099C3450467A0E24A09CC09643 /* PBXTargetDependency */ = {
+		A7CC02A4C58ACCA861AFFAFFD4DA1B6D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = 33BA94C64DA81952E385E73BB27CB76C /* PBXContainerItemProxy */;
+			targetProxy = 4635D83349F17C1FBAC062A2D590C9C8 /* PBXContainerItemProxy */;
+		};
+		CECD489D0917F42F962165C9ADE90B16 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 915CDA177F42F7183F2BF82A5B3789A7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -281,7 +281,7 @@
 			};
 			name = Release;
 		};
-		416E33D1C960D95A267AFAED6887D317 /* Debug */ = {
+		30F6F78021ED68DA4D43785CD1D77C44 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C95C3BA62CB59B207646A5BE4D48154B /* EXPermissions.debug.xcconfig */;
 			buildSettings = {
@@ -370,7 +370,7 @@
 			};
 			name = Debug;
 		};
-		CABFC9EF59E2FF1837DC2547D9974DEC /* Release */ = {
+		76F88F8F4D099FF2E0F773FC708951EC /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 00CF12D302F66063727E104C0DDA01B6 /* EXPermissions.release.xcconfig */;
 			buildSettings = {
@@ -399,11 +399,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		049C0B70B5B379EE9D98867307A48E8C /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
+		2395E9E43D24EA4D5617188E0A57A578 /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				416E33D1C960D95A267AFAED6887D317 /* Debug */,
-				CABFC9EF59E2FF1837DC2547D9974DEC /* Release */,
+				30F6F78021ED68DA4D43785CD1D77C44 /* Debug */,
+				76F88F8F4D099FF2E0F773FC708951EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
