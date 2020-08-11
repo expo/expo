@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Fix motion permission bug on web. ([#9670](https://github.com/expo/expo/pull/9670) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed motion permission bug on web. ([#9670](https://github.com/expo/expo/pull/9670) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
