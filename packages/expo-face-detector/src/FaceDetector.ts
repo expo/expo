@@ -52,6 +52,13 @@ export type DetectionOptions = {
   runClassifications?: FaceDetectorClassifications;
 };
 
+/**
+ * Returns whether the Face Detector API is enabled on the current device.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoFaceDetector.detectFaces;
+}
+
 export async function detectFacesAsync(
   uri: string,
   options: DetectionOptions = {}
