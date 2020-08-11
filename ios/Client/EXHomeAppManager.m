@@ -95,7 +95,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 {
   NSMutableArray *modules = [NSMutableArray array];
 
-  [modules addObjectsFromArray:[self.versionManager extraModulesWithParams:self.extraParams]];
+  [modules addObjectsFromArray:[self.versionManager extraModulesForBridge:bridge]];
   
   return modules;
 }

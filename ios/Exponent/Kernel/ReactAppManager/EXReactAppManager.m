@@ -132,7 +132,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     Class rootViewClass = [self versionedClassFromString:@"RCTRootView"];
     
     _versionManager = [[versionManagerClass alloc]
-                       initWithFatalHandler:handleFatalReactError
+                       initWithParams:[self extraParams]
+                       fatalHandler:handleFatalReactError
                        logFunction:[self logFunction]
                        logThreshold:[self logLevel]
                        ];
@@ -288,7 +289,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  return [self.versionManager extraModulesWithParams:_extraParams];
+  return [self.versionManager extraModulesForBridge:bridge];
 }
 
 - (void)appLoaderFinished
