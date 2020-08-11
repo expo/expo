@@ -199,7 +199,7 @@ export async function getAssetsAsync(assetsOptions = {}) {
     if (album != null && typeof options.album !== 'string') {
         throw new Error('Option "album" must be a string!');
     }
-    if (Platform.OS === 'android' && isNaN(parseInt(getId(after), 10))) {
+    if (after != null && Platform.OS === 'android' && isNaN(parseInt(getId(after), 10))) {
         throw new Error('Option "after" must be a valid ID!');
     }
     if (first != null && first < 0) {

@@ -396,8 +396,8 @@ final class MediaLibraryUtils {
           if (file.delete()) {
             context.getContentResolver().delete(
               EXTERNAL_CONTENT,
-              Media.DATA + " = \"" + filePath + "\"",
-              null);
+              Media.DATA + "=?",
+              new String[]{filePath});
           } else {
             promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
             return;
@@ -408,6 +408,9 @@ final class MediaLibraryUtils {
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_SAVE_PERMISSION,
         "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.", e);
     }
   }
 
