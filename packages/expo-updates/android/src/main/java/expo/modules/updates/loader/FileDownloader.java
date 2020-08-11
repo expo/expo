@@ -109,7 +109,9 @@ public class FileDownloader {
                     public void onCompleted(boolean isValid) {
                       if (isValid) {
                         try {
-                          Manifest manifest = ManifestFactory.getManifest(new JSONObject(innerManifestString), configuration, context);
+                          JSONObject manifestJson = new JSONObject(innerManifestString);
+                          manifestJson.put("isVerified", true);
+                          Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration, context);
                           callback.onSuccess(manifest);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);

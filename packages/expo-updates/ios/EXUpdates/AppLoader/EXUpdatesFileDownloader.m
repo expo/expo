@@ -103,7 +103,9 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                                                     NSError *err;
                                                     id innerManifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
                                                     NSAssert(!err && innerManifest && [innerManifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)innerManifest
+                                                    NSMutableDictionary *mutableInnerManifest = [(NSDictionary *)innerManifest mutableCopy];
+                                                    mutableInnerManifest[@"isVerified"] = @(YES);
+                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableInnerManifest copy]
                                                                                                            config:self->_config
                                                                                                          database:database];
                                                     successBlock(update);
