@@ -86,8 +86,17 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
-    id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
-    NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+    id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
+    if (err) {
+      errorBlock(err, response);
+      return;
+    }
+
+    NSDictionary *manifest = [self _extractManifest:parsedJson error:&err];
+    if (err) {
+      errorBlock(err, response);
+      return;
+    }
 
     id innerManifestString = manifest[@"manifestString"];
     id signature = manifest[@"signature"];
@@ -161,6 +170,29 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
     }
   }];
   [task resume];
+}
+
+- (nullable NSDictionary *)_extractManifest:(id)parsedJson error:(NSError **)error
+{
+  if ([parsedJson isKindOfClass:[NSDictionary class]]) {
+    return (NSDictionary *)parsedJson;
+  } else if ([parsedJson isKindOfClass:[NSArray class]]) {
+    // TODO: either add support for runtimeVersion or deprecate multi-manifests
+    for (id providedManifest in (NSArray *)parsedJson) {
+      if ([providedManifest isKindOfClass:[NSDictionary class]] && providedManifest[@"sdkVersion"]){
+        NSString *sdkVersion = providedManifest[@"sdkVersion"];
+        NSArray<NSString *> *supportedSdkVersions = [_config.sdkVersion componentsSeparatedByString:@","];
+        if ([supportedSdkVersions containsObject:sdkVersion]){
+          return providedManifest;
+        }
+      }
+    }
+  }
+
+  if (error) {
+    *error = [NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:1009 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", _config.updateUrl.absoluteString, _config.sdkVersion]}];
+  }
+  return nil;
 }
 
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request

@@ -8,12 +8,14 @@ import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -93,7 +95,7 @@ public class FileDownloader {
 
           try {
             String manifestString = response.body().string();
-            JSONObject manifestJson = new JSONObject(manifestString);
+            JSONObject manifestJson = extractManifest(manifestString, configuration);
             if (manifestJson.has("manifestString") && manifestJson.has("signature")) {
               final String innerManifestString = manifestJson.getString("manifestString");
               Crypto.verifyPublicRSASignature(
@@ -190,6 +192,31 @@ public class FileDownloader {
         callback.onResponse(call, response);
       }
     });
+  }
+
+  private static JSONObject extractManifest(String manifestString, UpdatesConfiguration configuration) throws IOException {
+    try {
+      return new JSONObject(manifestString);
+    } catch (JSONException e) {
+      // Ignore this error, try to parse manifest as array
+    }
+
+    // TODO: either add support for runtimeVersion or deprecate multi-manifests
+    try {
+      // the manifestString could be an array of manifest objects
+      // in this case, we choose the first compatible manifest in the array
+      JSONArray manifestArray = new JSONArray(manifestString);
+      for (int i = 0; i < manifestArray.length(); i++) {
+        JSONObject manifestCandidate = manifestArray.getJSONObject(i);
+        String sdkVersion = manifestCandidate.getString("sdkVersion");
+        if (configuration.getSdkVersion() != null && Arrays.asList(configuration.getSdkVersion().split(",")).contains(sdkVersion)){
+          return manifestCandidate;
+        }
+      }
+    } catch (JSONException e){
+      throw new IOException("Manifest string is not a valid JSONObject or JSONArray: " + manifestString, e);
+    }
+    throw new IOException("No compatible manifest found. SDK Versions supported: " + configuration.getSdkVersion() + " Provided manifestString: " + manifestString);
   }
 
   private static Request setHeadersForUrl(Uri url, UpdatesConfiguration configuration) {
