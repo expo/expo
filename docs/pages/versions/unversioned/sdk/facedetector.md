@@ -110,11 +110,11 @@ detectFaces = async imageUri => {
 
 ### `FaceDetector.isAvailableAsync()`
 
-Returns whether the Face Detector API is enabled on the current device.
+Returns whether the Face Detection API is enabled on the current device.
 
 #### Returns
 
-A `Promise` resolving to either `true` or `false`.
+Async `boolean`, indicating whether the Face Detection API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
 ### `FaceDetector.detectFacesAsync(uri, options)`
 
