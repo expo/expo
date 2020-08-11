@@ -2,6 +2,9 @@ export default {
   get name(): string {
     return 'ExpoScreenCapture';
   },
+  async isAvailableAsync(): Promise<false> {
+    return false;
+  },
   async preventScreenCaptureAsync(tag = 'default'): Promise<null> {
     return null;
   },

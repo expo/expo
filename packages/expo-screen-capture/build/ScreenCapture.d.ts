@@ -1,4 +1,8 @@
 /**
+ * Returns whether the Screen Capture API is enabled on the current device.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
+/**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
  *

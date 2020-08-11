@@ -2,6 +2,12 @@ import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();
 /**
+ * Returns whether the Screen Capture API is enabled on the current device.
+ */
+export async function isAvailableAsync() {
+    return !!ExpoScreenCapture.preventScreenCapture && !!ExpoScreenCapture.allowScreenCapture;
+}
+/**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
  *

@@ -5,6 +5,13 @@ import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags: Set<string> = new Set();
 
 /**
+ * Returns whether the Screen Capture API is enabled on the current device.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoScreenCapture.preventScreenCapture && !!ExpoScreenCapture.allowScreenCapture;
+}
+
+/**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
  *
