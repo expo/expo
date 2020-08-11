@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Usage fails correctly on web. ([#9661](https://github.com/expo/expo/pull/9661) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 8.4.0 — 2020-07-16
 
 ### 🐛 Bug fixes
