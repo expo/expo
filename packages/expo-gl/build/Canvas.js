@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { PixelRatio, StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 function getElement(component) {
@@ -28,7 +29,7 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
     const _canvasRef = React.useRef(null);
     function updateCanvasSize() {
         const canvas = _canvasRef.current;
-        if (canvas) {
+        if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
             const size = getSize();
             const scale = PixelRatio.get();
             canvas.style.width = `${size.width}px`;
@@ -38,10 +39,12 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         }
     }
     function getSize() {
-        if (size)
+        if (size) {
             return size;
-        if (!ref.current)
+        }
+        else if (!ref.current || !canUseDOM) {
             return { width: 0, height: 0 };
+        }
         const element = getElement(ref.current);
         const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
         return { width, height };
