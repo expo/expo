@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
-- Create `isAvailableAsync` method. ([#9668](https://github.com/expo/expo/pull/9668) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+## 9.2.0 — 2020-08-11
+
+### 🎉 New features
+
+- Create `isAvailableAsync` method. ([#9668](https://github.com/expo/expo/pull/9668) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.1.0 — 2020-07-27
 

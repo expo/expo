@@ -65,7 +65,7 @@
     "expo-linear-gradient": "~8.2.2",
     "expo-linking": "~1.0.3",
     "expo-location": "~8.3.0",
-    "expo-permissions": "~9.1.0",
+    "expo-permissions": "~9.2.0",
     "expo-splash-screen": "^0.5.0",
     "expo-sqlite": "~8.3.0",
     "fbemitter": "^2.1.1",
