@@ -37,13 +37,12 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
             val id = asset.getString(bucketIdIndex)
 
             val album = albums[id] ?: let {
-              val newAlbum = Album(
+              Album(
                 id = id,
                 title = asset.getString(bucketDisplayNameIndex)
-              )
-              albums[id] = newAlbum
-
-              newAlbum
+              ).also {
+                albums[id] = it
+              }
             }
 
             album.count++
@@ -61,13 +60,11 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
   }
 
   private class Album(private val id: String, private val title: String, var count: Int = 0) {
-    fun toBundle(): Bundle {
-      val album = Bundle()
-      album.putString("id", id)
-      album.putString("title", title)
-      album.putParcelable("type", null)
-      album.putInt("assetCount", count)
-      return album
+    fun toBundle() = Bundle().apply {
+      putString("id", id)
+      putString("title", title)
+      putParcelable("type", null)
+      putInt("assetCount", count)
     }
   }
 }

@@ -5,32 +5,15 @@ import android.os.Bundle
 import android.provider.MediaStore
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.mockkConstructor
-import io.mockk.mockkStatic
-import io.mockk.runs
-import io.mockk.unmockkConstructor
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.fakes.RoboCursor
 import org.unimodules.core.Promise
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertRejectedWithCode
-import org.unimodules.test.core.promiseResolved
 import org.unimodules.test.core.promiseResolvedWithType
-import java.io.IOException
-import java.lang.IllegalArgumentException
-
-// hack for calling protected methods.
-private class TestGetAlbums(mContext: Context, mPromise: Promise) : GetAlbums(mContext, mPromise) {
-  fun execute() = doInBackground()
-}
 
 @RunWith(RobolectricTestRunner::class)
 class GetAlbumsTests {
@@ -105,5 +88,10 @@ class GetAlbumsTests {
 
     //assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
+  }
+
+  // hack for calling protected methods.
+  private class TestGetAlbums(mContext: Context, mPromise: Promise) : GetAlbums(mContext, mPromise) {
+    fun execute() = doInBackground()
   }
 }
