@@ -295,14 +295,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   
   // add scoped modules
   [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
-
-  id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
-  if (exceptionsManagerDelegate) {
-    RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
-    [extraModules addObject:exceptionsManager];
-  } else {
-    RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
-  }
   
   if (params[@"testEnvironment"]) {
     EXTestEnvironment testEnvironment = (EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
@@ -425,6 +417,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   if (moduleClass == EXDevSettings.class) {
     BOOL isDevelopment = ![self _isOpeningHomeInProductionMode] && [_params[@"isDeveloper"] boolValue];
     return [[moduleClass alloc] initWithExperienceId:[self _experienceId] isDevelopment:isDevelopment];
+  } else if (moduleClass == RCTExceptionsManagerCls()) {
+    id exceptionsManagerDelegate = _params[@"exceptionsManagerDelegate"];
+    if (exceptionsManagerDelegate) {
+      return [[moduleClass alloc] initWithDelegate:exceptionsManagerDelegate];
+    } else {
+      RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
+    }
   }
 
   return [moduleClass new];
