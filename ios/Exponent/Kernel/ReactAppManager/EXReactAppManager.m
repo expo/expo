@@ -70,33 +70,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _appRecord = record;
     _initialProps = initialProps;
     _isHeadless = NO;
-
-    // we allow the vanilla RN dev menu in some circumstances.
-    BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
     _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
-    
-    _extraParams = @{
-      @"manifest": _appRecord.appLoader.manifest,
-      @"constants": @{
-          @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
-          @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
-          @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-          @"manifest": _appRecord.appLoader.manifest,
-          @"appOwnership": [self _appOwnership],
-          @"isHeadless": @(_isHeadless),
-          @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
-      },
-      @"exceptionsManagerDelegate": _exceptionHandler,
-      @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
-      @"isDeveloper": @([self enablesDeveloperTools]),
-      @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
-      @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
-      @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-      @"singletonModules": [UMModuleRegistryProvider singletonModules],
-      @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
-    };
   }
   return self;
+}
+
+- (void)setAppRecord:(EXKernelAppRecord *)appRecord
+{
+  _appRecord = appRecord;
+  _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:appRecord];
 }
 
 - (EXReactAppManagerStatus)status
@@ -152,6 +134,32 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
     [_versionManager bridgeWillStartLoading:_reactBridge];
   }
+}
+
+- (NSDictionary *)extraParams
+{
+  // we allow the vanilla RN dev menu in some circumstances.
+  BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
+  return @{
+    @"manifest": _appRecord.appLoader.manifest,
+    @"constants": @{
+        @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
+        @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
+        @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
+        @"manifest": _appRecord.appLoader.manifest,
+        @"appOwnership": [self _appOwnership],
+        @"isHeadless": @(_isHeadless),
+        @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
+    },
+    @"exceptionsManagerDelegate": _exceptionHandler,
+    @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
+    @"isDeveloper": @([self enablesDeveloperTools]),
+    @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
+    @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
+    @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+    @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
+  };
 }
 
 - (void)invalidate
