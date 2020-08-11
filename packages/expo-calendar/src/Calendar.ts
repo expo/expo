@@ -157,6 +157,15 @@ type OptionalKeys<T> = {
   [P in keyof T]?: T[P] | null;
 };
 
+/**
+ * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoCalendar.getCalendarsAsync;
+}
+
 export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
   if (!ExpoCalendar.getCalendarsAsync) {
     throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
