@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add permissions for web. ([#9671](https://github.com/expo/expo/pull/9671) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 8.4.0 — 2020-08-11
