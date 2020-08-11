@@ -70,6 +70,31 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _appRecord = record;
     _initialProps = initialProps;
     _isHeadless = NO;
+
+    // we allow the vanilla RN dev menu in some circumstances.
+    BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
+    _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
+    
+    _extraParams = @{
+      @"manifest": _appRecord.appLoader.manifest,
+      @"constants": @{
+          @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
+          @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
+          @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
+          @"manifest": _appRecord.appLoader.manifest,
+          @"appOwnership": [self _appOwnership],
+          @"isHeadless": @(_isHeadless),
+          @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
+      },
+      @"exceptionsManagerDelegate": _exceptionHandler,
+      @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
+      @"isDeveloper": @([self enablesDeveloperTools]),
+      @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
+      @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
+      @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+      @"singletonModules": [UMModuleRegistryProvider singletonModules],
+      @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
+    };
   }
   return self;
 }
@@ -263,32 +288,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
-  _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
-
-  NSDictionary *params = @{
-                           @"bridge": bridge,
-                           @"manifest": _appRecord.appLoader.manifest,
-                           @"constants": @{
-                               @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
-                               @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
-                               @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-                               @"manifest": _appRecord.appLoader.manifest,
-                               @"appOwnership": [self _appOwnership],
-                               @"isHeadless": @(_isHeadless),
-                               @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
-                             },
-                           @"exceptionsManagerDelegate": _exceptionHandler,
-                           @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
-                           @"isDeveloper": @([self enablesDeveloperTools]),
-                           @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
-                           @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
-                           @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-                           @"singletonModules": [UMModuleRegistryProvider singletonModules],
-                           @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
-                           };
-  return [self.versionManager extraModulesWithParams:params];
+  return [self.versionManager extraModulesWithParams:_extraParams];
 }
 
 - (void)appLoaderFinished

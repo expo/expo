@@ -25,6 +25,39 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 @implementation EXHomeAppManager
 
+- (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps
+{
+  if (self = [super initWithAppRecord:record initialProps:initialProps]) {
+    self.exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:self.appRecord];
+
+    NSMutableDictionary *params = [@{
+      @"browserModuleClass": [EXHomeModule class],
+      @"constants": @{
+          @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
+          @"linkingUri": @"exp://",
+          @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
+          @"manifest": self.appRecord.appLoader.manifest,
+          @"appOwnership": @"expo",
+          @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
+      },
+      @"exceptionsManagerDelegate": self.exceptionHandler,
+      @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
+      @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
+      @"manifest": self.appRecord.appLoader.manifest,
+      @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+      @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    } mutableCopy];
+
+    NSURL *initialHomeUrl = [self _initialHomeUrl];
+    if (initialHomeUrl) {
+      params[@"initialUri"] = initialHomeUrl;
+    }
+    self.extraParams = params;
+  }
+
+  return self;
+}
+
 #pragma mark - interfacing with home JS
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(NSDictionary *)manifest
@@ -61,34 +94,8 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSMutableArray *modules = [NSMutableArray array];
-  self.exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:self.appRecord];
 
-  NSMutableDictionary *params = [@{
-                                   @"bridge": bridge,
-                                   @"browserModuleClass": [EXHomeModule class],
-                                   @"constants": @{
-                                       @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-                                       @"linkingUri": @"exp://",
-                                       @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
-                                       @"manifest": self.appRecord.appLoader.manifest,
-                                       @"appOwnership": @"expo",
-                                       @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
-                                     },
-                                   @"exceptionsManagerDelegate": self.exceptionHandler,
-                                   @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
-                                   @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
-                                   @"manifest": self.appRecord.appLoader.manifest,
-                                   @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-                                   @"singletonModules": [UMModuleRegistryProvider singletonModules],
-                                   } mutableCopy];
-  
-
-  NSURL *initialHomeUrl = [self _initialHomeUrl];
-  if (initialHomeUrl) {
-    params[@"initialUri"] = initialHomeUrl;
-  }
-  
-  [modules addObjectsFromArray:[self.versionManager extraModulesWithParams:params]];
+  [modules addObjectsFromArray:[self.versionManager extraModulesWithParams:self.extraParams]];
   
   return modules;
 }
