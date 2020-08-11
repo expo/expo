@@ -45,7 +45,7 @@ UM_EXPORT_METHOD_AS(identify,
  UM_EXPORT_METHOD_AS(identifyWithTraits,
                      identifyWithTraits:(NSString *)userId
                      withTraits:(NSDictionary *)traits
-                     withOptions:(NSDictionary *)options
+                     withOptions:(nullable NSDictionary *)options
                      resolver:(UMPromiseResolveBlock)resolve
                      rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -69,7 +69,7 @@ UM_EXPORT_METHOD_AS(track,
 UM_EXPORT_METHOD_AS(trackWithProperties,
                     trackWithProperties:(NSString *)event 
                     withProperties:(NSDictionary *)properties
-                    withOptions:(NSDictionary *)options
+                    withOptions:(nullable NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -93,7 +93,7 @@ UM_EXPORT_METHOD_AS(group,
 UM_EXPORT_METHOD_AS(groupWithTraits,
                     groupWithTraits:(NSString *)groupId
                     withTraits:(NSDictionary *)traits
-                    withOptions:(NSDictionary *)options
+                    withOptions:(nullable NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -105,7 +105,7 @@ UM_EXPORT_METHOD_AS(groupWithTraits,
 
 UM_EXPORT_METHOD_AS(alias,
                     alias:(NSString *)newId
-                    withOptions:(NSDictionary *)options
+                    withOptions:(nullable NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
