@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import React from 'react';
+import * as React from 'react';
 import { Alert, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
