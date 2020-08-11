@@ -100,7 +100,19 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 
     id innerManifestString = manifest[@"manifestString"];
     id signature = manifest[@"signature"];
-    if (innerManifestString && signature) {
+    BOOL isSigned = innerManifestString != nil && signature != nil;
+
+    // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
+    // We should treat these manifests as unsigned rather than signed with an invalid signature.
+    if (isSigned && [signature isKindOfClass:[NSString class]] && [(NSString *)signature isEqualToString:@"UNSIGNED"]) {
+      isSigned = NO;
+
+      NSError *err;
+      manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+      NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+    }
+
+    if (isSigned) {
       NSAssert([innerManifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
       NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString

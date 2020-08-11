@@ -96,7 +96,16 @@ public class FileDownloader {
           try {
             String manifestString = response.body().string();
             JSONObject manifestJson = extractManifest(manifestString, configuration);
-            if (manifestJson.has("manifestString") && manifestJson.has("signature")) {
+
+            boolean isSigned = manifestJson.has("manifestString") && manifestJson.has("signature");
+            // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
+            // We should treat these manifests as unsigned rather than signed with an invalid signature.
+            if (isSigned && "UNSIGNED".equals(manifestJson.getString("signature"))) {
+              isSigned = false;
+              manifestJson = new JSONObject(manifestJson.getString("manifestString"));
+            }
+
+            if (isSigned) {
               final String innerManifestString = manifestJson.getString("manifestString");
               Crypto.verifyPublicRSASignature(
                   innerManifestString,
