@@ -43,6 +43,10 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     @"manifest": self.appRecord.appLoader.manifest,
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
     @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    @"fileSystemDirectories": @{
+        @"documentDirectory": [self scopedDocumentDirectory],
+        @"cachesDirectory": [self scopedCachesDirectory]
+    }
   } mutableCopy];
   
   NSURL *initialHomeUrl = [self _initialHomeUrl];

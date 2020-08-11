@@ -140,7 +140,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   // we allow the vanilla RN dev menu in some circumstances.
   BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
-  return @{
+  NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
     @"manifest": _appRecord.appLoader.manifest,
     @"constants": @{
         @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
@@ -159,7 +159,16 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
     @"singletonModules": [UMModuleRegistryProvider singletonModules],
     @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
-  };
+  }];
+  if ([@"expo" isEqualToString:[self _appOwnership]]) {
+    [params addEntriesFromDictionary:@{
+      @"fileSystemDirectories": @{
+          @"documentDirectory": [self scopedDocumentDirectory],
+          @"cachesDirectory": [self scopedCachesDirectory]
+      }
+    }];
+  }
+  return params;
 }
 
 - (void)invalidate
@@ -217,6 +226,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (NSString *)versionedString: (NSString *)string
 {
   return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
+}
+
+- (NSString *)escapedResourceName:(NSString *)string
+{
+  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
+  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
+  return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
 - (BOOL)isReadyToLoad
@@ -615,6 +631,22 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return @"standalone";
   }
   return @"expo";
+}
+
+- (NSString *)scopedDocumentDirectory
+{
+  NSString *escapedExperienceId = [self escapedResourceName:_appRecord.experienceId];
+  NSString *mainDocumentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *exponentDocumentDirectory = [mainDocumentDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
+  return [[exponentDocumentDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
+}
+
+- (NSString *)scopedCachesDirectory
+{
+  NSString *escapedExperienceId = [self escapedResourceName:_appRecord.experienceId];
+  NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
+  return [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
 }
 
 @end
