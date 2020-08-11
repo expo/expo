@@ -70,8 +70,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _appRecord = record;
     _initialProps = initialProps;
     _isHeadless = NO;
+    _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
   }
   return self;
+}
+
+- (void)setAppRecord:(EXKernelAppRecord *)appRecord
+{
+  _appRecord = appRecord;
+  _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:appRecord];
 }
 
 - (EXReactAppManagerStatus)status
@@ -107,7 +114,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     Class rootViewClass = [self versionedClassFromString:@"RCTRootView"];
     
     _versionManager = [[versionManagerClass alloc]
-                       initWithFatalHandler:handleFatalReactError
+                       initWithParams:[self extraParams]
+                       fatalHandler:handleFatalReactError
                        logFunction:[self logFunction]
                        logThreshold:[self logLevel]
                        ];
@@ -126,6 +134,41 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
     [_versionManager bridgeWillStartLoading:_reactBridge];
   }
+}
+
+- (NSDictionary *)extraParams
+{
+  // we allow the vanilla RN dev menu in some circumstances.
+  BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
+  NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
+    @"manifest": _appRecord.appLoader.manifest,
+    @"constants": @{
+        @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
+        @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
+        @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
+        @"manifest": _appRecord.appLoader.manifest,
+        @"appOwnership": [self _appOwnership],
+        @"isHeadless": @(_isHeadless),
+        @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
+    },
+    @"exceptionsManagerDelegate": _exceptionHandler,
+    @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
+    @"isDeveloper": @([self enablesDeveloperTools]),
+    @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
+    @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
+    @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+    @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
+  }];
+  if ([@"expo" isEqualToString:[self _appOwnership]]) {
+    [params addEntriesFromDictionary:@{
+      @"fileSystemDirectories": @{
+          @"documentDirectory": [self scopedDocumentDirectory],
+          @"cachesDirectory": [self scopedCachesDirectory]
+      }
+    }];
+  }
+  return params;
 }
 
 - (void)invalidate
@@ -183,6 +226,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (NSString *)versionedString: (NSString *)string
 {
   return [EXVersions versionedString:string withPrefix:_versionSymbolPrefix];
+}
+
+- (NSString *)escapedResourceName:(NSString *)string
+{
+  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
+  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
+  return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
 - (BOOL)isReadyToLoad
@@ -263,32 +313,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
-  _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
-
-  NSDictionary *params = @{
-                           @"bridge": bridge,
-                           @"manifest": _appRecord.appLoader.manifest,
-                           @"constants": @{
-                               @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
-                               @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
-                               @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-                               @"manifest": _appRecord.appLoader.manifest,
-                               @"appOwnership": [self _appOwnership],
-                               @"isHeadless": @(_isHeadless),
-                               @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
-                             },
-                           @"exceptionsManagerDelegate": _exceptionHandler,
-                           @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
-                           @"isDeveloper": @([self enablesDeveloperTools]),
-                           @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
-                           @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
-                           @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-                           @"singletonModules": [UMModuleRegistryProvider singletonModules],
-                           @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
-                           };
-  return [self.versionManager extraModulesWithParams:params];
+  return [self.versionManager extraModulesForBridge:bridge];
 }
 
 - (void)appLoaderFinished
@@ -606,6 +631,22 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return @"standalone";
   }
   return @"expo";
+}
+
+- (NSString *)scopedDocumentDirectory
+{
+  NSString *escapedExperienceId = [self escapedResourceName:_appRecord.experienceId];
+  NSString *mainDocumentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *exponentDocumentDirectory = [mainDocumentDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
+  return [[exponentDocumentDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
+}
+
+- (NSString *)scopedCachesDirectory
+{
+  NSString *escapedExperienceId = [self escapedResourceName:_appRecord.experienceId];
+  NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
+  return [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
 }
 
 @end

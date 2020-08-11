@@ -38,15 +38,19 @@ export type ImageInfo = {
 
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 
+export type ImagePickerMultipleResult =
+  | { cancelled: true }
+  | { cancelled: false; selected: ImageInfo[] };
+
 export type ImagePickerOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
-  allowsMultipleSelection?: boolean;
   mediaTypes?: MediaTypeOptions;
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
+  allowsMultipleSelection?: boolean;
   videoMaxDuration?: number;
 };
 
@@ -55,3 +59,11 @@ export type OpenFileBrowserOptions = {
   capture?: boolean;
   allowsMultipleSelection: boolean;
 };
+
+export type ExpandImagePickerResult<
+  T extends ImagePickerOptions | OpenFileBrowserOptions
+> = T extends {
+  allowsMultipleSelection: true;
+}
+  ? ImagePickerMultipleResult
+  : ImagePickerResult;

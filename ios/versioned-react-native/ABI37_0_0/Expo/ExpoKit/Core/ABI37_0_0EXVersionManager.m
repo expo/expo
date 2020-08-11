@@ -87,16 +87,34 @@ void ABI37_0_0EXRegisterScopedModule(Class moduleClass, ...)
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
+@property (nonatomic, strong) NSDictionary *params;
 
 @end
 
 @implementation ABI37_0_0EXVersionManager
 
-- (instancetype)initWithFatalHandler:(void (^)(NSError *))fatalHandler
-                         logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
-                        logThreshold:(NSInteger)threshold
+/**
+ *  Expected params:
+ *    NSDictionary *manifest
+ *    NSDictionary *constants
+ *    NSURL *initialUri
+ *    @BOOL isDeveloper
+ *    @BOOL isStandardDevMenuAllowed
+ *    @ABI37_0_0EXTestEnvironment testEnvironment
+ *    NSDictionary *services
+ *
+ * Kernel-only:
+ *    ABI37_0_0EXKernel *kernel
+ *    NSArray *supportedSdkVersions
+ *    id exceptionsManagerDelegate
+ */
+- (instancetype)initWithParams:(NSDictionary *)params
+                  fatalHandler:(void (^)(NSError *))fatalHandler
+                   logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
+                  logThreshold:(NSInteger)threshold
 {
   if (self = [super init]) {
+    _params = params;
     [self configureABIWithFatalHandler:fatalHandler logFunction:logFunction logThreshold:threshold];
   }
   return self;
@@ -276,23 +294,9 @@ void ABI37_0_0EXRegisterScopedModule(Class moduleClass, ...)
   ABI37_0_0RCTSetLogFunction(logFunction);
 }
 
-/**
- *  Expected params:
- *    NSDictionary *manifest
- *    NSDictionary *constants
- *    NSURL *initialUri
- *    @BOOL isDeveloper
- *    @BOOL isStandardDevMenuAllowed
- *    @ABI37_0_0EXTestEnvironment testEnvironment
- *    NSDictionary *services
- *
- * Kernel-only:
- *    ABI37_0_0EXKernel *kernel
- *    NSArray *supportedSdkVersions
- *    id exceptionsManagerDelegate
- */
-- (NSArray *)extraModulesWithParams:(NSDictionary *)params
+- (NSArray *)extraModulesForBridge:(id)bridge
 {
+  NSDictionary *params = _params;
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];

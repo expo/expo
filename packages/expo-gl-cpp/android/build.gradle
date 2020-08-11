@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '8.4.0'
+version = '9.0.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -83,8 +83,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 25
-    versionName "8.4.0"
+    versionCode 26
+    versionName "9.0.0"
 
     ndk {
       abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
@@ -349,10 +349,6 @@ task cleanNdkLib(type: Exec) {
       "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
       "-C", file("src/main/jni").absolutePath,
       "clean")
-  doLast {
-    file(AAR_OUTPUT_URL).delete()
-    println("Deleted aar output dir at ${file(AAR_OUTPUT_URL)}")
-  }
 }
 
 task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {

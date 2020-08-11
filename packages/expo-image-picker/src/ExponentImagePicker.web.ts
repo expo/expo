@@ -5,7 +5,9 @@ import {
   ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
-  ImagePickerOptions,
+  ImagePickerMultipleResult,
+  ImageInfo,
+  ExpandImagePickerResult,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -22,7 +24,7 @@ export default {
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult> {
+  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -32,7 +34,7 @@ export default {
   async launchCameraAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult> {
+  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -71,11 +73,11 @@ function permissionGrantedResponse(): PermissionResponse {
   };
 }
 
-function openFileBrowserAsync({
+function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
-}: OpenFileBrowserOptions): Promise<ImagePickerResult> {
+}: T): Promise<ExpandImagePickerResult<T>> {
   const mediaTypeFormat = MediaTypeInput[mediaTypes];
 
   const input = document.createElement('input');
@@ -92,52 +94,62 @@ function openFileBrowserAsync({
   document.body.appendChild(input);
 
   return new Promise((resolve, reject) => {
-    input.addEventListener('change', () => {
+    input.addEventListener('change', async () => {
       if (input.files) {
-        const targetFile = input.files[0];
-        const reader = new FileReader();
-        reader.onerror = () => {
-          reject(new Error(`Failed to read the selected media because the operation failed.`));
-        };
-        reader.onload = ({ target }) => {
-          const uri = (target as any).result;
-
-          const returnRaw = () => {
-            resolve({
-              cancelled: false,
-              uri,
-              width: 0,
-              height: 0,
-            });
-          };
-          if (typeof target?.result === 'string') {
-            const image = new Image();
-            image.src = target.result;
-            image.onload = function() {
-              resolve({
-                cancelled: false,
-                uri,
-                width: image.naturalWidth ?? image.width,
-                height: image.naturalHeight ?? image.height,
-              });
-            };
-            image.onerror = () => {
-              returnRaw();
-            };
-          } else {
-            returnRaw();
-          }
-        };
-        // Read in the image file as a binary string.
-        reader.readAsDataURL(targetFile);
+        if (!allowsMultipleSelection) {
+          const img: ImageInfo = await readFile(input.files[0]);
+          resolve({
+            cancelled: false,
+            ...img,
+          } as ExpandImagePickerResult<T>);
+        } else {
+          const imgs: ImageInfo[] = await Promise.all(Array.from(input.files).map(readFile));
+          resolve({
+            cancelled: false,
+            selected: imgs,
+          } as ExpandImagePickerResult<T>);
+        }
       } else {
-        resolve({ cancelled: true });
+        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
       }
-
       document.body.removeChild(input);
     });
 
     const event = new MouseEvent('click');
     input.dispatchEvent(event);
+  });
+}
+
+function readFile(targetFile: Blob): Promise<ImageInfo> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => {
+      reject(new Error(`Failed to read the selected media because the operation failed.`));
+    };
+    reader.onload = ({ target }) => {
+      const uri = (target as any).result;
+      const returnRaw = () =>
+        resolve({
+          uri,
+          width: 0,
+          height: 0,
+        });
+
+      if (typeof target?.result === 'string') {
+        const image = new Image();
+        image.src = target.result;
+        image.onload = () =>
+          resolve({
+            uri,
+            width: image.naturalWidth ?? image.width,
+            height: image.naturalHeight ?? image.height,
+          });
+        image.onerror = () => returnRaw();
+      } else {
+        returnRaw();
+      }
+    };
+
+    reader.readAsDataURL(targetFile);
   });
 }

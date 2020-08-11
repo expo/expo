@@ -7,6 +7,13 @@
 ### 🎉 New features
 
 - Add permissions for web. ([#9671](https://github.com/expo/expo/pull/9671) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+## 8.4.0 — 2020-08-11
+
+### 🎉 New features
+
 - Added `isAvailableAsync()` method for guarding against web usage. ([#9640](https://github.com/expo/expo/pull/9640) by [@EvanBacon](https://github.com/evanbacon))
 
 ### 🐛 Bug fixes

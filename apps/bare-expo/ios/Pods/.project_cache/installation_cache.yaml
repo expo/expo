@@ -98,7 +98,7 @@ CACHE_KEYS:
       EXAV:
         :debug: 145c0531e2c7438e612f4f31e07db048
         :release: 145c0531e2c7438e612f4f31e07db048
-    CHECKSUM: 21a356a369d2995eea564ed16c8b1e10958785e4
+    CHECKSUM: df4f691ce052d22c9fe3e8d900c13d78bd19cd2c
     FILES:
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -118,7 +118,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-av/ios/EXAV/Video/EXVideoView.m"
     PROJECT_NAME: EXAV
     SPECS:
-      - EXAV (8.4.1)
+      - EXAV (8.5.0)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
       EXBackgroundFetch:
@@ -202,7 +202,7 @@ CACHE_KEYS:
       EXCalendar:
         :debug: 36ce61fb0d5ba58b521d7be01d0ae914
         :release: 36ce61fb0d5ba58b521d7be01d0ae914
-    CHECKSUM: 2ddc3ad70875ba1c74243b03618543c7526ca64a
+    CHECKSUM: edf6531b9beef7db26b431953f323eddb848f175
     FILES:
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendar.h"
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendar.m"
@@ -214,7 +214,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.m"
     PROJECT_NAME: EXCalendar
     SPECS:
-      - EXCalendar (8.3.0)
+      - EXCalendar (8.4.0)
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
       EXCellular:
@@ -246,7 +246,7 @@ CACHE_KEYS:
       EXContacts:
         :debug: fe8a1ede70ae72129e31aea29717efbc
         :release: fe8a1ede70ae72129e31aea29717efbc
-    CHECKSUM: 6037d1955ebbc123fda975f73d4dc37391a84070
+    CHECKSUM: ac12e36369731b230344e54dad70cdb1256b2086
     FILES:
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.h"
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.m"
@@ -258,7 +258,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.m"
     PROJECT_NAME: EXContacts
     SPECS:
-      - EXContacts (8.3.0)
+      - EXContacts (8.4.0)
   EXCrypto:
     BUILD_SETTINGS_CHECKSUM:
       EXCrypto:
@@ -449,7 +449,7 @@ CACHE_KEYS:
       EXGL:
         :debug: e2693ac9b23793b0d76b54ea5efb250c
         :release: e2693ac9b23793b0d76b54ea5efb250c
-    CHECKSUM: 5ab2299d0bae290b81ca24fc70e8f1697affbef5
+    CHECKSUM: 0a320f8e1345376e4c67e33d71722fd062073515
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -465,13 +465,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLViewManager.m"
     PROJECT_NAME: EXGL
     SPECS:
-      - EXGL (8.4.0)
+      - EXGL (9.0.0)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP:
         :debug: 2048fe04f075c294e3d06750bdb6e79a
         :release: 2048fe04f075c294e3d06750bdb6e79a
-    CHECKSUM: 6ef005841e3e556604f57f4654d43586f4cd118a
+    CHECKSUM: c5294a946598c996585553fde565f90404b067b8
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -490,7 +490,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (8.4.0)
+      - EXGL_CPP (9.0.0)
   EXGL_CPP_LEGACY:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP_LEGACY:
@@ -575,7 +575,7 @@ CACHE_KEYS:
       EXImagePicker:
         :debug: d527769f4e804c5ea2f09deb41a716e1
         :release: d527769f4e804c5ea2f09deb41a716e1
-    CHECKSUM: 36f2bba7d6367ecb2b1340c5db5a676b3b19a26a
+    CHECKSUM: 162ff908874712612352c1a15889512537045729
     FILES:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -585,7 +585,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
-      - EXImagePicker (8.4.0)
+      - EXImagePicker (9.0.0)
   EXInAppPurchases:
     BUILD_SETTINGS_CHECKSUM:
       EXInAppPurchases:
@@ -687,7 +687,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: cc36485bbe4780e0bf7381237eb7412a
         :release: cc36485bbe4780e0bf7381237eb7412a
-    CHECKSUM: bf749aeca17e781733d9fe2d8063b4bf2c106e1f
+    CHECKSUM: 588b27235785fae12add07801f1333f8689a8130
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -699,7 +699,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (8.5.0)
+      - EXMediaLibrary (9.0.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork:
@@ -765,7 +765,7 @@ CACHE_KEYS:
       EXPermissions:
         :debug: 042b0d307d74f9ba36a7183b44cd74a0
         :release: 042b0d307d74f9ba36a7183b44cd74a0
-    CHECKSUM: 9daf039546113d8f2f0a62db1c75d2d9206e5e4e
+    CHECKSUM: ecac8bbc91ee6fa7160d1bf834728e56858fce5b
     FILES:
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
@@ -773,7 +773,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
     PROJECT_NAME: EXPermissions
     SPECS:
-      - EXPermissions (9.1.0)
+      - EXPermissions (9.2.0)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
       expo-image:
@@ -842,7 +842,7 @@ CACHE_KEYS:
       EXScreenOrientation:
         :debug: c819a7ea2016ade1c113b7333b8d9a0d
         :release: c819a7ea2016ade1c113b7333b8d9a0d
-    CHECKSUM: c9cfb33eaff7ce83330c5238eba523d027b9eb53
+    CHECKSUM: 9110f49798fae74322f6fa959eab1da5d4805cf0
     FILES:
       - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
       - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
@@ -854,19 +854,19 @@ CACHE_KEYS:
       - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m"
     PROJECT_NAME: EXScreenOrientation
     SPECS:
-      - EXScreenOrientation (1.1.1)
+      - EXScreenOrientation (2.0.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
       EXSecureStore:
         :debug: 10a623412aef75951df791abc0f7f5ba
         :release: 10a623412aef75951df791abc0f7f5ba
-    CHECKSUM: 321ee488c66ef1af2aa73701f01cdd512f69ecdf
+    CHECKSUM: 579cbccd9cd093e6f4336aba073b059008bd78e0
     FILES:
       - "../../../../packages/expo-secure-store/ios/EXSecureStore/EXSecureStore.h"
       - "../../../../packages/expo-secure-store/ios/EXSecureStore/EXSecureStore.m"
     PROJECT_NAME: EXSecureStore
     SPECS:
-      - EXSecureStore (9.1.0)
+      - EXSecureStore (9.2.0)
   EXSegment:
     BUILD_SETTINGS_CHECKSUM:
       EXSegment:
@@ -884,7 +884,7 @@ CACHE_KEYS:
       EXSensors:
         :debug: b9da911a0b1aa9882d008d47807201fe
         :release: b9da911a0b1aa9882d008d47807201fe
-    CHECKSUM: 761f6bd03eb13ff7dfffe955de7edce3b73306c4
+    CHECKSUM: 352c8d17c066765517e9e73c05d68491f2cfa7b6
     FILES:
       - "../../../../packages/expo-sensors/ios/EXSensors/EXSensorsManager.h"
       - "../../../../packages/expo-sensors/ios/EXSensors/EXSensorsManager.m"
@@ -906,7 +906,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-sensors/ios/EXSensors/Modules/SensorModules/EXMagnetometerUncalibrated.m"
     PROJECT_NAME: EXSensors
     SPECS:
-      - EXSensors (9.0.1)
+      - EXSensors (9.1.0)
   EXSharing:
     BUILD_SETTINGS_CHECKSUM:
       EXSharing:
@@ -924,13 +924,13 @@ CACHE_KEYS:
       EXSMS:
         :debug: 066e893c0c23fbe834b31de7cff3751d
         :release: 066e893c0c23fbe834b31de7cff3751d
-    CHECKSUM: 93b2aafc8aca983cecf5905cf03ac80a678c61d9
+    CHECKSUM: 62b990a7d9e6132904062b2438002f09418b4f0b
     FILES:
       - "../../../../packages/expo-sms/ios/EXSMS/EXSMSModule.h"
       - "../../../../packages/expo-sms/ios/EXSMS/EXSMSModule.m"
     PROJECT_NAME: EXSMS
     SPECS:
-      - EXSMS (8.2.1)
+      - EXSMS (8.3.0)
   EXSpeech:
     BUILD_SETTINGS_CHECKSUM:
       EXSpeech:
@@ -2628,7 +2628,7 @@ CACHE_KEYS:
       UMCore:
         :debug: 725599ebffd932f0853dea43e0c4795a
         :release: 725599ebffd932f0853dea43e0c4795a
-    CHECKSUM: d98083b522b08c0a8ba3992bc263c624ae5d887c
+    CHECKSUM: 28d7a74260813f906738533ad7dce4529d3d24ee
     FILES:
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -2663,7 +2663,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/core/ios/UMCore/UMViewManager.m"
     PROJECT_NAME: UMCore
     SPECS:
-      - UMCore (5.3.0)
+      - UMCore (5.5.0)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFileSystemInterface:
@@ -2720,7 +2720,7 @@ CACHE_KEYS:
       UMReactNativeAdapter:
         :debug: 671e6af9638e495e270f6054418ae6d0
         :release: 671e6af9638e495e270f6054418ae6d0
-    CHECKSUM: 538efe92e781b5d7678cf95b34c46f2d0989a557
+    CHECKSUM: 3ea819190be592add3ecc3feb45c2cf1fab8664c
     FILES:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -2743,7 +2743,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.4.0)
+      - UMReactNativeAdapter (5.5.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface:
