@@ -88,6 +88,14 @@ import {
 
 ## Methods
 
+### `isAvailableAsync()`
+
+Returns whether the Screen Capture API is enabled on the current device.
+
+#### Returns
+
+A `Promise` resolving to either `true` or `false`.
+
 ### `usePreventScreenCapture(key?: String)`
 
 A React hook to prevent screen capturing for as long as the owner component is mounted.
