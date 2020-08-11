@@ -1,6 +1,6 @@
 import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';
 /**
- * Returns whether the Haptics API is enabled on the current device. This does not check the app permissions.
+ * Returns whether the Haptics API is enabled on the current device.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 export declare function notification(type?: NotificationFeedbackType): Promise<void>;
