@@ -36,7 +36,6 @@ const generateGeneralNavLinks = (path_, arr = null) => {
 
   if (arr === null) {
     const initArr = [];
-
     // Make sure to add '/' at the end of index pages so that relative links in the markdown work correctly
     const href = fs.existsSync(path.join(path_, 'index.md')) ? processUrl(path_) + '/' : '';
 
