@@ -66,64 +66,17 @@ Once you've created `eas.json`, new Expo CLI commands should become available fo
 
 ## Building For Android
 
-### Configuring the Android Project
-
-> We're working on streamlining this process. It'll look differently in the future. Stay tuned.
-
-So far, we've configured EAS Builds with `eas.json`. Now is the time to make the Android code buildable on our servers. All you need to do is provide your app's credentials to EAS Builds. For an Android application, a keystore, keystore password, key alias, and key password are needed to build the app binary.
-
-Expo CLI will help you generate the keystore. However, we need to tell `gradle` where it should look for the credentials.
-Open `android/app/build.gradle` and make the following changes:
-
-```diff
-diff --git a/android/app/build.gradle b/android/app/build.gradle
-index 980625b..4388b3b 100644
---- a/android/app/build.gradle
-+++ b/android/app/build.gradle
-@@ -152,15 +152,20 @@ android {
-             keyAlias 'androiddebugkey'
-             keyPassword 'android'
-         }
-+        release {
-+            def credentialsJson = new groovy.json.JsonSlurper().parse(rootProject.file("../credentials.json"))
-+            storeFile rootProject.file("../" + credentialsJson[android"]["keystore"]["keystorePath"])
-+            storePassword credentialsJson["android"]["keystore"]["keystorePassword"]
-+            keyAlias credentialsJson["android"]["keystore"]["keyAlias"]
-+            keyPassword credentialsJson["android"]["keystore"]["keyPassword"]
-+        }
-     }
-     buildTypes {
-         debug {
-             signingConfig signingConfigs.debug
-         }
-         release {
--            // Caution! In production, you need to generate your own keystore file.
--            // see https://facebook.github.io/react-native/docs/signed-apk-android.
--            signingConfig signingConfigs.debug
-+            signingConfig signingConfigs.release
-             minifyEnabled enableProguardInReleaseBuilds
-             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-         }
-```
-
-We're defining here a new signing config (`release`) and using it for the `release` build type. The code in the `release` signing config is reading the keystore configration from the file named `credentials.json`. You don't need to create this file manually. It'll be automatically created on our build servers and populated with the credentials you generate (or provide) with Expo CLI. Using your own `credentials.json` is an advanced feature of EAS Builds. You can learn more about it in the [Advanced Credentials](https://todo) page.
-
-After making the changes to the `build.gradle` file, commit them:
-
-- `git add android/app/build.gradle`
-- `git commit -m "Configure Android project"`
-
-<center><img src="/static/images/eas-builds/5-minute-tutorial/05-configure-android.png" /></center>
-
-### Running the Build
-
 Building the Android app binary is simple - just run `expo eas:build --platform android` and you'll be guided through generating or providing your own keystore. For the sake of simplicity in this tutorial, select `Generate new keystore` and hit `ENTER`.
 
 **Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/06-generate-keystore.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/05-generate-keystore.png" /></center>
 
-The build should start soon after that. Expo CLI will print a URL to the page where you can monitor the build (and view logs). Open the URL in a browser and you should see a page like this:
+Next, Expo CLI will auto-configure you Gradle project so we could build it on our servers. You'll be offered to commit the changes to your repository.
+
+<center><img src="/static/images/eas-builds/5-minute-tutorial/06-configure-gradle.png" /></center>
+
+The build should start just after completing those steps. Expo CLI will print a URL to the page where you can monitor the build (and view logs). Open the URL in a browser and you should see a page like this:
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/07-build-progress.png" /></center>
 <center><img src="/static/images/eas-builds/5-minute-tutorial/08-build-logs.png" /></center>
