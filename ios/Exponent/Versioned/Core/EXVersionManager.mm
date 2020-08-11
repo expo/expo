@@ -327,10 +327,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
 
-  id<UMFileSystemInterface> fileSystemModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
-  NSString *localStorageDirectory = [fileSystemModule.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
-  [extraModules addObject:[[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory]];
-
   return extraModules;
 }
 
@@ -425,6 +421,16 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     } else {
       RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
     }
+  } else if (moduleClass == RCTAsyncLocalStorageCls()) {
+    NSString *documentDirectory;
+    if (_params[@"fileSystemDirectories"]) {
+      documentDirectory = _params[@"fileSystemDirectories"][@"documentDirectory"];
+    } else {
+      NSArray<NSString *> *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+      documentDirectory = [documentPaths objectAtIndex:0];
+    }
+    NSString *localStorageDirectory = [documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
+    return [[moduleClass alloc] initWithStorageDirectory:localStorageDirectory];
   }
 
   return [moduleClass new];
