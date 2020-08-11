@@ -38,7 +38,9 @@ export type ImageInfo = {
 
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 
-export type ImagePickerMultipleResult = { cancelled: true } | ({ cancelled: false; selected: ImageInfo[] });
+export type ImagePickerMultipleResult =
+  | { cancelled: true }
+  | { cancelled: false; selected: ImageInfo[] };
 
 export type ImagePickerOptions = {
   allowsEditing?: boolean;
@@ -58,8 +60,10 @@ export type OpenFileBrowserOptions = {
   allowsMultipleSelection: boolean;
 };
 
-export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
-  allowsMultipleSelection: true
+export type ExpandImagePickerResult<
+  T extends ImagePickerOptions | OpenFileBrowserOptions
+> = T extends {
+  allowsMultipleSelection: true;
 }
   ? ImagePickerMultipleResult
   : ImagePickerResult;
