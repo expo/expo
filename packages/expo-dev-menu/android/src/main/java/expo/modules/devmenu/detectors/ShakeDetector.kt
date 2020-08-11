@@ -1,4 +1,4 @@
-package expo.modules.devmenu
+package expo.modules.devmenu.detectors
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -6,7 +6,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
-
 
 // Number of nanoseconds that must elapse before we start detecting next gesture.
 private val MIN_TIME_AFTER_SHAKE_NS = TimeUnit.NANOSECONDS.convert(600, TimeUnit.MILLISECONDS)
@@ -36,11 +35,9 @@ class ShakeDetector(private val shakeListener: () -> Unit) : SensorEventListener
    * Start listening for shakes.
    */
   fun start(manager: SensorManager) {
-    val accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-
-    if (accelerometer != null) {
+    manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
       sensorManager = manager
-      manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI)
+      manager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
       lastDispatchedShakeTimestamp = 0
       reset()
     }

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.facebook.react.devsupport.DevInternalSettings
 
-class ReactInternalSettings(serverIp: String, application: Context) : DevInternalSettings(application, {}) {
+class DevMenuReactInternalSettings(serverIp: String, application: Context) : DevInternalSettings(application, {}) {
   private val packagerConnectionSettings = DevMenuPackagerConnectionSettings(serverIp, application)
 
   override fun isElementInspectorEnabled() = false

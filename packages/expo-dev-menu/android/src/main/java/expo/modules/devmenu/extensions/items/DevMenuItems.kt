@@ -3,7 +3,9 @@ package expo.modules.devmenu.extensions.items
 import android.os.Bundle
 import android.view.KeyCharacterMap
 
-val keyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD)
+val keyCharacterMap: KeyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD)
+
+data class KeyCommand(val code: Int, val modifiers: Int = 0)
 
 sealed class DevMenuItem {
   var isAvailable = { true }
@@ -11,7 +13,7 @@ sealed class DevMenuItem {
   var label = { "" }
   var detail = { "" }
   var glyphName = { "" }
-  var importance = ItemImportance.MEDIUM.value
+  var importance = DevMenuItemImportance.MEDIUM.value
 
   abstract fun getExportedType(): Int
 
@@ -26,11 +28,11 @@ sealed class DevMenuItem {
 }
 
 class DevMenuAction(val actionId: String, val action: () -> Unit) : DevMenuItem() {
-  override fun getExportedType() = 1
   var keyCommand: KeyCommand? = null
 
-  override fun serialize() = super.serialize().apply {
+  override fun getExportedType() = 1
 
+  override fun serialize() = super.serialize().apply {
     putString("actionId", actionId)
 
     putBundle("keyCommand", keyCommand?.let { keyCommand ->
@@ -43,18 +45,16 @@ class DevMenuAction(val actionId: String, val action: () -> Unit) : DevMenuItem(
 }
 
 class DevMenuGroup(private val groupName: String) : DevMenuItem() {
-  override fun getExportedType() = 2
   private val items: ArrayList<DevMenuItem> = ArrayList()
 
-  fun addItem(item: DevMenuItem) {
-    items.add(item)
-  }
+  fun addItem(item: DevMenuItem) = items.add(item)
+
+  override fun getExportedType() = 2
 
   override fun serialize() = super.serialize().apply {
     putString("groupName", groupName)
     putParcelableArray("items", items.map { it.serialize() }.toTypedArray())
   }
 }
-
 
 

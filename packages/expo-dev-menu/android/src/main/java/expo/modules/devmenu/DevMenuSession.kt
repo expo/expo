@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.core.content.pm.PackageInfoCompat
 import com.facebook.react.ReactInstanceManager
 
-
 class DevMenuSession(private val reactInstanceManager: ReactInstanceManager, initAppInfo: Bundle?) {
   val appInfo = initAppInfo ?: guessAppInfo()
 
@@ -15,7 +14,7 @@ class DevMenuSession(private val reactInstanceManager: ReactInstanceManager, ini
     val reactContext = reactInstanceManager.currentReactContext ?: return@apply
     val applicationContext = reactContext.applicationContext
     putCharSequence("appName", guessAppName(applicationContext))
-    putLong("appVersion", guessAppVersion(applicationContext)) // todo: pass app version not dev menu version
+    putLong("appVersion", guessAppVersion(applicationContext))
     putString("appIcon", guessAppIcon(applicationContext))
     putString("hostUrl", reactContext.catalystInstance?.sourceURL)
   }
@@ -36,7 +35,6 @@ class DevMenuSession(private val reactInstanceManager: ReactInstanceManager, ini
 
   private fun guessAppIcon(context: Context): String {
     val iconId = context.applicationInfo.icon
-
     return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
       context.resources.getResourcePackageName(iconId) + '/' +
       context.resources.getResourceTypeName(iconId) + '/' +

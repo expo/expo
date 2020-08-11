@@ -1,6 +1,6 @@
 package expo.modules.devmenu.extensions.items
 
-enum class ItemImportance(val value: Int) {
+enum class DevMenuItemImportance(val value: Int) {
   LOWEST(-200),
   LOW(-100),
   MEDIUM(0),

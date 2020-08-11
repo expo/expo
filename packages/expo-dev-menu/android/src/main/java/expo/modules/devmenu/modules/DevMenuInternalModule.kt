@@ -5,19 +5,18 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import expo.modules.devmenu.managers.DevMenuManager
 
 class DevMenuInternalModule(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext) {
   override fun getName() = "ExpoDevMenuInternal"
 
-  private val devMenuManger: DevMenuManager by lazy {
+  private val devMenuManger by lazy {
     reactContext
       .getNativeModule(DevMenuManagerProvider::class.java)
       .getDevMenuManager()
   }
 
-  private val devMenuSettings: DevMenuSettings by lazy {
+  private val devMenuSettings by lazy {
     reactContext
       .getNativeModule(DevMenuSettings::class.java)
   }

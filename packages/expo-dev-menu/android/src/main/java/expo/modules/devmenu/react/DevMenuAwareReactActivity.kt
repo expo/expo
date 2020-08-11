@@ -3,11 +3,12 @@ package expo.modules.devmenu.react
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactActivity
-import expo.modules.devmenu.managers.DevMenuManager
+import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
+import expo.modules.devmenu.DevMenuManager
 
 abstract class DevMenuAwareReactActivity : ReactActivity() {
   private val longPressListener: () -> Unit = {
-    DevMenuManager.settings?.let {
+    DevMenuManager.getSettings()?.let {
       if (it.touchGestureEnabled) {
         threeFingerLongPressDetector.isEnable = false
         DevMenuManager.openMenu(this)
@@ -36,8 +37,6 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
       DevMenuManager.openMenu(this)
       return true
     }
-
     return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyDown(keyCode, event)
   }
-
 }

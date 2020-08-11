@@ -22,5 +22,4 @@ class DevMenuPackage : ReactPackage {
     )
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> = listOf()
-
 }

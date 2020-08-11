@@ -16,15 +16,15 @@ import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import java.util.List;
 
 import dev.expo.payments.generated.BasePackageList;
-import expo.modules.devmenu.managers.DevMenuManager;
-import expo.modules.devmenu.react.ReactNativeHostWithDevMenu;
+import expo.modules.devmenu.DevMenuManager;
+import expo.modules.devmenu.react.DevMenuAwareReactNativeHost;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList()
   );
 
-  private final ReactNativeHostWithDevMenu mReactNativeHost = new ReactNativeHostWithDevMenu(this) {
+  private final DevMenuAwareReactNativeHost mReactNativeHost = new DevMenuAwareReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;

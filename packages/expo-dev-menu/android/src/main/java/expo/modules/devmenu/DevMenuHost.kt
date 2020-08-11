@@ -7,7 +7,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.devsupport.DevServerHelper
-import expo.modules.devmenu.react.ReactInternalSettings
+import expo.modules.devmenu.react.DevMenuReactInternalSettings
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
@@ -39,7 +39,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
           it.readLine()
         }
 
-        val devMenuInternalReactSettings = ReactInternalSettings(serverIp, super.getApplication())
+        val devMenuInternalReactSettings = DevMenuReactInternalSettings(serverIp, super.getApplication())
 
         val devSupportManager = reactInstanceManager.devSupportManager
         val devSupportManagerBaseClass = devSupportManager.javaClass.superclass!!
@@ -67,16 +67,4 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
     return reactInstanceManager
   }
-
-  private fun setPrivateField(obj: Any, objClass: Class<*>, field: String, newValue: Any) =
-    objClass.getDeclaredField(field).run {
-      isAccessible = true
-      set(obj, newValue)
-    }
-
-  private inline fun <reified T> getPrivateFiled(obj: Any, objClass: Class<*>, field: String) =
-    objClass.getDeclaredField(field).run {
-      isAccessible = true
-      get(obj) as T
-    }
 }

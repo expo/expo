@@ -5,6 +5,5 @@ import com.facebook.react.ReactInstanceManager
 
 interface DevMenuDelegateProtocol {
   fun appInfo(): Bundle?
-
   fun reactInstanceManager(): ReactInstanceManager
 }

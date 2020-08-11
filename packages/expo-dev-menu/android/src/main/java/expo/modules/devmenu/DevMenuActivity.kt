@@ -6,7 +6,6 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
-import expo.modules.devmenu.managers.DevMenuManager
 import java.util.*
 
 class DevMenuActivity : ReactActivity() {
@@ -15,14 +14,14 @@ class DevMenuActivity : ReactActivity() {
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return object : ReactActivityDelegate(this, mainComponentName) {
       override fun getReactNativeHost(): ReactNativeHost {
-        return DevMenuManager.getDevMenuHost()
+        return DevMenuManager.getMenuHost()
       }
 
       override fun getLaunchOptions(): Bundle? {
         val bundle = Bundle()
         bundle.putBoolean("enableDevelopmentTools", true)
-        bundle.putBoolean("showOnboardingView", DevMenuManager.settings?.isOnboardingFinished != true)
-        bundle.putParcelableArray("devMenuItems", DevMenuManager.serializedDevMenuItems().toTypedArray())
+        bundle.putBoolean("showOnboardingView", DevMenuManager.getSettings()?.isOnboardingFinished != true)
+        bundle.putParcelableArray("devMenuItems", DevMenuManager.serializedItems().toTypedArray())
         bundle.putString("uuid", UUID.randomUUID().toString())
         bundle.putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
         return bundle
@@ -45,5 +44,4 @@ class DevMenuActivity : ReactActivity() {
     super.onPause()
     overridePendingTransition(0, 0)
   }
-
 }

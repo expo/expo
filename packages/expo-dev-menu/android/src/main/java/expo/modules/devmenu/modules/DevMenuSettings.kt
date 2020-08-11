@@ -4,6 +4,7 @@ import android.content.Context.MODE_PRIVATE
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BaseJavaModule
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
@@ -35,13 +36,16 @@ class DevMenuSettings(context: ReactApplicationContext) : BaseJavaModule() {
     get() = sharedPreferences.getBoolean("isOnboardingFinished", false)
     set(value) = saveBoolean("isOnboardingFinished", value)
 
-  fun serialize() = Arguments.createMap().apply {
-    putBoolean("motionGestureEnabled", motionGestureEnabled)
-    putBoolean("touchGestureEnabled", touchGestureEnabled)
-    putBoolean("keyCommandsEnabled", keyCommandsEnabled)
-    putBoolean("showsAtLaunch", showsAtLaunch)
-    putBoolean("isOnboardingFinished", isOnboardingFinished)
-  }
+  fun serialize(): WritableMap =
+    Arguments
+      .createMap()
+      .apply {
+        putBoolean("motionGestureEnabled", motionGestureEnabled)
+        putBoolean("touchGestureEnabled", touchGestureEnabled)
+        putBoolean("keyCommandsEnabled", keyCommandsEnabled)
+        putBoolean("showsAtLaunch", showsAtLaunch)
+        putBoolean("isOnboardingFinished", isOnboardingFinished)
+      }
 
   private fun saveBoolean(key: String, value: Boolean) {
     sharedPreferences

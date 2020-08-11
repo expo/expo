@@ -1,18 +1,13 @@
 package dev.expo.payments;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 
-import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.util.UUID;
 
-import expo.modules.devmenu.managers.DevMenuManager;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 
 public class MainActivity extends DevMenuAwareReactActivity {

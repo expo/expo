@@ -6,10 +6,9 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import expo.modules.devmenu.protocoles.DevMenuDelegateProtocol
 
-abstract class ReactNativeHostWithDevMenu(application: Application)
+abstract class DevMenuAwareReactNativeHost(application: Application)
   : ReactNativeHost(application), DevMenuDelegateProtocol {
-
   override fun appInfo(): Bundle? = null
 
-  override fun reactInstanceManager(): ReactInstanceManager = reactInstanceManager
+  override fun reactInstanceManager(): ReactInstanceManager = super.getReactInstanceManager()
 }

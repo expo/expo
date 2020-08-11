@@ -1,20 +1,18 @@
-package expo.modules.devmenu.react
+package expo.modules.devmenu.detectors
 
 import android.os.SystemClock
 import android.view.MotionEvent
 import kotlin.math.abs
 
-const val PRECISION = 20.0
-const val NEEDED_PRESS_TIME = 1000
+private const val PRECISION = 20.0
+private const val NEEDED_PRESS_TIME = 800
 
 class ThreeFingerLongPressDetector(val onLongPress: () -> Unit) {
-  var isEnable: Boolean = true
-
   private var startedDetecting = false
   private var startTime: Long = Long.MAX_VALUE
-  private var startPosition = Array(3) {
-    MotionEvent.PointerCoords()
-  }
+  private var startPosition = Array(3) { MotionEvent.PointerCoords() }
+
+  var isEnable: Boolean = true
 
   fun onTouchEvent(event: MotionEvent?) {
     if (!isEnable) {
