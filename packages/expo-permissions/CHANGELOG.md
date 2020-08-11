@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Fix motion permission bug on web. ([#9670](https://github.com/expo/expo/pull/9670) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Added support for the limited `CAMERA_ROLL` permission on iOS 14. ([#9423](https://github.com/expo/expo/pull/9423) by [@lukmccall](https://github.com/lukmccall))
