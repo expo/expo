@@ -9,27 +9,6 @@ NSString * const EXShellManifestResourceName = @"shell-app-manifest";
 
 @implementation EXScopedFileSystemModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding
-{
-  NSString *escapedExperienceId = [EXUtil escapedResourceName:experienceId];
-
-  NSString *mainDocumentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-  NSString *exponentDocumentDirectory = [mainDocumentDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
-  NSString *experienceDocumentDirectory = [[exponentDocumentDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
-
-  NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-  NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
-  NSString *experienceCachesDirectory = [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
-
-  if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
-    return [super init];
-  }
-
-  return [super initWithDocumentDirectory:experienceDocumentDirectory
-                          cachesDirectory:experienceCachesDirectory
-                          bundleDirectory:nil];
-}
-
 - (NSDictionary *)constantsToExport
 {
   NSMutableDictionary *constants = [[NSMutableDictionary alloc] initWithDictionary:[super constantsToExport]];
