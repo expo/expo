@@ -6,6 +6,7 @@ import android.util.Log;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.db.enums.UpdateStatus;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,6 +108,9 @@ public class LegacyManifest implements Manifest {
     if (mMetadata != null) {
       updateEntity.metadata = mMetadata;
     }
+    if (isDevelopmentMode()) {
+      updateEntity.status = UpdateStatus.DEVELOPMENT;
+    }
 
     return updateEntity;
   }
@@ -172,6 +176,10 @@ public class LegacyManifest implements Manifest {
       }
     }
     return mAssetsUrlBase;
+  }
+
+  public boolean isDevelopmentMode() {
+    return isDevelopmentMode(mManifestJson);
   }
 
   private static boolean isDevelopmentMode(final JSONObject manifest) {

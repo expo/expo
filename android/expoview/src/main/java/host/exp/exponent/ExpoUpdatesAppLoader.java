@@ -125,45 +125,35 @@ public abstract class ExpoUpdatesAppLoader {
 
       @Override
       public boolean onCachedUpdateLoaded(UpdateEntity update) {
+        boolean shouldForceRemote = false;
         if (isDevelopmentMode(update.metadata)) {
-          startDevelopmentLoad();
-          return false;
+          shouldForceRemote = true;
+        } else {
+          try {
+            String experienceId = update.metadata.getString(ExponentManifest.MANIFEST_ID_KEY);
+            // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
+            JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+            if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
+              shouldForceRemote = true;
+            }
+          } catch (Exception e) {
+            shouldForceRemote = false;
+          }
         }
 
-        try {
-          String experienceId = update.metadata.getString(ExponentManifest.MANIFEST_ID_KEY);
-          // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-          JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-          if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
-            if (configuration.getCheckOnLaunch() != UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS) {
-              HashMap<String, Object> configMap = new HashMap<>();
-              configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "ALWAYS");
-              configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 10000);
-              configuration.loadValuesFromMap(configMap);
-              startLoaderTask(configuration, directory, selectionPolicy);
-              return false;
-            }
-          }
-          return true;
-        } catch (Exception e) {
-          return true;
+        if (shouldForceRemote && configuration.getCheckOnLaunch() != UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS) {
+          HashMap<String, Object> configMap = new HashMap<>();
+          configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "ALWAYS");
+          configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 10000);
+          configuration.loadValuesFromMap(configMap);
+          startLoaderTask(configuration, directory, selectionPolicy);
+          return false;
         }
+        return true;
       }
 
       @Override
       public boolean onRemoteManifestLoaded(Manifest manifest) {
-        if (isDevelopmentMode(manifest.getRawManifestJson())) {
-          try {
-            JSONObject manifestJson = processAndSaveManifest(manifest.getRawManifestJson());
-            onManifestCompleted(manifestJson);
-            // ReactAndroid will load the bundle on its own in development mode, so we don't need to
-            // call onBundleCompleted()
-          } catch (Exception e) {
-            onError(e);
-          }
-          return false;
-        }
-
         onOptimisticManifest(manifest.getRawManifestJson());
         return true;
       }
@@ -199,38 +189,6 @@ public abstract class ExpoUpdatesAppLoader {
         }
       }
     }).start(mContext);
-  }
-
-  private void startDevelopmentLoad() {
-    Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
-
-    HashMap<String, Object> configMap = new HashMap<>();
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
-
-    UpdatesConfiguration configuration = new UpdatesConfiguration();
-    configuration.loadValuesFromMap(configMap);
-
-    FileDownloader.downloadManifest(configuration, mContext, new FileDownloader.ManifestDownloadCallback() {
-      @Override
-      public void onFailure(String message, Exception e) {
-        onError(e);
-      }
-
-      @Override
-      public void onSuccess(Manifest manifest) {
-        try {
-          JSONObject manifestJson = processAndSaveManifest(manifest.getRawManifestJson());
-          onManifestCompleted(manifestJson);
-          // ReactAndroid will load the bundle on its own in development mode, so we don't need to
-          // call onBundleCompleted()
-        } catch (Exception e) {
-          onError(e);
-        }
-      }
-    });
   }
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {

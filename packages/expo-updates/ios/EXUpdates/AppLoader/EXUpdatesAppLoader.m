@@ -82,6 +82,37 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     return;
   }
 
+  if (updateManifest.isDevelopmentMode) {
+    dispatch_async(_database.databaseQueue, ^{
+      NSError *updateError;
+      [self->_database addUpdate:updateManifest error:&updateError];
+
+      if (updateError) {
+        [self _finishWithError:updateError];
+        return;
+      }
+
+      NSError *updateReadyError;
+      [self->_database markUpdateFinished:updateManifest error:&updateReadyError];
+      if (updateReadyError) {
+        [self _finishWithError:updateReadyError];
+        return;
+      }
+
+      EXUpdatesAppLoaderSuccessBlock successBlock;
+      if (self->_successBlock) {
+        successBlock = self->_successBlock;
+      }
+      dispatch_async(self->_completionQueue, ^{
+        if (successBlock) {
+          successBlock(updateManifest);
+        }
+        [self _reset];
+      });
+    });
+    return;
+  }
+
   dispatch_async(_database.databaseQueue, ^{
     NSError *existingUpdateError;
     EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError];

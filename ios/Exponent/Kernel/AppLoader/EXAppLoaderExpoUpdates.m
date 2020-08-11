@@ -146,7 +146,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
 {
-  NSAssert(![EXAppFetcher areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest], @"Should not finish loading a development mode manifest and bundle with AppLoaderTask");
+  if ([EXAppFetcher areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
+    return;
+  }
   _confirmedManifest = launcher.launchedUpdate.rawManifest;
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
   if (self.delegate) {
@@ -171,14 +173,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask shouldLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
-  if ([EXAppFetcher areDevToolsEnabledWithManifest:update.rawManifest]) {
-    dispatch_async(_appLoaderQueue, ^{
-      [self _startDevelopmentModeLoad];
-    });
-    return NO;
-  }
-  // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
+  // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
+  if ([EXAppFetcher areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
     if (_shouldUseCacheOnly) {
       _shouldUseCacheOnly = NO;
       dispatch_async(_appLoaderQueue, ^{
@@ -192,16 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask shouldLoadRemoteUpdate:(EXUpdatesUpdate *)update
 {
-  if ([EXAppFetcher areDevToolsEnabledWithManifest:update.rawManifest]) {
-    _optimisticManifest = update.rawManifest;
-    _confirmedManifest = _optimisticManifest;
-    if (self.delegate) {
-      [self.delegate appLoader:self didLoadOptimisticManifest:update.rawManifest];
-    }
-    return NO;
-  } else {
-    return YES;
-  }
+  return YES;
 }
 
 #pragma mark - internal
@@ -274,45 +261,17 @@ NS_ASSUME_NONNULL_BEGIN
   [loaderTask start];
 }
 
-- (void)_startDevelopmentModeLoad
-{
-  NSURL *httpManifestUrl = [[self class] _httpUrlFromManifestUrl:_manifestUrl];
-
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": httpManifestUrl.absoluteString,
-    @"EXUpdatesSDKVersion": [self _sdkVersions],
-    @"EXUpdatesScopeKey": _manifestUrl.absoluteString,
-    @"EXUpdatesRequestHeaders": [self _requestHeaders]
-  }];
-
-  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
-  EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
-
-  [fileDownloader downloadManifestFromURL:httpManifestUrl withDatabase:updatesDatabaseManager.database cacheDirectory:updatesDatabaseManager.updatesDirectory successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    self.optimisticManifest = update.rawManifest;
-    self.confirmedManifest = self.optimisticManifest;
-    if (self.delegate) {
-      [self.delegate appLoader:self didLoadOptimisticManifest:self.optimisticManifest];
-    }
-  } errorBlock:^(NSError * _Nonnull error, NSURLResponse * _Nonnull response) {
-    self.error = error;
-    if (self.delegate) {
-      [self.delegate appLoader:self didFailWithError:error];
-    }
-  }];
-}
-
 - (void)_loadDevelopmentJavaScriptResource
 {
   EXAppFetcher *appFetcher = [[EXAppFetcher alloc] initWithAppLoader:self];
-  [appFetcher fetchJSBundleWithManifest:self.confirmedManifest cacheBehavior:EXCachedResourceNoCache timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress *progress) {
+  [appFetcher fetchJSBundleWithManifest:self.optimisticManifest cacheBehavior:EXCachedResourceNoCache timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress *progress) {
     if (self.delegate) {
       [self.delegate appLoader:self didLoadBundleWithProgress:progress];
     }
   } success:^(NSData *bundle) {
     self.bundle = bundle;
     if (self.delegate) {
-      [self.delegate appLoader:self didFinishLoadingManifest:self.confirmedManifest bundle:self.bundle];
+      [self.delegate appLoader:self didFinishLoadingManifest:self.optimisticManifest bundle:self.bundle];
     }
   } error:^(NSError *error) {
     self.error = error;

@@ -28,6 +28,8 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
     // we do not need these so we just stub them out
     update.updateId = [NSUUID UUID];
     update.commitTime = [NSDate date];
+    update.isDevelopmentMode = YES;
+    update.status = EXUpdatesUpdateStatusDevelopment;
   } else {
     id updateId = manifest[@"releaseId"];
     NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
@@ -37,6 +39,8 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
     id commitTimeString = manifest[@"commitTime"];
     NSAssert([commitTimeString isKindOfClass:[NSString class]], @"commitTime should be a string");
     update.commitTime = [RCTConvert NSDate:commitTimeString];
+
+    update.status = EXUpdatesUpdateStatusPending;
   }
 
   id bundleUrlString = manifest[@"bundleUrl"];
@@ -102,7 +106,6 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   }
 
   update.metadata = manifest;
-  update.status = EXUpdatesUpdateStatusPending;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;

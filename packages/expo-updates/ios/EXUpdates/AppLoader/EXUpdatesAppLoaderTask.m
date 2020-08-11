@@ -136,7 +136,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      if (self->_isReadyToLaunch && self->_launcher.launchAssetUrl) {
+      if (self->_isReadyToLaunch && (self->_launcher.launchAssetUrl || self->_launcher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
         [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher];
       } else {
         [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
