@@ -32,7 +32,6 @@ public class LoaderTask {
 
   public interface LoaderTaskCallback {
     void onFailure(Exception e);
-
     /**
      * This method gives the calling class an opportunity to abort the LoaderTask early if, for
      * example, we need to restart with a different configuration after getting the initial
@@ -43,17 +42,7 @@ public class LoaderTask {
      * methods will be fired.
      */
     boolean onCachedUpdateLoaded(UpdateEntity update);
-
-    /**
-     * This method gives the calling class an opportunity to abort the LoaderTask early if, for
-     * example, we need to restart with a different configuration after loading the remote
-     * manifest.
-     *
-     * Return value should indicate whether to continue loading this app. `true` will continue
-     * loading with the provided configuration, `false` will abort the task and no other callback
-     * methods will be fired.
-     */
-    boolean onRemoteManifestLoaded(Manifest manifest);
+    void onRemoteManifestLoaded(Manifest manifest);
     void onSuccess(Launcher launcher);
     void onEvent(String eventName, WritableMap params);
   }
@@ -73,7 +62,6 @@ public class LoaderTask {
   private boolean mIsReadyToLaunch = false;
   private boolean mTimeoutFinished = false;
   private boolean mHasLaunched = false;
-  private boolean mHasAborted = false;
   private HandlerThread mHandlerThread;
   private Launcher mLauncher;
 
@@ -262,8 +250,8 @@ public class LoaderTask {
 
           @Override
           public boolean onManifestLoaded(Manifest manifest) {
-            mHasAborted = !mCallback.onRemoteManifestLoaded(manifest);
-            return !mHasAborted && mSelectionPolicy.shouldLoadNewUpdate(
+            mCallback.onRemoteManifestLoaded(manifest);
+            return mSelectionPolicy.shouldLoadNewUpdate(
               manifest.getUpdateEntity(),
               mLauncher.getLaunchedUpdate()
             );
@@ -271,9 +259,6 @@ public class LoaderTask {
 
           @Override
           public void onSuccess(@Nullable UpdateEntity update) {
-            if (mHasAborted) {
-              return;
-            }
             // a new update has loaded successfully; we need to launch it with a new Launcher and
             // replace the old Launcher so that the callback fires with the new one
             final DatabaseLauncher newLauncher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);

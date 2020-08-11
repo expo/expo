@@ -237,9 +237,7 @@ public class UpdatesController {
       }
 
       @Override
-      public boolean onRemoteManifestLoaded(Manifest manifest) {
-        return true;
-      }
+      public void onRemoteManifestLoaded(Manifest manifest) { }
 
       @Override
       public void onSuccess(Launcher launcher) {

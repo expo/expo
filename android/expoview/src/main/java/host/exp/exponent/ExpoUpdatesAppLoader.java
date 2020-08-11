@@ -153,9 +153,8 @@ public abstract class ExpoUpdatesAppLoader {
       }
 
       @Override
-      public boolean onRemoteManifestLoaded(Manifest manifest) {
+      public void onRemoteManifestLoaded(Manifest manifest) {
         onOptimisticManifest(manifest.getRawManifestJson());
-        return true;
       }
 
       @Override

@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXAppLoaderExpoUpdates : EXAppLoader <EXUpdatesAppLoaderTaskDelegate, EXUpdatesAppLoaderTaskAborterDelegate>
+@interface EXAppLoaderExpoUpdates : EXAppLoader <EXUpdatesAppLoaderTaskDelegate>
 
 @end
 

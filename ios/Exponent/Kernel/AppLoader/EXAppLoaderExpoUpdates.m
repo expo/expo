@@ -136,6 +136,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXUpdatesAppLoaderTaskDelegate
 
+- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
+{
+  // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
+  if ([EXAppFetcher areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
+    if (_shouldUseCacheOnly) {
+      _shouldUseCacheOnly = NO;
+      dispatch_async(_appLoaderQueue, ^{
+        [self _startLoaderTask];
+      });
+      return NO;
+    }
+  }
+  return YES;
+}
+
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
   _optimisticManifest = update.rawManifest;
@@ -167,28 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFireEventWithType:(NSString *)type body:(NSDictionary *)body
 {
   // TODO: add delegate method for this
-}
-
-#pragma mark - EXUpdatesAppLoaderTaskAborterDelegate
-
-- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask shouldLoadCachedUpdate:(EXUpdatesUpdate *)update
-{
-  // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if ([EXAppFetcher areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
-    if (_shouldUseCacheOnly) {
-      _shouldUseCacheOnly = NO;
-      dispatch_async(_appLoaderQueue, ^{
-        [self _startLoaderTask];
-      });
-      return NO;
-    }
-  }
-  return YES;
-}
-
-- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask shouldLoadRemoteUpdate:(EXUpdatesUpdate *)update
-{
-  return YES;
 }
 
 #pragma mark - internal
@@ -257,7 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       selectionPolicy:selectionPolicy
                                                                         delegateQueue:_appLoaderQueue];
   loaderTask.delegate = self;
-  loaderTask.aborterDelegate = self;
   [loaderTask start];
 }
 

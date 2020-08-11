@@ -12,15 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXUpdatesAppLoaderTaskDelegate <NSObject>
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update;
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher;
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error;
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFireEventWithType:(NSString *)type body:(NSDictionary *)body;
-
-@end
-
-@protocol EXUpdatesAppLoaderTaskAborterDelegate <NSObject>
-
 /**
  * This method gives the calling class an opportunity to abort the task early if, for
  * example, we need to restart with a different configuration after getting the initial
@@ -30,15 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
  * loading with the provided configuration, `NO` will abort the task and no other delegate
  * methods will be fired.
  */
-- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask shouldLoadCachedUpdate:(EXUpdatesUpdate *)update;
-- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask shouldLoadRemoteUpdate:(EXUpdatesUpdate *)update;
+- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update;
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update;
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher;
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error;
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFireEventWithType:(NSString *)type body:(NSDictionary *)body;
 
 @end
 
 @interface EXUpdatesAppLoaderTask : NSObject
 
 @property (nonatomic, weak) id<EXUpdatesAppLoaderTaskDelegate> delegate;
-@property (nonatomic, weak) id<EXUpdatesAppLoaderTaskAborterDelegate> aborterDelegate;
 
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
