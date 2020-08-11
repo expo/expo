@@ -153,15 +153,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
-  _optimisticManifest = [self _processManifest:update.rawManifest];
-  if (self.delegate) {
-    [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
-  }
+  [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
 {
   if ([EXAppFetcher areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
+    // in dev mode, we need to set an optimistic manifest even if the LoaderTask never sent one
+    if (!_optimisticManifest) {
+      [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
+    }
     return;
   }
   _confirmedManifest = [self _processManifest:launcher.launchedUpdate.rawManifest];
@@ -251,6 +252,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         delegateQueue:_appLoaderQueue];
   loaderTask.delegate = self;
   [loaderTask start];
+}
+
+- (void)_setOptimisticManifest:(NSDictionary *)manifest
+{
+  _optimisticManifest = manifest;
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+  }
 }
 
 - (void)_loadDevelopmentJavaScriptResource
