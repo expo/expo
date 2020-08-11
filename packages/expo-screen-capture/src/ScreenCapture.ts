@@ -58,7 +58,7 @@ export async function preventScreenCaptureAsync(key: string = 'default'): Promis
  * ```
  */
 export async function allowScreenCaptureAsync(key: string = 'default'): Promise<void> {
-  if (!ExpoScreenCapture.allowScreenCaptureAsync) {
+  if (!ExpoScreenCapture.allowScreenCapture) {
     throw new UnavailabilityError('ScreenCapture', 'allowScreenCaptureAsync');
   }
 

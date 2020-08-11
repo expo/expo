@@ -52,7 +52,7 @@ export async function preventScreenCaptureAsync(key = 'default') {
  * ```
  */
 export async function allowScreenCaptureAsync(key = 'default') {
-    if (!ExpoScreenCapture.allowScreenCaptureAsync) {
+    if (!ExpoScreenCapture.allowScreenCapture) {
         throw new UnavailabilityError('ScreenCapture', 'allowScreenCaptureAsync');
     }
     activeTags.delete(key);

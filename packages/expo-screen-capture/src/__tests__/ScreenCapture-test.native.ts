@@ -1,5 +1,6 @@
-import ExpoScreenCapture from '../ExpoScreenCapture';
 import * as ScreenCapture from '../ScreenCapture';
+
+const { default: ExpoScreenCapture } = require('../ExpoScreenCapture');
 
 describe('ScreenCapture methods are defined', () => {
   it('isAvailableAsync is defined', async () => {
@@ -24,7 +25,7 @@ describe('Test key functionality', () => {
     await cleanUpTags();
   });
 
-  it('resolves true for isAvailableAsync when API is available', async () => {
+  it('resolves true for isAvailableAsync on native platforms', async () => {
     await expect(ScreenCapture.isAvailableAsync()).resolves.toBeTruthy();
   });
 

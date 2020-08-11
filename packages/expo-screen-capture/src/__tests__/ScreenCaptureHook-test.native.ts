@@ -11,13 +11,14 @@ describe('hooks', () => {
 
   const preventScreenCaptureAsyncSpy = jest
     .spyOn(ExpoScreenCapture, 'preventScreenCapture')
-    .mockResolvedValue();
+    .mockResolvedValue(undefined);
+
   const allowScreenCaptureAsyncSpy = jest
     .spyOn(ExpoScreenCapture, 'allowScreenCapture')
-    .mockResolvedValue();
+    .mockResolvedValue(undefined);
 
   it('calls native methods once if mounted & unmounted', async () => {
-    const hook = renderHook(async () => ScreenCapture.usePreventScreenCapture());
+    const hook = renderHook(() => ScreenCapture.usePreventScreenCapture());
     hook.rerender();
     expect(preventScreenCaptureAsyncSpy).toHaveBeenCalledTimes(1);
 
@@ -26,7 +27,7 @@ describe('hooks', () => {
   });
 
   it('calls native methods once if mounted & unmounted', async () => {
-    const hook = renderHook(async () => ScreenCapture.usePreventScreenCapture());
+    const hook = renderHook(() => ScreenCapture.usePreventScreenCapture());
     hook.rerender();
     expect(preventScreenCaptureAsyncSpy).toHaveBeenCalledTimes(1);
 
@@ -35,7 +36,9 @@ describe('hooks', () => {
   });
 
   it('Re runs hook when tag changes', async () => {
-    const hook = renderHook(async ({ key }) => ScreenCapture.usePreventScreenCapture(key));
+    const hook = renderHook<{ key: string }, void>(({ key }) =>
+      ScreenCapture.usePreventScreenCapture(key)
+    );
     hook.rerender({ key: 'foo' });
     hook.rerender({ key: 'bar' });
 
@@ -48,8 +51,10 @@ describe('hooks', () => {
   });
 
   it('Unmounting one hook when two are active does not re-allow screen capturing', async () => {
-    const hook1 = renderHook(async () => ScreenCapture.usePreventScreenCapture());
-    const hook2 = renderHook(async ({ key }) => ScreenCapture.usePreventScreenCapture(key));
+    const hook1 = renderHook(() => ScreenCapture.usePreventScreenCapture());
+    const hook2 = renderHook<{ key: string }, void>(({ key }) =>
+      ScreenCapture.usePreventScreenCapture(key)
+    );
     hook1.rerender();
     hook2.rerender({ key: 'foo' });
     hook2.unmount();
