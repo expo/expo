@@ -64,5 +64,3 @@ class DevMenuGroup(private val groupName: String) : DevMenuItem() {
     putParcelableArray("items", items.map { it.serialize() }.toTypedArray())
   }
 }
-
-

@@ -95,7 +95,6 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       importance = DevMenuItemImportance.LOW.value
     }
 
-
     val result = mutableListOf(
       reloadAction,
       elementInspectorAction,
@@ -137,6 +136,4 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       }
     }
   }
-
-
 }
