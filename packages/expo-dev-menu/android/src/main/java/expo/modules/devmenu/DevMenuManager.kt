@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.extensions.items.DevMenuAction
@@ -73,6 +74,9 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
         add(ModuleRegistryAdapter(ReactModuleRegistryProvider(expoModules)))
       }
     devMenuHost.setPackages(packages)
+    UiThreadUtil.runOnUiThread {
+      devMenuHost.reactInstanceManager.createReactContextInBackground()
+    }
   }
 
   private fun handleLoadedDelegate(reactContext: ReactContext) {
