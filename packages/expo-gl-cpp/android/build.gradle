@@ -349,10 +349,6 @@ task cleanNdkLib(type: Exec) {
       "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
       "-C", file("src/main/jni").absolutePath,
       "clean")
-  doLast {
-    file(AAR_OUTPUT_URL).delete()
-    println("Deleted aar output dir at ${file(AAR_OUTPUT_URL)}")
-  }
 }
 
 task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {
