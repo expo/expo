@@ -38,10 +38,10 @@ export declare type ImagePickerResult = {
 } & ImageInfo);
 export declare type ImagePickerMultipleResult = {
     cancelled: true;
-} | ({
+} | {
     cancelled: false;
     selected: ImageInfo[];
-});
+};
 export declare type ImagePickerOptions = {
     allowsEditing?: boolean;
     aspect?: [number, number];
