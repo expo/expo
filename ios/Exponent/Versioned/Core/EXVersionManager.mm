@@ -312,12 +312,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     [extraModules addObject:homeModule];
   }
 
-  if (!isDeveloper) {
-    // user-facing (not debugging).
-    // additionally disable RCTRedBox
-    [extraModules addObject:[[EXDisabledRedBox alloc] init]];
-  }
-
   UMModuleRegistryProvider *moduleRegistryProvider = [[UMModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [EXScopedModuleRegistryDelegate class];
@@ -380,6 +374,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     if (![_params[@"isStandardDevMenuAllowed"] boolValue] || ![_params[@"isDeveloper"] boolValue]) {
       // non-kernel, or non-development kernel, uses expo menu instead of RCTDevMenu
       return EXDisabledDevMenu.class;
+    }
+  }
+  if (std::string(name) == "RedBox") {
+    if (![_params[@"isDeveloper"] boolValue]) {
+      // user-facing (not debugging).
+      // additionally disable RCTRedBox
+      return EXDisabledRedBox.class;
     }
   }
   return RCTCoreModulesClassProvider(name);
