@@ -16,8 +16,8 @@ class DevMenuModule(reactContext: ReactApplicationContext)
 
   @ReactMethod
   fun openMenu() {
-    reactApplicationContext.currentActivity?.let {
-      devMenuManger.openMenu(it)
+    reactApplicationContext.currentActivity?.run {
+      devMenuManger.openMenu(this)
     }
   }
 }

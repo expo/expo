@@ -12,6 +12,9 @@ import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
 
+/**
+ * Class that represents react host used by dev menu.
+ */
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
   private lateinit var reactPackages: List<ReactPackage>
 
@@ -21,7 +24,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
   override fun getPackages() = reactPackages.toMutableList()
 
-  override fun getUseDeveloperSupport() = false
+  override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
 
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 
@@ -32,6 +35,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
   override fun createReactInstanceManager(): ReactInstanceManager {
     val reactInstanceManager = super.createReactInstanceManager()
     if (useDeveloperSupport) {
+      // To use a different packager url, we need to replace internal RN objects.
       try {
         val serverIp = BufferedReader(
           InputStreamReader(super.getApplication().assets.open("dev-menu-packager-host"))

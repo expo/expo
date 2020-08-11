@@ -29,6 +29,7 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   private var delegate: DevMenuDelegateProtocol? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
+  private lateinit var cachedDevMenuItems: List<DevMenuItem>
 
   //region helpers
 
@@ -52,10 +53,16 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
       ?: emptyList()
 
   private val delegateMenuItems: List<DevMenuItem>
-    get() = delegateExtensions
-      .map { it.devMenuItems() ?: emptyList() }
-      .flatten()
-      .sortedByDescending { it.importance }
+    get() {
+      if (!this::cachedDevMenuItems.isInitialized) {
+        cachedDevMenuItems = delegateExtensions
+          .map { it.devMenuItems() ?: emptyList() }
+          .flatten()
+          .sortedByDescending { it.importance }
+      }
+
+      return cachedDevMenuItems
+    }
 
   private val delegateActions: List<DevMenuAction>
     get() = delegateMenuItems.filterIsInstance<DevMenuAction>()
@@ -79,10 +86,17 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
     }
   }
 
+  /**
+   * Get [DevMenuSettings] for current delegate and prepare for opening menu at launch if needed.
+   * We can't open dev menu here, cause then the app will crash - two react instance try to render.
+   * So, we wait until the [reactContext] activity will be ready
+   */
   private fun handleLoadedDelegate(reactContext: ReactContext) {
-    reactContext.addLifecycleEventListener(this)
     settings = reactContext.getNativeModule(DevMenuSettings::class.java).also {
       shouldLaunchDevMenuOnStart = it.showsAtLaunch
+      if (shouldLaunchDevMenuOnStart) {
+        reactContext.addLifecycleEventListener(this)
+      }
     }
   }
 
@@ -118,6 +132,8 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   //region delegate's LifecycleEventListener
 
   override fun onHostResume() {
+    delegateReactContext?.removeLifecycleEventListener(this)
+
     if (shouldLaunchDevMenuOnStart) {
       shouldLaunchDevMenuOnStart = false
       delegateActivity?.let {
@@ -140,6 +156,7 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   }
 
   override fun closeMenu() {
+    // Sends an event to JS triggering the animation that collapses the dev menu.
     hostReactContext
       ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       ?.emit("closeDevMenu", null)
@@ -158,6 +175,10 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   }
 
   override fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean {
+    if (settings?.keyCommandsEnabled != true) {
+      return false
+    }
+
     val keyCommand = KeyCommand(keyCode, event.modifiers)
     delegateActions.forEach {
       if (it.keyCommand == keyCommand) {

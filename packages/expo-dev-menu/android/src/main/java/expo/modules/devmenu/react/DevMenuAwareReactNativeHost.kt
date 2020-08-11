@@ -6,6 +6,9 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import expo.modules.devmenu.protocoles.DevMenuDelegateProtocol
 
+/**
+ * Basic [ReactNativeHost] which knows about expo-dev-menu and implements [DevMenuDelegateProtocol].
+ */
 abstract class DevMenuAwareReactNativeHost(application: Application)
   : ReactNativeHost(application), DevMenuDelegateProtocol {
   override fun appInfo(): Bundle? = null

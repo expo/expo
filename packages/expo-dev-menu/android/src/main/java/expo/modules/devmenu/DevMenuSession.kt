@@ -7,9 +7,15 @@ import android.os.Bundle
 import androidx.core.content.pm.PackageInfoCompat
 import com.facebook.react.ReactInstanceManager
 
+/**
+ * Class that represents a "session" as of the dev menu is open until it gets closed.
+ */
 class DevMenuSession(private val reactInstanceManager: ReactInstanceManager, initAppInfo: Bundle?) {
   val appInfo = initAppInfo ?: guessAppInfo()
 
+  /**
+   * Constructs app info `Bundle` based on the native app metadata such as `ApplicationContext`.
+   */
   private fun guessAppInfo() = Bundle().apply {
     val reactContext = reactInstanceManager.currentReactContext ?: return@apply
     val applicationContext = reactContext.applicationContext

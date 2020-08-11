@@ -7,6 +7,9 @@ val keyCharacterMap: KeyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRT
 
 data class KeyCommand(val code: Int, val modifiers: Int = 0)
 
+/**
+ * An abstract representation of the single dev menu item.
+ */
 sealed class DevMenuItem {
   var isAvailable = { true }
   var isEnabled = { false }
@@ -15,6 +18,11 @@ sealed class DevMenuItem {
   var glyphName = { "" }
   var importance = DevMenuItemImportance.MEDIUM.value
 
+  /**
+   * Represent how this item will be treated by the js.
+   *  1 - [DevMenuAction]
+   *  2 - [DevMenuGroup]
+   */
   abstract fun getExportedType(): Int
 
   open fun serialize() = Bundle().apply {

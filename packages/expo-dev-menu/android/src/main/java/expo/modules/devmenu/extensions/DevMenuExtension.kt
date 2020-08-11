@@ -35,6 +35,9 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       return emptyList()
     }
 
+    // RN will temporary disable `devSupport` if the current activity isn't active.
+    // Because of that we can't call some functions like `toggleElementInspector`.
+    // However, we can temporary set the `devSupport` flag to true and run needed methods.
     val runWithDevSupportEnabled = { action: () -> Unit ->
       val currentSetting = reactDevManager.devSupportEnabled
       reactDevManager.devSupportEnabled = true
@@ -80,8 +83,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
 
     val remoteDebugAction = DevMenuAction("remote-debug") {
       UiThreadUtil.runOnUiThread {
-        val isRemoteJsEnable = devSettings.isRemoteJSDebugEnabled
-        devSettings.isRemoteJSDebugEnabled = !isRemoteJsEnable
+        devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
         reactDevManager.handleReloadJS()
       }
     }.apply {
@@ -119,14 +121,14 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
 
   /**
    * Requests for the permission that allows the app to draw overlays on other apps.
-   * Such permission is required for example to enable performance monitor.
+   * Such permission is required to enable performance monitor.
    */
   private fun requestOverlaysPermission() {
     val context = currentActivity ?: return
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
       && !Settings.canDrawOverlays(context)) {
-      val uri = Uri.parse("package:" + context.packageName)
+      val uri = Uri.parse("package:" + context.applicationContext.packageName)
       val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
       }

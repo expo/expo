@@ -6,6 +6,10 @@ import com.facebook.react.ReactActivity
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.DevMenuManager
 
+/**
+ * Basic [ReactActivity] which know about expo-dev-menu.
+ * It can detect a long press and dispatch key events.
+ */
 abstract class DevMenuAwareReactActivity : ReactActivity() {
   private val longPressListener: () -> Unit = {
     DevMenuManager.getSettings()?.let {

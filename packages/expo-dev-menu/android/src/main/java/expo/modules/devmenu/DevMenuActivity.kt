@@ -8,6 +8,11 @@ import com.facebook.react.ReactNativeHost
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
 import java.util.*
 
+/**
+ * The dev menu is launched using this activity.
+ * [DevMenuActivity] is transparent and doesn't have any in/out animations.
+ * So, we can display dev menu as a modal.
+ */
 class DevMenuActivity : ReactActivity() {
   override fun getMainComponentName() = "main"
 
