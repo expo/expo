@@ -30,7 +30,7 @@
 
 @end
 
-@interface ABI38_0_0RCTWebSocketModule () <ABI38_0_0RCTSRWebSocketDelegate, NativeWebSocketModuleSpec>
+@interface ABI38_0_0RCTWebSocketModule () <ABI38_0_0RCTSRWebSocketDelegate, ABI38_0_0NativeWebSocketModuleSpec>
 
 @end
 
