@@ -2,8 +2,10 @@
   package="expo.modules.devmenu">
 
   <application>
-    <activity android:name=".DevMenuActivity" android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" >
-    </activity>
+    <activity
+      android:name=".DevMenuActivity"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" />
   </application>
 </manifest>
 

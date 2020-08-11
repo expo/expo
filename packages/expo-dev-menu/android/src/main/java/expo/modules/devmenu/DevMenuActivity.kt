@@ -32,6 +32,11 @@ class DevMenuActivity : ReactActivity() {
   }
 
   override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    if (keyCode == KeyEvent.KEYCODE_MENU) {
+      DevMenuManager.closeMenu()
+      return true
+    }
+
     if (DevMenuManager.onKeyEvent(keyCode, event)) {
       DevMenuManager.closeMenu()
       return true
