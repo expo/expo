@@ -24,6 +24,7 @@
 ### 🐛 Bug fixes
 
 - Fixed downsizing cropped image, when `allowsEditing` was `true`. ([#9316](https://github.com/expo/expo/pull/9316) by [@barthap](https://github.com/barthap))
+- Return array of `ImagePickerResult` when `allowsMultipleSelection` is set to `true` on Web. ([#9402](https://github.com/expo/expo/pull/9402) by [@isthaison](https://github.com/isthaison)) 
 
 ## 8.3.0 — 2020-05-29
 
