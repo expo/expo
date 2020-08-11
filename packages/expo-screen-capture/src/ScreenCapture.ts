@@ -1,3 +1,4 @@
+import { UnavailabilityError } from '@unimodules/core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';
@@ -31,6 +32,10 @@ export async function isAvailableAsync(): Promise<boolean> {
  * ```
  */
 export async function preventScreenCaptureAsync(key: string = 'default'): Promise<void> {
+  if (!ExpoScreenCapture.preventScreenCapture) {
+    throw new UnavailabilityError('ScreenCapture', 'preventScreenCaptureAsync');
+  }
+
   if (!activeTags.has(key)) {
     activeTags.add(key);
     await ExpoScreenCapture.preventScreenCapture();
@@ -53,6 +58,10 @@ export async function preventScreenCaptureAsync(key: string = 'default'): Promis
  * ```
  */
 export async function allowScreenCaptureAsync(key: string = 'default'): Promise<void> {
+  if (!ExpoScreenCapture.allowScreenCaptureAsync) {
+    throw new UnavailabilityError('ScreenCapture', 'allowScreenCaptureAsync');
+  }
+
   activeTags.delete(key);
   if (activeTags.size === 0) {
     await ExpoScreenCapture.allowScreenCapture();
