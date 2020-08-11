@@ -207,6 +207,9 @@ public abstract class ExpoUpdatesAppLoader {
       // automatically verified
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
+    if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false);
+    }
 
     String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
 
@@ -220,8 +223,8 @@ public abstract class ExpoUpdatesAppLoader {
 
   private boolean isThirdPartyHosted(Uri uri) {
     String host = uri.getHost();
-    return host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
-      host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test");
+    return !(host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
+      host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"));
   }
 
   private boolean isDevelopmentMode(JSONObject manifest) {
