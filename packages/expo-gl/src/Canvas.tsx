@@ -68,10 +68,12 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
       },
     } = event;
 
-    setSize({ width, height });
+    if (width !== size?.width || height !== size.height) {
+      setSize({ width, height });
 
-    if (props.onLayout) {
-      props.onLayout(event);
+      if (props.onLayout) {
+        props.onLayout(event);
+      }
     }
   }
 

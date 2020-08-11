@@ -51,9 +51,11 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
     }
     function onLayout(event) {
         const { nativeEvent: { layout: { width, height }, }, } = event;
-        setSize({ width, height });
-        if (props.onLayout) {
-            props.onLayout(event);
+        if (width !== size?.width || height !== size.height) {
+            setSize({ width, height });
+            if (props.onLayout) {
+                props.onLayout(event);
+            }
         }
     }
     React.useEffect(() => {
