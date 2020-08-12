@@ -63,14 +63,16 @@ function outputResult(results: { manifest: string; permissions: string[] }[]): v
     return;
   }
 
-  const manifestLinks = results.map(
-    result => `- <code>${danger.github.utils.fileLinks([result.manifest], false)}</code>`
+  const info = results.map(
+    result =>
+      `<code>${danger.github.utils.fileLinks([result.manifest], false)}</code>
+${result.permissions.map(permission => `\\- \`${permission}\``).join('\n')}`
   );
 
   warn(
-    `**Android manifests with new permissions**
+    `**Manifests with new permissions**
 ------
-${manifestLinks.join('\n')}
+${info.join('<br /><br />')}
 `
   );
 

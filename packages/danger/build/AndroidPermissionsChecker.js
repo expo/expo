@@ -51,10 +51,11 @@ function outputResult(results) {
     if (results.length === 0) {
         return;
     }
-    const manifestLinks = results.map(result => `- <code>${danger.github.utils.fileLinks([result.manifest], false)}</code>`);
-    warn(`**Android manifests with new permissions**
+    const info = results.map(result => `<code>${danger.github.utils.fileLinks([result.manifest], false)}</code>
+${result.permissions.map(permission => `\\- \`${permission}\``).join('\n')}`);
+    warn(`**Manifests with new permissions**
 ------
-${manifestLinks.join('\n')}
+${info.join('<br /><br />')}
 `);
     markdown(`### ⚠️  Android permissions added
 Please make sure these permissions are absolutely required for the core functionality of the modules. All permissions added in the Android Manifests are included, by default, in the standalone builds.
