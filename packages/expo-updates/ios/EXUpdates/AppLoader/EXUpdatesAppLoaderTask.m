@@ -109,7 +109,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
       }
 
       if (shouldCheckForUpdate) {
-        if (self->_delegate &&
+        if (success && self->_delegate &&
             ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
           return;
         }
@@ -133,7 +133,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      if (self->_isReadyToLaunch && self->_launcher.launchAssetUrl) {
+      if (self->_isReadyToLaunch && (self->_launcher.launchAssetUrl || self->_launcher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
         [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher];
       } else {
         [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
@@ -203,6 +203,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
         [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
       });
     }
+
     return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate];
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
