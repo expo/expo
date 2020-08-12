@@ -10,6 +10,7 @@ import android.util.Log;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.WritableMap;
 
@@ -35,6 +36,10 @@ import java.util.Map;
 public class UpdatesController {
 
   private static final String TAG = UpdatesController.class.getSimpleName();
+
+  private static final String UPDATE_AVAILABLE_EVENT = "updateAvailable";
+  private static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
+  private static final String UPDATE_ERROR_EVENT = "error";
 
   private static UpdatesController sInstance;
 
@@ -247,8 +252,24 @@ public class UpdatesController {
       }
 
       @Override
-      public void onEvent(String eventName, WritableMap params) {
-        UpdatesUtils.sendEventToReactNative(mReactNativeHost, eventName, params);
+      public void onBackgroundUpdateFinished(LoaderTask.BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception) {
+        if (status == LoaderTask.BackgroundUpdateStatus.ERROR) {
+          if (exception == null) {
+            throw new AssertionError("Background update with error status must have a nonnull exception object");
+          }
+          WritableMap params = Arguments.createMap();
+          params.putString("message", exception.getMessage());
+          UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_ERROR_EVENT, params);
+        } else if (status == LoaderTask.BackgroundUpdateStatus.UPDATE_AVAILABLE) {
+          if (update == null) {
+            throw new AssertionError("Background update with error status must have a nonnull update object");
+          }
+          WritableMap params = Arguments.createMap();
+          params.putString("manifestString", update.metadata.toString());
+          UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_AVAILABLE_EVENT, params);
+        } else if (status == LoaderTask.BackgroundUpdateStatus.NO_UPDATE_AVAILABLE) {
+          UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);
+        }
       }
     }).start(context);
   }

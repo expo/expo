@@ -8,9 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
-static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
-static NSString * const EXUpdatesErrorEventName = @"error";
 static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
 
 @interface EXUpdatesAppLoaderTask ()
@@ -241,27 +238,25 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
           }
         }];
       } else {
-        [self _sendEventWithType:EXUpdatesUpdateAvailableEventName
-                            body:@{@"manifest": update.rawManifest}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:update error:nil];
       }
     } else {
       // there's no update, so signal we're ready to launch
       [self _finishWithError:nil];
       if (error) {
-        [self _sendEventWithType:EXUpdatesErrorEventName
-                            body:@{@"message": error.localizedDescription}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusError manifest:nil error:error];
       } else {
-        [self _sendEventWithType:EXUpdatesNoUpdateAvailableEventName body:@{}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusNoUpdateAvailable manifest:nil error:nil];
       }
     }
   });
 }
 
-- (void)_sendEventWithType:(NSString *)type body:(NSDictionary *)body
+- (void)_didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status manifest:(nullable EXUpdatesUpdate *)manifest error:(nullable NSError *)error
 {
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      [self->_delegate appLoaderTask:self didFireEventWithType:type body:body];
+      [self->_delegate appLoaderTask:self didFinishBackgroundUpdateWithStatus:status update:manifest error:error];
     });
   }
 }

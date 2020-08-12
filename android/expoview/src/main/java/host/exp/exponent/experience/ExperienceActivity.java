@@ -41,6 +41,7 @@ import expo.modules.splashscreen.SplashScreen;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentIntentService;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
