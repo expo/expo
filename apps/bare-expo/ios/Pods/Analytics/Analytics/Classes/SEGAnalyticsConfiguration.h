@@ -7,29 +7,48 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#elif TARGET_OS_OSX
+#import <Cocoa/Cocoa.h>
+#endif
+
+NS_SWIFT_NAME(ApplicationProtocol)
 @protocol SEGApplicationProtocol <NSObject>
+
+#if TARGET_OS_IPHONE
 @property (nullable, nonatomic, assign) id<UIApplicationDelegate> delegate;
-- (UIBackgroundTaskIdentifier)seg_beginBackgroundTaskWithName:(nullable NSString *)taskName expirationHandler:(void (^__nullable)(void))handler;
-- (void)seg_endBackgroundTask:(UIBackgroundTaskIdentifier)identifier;
+- (NSUInteger)seg_beginBackgroundTaskWithName:(nullable NSString *)taskName expirationHandler:(void (^__nullable)(void))handler;
+- (void)seg_endBackgroundTask:(NSUInteger)identifier;
+#elif TARGET_OS_OSX
+@property (nullable, nonatomic, assign) id<NSApplicationDelegate> delegate;
+#endif
 @end
 
-
+#if TARGET_OS_IOS
 @interface UIApplication (SEGApplicationProtocol) <SEGApplicationProtocol>
 @end
+#elif TARGET_OS_OSX
+@interface NSApplication (SEGApplicationProtocol) <SEGApplicationProtocol>
+@end
+#endif
+
 
 typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
+typedef NSString *_Nonnull (^SEGAdSupportBlock)(void);
 
 @protocol SEGIntegrationFactory;
 @protocol SEGCrypto;
 @protocol SEGMiddleware;
 
 @class SEGAnalyticsExperimental;
+@class SEGDestinationMiddleware;
 
 /**
  * This object provides a set of properties to control various policies of the analytics client. Other than `writeKey`, these properties can be changed at any time.
  */
+NS_SWIFT_NAME(AnalyticsConfiguration)
 @interface SEGAnalyticsConfiguration : NSObject
 
 /**
@@ -135,9 +154,20 @@ typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
 @property (nonatomic, strong, nullable) NSDictionary *defaultSettings;
 
 /**
- * Set custom middlewares. Will be run before all integrations
+ * Set custom middlewares. Will be run before all integrations.
+ *  This property is deprecated in favor of the `sourceMiddleware` property.
  */
-@property (nonatomic, strong, nullable) NSArray<id<SEGMiddleware>> *middlewares;
+@property (nonatomic, strong, nullable) NSArray<id<SEGMiddleware>> *middlewares DEPRECATED_MSG_ATTRIBUTE("Use .sourceMiddleware instead.");
+
+/**
+ * Set custom source middleware. Will be run before all integrations
+ */
+@property (nonatomic, strong, nullable) NSArray<id<SEGMiddleware>> *sourceMiddleware;
+
+/**
+ * Set custom destination middleware. Will be run before the associated integration for a destination.
+ */
+@property (nonatomic, strong, nullable) NSArray<SEGDestinationMiddleware *> *destinationMiddleware;
 
 /**
  * Register a factory that can be used to create an integration.
@@ -181,13 +211,29 @@ typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
 @property (nonatomic, strong, nullable) id<NSURLSessionDelegate> httpSessionDelegate;
 
 /**
+ * Sets a block to be called when IDFA / AdSupport identifier is created.
+ * This is to allow for apps that do not want ad tracking to pass App Store guidelines in certain categories while
+ * still allowing apps that do ad tracking to continue to function.
+ *
+ * Example:
+ *      configuration.adSupportBlock = ^{
+ *          return [[ASIdentifierManager sharedManager] advertisingIdentifier];
+ *      }
+ */
+@property (nonatomic, strong, nullable) SEGAdSupportBlock adSupportBlock;
+
+/**
  Enable experimental features within the Segment Analytics-iOS library.
  */
 @property (nonatomic, readonly, nonnull) SEGAnalyticsExperimental *experimental;
 
 @end
 
+#pragma mark - Experimental
 
+typedef  NSDictionary * _Nonnull (^SEGRawModificationBlock)( NSDictionary * _Nonnull rawPayload);
+
+NS_SWIFT_NAME(AnalyticsExperimental)
 @interface SEGAnalyticsExperimental : NSObject
 /**
  Experimental support for nanosecond timestamps.  While the segment pipeline doesn't support this yet
@@ -199,4 +245,12 @@ typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
  received.
  */
 @property (nonatomic, assign) BOOL nanosecondTimestamps;
+/**
+ Experimental support for transformation of raw dictionaries prior to being sent to segment.
+ This should generally NOT be used, but is a current stop-gap measure for some customers who need to filter
+ payload data prior to being received by segment.com.  This property will go away in future versions when context
+ object data is made available earlier in the event pipeline.
+ */
+@property (nonatomic, strong, nullable) SEGRawModificationBlock rawSegmentModificationBlock;
+
 @end

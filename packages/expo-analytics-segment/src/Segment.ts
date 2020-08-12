@@ -3,12 +3,14 @@ import { Platform } from 'react-native';
 
 import ExponentSegment from './ExponentSegment';
 
-export type SegmentOptions = {
+export type InitializeOptions = {
   androidWriteKey?: string;
   iosWriteKey?: string;
 };
 
-export function initialize(options: SegmentOptions): void {
+export type CommonOptions = { [key: string]: any } | null;
+
+export function initialize(options: InitializeOptions): void {
   if (!ExponentSegment.initialize) {
     throw new UnavailabilityError('expo-analytics-segment', 'initialize');
   }
@@ -30,11 +32,15 @@ export function identify(userId: string): void {
   ExponentSegment.identify(userId);
 }
 
-export function identifyWithTraits(userId: string, traits: { [key: string]: any }): void {
+export function identifyWithTraits(
+  userId: string,
+  traits: { [key: string]: any },
+  options: CommonOptions = null
+): void {
   if (!ExponentSegment.identifyWithTraits) {
     throw new UnavailabilityError('expo-analytics-segment', 'identifyWithTraits');
   }
-  ExponentSegment.identifyWithTraits(userId, traits);
+  ExponentSegment.identifyWithTraits(userId, traits, options);
 }
 
 export function group(groupId: string): void {
@@ -44,14 +50,18 @@ export function group(groupId: string): void {
   ExponentSegment.group(groupId);
 }
 
-export function groupWithTraits(groupId: string, traits: { [key: string]: any }): void {
+export function groupWithTraits(
+  groupId: string,
+  traits: { [key: string]: any },
+  options: CommonOptions = null
+): void {
   if (!ExponentSegment.groupWithTraits) {
     throw new UnavailabilityError('expo-analytics-segment', 'groupWithTraits');
   }
-  ExponentSegment.groupWithTraits(groupId, traits);
+  ExponentSegment.groupWithTraits(groupId, traits, options);
 }
 
-export async function alias(newId: string, options?: { [key: string]: any }): Promise<boolean> {
+export async function alias(newId: string, options: CommonOptions = null): Promise<boolean> {
   if (!ExponentSegment.alias) {
     throw new UnavailabilityError('expo-analytics-segment', 'alias');
   }
@@ -72,11 +82,15 @@ export function track(event: string): void {
   ExponentSegment.track(event);
 }
 
-export function trackWithProperties(event: string, properties: { [key: string]: any }): void {
+export function trackWithProperties(
+  event: string,
+  properties: { [key: string]: any },
+  options: CommonOptions = null
+): void {
   if (!ExponentSegment.trackWithProperties) {
     throw new UnavailabilityError('expo-analytics-segment', 'trackWithProperties');
   }
-  ExponentSegment.trackWithProperties(event, properties);
+  ExponentSegment.trackWithProperties(event, properties, options);
 }
 
 export function screen(screenName: string): void {
@@ -86,11 +100,15 @@ export function screen(screenName: string): void {
   ExponentSegment.screen(screenName);
 }
 
-export function screenWithProperties(event: string, properties: { [key: string]: any }): void {
+export function screenWithProperties(
+  event: string,
+  properties: { [key: string]: any },
+  options: CommonOptions = null
+): void {
   if (!ExponentSegment.screenWithProperties) {
     throw new UnavailabilityError('expo-analytics-segment', 'screenWithProperties');
   }
-  ExponentSegment.screenWithProperties(event, properties);
+  ExponentSegment.screenWithProperties(event, properties, options);
 }
 
 export function flush(): void {

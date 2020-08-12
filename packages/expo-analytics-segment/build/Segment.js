@@ -22,11 +22,11 @@ export function identify(userId) {
     }
     ExponentSegment.identify(userId);
 }
-export function identifyWithTraits(userId, traits) {
+export function identifyWithTraits(userId, traits, options = null) {
     if (!ExponentSegment.identifyWithTraits) {
         throw new UnavailabilityError('expo-analytics-segment', 'identifyWithTraits');
     }
-    ExponentSegment.identifyWithTraits(userId, traits);
+    ExponentSegment.identifyWithTraits(userId, traits, options);
 }
 export function group(groupId) {
     if (!ExponentSegment.group) {
@@ -34,13 +34,13 @@ export function group(groupId) {
     }
     ExponentSegment.group(groupId);
 }
-export function groupWithTraits(groupId, traits) {
+export function groupWithTraits(groupId, traits, options = null) {
     if (!ExponentSegment.groupWithTraits) {
         throw new UnavailabilityError('expo-analytics-segment', 'groupWithTraits');
     }
-    ExponentSegment.groupWithTraits(groupId, traits);
+    ExponentSegment.groupWithTraits(groupId, traits, options);
 }
-export async function alias(newId, options) {
+export async function alias(newId, options = null) {
     if (!ExponentSegment.alias) {
         throw new UnavailabilityError('expo-analytics-segment', 'alias');
     }
@@ -58,11 +58,11 @@ export function track(event) {
     }
     ExponentSegment.track(event);
 }
-export function trackWithProperties(event, properties) {
+export function trackWithProperties(event, properties, options = null) {
     if (!ExponentSegment.trackWithProperties) {
         throw new UnavailabilityError('expo-analytics-segment', 'trackWithProperties');
     }
-    ExponentSegment.trackWithProperties(event, properties);
+    ExponentSegment.trackWithProperties(event, properties, options);
 }
 export function screen(screenName) {
     if (!ExponentSegment.screen) {
@@ -70,11 +70,11 @@ export function screen(screenName) {
     }
     ExponentSegment.screen(screenName);
 }
-export function screenWithProperties(event, properties) {
+export function screenWithProperties(event, properties, options = null) {
     if (!ExponentSegment.screenWithProperties) {
         throw new UnavailabilityError('expo-analytics-segment', 'screenWithProperties');
     }
-    ExponentSegment.screenWithProperties(event, properties);
+    ExponentSegment.screenWithProperties(event, properties, options);
 }
 export function flush() {
     if (!ExponentSegment.flush) {

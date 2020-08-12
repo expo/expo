@@ -41,12 +41,13 @@ Associates the current user with a user ID. Call this after calling [`Segment.in
 
 - **userId (_string_)** – User ID for the current user.
 
-### `Segment.identifyWithTraits(userId, traits)`
+### `Segment.identifyWithTraits(userId, traits, options?)`
 
 #### Arguments
 
 - **userId (_string_)** – User ID for the current user.
 - **traits (_object_)** – A map of custom properties.
+- **options (_object_)** – _(optional)_ map that can include any of [these common fields](https://segment.com/docs/connections/spec/common/). Defaults to `null`.
 
 ### `Segment.reset()`
 
@@ -60,7 +61,7 @@ Log an event to Segment. See <https://segment.com/docs/spec/track/>.
 
 - **event (_string_)** – The event name.
 
-### `Segment.trackWithProperties(event, properties)`
+### `Segment.trackWithProperties(event, properties, options?)`
 
 Log an event to Segment with custom properties. See <https://segment.com/docs/spec/track/>.
 
@@ -68,6 +69,7 @@ Log an event to Segment with custom properties. See <https://segment.com/docs/sp
 
 - **event (_string_)** – The event name.
 - **properties (_object_)** – A map of custom properties.
+- **options (_object_)** – _(optional)_ map that can include any of [these common fields](https://segment.com/docs/connections/spec/common/). Defaults to `null`.
 
 ### `Segment.group(groupId)`
 
@@ -77,7 +79,7 @@ Associate the user with a group. See <https://segment.com/docs/spec/group/>.
 
 - **groupId (_string_)** – ID of the group.
 
-### `Segment.groupWithTraits(groupId, traits)`
+### `Segment.groupWithTraits(groupId, traits, options?)`
 
 Associate the user with a group with traits. See <https://segment.com/docs/spec/group/>.
 
@@ -85,15 +87,29 @@ Associate the user with a group with traits. See <https://segment.com/docs/spec/
 
 - **groupId (_string_)** – ID of the group.
 - **traits (_object_)** – free-form dictionary of traits of the group.
+- **options (_object_)** – _(optional)_ map that can include any of [these common fields](https://segment.com/docs/connections/spec/common/). Defaults to `null`.
 
-### `Segment.alias(newId, [options])`
+### `Segment.alias(newId, options?)`
 
 Associate current identity with a new identifier. See <https://segment.com/docs/spec/alias/>.
 
 #### Arguments
 
 - **newId (_string_)** – Identifier to associate with.
-- **options (_object_)** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
+- **options (_object_)** – _(optional)_ extra dictionary with options for the call, [see here](https://segment.com/docs/connections/spec/common/) for possible configuration options. An example `options` object would be:
+
+```js
+{
+  "integrations": {
+    "Sentry": {
+      "enabled": true
+    }
+  },
+  "context": {
+    "ip": "0.0.0.0"
+  }
+}
+```
 
 #### Returns
 
@@ -107,12 +123,13 @@ Record that a user has seen a screen to Segment. See <https://segment.com/docs/s
 
 - **screenName (_string_)** – Name of the screen.
 
-### `Segment.screenWithProperties(screenName, properties)`
+### `Segment.screenWithProperties(screenName, properties, options?)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
 - **screenName (_string_)** – Name of the screen.
 - **properties (_object_)** – A map of custom properties.
+- **options (_object_)** – _(optional)_ map that can include any of [these common fields](https://segment.com/docs/connections/spec/common/). Defaults to `null`.
 
 ### `Segment.flush()`
 
