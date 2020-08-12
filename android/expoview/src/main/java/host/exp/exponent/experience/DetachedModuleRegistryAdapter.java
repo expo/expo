@@ -18,6 +18,7 @@ import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
+import versioned.host.exp.exponent.modules.universal.UpdatesBinding;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   public DetachedModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
@@ -32,6 +33,9 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
+
+    // Overriding expo-updates UpdatesService
+    moduleRegistry.registerInternalModule(new UpdatesBinding(scopedContext, experienceProperties));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();

@@ -63,6 +63,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-permissions ScopedPermissionsService
     moduleRegistry.registerInternalModule(new ScopedPermissionsService(scopedContext, experienceId));
 
+    // Overriding expo-updates UpdatesService
+    moduleRegistry.registerInternalModule(new UpdatesBinding(scopedContext, experienceProperties));
+
     // Overriding expo-facebook
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
 

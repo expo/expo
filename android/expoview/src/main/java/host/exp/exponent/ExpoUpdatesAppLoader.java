@@ -53,18 +53,36 @@ public abstract class ExpoUpdatesAppLoader {
   private String mManifestUrl;
   private final boolean mUseCacheOnly;
 
-  private Context mContext;
+  private UpdatesConfiguration mUpdatesConfiguration;
+  private File mUpdatesDirectory;
+  private SelectionPolicy mSelectionPolicy;
+  private Launcher mLauncher;
 
   public ExpoUpdatesAppLoader(String manifestUrl) {
-    this(manifestUrl, false, null);
+    this(manifestUrl, false);
   }
 
-  public ExpoUpdatesAppLoader(String manifestUrl, boolean useCacheOnly, Context context) {
+  public ExpoUpdatesAppLoader(String manifestUrl, boolean useCacheOnly) {
     NativeModuleDepsProvider.getInstance().inject(ExpoUpdatesAppLoader.class, this);
 
     mManifestUrl = manifestUrl;
     mUseCacheOnly = useCacheOnly;
-    mContext = context;
+  }
+
+  public UpdatesConfiguration getUpdatesConfiguration() {
+    return mUpdatesConfiguration;
+  }
+
+  public File getUpdatesDirectory() {
+    return mUpdatesDirectory;
+  }
+
+  public SelectionPolicy getSelectionPolicy() {
+    return mSelectionPolicy;
+  }
+
+  public Launcher getLauncher() {
+    return mLauncher;
   }
 
   public abstract void onOptimisticManifest(JSONObject optimisticManifest);
@@ -79,7 +97,7 @@ public abstract class ExpoUpdatesAppLoader {
 
   public abstract void onError(String e);
 
-  public void start() {
+  public void start(Context context) {
     Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
 
     HashMap<String, Object> configMap = new HashMap<>();
@@ -107,16 +125,20 @@ public abstract class ExpoUpdatesAppLoader {
 
     File directory;
     try {
-      directory = UpdatesUtils.getOrCreateUpdatesDirectory(mContext);
+      directory = UpdatesUtils.getOrCreateUpdatesDirectory(context);
     } catch (Exception e) {
       onError(e);
       return;
     }
 
-    startLoaderTask(configuration, directory, selectionPolicy);
+    startLoaderTask(configuration, directory, selectionPolicy, context);
   }
 
-  private void startLoaderTask(final UpdatesConfiguration configuration, final File directory, final SelectionPolicy selectionPolicy) {
+  private void startLoaderTask(final UpdatesConfiguration configuration, final File directory, final SelectionPolicy selectionPolicy, final Context context) {
+    mUpdatesConfiguration = configuration;
+    mUpdatesDirectory = directory;
+    mSelectionPolicy = selectionPolicy;
+
     new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
@@ -146,7 +168,7 @@ public abstract class ExpoUpdatesAppLoader {
           configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "ALWAYS");
           configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 10000);
           configuration.loadValuesFromMap(configMap);
-          startLoaderTask(configuration, directory, selectionPolicy);
+          startLoaderTask(configuration, directory, selectionPolicy, context);
           return false;
         }
         return true;
@@ -159,6 +181,7 @@ public abstract class ExpoUpdatesAppLoader {
 
       @Override
       public void onSuccess(Launcher launcher) {
+        mLauncher = launcher;
         try {
           JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
           onManifestCompleted(manifest);
@@ -187,7 +210,7 @@ public abstract class ExpoUpdatesAppLoader {
           Log.e(TAG, "Failed to emit event to JS", e);
         }
       }
-    }).start(mContext);
+    }).start(context);
   }
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {

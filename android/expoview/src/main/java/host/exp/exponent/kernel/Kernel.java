@@ -49,6 +49,7 @@ import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
 import host.exp.exponent.AppLoader;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.experience.ErrorActivity;
@@ -143,6 +144,7 @@ public class Kernel extends KernelInterface {
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private static final Map<String, KernelConstants.ExperienceOptions> mManifestUrlToOptions = new HashMap<>();
+  private static final Map<String, ExpoUpdatesAppLoader> mManifestUrlToAppLoader = new HashMap<>();
 
   @Inject
   ExponentNetwork mExponentNetwork;
@@ -373,6 +375,14 @@ public class Kernel extends KernelInterface {
 
   public KernelConstants.ExperienceOptions popOptionsForManifestUrl(String manifestUrl) {
     return mManifestUrlToOptions.remove(manifestUrl);
+  }
+
+  public void addAppLoaderForManifestUrl(String manifestUrl, ExpoUpdatesAppLoader appLoader) {
+    mManifestUrlToAppLoader.put(manifestUrl, appLoader);
+  }
+
+  public ExpoUpdatesAppLoader getAppLoaderForManifestUrl(String manifestUrl) {
+    return mManifestUrlToAppLoader.get(manifestUrl);
   }
 
   public ExperienceActivityTask getExperienceActivityTask(String manifestUrl) {
