@@ -13,6 +13,15 @@ const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScree
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
 const QRCode = optionalRequire(() => require('../screens/QRCodeScreen'));
+
+const Switch = optionalRequire(() => require('../screens/SwitchScreen'));
+const Slider = optionalRequire(() => require('../screens/SliderScreen'));
+const Pressable = optionalRequire(() => require('../screens/PressableScreen'));
+const Picker = optionalRequire(() => require('../screens/PickerScreen'));
+const CheckBox = optionalRequire(() => require('../screens/CheckBoxScreen'));
+const Button = optionalRequire(() => require('../screens/ButtonScreen'));
+const ActivityIndicator = optionalRequire(() => require('../screens/ActivityIndicatorScreen'));
+
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
 const GestureHandlerList = optionalRequire(() => require('../screens/GestureHandlerListScreen'));
 const GestureHandlerPinch = optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
@@ -56,6 +65,13 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
+  Switch,
+  Slider,
+  Pressable,
+  Picker,
+  CheckBox,
+  Button,
+  ActivityIndicator,
   QRCode,
   DateTimePicker,
   GL,

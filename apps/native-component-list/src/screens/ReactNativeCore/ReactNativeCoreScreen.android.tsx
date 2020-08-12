@@ -17,17 +17,10 @@ import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler
 
 import { Colors, Layout } from '../../constants';
 import ModalExample from '../ModalExample';
-import { ActivityIndicatorExample } from './ActivityIndicator';
 import { AlertExample } from './Alert';
-import { ButtonExample } from './Button';
-import { CheckBoxExample } from './CheckBox';
 import { ClipboardExample } from './Clipboard';
-import { PickerExample } from './Picker';
-import { PressableExample } from './Pressable';
 import { ProgressBarAndroidExample } from './ProgressBarAndroid';
-import { SliderExample } from './Slider';
 import { StatusBarExample } from './StatusBar';
-import { SwitchExample } from './Switch';
 import { TouchableBounceExample } from './TouchableBounce';
 
 interface State {
@@ -46,17 +39,10 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     super(props);
 
     this.sections = [
-      { title: 'CheckBox', data: [() => <CheckBoxExample />] },
-      { title: 'Switch', data: [() => <SwitchExample />] },
-      { title: 'Button', data: [() => <ButtonExample />] },
-      { title: 'ActivityIndicator', data: [() => <ActivityIndicatorExample />] },
-      { title: 'Slider', data: [() => <SliderExample />] },
-      { title: 'Picker', data: [() => <PickerExample />] },
       { title: 'StatusBar', data: [() => <StatusBarExample />] },
       { title: 'Alert', data: [() => <AlertExample />] },
       { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
       { title: 'ProgressBarAndroid', data: [() => <ProgressBarAndroidExample />] },
-      { title: 'Pressable', data: [() => <PressableExample />] },
       { title: 'Clipboard', data: [() => <ClipboardExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
       { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },

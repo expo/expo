@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Button } from 'react-native';
 
-import Colors from '../../constants/Colors';
-import { Page, Section } from './CommonViews';
+import Colors from '../constants/Colors';
+import { Page, Section } from './ReactNativeCore/CommonViews';
 
-export function ButtonExample() {
+export default function ButtonScreen() {
   return (
     <Page>
       <Section title="Default">
@@ -19,3 +19,7 @@ export function ButtonExample() {
     </Page>
   );
 }
+
+ButtonScreen.navigationOptions = {
+  title: 'Button',
+};

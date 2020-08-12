@@ -19,17 +19,10 @@ import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
 import ModalExample from '../ModalExample';
-import { ActivityIndicatorExample } from './ActivityIndicator';
 import { AlertExample } from './Alert';
-import { ButtonExample } from './Button';
-import { CheckBoxExample } from './CheckBox';
 import { ClipboardExample } from './Clipboard';
-import { PickerExample } from './Picker';
-import { PressableExample } from './Pressable';
 import { ProgressViewIOSExample } from './ProgressViewIOS';
-import { SliderExample } from './Slider';
 import { StatusBarExample } from './StatusBar';
-import { SwitchExample } from './Switch';
 import { TouchableBounceExample } from './TouchableBounce';
 
 export default class ReactNativeCoreScreen extends React.Component<{}> {
@@ -45,18 +38,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
     super(props);
 
     this.sections = [
-      { title: 'Switch', data: [() => <SwitchExample />] },
-      { title: 'Button', data: [() => <ButtonExample />] },
-      { title: 'ActivityIndicator', data: [() => <ActivityIndicatorExample />] },
-      { title: 'Slider', data: [() => <SliderExample />] },
-      { title: 'Picker', data: [() => <PickerExample />] },
       { title: 'StatusBar', data: [() => <StatusBarExample />] },
       { title: 'Alert', data: [() => <AlertExample />] },
       { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
       { title: 'ProgressViewIOS', data: [() => <ProgressViewIOSExample />] },
-      { title: 'Pressable', data: [() => <PressableExample />] },
       { title: 'Clipboard', data: [() => <ClipboardExample />] },
-      { title: 'CheckBox', data: [() => <CheckBoxExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
       { title: 'ActionSheetIOS', data: [this._renderActionSheet] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
