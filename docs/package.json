@@ -3,7 +3,7 @@
   "version": "38.0.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "rimraf node_modules/.cache && node server.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "export": "yarn run build && next export",
     "export-server": "http-server out -p 8000",
@@ -51,6 +51,7 @@
     "jest": "26.1.0",
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0",
+    "rimraf": "^3.0.2",
     "semver": "^7.3.2"
   }
 }
