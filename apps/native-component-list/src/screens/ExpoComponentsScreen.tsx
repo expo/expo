@@ -8,6 +8,7 @@ const screens = [
   'AdMob',
   'Modal',
   'Text',
+  'ScrollView',
   'TextInput',
   'Touchables',
   'BarCodeScanner',

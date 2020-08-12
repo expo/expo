@@ -7,6 +7,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 }
 
 const AdMob = optionalRequire(() => require('../screens/AdMobScreen'));
+const ScrollView = optionalRequire(() => require('../screens/ScrollViewScreen'));
 
 const BarCodeScanner = optionalRequire(() => require('../screens/BarCodeScannerScreen'));
 const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScreen'));
@@ -71,6 +72,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
   BarCodeScanner,
   Modal,
+  ScrollView,
   MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
