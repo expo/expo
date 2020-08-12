@@ -291,6 +291,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
       },
     ],
+    warnings: [
+      `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(
+        'ReactAndroid'
+      )}. Please ensure that ${chalk.magenta(
+        'resourceName'
+      )}s used for grabbing style of dialogs are being resolved properly.`,
+    ],
   },
   '@react-native-community/masked-view': {
     repoUrl: 'https://github.com/react-native-community/react-native-masked-view',
