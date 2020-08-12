@@ -41,7 +41,7 @@ const sections = [
   },
   {
     name: 'Get Started',
-    reference: ['Installation', 'Create a new app'],
+    reference: ['Installation', 'Create a new app', 'Errors and debugging'],
   },
   {
     name: 'Conceptual Overview',
@@ -64,7 +64,6 @@ const sections = [
       'Sharing the image',
       'Handling platform differences',
       'Configuring a splash screen and app icon',
-      'Errors and debugging',
       'Learning more',
     ],
   },

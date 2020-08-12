@@ -286,6 +286,9 @@ const RENAMED_PAGES = {
   // Move overview to index
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 
+  // Errors and debugging is better suited for getting started than tutorial
+  '/tutorial/errors/': '/get-started/errors/',
+
   // Additional redirects based on Sentry (04/28/2020)
   '/next-steps/installation/': '/get-started/installation/',
   '/guides/release-channels/': '/distribution/release-channels/',
