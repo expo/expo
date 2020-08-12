@@ -7,10 +7,6 @@ import {
   SectionList,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableHighlight,
-  TouchableNativeFeedback,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler';
@@ -36,9 +32,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
       { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
-      { title: 'Text', data: [this._renderText] },
-      { title: 'TextInput', data: [this._renderTextInput] },
-      { title: 'Touchables', data: [this._renderTouchables] },
     ];
   }
 
@@ -148,113 +141,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
       </ScrollView>
     );
   };
-
-  _renderText = () => {
-    const linkStyle = { color: Colors.tintColor, marginVertical: 3 };
-
-    return (
-      <View style={{ padding: 10 }}>
-        <Text>
-          All text in React Native on Android uses the native text component and supports a bunch of
-          useful properties.
-        </Text>
-        <Text style={linkStyle} onPress={() => alert('pressed!')}>
-          Press on this!
-        </Text>
-        <Text numberOfLines={1} ellipsizeMode="tail">
-          It's easy to limit the number of lines that some text can span and ellipsize it
-        </Text>
-      </View>
-    );
-  };
-
-  _renderTextInput = () => {
-    return <TextInputExample />;
-  };
-
-  _renderTouchables = () => {
-    const buttonStyle = {
-      paddingHorizontal: 20,
-      paddingVertical: 15,
-      marginRight: 10,
-      backgroundColor: Colors.tintColor,
-      borderRadius: 5,
-    };
-
-    const buttonText = {
-      color: '#fff',
-    };
-
-    return (
-      <View style={{ flex: 1 }}>
-        <View style={{ padding: 10, flexDirection: 'row', flex: 1 }}>
-          <TouchableHighlight
-            underlayColor="rgba(1, 1, 255, 0.9)"
-            style={buttonStyle}
-            onPress={() => {}}>
-            <Text style={buttonText}>Highlight!</Text>
-          </TouchableHighlight>
-
-          <TouchableOpacity style={buttonStyle} onPress={() => {}}>
-            <Text style={buttonText}>Opacity!</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ padding: 10, flexDirection: 'row', flex: 1 }}>
-          <TouchableNativeFeedback
-            background={TouchableNativeFeedback.Ripple('#fff', false)}
-            onPress={() => {}}
-            delayPressIn={0}>
-            <View style={buttonStyle}>
-              <Text style={buttonText}>Native feedback!</Text>
-            </View>
-          </TouchableNativeFeedback>
-        </View>
-      </View>
-    );
-  };
-}
-
-class TextInputExample extends React.Component {
-  state = {
-    singleLineValue: '',
-    secureTextValue: '',
-  };
-
-  render() {
-    const textInputStyle = {
-      width: Layout.window.width - 20,
-      borderRadius: 2,
-      borderWidth: 1,
-      borderColor: '#eee',
-      fontSize: 15,
-      padding: 5,
-      height: 40,
-    };
-
-    const updateSingleLineValue = (value: string) => this.setState({ singleLineValue: value });
-    const updateSecureTextValue = (value: string) => this.setState({ secureTextValue: value });
-
-    return (
-      <View style={{ padding: 10 }}>
-        <TextInput
-          placeholder="A single line text input"
-          onChangeText={updateSingleLineValue}
-          style={[{ marginBottom: 10 }, textInputStyle]}
-          value={this.state.singleLineValue}
-        />
-
-        <TextInput
-          placeholder="A secure text field"
-          keyboardAppearance="dark"
-          value={this.state.secureTextValue}
-          onChangeText={updateSecureTextValue}
-          secureTextEntry
-          style={textInputStyle}
-        />
-      </View>
-    );
-  }
 }
 
 const styles = StyleSheet.create({

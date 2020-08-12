@@ -19,6 +19,9 @@ const ProgressViewIOS = optionalRequire(() => require('../screens/ProgressViewIO
 const ProgressBarAndroid = optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
 const TouchableBounce = optionalRequire(() => require('../screens/TouchableBounceScreen'));
 
+const Text = optionalRequire(() => require('../screens/TextScreen'));
+const TextInput = optionalRequire(() => require('../screens/TextInputScreen'));
+const Touchables = optionalRequire(() => require('../screens/TouchablesScreen'));
 const Switch = optionalRequire(() => require('../screens/SwitchScreen'));
 const Slider = optionalRequire(() => require('../screens/SliderScreen'));
 const Pressable = optionalRequire(() => require('../screens/PressableScreen'));
@@ -71,6 +74,9 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
+  Text,
+  TextInput,
+  Touchables,
   ProgressViewIOS,
   ProgressBarAndroid,
   TouchableBounce,
