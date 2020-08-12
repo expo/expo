@@ -354,9 +354,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Analytics.sendTimedEvents(mManifestUrl);
   }
 
-  public void onEvent(BaseExperienceActivity.ExperienceContentLoaded event) {
-    super.onEvent(event);
-    mLoadingProgressPopupController.hide();
+  public void onEvent(ExperienceDoneLoadingEvent event) {
+    if (event.getActivity() == this) {
+      mLoadingProgressPopupController.hide();
+    }
   }
 
   /*
