@@ -1,6 +1,6 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { PixelRatio, StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 function getElement(component) {
@@ -29,6 +29,7 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
     const _canvasRef = React.useRef(null);
     function updateCanvasSize() {
         const canvas = _canvasRef.current;
+        // eslint-disable-next-line no-undef
         if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
             const size = getSize();
             const scale = PixelRatio.get();
