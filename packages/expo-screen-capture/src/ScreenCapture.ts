@@ -7,6 +7,8 @@ const activeTags: Set<string> = new Set();
 
 /**
  * Returns whether the Screen Capture API is enabled on the current device.
+ *
+ * @returns Async `boolean`, indicating whether the Screen Capture API is available on the current device. Currently this resolves `true` on iOS and Android only.
  */
 export async function isAvailableAsync(): Promise<boolean> {
   return !!ExpoScreenCapture.preventScreenCapture && !!ExpoScreenCapture.allowScreenCapture;

@@ -94,7 +94,7 @@ Returns whether the Screen Capture API is enabled on the current device.
 
 #### Returns
 
-A `Promise` resolving to either `true` or `false`.
+Async `boolean`, indicating whether the Screen Capture API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
 ### `usePreventScreenCapture(key?: String)`
 
