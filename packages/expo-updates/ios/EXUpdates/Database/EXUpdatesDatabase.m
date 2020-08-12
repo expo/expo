@@ -13,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
-static NSString * const kEXUpdatesDatabaseFilename = @"expo-v3.db";
+static NSString * const EXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
+static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
 
 @implementation EXUpdatesDatabase
 
@@ -31,7 +31,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v3.db";
 - (BOOL)openDatabaseInDirectory:(NSURL *)directory withError:(NSError ** _Nullable)error
 {
   sqlite3 *db;
-  NSURL *dbUrl = [directory URLByAppendingPathComponent:kEXUpdatesDatabaseFilename];
+  NSURL *dbUrl = [directory URLByAppendingPathComponent:EXUpdatesDatabaseFilename];
   BOOL shouldInitializeDatabase = ![[NSFileManager defaultManager] fileExistsAtPath:[dbUrl path]];
   int resultCode = sqlite3_open([[dbUrl path] UTF8String], &db);
   if (resultCode != SQLITE_OK) {
@@ -39,7 +39,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v3.db";
     sqlite3_close(db);
 
     if (resultCode == SQLITE_CORRUPT || resultCode == SQLITE_NOTADB) {
-      NSString *archivedDbFilename = [NSString stringWithFormat:@"%f-%@", [[NSDate date] timeIntervalSince1970], kEXUpdatesDatabaseFilename];
+      NSString *archivedDbFilename = [NSString stringWithFormat:@"%f-%@", [[NSDate date] timeIntervalSince1970], EXUpdatesDatabaseFilename];
       NSURL *destinationUrl = [directory URLByAppendingPathComponent:archivedDbFilename];
       NSError *err;
       if ([[NSFileManager defaultManager] moveItemAtURL:dbUrl toURL:destinationUrl error:&err]) {
@@ -54,7 +54,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v3.db";
       } else {
         NSString *description = [NSString stringWithFormat:@"Could not move existing corrupt database: %@", [err localizedDescription]];
         if (error != nil) {
-          *error = [NSError errorWithDomain:kEXUpdatesDatabaseErrorDomain
+          *error = [NSError errorWithDomain:EXUpdatesDatabaseErrorDomain
                                        code:1004
                                    userInfo:@{ NSLocalizedDescriptionKey: description, NSUnderlyingErrorKey: err }];
         }
@@ -570,7 +570,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v3.db";
   int code = sqlite3_errcode(db);
   int extendedCode = sqlite3_extended_errcode(db);
   NSString *message = [NSString stringWithUTF8String:sqlite3_errmsg(db)];
-  return [NSError errorWithDomain:kEXUpdatesDatabaseErrorDomain
+  return [NSError errorWithDomain:EXUpdatesDatabaseErrorDomain
                               code:extendedCode
                           userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Error code %i: %@ (extended error code %i)", code, message, extendedCode]}];
 }
