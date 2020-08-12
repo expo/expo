@@ -44,6 +44,7 @@
 		317306082242459A006D1BC0 /* RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 317306072242459A006D1BC0 /* RNCNetInfo.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */; };
 		318102BA20C15E460061726F /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74121FF6DADB001C764B /* EXLinkingManager.m */; };
+		3181E8FC24E44C85000A37A3 /* RNCAsyncStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3181E8FA24E44C85000A37A3 /* RNCAsyncStorage.m */; };
 		319C949F22F80DE100063194 /* EXScopedBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 319C949E22F80DE100063194 /* EXScopedBranch.m */; };
 		31AD99DC2285B51100F19090 /* AIRGoogleMapPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99AC2285B50D00F19090 /* AIRGoogleMapPolygon.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		31AD99DD2285B51100F19090 /* AIRGoogleMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99AD2285B50D00F19090 /* AIRGoogleMapOverlayManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -459,6 +460,9 @@
 		317306072242459A006D1BC0 /* RNCNetInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCNetInfo.m; sourceTree = "<group>"; };
 		3179683420B5B95B00243B6B /* EXScopedModuleRegistryAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedModuleRegistryAdapter.h; sourceTree = "<group>"; };
 		3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedModuleRegistryAdapter.m; sourceTree = "<group>"; };
+		3181E8F924E44C85000A37A3 /* RNCAsyncStorageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCAsyncStorageDelegate.h; sourceTree = "<group>"; };
+		3181E8FA24E44C85000A37A3 /* RNCAsyncStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCAsyncStorage.m; sourceTree = "<group>"; };
+		3181E8FB24E44C85000A37A3 /* RNCAsyncStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCAsyncStorage.h; sourceTree = "<group>"; };
 		319C949D22F80DE100063194 /* EXScopedBranch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedBranch.h; sourceTree = "<group>"; };
 		319C949E22F80DE100063194 /* EXScopedBranch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedBranch.m; sourceTree = "<group>"; };
 		31AD99AA2285B50C00F19090 /* AIRGoogleMapCircleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapCircleManager.h; sourceTree = "<group>"; };
@@ -1211,6 +1215,16 @@
 				0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */,
 			);
 			path = NetInfo;
+			sourceTree = "<group>";
+		};
+		3181E8F824E44C85000A37A3 /* AsyncStorage */ = {
+			isa = PBXGroup;
+			children = (
+				3181E8F924E44C85000A37A3 /* RNCAsyncStorageDelegate.h */,
+				3181E8FA24E44C85000A37A3 /* RNCAsyncStorage.m */,
+				3181E8FB24E44C85000A37A3 /* RNCAsyncStorage.h */,
+			);
+			path = AsyncStorage;
 			sourceTree = "<group>";
 		};
 		31AD9A232285B53000F19090 /* Callout */ = {
@@ -2126,6 +2140,7 @@
 		B5FB72711FF6DADB001C764B /* Api */ = {
 			isa = PBXGroup;
 			children = (
+				3181E8F824E44C85000A37A3 /* AsyncStorage */,
 				BBB83C522479C3B50004FF8E /* SafeAreaContext */,
 				31F25C9123717B08009AD55F /* ViewShot */,
 				BBE6036F2310CD8900971F79 /* Appearance */,
@@ -2807,6 +2822,7 @@
 				7043DF852283303800272D74 /* RNSVGTextManager.m in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
 				F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */,
+				3181E8FC24E44C85000A37A3 /* RNCAsyncStorage.m in Sources */,
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				314410DC223BF73B00310599 /* RNCWKProcessPoolManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
