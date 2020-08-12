@@ -10,6 +10,7 @@
 #import "EXRemoteNotificationManager.h"
 #import "EXScreenOrientationManager.h"
 #import "EXSensorManager.h"
+#import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXUserNotificationCenter.h"
@@ -25,6 +26,7 @@
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
+@property (nonatomic, strong) EXUpdatesDatabaseManager *updatesDatabaseManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
 @property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
@@ -45,6 +47,7 @@
     [self homeModuleManager];
     [self screenOrientationManager];
     [self sensorManager];
+    [self updatesDatabaseManager];
     [self updatesManager];
     [self notificationsManager];
     [self notificationCenter];
@@ -106,6 +109,14 @@
     _sensorManager = [[EXSensorManager alloc] init];
   }
   return _sensorManager;
+}
+
+- (EXUpdatesDatabaseManager *)updatesDatabaseManager
+{
+  if (!_updatesDatabaseManager) {
+    _updatesDatabaseManager = [[EXUpdatesDatabaseManager alloc] init];
+  }
+  return _updatesDatabaseManager;
 }
 
 - (EXUpdatesManager *)updatesManager

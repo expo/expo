@@ -126,6 +126,12 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       self->_completion = nil;
     });
     return;
+  } else if (_launchedUpdate.status == EXUpdatesUpdateStatusDevelopment) {
+    dispatch_async(self->_completionQueue, ^{
+      self->_completion(nil, YES);
+      self->_completion = nil;
+    });
+    return;
   }
 
   _assetFilesMap = [NSMutableDictionary new];

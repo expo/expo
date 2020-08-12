@@ -78,6 +78,7 @@ public class ExponentManifest {
   public static final String MANIFEST_PRIMARY_COLOR_KEY = "primaryColor";
   public static final String MANIFEST_ORIENTATION_KEY = "orientation";
   public static final String MANIFEST_DEVELOPER_KEY = "developer";
+  public static final String MANIFEST_DEVELOPER_TOOL_KEY = "tool";
   public static final String MANIFEST_PACKAGER_OPTS_KEY = "packagerOpts";
   public static final String MANIFEST_PACKAGER_OPTS_DEV_KEY = "dev";
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";

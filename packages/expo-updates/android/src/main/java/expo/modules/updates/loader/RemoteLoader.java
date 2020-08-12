@@ -118,6 +118,16 @@ public class RemoteLoader {
   // private helper methods
 
   private void processManifest(Manifest manifest) {
+    if (manifest.isDevelopmentMode()) {
+      // insert into database but don't try to load any assets;
+      // the RN runtime will take care of that and we don't want to cache anything
+      UpdateEntity updateEntity = manifest.getUpdateEntity();
+      mDatabase.updateDao().insertUpdate(updateEntity);
+      mDatabase.updateDao().markUpdateFinished(updateEntity);
+      finishWithSuccess();
+      return;
+    }
+
     UpdateEntity newUpdateEntity = manifest.getUpdateEntity();
     UpdateEntity existingUpdateEntity = mDatabase.updateDao().loadUpdateWithId(newUpdateEntity.id);
     if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {

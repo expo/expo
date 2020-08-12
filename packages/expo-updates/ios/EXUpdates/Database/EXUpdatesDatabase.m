@@ -273,7 +273,9 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v3.db";
 
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  update.status = EXUpdatesUpdateStatusReady;
+  if (update.status != EXUpdatesUpdateStatusDevelopment) {
+    update.status = EXUpdatesUpdateStatusReady;
+  }
   NSString * const updateSql = @"UPDATE updates SET status = ?1, keep = 1 WHERE id = ?2;";
   [self _executeSql:updateSql
            withArgs:@[
@@ -371,7 +373,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v3.db";
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
   WHERE scope_key = ?1\
-  AND status IN (%li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded];
+  AND status IN (%li, %li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded, (long)EXUpdatesUpdateStatusDevelopment];
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
   if (!rows) {
