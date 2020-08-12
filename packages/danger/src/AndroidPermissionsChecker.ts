@@ -68,21 +68,22 @@ function outputResult(results: { manifest: string; permissions: string[] }[]): v
   );
 
   warn(
-    `⚠️ **Android permissions added**
+    `**Android manifests with new permissions**
 ------
-Added permissions found in:
 ${manifestLinks.join('\n')}
 `
   );
 
   markdown(
-    `### ⚠️ Android permissions added
+    `### ⚠️  Android permissions added
 Please make sure these permissions are absolutely required for the core functionality of the modules. All permissions added in the Android Manifests are included, by default, in the standalone builds.
 
 <details>
   <summary>What can I do?</summary>
-  1. Reconsider if the permission is required, and remove it from the \`AndroidManifest.xml\`.
-  2. Add the permission to the [XDL blacklist](https://github.com/expo/expo-cli/blob/d75089b2e9f11b36f936967313d847fcc45f4e76/packages/xdl/src/detach/AndroidShellApp.js#L780) to allow users to opt-out of the permissions, by excluding it from the \`android.permissions\` manifest property.
+
+  - Reconsider if the permission is required, and remove it from the \`AndroidManifest.xml\`.
+  - Add the permission to the [XDL blacklist](https://github.com/expo/expo-cli/blob/d75089b2e9f11b36f936967313d847fcc45f4e76/packages/xdl/src/detach/AndroidShellApp.js#L780) to allow users to opt-out of the permissions, by excluding it from the \`android.permissions\` manifest property.
+
 </details>
 `.trim()
   );
