@@ -8,6 +8,11 @@
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif
+
+// TODO (iOS 14): Update this to use UTType instead of string identifiers
 static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 {
   CFStringRef uti;
@@ -70,7 +75,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _resolve = resolve;
   _reject = reject;
   
-  NSString *type = options[@"type"] ?: @"*/*";
+  NSString *type = EXConvertMimeTypeToUTI(options[@"type"] ?: @"*/*");
   
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
@@ -82,11 +87,12 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
 
     @try {
       if(@available(iOS 14, *)) {
-        
-        //documentPickerVC = [[UIDocumentPickerViewController alloc] initFor];
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+        UTType *utType = [UTType typeWithIdentifier:type];
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[utType] asCopy:YES];
+#endif
       } else {
-        NSString* utiType = EXConvertMimeTypeToUTI(type);
-        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[utiType]
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
                                                                                   inMode:UIDocumentPickerModeImport];
       }
     }
