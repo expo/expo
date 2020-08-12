@@ -8,7 +8,7 @@
 
 - The `options` argument for `Segment.alias` now accepts context configuration as well as integration configuration. Previously, this expected just the `integrations` configuration. ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)). The expected format now is:
 
-```json
+```js
 {
     integrations: {
         [integrationName]: {
