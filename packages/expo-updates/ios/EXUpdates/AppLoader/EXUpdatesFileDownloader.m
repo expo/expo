@@ -6,8 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const kEXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
-NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
+NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
+NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 
 @interface EXUpdatesFileDownloader () <NSURLSessionDataDelegate>
 
@@ -63,7 +63,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
     if ([data writeToFile:destinationPath options:NSDataWritingAtomic error:&error]) {
       successBlock(data, response);
     } else {
-      errorBlock([NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:1002
                                  userInfo:@{
                                    NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Could not write to path %@: %@", destinationPath, error.localizedDescription],
@@ -82,7 +82,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                                     timeoutInterval:kEXUpdatesDefaultTimeoutInterval];
+                                                     timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
@@ -108,7 +108,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                                                                                                          database:database];
                                                     successBlock(update);
                                                   } else {
-                                                    NSError *error = [NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
+                                                    NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
                                                     errorBlock(error, response);
                                                   }
                                                 }
@@ -132,7 +132,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   // pass any custom cache policy onto this specific request
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
 
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:kEXUpdatesDefaultTimeoutInterval];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setHTTPHeaderFields:request];
 
   [self _downloadDataWithRequest:request successBlock:successBlock errorBlock:errorBlock];
@@ -234,7 +234,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   NSDictionary *userInfo = @{
                              NSLocalizedDescriptionKey: body,
                              };
-  return [NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:response.statusCode userInfo:userInfo];
+  return [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:response.statusCode userInfo:userInfo];
 }
 
 @end

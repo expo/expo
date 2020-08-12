@@ -8,10 +8,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesExpoAssetBaseUrl = @"https://d1wp6m56sqw74a.cloudfront.net/~assets/";
-static NSString * const kEXUpdatesExpoIoDomain = @"expo.io";
-static NSString * const kEXUpdatesExpHostDomain = @"exp.host";
-static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
+static NSString * const EXUpdatesExpoAssetBaseUrl = @"https://d1wp6m56sqw74a.cloudfront.net/~assets/";
+static NSString * const EXUpdatesExpoIoDomain = @"expo.io";
+static NSString * const EXUpdatesExpHostDomain = @"exp.host";
+static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
 @implementation EXUpdatesLegacyUpdate
 
@@ -68,10 +68,10 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
   NSString *bundleKey = [NSString stringWithFormat:@"bundle-%f", update.commitTime.timeIntervalSince1970];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesEmbeddedBundleFileType];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
-  jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
+  jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
   
   NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
@@ -118,10 +118,10 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   NSURL *manifestUrl = config.updateUrl;
   NSString *host = manifestUrl.host;
   if (!host ||
-      [host containsString:kEXUpdatesExpoIoDomain] ||
-      [host containsString:kEXUpdatesExpHostDomain] ||
-      [host containsString:kEXUpdatesExpoTestDomain]) {
-    return [NSURL URLWithString:kEXUpdatesExpoAssetBaseUrl];
+      [host containsString:EXUpdatesExpoIoDomain] ||
+      [host containsString:EXUpdatesExpHostDomain] ||
+      [host containsString:EXUpdatesExpoTestDomain]) {
+    return [NSURL URLWithString:EXUpdatesExpoAssetBaseUrl];
   } else {
     NSString *assetsPath = manifest[@"assetUrlOverride"] ?: @"assets";
     return [manifestUrl.URLByDeletingLastPathComponent URLByAppendingPathComponent:assetsPath];

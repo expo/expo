@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
+static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 @implementation EXUpdatesAppLoader
 
@@ -294,7 +294,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
     dispatch_async(self->_completionQueue, ^{
       if (errorBlock) {
-        errorBlock([NSError errorWithDomain:kEXUpdatesAppLoaderErrorDomain
+        errorBlock([NSError errorWithDomain:EXUpdatesAppLoaderErrorDomain
                                        code:1012
                                    userInfo:@{NSLocalizedDescriptionKey: @"Failed to load all assets"}]);
       } else if (successBlock) {
