@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Debug;
+import android.os.Looper;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -49,13 +50,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 @Singleton
 public class ExponentManifest {
 
   public interface ManifestListener {
     void onCompleted(JSONObject manifest);
+
     void onError(Exception e);
+
     void onError(String e);
   }
 
@@ -225,9 +229,9 @@ public class ExponentManifest {
 
     // Fetch manifest
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(
-        httpManifestUrl,
-        manifestUrl.equals(Constants.INITIAL_URL),
-        mExponentSharedPreferences.getSessionSecret()
+      httpManifestUrl,
+      manifestUrl.equals(Constants.INITIAL_URL),
+      mExponentSharedPreferences.getSessionSecret()
     );
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
@@ -288,9 +292,9 @@ public class ExponentManifest {
 
     // Fetch manifest
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(
-        httpManifestUrl,
-        manifestUrl.equals(Constants.INITIAL_URL),
-        mExponentSharedPreferences.getSessionSecret()
+      httpManifestUrl,
+      manifestUrl.equals(Constants.INITIAL_URL),
+      mExponentSharedPreferences.getSessionSecret()
     );
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
@@ -338,9 +342,9 @@ public class ExponentManifest {
     String httpManifestUrl = httpManifestUrlBuilder(manifestUrl).build().toString();
 
     Request.Builder requestBuilder = ExponentUrls.addExponentHeadersToManifestUrl(
-        httpManifestUrl,
-        manifestUrl.equals(Constants.INITIAL_URL),
-        mExponentSharedPreferences.getSessionSecret()
+      httpManifestUrl,
+      manifestUrl.equals(Constants.INITIAL_URL),
+      mExponentSharedPreferences.getSessionSecret()
     );
     requestBuilder.header("Exponent-Accept-Signature", "true");
     requestBuilder.header("Expo-JSON-Error", "true");
@@ -425,27 +429,27 @@ public class ExponentManifest {
   }
 
   private JSONObject extractManifest(final String manifestString) throws IOException {
-      try {
-          return new JSONObject(manifestString);
-      } catch (JSONException e) {
-        // Ignore this error, try to parse manifest as array
-      }
+    try {
+      return new JSONObject(manifestString);
+    } catch (JSONException e) {
+      // Ignore this error, try to parse manifest as array
+    }
 
-      try {
-        // the manifestString could be an array of manifest objects
-        // in this case, we choose the first compatible manifest in the array
-        JSONArray manifestArray = new JSONArray(manifestString);
-        for (int i = 0; i < manifestArray.length(); i++) {
-          JSONObject manifestCandidate = manifestArray.getJSONObject(i);
-          String sdkVersion = manifestCandidate.getString(MANIFEST_SDK_VERSION_KEY);
-          if (Constants.SDK_VERSIONS_LIST.contains(sdkVersion)){
-            return manifestCandidate;
-          }
+    try {
+      // the manifestString could be an array of manifest objects
+      // in this case, we choose the first compatible manifest in the array
+      JSONArray manifestArray = new JSONArray(manifestString);
+      for (int i = 0; i < manifestArray.length(); i++) {
+        JSONObject manifestCandidate = manifestArray.getJSONObject(i);
+        String sdkVersion = manifestCandidate.getString(MANIFEST_SDK_VERSION_KEY);
+        if (Constants.SDK_VERSIONS_LIST.contains(sdkVersion)) {
+          return manifestCandidate;
         }
-      } catch (JSONException e){
-        throw new IOException("Manifest string is not a valid JSONObject or JSONArray: " + manifestString, e);
       }
-      throw new IOException("No compatible manifest found. SDK Versions supported: " + Constants.SDK_VERSIONS + " Provided manifestString: " + manifestString);
+    } catch (JSONException e) {
+      throw new IOException("Manifest string is not a valid JSONObject or JSONArray: " + manifestString, e);
+    }
+    throw new IOException("No compatible manifest found. SDK Versions supported: " + Constants.SDK_VERSIONS + " Provided manifestString: " + manifestString);
   }
 
   private void fetchManifestStep2(final String manifestUrl, final String httpManifestUrl, final String manifestString, final ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException, URISyntaxException, IOException {
@@ -501,35 +505,35 @@ public class ExponentManifest {
       } else {
         final JSONObject finalManifest = manifest;
         mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
-            outerManifest.getString(MANIFEST_STRING_KEY), outerManifest.getString(MANIFEST_SIGNATURE_KEY), new Crypto.RSASignatureListener() {
-              @Override
-              public void onError(String errorMessage, boolean isNetworkError) {
-                if (isOffline && isNetworkError) {
-                  // automatically validate if offline and don't have public key
-                  // TODO: we need to evict manifest from the cache if it doesn't pass validation when online
-                  fetchManifestStep3(manifestUrl, finalManifest, true, listener);
-                } else {
-                  Log.w(TAG, errorMessage);
-                  fetchManifestStep3(manifestUrl, finalManifest, false, listener);
-                }
+          outerManifest.getString(MANIFEST_STRING_KEY), outerManifest.getString(MANIFEST_SIGNATURE_KEY), new Crypto.RSASignatureListener() {
+            @Override
+            public void onError(String errorMessage, boolean isNetworkError) {
+              if (isOffline && isNetworkError) {
+                // automatically validate if offline and don't have public key
+                // TODO: we need to evict manifest from the cache if it doesn't pass validation when online
+                fetchManifestStep3(manifestUrl, finalManifest, true, listener);
+              } else {
+                Log.w(TAG, errorMessage);
+                fetchManifestStep3(manifestUrl, finalManifest, false, listener);
               }
+            }
 
-              @Override
-              public void onCompleted(boolean isValid) {
-                fetchManifestStep3(manifestUrl, finalManifest, isValid, listener);
-              }
-            });
+            @Override
+            public void onCompleted(boolean isValid) {
+              fetchManifestStep3(manifestUrl, finalManifest, isValid, listener);
+            }
+          });
       }
     } else {
       // if we're using a cached manifest that's stored without the signature, we can assume
       // we've already verified it previously
       if (isCached || isUsingEmbeddedManifest || isMainShellAppExperience) {
         fetchManifestStep3(manifestUrl, manifest, true, listener);
-      } else if (isThirdPartyHosted(parsedManifestUrl)){
+      } else if (isThirdPartyHosted(parsedManifestUrl)) {
         // Sandbox third party apps and consider them verified
         // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
         // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
-        if (!Constants.isStandaloneApp()){
+        if (!Constants.isStandaloneApp()) {
           String protocol = parsedManifestUrl.getScheme();
           String securityPrefix = protocol.equals("https") || protocol.equals("exps") ? "" : "UNVERIFIED-";
           String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
@@ -557,9 +561,9 @@ public class ExponentManifest {
   }
 
   private boolean isThirdPartyHosted(final URI uri) {
-    String host= uri.getHost();
+    String host = uri.getHost();
     boolean isExpoHost = host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
-        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test");
+      host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test");
     return !isExpoHost;
   }
 
@@ -608,6 +612,22 @@ public class ExponentManifest {
     Bitmap icon = getIconFromCache(iconUrl);
     if (icon != null) {
       return icon;
+    }
+    boolean isMainThread = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M ?
+      Looper.getMainLooper().isCurrentThread() : Looper.myLooper() == Looper.getMainLooper();
+    if (isMainThread) {
+      // We can't make an HTTP request on the main thread. So, we can spawn a worker and wait.
+      try {
+        return new AsyncTask<Void, Void, Bitmap>() {
+          @Override
+          protected Bitmap doInBackground(Void... params) {
+            return loadIconTask(iconUrl);
+          }
+        }.get();
+      } catch (ExecutionException | InterruptedException e) {
+        e.printStackTrace();
+        return null;
+      }
     }
 
     return loadIconTask(iconUrl);
@@ -749,10 +769,10 @@ public class ExponentManifest {
   public static boolean isDebugModeEnabled(final JSONObject manifest) {
     try {
       return (manifest != null &&
-          manifest.has(ExponentManifest.MANIFEST_DEVELOPER_KEY) &&
-          manifest.has(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY) &&
-          manifest.getJSONObject(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY)
-              .optBoolean(ExponentManifest.MANIFEST_PACKAGER_OPTS_DEV_KEY, false));
+        manifest.has(ExponentManifest.MANIFEST_DEVELOPER_KEY) &&
+        manifest.has(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY) &&
+        manifest.getJSONObject(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY)
+          .optBoolean(ExponentManifest.MANIFEST_PACKAGER_OPTS_DEV_KEY, false));
     } catch (JSONException e) {
       return false;
     }
