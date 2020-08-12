@@ -346,17 +346,15 @@ final class MediaLibraryUtils {
 
   static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
-    final String countColumn = "COUNT(*)";
-    final String[] projection = {Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME, countColumn};
-    final String selectionWithGroupBy = selection + ") GROUP BY (" + Media.BUCKET_ID;
-    final String group = Media.BUCKET_DISPLAY_NAME;
+    final String[] projection = {Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME};
+    final String order = Media.BUCKET_DISPLAY_NAME;
 
     try (Cursor albums = context.getContentResolver().query(
       EXTERNAL_CONTENT,
       projection,
-      selectionWithGroupBy,
+      selection,
       selectionArgs,
-      group)) {
+      order)) {
 
       if (albums == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.");
@@ -368,15 +366,16 @@ final class MediaLibraryUtils {
       }
       final int bucketIdIndex = albums.getColumnIndex(Media.BUCKET_ID);
       final int bucketDisplayNameIndex = albums.getColumnIndex(Media.BUCKET_DISPLAY_NAME);
-      final int numOfItemsIndex = albums.getColumnIndex(countColumn);
 
       result.putString("id", albums.getString(bucketIdIndex));
       result.putString("title", albums.getString(bucketDisplayNameIndex));
-      result.putInt("assetCount", albums.getInt(numOfItemsIndex));
+      result.putInt("assetCount", albums.getCount());
       promise.resolve(result);
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
+    } catch (IllegalArgumentException e) {
+      promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album.", e);
     }
   }
 
@@ -397,8 +396,8 @@ final class MediaLibraryUtils {
           if (file.delete()) {
             context.getContentResolver().delete(
               EXTERNAL_CONTENT,
-              Media.DATA + " = \"" + filePath + "\"",
-              null);
+              Media.DATA + "=?",
+              new String[]{filePath});
           } else {
             promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
             return;
@@ -409,6 +408,9 @@ final class MediaLibraryUtils {
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_SAVE_PERMISSION,
         "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.", e);
     }
   }
 
