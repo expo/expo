@@ -626,7 +626,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void emitUpdatesEvent(JSONObject params) {
-    KernelProvider.getInstance().addEventForExperience(mManifestUrl, new KernelConstants.ExperienceEvent(AppLoader.UPDATES_EVENT_NAME, params.toString()));
+    String eventName = ABIVersion.toNumber("39.0.0") >= ABIVersion.toNumber(mSDKVersion)
+      ? ExpoUpdatesAppLoader.UPDATES_EVENT_NAME
+      : AppLoader.UPDATES_EVENT_NAME;
+    KernelProvider.getInstance().addEventForExperience(mManifestUrl, new KernelConstants.ExperienceEvent(eventName, params.toString()));
   }
 
   @Override

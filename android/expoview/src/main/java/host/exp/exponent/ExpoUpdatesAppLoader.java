@@ -53,6 +53,8 @@ public class ExpoUpdatesAppLoader {
 
   private static final String TAG = ExpoUpdatesAppLoader.class.getSimpleName();
 
+  public static final String UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent";
+
   private String mManifestUrl;
   private AppLoaderCallback mCallback;
   private final boolean mUseCacheOnly;
@@ -218,10 +220,12 @@ public class ExpoUpdatesAppLoader {
         try {
           JSONObject jsonParams = new JSONObject();
           jsonParams.put("type", eventName);
-          Iterator<Map.Entry<String, Object>> iterator = params.getEntryIterator();
-          while (iterator.hasNext()) {
-            Map.Entry<String, Object> entry = iterator.next();
-            jsonParams.put(entry.getKey(), entry.getValue());
+          if (params != null) {
+            Iterator<Map.Entry<String, Object>> iterator = params.getEntryIterator();
+            while (iterator.hasNext()) {
+              Map.Entry<String, Object> entry = iterator.next();
+              jsonParams.put(entry.getKey(), entry.getValue());
+            }
           }
           mCallback.emitEvent(jsonParams);
         } catch (Exception e) {
