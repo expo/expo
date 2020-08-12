@@ -31,6 +31,8 @@ internal data class MockAsset(
 }
 
 internal object MockData {
+  const val MOCK_ALBUM_ID = "album12"
+
   val mockImage = MockAsset(
     id = 1L,
     name = "img1.jpg",
@@ -42,7 +44,7 @@ internal object MockData {
     modifiedDate = 23456789,
     orientation = 0,
     duration = null,
-    albumId = "album12"
+    albumId = MOCK_ALBUM_ID
   )
 
   val mockVideo = MockAsset(
@@ -56,7 +58,7 @@ internal object MockData {
     modifiedDate = 23456789,
     orientation = 0,
     duration = 3000,
-    albumId = "album23"
+    albumId = MOCK_ALBUM_ID
   )
 
   val mockAudio = MockAsset(
