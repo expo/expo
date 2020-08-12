@@ -18,10 +18,6 @@ import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
-import ModalExample from '../ModalExample';
-import { AlertExample } from './Alert';
-import { ClipboardExample } from './Clipboard';
-import { StatusBarExample } from './StatusBar';
 
 export default class ReactNativeCoreScreen extends React.Component<{}> {
   state = {
@@ -36,13 +32,9 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
     super(props);
 
     this.sections = [
-      { title: 'StatusBar', data: [() => <StatusBarExample />] },
-      { title: 'Alert', data: [() => <AlertExample />] },
-      { title: 'Clipboard', data: [() => <ClipboardExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
       { title: 'ActionSheetIOS', data: [this._renderActionSheet] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
-      { title: 'Modal', data: [this._renderModal] },
       { title: 'SegmentedControl', data: [this._renderSegmentedControl] },
       { title: 'Text', data: [this._renderText] },
       { title: 'TextInput', data: [this._renderTextInput] },
@@ -81,10 +73,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
   _scrollToTop = () => {
     // @ts-ignore
     this._sectionList!.scrollTo({ x: 0, y: 0 });
-  };
-
-  _renderModal = () => {
-    return <ModalExample />;
   };
 
   _renderRefreshControl = () => {

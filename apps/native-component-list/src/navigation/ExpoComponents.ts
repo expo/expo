@@ -14,6 +14,7 @@ const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
 const QRCode = optionalRequire(() => require('../screens/QRCodeScreen'));
 
+const Modal = optionalRequire(() => require('../screens/ModalScreen'));
 const ProgressViewIOS = optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
 const ProgressBarAndroid = optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
 const TouchableBounce = optionalRequire(() => require('../screens/TouchableBounceScreen'));
@@ -66,6 +67,7 @@ const ImageScreens = (optionalRequire(() =>
 const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
   BarCodeScanner,
+  Modal,
   MaskedView: BasicMaskScreen,
   BlurView,
   Camera,

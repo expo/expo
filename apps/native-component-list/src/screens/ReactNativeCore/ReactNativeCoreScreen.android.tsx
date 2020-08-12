@@ -16,10 +16,6 @@ import {
 import { ScrollView as NavigationScrollView } from 'react-native-gesture-handler';
 
 import { Colors, Layout } from '../../constants';
-import ModalExample from '../ModalExample';
-import { AlertExample } from './Alert';
-import { ClipboardExample } from './Clipboard';
-import { StatusBarExample } from './StatusBar';
 
 interface State {
   isRefreshing: boolean;
@@ -37,13 +33,9 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     super(props);
 
     this.sections = [
-      { title: 'StatusBar', data: [() => <StatusBarExample />] },
-      { title: 'Alert', data: [() => <AlertExample />] },
-      { title: 'Clipboard', data: [() => <ClipboardExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
       { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
-      { title: 'Modal', data: [this._renderModal] },
       { title: 'Text', data: [this._renderText] },
       { title: 'TextInput', data: [this._renderTextInput] },
       { title: 'Touchables', data: [this._renderTouchables] },
@@ -109,10 +101,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Text>{title}</Text>
       </View>
     );
-  };
-
-  _renderModal = () => {
-    return <ModalExample />;
   };
 
   _renderVerticalScrollView = () => {

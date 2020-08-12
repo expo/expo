@@ -6,6 +6,7 @@ import ComponentListScreen from './ComponentListScreen';
 
 const screens = [
   'AdMob',
+  'Modal',
   'BarCodeScanner',
   'BlurView',
   'ProgressViewIOS',

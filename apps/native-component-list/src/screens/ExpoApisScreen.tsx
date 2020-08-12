@@ -27,6 +27,9 @@ if (Platform.OS !== 'web')
   });
 
 const screens = [
+  'Clipboard',
+  'Alert',
+  'StatusBar',
   'Accelerometer',
   'ActionSheet',
   'AppAuth',

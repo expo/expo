@@ -8,6 +8,10 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
   }
 }
 
+const StatusBar = optionalRequire(() => require('../screens/StatusBarScreen'));
+const Alert = optionalRequire(() => require('../screens/AlertScreen'));
+const Clipboard = optionalRequire(() => require('../screens/ClipboardScreen'));
+
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
 const ActionSheet = optionalRequire(() => require('../screens/ActionSheetScreen'));
 const AppAuth = optionalRequire(() => require('../screens/AppAuthScreen'));
@@ -70,6 +74,9 @@ const WebBrowser = optionalRequire(() => require('../screens/WebBrowserScreen'))
 const optionalScreens: {
   [key: string]: React.ComponentType | null;
 } = {
+  StatusBar,
+  Alert,
+  Clipboard,
   Accelerometer,
   ActionSheet,
   AppAuth,
