@@ -62,7 +62,7 @@ How can you take what you have built and turn it into an app that you ship to th
 
 ## Navigation
 
-Most apps have multiple screens, we just have one here! Learn more about how to add navigation to your app by following the [Fundamentals guide](https://reactnavigation.org/docs/en/getting-started.html) in the React Navigation documentation.
+Most apps have multiple screens, we just have one here! Learn more about how to add navigation to your app by following the [Fundamentals guide](https://reactnavigation.org/docs/getting-started) in the React Navigation documentation.
 
 ## Debugging
 
