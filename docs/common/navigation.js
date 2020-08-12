@@ -33,10 +33,11 @@ const sections = [
     reference: [
       'Introduction',
       'EAS Builds in 5 Minutes',
-      'Configuring with eas.json',
       'Setup',
-      'iOS',
-      'Android',
+      'Configuring with eas.json',
+      'Android Builds',
+      'iOS Builds',
+      'Advanced Credentials Configuration',
     ],
   },
   {
