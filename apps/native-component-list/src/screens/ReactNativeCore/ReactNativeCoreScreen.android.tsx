@@ -19,9 +19,7 @@ import { Colors, Layout } from '../../constants';
 import ModalExample from '../ModalExample';
 import { AlertExample } from './Alert';
 import { ClipboardExample } from './Clipboard';
-import { ProgressBarAndroidExample } from './ProgressBarAndroid';
 import { StatusBarExample } from './StatusBar';
-import { TouchableBounceExample } from './TouchableBounce';
 
 interface State {
   isRefreshing: boolean;
@@ -41,8 +39,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     this.sections = [
       { title: 'StatusBar', data: [() => <StatusBarExample />] },
       { title: 'Alert', data: [() => <AlertExample />] },
-      { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
-      { title: 'ProgressBarAndroid', data: [() => <ProgressBarAndroidExample />] },
       { title: 'Clipboard', data: [() => <ClipboardExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
       { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },

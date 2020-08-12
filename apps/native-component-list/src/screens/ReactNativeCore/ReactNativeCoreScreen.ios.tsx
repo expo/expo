@@ -21,9 +21,7 @@ import Layout from '../../constants/Layout';
 import ModalExample from '../ModalExample';
 import { AlertExample } from './Alert';
 import { ClipboardExample } from './Clipboard';
-import { ProgressViewIOSExample } from './ProgressViewIOS';
 import { StatusBarExample } from './StatusBar';
-import { TouchableBounceExample } from './TouchableBounce';
 
 export default class ReactNativeCoreScreen extends React.Component<{}> {
   state = {
@@ -40,8 +38,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}> {
     this.sections = [
       { title: 'StatusBar', data: [() => <StatusBarExample />] },
       { title: 'Alert', data: [() => <AlertExample />] },
-      { title: 'TouchableBounce', data: [() => <TouchableBounceExample />] },
-      { title: 'ProgressViewIOS', data: [() => <ProgressViewIOSExample />] },
       { title: 'Clipboard', data: [() => <ClipboardExample />] },
       { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
       { title: 'ActionSheetIOS', data: [this._renderActionSheet] },
