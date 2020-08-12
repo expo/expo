@@ -373,6 +373,20 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  '@react-native-community/async-storage': {
+    repoUrl: 'https://github.com/react-native-community/async-storage',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/AsyncStorage',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/asyncstorage',
+        targetAndroidPath: 'modules/api/asyncstorage',
+        sourceAndroidPackage: 'com.reactnativecommunity.asyncstorage',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.asyncstorage',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {
