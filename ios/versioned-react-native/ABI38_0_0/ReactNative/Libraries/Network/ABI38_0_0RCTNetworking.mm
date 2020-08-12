@@ -25,7 +25,7 @@ typedef ABI38_0_0RCTURLRequestCancellationBlock (^ABI38_0_0RCTHTTPQueryResult)(N
 
 NSString *const ABI38_0_0RCTNetworkingPHUploadHackScheme = @"ph-upload";
 
-@interface ABI38_0_0RCTNetworking () <NativeNetworkingIOSSpec>
+@interface ABI38_0_0RCTNetworking () <ABI38_0_0NativeNetworkingIOSSpec>
 
 - (ABI38_0_0RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary<NSString *, id> *)data
                                                  callback:(ABI38_0_0RCTHTTPQueryResult)callback;

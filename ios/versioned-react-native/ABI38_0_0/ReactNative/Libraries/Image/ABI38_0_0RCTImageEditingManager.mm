@@ -19,7 +19,7 @@
 
 #import "ABI38_0_0RCTImagePlugins.h"
 
-@interface ABI38_0_0RCTImageEditingManager() <NativeImageEditorSpec>
+@interface ABI38_0_0RCTImageEditingManager() <ABI38_0_0NativeImageEditorSpec>
 @end
 
 @implementation ABI38_0_0RCTImageEditingManager

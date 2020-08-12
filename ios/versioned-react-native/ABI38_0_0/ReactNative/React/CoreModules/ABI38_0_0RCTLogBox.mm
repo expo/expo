@@ -74,7 +74,7 @@
 
 @end
 
-@interface ABI38_0_0RCTLogBox () <NativeLogBoxSpec>
+@interface ABI38_0_0RCTLogBox () <ABI38_0_0NativeLogBoxSpec>
 @end
 
 @implementation ABI38_0_0RCTLogBox
@@ -125,7 +125,7 @@ ABI38_0_0RCT_EXPORT_METHOD(hide)
 
 #else // Disabled
 
-@interface ABI38_0_0RCTLogBox() <NativeLogBoxSpec>
+@interface ABI38_0_0RCTLogBox() <ABI38_0_0NativeLogBoxSpec>
 @end
 
 @implementation ABI38_0_0RCTLogBox
