@@ -6,6 +6,7 @@ import {
   CameraPermissionResponse,
   CameraRollPermissionResponse,
   ImagePickerResult,
+  ImagePickerErrorResult,
   MediaTypeOptions,
   ImagePickerOptions,
   VideoExportPreset,
@@ -62,9 +63,9 @@ export async function requestCameraRollPermissionsAsync(): Promise<CameraRollPer
 }
 
 export function addOnPendingResultListener(
-  listener: (event: ImagePickerResult) => void
+  listener: (event: ImagePickerResult | ImagePickerErrorResult) => void
 ): Subscription {
-  return imagePickerEventEmitter.addListener<ImagePickerResult>(
+  return imagePickerEventEmitter.addListener<ImagePickerResult | ImagePickerErrorResult>(
     'Expo.onImagePickerPendingResult',
     listener
   );
@@ -92,6 +93,7 @@ export {
   MediaTypeOptions,
   ImagePickerOptions,
   ImagePickerResult,
+  ImagePickerErrorResult,
   VideoExportPreset,
   CameraPermissionResponse,
   CameraRollPermissionResponse,

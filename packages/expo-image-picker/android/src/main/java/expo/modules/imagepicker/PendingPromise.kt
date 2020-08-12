@@ -18,14 +18,10 @@ class PendingPromise(private val pickerResultsStore: PickerResultsStore) : Promi
     throw IllegalArgumentException("Can not resolve 'DestroyedPromise' with anything else then 'Bundle'.")
   }
 
-  override fun reject(code: String?, message: String?, e: Throwable?) {
+  override fun reject(code: String, message: String, e: Throwable?) {
     pickerResultsStore.addPendingResult(Bundle().apply {
-      code?.let {
-        putString("code", it)
-      }
-      message?.let {
-        putString("message", it)
-      }
+      putString("code", code)
+      putString("message", message)
       e?.let {
         putString("exception", it.toString())
       }

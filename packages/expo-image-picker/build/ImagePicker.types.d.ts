@@ -31,6 +31,11 @@ export declare type ImageInfo = {
     };
     base64?: string;
 };
+export declare type ImagePickerErrorResult = {
+    code: string;
+    message: string;
+    exception?: string;
+};
 export declare type ImagePickerResult = {
     cancelled: true;
 } | ({
