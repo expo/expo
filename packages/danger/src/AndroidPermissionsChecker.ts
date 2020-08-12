@@ -83,6 +83,7 @@ Please make sure these permissions are absolutely required for the core function
 <details>
   <summary>What can I do?</summary>
 
+  - Keep it in when you are confident it's absolutely required for the primary functionality of the API
   - Reconsider if the permission is required, and remove it from the \`AndroidManifest.xml\`.
   - Add the permission to the [XDL blacklist](https://github.com/expo/expo-cli/blob/d75089b2e9f11b36f936967313d847fcc45f4e76/packages/xdl/src/detach/AndroidShellApp.js#L780) to allow users to opt-out of the permissions, by excluding it from the \`android.permissions\` manifest property.
 
