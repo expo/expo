@@ -5,14 +5,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const kEXUpdatesEmbeddedManifestName = @"app";
-NSString * const kEXUpdatesEmbeddedManifestType = @"manifest";
-NSString * const kEXUpdatesEmbeddedBundleFilename = @"app";
-NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
-NSString * const kEXUpdatesBareEmbeddedBundleFilename = @"main";
-NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
+NSString * const EXUpdatesEmbeddedManifestName = @"app";
+NSString * const EXUpdatesEmbeddedManifestType = @"manifest";
+NSString * const EXUpdatesEmbeddedBundleFilename = @"app";
+NSString * const EXUpdatesEmbeddedBundleFileType = @"bundle";
+NSString * const EXUpdatesBareEmbeddedBundleFilename = @"main";
+NSString * const EXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
 
-static NSString * const kEXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbeddedAppLoader";
+static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbeddedAppLoader";
 
 @implementation EXUpdatesEmbeddedAppLoader
 
@@ -25,7 +25,7 @@ static NSString * const kEXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbe
     if (!config.hasEmbeddedUpdate) {
       embeddedManifest = nil;
     } else if (!embeddedManifest) {
-      NSString *path = [[NSBundle mainBundle] pathForResource:kEXUpdatesEmbeddedManifestName ofType:kEXUpdatesEmbeddedManifestType];
+      NSString *path = [[NSBundle mainBundle] pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
       if (!manifestData) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
@@ -67,7 +67,7 @@ static NSString * const kEXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbe
     self.errorBlock = error;
     [self startLoadingFromManifest:embeddedManifest];
   } else {
-    error([NSError errorWithDomain:kEXUpdatesEmbeddedAppLoaderErrorDomain
+    error([NSError errorWithDomain:EXUpdatesEmbeddedAppLoaderErrorDomain
                               code:1008
                           userInfo:@{NSLocalizedDescriptionKey: @"Failed to load embedded manifest. Make sure you have configured expo-updates correctly."}]);
   }

@@ -16,3 +16,10 @@ expo.modules.notifications.notifications.service
 expo.modules.notifications.FirebaseListenerService
 expo.modules.notifications.tokens.interfaces
 expo.modules.notifications.tokens.PushTokenManager
+expo.modules.updates.UpdatesConfiguration
+expo.modules.updates.UpdatesController
+expo.modules.updates.UpdatesUtils
+expo.modules.updates.db
+expo.modules.updates.launcher
+expo.modules.updates.loader
+expo.modules.updates.manifest

@@ -8,10 +8,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesUpdateAvailableEventName = @"updateAvailable";
-static NSString * const kEXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
-static NSString * const kEXUpdatesErrorEventName = @"error";
-static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
+static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
+static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
+static NSString * const EXUpdatesErrorEventName = @"error";
+static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
 
 @interface EXUpdatesAppLoaderTask ()
 
@@ -59,7 +59,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   if (!_config.isEnabled) {
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
-                  didFinishWithError:[NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
+                  didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
                     NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling EXUpdatesAppLoaderTask, or enable updates in the configuration."
                   }]];
     });
@@ -69,7 +69,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   if (!_config.updateUrl) {
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
-                  didFinishWithError:[NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
+                  didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
                     NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use EXUpdatesAppLoaderTask to load updates."
                   }]];
     });
@@ -79,7 +79,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   if (!_directory) {
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
-                  didFinishWithError:[NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
+                  didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
                     NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask directory must be nonnull."
                   }]];
     });
@@ -136,7 +136,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
       if (self->_isReadyToLaunch && (self->_launcher.launchAssetUrl || self->_launcher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
         [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher];
       } else {
-        [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
+        [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
           NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask encountered an unexpected error and could not launch an update."
         }]];
       }
@@ -241,17 +241,17 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
           }
         }];
       } else {
-        [self _sendEventWithType:kEXUpdatesUpdateAvailableEventName
+        [self _sendEventWithType:EXUpdatesUpdateAvailableEventName
                             body:@{@"manifest": update.rawManifest}];
       }
     } else {
       // there's no update, so signal we're ready to launch
       [self _finishWithError:nil];
       if (error) {
-        [self _sendEventWithType:kEXUpdatesErrorEventName
+        [self _sendEventWithType:EXUpdatesErrorEventName
                             body:@{@"message": error.localizedDescription}];
       } else {
-        [self _sendEventWithType:kEXUpdatesNoUpdateAvailableEventName body:@{}];
+        [self _sendEventWithType:EXUpdatesNoUpdateAvailableEventName body:@{}];
       }
     }
   });

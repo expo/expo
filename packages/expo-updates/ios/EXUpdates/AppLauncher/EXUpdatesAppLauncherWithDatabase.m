@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
+static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 @implementation EXUpdatesAppLauncherWithDatabase
 
@@ -97,7 +97,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
             if (error) {
               userInfo[NSUnderlyingErrorKey] = error;
             }
-            self->_completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1011 userInfo:userInfo], NO);
+            self->_completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain code:1011 userInfo:userInfo], NO);
           });
         }
       } else {
@@ -119,7 +119,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 {
   if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
     NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
-    _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesBareEmbeddedBundleFilename withExtension:kEXUpdatesBareEmbeddedBundleFileType];
+    _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesBareEmbeddedBundleFilename withExtension:EXUpdatesBareEmbeddedBundleFileType];
 
     dispatch_async(self->_completionQueue, ^{
       self->_completion(self->_launchAssetError, self->_launchAssetUrl != nil);
@@ -255,7 +255,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
             completion:(void (^)(NSError * _Nullable error, EXUpdatesAsset *asset, NSURL *assetLocalUrl))completion
 {
   if (!asset.url) {
-    completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
+    completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
   }
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {
