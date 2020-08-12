@@ -12,12 +12,6 @@
 #import "RNDateTimePicker.h"
 #import <React/UIView+React.h>
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED < 130000
-@interface UIColor (Xcode10)
-+ (instancetype) labelColor;
-@end
-#endif
-
 @implementation RCTConvert(UIDatePicker)
 
 RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
@@ -25,6 +19,15 @@ RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
   @"date": @(UIDatePickerModeDate),
   @"datetime": @(UIDatePickerModeDateAndTime),
 }), UIDatePickerModeTime, integerValue)
+
+RCT_ENUM_CONVERTER(UIDatePickerStyle, (@{
+    @"default": @(UIDatePickerStyleAutomatic),
+    @"compact": @(UIDatePickerStyleCompact),
+    @"spinner": @(UIDatePickerStyleWheels),
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+    @"inline": @(UIDatePickerStyleInline),
+#endif
+}), UIDatePickerStyleAutomatic, integerValue)
 
 @end
 
@@ -35,6 +38,41 @@ RCT_EXPORT_MODULE()
 - (UIView *)view
 {
   return [RNDateTimePicker new];
+}
+
++ (NSString*) datepickerStyleToString: (UIDatePickerStyle) style {
+    // RCTConvert does not handle this.?
+    switch (style) {
+        case UIDatePickerStyleCompact:
+            return @"compact";
+        case UIDatePickerStyleWheels:
+            return @"spinner";
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+        case UIDatePickerStyleInline:
+            return @"inline";
+#endif
+        default:
+            [NSException raise:@"Unsupported style value" format:@"UIDatePickerStyle of %ld is unsupported", (long)style];
+            return @"";
+    }
+}
+
+RCT_EXPORT_METHOD(getDefaultDisplayValue:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIDatePicker* view = [RNDateTimePicker new];
+        
+        view.preferredDatePickerStyle = UIDatePickerStyleAutomatic;
+        UIDatePickerMode renderedMode = [RCTConvert UIDatePickerMode:options[@"mode"]];
+        view.datePickerMode = renderedMode;
+        // NOTE afaict we do not need to measure the actual dimensions here, but if we do, just look at the original PR
+        
+        UIDatePickerStyle determinedDisplayValue = view.datePickerStyle;
+
+        resolve(@{
+                 @"determinedDisplayValue": [RNDateTimePickerManager datepickerStyleToString:determinedDisplayValue],
+                });
+    });
 }
 
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
@@ -61,6 +99,19 @@ RCT_CUSTOM_VIEW_PROPERTY(textColor, UIColor, RNDateTimePicker)
     [view setValue:defaultColor forKey:@"textColor"];
     [view setValue:@(YES) forKey:@"highlightsToday"];
   }
+}
+
+// TODO vonovak setting preferredDatePickerStyle invalidates minuteinterval
+RCT_CUSTOM_VIEW_PROPERTY(displayIOS, UIDatePickerStyle, RNDateTimePicker)
+{
+    if (@available(iOS 13.4, *)) {
+        if (json) {
+            UIDatePickerStyle propValue = [RCTConvert UIDatePickerStyle:json];
+            view.preferredDatePickerStyle = propValue;
+        } else {
+            view.preferredDatePickerStyle = UIDatePickerStyleAutomatic;
+        }
+    }
 }
 
 @end
