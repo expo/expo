@@ -47,7 +47,6 @@ jobs:
           fi
       - run: echo "::add-path::$(pwd)/bin"
       - run: expotools ios-generate-dynamic-macros
-      - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
       - name: bundler cache
         uses: actions/cache@v1
@@ -65,8 +64,8 @@ jobs:
       - run: expotools client-build --platform ios
         timeout-minutes: 60
         env:
-          AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Save test results
         if: always()
         uses: actions/upload-artifact@v2
@@ -76,8 +75,8 @@ jobs:
       - run: expotools client-build --platform ios --release # should only upload already-built app
         if: ${{ github.event.inputs.releaseSimulator == 'release-simulator' }}
         env:
-          AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
