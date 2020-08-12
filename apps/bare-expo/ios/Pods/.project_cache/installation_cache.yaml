@@ -2251,7 +2251,7 @@ CACHE_KEYS:
       RNDateTimePicker:
         :debug: 607c483d0fe7cbf9c5fed303d9546177
         :release: 607c483d0fe7cbf9c5fed303d9546177
-    CHECKSUM: 6cba311a3ba473624d97cc762fd270b2a3cfca49
+    CHECKSUM: f47a6309133c6d013ad6942fc83b753b3f6e41d6
     FILES:
       - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePicker.h"
       - "../../../../node_modules/@react-native-community/datetimepicker/ios/RNDateTimePicker.m"
@@ -2261,7 +2261,7 @@ CACHE_KEYS:
       - "../../../../node_modules/@react-native-community/datetimepicker/README.md"
     PROJECT_NAME: RNDateTimePicker
     SPECS:
-      - RNDateTimePicker (2.4.3)
+      - RNDateTimePicker (3.0.0)
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler:
