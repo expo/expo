@@ -8,6 +8,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 
 const AdMob = optionalRequire(() => require('../screens/AdMobScreen'));
 const ScrollView = optionalRequire(() => require('../screens/ScrollViewScreen'));
+const DrawerLayoutAndroid = optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
 
 const BarCodeScanner = optionalRequire(() => require('../screens/BarCodeScannerScreen'));
 const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScreen'));
@@ -71,6 +72,7 @@ const ImageScreens = (optionalRequire(() =>
 const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
   BarCodeScanner,
+  DrawerLayoutAndroid,
   Modal,
   ScrollView,
   MaskedView: BasicMaskScreen,
@@ -94,6 +96,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   GL,
   ...Object.keys(GLScreens ?? {}).reduce((prev, screenName) => {
     const entry = GLScreens[screenName];
+    // @ts-ignore
     const screen = entry.screen ?? entry;
     screen.navigationOptions = {
       title: screen.title,

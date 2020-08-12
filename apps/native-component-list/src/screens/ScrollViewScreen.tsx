@@ -15,7 +15,7 @@ import {
 import Button from '../components/Button';
 import TitleSwitch from '../components/TitledSwitch';
 
-export default function DirectionalScrollView() {
+export default function ScrollViewScreen() {
   const [isHorizontal, setHorizontal] = React.useState(true);
   const [isEnabled, setEnabled] = React.useState(true);
   const [isRefreshing, setRefreshing] = React.useState(false);
@@ -50,7 +50,7 @@ export default function DirectionalScrollView() {
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}>
-      <View style={{ maxWidth: 640, flex: 1, paddingHorizontal: isMobile ? 8 : 12 }}>
+      <View style={{ flex: 1, paddingHorizontal: isMobile ? 8 : 12 }}>
         <TitleSwitch
           title="Remove Clipped Subviews"
           value={removeClippedSubviews}
@@ -135,6 +135,10 @@ export default function DirectionalScrollView() {
     </ScrollView>
   );
 }
+
+ScrollViewScreen.navigationOptions = {
+  title: 'ScrollView',
+};
 
 function Item(props: { children: React.ReactNode }) {
   return (
