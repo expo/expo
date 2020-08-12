@@ -77,7 +77,7 @@ public class HomeActivity extends BaseExperienceActivity {
   }
 
   @Override
-  protected boolean shouldCreateLadingView() {
+  protected boolean shouldCreateLoadingView() {
     return false;
   }
 

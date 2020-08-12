@@ -1,8 +1,8 @@
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, SplashScreenImageResizeMode) {
-  SplashScreenImageResizeModeContain,
-  SplashScreenImageResizeModeCover,
+typedef NS_ENUM(NSInteger, EXSplashScreenImageResizeMode) {
+  EXSplashScreenImageResizeModeContain,
+  EXSplashScreenImageResizeModeCover,
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,12 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic, nonnull, readonly) UIColor *backgroundColor;
 @property (strong, nonatomic, nullable, readonly) NSString *imageUrl;
-@property (nonatomic, readonly) SplashScreenImageResizeMode imageResizeMode;
+@property (nonatomic, readonly) EXSplashScreenImageResizeMode imageResizeMode;
  
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithBackgroundColor:(UIColor *)backgroundColor
                                imageUrl:(NSString * _Nullable)imageUrl
-                        imageResizeMode:(SplashScreenImageResizeMode)imageResizeMode;
+                        imageResizeMode:(EXSplashScreenImageResizeMode)imageResizeMode;
 
 @end
 

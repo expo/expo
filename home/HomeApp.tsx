@@ -22,24 +22,20 @@ Asset.loadAsync(StackAssets);
 function useSplashScreenWhileLoadingResources(loadResources: () => Promise<void>) {
   const [isSplashScreenShown, setSplashScreenShown] = React.useState(true);
   React.useEffect(() => {
-    const preventAutoHideAndLoadResources = async () => {
-      try {
-        const result = await (SplashScreen.preventAutoHideAsync || SplashScreen.preventAutoHide)();
-        console.log(`SplashScreen.preventAutoHideAsync returned: ${result}`);
-      } catch (error) {
-        console.warn(`SplashScreen.preventAutoHideAsync threw: ${error}`);
-      }
+    (async () => {
+      await SplashScreen.preventAutoHideAsync();
       await loadResources();
       setSplashScreenShown(false);
-      try {
-        const result = await (SplashScreen.hideAsync || SplashScreen.hide)();
-        console.log(`SplashScreen.hideAsync returned: ${result}`);
-      } catch (error) {
-        console.warn(`SplashScreen.hideAsync threw: ${error}`);
-      }
-    };
-    preventAutoHideAndLoadResources();
+    })();
   }, []);
+  React.useEffect(() => {
+    (async () => {
+      if (!isSplashScreenShown) {
+        await SplashScreen.hideAsync();
+      }
+    })();
+  }, [isSplashScreenShown]);
+
   return isSplashScreenShown;
 }
 

@@ -20,8 +20,7 @@ static const NSString *kImageResizeModeCover = @"cover";
 {
   UIColor *backgroundColor = [[self class] parseBackgroundColor:manifest];
   NSString *imageUrl = [[self class] parseImageUrl:manifest];
-  SplashScreenImageResizeMode imageResizeMode = [[self class] parseImageResizeMode:manifest];
-  
+  EXSplashScreenImageResizeMode imageResizeMode = [[self class] parseImageResizeMode:manifest];
   return [[EXSplashScreenConfiguration alloc] initWithBackgroundColor:backgroundColor
                                                              imageUrl:imageUrl
                                                       imageResizeMode:imageResizeMode];
@@ -55,7 +54,7 @@ static const NSString *kImageResizeModeCover = @"cover";
                                        ]];
 }
 
-+ (SplashScreenImageResizeMode)parseImageResizeMode:(NSDictionary *)manifest
++ (EXSplashScreenImageResizeMode)parseImageResizeMode:(NSDictionary *)manifest
 {
   NSString *resizeMode = [[self class] getStringFromManifest:manifest
                                                        paths:@[
@@ -63,9 +62,9 @@ static const NSString *kImageResizeModeCover = @"cover";
                                                          @[kManifestSplashKey, kManifestResizeModeKey],
                                                        ]];
   if ([kImageResizeModeCover isEqualToString:resizeMode]) {
-    return SplashScreenImageResizeModeCover;
+    return EXSplashScreenImageResizeModeCover;
   }
-  return SplashScreenImageResizeModeContain;
+  return EXSplashScreenImageResizeModeContain;
 }
 
 + (NSString * _Nullable)getStringFromManifest:(NSDictionary *)manifest

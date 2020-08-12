@@ -4,7 +4,7 @@
 
 - (instancetype)initWithBackgroundColor:(UIColor *)backgroundColor
                                imageUrl:(NSString *)imageUrl
-                        imageResizeMode:(SplashScreenImageResizeMode)imageResizeMode
+                        imageResizeMode:(EXSplashScreenImageResizeMode)imageResizeMode
 {
   if (self = [super init]) {
     _backgroundColor = backgroundColor;

@@ -69,7 +69,7 @@
         self.splashImageView = [[RCTImageView alloc] initWithBridge:homeAppRecord.appManager.reactBridge];
         self.splashImageView.frame = splashScreenView.bounds;
         self.splashImageView.imageSources = @[imageSource];
-        self.splashImageView.resizeMode = self.configuration.imageResizeMode == SplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;;
+        self.splashImageView.resizeMode = self.configuration.imageResizeMode == EXSplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;;
         UM_WEAKIFY(self);
         [self.splashImageView setOnLoadEnd:^(NSDictionary *dict) {
           UM_ENSURE_STRONGIFY(self);

@@ -143,7 +143,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
   private Handler mHandler = new Handler();
 
-  protected boolean shouldCreateLadingView() {
+  protected boolean shouldCreateLoadingView() {
     return true;
   }
 
@@ -176,7 +176,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     mContainerView.addView(mReactContainerView);
 
     // TODO (@bbarthec) if (!Constants.isStandaloneApp()) {
-    if (this.shouldCreateLadingView()) {
+    if (this.shouldCreateLoadingView()) {
       mLoadingView = new LoadingView(this);
       mLoadingView.show();
       mContainerView.addView(mLoadingView);
@@ -185,8 +185,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     Exponent.initialize(this, getApplication());
     NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
-    mSplashScreenKernelService = mExpoKernelServiceRegistry.getSplashScreenKernelService();
-    mSplashScreenKernelService.reset();
 
     // Can't call this here because subclasses need to do other initialization
     // before their listener methods are called.
