@@ -26,6 +26,8 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityEventListener
 import org.unimodules.core.interfaces.ActivityProvider
 import org.unimodules.core.interfaces.ExpoMethod
+import org.unimodules.core.interfaces.LifecycleEventListener
+import org.unimodules.core.interfaces.services.EventEmitter
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.core.utilities.FileUtilities.generateOutputPath
 import org.unimodules.interfaces.imageloader.ImageLoader
@@ -34,32 +36,44 @@ import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 import org.unimodules.interfaces.permissions.PermissionsStatus
 import java.io.IOException
-import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 
 class ImagePickerModule(private val mContext: Context,
-                        val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate())
-  : ExportedModule(mContext), ActivityEventListener {
+                        val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate(),
+                        private val pickerResultStore: PickerResultsStore = PickerResultsStore(mContext))
+  : ExportedModule(mContext), ActivityEventListener, LifecycleEventListener {
 
   private var mCameraCaptureURI: Uri? = null
   private var mPromise: Promise? = null
   private var mPickerOptions: ImagePickerOptions? = null
+  private var mWasDestroyed = false
 
-  private val mExperienceActivity: WeakReference<Activity> by moduleRegistry { activityProvider: ActivityProvider ->
-    WeakReference(activityProvider.currentActivity)
-  }
   private val mImageLoader: ImageLoader by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
   private val mPermissions: Permissions by moduleRegistry()
+  private val mEventEmitter: EventEmitter by moduleRegistry()
+  private val mActivityProvider: ActivityProvider by moduleRegistry()
+
+  private lateinit var _experienceActivity: WeakReference<Activity>
+
+  private val experienceActivity: Activity?
+    get() {
+      if (!this::_experienceActivity.isInitialized) {
+        _experienceActivity = WeakReference(mActivityProvider.currentActivity)
+      }
+
+      return _experienceActivity.get()
+    }
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryPropertyDelegate.onCreate(moduleRegistry)
+
+    mUIManager.registerLifecycleEventListener(this)
   }
 
-  private val experienceActivity: Activity?
-    get() = mExperienceActivity.get()
-
   override fun getName() = "ExponentImagePicker"
+
+  //region expo methods
 
   @ExpoMethod
   fun requestCameraRollPermissionsAsync(promise: Promise) {
@@ -79,6 +93,15 @@ class ImagePickerModule(private val mContext: Context,
   @ExpoMethod
   fun getCameraPermissionsAsync(promise: Promise) {
     Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.CAMERA)
+  }
+
+  @ExpoMethod
+  fun startObserving(promise: Promise) {
+    for (result in pickerResultStore.getAllPendingResults()) {
+      mEventEmitter.emit(ImagePickerConstants.PENDING_RESULT_EVENT, result)
+    }
+
+    promise.resolve(null)
   }
 
   // NOTE: Currently not reentrant / doesn't support concurrent requests
@@ -110,6 +133,31 @@ class ImagePickerModule(private val mContext: Context,
     mPermissions.askForPermissions(permissionsResponseHandler, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
   }
 
+  // NOTE: Currently not reentrant / doesn't support concurrent requests
+  @ExpoMethod
+  fun launchImageLibraryAsync(options: Map<String, Any?>, promise: Promise) {
+    val pickerOptions = optionsFromMap(options, promise) ?: return
+
+    val libraryIntent = Intent().apply {
+      when (pickerOptions.mediaTypes) {
+        MediaTypes.IMAGES -> type = "image/*"
+        MediaTypes.VIDEOS -> type = "video/*"
+        MediaTypes.ALL -> {
+          type = "*/*"
+          putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
+        }
+      }
+
+      action = Intent.ACTION_GET_CONTENT
+    }
+
+    startActivityOnResult(libraryIntent, ImagePickerConstants.REQUEST_LAUNCH_IMAGE_LIBRARY, promise, pickerOptions)
+  }
+
+  //endregion
+
+  //region helpers
+
   private fun launchCameraWithPermissionsGranted(promise: Promise, cameraIntent: Intent, pickerOptions: ImagePickerOptions) {
     val imageFile = createOutputFile(
       mContext.cacheDir,
@@ -135,31 +183,7 @@ class ImagePickerModule(private val mContext: Context,
 
     // camera intent needs a content URI but we need a file one
     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUriFromFile(imageFile, activity.application))
-    startActivityOnResult(cameraIntent, ImagePickerConstants.REQUEST_LAUNCH_CAMERA, promise)
-  }
-
-  // NOTE: Currently not reentrant / doesn't support concurrent requests
-  @ExpoMethod
-  fun launchImageLibraryAsync(options: Map<String, Any?>, promise: Promise) {
-    val pickerOptions = optionsFromMap(options, promise) ?: return
-
-    val libraryIntent = Intent().apply {
-      when (pickerOptions.mediaTypes) {
-        MediaTypes.IMAGES -> type = "image/*"
-        MediaTypes.VIDEOS -> type = "video/*"
-        MediaTypes.ALL -> {
-          type = "*/*"
-          putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
-        }
-      }
-
-      action = Intent.ACTION_GET_CONTENT
-    }
-
-    mPromise = promise
-    mPickerOptions = pickerOptions
-
-    startActivityOnResult(libraryIntent, ImagePickerConstants.REQUEST_LAUNCH_IMAGE_LIBRARY, promise)
+    startActivityOnResult(cameraIntent, ImagePickerConstants.REQUEST_LAUNCH_CAMERA, promise, pickerOptions)
   }
 
   /**
@@ -221,7 +245,58 @@ class ImagePickerModule(private val mContext: Context,
       setOutputCompressQuality(pickerOptions.quality)
     }
 
-    startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise)
+    startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
+  }
+
+  //endregion
+
+  // region ActivityEventListener
+
+  override fun onNewIntent(intent: Intent) = Unit
+
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+    if (shouldHandleOnActivityResult(activity, requestCode)) {
+      mUIManager.unregisterActivityEventListener(this)
+
+      val promise = if (mWasDestroyed) {
+        PendingPromise(pickerResultStore)
+      } else {
+        mPromise!!
+      }
+      val pickerOptions = mPickerOptions!!
+
+      mPromise = null
+      mPickerOptions = null
+
+      handleOnActivityResult(promise, activity, requestCode, resultCode, data, pickerOptions)
+    }
+  }
+
+  //endregion
+
+  //region activity for result
+
+  private fun startActivityOnResult(intent: Intent, requestCode: Int, promise: Promise, pickerOptions: ImagePickerOptions) {
+    experienceActivity
+      .ifNull {
+        promise.reject(ImagePickerConstants.ERR_MISSING_ACTIVITY, ImagePickerConstants.MISSING_ACTIVITY_MESSAGE)
+        return
+      }
+      .also {
+        mUIManager.registerActivityEventListener(this)
+        mPromise = promise
+        mPickerOptions = pickerOptions
+      }
+      .startActivityForResult(intent, requestCode)
+  }
+
+  private fun shouldHandleOnActivityResult(activity: Activity, requestCode: Int): Boolean {
+    return experienceActivity != null
+      && mPromise != null
+      && mPickerOptions != null
+      // When we launched the crop tool and the android kills current activity, the references can be different.
+      // So, we fallback to the requestCode in this case.
+      && (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
   }
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
@@ -266,7 +341,6 @@ class ImagePickerModule(private val mContext: Context,
         CompressionImageExporter(mImageLoader, pickerOptions.quality, pickerOptions.isBase64)
       }
 
-
       ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter).execute()
       return
     }
@@ -283,28 +357,18 @@ class ImagePickerModule(private val mContext: Context,
     }
   }
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-    if (experienceActivity != null
-      && activity === experienceActivity
-      && mPromise != null
-      && mPickerOptions != null) {
-      mUIManager.unregisterActivityEventListener(this)
-      handleOnActivityResult(mPromise!!, activity, requestCode, resultCode, data, mPickerOptions!!)
-    }
+  //endregion
+
+  //region LifecycleEventListener
+
+  override fun onHostDestroy() {
+    mWasDestroyed = true
+
+    mUIManager.unregisterLifecycleEventListener(this)
   }
 
-  private fun startActivityOnResult(intent: Intent, requestCode: Int, promise: Promise) {
-    mUIManager.registerActivityEventListener(this)
+  override fun onHostResume() = Unit
+  override fun onHostPause() = Unit
 
-    experienceActivity
-      .ifNull {
-        promise.reject(ImagePickerConstants.ERR_MISSING_ACTIVITY, ImagePickerConstants.MISSING_ACTIVITY_MESSAGE)
-        return
-      }
-      .startActivityForResult(intent, requestCode)
-  }
-
-  override fun onNewIntent(intent: Intent) = Unit
-
-
+  //endregion
 }

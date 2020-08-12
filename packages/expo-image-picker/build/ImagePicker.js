@@ -1,7 +1,8 @@
-import { UnavailabilityError, CodedError } from '@unimodules/core';
+import { UnavailabilityError, EventEmitter, CodedError } from '@unimodules/core';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExponentImagePicker from './ExponentImagePicker';
 import { MediaTypeOptions, VideoExportPreset, } from './ImagePicker.types';
+const imagePickerEventEmitter = new EventEmitter(ExponentImagePicker);
 function validateOptions(options) {
     const { aspect, quality, videoMaxDuration } = options;
     if (aspect != null) {
@@ -29,6 +30,9 @@ export async function requestCameraPermissionsAsync() {
 }
 export async function requestCameraRollPermissionsAsync() {
     return ExponentImagePicker.requestCameraRollPermissionsAsync();
+}
+export function addOnPendingResultListener(listener) {
+    return imagePickerEventEmitter.addListener('Expo.onImagePickerPendingResult', listener);
 }
 export async function launchCameraAsync(options = {}) {
     if (!ExponentImagePicker.launchCameraAsync) {

@@ -1,4 +1,4 @@
-import { UnavailabilityError, CodedError } from '@unimodules/core';
+import { UnavailabilityError, EventEmitter, Subscription, CodedError } from '@unimodules/core';
 import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 
 import ExponentImagePicker from './ExponentImagePicker';
@@ -11,6 +11,8 @@ import {
   VideoExportPreset,
   ExpandImagePickerResult,
 } from './ImagePicker.types';
+
+const imagePickerEventEmitter = new EventEmitter(ExponentImagePicker);
 
 function validateOptions(options: ImagePickerOptions) {
   const { aspect, quality, videoMaxDuration } = options;
@@ -57,6 +59,15 @@ export async function requestCameraPermissionsAsync(): Promise<CameraPermissionR
 
 export async function requestCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse> {
   return ExponentImagePicker.requestCameraRollPermissionsAsync();
+}
+
+export function addOnPendingResultListener(
+  listener: (event: ImagePickerResult) => void
+): Subscription {
+  return imagePickerEventEmitter.addListener<ImagePickerResult>(
+    'Expo.onImagePickerPendingResult',
+    listener
+  );
 }
 
 export async function launchCameraAsync(
