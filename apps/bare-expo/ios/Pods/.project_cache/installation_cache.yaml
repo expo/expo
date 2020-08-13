@@ -2267,7 +2267,7 @@ CACHE_KEYS:
       RNGestureHandler:
         :debug: 7d5f08354d3cc132d6e345d02f80b0f5
         :release: 7d5f08354d3cc132d6e345d02f80b0f5
-    CHECKSUM: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
+    CHECKSUM: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
     FILES:
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.h"
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.m"
@@ -2305,7 +2305,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-gesture-handler/README.md"
     PROJECT_NAME: RNGestureHandler
     SPECS:
-      - RNGestureHandler (1.6.1)
+      - RNGestureHandler (1.7.0)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated:

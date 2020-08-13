@@ -54,6 +54,9 @@ public class GestureHandler<T extends GestureHandler> {
   private boolean mEnabled = true;
   private float mHitSlop[];
 
+  private static short sNextEventCoalescingKey = 0;
+  private short mEventCoalescingKey;
+
   private float mLastX, mLastY;
   private float mLastEventOffsetX, mLastEventOffsetY;
 
@@ -171,6 +174,10 @@ public class GestureHandler<T extends GestureHandler> {
 
   public boolean isWithinBounds() {
     return mWithinBounds;
+  }
+
+  public short getEventCoalescingKey() {
+    return mEventCoalescingKey;
   }
 
   public final void prepare(View view, GestureHandlerOrchestrator orchestrator) {
@@ -324,6 +331,13 @@ public class GestureHandler<T extends GestureHandler> {
     }
     int oldState = mState;
     mState = newState;
+
+    if (mState == STATE_ACTIVE) {
+      // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
+      // the same coalescing-key allowing EventDispatcher to coalesce RNGestureHandlerEvents when events are
+      // generated faster than they can be treated by JS thread
+      mEventCoalescingKey = sNextEventCoalescingKey++;
+    }
 
     mOrchestrator.onHandlerStateChange(this, newState, oldState);
 
