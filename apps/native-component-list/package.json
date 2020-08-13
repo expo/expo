@@ -90,7 +90,7 @@
     "react-native-paper": "^4.0.1",
     "react-native-redash": "^14.1.1",
     "react-native-safe-area-view": "^0.14.8",
-    "react-native-web": "~0.13.0",
+    "react-native-web": "~0.13.7",
     "react-navigation": "^4.4.0",
     "react-navigation-shared-element": "^3.0.0",
     "react-navigation-stack": "^2.8.2",

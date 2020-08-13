@@ -40,7 +40,7 @@
   "peerDependencies": {
     "react": "16.13.1",
     "react-native": "*",
-    "react-native-web": "~0.13.0"
+    "react-native-web": "~0.13.7"
   },
   "dependencies": {
     "chalk": "^2.4.2",

@@ -1,3 +1,4 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
@@ -22,7 +23,10 @@ function setRef<T>(refProp: React.Ref<T>, ref: T | null) {
   }
 }
 
-const Canvas: any = React.forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
+const Canvas = React.forwardRef(
+  (props: React.ComponentProps<typeof View>, ref: React.Ref<HTMLCanvasElement>) =>
+    createElement('canvas', { ...props, ref })
+);
 
 const CanvasWrapper: React.FunctionComponent<ViewProps & {
   canvasRef: React.Ref<HTMLCanvasElement>;
@@ -34,7 +38,8 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
 
   function updateCanvasSize(): void {
     const canvas = _canvasRef.current;
-    if (canvas) {
+    // eslint-disable-next-line no-undef
+    if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
       const size = getSize();
       const scale = PixelRatio.get();
 
@@ -47,8 +52,11 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
   }
 
   function getSize(): { width: number; height: number } {
-    if (size) return size;
-    if (!ref.current) return { width: 0, height: 0 };
+    if (size) {
+      return size;
+    } else if (!ref.current || !canUseDOM) {
+      return { width: 0, height: 0 };
+    }
     const element = getElement(ref.current);
     const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
     return { width, height };
@@ -61,10 +69,12 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
       },
     } = event;
 
-    setSize({ width, height });
+    if (width !== size?.width || height !== size.height) {
+      setSize({ width, height });
 
-    if (props.onLayout) {
-      props.onLayout(event);
+      if (props.onLayout) {
+        props.onLayout(event);
+      }
     }
   }
 
