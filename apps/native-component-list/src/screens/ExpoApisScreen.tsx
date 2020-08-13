@@ -34,7 +34,6 @@ const screens = [
   'AppleAuthentication',
   'Audio',
   'AuthSession',
-  'FirebaseAuthSession',
   'Battery',
   'BackgroundFetch',
   'Branch',

@@ -12,15 +12,23 @@ import { getGUID } from '../../api/guid';
 import TitledSwitch from '../../components/TitledSwitch';
 import { AuthSection } from './AuthResult';
 import LegacyAuthSession from './LegacyAuthSession';
+import TitledPicker from '../../components/TitledPicker';
 
 maybeCompleteAuthSession();
 
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
+const languages = [
+  { key: 'en', value: 'English' },
+  { key: 'pl', value: 'Polish' },
+  { key: 'nl', value: 'Dutch' },
+  { key: 'fi', value: 'Finnish' },
+];
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
+  const [language, setLanguage] = React.useState<any>(languages[0].key);
 
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
@@ -43,9 +51,20 @@ export default function AuthSessionScreen() {
             setValue={value => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
           />
           <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
+          <TitledPicker
+            items={languages}
+            title="Language"
+            value={language}
+            setValue={setLanguage}
+          />
         </View>
         <H2>Services</H2>
-        <AuthSessionProviders prompt={prompt} usePKCE={usePKCE} useProxy={useProxy} />
+        <AuthSessionProviders
+          prompt={prompt}
+          usePKCE={usePKCE}
+          useProxy={useProxy}
+          language={language}
+        />
         <H2>Legacy</H2>
         <LegacyAuthSession />
       </ScrollView>
@@ -61,8 +80,9 @@ function AuthSessionProviders(props: {
   useProxy: boolean;
   usePKCE: boolean;
   prompt?: AuthSession.Prompt;
+  language: string;
 }) {
-  const { useProxy, usePKCE, prompt } = props;
+  const { useProxy, usePKCE, prompt, language } = props;
 
   const redirectUri = AuthSession.makeRedirectUri({
     native: 'bareexpo://redirect',
@@ -75,15 +95,17 @@ function AuthSessionProviders(props: {
     usePKCE,
     prompt,
     redirectUri,
+    language,
   };
 
   const providers = [
+    Google,
+    GoogleFirebase,
     Facebook,
     Spotify,
     Strava,
     Twitch,
     Dropbox,
-    Google,
     Reddit,
     Github,
     Coinbase,
@@ -103,16 +125,13 @@ function AuthSessionProviders(props: {
   );
 }
 
-function Google({ prompt, usePKCE }: any) {
+function Google({ prompt, language, usePKCE }: any) {
   const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest(
     {
+      language,
       expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
       clientId: `${getGUID()}.apps.googleusercontent.com`,
       selectAccount: !!prompt,
-      // language: 'fr',
-      // responseType: AuthSession.ResponseType.Token,
-      // responseType: AuthSession.ResponseType.IdToken,
-      // clientSecret: '',
       usePKCE,
     },
     {
@@ -134,6 +153,40 @@ function Google({ prompt, usePKCE }: any) {
     <AuthSection
       request={request}
       title="google"
+      result={result}
+      promptAsync={() => promptAsync()}
+    />
+  );
+}
+
+function GoogleFirebase({ prompt, language, usePKCE }: any) {
+  const [request, result, promptAsync] = GoogleAuthSession.useIdTokenAuthRequest(
+    {
+      language,
+      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
+      clientId: `${getGUID()}.apps.googleusercontent.com`,
+      selectAccount: !!prompt,
+      usePKCE,
+    },
+    {
+      path: 'redirect',
+      preferLocalhost: true,
+    }
+  );
+
+  React.useEffect(() => {
+    if (request && result?.type === 'success') {
+      console.log('RESULT: ', result);
+
+      console.log('------ AUTH ------');
+      console.log(result.params.id_token);
+    }
+  }, [result]);
+
+  return (
+    <AuthSection
+      request={request}
+      title="google_firebase"
       result={result}
       promptAsync={() => promptAsync()}
     />

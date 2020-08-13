@@ -27,6 +27,12 @@ const providers: Record<string, any> = {
       'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
     color: '#4285F4',
   },
+  google_firebase: {
+    name: 'Google Firebase',
+    image:
+      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
+    color: '#4285F4',
+  },
   azure: {
     name: 'Azure',
     image:
