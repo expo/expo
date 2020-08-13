@@ -1,6 +1,5 @@
 import * as Application from 'expo-application';
-import Constants from 'expo-constants';
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
@@ -16,8 +15,9 @@ import {
   Prompt,
   ResponseType,
 } from '../AuthSession';
-import { ProviderAuthRequestConfig } from './Provider.types';
 import { AccessTokenRequest } from '../TokenRequest';
+import { ProviderAuthRequestConfig } from './Provider.types';
+import { applyRequiredScopes, invariantClientId, useProxyEnabled } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 515, height: 680 },
@@ -98,13 +98,6 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
   shouldAutoExchangeCode?: boolean;
 }
 
-function applyRequiredScopes(scopes: string[] = []): string[] {
-  // Add the required scopes for returning profile data.
-  const requiredScopes = [...scopes, ...settings.minimumScopes];
-  // Remove duplicates
-  return [...new Set(requiredScopes)];
-}
-
 class GoogleAuthRequest extends AuthRequest {
   nonce?: string;
 
@@ -124,7 +117,7 @@ class GoogleAuthRequest extends AuthRequest {
     if (selectAccount) inputParams.prompt = Prompt.SelectAccount;
 
     // Apply the default scopes
-    const scopes = applyRequiredScopes(config.scopes);
+    const scopes = applyRequiredScopes(config.scopes, settings.minimumScopes);
     const isImplicit =
       config.responseType === ResponseType.Token || config.responseType === ResponseType.IdToken;
     if (isImplicit) {
@@ -161,31 +154,6 @@ class GoogleAuthRequest extends AuthRequest {
       extraParams,
     };
   }
-}
-
-// Only natively in the Expo client.
-function shouldUseProxy(): boolean {
-  return Platform.select({
-    web: false,
-    // Use the proxy in the Expo client.
-    default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
-  });
-}
-
-function invariantClientId(idName: string, value: any) {
-  if (typeof value === 'undefined')
-    // TODO(Bacon): Add learn more
-    throw new Error(
-      `Client Id property \`${idName}\` must be defined to use Google auth on this platform.`
-    );
-}
-
-function useProxyEnabled(
-  redirectUriOptions: Pick<AuthSessionRedirectUriOptions, 'useProxy'>
-): boolean {
-  return useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-    redirectUriOptions.useProxy,
-  ]);
 }
 
 /**
@@ -258,7 +226,7 @@ export function useAuthRequest(
         });
 
     const clientId = config[propertyName as any] ?? config.clientId;
-    invariantClientId(propertyName, clientId);
+    invariantClientId(propertyName, clientId, 'Google');
     return clientId;
   }, [
     useProxy,

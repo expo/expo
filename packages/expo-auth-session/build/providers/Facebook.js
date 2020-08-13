@@ -1,9 +1,9 @@
-import Constants from 'expo-constants';
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, makeRedirectUri, ResponseType, } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
+import { applyRequiredScopes, useProxyEnabled } from './ProviderUtils';
 const settings = {
     windowFeatures: { width: 700, height: 600 },
     // These are required for Firebase to work properly which is a reasonable default.
@@ -13,12 +13,6 @@ export const discovery = {
     authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
     tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
 };
-function applyRequiredScopes(scopes = []) {
-    // Add the required scopes for returning profile data.
-    const requiredScopes = [...scopes, ...settings.minimumScopes];
-    // Remove duplicates
-    return [...new Set(requiredScopes)];
-}
 class FacebookAuthRequest extends AuthRequest {
     constructor({ language, 
     // Account selection cannot be reliably emulated on Facebook.
@@ -31,7 +25,7 @@ class FacebookAuthRequest extends AuthRequest {
             inputParams.locale = language;
         }
         // Apply the default scopes
-        const scopes = applyRequiredScopes(config.scopes);
+        const scopes = applyRequiredScopes(config.scopes, settings.minimumScopes);
         let inputClientSecret;
         //  Facebook will throw if you attempt to use the client secret
         if (config.responseType && config.responseType !== ResponseType.Code) {
@@ -66,14 +60,6 @@ class FacebookAuthRequest extends AuthRequest {
         };
     }
 }
-// Only natively in the Expo client.
-function shouldUseProxy() {
-    return Platform.select({
-        web: false,
-        // Use the proxy in the Expo client.
-        default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
-    });
-}
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -85,9 +71,7 @@ function shouldUseProxy() {
  * @param discovery
  */
 export function useAuthRequest(config = {}, redirectUriOptions = {}) {
-    const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-        redirectUriOptions.useProxy,
-    ]);
+    const useProxy = useProxyEnabled(redirectUriOptions);
     const clientId = useMemo(() => {
         const propertyName = useProxy
             ? 'expoClientId'

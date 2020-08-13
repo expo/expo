@@ -142,10 +142,7 @@ function Google({ prompt, language, usePKCE }: any) {
 
   React.useEffect(() => {
     if (request && result?.type === 'success') {
-      console.log('RESULT: ', result);
-
-      console.log('------ AUTH ------');
-      console.log(result.authentication);
+      console.log('Result: ', result.authentication);
     }
   }, [result]);
 
@@ -176,10 +173,7 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
 
   React.useEffect(() => {
     if (request && result?.type === 'success') {
-      console.log('RESULT: ', result);
-
-      console.log('------ AUTH ------');
-      console.log(result.params.id_token);
+      console.log('Result:', result.params.id_token);
     }
   }, [result]);
 

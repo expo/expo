@@ -1,10 +1,10 @@
 import * as Application from 'expo-application';
-import Constants from 'expo-constants';
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
 import { AccessTokenRequest } from '../TokenRequest';
+import { applyRequiredScopes, invariantClientId, useProxyEnabled } from './ProviderUtils';
 const settings = {
     windowFeatures: { width: 515, height: 680 },
     minimumScopes: [
@@ -19,12 +19,6 @@ export const discovery = {
     revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
     userInfoEndpoint: 'https://openidconnect.googleapis.com/v1/userinfo',
 };
-function applyRequiredScopes(scopes = []) {
-    // Add the required scopes for returning profile data.
-    const requiredScopes = [...scopes, ...settings.minimumScopes];
-    // Remove duplicates
-    return [...new Set(requiredScopes)];
-}
 class GoogleAuthRequest extends AuthRequest {
     constructor({ language, loginHint, selectAccount, extraParams = {}, clientSecret, ...config }) {
         const inputParams = {
@@ -37,7 +31,7 @@ class GoogleAuthRequest extends AuthRequest {
         if (selectAccount)
             inputParams.prompt = Prompt.SelectAccount;
         // Apply the default scopes
-        const scopes = applyRequiredScopes(config.scopes);
+        const scopes = applyRequiredScopes(config.scopes, settings.minimumScopes);
         const isImplicit = config.responseType === ResponseType.Token || config.responseType === ResponseType.IdToken;
         if (isImplicit) {
             // PKCE must be disabled in implicit mode.
@@ -72,24 +66,6 @@ class GoogleAuthRequest extends AuthRequest {
             extraParams,
         };
     }
-}
-// Only natively in the Expo client.
-function shouldUseProxy() {
-    return Platform.select({
-        web: false,
-        // Use the proxy in the Expo client.
-        default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
-    });
-}
-function invariantClientId(idName, value) {
-    if (typeof value === 'undefined')
-        // TODO(Bacon): Add learn more
-        throw new Error(`Client Id property \`${idName}\` must be defined to use Google auth on this platform.`);
-}
-function useProxyEnabled(redirectUriOptions) {
-    return useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-        redirectUriOptions.useProxy,
-    ]);
 }
 /**
  * Load an authorization request with an ID Token for authentication with Firebase.
@@ -139,7 +115,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
                 default: 'webClientId',
             });
         const clientId = config[propertyName] ?? config.clientId;
-        invariantClientId(propertyName, clientId);
+        invariantClientId(propertyName, clientId, 'Google');
         return clientId;
     }, [
         useProxy,

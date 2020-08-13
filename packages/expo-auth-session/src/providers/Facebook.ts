@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
@@ -15,6 +14,7 @@ import {
 } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
 import { ProviderAuthRequestConfig } from './Provider.types';
+import { applyRequiredScopes, useProxyEnabled } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },
@@ -32,13 +32,6 @@ export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
   iosClientId?: string;
   androidClientId?: string;
   expoClientId?: string;
-}
-
-function applyRequiredScopes(scopes: string[] = []): string[] {
-  // Add the required scopes for returning profile data.
-  const requiredScopes = [...scopes, ...settings.minimumScopes];
-  // Remove duplicates
-  return [...new Set(requiredScopes)];
 }
 
 class FacebookAuthRequest extends AuthRequest {
@@ -60,7 +53,7 @@ class FacebookAuthRequest extends AuthRequest {
     }
 
     // Apply the default scopes
-    const scopes = applyRequiredScopes(config.scopes);
+    const scopes = applyRequiredScopes(config.scopes, settings.minimumScopes);
     let inputClientSecret: string | undefined;
     //  Facebook will throw if you attempt to use the client secret
     if (config.responseType && config.responseType !== ResponseType.Code) {
@@ -97,15 +90,6 @@ class FacebookAuthRequest extends AuthRequest {
   }
 }
 
-// Only natively in the Expo client.
-function shouldUseProxy(): boolean {
-  return Platform.select({
-    web: false,
-    // Use the proxy in the Expo client.
-    default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
-  });
-}
-
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -124,9 +108,7 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-    redirectUriOptions.useProxy,
-  ]);
+  const useProxy = useProxyEnabled(redirectUriOptions);
 
   const clientId = useMemo((): string => {
     const propertyName = useProxy
