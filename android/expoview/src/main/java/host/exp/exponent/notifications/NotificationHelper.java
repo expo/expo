@@ -117,17 +117,17 @@ public class NotificationHelper {
     AsyncCondition.wait(ExponentNotificationIntentService.DEVICE_PUSH_TOKEN_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
-        return exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY) != null
+        return exponentSharedPreferences.getString(ExponentSharedPreferences.FCM_TOKEN_KEY) != null
             || ExponentNotificationIntentService.hasTokenError();
       }
 
       @Override
       public void execute() {
-        String sharedPreferencesToken = exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY);
+        String sharedPreferencesToken = exponentSharedPreferences.getString(ExponentSharedPreferences.FCM_TOKEN_KEY);
         if (sharedPreferencesToken == null || sharedPreferencesToken.length() == 0) {
           String message = "No device token found.";
           if (!Constants.FCM_ENABLED) {
-            message += " Expo support for GCM is deprecated. Follow this guide to set up FCM for your standalone app: https://docs.expo.io/versions/latest/guides/using-fcm";
+            message += " You need to enable FCM in order to get a push token. Follow this guide to set up FCM for your standalone app: https://docs.expo.io/versions/latest/guides/using-fcm";
           }
           listener.onFailure(new Exception(message));
           return;
@@ -139,7 +139,7 @@ public class NotificationHelper {
           params.put("experienceId", experienceId);
           params.put("appId", exponentSharedPreferences.getContext().getApplicationContext().getPackageName());
           params.put("deviceToken", sharedPreferencesToken);
-          params.put("type", Constants.FCM_ENABLED ? "fcm" : "gcm");
+          params.put("type", "fcm");
           params.put("development", false);
         } catch (JSONException e) {
           listener.onFailure(new Exception("Error constructing request"));

@@ -88,8 +88,6 @@ public class HomeActivity extends BaseExperienceActivity {
     SoLoader.init(this, false);
 
     Analytics.logEvent("HOME_APPEARED");
-
-    registerForNotifications();
   }
 
   //endregion Activity Lifecycle

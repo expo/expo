@@ -31,7 +31,6 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 public abstract class ExpoApplication extends MultiDexApplication {
 
   // Override me!
-  public abstract String gcmSenderId();
   public abstract boolean isDebug();
 
   private static final String TAG = ExpoApplication.class.getSimpleName();
@@ -65,7 +64,6 @@ public abstract class ExpoApplication extends MultiDexApplication {
     Exponent.initialize(this, this);
     NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());
     NativeModuleDepsProvider.getInstance().add(DevMenuManager.class, new DevMenuManager());
-    Exponent.getInstance().setGCMSenderId(gcmSenderId());
     
     NativeModuleDepsProvider.getInstance().inject(ExpoApplication.class, this);
 

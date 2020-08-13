@@ -125,20 +125,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
           promise.resolve(params);
         }
       } else {
-        InstanceID instanceID = InstanceID.getInstance(this.getReactApplicationContext());
-        String gcmSenderId = config.getString("gcmSenderId");
-        if (gcmSenderId == null || gcmSenderId.length() == 0) {
-          throw new InvalidParameterException("GCM Sender ID is null/empty");
-        }
-        final String token = instanceID.getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-        if (token == null) {
-          promise.reject("GCM token has not been set");
-        } else {
-          WritableMap params = Arguments.createMap();
-          params.putString("type", "gcm");
-          params.putString("data", token);
-          promise.resolve(params);
-        }
+        promise.reject("ERR_NOTIFICATIONS_FCM_NOT_ENABLED", "FCM must be enabled in order to get the device push token");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());

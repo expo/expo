@@ -274,23 +274,4 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   protected void onError(final ExponentError error) {
     // Called for each JS error
   }
-
-  protected void registerForNotifications() {
-    try {
-      int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-      if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-        if (!Constants.FCM_ENABLED) {
-          Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-          startService(intent);
-        }
-      }
-    } catch (IllegalStateException e) {
-      // This is pretty hacky but we need to prevent crashes when trying to start this service in
-      // the background, which fails on Android 9 and above.
-      // TODO(eric): find a better fix for this.
-      // Probably we need to either remove GCM entirely from the clients, or update the
-      // implementation to ensure we only try to register in the foreground (like we do with FCM).
-      Log.e(TAG, "Failed to register for GCM notifications", e);
-    }
-  }
 }

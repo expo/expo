@@ -36,11 +36,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
     return new BasePackageList().getPackageList();
   }
 
-  @Override
-  public String gcmSenderId() {
-    return getString(R.string.gcm_defaultSenderId);
-  }
-
   public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {
     // Customize/override OkHttp client here
     return builder;
