@@ -70,18 +70,30 @@ public abstract class ExpoUpdatesAppLoader {
   }
 
   public UpdatesConfiguration getUpdatesConfiguration() {
+    if (mUpdatesConfiguration == null) {
+      throw new IllegalStateException("Tried to access UpdatesConfiguration before it was set");
+    }
     return mUpdatesConfiguration;
   }
 
   public File getUpdatesDirectory() {
+    if (mUpdatesDirectory == null) {
+      throw new IllegalStateException("Tried to access UpdatesDirectory before it was set");
+    }
     return mUpdatesDirectory;
   }
 
   public SelectionPolicy getSelectionPolicy() {
+    if (mSelectionPolicy == null) {
+      throw new IllegalStateException("Tried to access SelectionPolicy before it was set");
+    }
     return mSelectionPolicy;
   }
 
   public Launcher getLauncher() {
+    if (mLauncher == null) {
+      throw new IllegalStateException("Tried to access Launcher before it was set");
+    }
     return mLauncher;
   }
 
