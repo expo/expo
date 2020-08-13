@@ -455,6 +455,7 @@ export default function App() {
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Facebook from 'expo-auth-session/providers/Facebook';
+import { ResponseType } from 'expo-auth-session';
 import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -464,6 +465,9 @@ WebBrowser.maybeCompleteAuthSession();
 export default function App() {
   const [request, response, promptAsync] = Facebook.useAuthRequest({
     clientId: '<YOUR FBID>',
+    /* @info Request that the server returns a <code>code</code> for server exchanges. */
+    responseType: ResponseType.Code,
+    /* @end */
   });
 
   React.useEffect(() => {
@@ -511,16 +515,13 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   const [request, response, promptAsync] = useAuthRequest({
-    /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-    responseType: ResponseType.Token,
-    /* @end */
     clientId: '<YOUR FBID>',
   });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
+      /* @info A <code>TokenResponse</code> object with authentication data like accessToken. */
+      const { authentication } = response;
       /* @end */
     }
   }, [response]);
