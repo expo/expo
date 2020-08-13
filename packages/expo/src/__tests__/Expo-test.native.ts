@@ -66,6 +66,7 @@ const skippedExports: string[] = [
   'Sharing',
   'SMS',
   'Speech',
+  'SplashScreen',
   'SQLite',
   'Svg',
   'takeSnapshotAsync',

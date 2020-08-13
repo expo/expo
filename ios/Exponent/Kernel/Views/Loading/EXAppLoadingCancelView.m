@@ -4,6 +4,8 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 
 @interface EXAppLoadingCancelView ()
 
+@property (nonatomic, assign) id<EXAppLoadingCancelViewDelegate> delegate;
+
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, strong) UILabel *lblStatus;
 @property (nonatomic, strong) UILabel *lblAdvice;
@@ -27,18 +29,28 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
   [self _invalidateTimer];
 }
 
+- (void)setDelegate:(id<EXAppLoadingCancelViewDelegate>)delegate
+{
+  _delegate = delegate;
+  if (_delegate) {
+    _btnCancel.hidden = NO;
+  }
+}
+
 - (void)setFrame:(CGRect)frame
 {
   [super setFrame:frame];
   
-  CGFloat statusWidth;
+  CGFloat startingY = CGRectGetMidY(frame) - 54.0f;
+  
   _lblStatus.frame = CGRectMake(0, 0, self.bounds.size.width - 32.0f, 24.0f);
   [_lblStatus sizeToFit];
-  statusWidth = _lblStatus.frame.size.width + _loadingIndicator.frame.size.width + 8.0f;
+  CGFloat statusWidth = _lblStatus.frame.size.width + _loadingIndicator.frame.size.width + 8.0f;
   
   _loadingIndicator.center = CGPointMake(CGRectGetMidX(self.bounds) - (statusWidth * 0.5f) + _loadingIndicator.frame.size.width * 0.5f,
-                                         CGRectGetMidY(_loadingIndicator.frame));
-  _lblStatus.center = CGPointMake(CGRectGetMaxX(_loadingIndicator.frame) + 8.0f + CGRectGetMidX(_lblStatus.frame), _loadingIndicator.center.y);
+                                         startingY);
+  _lblStatus.center = CGPointMake(CGRectGetMaxX(_loadingIndicator.frame) + 8.0f + CGRectGetMidX(_lblStatus.frame),
+                                  _loadingIndicator.center.y);
 
   _btnCancel.frame = CGRectMake(0, 0, 84.0f, 36.0f);
   _btnCancel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_lblStatus.frame) + 48.0f);
@@ -81,6 +93,7 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
   [_btnCancel addTarget:self action:@selector(_onTapCancel) forControlEvents:UIControlEventTouchUpInside];
   [self addSubview:_btnCancel];
   
+  _btnCancel.hidden = YES;
   _lblAdvice.hidden = YES;
   _tmrShowCancel = [NSTimer scheduledTimerWithTimeInterval:kEXTimeUntilCancelAppears
                                                     target:self

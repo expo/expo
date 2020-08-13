@@ -4,21 +4,20 @@ import android.app.Activity
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
-import com.facebook.react.ReactRootView
 import expo.modules.splashscreen.exceptions.NoContentViewException
 import java.lang.ref.WeakReference
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
 class SplashScreenController(
-    activity: Activity,
-    resizeMode: SplashScreenImageResizeMode,
-    splashScreenResourcesProvider: SplashScreenResourcesProvider
+  activity: Activity,
+  private val rootViewClass: Class<out ViewGroup>,
+  splashScreenViewProvider: SplashScreenViewProvider
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
       ?: throw NoContentViewException()
-  private var splashScreenView: View = SplashScreenView(activity, resizeMode, splashScreenResourcesProvider)
+  private var splashScreenView: View = splashScreenViewProvider.createSplashScreenView(activity)
   private val handler = Handler()
 
   private var autoHideEnabled = true
@@ -42,12 +41,8 @@ class SplashScreenController(
       successCallback: (hasEffect: Boolean) -> Unit,
       failureCallback: (reason: String) -> Unit
   ) {
-    if (!autoHideEnabled) {
+    if (!autoHideEnabled || !splashScreenShown) {
       return successCallback(false)
-    }
-
-    if (!splashScreenShown) {
-      return failureCallback("Native splash screen is already hidden. Call this method before rendering any view.")
     }
 
     autoHideEnabled = false
@@ -92,10 +87,10 @@ class SplashScreenController(
   }
 
   private fun findRootView(view: View): ViewGroup? {
-    if (ReactRootView::class.isInstance(view)) {
+    if (rootViewClass.isInstance(view)) {
       return view as ViewGroup
     }
-    if (view !is SplashScreenView && view is ViewGroup) {
+    if (view != splashScreenView && view is ViewGroup) {
       for (idx in 0 until view.childCount) {
         findRootView(view.getChildAt(idx))?.let { return@findRootView it }
       }

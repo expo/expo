@@ -217,7 +217,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       }
 
       if (!isDebugModeEnabled()) {
-        removeViews();
+        removeAllViewsFromContainer();
         mReactInstanceManager.assign(null);
         mReactRootView.assign(null);
       }
