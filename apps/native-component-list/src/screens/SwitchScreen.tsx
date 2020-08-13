@@ -1,11 +1,11 @@
+import { Platform } from '@unimodules/core';
 import * as React from 'react';
 import { Switch } from 'react-native';
 
-import Colors from '../../constants/Colors';
-import { Page, Section } from './CommonViews';
-import { Platform } from '@unimodules/core';
+import { Page, Section } from '../components/Page';
+import Colors from '../constants/Colors';
 
-export function SwitchExample() {
+export default function SwitchScreen() {
   const [value, setValue] = React.useState(true);
 
   return (
@@ -29,3 +29,7 @@ export function SwitchExample() {
     </Page>
   );
 }
+
+SwitchScreen.navigationOptions = {
+  title: 'Switch',
+};

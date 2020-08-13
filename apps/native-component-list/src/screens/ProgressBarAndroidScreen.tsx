@@ -1,9 +1,9 @@
 import * as React from 'react';
-
 import { ProgressBarAndroid } from 'react-native';
-import { Page, Section } from './CommonViews';
 
-export function ProgressBarAndroidExample() {
+import { Page, Section } from '../components/Page';
+
+export default function ProgressBarAndroidScreen() {
   return (
     <Page>
       <Section title="Custom Color">
@@ -15,6 +15,10 @@ export function ProgressBarAndroidExample() {
     </Page>
   );
 }
+
+ProgressBarAndroidScreen.navigationOptions = {
+  title: 'ProgressBarAndroid',
+};
 
 interface ProgressBarExampleProps {
   progressTintColor?: string;

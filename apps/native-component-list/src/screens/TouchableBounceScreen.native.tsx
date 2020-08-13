@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { Text } from 'react-native';
-
-import Colors from '../../constants/Colors';
-import { Page, Section } from './CommonViews';
-
 // @ts-ignore
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 
+import { Page, Section } from '../components/Page';
+import Colors from '../constants/Colors';
+
 // TODO: Deprecate
-export function TouchableBounceExample() {
+export default function TouchableBounceScreen() {
   const buttonStyle = {
     paddingHorizontal: 25,
     paddingVertical: 20,
@@ -31,3 +30,7 @@ export function TouchableBounceExample() {
     </Page>
   );
 }
+
+TouchableBounceScreen.navigationOptions = {
+  title: 'TouchableBounce',
+};

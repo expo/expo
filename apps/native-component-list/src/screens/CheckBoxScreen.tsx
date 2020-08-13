@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { CheckBox, Platform } from 'react-native';
 
-import Colors from '../../constants/Colors';
-import { Page, Section } from './CommonViews';
+import { Page, Section } from '../components/Page';
+import Colors from '../constants/Colors';
 
 // TODO: Upgrade to @react-native-community/checkbox
-export function CheckBoxExample() {
+export default function CheckBoxScreen() {
   const [value, setValue] = React.useState(true);
 
   return (
@@ -24,3 +24,7 @@ export function CheckBoxExample() {
     </Page>
   );
 }
+
+CheckBoxScreen.navigationOptions = {
+  title: 'CheckBox',
+};

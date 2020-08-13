@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Button, Clipboard, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, Clipboard, Text, TextInput } from 'react-native';
 
-import { Page, Section } from './CommonViews';
+import { Page, Section } from '../components/Page';
 
-export function ClipboardExample() {
+export default function ClipboardScreen() {
   return (
     <Page>
       <Section title="Set String">
@@ -15,6 +15,10 @@ export function ClipboardExample() {
     </Page>
   );
 }
+
+ClipboardScreen.navigationOptions = {
+  title: 'StatusBar',
+};
 
 function GetStringExample() {
   const [value, setValue] = React.useState('');

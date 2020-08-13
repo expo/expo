@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { StatusBar } from 'react-native';
 
-import Button from '../../components/Button';
-import { Page, Section } from './CommonViews';
+import Button from '../components/Button';
+import { Page, Section } from '../components/Page';
 
-export function StatusBarExample() {
+export default function StatusBarScreen() {
   const randomAnimation = () => {
     return Math.random() > 0.5 ? 'slide' : 'fade';
   };
@@ -27,3 +27,7 @@ export function StatusBarExample() {
     </Page>
   );
 }
+
+StatusBarScreen.navigationOptions = {
+  title: 'StatusBar',
+};

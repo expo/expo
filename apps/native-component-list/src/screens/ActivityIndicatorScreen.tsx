@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 
-import Colors from '../../constants/Colors';
-import { Page, Section } from './CommonViews';
+import Colors from '../constants/Colors';
+import { Page, Section } from '../components/Page';
 
 function ActivityIndicatorStopping({ hidesWhenStopped }: { hidesWhenStopped?: boolean }) {
   const [animating, setAnimating] = React.useState(true);
@@ -29,7 +29,7 @@ function ActivityIndicatorStopping({ hidesWhenStopped }: { hidesWhenStopped?: bo
   );
 }
 
-export function ActivityIndicatorExample() {
+export default function ActivityIndicatorScreen() {
   return (
     <Page>
       <Section title="Custom Color" row>
@@ -48,6 +48,10 @@ export function ActivityIndicatorExample() {
     </Page>
   );
 }
+
+ActivityIndicatorScreen.navigationOptions = {
+  title: 'ActivityIndicator',
+};
 
 const styles = StyleSheet.create({
   item: {

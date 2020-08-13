@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Alert, Platform } from 'react-native';
 
-import Button from '../../components/Button';
-import { Page, Section } from './CommonViews';
+import Button from '../components/Button';
+import { Page, Section } from '../components/Page';
 
-export function AlertExample() {
+export default function AlertExample() {
   const showPrompt = () => {
     Alert.prompt('Enter a value', undefined, text => console.log(`You entered ${text}`));
   };
@@ -33,3 +33,7 @@ export function AlertExample() {
     </Page>
   );
 }
+
+AlertExample.navigationOptions = {
+  title: 'Alert',
+};

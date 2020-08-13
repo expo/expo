@@ -1,10 +1,10 @@
-import * as React from 'react';
 import { Picker } from '@react-native-community/picker';
-
-import { Page, Section } from './CommonViews';
 import { Platform } from '@unimodules/core';
+import * as React from 'react';
 
-export function PickerExample() {
+import { Page, Section } from '../components/Page';
+
+export default function PickerScreen() {
   // TODO: PickerIOS, Android `mode`, Android `prompt`, iOS `itemStyle`
   return (
     <Page>
@@ -24,6 +24,10 @@ export function PickerExample() {
     </Page>
   );
 }
+
+PickerScreen.navigationOptions = {
+  title: 'Picker',
+};
 
 function GenericPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
   const [value, setValue] = React.useState<any>('java');

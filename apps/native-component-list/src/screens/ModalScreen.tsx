@@ -2,14 +2,14 @@ import * as React from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
-import { Colors, Layout } from '../constants';
+import { Layout } from '../constants';
 
 interface State {
   modalVisible: boolean;
   animationType?: 'none' | 'slide' | 'fade';
 }
 
-export default class ModalExample extends React.Component<object, State> {
+export default class ModalScreen extends React.Component<object, State> {
   readonly state: State = {
     modalVisible: false,
     animationType: 'none',
@@ -91,3 +91,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
+
+ModalScreen.navigationOptions = {
+  title: 'Modal',
+};

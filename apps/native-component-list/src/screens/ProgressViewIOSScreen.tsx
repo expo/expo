@@ -1,9 +1,9 @@
 import * as React from 'react';
-
 import { ProgressViewIOS } from 'react-native';
-import { Page, Section } from './CommonViews';
 
-export function ProgressViewIOSExample() {
+import { Page, Section } from '../components/Page';
+
+export default function ProgressViewIOSScreen() {
   return (
     <Page>
       <Section title="Custom Color">
@@ -15,6 +15,10 @@ export function ProgressViewIOSExample() {
     </Page>
   );
 }
+
+ProgressViewIOSScreen.navigationOptions = {
+  title: 'ProgressViewIOS',
+};
 
 interface ProgressViewExampleProps {
   progressTintColor?: string;

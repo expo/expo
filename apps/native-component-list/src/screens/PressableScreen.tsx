@@ -5,9 +5,9 @@
 import * as React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Page, Section } from './CommonViews';
+import { Page, Section } from '../components/Page';
 
-export function PressableExample() {
+export default function PressableScreen() {
   return (
     <Page>
       <Section title="FeedbackEvents">
@@ -23,10 +23,14 @@ export function PressableExample() {
   );
 }
 
+PressableScreen.navigationOptions = {
+  title: 'Pressable',
+};
+
 function DelayEvents() {
   const [eventLog, updateEventLog] = React.useState([]);
 
-  const handlePress = eventName => {
+  const handlePress = (eventName: string) => {
     return () => {
       const limit = 6;
       updateEventLog(state => {
@@ -83,7 +87,7 @@ function Disabled() {
 function FeedbackEvents() {
   const [eventLog, updateEventLog] = React.useState([]);
 
-  const handlePress = eventName => {
+  const handlePress = (eventName: string) => {
     return () => {
       const limit = 6;
       updateEventLog(state => {

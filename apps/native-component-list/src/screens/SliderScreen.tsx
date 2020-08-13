@@ -1,10 +1,11 @@
-import * as React from 'react';
 import Slider from '@react-native-community/slider';
+import * as React from 'react';
 import { Text } from 'react-native';
-import Colors from '../../constants/Colors';
-import { Page, Section } from './CommonViews';
 
-export function SliderExample() {
+import { Page, Section } from '../components/Page';
+import Colors from '../constants/Colors';
+
+export default function SliderScreen() {
   const [value, setValue] = React.useState(0.5);
 
   return (
@@ -25,3 +26,7 @@ export function SliderExample() {
     </Page>
   );
 }
+
+SliderScreen.navigationOptions = {
+  title: 'Slider',
+};
