@@ -51,6 +51,7 @@ const NetInfo = optionalRequire(() => require('../screens/NetInfoScreen'));
 const Notification = optionalRequire(() => require('../screens/NotificationScreen'));
 const Pedometer = optionalRequire(() => require('../screens/PedometerScreen'));
 const Permissions = optionalRequire(() => require('../screens/PermissionsScreen'));
+const Polyfills = optionalRequire(() => require('../screens/PolyfillsScreen'));
 const Print = optionalRequire(() => require('../screens/PrintScreen'));
 const Recording = optionalRequire(() => require('../screens/AV/RecordingScreen'));
 const Reminders = optionalRequire(() => require('../screens/RemindersScreen'));
@@ -111,6 +112,7 @@ const optionalScreens: {
   ...LocationScreens,
   Pedometer,
   Permissions,
+  Polyfills,
   Print,
   Recording,
   Reminders,

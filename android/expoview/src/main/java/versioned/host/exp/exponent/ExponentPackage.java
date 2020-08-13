@@ -63,6 +63,7 @@ import versioned.host.exp.exponent.modules.api.components.sharedelement.RNShared
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
+import versioned.host.exp.exponent.modules.api.getrandomvalues.RNGetRandomValuesModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
@@ -199,6 +200,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
+        nativeModules.add(new RNGetRandomValuesModule(reactContext));
 
         // @tsapeta: Using ExpoAppearanceModule in home app causes some issues with the dev menu,
         // when home's setting is set to automatic and the system theme is different

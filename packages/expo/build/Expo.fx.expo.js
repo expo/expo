@@ -4,6 +4,8 @@ import './environment/LogBox.fx'; // This must be imported exactly here
 import './environment/react-native-logs.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
+// load react-native-get-random-values to polyfill crypto.getRandomValues
+import 'react-native-get-random-values';
 import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import { installWebGeolocationPolyfill } from 'expo-location';

@@ -380,6 +380,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'react-native-get-random-values': {
+    repoUrl: 'https://github.com/LinusU/react-native-get-random-values/',
+    installableInManagedApps: true,
+    semverPrefix: '~',
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/GetRandomValues',
+        sourceAndroidPath: 'android/src/main/java/org/linusu',
+        targetAndroidPath: 'modules/api/getrandomvalues',
+        sourceAndroidPackage: 'org.linusu',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.getrandomvalues',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {
