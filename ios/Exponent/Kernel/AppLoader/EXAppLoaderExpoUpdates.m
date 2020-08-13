@@ -294,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
     // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
     NSString *securityPrefix = [_httpManifestUrl.scheme isEqualToString:@"https"] ? @"" : @"UNVERIFIED-";
     NSString *slugSuffix = manifest[@"slug"] ? [@"-" stringByAppendingString:manifest[@"slug"]]: @"";
-    mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path?:@"", slugSuffix];
+    mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path ?: @"", slugSuffix];
     mutableManifest[@"isVerified"] = @(YES);
   }
   if (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [self _isAnonymousExperience:manifest]) {

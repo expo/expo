@@ -222,7 +222,7 @@ public class FileDownloader {
           return manifestCandidate;
         }
       }
-    } catch (JSONException e){
+    } catch (JSONException e) {
       throw new IOException("Manifest string is not a valid JSONObject or JSONArray: " + manifestString, e);
     }
     throw new IOException("No compatible manifest found. SDK Versions supported: " + configuration.getSdkVersion() + " Provided manifestString: " + manifestString);
