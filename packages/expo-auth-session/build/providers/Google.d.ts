@@ -77,21 +77,23 @@ declare class GoogleAuthRequest extends AuthRequest {
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes then the response will be fulfilled.
  *
+ * The id token can be retrieved with `response.params.id_token`.
+ *
  * - [Get Started](https://docs.expo.io/guides/authentication/#google)
  *
  * @param config
- * @param discovery
+ * @param redirectUriOptions
  */
-export declare function useIdTokenAuthRequest(config?: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export declare function useIdTokenAuthRequest(config: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
- * When the prompt method completes then the response will be fulfilled.
+ * When the prompt method completes, then the response will be fulfilled.
  *
  * - [Get Started](https://docs.expo.io/guides/authentication/#google)
  *
  * @param config
- * @param discovery
+ * @param redirectUriOptions
  */
 export declare function useAuthRequest(config?: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
 export {};

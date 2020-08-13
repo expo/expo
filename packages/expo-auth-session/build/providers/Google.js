@@ -86,28 +86,33 @@ function invariantClientId(idName, value) {
         // TODO(Bacon): Add learn more
         throw new Error(`Client Id property \`${idName}\` must be defined to use Google auth on this platform.`);
 }
+function useProxyEnabled(redirectUriOptions) {
+    return useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
+        redirectUriOptions.useProxy,
+    ]);
+}
 /**
  * Load an authorization request with an ID Token for authentication with Firebase.
  *
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes then the response will be fulfilled.
  *
+ * The id token can be retrieved with `response.params.id_token`.
+ *
  * - [Get Started](https://docs.expo.io/guides/authentication/#google)
  *
  * @param config
- * @param discovery
+ * @param redirectUriOptions
  */
-export function useIdTokenAuthRequest(config = {}, redirectUriOptions = {}) {
-    const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-        redirectUriOptions.useProxy,
-    ]);
+export function useIdTokenAuthRequest(config, redirectUriOptions = {}) {
+    const useProxy = useProxyEnabled(redirectUriOptions);
     const isWebAuth = useProxy || Platform.OS === 'web';
     return useAuthRequest({
         ...config,
         responseType: 
         // If the client secret is provided then code can be used
         !config.clientSecret &&
-            // When when auth is used we can request the id token directly without exchanging
+            // When web auth is used, we can request the `id_token` directly without exchanging a code.
             isWebAuth
             ? ResponseType.IdToken
             : undefined,
@@ -116,17 +121,15 @@ export function useIdTokenAuthRequest(config = {}, redirectUriOptions = {}) {
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
- * When the prompt method completes then the response will be fulfilled.
+ * When the prompt method completes, then the response will be fulfilled.
  *
  * - [Get Started](https://docs.expo.io/guides/authentication/#google)
  *
  * @param config
- * @param discovery
+ * @param redirectUriOptions
  */
 export function useAuthRequest(config = {}, redirectUriOptions = {}) {
-    const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-        redirectUriOptions.useProxy,
-    ]);
+    const useProxy = useProxyEnabled(redirectUriOptions);
     const clientId = useMemo(() => {
         const propertyName = useProxy
             ? 'expoClientId'

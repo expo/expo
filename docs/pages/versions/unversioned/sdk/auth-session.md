@@ -511,11 +511,26 @@ Access token type [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
 
 `'bearer' | 'mac'`
 
+### `GoogleAuthRequestConfig`
+
+An extension of the [`AuthRequestConfig`][#authrequestconfig] for use with the built-in Google provider.
+
+| Name                   | Type       | Description                                                                           |
+| ---------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| language               | `?string`  | Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'                 |
+| loginHint              | `?string`  | User email to use as the default option                                               |
+| selectAccount          | `?boolean` | Used in favor of `prompt: Prompt.SelectAccount` to switch accounts                    |
+| expoClientId           | `?string`  | Proxy client ID for use in the Expo client on iOS and Android.                        |
+| webClientId            | `?string`  | Web client ID for use in the browser (web apps).                                      |
+| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare-workflow, and custom clients.        |
+| androidClientId        | `?string`  | Android native client ID for use in standalone, bare-workflow, and custom clients.    |
+| shouldAutoExchangeCode | `?string`  | Should the hook automatically exchange the response code for an authentication token. |
+
 ## Providers
 
 AuthSession has built-in support for some popular providers to make usage as easy as possible. These allow you to skip repetitive things like defining endpoints and abstract common features like `language`.
 
-### Google
+## Google
 
 ```tsx
 import * as Google from 'expo-auth-session/providers/Google';
@@ -524,12 +539,32 @@ import * as Google from 'expo-auth-session/providers/Google';
 - See the guide for more info on usage: [Google Authentication](/guides/authentication#google).
 - Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
 - Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
-- Automatically uses the proxy in Expo client because native auth is not supported due to custom build time configuration.
+- By default, the authorization `code` will be automatically exchanged for an access token. This can be overridden with `shouldAutoExchangeCode`.
+- Automatically uses the proxy in Expo client because native auth is not supported due to custom build time configuration. This can be overridden with `redirectUriOptions.useProxy`.
 - Defaults to using the bundle ID and package name for the native URI redirect instead of the reverse client ID.
 - Disables PKCE for implicit and id-token based auth responses.
-- On web, the popup is presented with the dimensions `{ width: 515, height: 680 }`
+- On web, the popup is presented with the dimensions that are optimized for the Google login UI (`{ width: 515, height: 680 }`).
 
-### Facebook
+### useAuthRequest()
+
+A hook used for opinionated Google authentication that works across platforms.
+
+#### Arguments
+
+- **config (_Partial<GoogleAuthRequestConfig>_)** -- An object with client IDs for each platform that should be supported.
+- **redirectUriOptions (_AuthSessionRedirectUriOptions_)** -- Optional properties used to construct the redirect URI (passed to `makeRedirectUriAsync()`).
+
+#### Returns
+
+- **request (_GoogleAuthRequest | null_)** -- An instance of [`GoogleAuthRequest`](#googleauthrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. This **should not** be used to enable the Expo proxy service `auth.expo.io`, as the proxy will be automatically enabled based on the platform.
+
+### discovery
+
+An object containing the discovery URLs used for Google auth.
+
+## Facebook
 
 ```tsx
 import * as Facebook from 'expo-auth-session/providers/Facebook';
@@ -542,6 +577,25 @@ import * as Facebook from 'expo-auth-session/providers/Facebook';
 - The URI redirect must be added to your `app.config.js` or `app.json` as `facebookScheme: 'fb<YOUR FBID>'`.
 - Disables PKCE for implicit auth response.
 - On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`
+
+### useAuthRequest()
+
+A hook used for opinionated Facebook authentication that works across platforms.
+
+#### Arguments
+
+- **config (_Partial<FacebookAuthRequestConfig>_)** -- An object with client IDs for each platform that should be supported.
+- **redirectUriOptions (_AuthSessionRedirectUriOptions_)** -- Optional properties used to construct the redirect URI (passed to `makeRedirectUriAsync()`).
+
+#### Returns
+
+- **request (_FacebookAuthRequest | null_)** -- An instance of [`FacebookAuthRequest`](#facebookauthrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute.
+
+### discovery
+
+An object containing the discovery URLs used for Facebook auth.
 
 ## Usage in the bare React Native app
 
