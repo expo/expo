@@ -7,7 +7,7 @@ on:
         description: 'type "release-simulator" to confirm upload'
         required: false
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
@@ -17,7 +17,7 @@ on:
       - Gemfile.lock
       - .ruby-version
   push:
-    branches: [ master, sdk-* ]
+    branches: [master, sdk-*]
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
@@ -63,6 +63,9 @@ jobs:
           bundle install --jobs 4 --retry 3
       - run: expotools client-build --platform ios
         timeout-minutes: 60
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Save test results
         if: always()
         uses: actions/upload-artifact@v2
@@ -71,6 +74,9 @@ jobs:
           path: ~/Library/Logs/fastlane
       - run: expotools client-build --platform ios --release # should only upload already-built app
         if: ${{ github.event.inputs.releaseSimulator == 'release-simulator' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
