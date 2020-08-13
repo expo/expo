@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
-import { Page, Section } from './ReactNativeCore/CommonViews';
+import { Page, Section } from '../components/Page';
 
 function ActivityIndicatorStopping({ hidesWhenStopped }: { hidesWhenStopped?: boolean }) {
   const [animating, setAnimating] = React.useState(true);

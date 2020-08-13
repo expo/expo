@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { CheckBox, Platform } from 'react-native';
 
+import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
-import { Page, Section } from './ReactNativeCore/CommonViews';
 
 // TODO: Upgrade to @react-native-community/checkbox
 export default function CheckBoxScreen() {

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Text } from 'react-native';
 
+import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
-import { Page, Section } from './ReactNativeCore/CommonViews';
 
 export default function TextScreen() {
   const linkStyle = { color: Colors.tintColor, marginVertical: 3 };

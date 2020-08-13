@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Button } from 'react-native';
 
+import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
-import { Page, Section } from './ReactNativeCore/CommonViews';
 
 export default function ButtonScreen() {
   return (

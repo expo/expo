@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ProgressViewIOS } from 'react-native';
 
-import { Page, Section } from './ReactNativeCore/CommonViews';
+import { Page, Section } from '../components/Page';
 
 export default function ProgressViewIOSScreen() {
   return (

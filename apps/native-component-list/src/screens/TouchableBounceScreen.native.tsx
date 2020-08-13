@@ -3,8 +3,8 @@ import { Text } from 'react-native';
 // @ts-ignore
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 
+import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
-import { Page, Section } from './ReactNativeCore/CommonViews';
 
 // TODO: Deprecate
 export default function TouchableBounceScreen() {

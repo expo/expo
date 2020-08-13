@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StatusBar } from 'react-native';
 
 import Button from '../components/Button';
-import { Page, Section } from './ReactNativeCore/CommonViews';
+import { Page, Section } from '../components/Page';
 
 export default function StatusBarScreen() {
   const randomAnimation = () => {

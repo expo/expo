@@ -1,15 +1,15 @@
 import * as React from 'react';
 import {
+  Platform,
   Text,
   TouchableHighlight,
-  Platform,
   TouchableNativeFeedback,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
-import { Page, Section } from './ReactNativeCore/CommonViews';
 
 export default function TouchablesScreen() {
   const buttonStyle = {

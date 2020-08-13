@@ -1,8 +1,8 @@
-import * as React from 'react';
 import { Picker } from '@react-native-community/picker';
-
-import { Page, Section } from './ReactNativeCore/CommonViews';
 import { Platform } from '@unimodules/core';
+import * as React from 'react';
+
+import { Page, Section } from '../components/Page';
 
 export default function PickerScreen() {
   // TODO: PickerIOS, Android `mode`, Android `prompt`, iOS `itemStyle`

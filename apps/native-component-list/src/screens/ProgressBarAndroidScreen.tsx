@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ProgressBarAndroid } from 'react-native';
 
-import { Page, Section } from './ReactNativeCore/CommonViews';
+import { Page, Section } from '../components/Page';
 
 export default function ProgressBarAndroidScreen() {
   return (
