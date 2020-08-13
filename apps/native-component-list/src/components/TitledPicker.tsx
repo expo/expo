@@ -1,6 +1,7 @@
 import { B } from '@expo/html-elements';
 import * as React from 'react';
-import { StyleSheet, Picker, View, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet, View, TextStyle, ViewStyle } from 'react-native';
+import { Picker } from '@react-native-community/picker';
 
 export default function TitledPicker({
   style,

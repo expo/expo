@@ -54,6 +54,7 @@ export async function startAsync(options) {
         type: errorCode ? 'error' : 'success',
         params,
         errorCode,
+        authentication: null,
         url: result.url,
     };
 }

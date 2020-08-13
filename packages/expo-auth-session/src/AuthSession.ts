@@ -85,6 +85,7 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
     type: errorCode ? 'error' : 'success',
     params,
     errorCode,
+    authentication: null,
     url: result.url,
   };
 }

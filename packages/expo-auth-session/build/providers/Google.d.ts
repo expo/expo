@@ -56,6 +56,12 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      *   - **Bare-workflow**: Run `npx uri-scheme add <your android package> --android`
      */
     androidClientId?: string;
+    /**
+     * Should the hook automatically exchange the response code for an authentication token.
+     *
+     * Defaults to true on installed apps (iOS, Android) when `ResponseType.Code` is used (default).
+     */
+    shouldAutoExchangeCode?: boolean;
 }
 declare class GoogleAuthRequest extends AuthRequest {
     nonce?: string;
@@ -65,6 +71,18 @@ declare class GoogleAuthRequest extends AuthRequest {
      */
     getAuthRequestConfigAsync(): Promise<AuthRequestConfig>;
 }
+/**
+ * Load an authorization request with an ID Token for authentication with Firebase.
+ *
+ * Returns a loaded request, a response, and a prompt method.
+ * When the prompt method completes then the response will be fulfilled.
+ *
+ * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ *
+ * @param config
+ * @param discovery
+ */
+export declare function useIdTokenAuthRequest(config?: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.

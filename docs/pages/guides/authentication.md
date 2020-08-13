@@ -928,10 +928,9 @@ Expo web client ID for use in the browser.
 - Give it a name (e.g. "Web App").
 - **URIs** (Authorized JavaScript origins): https://yourwebsite.com | https://localhost:19006
 - **Authorized redirect URIs**: https://yourwebsite.com | https://localhost:19006
-  - To test this be sure to start your app with `expo start:web --https`.
 - To test this be sure to start your app with `expo start:web --https`.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
+<AuthMethodTabSwitcher tabs={["Standard", "Firebase"]}>
 <AuthCodeTab>
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -956,8 +955,8 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
-      const { code } = response.params;
+      /* @info A <code>TokenResponse</code> object with authentication data like accessToken. */
+      const { authentication } = response;
       /* @end */
     }
   }, [response]);
@@ -981,60 +980,6 @@ export default function App() {
 </SnackInline>
 
 </AuthCodeTab>
-
-<ImplicitTab>
-
-<SnackInline label='Google Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
-
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/Google';
-import { Button } from 'react-native';
-import { ResponseType } from 'expo-auth-session';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-export default function App() {
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
-    iosClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
-    androidClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
-    webClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
-    /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-    responseType: ResponseType.Token,
-    /* @end */
-  });
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</SnackInline>
-
-</ImplicitTab>
 
 <ImplicitTab>
 
@@ -1077,13 +1022,10 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
 
-  const [request, response, promptAsync] = Google.useAuthRequest(
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
     {
       /* @info This comes from the Firebase Google authentication panel. */
       clientId: 'Your-Web-Client-ID.apps.googleusercontent.com',
-      /* @end */
-      /* @info Request that the server returns an <code>id_token</code>, which Firebase expects. */
-      responseType: ResponseType.IdToken,
       /* @end */
     },
   );

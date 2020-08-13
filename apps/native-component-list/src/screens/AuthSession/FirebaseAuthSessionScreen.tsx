@@ -77,19 +77,25 @@ function AuthSessionProviders(props: ProviderProps) {
 }
 
 function Google({ language, selectAccount }: ProviderProps) {
-  const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest(
+  const [request, result, promptAsync] = GoogleAuthSession.useIdTokenAuthRequest(
     {
       expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
       clientId: `${getGUID()}.apps.googleusercontent.com`,
       selectAccount,
       language,
-      responseType: AuthSession.ResponseType.IdToken,
     },
     {
       path: 'redirect',
       preferLocalhost: true,
     }
   );
+
+  React.useEffect(() => {
+    if (result?.type === 'success') {
+      console.log('Auth >', result.params.id_token);
+      console.log('Results >', result);
+    }
+  }, [result]);
 
   return (
     <AuthSection

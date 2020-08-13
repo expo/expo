@@ -1,9 +1,10 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
+import { AccessTokenRequest } from '../TokenRequest';
 const settings = {
     windowFeatures: { width: 515, height: 680 },
     minimumScopes: [
@@ -86,6 +87,33 @@ function invariantClientId(idName, value) {
         throw new Error(`Client Id property \`${idName}\` must be defined to use Google auth on this platform.`);
 }
 /**
+ * Load an authorization request with an ID Token for authentication with Firebase.
+ *
+ * Returns a loaded request, a response, and a prompt method.
+ * When the prompt method completes then the response will be fulfilled.
+ *
+ * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ *
+ * @param config
+ * @param discovery
+ */
+export function useIdTokenAuthRequest(config = {}, redirectUriOptions = {}) {
+    const useProxy = useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
+        redirectUriOptions.useProxy,
+    ]);
+    const isWebAuth = useProxy || Platform.OS === 'web';
+    return useAuthRequest({
+        ...config,
+        responseType: 
+        // If the client secret is provided then code can be used
+        !config.clientSecret &&
+            // When when auth is used we can request the id token directly without exchanging
+            isWebAuth
+            ? ResponseType.IdToken
+            : undefined,
+    }, { ...redirectUriOptions, useProxy });
+}
+/**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes then the response will be fulfilled.
@@ -118,6 +146,21 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         config.webClientId,
         config.clientId,
     ]);
+    const responseType = useMemo(() => {
+        // Allow overrides.
+        if (typeof config.responseType !== 'undefined') {
+            return config.responseType;
+        }
+        // You can only use `response_token=code` on installed apps (iOS, Android without proxy).
+        // Installed apps can auto exchange without a client secret and get the token and id-token (Firebase).
+        const isInstalledApp = Platform.OS !== 'web' && !useProxy;
+        // If the user provided the client secret (they shouldn't!) then use code exchange by default.
+        if (config.clientSecret || isInstalledApp) {
+            return ResponseType.Code;
+        }
+        // This seems the most pragmatic option since it can result in a full authentication on web and proxy platforms as expected.
+        return ResponseType.Token;
+    }, [config.responseType, config.clientSecret, useProxy]);
     const redirectUri = useMemo(() => {
         if (typeof config.redirectUri !== 'undefined') {
             return config.redirectUri;
@@ -143,6 +186,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
     }, [config.extraParams, config.language, config.loginHint, config.selectAccount]);
     const request = useLoadedAuthRequest({
         ...config,
+        responseType,
         extraParams,
         clientId,
         redirectUri,
@@ -151,6 +195,59 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         useProxy,
         windowFeatures: settings.windowFeatures,
     });
-    return [request, result, promptAsync];
+    const [fullResult, setFullResult] = useState(null);
+    const shouldAutoExchangeCode = useMemo(() => {
+        // allow overrides
+        if (typeof config.shouldAutoExchangeCode !== 'undefined')
+            return config.shouldAutoExchangeCode;
+        // has a code to exchange and doesn't have an authentication yet.
+        const couldAutoExchange = result?.type === 'success' && result.params.code && !result.authentication;
+        return couldAutoExchange;
+    }, [config.shouldAutoExchangeCode, result?.type]);
+    useEffect(() => {
+        let isMounted = true;
+        if (!fullResult && shouldAutoExchangeCode && result?.type === 'success') {
+            const exchangeRequest = new AccessTokenRequest({
+                clientId,
+                clientSecret: config.clientSecret,
+                redirectUri,
+                scopes: config.scopes,
+                code: result.params.code,
+                extraParams: {
+                    // @ts-ignore: allow for instances where PKCE is disabled
+                    code_verifier: request.codeVerifier,
+                },
+            });
+            exchangeRequest.performAsync(discovery).then(authentication => {
+                if (isMounted) {
+                    setFullResult({
+                        ...result,
+                        params: {
+                            // @ts-ignore: provide a singular interface for getting the id_token across all workflows that request it.
+                            id_token: authentication.idToken,
+                            access_token: authentication.accessToken,
+                            ...result.params,
+                        },
+                        authentication,
+                    });
+                }
+            });
+        }
+        else {
+            setFullResult(fullResult ?? result);
+        }
+        return () => {
+            isMounted = false;
+        };
+    }, [
+        clientId,
+        redirectUri,
+        shouldAutoExchangeCode,
+        config.clientSecret,
+        config.scopes?.join(','),
+        request?.codeVerifier,
+        fullResult,
+    ]);
+    return [request, fullResult, promptAsync];
 }
 //# sourceMappingURL=Google.js.map

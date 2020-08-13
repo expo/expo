@@ -111,7 +111,7 @@ function Google({ prompt, usePKCE }: any) {
       selectAccount: !!prompt,
       // language: 'fr',
       // responseType: AuthSession.ResponseType.Token,
-      responseType: AuthSession.ResponseType.IdToken,
+      // responseType: AuthSession.ResponseType.IdToken,
       // clientSecret: '',
       usePKCE,
     },
@@ -120,6 +120,15 @@ function Google({ prompt, usePKCE }: any) {
       preferLocalhost: true,
     }
   );
+
+  React.useEffect(() => {
+    if (request && result?.type === 'success') {
+      console.log('RESULT: ', result);
+
+      console.log('------ AUTH ------');
+      console.log(result.authentication);
+    }
+  }, [result]);
 
   return (
     <AuthSection
