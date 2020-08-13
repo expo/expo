@@ -43,5 +43,6 @@ export declare class WebGLObject {
     toString(): string;
 }
 declare class WebGLTexture extends WebGLObject {
+    constructor(id: any, w: any, h: any);
 }
 export {};
