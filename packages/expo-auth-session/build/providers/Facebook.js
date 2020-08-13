@@ -94,6 +94,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
             return config.redirectUri;
         }
         return makeRedirectUri({
+            // The redirect URI should be created using fb + client ID on native.
             native: `fb${clientId}://authorize`,
             useProxy,
             ...redirectUriOptions,

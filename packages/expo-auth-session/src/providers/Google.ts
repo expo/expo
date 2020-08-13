@@ -302,7 +302,9 @@ export function useAuthRequest(
 
   const shouldAutoExchangeCode = useMemo(() => {
     // allow overrides
-    if (typeof config.shouldAutoExchangeCode !== 'undefined') return config.shouldAutoExchangeCode;
+    if (typeof config.shouldAutoExchangeCode !== 'undefined') {
+      return config.shouldAutoExchangeCode;
+    }
 
     // has a code to exchange and doesn't have an authentication yet.
     const couldAutoExchange =

@@ -177,8 +177,9 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
     const [fullResult, setFullResult] = useState(null);
     const shouldAutoExchangeCode = useMemo(() => {
         // allow overrides
-        if (typeof config.shouldAutoExchangeCode !== 'undefined')
+        if (typeof config.shouldAutoExchangeCode !== 'undefined') {
             return config.shouldAutoExchangeCode;
+        }
         // has a code to exchange and doesn't have an authentication yet.
         const couldAutoExchange = result?.type === 'success' && result.params.code && !result.authentication;
         return couldAutoExchange;
