@@ -385,6 +385,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { Speech } from 'expo' -> import * as Speech from 'expo-speech'`, 'Speech', 'expo-speech');
         },
     },
+    SplashScreen: {
+        enumerable: true,
+        get() {
+            removedModule(`import { SplashScreen } from 'expo' -> import * as SplashScreen from 'expo-splash-screen'`, 'SplashScreen', 'expo-splash-screen');
+        },
+    },
     SQLite: {
         enumerable: true,
         get() {

@@ -30,11 +30,18 @@ const sections = [
   },
   {
     name: 'EAS Builds',
-    reference: ['Introduction', 'EAS Builds in 5 Minutes', 'Setup', 'iOS', 'Android'],
+    reference: [
+      'Introduction',
+      'EAS Builds in 5 Minutes',
+      'Configuring with eas.json',
+      'Setup',
+      'iOS',
+      'Android',
+    ],
   },
   {
     name: 'Get Started',
-    reference: ['Installation', 'Create a new app'],
+    reference: ['Installation', 'Create a new app', 'Errors and debugging'],
   },
   {
     name: 'Conceptual Overview',
@@ -57,7 +64,6 @@ const sections = [
       'Sharing the image',
       'Handling platform differences',
       'Configuring a splash screen and app icon',
-      'Errors and debugging',
       'Learning more',
     ],
   },

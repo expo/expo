@@ -10,9 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
+static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
 
-static NSString * const kEXUpdatesConfigPlistName = @"Expo";
+static NSString * const EXUpdatesConfigPlistName = @"Expo";
 
 @interface EXUpdatesAppController ()
 
@@ -234,7 +234,7 @@ static NSString * const kEXUpdatesConfigPlistName = @"Expo";
 
 - (EXUpdatesConfig *)_loadConfigFromExpoPlist
 {
-  NSString *configPath = [[NSBundle mainBundle] pathForResource:kEXUpdatesConfigPlistName ofType:@"plist"];
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:EXUpdatesConfigPlistName ofType:@"plist"];
   if (!configPath) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXUpdatesFileDownloader *downloader;
 
 @end
-static NSString * const kEXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteAppLoader";
+static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteAppLoader";
 
 @implementation EXUpdatesRemoteAppLoader
 
@@ -55,7 +55,7 @@ static NSString * const kEXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemote
       });
     } else {
       if (!asset.url) {
-        [self handleAssetDownloadWithError:[NSError errorWithDomain:kEXUpdatesRemoteAppLoaderErrorDomain code:1006 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}] asset:asset];
+        [self handleAssetDownloadWithError:[NSError errorWithDomain:EXUpdatesRemoteAppLoaderErrorDomain code:1006 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}] asset:asset];
         return;
       }
 

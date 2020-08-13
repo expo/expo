@@ -59,13 +59,21 @@ export default function App() {
 import * as Brightness from 'expo-brightness';
 ```
 
-<TableOfContentSection title='Methods' contents={['Brightness.requestPermissionsAsync()', 'Brightness.getPermissionsAsync()', 'Brightness.getBrightnessAsync()', 'Brightness.setBrightnessAsync(brightnessValue)', 'Brightness.useSystemBrightnessAsync()', 'Brightness.isUsingSystemBrightnessAsync()', 'Brightness.getSystemBrightnessAsync()', 'Brightness.setSystemBrightnessAsync(brightnessValue)', 'Brightness.getSystemBrightnessModeAsync()', 'Brightness.setSystemBrightnessModeAsync(brightnessMode)' ]} />
+<TableOfContentSection title='Methods' contents={['Brightness.isAvailableAsync()', 'Brightness.requestPermissionsAsync()', 'Brightness.getPermissionsAsync()', 'Brightness.getBrightnessAsync()', 'Brightness.setBrightnessAsync(brightnessValue)', 'Brightness.useSystemBrightnessAsync()', 'Brightness.isUsingSystemBrightnessAsync()', 'Brightness.getSystemBrightnessAsync()', 'Brightness.setSystemBrightnessAsync(brightnessValue)', 'Brightness.getSystemBrightnessModeAsync()', 'Brightness.setSystemBrightnessModeAsync(brightnessMode)' ]} />
 
 <TableOfContentSection title='Enum Types' contents={['Brightness.BrightnessMode']} />
 
 <TableOfContentSection title='Error Codes' contents={['ERR_BRIGHTNESS', 'ERR_BRIGHTNESS_MODE', 'ERR_BRIGHTNESS_PERMISSIONS_DENIED', 'ERR_BRIGHTNESS_SYSTEM', 'ERR_INVALID_ARGUMENT']} />
 
 ## Methods
+
+### `Brightness.isAvailableAsync()`
+
+Returns whether the Brightness API is enabled on the current device. This does not check the app permissions.
+
+#### Returns
+
+Async `boolean`, indicating whether the Brightness API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
 ### `Brightness.requestPermissionsAsync()`
 

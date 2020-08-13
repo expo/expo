@@ -32,6 +32,8 @@ In order to use [Geofencing Methods](#geofencing-methods), the following require
 - Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
 
+On Android, This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
+
 ## Usage
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).

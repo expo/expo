@@ -11,6 +11,7 @@ import android.os.Debug;
 import androidx.core.content.ContextCompat;
 import android.view.View;
 
+import com.facebook.react.ReactRootView;
 import com.facebook.soloader.SoLoader;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -34,6 +35,9 @@ import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.notifications.NotificationsPackage;
 import expo.modules.permissions.PermissionsPackage;
+import expo.modules.splashscreen.SplashScreen;
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
+import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -66,9 +70,15 @@ public class HomeActivity extends BaseExperienceActivity {
 
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel(this);
-    showLoadingScreen(null);
+
+    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView.class, true);
 
     tryInstallLeakCanary(true);
+  }
+
+  @Override
+  protected boolean shouldCreateLoadingView() {
+    return false;
   }
 
   @Override
@@ -118,8 +128,8 @@ public class HomeActivity extends BaseExperienceActivity {
     mReactInstanceManager.assign(mKernel.getReactInstanceManager());
     mReactRootView.assign(mKernel.getReactRootView());
     mReactInstanceManager.onHostResume(this, this);
-    setView((View) mReactRootView.get());
-    checkForReactViews();
+    setReactRootView((View) mReactRootView.get());
+    finishLoading();
 
     if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
       Debug.stopMethodTracing();
@@ -146,7 +156,8 @@ public class HomeActivity extends BaseExperienceActivity {
         new MediaLibraryPackage(),
         new NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         new TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
-        new DevicePackage()
+        new DevicePackage(),
+        new SplashScreenPackage()
     );
   }
 }

@@ -4,6 +4,7 @@ import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
+import * as BarCodeScanner from 'expo-barcode-scanner';
 
 import QRFooterButton from '../components/QRFooterButton';
 import QRIndicator from '../components/QRIndicator';
@@ -81,6 +82,9 @@ export default function BarCodeScreen(props) {
     <View style={styles.container}>
       {state.isVisible ? (
         <Camera
+          barCodeScannerSettings={{
+            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+          }}
           onBarCodeScanned={_handleBarCodeScanned}
           style={StyleSheet.absoluteFill}
           flashMode={isLit ? 'torch' : 'off'}

@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCUserAgentCollector.h
+../../../Branch/Branch-SDK/BNCUserAgentCollector.h

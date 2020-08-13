@@ -4,6 +4,7 @@
 /packages/@unimodules/core                      @sjchmiela @tsapeta
 /packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne
+/packages/danger                                @lukmccall @bbarthec
 /packages/expo-ads-admob                        @sjchmiela
 /packages/expo-ads-facebook                     @sjchmiela
 /packages/expo-analytics-amplitude              @sjchmiela
@@ -17,7 +18,6 @@
 /packages/expo-background-fetch                 @tsapeta
 /packages/expo-barcode-scanner                  @bbarthec @lukmccall
 /packages/expo-battery                          @tsapeta
-/packages/expo-bluetooth                        @EvanBacon
 /packages/expo-blur                             @sjchmiela
 /packages/expo-branch                           @sjchmiela
 /packages/expo-brightness                       @sjchmiela

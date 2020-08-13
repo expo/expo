@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCFieldDefines.h
+../../../Branch/Branch-SDK/BNCFieldDefines.h

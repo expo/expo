@@ -61,6 +61,7 @@ export declare const Sensors: null;
 export declare const Sharing: null;
 export declare const SMS: null;
 export declare const Speech: null;
+export declare const SplashScreen: null;
 export declare const SQLite: null;
 export declare const StoreReview: null;
 export declare const TaskManager: null;

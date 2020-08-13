@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/NSString+Branch.h
+../../../Branch/Branch-SDK/NSString+Branch.h

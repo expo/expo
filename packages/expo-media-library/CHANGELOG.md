@@ -4,9 +4,25 @@
 
 ### 🛠 Breaking changes
 
-- Added external storage permissions declarations to `AndroidManifest.xml` on Android. ([#9231](https://github.com/expo/expo/pull/9231) by [@bycedric](https://github.com/bycedric))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 9.1.0 — 2020-08-13
 
 ### 🎉 New features
+
+- Add permissions for web. ([#9671](https://github.com/expo/expo/pull/9671) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fixed `getAlbumsAsync()`, `getAlbum()` and media change listener crashing on Android 10. ([#9666](https://github.com/expo/expo/pull/9666) by [@barthap](https://github.com/barthap))
+
+## 9.0.0 — 2020-08-11
+
+### 🛠 Breaking changes
+
+- Added external storage permissions declarations to `AndroidManifest.xml` on Android. ([#9231](https://github.com/expo/expo/pull/9231) by [@bycedric](https://github.com/bycedric))
 
 ### 🐛 Bug fixes
 
@@ -38,7 +54,7 @@
 
 ## 8.2.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.2.0 — 2020-05-27
 

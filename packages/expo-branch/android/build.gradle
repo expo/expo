@@ -4,6 +4,17 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '2.2.1'
 
+import groovy.json.JsonSlurper
+
+def getNpmVersion() {
+  def packageJsonFile = file('../package.json')
+  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+  // In expo-branch we want to return version of the react-native-branch
+  // not the package version as they don't necessarily match.
+  // return packageJson.version
+  return packageJson.dependencies["react-native-branch"]
+}
+
 // Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -42,6 +53,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 8
     versionName '2.2.1'
+
+    buildConfigField("String", "RNBRANCH_VERSION", "\"${getNpmVersion()}\"")
   }
   lintOptions {
     abortOnError false
@@ -59,6 +72,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   implementation 'com.facebook.react:react-native:+'
-  api 'io.branch.sdk.android:library:4.1.0'
+  api 'io.branch.sdk.android:library:5.0.1'
   implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.0.0"
 }

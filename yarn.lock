@@ -2631,14 +2631,14 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/datetimepicker@2.4.3":
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-2.4.3.tgz#9afbe768fbaced25a64ca3e22e10e43ee65463db"
-  integrity sha512-Y8L60DlXW6gqjhDj9E7dErtSRff5i/CqTRsRkJ8UiY27FnrtTFjRhQ0652XOc+o+1geEqcyD71wjN/0L3zOs9A==
+"@react-native-community/datetimepicker@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-3.0.0.tgz#93747bcabbebff191547edd07103cf2ea15acf8c"
+  integrity sha512-GqKnUd5oZ5iy0PhkeRimxrgHiJur6zUYJaU4OI3JnInKuTqbuBRviHackIhTHIJtIKyGPRnHXrH1XhWiHlf4AQ==
   dependencies:
     invariant "^2.2.4"
   optionalDependencies:
-    react-native-windows "^0.62.0-preview.1"
+    react-native-windows "^0.62.0-0"
 
 "@react-native-community/masked-view@0.1.10", "@react-native-community/masked-view@^0.1.10":
   version "0.1.10"
@@ -4380,10 +4380,10 @@ babel-plugin-module-resolver@^4.0.0:
     reselect "^4.0.0"
     resolve "^1.13.1"
 
-babel-plugin-react-native-web@~0.13.0:
-  version "0.13.4"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.13.4.tgz#d957c6fc299b3d522cfd98b30579d1703725a238"
-  integrity sha512-gxHXfZ/dZTE3/3Nd+JylN1HIcgUMrlCGhCkxuGg8tU4+TPBJQgW1IwCjo6EDQx8JXRgq/dqZsbhHNxybBiIZsg==
+babel-plugin-react-native-web@~0.13.6:
+  version "0.13.6"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.13.6.tgz#5a9385542f10ec289f087b7bc6f62d2aa11402f4"
+  integrity sha512-FHLvkVyO9gvMp2zzrqtBGRc4Y9dfAkQI4/qeu3qdXd9I/9RkqiNInQE8vWvsYRsk3NarfSvZPBcq5smOnHM8ug==
 
 babel-plugin-syntax-object-rest-spread@^6.8.0:
   version "6.13.0"
@@ -14960,10 +14960,10 @@ react-native-appearance@~0.3.3:
     invariant "^2.2.4"
     use-subscription "^1.0.0"
 
-react-native-branch@4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-4.2.1.tgz#3ed1a071c053b420d11af8aa368142b19e2d5129"
-  integrity sha512-wwBCsj3VslS0zG8UAZjx+nNrWgd3CuA24r5muFDzS38oQ4S9oB0NJPafEcWcUT7TPxw/rfpdPLb+JccGvS2/Lg==
+react-native-branch@5.0.0-rc.1:
+  version "5.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.0.0-rc.1.tgz#b8739c6a08d9edb8bf025dfa101462ae8bead666"
+  integrity sha512-d9+PKw44KfGqsi+3+QGCktcTOiIwZ4ua8FOpdII0fAOUn/TKKOojvqTSEOEFn+nGZj3HvMh2fofgoMEVierXPw==
 
 react-native-bundle-visualizer@^2.2.1:
   version "2.2.1"
@@ -14987,10 +14987,10 @@ react-native-fade-in-image@^1.5.0:
     react-mixin "^3.0.5"
     react-timer-mixin "^0.13.3"
 
-react-native-gesture-handler@~1.6.0:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.6.1.tgz#678e2dce250ed66e93af409759be22cd6375dd17"
-  integrity sha512-gQgIKhDiYf754yzhhliagLuLupvGb6ZyBdzYzr7aus3Fyi87TLOw63ers+r4kGw0h26oAWTAdHd34JnF4NeL6Q==
+react-native-gesture-handler@~1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.7.0.tgz#0ef74a5ba836832e497dc49eb1ce58baa6c617e5"
+  integrity sha512-1CrjJf8Z6Iz2XWzfZknYtsm2sud5Lu/pLhhokkgBIKttxqGDtetDEVFDJOTJWJyKCrUPk0X5tnWi/diSF4q++w==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^2.3.1"
@@ -15065,10 +15065,10 @@ react-native-safe-module@^1.1.0:
   dependencies:
     dedent "^0.6.0"
 
-react-native-screens@~2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.9.0.tgz#ead2843107ba00fee259aa377582e457c74f1f3b"
-  integrity sha512-5MaiUD6HA3nzY3JbVI8l3V7pKedtxQF3d8qktTVI0WmWXTI4QzqOU8r8fPVvfKo3MhOXwhWBjr+kQ7DZaIQQeg==
+react-native-screens@~2.10.1:
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.10.1.tgz#06d22fae87ef0ce51c616c34a199726db1403b95"
+  integrity sha512-Z2kKSk4AwWRQNCBmTjViuBQK0/Lx0jc25TZptn/2gKYUCOuVRvCekoA26u0Tsb3BIQ8tWDsZW14OwDlFUXW1aw==
 
 react-native-scrollable-mixin@^1.0.0:
   version "1.0.1"
@@ -15093,10 +15093,10 @@ react-native-view-shot@3.1.2:
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.1.2.tgz#8c8e84c67a4bc8b603e697dbbd59dbc9b4f84825"
   integrity sha512-9u9fPtp6a52UMoZ/UCPrCjKZk8tnkI9To0Eh6yYnLKFEGkRZ7Chm6DqwDJbYJHeZrheCCopaD5oEOnRqhF4L2Q==
 
-react-native-web@~0.13.0:
-  version "0.13.4"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.13.4.tgz#b934b9ec3e23119dc7c143cdc316b22d75467b60"
-  integrity sha512-SXplf0ksAeZZPvo7Gq8y/A0BcdqdJouPCmHLUQ5a9P85uMPclJXwUynvVIwl7vxP9qmg39MatOMD8A7K0neTPQ==
+react-native-web@~0.13.7:
+  version "0.13.7"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.13.7.tgz#b140b4769a94ac0c34ba354f51af157b2e301886"
+  integrity sha512-4gErceUtBq92Qn3HR7gV5TYeIY2vwN7/rcGtfJgpzTImNBpl1BKubIAtde4qn/8o+nihzZBD0fi+4F9U7+y+8A==
   dependencies:
     array-find-index "^1.0.2"
     create-react-class "^15.6.2"
@@ -15117,7 +15117,7 @@ react-native-webview@10.3.3:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native-windows@^0.62.0-preview.1:
+react-native-windows@^0.62.0-0:
   version "0.62.4"
   resolved "https://registry.yarnpkg.com/react-native-windows/-/react-native-windows-0.62.4.tgz#81b6342b51765eca955250dc4250840f7f7f41dc"
   integrity sha512-Iif7c+3gRTJuIwunPHv176y9vMeL5vgK4vWzIxMAzQVS7hYQg97RA7bS74ta0oLjnxzEVCOGP+byIIiA+lb1lw==

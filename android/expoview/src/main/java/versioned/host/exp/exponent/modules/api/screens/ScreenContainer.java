@@ -29,6 +29,7 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
   private boolean mNeedUpdate;
   private boolean mIsAttached;
   private boolean mLayoutEnqueued = false;
+  private @Nullable ScreenFragment mParentScreenFragment = null;
 
 
   private final ChoreographerCompat.FrameCallback mFrameCallback = new ChoreographerCompat.FrameCallback() {
@@ -72,6 +73,10 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
               ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
               mLayoutCallback);
     }
+  }
+
+  public boolean isNested() {
+    return mParentScreenFragment != null;
   }
 
   protected void markUpdated() {
@@ -137,8 +142,10 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     // If parent is of type Screen it means we are inside a nested fragment structure.
     // Otherwise we expect to connect directly with root view and get root fragment manager
     if (parent instanceof Screen) {
-      Fragment screenFragment = ((Screen) parent).getFragment();
+      ScreenFragment screenFragment = ((Screen) parent).getFragment();
       setFragmentManager(screenFragment.getChildFragmentManager());
+      mParentScreenFragment = screenFragment;
+      mParentScreenFragment.registerChildScreenContainer(this);
       return;
     }
 
@@ -250,6 +257,12 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
       removeMyFragments();
       mFragmentManager.executePendingTransactions();
     }
+
+    if (mParentScreenFragment != null) {
+      mParentScreenFragment.unregisterChildScreenContainer(this);
+      mParentScreenFragment = null;
+    }
+
     super.onDetachedFromWindow();
     mIsAttached = false;
     // When fragment container view is detached we force all its children to be removed.

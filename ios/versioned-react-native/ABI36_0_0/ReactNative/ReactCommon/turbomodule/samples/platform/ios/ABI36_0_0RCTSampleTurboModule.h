@@ -13,6 +13,6 @@
  * Sample iOS-specific impl of a TurboModule, conforming to the spec protocol.
  * This class is also 100% compatible with the NativeModule system.
  */
-@interface ABI36_0_0RCTSampleTurboModule : NSObject <NativeSampleTurboModuleSpec>
+@interface ABI36_0_0RCTSampleTurboModule : NSObject <ABI36_0_0NativeSampleTurboModuleSpec>
 
 @end

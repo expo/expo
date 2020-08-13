@@ -45,7 +45,7 @@ public abstract class UpdateDao {
   public abstract List<UpdateEntity> loadAllUpdatesForScope(String scopeKey);
 
   public List<UpdateEntity> loadLaunchableUpdatesForScope(String scopeKey) {
-    return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED));
+    return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT));
   }
 
   public UpdateEntity loadUpdateWithId(UUID id) {
@@ -64,7 +64,13 @@ public abstract class UpdateDao {
 
   @Transaction
   public void markUpdateFinished(UpdateEntity update, boolean hasSkippedEmbeddedAssets) {
-    _markUpdateWithStatus(hasSkippedEmbeddedAssets ? UpdateStatus.EMBEDDED : UpdateStatus.READY, update.id);
+    UpdateStatus statusToMark = UpdateStatus.READY;
+    if (update.status == UpdateStatus.DEVELOPMENT) {
+      statusToMark = UpdateStatus.DEVELOPMENT;
+    } else if (hasSkippedEmbeddedAssets) {
+      statusToMark = UpdateStatus.EMBEDDED;
+    }
+    _markUpdateWithStatus(statusToMark, update.id);
     _keepUpdate(update.id);
   }
 

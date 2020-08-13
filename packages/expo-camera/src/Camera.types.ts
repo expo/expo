@@ -143,6 +143,8 @@ export type CameraNativeProps = {
   pictureSize?: string;
   barCodeScannerSettings?: BarCodeSettings;
   faceDetectorSettings?: object;
+  barCodeScannerEnabled?: boolean;
+  faceDetectorEnabled?: boolean;
   // Android
   ratio?: string;
   useCamera2Api?: boolean;

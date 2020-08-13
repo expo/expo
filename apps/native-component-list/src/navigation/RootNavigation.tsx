@@ -19,7 +19,6 @@ export const linking = {
         screens: {
           apis: MainNavigators.apis.linking,
           components: MainNavigators.components.linking,
-          'react-native': MainNavigators['react-native'].linking,
         },
       },
     },

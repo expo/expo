@@ -152,9 +152,7 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
-        'expo-bluetooth',
         'expo-in-app-purchases',
-        'expo-splash-screen',
         'expo-gl-cpp-legacy'
       ]
   ])
@@ -171,9 +169,7 @@ dependencies {
       target       : 'react-native',
       exclude      : [
           'expo-module-template',
-          'expo-bluetooth',
           'expo-in-app-purchases',
-          'expo-splash-screen'
       ]
   ])
 

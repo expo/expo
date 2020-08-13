@@ -16,7 +16,7 @@
 
 #import "ABI38_0_0RCTBlobPlugins.h"
 
-@interface ABI38_0_0RCTFileReaderModule() <NativeFileReaderModuleSpec>
+@interface ABI38_0_0RCTFileReaderModule() <ABI38_0_0NativeFileReaderModuleSpec>
 @end
 
 @implementation ABI38_0_0RCTFileReaderModule

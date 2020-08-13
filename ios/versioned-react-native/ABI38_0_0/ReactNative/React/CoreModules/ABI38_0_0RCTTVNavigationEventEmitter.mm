@@ -14,7 +14,7 @@ NSString *const ABI38_0_0RCTTVNavigationEventNotification = @"ABI38_0_0RCTTVNavi
 
 static NSString *const TVNavigationEventName = @"onHWKeyEvent";
 
-@interface ABI38_0_0RCTTVNavigationEventEmitter() <NativeTVNavigationEventEmitterSpec>
+@interface ABI38_0_0RCTTVNavigationEventEmitter() <ABI38_0_0NativeTVNavigationEventEmitterSpec>
 @end
 
 @implementation ABI38_0_0RCTTVNavigationEventEmitter

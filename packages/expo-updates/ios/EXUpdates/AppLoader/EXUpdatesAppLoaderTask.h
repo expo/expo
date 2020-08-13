@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXUpdatesAppLoaderTaskDelegate <NSObject>
 
-
 /**
  * This method gives the calling class an opportunity to abort the task early if, for
  * example, we need to restart with a different configuration after getting the initial

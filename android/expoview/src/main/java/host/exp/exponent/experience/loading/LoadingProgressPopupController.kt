@@ -59,12 +59,12 @@ class LoadingProgressPopupController(activity: Activity) {
   }
 
   fun hide() {
-    if (mPopupWindow == null || !mPopupWindow!!.isShowing) {
-      // already hidden
-      return
-    }
-
     mWeakActivity.get()?.runOnUiThread {
+      if (mPopupWindow == null || !mPopupWindow!!.isShowing) {
+        // already hidden
+        return@runOnUiThread
+      }
+
       mPopupWindow!!.dismiss()
       mPopupWindow = null
       mContainer = null

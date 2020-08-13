@@ -12,6 +12,7 @@ import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLThreeComposer from './GLThreeComposer';
 import GLThreeDepthStencilBuffer from './GLThreeDepthStencilBuffer';
 import GLThreeSprite from './GLThreeSprite';
+import GLViewScreen from './GLViewScreen';
 import GLWrap from './GLWrap';
 import ProcessingWrap from './ProcessingWrap';
 
