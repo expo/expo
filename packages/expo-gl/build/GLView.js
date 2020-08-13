@@ -67,8 +67,8 @@ let GLView = /** @class */ (() => {
                 throw new Error("GLView's surface is not created yet!");
             }
             const cameraTag = findNodeHandle(cameraRefOrHandle);
-            const { exglObjId } = await ExponentGLObjectManager.createCameraTextureAsync(exglCtxId, cameraTag);
-            return new WebGLTexture(exglObjId);
+            const { exglObjId, textureWidth, textureHeight, } = await ExponentGLObjectManager.createCameraTextureAsync(exglCtxId, cameraTag);
+            return new WebGLTexture(exglObjId, textureWidth, textureHeight);
         }
         async destroyObjectAsync(glObject) {
             if (!ExponentGLObjectManager.destroyObjectAsync) {
@@ -127,6 +127,11 @@ class WebGLRenderbuffer extends WebGLObject {
 class WebGLShader extends WebGLObject {
 }
 class WebGLTexture extends WebGLObject {
+    constructor(id, w, h) {
+        super(id);
+        this.w = w || -1;
+        this.h = h || -1;
+    }
 }
 class WebGLUniformLocation {
     constructor(id) {

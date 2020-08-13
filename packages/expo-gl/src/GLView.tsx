@@ -127,19 +127,20 @@ export class GLView extends React.Component<GLViewProps> {
     if (!ExponentGLObjectManager.createCameraTextureAsync) {
       throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync');
     }
-
-    const { exglCtxId } = this;
-
+    const {exglCtxId} = this;
     if (!exglCtxId) {
       throw new Error("GLView's surface is not created yet!");
     }
-
     const cameraTag = findNodeHandle(cameraRefOrHandle);
-    const { exglObjId } = await ExponentGLObjectManager.createCameraTextureAsync(
+    const {
+      exglObjId,
+      textureWidth,
+      textureHeight,
+    } = await ExponentGLObjectManager.createCameraTextureAsync(
       exglCtxId,
-      cameraTag
+      cameraTag,
     );
-    return new WebGLTexture(exglObjId);
+    return new WebGLTexture(exglObjId, textureWidth, textureHeight);
   }
 
   async destroyObjectAsync(glObject: WebGLObject): Promise<boolean> {
@@ -206,7 +207,13 @@ class WebGLRenderbuffer extends WebGLObject {}
 
 class WebGLShader extends WebGLObject {}
 
-class WebGLTexture extends WebGLObject {}
+class WebGLTexture extends WebGLObject {
+  constructor(id, w, h) {
+    super(id);
+    this.w = w || -1;
+    this.h = h || -1;
+  }
+}
 
 class WebGLUniformLocation {
   id: WebGLObjectId;

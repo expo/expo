@@ -91,7 +91,12 @@ public class GLObjectManagerModule extends ExportedModule {
             mGLObjects.put(exglObjId, cameraTexture);
 
             Bundle response = new Bundle();
+            final int[] previewSize = cameraView.getPreviewSizeAsArray();
+            final int textureWidth = previewSize[0];
+            final int textureHeight = previewSize[1];
             response.putInt("exglObjId", exglObjId);
+            response.putInt("textureWidth", textureWidth);
+            response.putInt("textureHeight", textureHeight);
             promise.resolve(response);
           }
         });
