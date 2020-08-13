@@ -24,11 +24,11 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   // Needed for `react-native link`
   public List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
-        // Add your own packages here!
-        // TODO: add native modules!
+      // Add your own packages here!
+      // TODO: add native modules!
 
-        // Needed for `react-native link`
-        // new MainReactPackage()
+      // Needed for `react-native link`
+      // new MainReactPackage()
     );
   }
 

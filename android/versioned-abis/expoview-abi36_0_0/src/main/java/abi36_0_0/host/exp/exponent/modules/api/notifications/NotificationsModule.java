@@ -3,22 +3,11 @@
 package abi36_0_0.host.exp.exponent.modules.api.notifications;
 
 import com.cronutils.model.Cron;
-import abi36_0_0.com.facebook.react.bridge.Arguments;
-import abi36_0_0.com.facebook.react.bridge.Promise;
-import abi36_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi36_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
-import abi36_0_0.com.facebook.react.bridge.ReactMethod;
-import abi36_0_0.com.facebook.react.bridge.ReadableArray;
-import abi36_0_0.com.facebook.react.bridge.ReadableMap;
-import abi36_0_0.com.facebook.react.bridge.WritableMap;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +16,14 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import abi36_0_0.com.facebook.react.bridge.Arguments;
+import abi36_0_0.com.facebook.react.bridge.Promise;
+import abi36_0_0.com.facebook.react.bridge.ReactApplicationContext;
+import abi36_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
+import abi36_0_0.com.facebook.react.bridge.ReactMethod;
+import abi36_0_0.com.facebook.react.bridge.ReadableArray;
+import abi36_0_0.com.facebook.react.bridge.ReadableMap;
+import abi36_0_0.com.facebook.react.bridge.WritableMap;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -36,14 +33,13 @@ import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
-import host.exp.exponent.notifications.schedulers.IntervalSchedulerModel;
-import host.exp.exponent.notifications.schedulers.SchedulerImpl;
-import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 import host.exp.exponent.notifications.schedulers.CalendarSchedulerModel;
+import host.exp.exponent.notifications.schedulers.IntervalSchedulerModel;
+import host.exp.exponent.notifications.schedulers.SchedulerImpl;
+import host.exp.exponent.storage.ExponentSharedPreferences;
 
-import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
 import static host.exp.exponent.notifications.helpers.ExpoCronParser.createCronInstance;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
@@ -182,11 +178,11 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     try {
       NotificationHelper.createChannel(
-          getReactApplicationContext(),
-          experienceId,
-          channelId,
-          channelName,
-          data.toHashMap());
+        getReactApplicationContext(),
+        experienceId,
+        channelId,
+        channelName,
+        data.toHashMap());
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject("E_FAILED_CREATING_CHANNEL", "Could not create channel", e);
@@ -206,9 +202,9 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     try {
       NotificationHelper.deleteChannel(
-          getReactApplicationContext(),
-          experienceId,
-          channelId);
+        getReactApplicationContext(),
+        experienceId,
+        channelId);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject("E_FAILED_DELETING_CHANNEL", "Could not delete channel", e);
@@ -247,28 +243,28 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         return;
       }
       NotificationHelper.maybeCreateLegacyStoredChannel(
-          getReactApplicationContext(),
-          experienceId,
-          channelId,
-          legacyChannelData.toHashMap());
+        getReactApplicationContext(),
+        experienceId,
+        channelId,
+        legacyChannelData.toHashMap());
     }
 
     int notificationId = new Random().nextInt();
 
     NotificationHelper.showNotification(
-        getReactApplicationContext(),
-        notificationId,
-        details,
-        mExponentManifest,
-        new NotificationHelper.Listener() {
-          public void onSuccess(int id) {
-            promise.resolve(id);
-          }
+      getReactApplicationContext(),
+      notificationId,
+      details,
+      mExponentManifest,
+      new NotificationHelper.Listener() {
+        public void onSuccess(int id) {
+          promise.resolve(id);
+        }
 
-          public void onFailure(Exception e) {
-            promise.reject(e);
-          }
-        });
+        public void onFailure(Exception e) {
+          promise.reject(e);
+        }
+      });
   }
 
   @ReactMethod
@@ -286,10 +282,10 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         return;
       }
       NotificationHelper.maybeCreateLegacyStoredChannel(
-          getReactApplicationContext(),
-          experienceId,
-          channelId,
-          legacyChannelData.toHashMap());
+        getReactApplicationContext(),
+        experienceId,
+        channelId,
+        legacyChannelData.toHashMap());
     }
 
     int notificationId = new Random().nextInt();
@@ -300,20 +296,20 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     }
 
     NotificationHelper.scheduleLocalNotification(
-        getReactApplicationContext(),
-        notificationId,
-        hashMap,
-        options.toHashMap(),
-        mManifest,
-        new NotificationHelper.Listener() {
-          public void onSuccess(int id) {
-            promise.resolve(id);
-          }
+      getReactApplicationContext(),
+      notificationId,
+      hashMap,
+      options.toHashMap(),
+      mManifest,
+      new NotificationHelper.Listener() {
+        public void onSuccess(int id) {
+          promise.resolve(id);
+        }
 
-          public void onFailure(Exception e) {
-            promise.reject(e);
-          }
-        });
+        public void onFailure(Exception e) {
+          promise.reject(e);
+        }
+      });
   }
 
   @ReactMethod
@@ -321,8 +317,8 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancel(
-          mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
-          notificationId
+        mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
+        notificationId
       );
       promise.resolve(true);
     } catch (JSONException e) {
@@ -356,8 +352,8 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void cancelScheduledNotificationWithStringIdAsync(final String id, final Promise promise) {
     try {
       SchedulersManagerProxy.getInstance(getReactApplicationContext()
-          .getApplicationContext())
-          .removeScheduler(id);
+        .getApplicationContext())
+        .removeScheduler(id);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -373,8 +369,8 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
 
       SchedulersManagerProxy
-          .getInstance(getReactApplicationContext().getApplicationContext())
-          .removeAll(experienceId);
+        .getInstance(getReactApplicationContext().getApplicationContext())
+        .removeAll(experienceId);
 
       promise.resolve(null);
     } catch (Exception e) {
@@ -385,7 +381,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void scheduleNotificationWithTimer(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
     HashMap<String, Object> options = optionsMap.toHashMap();
-    int notificationId = Math.abs( new Random().nextInt() );
+    int notificationId = Math.abs(new Random().nextInt());
     HashMap<String, Object> hashMap = data.toHashMap();
     if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
@@ -413,22 +409,22 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     SchedulerImpl scheduler = new SchedulerImpl(intervalSchedulerModel);
 
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
-        scheduler,
-        (String id) -> {
-          if (id == null) {
-            promise.reject(new UnableToScheduleException());
-            return false;
-          }
-          promise.resolve(id);
-          return true;
+      scheduler,
+      (String id) -> {
+        if (id == null) {
+          promise.reject(new UnableToScheduleException());
+          return false;
         }
+        promise.resolve(id);
+        return true;
+      }
     );
   }
-  
+
   @ReactMethod
   public void scheduleNotificationWithCalendar(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
     HashMap<String, Object> options = optionsMap.toHashMap();
-    int notificationId = Math.abs( new Random().nextInt() );
+    int notificationId = Math.abs(new Random().nextInt());
     HashMap<String, Object> hashMap = data.toHashMap();
     if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
@@ -457,15 +453,15 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     SchedulerImpl scheduler = new SchedulerImpl(calendarSchedulerModel);
 
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
-        scheduler,
-        (String id) -> {
-          if (id == null) {
-            promise.reject(new UnableToScheduleException());
-            return false;
-          }
-          promise.resolve(id);
-          return true;
+      scheduler,
+      (String id) -> {
+        if (id == null) {
+          promise.reject(new UnableToScheduleException());
+          return false;
         }
+        promise.resolve(id);
+        return true;
+      }
     );
   }
 

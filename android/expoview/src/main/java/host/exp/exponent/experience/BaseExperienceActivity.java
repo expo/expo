@@ -2,25 +2,19 @@
 
 package host.exp.exponent.experience;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
