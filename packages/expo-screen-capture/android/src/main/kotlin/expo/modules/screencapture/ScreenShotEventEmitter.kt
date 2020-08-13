@@ -27,6 +27,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
   private val onScreenShotEventName: String = "onScreenShot"
   private var isListening: Boolean = true
   private lateinit var eventEmitter: EventEmitter
+  private var previousPath: String = ""
 
   init {
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
@@ -41,7 +42,8 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
             return
           }
           val path = getFilePathFromContentResolver(context, uri)
-          if (pathIndicatesScreenshot(path)) {
+          if (path != null && isPathOfNewScreenshot(path)) {
+            previousPath = path
             eventEmitter.emit(onScreenShotEventName, Bundle())
           }
         }
@@ -62,7 +64,6 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
     // Do nothing
   }
 
-
   private fun hasReadExternalStoragePermission(context: Context): Boolean {
     return ContextCompat.checkSelfPermission(context, permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
   }
@@ -81,7 +82,16 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
     return null
   }
 
-  private fun pathIndicatesScreenshot(path: String?): Boolean {
-    return path != null && path.toLowerCase().contains("screenshot")
+  private fun isPathOfNewScreenshot(path: String): Boolean {
+    if (!path.toLowerCase().contains("screenshot")) {
+      return false
+    }
+    // Cannot check that the onChange event is for an insert operation until API level 30
+    // Instead, we save the last path and check if this is a duplicate, since each subsequent
+    // screenshot will have a new path
+    if (previousPath.isEmpty()) {
+      return true
+    }
+    return path.compareTo(previousPath) != 0
   }
 }
