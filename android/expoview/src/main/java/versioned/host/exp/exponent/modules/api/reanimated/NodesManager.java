@@ -97,8 +97,6 @@ public class NodesManager implements EventDispatcherListener {
     updateContext = new UpdateContext();
     mUIImplementation = mUIManager.getUIImplementation();
     mCustomEventNamesResolver = mUIManager.getDirectEventNamesResolver();
-    mUIManager.getEventDispatcher().addListener(this);
-
     mEventEmitter = context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
 
     mReactChoreographer = ReactChoreographer.getInstance();
@@ -110,6 +108,12 @@ public class NodesManager implements EventDispatcherListener {
     };
 
     mNoopNode = new NoopNode(this);
+
+    // We register as event listener at the end, because we pass `this` and we haven't finished contructing an object yet.
+    // This lead to a crash described in https://github.com/software-mansion/react-native-reanimated/issues/604 which was caused by Nodes Manager being constructed on UI thread and registering for events.
+    // Events are handled in the native modules thread in the `onEventDispatch()` method.
+    // This method indirectly uses `mChoreographerCallback` which was created after event registration, creating race condition
+    mUIManager.getEventDispatcher().addListener(this);
   }
 
   public void onHostPause() {
@@ -164,6 +168,7 @@ public class NodesManager implements EventDispatcherListener {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
       mOperationsInBatch = new LinkedList<>();
       mContext.runOnNativeModulesQueueThread(
+              // FIXME replace `mContext` with `mContext.getExceptionHandler()` after RN 0.59 support is dropped
               new GuardedRunnable(mContext) {
                 @Override
                 public void runGuarded() {
