@@ -23,7 +23,7 @@ function useSplashScreenWhileLoadingResources(loadResources: () => Promise<void>
   const [isSplashScreenShown, setSplashScreenShown] = React.useState(true);
   React.useEffect(() => {
     (async () => {
-      await SplashScreen.preventAutoHideAsync();
+      // await SplashScreen.preventAutoHideAsync(); // this is called in App (main component of the application)
       await loadResources();
       setSplashScreenShown(false);
     })();
