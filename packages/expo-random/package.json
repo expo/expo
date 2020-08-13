@@ -27,8 +27,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-random"
-  },
+    "directory": "packages/expo-random" },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
@@ -37,9 +36,6 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-random",
   "jest": {
     "preset": "expo-module-scripts"
-  },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"

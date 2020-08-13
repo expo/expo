@@ -4,23 +4,34 @@
 
 @implementation EXRandom
 
-UM_EXPORT_MODULE(ExpoRandom);
+RCT_EXPORT_MODULE(ExpoRandom);
 
-UM_EXPORT_METHOD_AS(getRandomBase64StringAsync,
-                    getRandomBase64StringAsync:(NSNumber *)count
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  NSUInteger _length = [count unsignedIntegerValue];
-  NSMutableData *bytes = [NSMutableData dataWithLength:_length];
-  
-  OSStatus result = SecRandomCopyBytes(kSecRandomDefault, _length, [bytes mutableBytes]);
-  if (result == errSecSuccess) {
-    resolve([bytes base64EncodedStringWithOptions:0]);
-  } else {
-    reject(@"ERR_RANDOM", @"Failed to create a secure random number", [NSError errorWithDomain:@"expo-random" code:result userInfo:nil]);
-  }
+RCT_EXPORT_METHOD(getRandomBase64StringAsync:(NSUInteger)length
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    @try {
+        resolve([self _getRandomBase64String:length]);
+    }
+    @catch(NSException *e) {
+        reject(e.name, e.reason, nil);
+    }
 }
 
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString*, getRandomBase64String:(NSUInteger)length) {
+    return [self _getRandomBase64String:length];
+}
+
+#pragma mark - Internal methods
+
+- (NSString *)_getRandomBase64String:(NSUInteger)length {
+    NSMutableData *bytes = [NSMutableData dataWithLength:length];
+
+    OSStatus result = SecRandomCopyBytes(kSecRandomDefault, length, [bytes mutableBytes]);
+    if (result == errSecSuccess) {
+      return [bytes base64EncodedStringWithOptions:0];
+    } else {
+      @throw([NSException exceptionWithName:@"expo-random" reason:@"Failed to create secure random string" userInfo:nil]);
+    }
+}
 
 @end

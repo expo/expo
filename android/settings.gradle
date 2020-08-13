@@ -37,3 +37,7 @@ includeUnimodulesProjects(
     ]
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 )
+
+// Include Expo modules that are not unimodules
+include(":expo-random")
+project(":expo-random").projectDir = new File("../packages/expo-random/android")

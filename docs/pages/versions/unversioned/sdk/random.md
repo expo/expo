@@ -1,6 +1,6 @@
 ---
 title: Random
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-random'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-random'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -41,7 +41,28 @@ import * as Random from 'expo-random';
 
 ## Methods
 
-### `Random.getRandomBytesAsync(byteCount)`
+### `getRandomBytes(byteCount)`
+
+```js
+getRandomBytes(byteCount: number): Uint8Array
+```
+
+Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
+
+**Parameters**
+
+| Name      | Type     | Description                                                                     |
+| --------- | -------- | ------------------------------------------------------------------------------- |
+| byteCount | `number` | A number within the range: **0...1024**. Anything else will throw a `TypeError` |
+
+**Returns**
+
+| Name        | Type                  | Description                                                      |
+| ----------- | --------------------- | ---------------------------------------------------------------- |
+| randomBytes | `Uint8Array` | An array of random bytes with the same length as the `byteCount` |
+
+
+### `getRandomBytesAsync(byteCount)`
 
 ```js
 getRandomBytesAsync(byteCount: number): Promise<Uint8Array>
@@ -60,9 +81,3 @@ Generates completely random bytes using native implementations. The `byteCount` 
 | Name        | Type                  | Description                                                      |
 | ----------- | --------------------- | ---------------------------------------------------------------- |
 | randomBytes | `Promise<Uint8Array>` | An array of random bytes with the same length as the `byteCount` |
-
-**Example**
-
-```js
-const randomBytes = await Random.getRandomBytesAsync(3);
-```

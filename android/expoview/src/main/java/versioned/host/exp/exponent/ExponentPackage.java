@@ -67,6 +67,8 @@ import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
+// This is an Expo module but not a unimodule
+import expo.modules.random.RandomModule;
 
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
@@ -186,6 +188,7 @@ public class ExponentPackage implements ReactPackage {
 
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
+        nativeModules.add(new RandomModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new ScreenOrientationModule(reactContext));

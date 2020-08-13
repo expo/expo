@@ -1,28 +1,18 @@
 package expo.modules.random;
 
-import android.content.Context;
 import android.util.Base64;
 
 import java.security.SecureRandom;
+import java.security.NoSuchAlgorithmException;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.Promise;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
-public class RandomModule extends ExportedModule {
-
-  SecureRandom mRandom;
-
-  public RandomModule(Context context) {
+public class RandomModule extends ReactContextBaseJavaModule {
+  public RandomModule(ReactApplicationContext context) {
     super(context);
-  }
-
-  @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    if (moduleRegistry != null) {
-      mRandom = new SecureRandom();
-    }
   }
 
   @Override
@@ -30,10 +20,21 @@ public class RandomModule extends ExportedModule {
     return "ExpoRandom";
   }
 
-  @ExpoMethod
-  public void getRandomBase64StringAsync(int randomByteCount, final Promise promise) {
+  private String _getRandomBase64String(int randomByteCount) throws NoSuchAlgorithmException {
     byte[] output = new byte[randomByteCount];
-    mRandom.nextBytes(output);
-    promise.resolve(Base64.encodeToString(output, Base64.NO_WRAP));
+    SecureRandom random = new SecureRandom();
+    random.nextBytes(output);
+
+    return Base64.encodeToString(output, Base64.NO_WRAP);
+  }
+
+  @ReactMethod
+  public void getRandomBase64StringAsync(int randomByteCount, Promise promise) throws NoSuchAlgorithmException {
+    promise.resolve(_getRandomBase64String(randomByteCount));
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String getRandomBase64String(int randomByteCount) throws NoSuchAlgorithmException {
+    return _getRandomBase64String(randomByteCount);
   }
 }
