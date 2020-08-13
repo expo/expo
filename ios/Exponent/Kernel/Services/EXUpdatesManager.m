@@ -7,7 +7,11 @@
 #import "EXReactAppManager.h"
 #import "EXScopedModuleRegistry.h"
 #import "EXUpdates.h"
+#import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
+
+#import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
@@ -144,46 +148,56 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
     failure(RCTErrorWithMessage(@"Remote updates are disabled in app.json"));
     return;
   }
+
+  EXUpdatesDatabaseManager *databaseKernelService = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
   EXAppLoader *appLoader = [self _appLoaderWithScopedModule:scopedModule];
-  [appLoader fetchManifestWithCacheBehavior:cacheBehavior success:success failure:failure];
-  if (cacheBehavior == EXManifestPrepareToCache) {
-    _manifestAppLoader = appLoader;
-  }
+
+  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:appLoader.config];
+  [fileDownloader downloadManifestFromURL:appLoader.config.updateUrl
+                             withDatabase:databaseKernelService.database
+                           cacheDirectory:databaseKernelService.updatesDirectory
+                             successBlock:^(EXUpdatesUpdate *update) {
+    success(update.rawManifest);
+  } errorBlock:^(NSError *error, NSURLResponse *response) {
+    failure(error);
+  }];
 }
 
+- (void)updatesModule:(nonnull id)scopedModule didRequestBundleWithManifest:(nonnull NSDictionary *)manifest progress:(nonnull void (^)(NSDictionary * _Nonnull))progress success:(nonnull void (^)(NSData * _Nonnull))success failure:(nonnull void (^)(NSError * _Nonnull))failure {
+  // TODO: remove this stub
+}
+
+
 - (void)updatesModule:(id)scopedModule
-didRequestBundleWithManifest:(NSDictionary *)manifest
-             progress:(void (^)(NSDictionary * _Nonnull))progressBlock
-              success:(void (^)(NSData * _Nonnull))success
+didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
+                start:(void (^)(void))startBlock
+              success:(void (^)(NSDictionary * _Nullable))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     failure(RCTErrorWithMessage(@"Remote updates are disabled in app.json"));
     return;
   }
-  void (^progressDictBlock)(EXLoadingProgress * _Nonnull) = ^void(EXLoadingProgress * _Nonnull progress) {
-    progressBlock(@{
-                    @"status": progress.status,
-                    @"done": progress.done,
-                    @"total": progress.total
-                    });
-  };
-  EXAppLoader *appLoader = _manifestAppLoader ?: [self _appLoaderWithScopedModule:scopedModule];
-  [appLoader fetchJSBundleWithManifest:manifest
-                         cacheBehavior:EXCachedResourceWriteToCache
-                       timeoutInterval:kEXJSBundleTimeout
-                              progress:progressDictBlock
-                               success:^(NSData * _Nonnull data) {
-                                         if (self->_manifestAppLoader) {
-                                           [self->_manifestAppLoader writeManifestToCache];
-                                         }
-                                         self->_manifestAppLoader = nil;
-                                         success(data);
-                                       }
-                                 error:^(NSError * _Nonnull error) {
-                                         self->_manifestAppLoader = nil;
-                                         failure(error);
-                                       }];
+
+  EXUpdatesDatabaseManager *databaseKernelService = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
+  EXAppLoader *appLoader = [self _appLoaderWithScopedModule:scopedModule];
+
+  EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:appLoader.config database:databaseKernelService.database directory:databaseKernelService.updatesDirectory completionQueue:completionQueue];
+  [remoteAppLoader loadUpdateFromUrl:appLoader.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+    BOOL shouldLoad = [appLoader.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:appLoader.appLauncher.launchedUpdate];
+    if (shouldLoad) {
+      startBlock();
+    }
+    return shouldLoad;
+  } success:^(EXUpdatesUpdate * _Nullable update) {
+    if (update) {
+      success(update.rawManifest);
+    } else {
+      success(nil);
+    }
+  } error:^(NSError * _Nonnull error) {
+    failure(error);
+  }];
 }
 
 - (BOOL)_doesBridgeSupportUpdatesModule:(RCTBridge *)bridge
