@@ -24,7 +24,7 @@ export default function DrawerLayoutAndroidScreen() {
       // @ts-ignore
       drawerPosition={isRight ? 'right' : 'left'}
       renderNavigationView={renderNavigationView}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, padding: 16 }}>
         <TitleSwitch title="Is Right" value={isRight} setValue={setRight} />
         <Text>Pull from the {isRight ? 'right' : 'left'}</Text>
       </View>

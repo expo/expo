@@ -1,14 +1,14 @@
 import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import React from 'react';
 import {
-  ScrollView,
   ActionSheetIOS,
-  TouchableOpacityProps,
-  TouchableOpacity,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
   View,
-  Platform,
 } from 'react-native';
 
 import ShowActionSheetButton from '../components/ShowActionSheetButton';

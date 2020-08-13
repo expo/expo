@@ -29,7 +29,7 @@ function ActivityIndicatorStopping({ hidesWhenStopped }: { hidesWhenStopped?: bo
   );
 }
 
-export function ActivityIndicatorScreen() {
+export default function ActivityIndicatorScreen() {
   return (
     <Page>
       <Section title="Custom Color" row>
