@@ -126,11 +126,7 @@ public class RNGestureHandlerRootHelper {
     mOrchestrator.onTouchEvent(ev);
     mPassingTouch = false;
 
-    if (mShouldIntercept) {
-      return true;
-    } else {
-      return false;
-    }
+    return mShouldIntercept;
   }
 
   private void tryCancelAllHandlers() {
