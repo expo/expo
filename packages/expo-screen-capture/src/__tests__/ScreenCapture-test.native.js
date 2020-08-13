@@ -13,6 +13,14 @@ describe('ScreenCapture methods are defined', () => {
   it('usePreventScreenCapture hook is defined', async () => {
     expect(ScreenCapture.usePreventScreenCapture).toBeDefined();
   });
+
+  it('addScreenShotListener is defined', async () => {
+    expect(ScreenCapture.addScreenShotListener).toBeDefined();
+  });
+
+  it('removeScreenShotListener is defined', async () => {
+    expect(ScreenCapture.removeScreenShotListener).toBeDefined();
+  });
 });
 
 describe('Test key functionality', () => {
