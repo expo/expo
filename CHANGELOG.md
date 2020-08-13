@@ -15,6 +15,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/viewpager` from `3.3.0` to `4.1.3`. ([#9535](https://github.com/expo/expo/pull/9535) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `react-native-reanimated` from `1.9.0` to `1.10.2`. ([#9608](https://github.com/expo/expo/pull/9608) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `react-native-safe-area-context` from `3.0.2` to `3.1.1`. ([#9548](https://github.com/expo/expo/pull/9548) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `react-native-screens` from `2.9.0` to `2.10.1`. ([#9611](https://github.com/expo/expo/pull/9611) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `react-native-webview` from `9.4.0` to `10.3.3`. ([#9549](https://github.com/expo/expo/pull/9549) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🛠 Breaking changes
