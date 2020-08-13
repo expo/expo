@@ -90,7 +90,7 @@ class SplashScreenController(
     if (rootViewClass.isInstance(view)) {
       return view as ViewGroup
     }
-    if (view == splashScreenView && view is ViewGroup) {
+    if (view != splashScreenView && view is ViewGroup) {
       for (idx in 0 until view.childCount) {
         findRootView(view.getChildAt(idx))?.let { return@findRootView it }
       }
