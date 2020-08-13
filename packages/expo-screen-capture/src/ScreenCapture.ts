@@ -6,7 +6,7 @@ import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags: Set<string> = new Set();
 const emitter = new EventEmitter(ExpoScreenCapture);
 
-const onScreenCaptureEventName = 'onScreenCapture';
+const onScreenShotEventName = 'onScreenShot';
 
 /**
  * Prevents screenshots and screen recordings. If you are
@@ -92,7 +92,7 @@ export function usePreventScreenCapture(key: string = 'default'): void {
  * ```
  */
 export function addScreenShotListener(listener: () => void): Subscription {
-  return emitter.addListener<void>(onScreenCaptureEventName, listener);
+  return emitter.addListener<void>(onScreenShotEventName, listener);
 }
 
 /**

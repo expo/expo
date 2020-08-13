@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();
 const emitter = new EventEmitter(ExpoScreenCapture);
-const onScreenCaptureEventName = 'onScreenCapture';
+const onScreenShotEventName = 'onScreenShot';
 /**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
@@ -84,7 +84,7 @@ export function usePreventScreenCapture(key = 'default') {
  * ```
  */
 export function addScreenShotListener(listener) {
-    return emitter.addListener(onScreenCaptureEventName, listener);
+    return emitter.addListener(onScreenShotEventName, listener);
 }
 /**
  * Removes the listener added by addScreenShotListener
