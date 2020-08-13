@@ -8266,7 +8266,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: 184fe62dba3fecadb085abc9343b63dc
         :release: 184fe62dba3fecadb085abc9343b63dc
-    CHECKSUM: 588b27235785fae12add07801f1333f8689a8130
+    CHECKSUM: 7ecb84ccf31fdd25a39c4c55910816688331f57d
     FILES:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -8278,7 +8278,7 @@ CACHE_KEYS:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (9.0.0)
+      - EXMediaLibrary (9.1.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork:
@@ -8759,7 +8759,7 @@ CACHE_KEYS:
       FirebaseMLVisionFaceModel:
         :debug: be561dec23d92ce53122582403370726
         :release: be561dec23d92ce53122582403370726
-    CHECKSUM: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
+    CHECKSUM: d6ba42000f263df52187aee936262bc2002b3389
     PROJECT_NAME: FirebaseMLVisionFaceModel
     SPECS:
       - FirebaseMLVisionFaceModel (0.19.0)

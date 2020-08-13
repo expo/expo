@@ -1653,7 +1653,7 @@ PODS:
   - EXMailComposer (8.3.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (9.0.0):
+  - EXMediaLibrary (9.1.0):
     - React
     - UMCore
     - UMFileSystemInterface
@@ -3690,7 +3690,7 @@ SPEC CHECKSUMS:
   EXLocalization: b5bcfc925ed83123b585d46d3bd54d7b7118f307
   EXLocation: 7615a912e30e8834679d9a07c86d99602f45b479
   EXMailComposer: c5126fc71f20770ebde5fee3965d54097320ef6d
-  EXMediaLibrary: 588b27235785fae12add07801f1333f8689a8130
+  EXMediaLibrary: 7ecb84ccf31fdd25a39c4c55910816688331f57d
   EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
   EXNotifications: ff56c1dda5d77f3212005bd66c57f306423b905c
   EXPermissions: ecac8bbc91ee6fa7160d1bf834728e56858fce5b
@@ -3723,7 +3723,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
   FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
   FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
-  FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
+  FirebaseMLVisionFaceModel: d6ba42000f263df52187aee936262bc2002b3389
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875

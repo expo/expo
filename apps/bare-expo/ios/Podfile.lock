@@ -123,7 +123,7 @@ PODS:
   - EXMailComposer (8.3.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (9.0.0):
+  - EXMediaLibrary (9.1.0):
     - React
     - UMCore
     - UMFileSystemInterface
@@ -987,7 +987,7 @@ SPEC CHECKSUMS:
   EXLocalization: b5bcfc925ed83123b585d46d3bd54d7b7118f307
   EXLocation: 7615a912e30e8834679d9a07c86d99602f45b479
   EXMailComposer: c5126fc71f20770ebde5fee3965d54097320ef6d
-  EXMediaLibrary: 588b27235785fae12add07801f1333f8689a8130
+  EXMediaLibrary: 7ecb84ccf31fdd25a39c4c55910816688331f57d
   EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
   EXNotifications: ff56c1dda5d77f3212005bd66c57f306423b905c
   EXPermissions: ecac8bbc91ee6fa7160d1bf834728e56858fce5b

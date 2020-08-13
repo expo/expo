@@ -687,7 +687,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: cc36485bbe4780e0bf7381237eb7412a
         :release: cc36485bbe4780e0bf7381237eb7412a
-    CHECKSUM: 588b27235785fae12add07801f1333f8689a8130
+    CHECKSUM: 7ecb84ccf31fdd25a39c4c55910816688331f57d
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -699,7 +699,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (9.0.0)
+      - EXMediaLibrary (9.1.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork:
