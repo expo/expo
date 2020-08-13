@@ -33,11 +33,12 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
-public abstract class ExpoUpdatesAppLoader {
+public class ExpoUpdatesAppLoader {
 
   @Inject
   ExponentManifest mExponentManifest;
@@ -48,9 +49,13 @@ public abstract class ExpoUpdatesAppLoader {
   @Inject
   DatabaseHolder mDatabaseHolder;
 
+  @Inject
+  Kernel mKernel;
+
   private static final String TAG = ExpoUpdatesAppLoader.class.getSimpleName();
 
   private String mManifestUrl;
+  private AppLoaderCallback mCallback;
   private final boolean mUseCacheOnly;
 
   private UpdatesConfiguration mUpdatesConfiguration;
@@ -58,14 +63,25 @@ public abstract class ExpoUpdatesAppLoader {
   private SelectionPolicy mSelectionPolicy;
   private Launcher mLauncher;
 
-  public ExpoUpdatesAppLoader(String manifestUrl) {
-    this(manifestUrl, false);
+  private boolean isStarted = false;
+
+  public interface AppLoaderCallback {
+    void onOptimisticManifest(JSONObject optimisticManifest);
+    void onManifestCompleted(JSONObject manifest);
+    void onBundleCompleted(String localBundlePath);
+    void emitEvent(JSONObject params);
+    void onError(Exception e);
   }
 
-  public ExpoUpdatesAppLoader(String manifestUrl, boolean useCacheOnly) {
+  public ExpoUpdatesAppLoader(String manifestUrl, AppLoaderCallback callback) {
+    this(manifestUrl, callback, false);
+  }
+
+  public ExpoUpdatesAppLoader(String manifestUrl, AppLoaderCallback callback, boolean useCacheOnly) {
     NativeModuleDepsProvider.getInstance().inject(ExpoUpdatesAppLoader.class, this);
 
     mManifestUrl = manifestUrl;
+    mCallback = callback;
     mUseCacheOnly = useCacheOnly;
   }
 
@@ -97,19 +113,14 @@ public abstract class ExpoUpdatesAppLoader {
     return mLauncher;
   }
 
-  public abstract void onOptimisticManifest(JSONObject optimisticManifest);
-
-  public abstract void onManifestCompleted(JSONObject manifest);
-
-  public abstract void onBundleCompleted(String localBundlePath);
-
-  public abstract void emitEvent(JSONObject params);
-
-  public abstract void onError(Exception e);
-
-  public abstract void onError(String e);
-
   public void start(Context context) {
+    if (isStarted) {
+      throw new IllegalStateException("AppLoader for " + mManifestUrl + " was started twice. AppLoader.start() may only be called once per instance.");
+    }
+    isStarted = true;
+
+    mKernel.addAppLoaderForManifestUrl(mManifestUrl, this);
+
     Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
 
     HashMap<String, Object> configMap = new HashMap<>();
@@ -139,7 +150,7 @@ public abstract class ExpoUpdatesAppLoader {
     try {
       directory = UpdatesUtils.getOrCreateUpdatesDirectory(context);
     } catch (Exception e) {
-      onError(e);
+      mCallback.onError(e);
       return;
     }
 
@@ -154,7 +165,7 @@ public abstract class ExpoUpdatesAppLoader {
     new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
-        onError(e);
+        mCallback.onError(e);
       }
 
       @Override
@@ -176,11 +187,7 @@ public abstract class ExpoUpdatesAppLoader {
         }
 
         if (shouldForceRemote && configuration.getCheckOnLaunch() != UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS) {
-          HashMap<String, Object> configMap = new HashMap<>();
-          configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "ALWAYS");
-          configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 10000);
-          configuration.loadValuesFromMap(configMap);
-          startLoaderTask(configuration, directory, selectionPolicy, context);
+          new ExpoUpdatesAppLoader(mManifestUrl, mCallback, false).start(context);
           return false;
         }
         return true;
@@ -188,7 +195,7 @@ public abstract class ExpoUpdatesAppLoader {
 
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
-        onOptimisticManifest(manifest.getRawManifestJson());
+        mCallback.onOptimisticManifest(manifest.getRawManifestJson());
       }
 
       @Override
@@ -196,14 +203,14 @@ public abstract class ExpoUpdatesAppLoader {
         mLauncher = launcher;
         try {
           JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
-          onManifestCompleted(manifest);
+          mCallback.onManifestCompleted(manifest);
 
           // ReactAndroid will load the bundle on its own in development mode
           if (!isDevelopmentMode(manifest)) {
-            onBundleCompleted(launcher.getLaunchAssetFile());
+            mCallback.onBundleCompleted(launcher.getLaunchAssetFile());
           }
         } catch (Exception e) {
-          onError(e);
+          mCallback.onError(e);
         }
       }
 
@@ -217,7 +224,7 @@ public abstract class ExpoUpdatesAppLoader {
             Map.Entry<String, Object> entry = iterator.next();
             jsonParams.put(entry.getKey(), entry.getValue());
           }
-          emitEvent(jsonParams);
+          mCallback.emitEvent(jsonParams);
         } catch (Exception e) {
           Log.e(TAG, "Failed to emit event to JS", e);
         }
