@@ -25,9 +25,7 @@ export default class PolyfillsScreen extends React.Component<object, State> {
         style={{ flex: 1, backgroundColor: Colors.greyBackground }}
         contentContainerStyle={{ padding: 10 }}>
         <HeadingText>crypto.getRandomValues()</HeadingText>
-        <MonoText>
-          is defined: {crypto.hasOwnProperty('getRandomValues') ? 'true' : 'false'}
-        </MonoText>
+        <MonoText>is defined: {crypto['getRandomValues'] ? 'true' : 'false'}</MonoText>
         <MonoText>used by uuid: {JSON.stringify(this.state.uuid)}</MonoText>
       </ScrollView>
     );
