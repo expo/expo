@@ -11,4 +11,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./ChangelogChecker"), exports);
+var AndroidPermissionsChecker_1 = require("./AndroidPermissionsChecker");
+Object.defineProperty(exports, "checkAndroidPermissions", { enumerable: true, get: function () { return AndroidPermissionsChecker_1.checkAndroidPermissions; } });
 //# sourceMappingURL=index.js.map
