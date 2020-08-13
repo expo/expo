@@ -540,7 +540,7 @@ PODS:
     - React
   - RNReanimated (1.10.2):
     - React
-  - RNScreens (2.9.0):
+  - RNScreens (2.10.1):
     - React
   - RNSharedElement (0.7.0):
     - React

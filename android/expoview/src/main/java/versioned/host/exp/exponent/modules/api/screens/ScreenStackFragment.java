@@ -9,16 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.widget.LinearLayout;
+
+import com.facebook.react.uimanager.PixelUtil;
+import com.google.android.material.appbar.AppBarLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
-
-import com.facebook.react.uimanager.PixelUtil;
-import com.google.android.material.appbar.AppBarLayout;
 
 public class ScreenStackFragment extends ScreenFragment {
 
@@ -31,10 +32,31 @@ public class ScreenStackFragment extends ScreenFragment {
       mFragment = fragment;
     }
 
+    private Animation.AnimationListener mAnimationListener = new Animation.AnimationListener() {
+      @Override
+      public void onAnimationStart(Animation animation) {
+        mFragment.onViewAnimationStart();
+      }
+
+      @Override
+      public void onAnimationEnd(Animation animation) {
+        mFragment.onViewAnimationEnd();
+      }
+
+      @Override
+      public void onAnimationRepeat(Animation animation) {
+
+      }
+    };
+
     @Override
-    protected void onAnimationEnd() {
-      super.onAnimationEnd();
-      mFragment.onViewAnimationEnd();
+    public void startAnimation(Animation animation) {
+      // For some reason View##onAnimationEnd doesn't get called for
+      // exit transitions so we use this hack.
+      AnimationSet set = new AnimationSet(true);
+      set.addAnimation(animation);
+      set.setAnimationListener(mAnimationListener);
+      super.startAnimation(set);
     }
   }
 
@@ -89,12 +111,32 @@ public class ScreenStackFragment extends ScreenFragment {
 
   @Nullable
   @Override
-  public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-    if (enter && transit == 0) {
-      // this means that the fragment will appear without transition, in this case onViewAnimationEnd
-      // won't be called and we need to notify stack directly from here.
-      notifyViewAppearTransitionEnd();
+  public Animation onCreateAnimation(int transit, final boolean enter, int nextAnim) {
+    // this means that the fragment will appear without transition, in this case
+    // onViewAnimationStart and onViewAnimationEnd won't be called and we need to notify
+    // stack directly from here.
+    // When using the Toolbar back button this is called an extra time with transit = 0 but in
+    // this case we don't want to notify. The way I found to detect is case is check isHidden.
+    if (transit == 0 && !isHidden()) {
+      // If the container is nested then appear events will be dispatched by their parent screen so
+      // they must not be triggered here.
+      ScreenContainer container = getScreen().getContainer();
+      boolean isNested = container != null && container.isNested();
+      if (enter) {
+        if (!isNested) {
+          dispatchOnWillAppear();
+          dispatchOnAppear();
+        }
+      } else {
+        if (!isNested) {
+          dispatchOnWillDisappear();
+          dispatchOnDisappear();
+        }
+        notifyViewAppearTransitionEnd();
+      }
+
     }
+
     return null;
   }
 

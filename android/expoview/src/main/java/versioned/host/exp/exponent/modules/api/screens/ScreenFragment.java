@@ -1,18 +1,23 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public class ScreenFragment extends Fragment {
 
@@ -33,6 +38,7 @@ public class ScreenFragment extends Fragment {
   }
 
   protected Screen mScreenView;
+  private List<ScreenContainer> mChildScreenContainers = new ArrayList<>();
 
   public ScreenFragment() {
     throw new IllegalStateException("Screen fragments should never be restored");
@@ -56,22 +62,112 @@ public class ScreenFragment extends Fragment {
     return wrapper;
   }
 
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    // The below line is a workaround for an issue with keyboard handling within fragments. Despite
+    // Android handles input focus on the fragments that leave the screen, the keyboard stays open
+    // in a number of cases. The issue can be best reproduced on Android 5 devices, before some changes
+    // in Android's InputMethodManager have been introduced (specifically around dismissing the
+    // keyboard in onDetachedFromWindow). However, we also noticed the keyboard issue happen
+    // intermittently on recent versions of Android as well. The issue hasn't been previously noticed
+    // as in React Native <= 0.61 there was a logic that'd trigger keyboard dismiss upon a blur event
+    // (the blur even gets dispatched properly, the keyboard just stays open despite that) – note
+    // the change in RN core here: https://github.com/facebook/react-native/commit/e9b4928311513d3cbbd9d875827694eab6cfa932
+    // The workaround is to force-hide keyboard passing the fragment's view token when the given fragment
+    // is detached. It is safe to call this method regardless of whether the keyboard was open or not.
+    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+            .hideSoftInputFromWindow(mScreenView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+  }
+
   public Screen getScreen() {
     return mScreenView;
   }
 
-  private void dispatchOnAppear() {
+  protected void dispatchOnWillAppear() {
+    ((ReactContext) mScreenView.getContext())
+        .getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(new ScreenWillAppearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnWillAppear();
+      }
+    }
+  }
+
+  protected void dispatchOnAppear() {
     ((ReactContext) mScreenView.getContext())
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher()
             .dispatchEvent(new ScreenAppearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnAppear();
+      }
+    }
+  }
+
+  protected void dispatchOnWillDisappear() {
+    ((ReactContext) mScreenView.getContext())
+        .getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(new ScreenWillDisappearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnWillDisappear();
+      }
+    }
+  }
+
+  protected void dispatchOnDisappear() {
+    ((ReactContext) mScreenView.getContext())
+        .getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(new ScreenDisappearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnDisappear();
+      }
+    }
+  }
+
+  public void registerChildScreenContainer(ScreenContainer screenContainer) {
+    mChildScreenContainers.add(screenContainer);
+  }
+
+  public void unregisterChildScreenContainer(ScreenContainer screenContainer) {
+    mChildScreenContainers.remove(screenContainer);
+  }
+
+  public void onViewAnimationStart() {
+    // onViewAnimationStart is triggered from View#onAnimationStart method of the fragment's root view.
+    // We override Screen#onAnimationStart and an appropriate method of the StackFragment's root view
+    // in order to achieve this.
+    if (isResumed()) {
+      dispatchOnWillAppear();
+    } else {
+      dispatchOnWillDisappear();
+    }
   }
 
   public void onViewAnimationEnd() {
     // onViewAnimationEnd is triggered from View#onAnimationEnd method of the fragment's root view.
     // We override Screen#onAnimationEnd and an appropriate method of the StackFragment's root view
     // in order to achieve this.
-    dispatchOnAppear();
+    if (isResumed()) {
+      dispatchOnAppear();
+    } else {
+      dispatchOnDisappear();
+    }
   }
 
   @Override
@@ -85,5 +181,6 @@ public class ScreenFragment extends Fragment {
               .getEventDispatcher()
               .dispatchEvent(new ScreenDismissedEvent(mScreenView.getId()));
     }
+    mChildScreenContainers.clear();
   }
 }

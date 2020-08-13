@@ -63,7 +63,7 @@
     "react-native-paper": "^4.0.1",
     "react-native-reanimated": "~1.10.2",
     "react-native-safe-area-context": "3.1.1",
-    "react-native-screens": "~2.9.0",
+    "react-native-screens": "~2.10.1",
     "react-redux": "^7.2.0",
     "react-string-replace": "^0.4.4",
     "reanimated-bottom-sheet": "^1.0.0-alpha.18",
