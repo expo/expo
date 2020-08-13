@@ -48,6 +48,12 @@ function ensureNativeProps(options) {
             barCodeTypes: newProps.barCodeTypes,
         };
     }
+    if (props.onBarCodeScanned) {
+        newProps.barCodeScannerEnabled = true;
+    }
+    if (props.onFacesDetected) {
+        newProps.faceDetectorEnabled = true;
+    }
     if (Platform.OS !== 'android') {
         delete newProps.ratio;
         delete newProps.useCamera2Api;
