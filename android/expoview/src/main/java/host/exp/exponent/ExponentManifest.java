@@ -115,19 +115,11 @@ public class ExponentManifest {
   public static final String MANIFEST_DEBUGGER_HOST_KEY = "debuggerHost";
   public static final String MANIFEST_MAIN_MODULE_NAME_KEY = "mainModuleName";
 
-  // Loading
-  public static final String MANIFEST_LOADING_INFO_KEY = "loading";
-  public static final String MANIFEST_LOADING_ICON_URL = "iconUrl";
-  public static final String MANIFEST_LOADING_EXPONENT_ICON_COLOR = "exponentIconColor";
-  public static final String MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE = "exponentIconGrayscale";
-  public static final String MANIFEST_LOADING_BACKGROUND_IMAGE_URL = "backgroundImageUrl";
-  public static final String MANIFEST_LOADING_BACKGROUND_COLOR = "backgroundColor";
-
   // Splash
   public static final String MANIFEST_SPLASH_INFO_KEY = "splash";
-  public static final String MANIFEST_SPLASH_IMAGE_URL = "imageUrl";
-  public static final String MANIFEST_SPLASH_RESIZE_MODE = "resizeMode";
-  public static final String MANIFEST_SPLASH_BACKGROUND_COLOR = "backgroundColor";
+  public static final String MANIFEST_SPLASH_IMAGE_URL_KEY = "imageUrl";
+  public static final String MANIFEST_SPLASH_RESIZE_MODE_KEY = "resizeMode";
+  public static final String MANIFEST_SPLASH_BACKGROUND_COLOR_KEY = "backgroundColor";
 
   // Updates
   public static final String MANIFEST_UPDATES_INFO_KEY = "updates";

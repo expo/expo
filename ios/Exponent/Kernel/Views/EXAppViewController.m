@@ -4,9 +4,12 @@
 
 #import "EXAnalytics.h"
 #import "EXAppLoader.h"
-#import "EXAppLoadingView.h"
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
+#import "EXAppLoadingCancelView.h"
+#import "EXManagedAppSplashScreenViewProvider.h"
+#import "EXManagedAppSplashScreenConfigurationBuilder.h"
+#import "EXHomeAppSplashScreenViewProvider.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -18,6 +21,9 @@
 #import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
+
+#import <EXSplashScreen/EXSplashScreenService.h>
+#import <React/RCTUtils.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
 #if __has_include(<EXGL_CPP/UEXGL.h>)
@@ -28,7 +34,6 @@
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #endif
 
-#import <React/RCTUtils.h>
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -44,17 +49,19 @@ const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
-  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate>
+  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
-@property (nonatomic, strong) EXAppLoadingView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
+
+@property (nonatomic, assign) BOOL isStandalone;
+@property (nonatomic, assign) BOOL isHomeApp;
 
 /*
  * Controller for handling all messages from bundler/fetcher.
@@ -63,6 +70,24 @@ NS_ASSUME_NONNULL_BEGIN
  * It should appear once manifest is fetched.
  */
 @property (nonatomic, strong, nonnull) EXAppLoadingProgressWindowController *appLoadingProgressWindowController;
+
+/**
+ * SplashScreenViewProvider that is used only in managed workflow app.
+ * Managed app does not need any specific SplashScreenViewProvider as it uses generic one povided by the SplashScreen module.
+ * See also self.homeAppSplashScreenViewProvider
+ */
+@property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
+/**
+ * SplashScreenViewProvider that is used only in home app.
+ * See also self.managedAppSplashScreenViewProvider
+ */
+@property (nonatomic, strong, nullable) EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider;
+
+/*
+ * This view is available in managed apps only.
+ * It is shown only before any managed app manifest is delivered by the app loader.
+ */
+@property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
 
 @end
 
@@ -77,13 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appRecord = record;
     _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
-
-    BOOL loadingProgressEnabled = ![EXEnvironment sharedEnvironment].isDetached;
-    if (![EXEnvironment sharedEnvironment].isDebugXCodeScheme) {
-      // home app should show loading progress only in debug mode (development)
-      loadingProgressEnabled &= record != [EXKernel sharedInstance].appRegistry.homeAppRecord;
-    }
-    _appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:loadingProgressEnabled];
+    _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
   }
   return self;
 }
@@ -98,9 +117,40 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
 
+  // EXKernel.appRegistry.homeAppRecord does not contain any homeAppRecord until this point,
+  // therefore we cannot move this propoerty initialization to the constructor/initializer
+  _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
+  
+  // show LoadingCancelView in managed apps only
+  if (!self.isStandalone && !self.isHomeApp) {
+    self.appLoadingCancelView = [EXAppLoadingCancelView new];
+    // if home app is available then LoadingCancelView can show `go to home` button
+    if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
+      self.appLoadingCancelView.delegate = self;
+    }
+    [self.view addSubview:self.appLoadingCancelView];
+    [self.view bringSubviewToFront:self.appLoadingCancelView];
+  }
+  
+  // show LoadingProgressWindow in managed apps and dev home app only
+  BOOL isDevelopmentHomeApp = self.isHomeApp && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone || isDevelopmentHomeApp];
+
+  // show SplashScreen in standalone apps and home app only
+  // SplashScreen for managed is shown once the manifest is available
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  if (self.isHomeApp) {
+    self.homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
+    [splashScreenService showSplashScreenFor:self
+                    splashScreenViewProvider:self.homeAppSplashScreenViewProvider
+                             successCallback:^{}
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  } else if (self.isStandalone) {
+    [splashScreenService showSplashScreenFor:self];
+  }
+  
+
   self.view.backgroundColor = [UIColor whiteColor];
-  _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
-  [self.view addSubview:_loadingView];
   _appRecord.appManager.delegate = self;
   self.isLoading = YES;
 }
@@ -123,12 +173,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
-  if (_loadingView) {
-    _loadingView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+  if (_appLoadingCancelView) {
+    _appLoadingCancelView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
   if (_contentView) {
     _contentView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+  [_appLoadingProgressWindowController hide];
+  [super viewWillDisappear:animated];
 }
 
 /**
@@ -191,13 +247,6 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_rebuildBridge
-{
-  [self _invalidateRecoveryTimer];
-  [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:_appRecord];
-  [_appRecord.appManager rebuildBridge];
-}
-
 - (void)refresh
 {
   self.isLoading = YES;
@@ -230,15 +279,16 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appManager appStateDidBecomeInactive];
 }
 
-- (void)_rebuildBridgeWithLoadingViewManifest:(NSDictionary *)manifest
+- (void)_rebuildBridge
 {
   if (!self.isBridgeAlreadyLoading) {
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
-      self->_loadingView.manifest = manifest;
       [self _overrideUserInterfaceStyleOf:self];
       [self _enforceDesiredDeviceOrientation];
-      [self _rebuildBridge];
+      [self _invalidateRecoveryTimer];
+      [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
+      [self.appRecord.appManager rebuildBridge];
     });
   }
 }
@@ -273,14 +323,45 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+/**
+ * In managed app we expect two kinds of manifest:
+ * - optimistic one (served from cache)
+ * - actual one served when app is fetched.
+ * For each of them we should show SplashScreen,
+ * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible. 
+ * Non-managed apps (HomeApp or standalones) this function is no-op as SplashScreen is managed differently.
+ */ 
+- (void)_showOrReconfigureManagedAppSplashScreen:(NSDictionary *)manifest
+{
+  if (_isStandalone || _isHomeApp) {
+    return;
+  }
+  if (!_managedAppSplashScreenViewProvider) {
+    _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
+    
+    EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+    [splashScreenService showSplashScreenFor:self
+                    splashScreenViewProvider:_managedAppSplashScreenViewProvider
+                             successCallback:^{}
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  } else {
+    [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
+  }
+}
+
 #pragma mark - EXAppLoaderDelegate
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
+  if (_appLoadingCancelView) {
+    [_appLoadingCancelView removeFromSuperview];
+    _appLoadingCancelView = nil;
+  }
+  [self _showOrReconfigureManagedAppSplashScreen:manifest];
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
-  [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  [self _rebuildBridge];
   [self.appLoadingProgressWindowController show];
 }
 
@@ -291,7 +372,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
 {
-  [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
   }
@@ -342,6 +424,17 @@ NS_ASSUME_NONNULL_BEGIN
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController appDidFinishLoadingSuccessfully:_appRecord];
   }
+}
+
+- (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager
+{
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  [splashScreenService onAppContentDidAppear:self];
+}
+
+- (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager {
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  [splashScreenService onAppContentWillReload:self];
 }
 
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
@@ -566,12 +659,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
   _isLoading = isLoading;
+  UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
     if (isLoading) {
-      self.loadingView.hidden = NO;
-      [self.view bringSubviewToFront:self.loadingView];
+      
     } else {
-      self.loadingView.hidden = YES;
       [self.appLoadingProgressWindowController hide];
     }
   });
@@ -601,6 +694,14 @@ NS_ASSUME_NONNULL_BEGIN
   if (_tmrAutoReloadDebounce) {
     [_tmrAutoReloadDebounce invalidate];
     _tmrAutoReloadDebounce = nil;
+  }
+}
+
+#pragma mark - EXAppLoadingCancelViewDelegate
+
+- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view {
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
 }
 

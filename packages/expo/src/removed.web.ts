@@ -64,6 +64,7 @@ export const Sensors = null;
 export const Sharing = null;
 export const SMS = null;
 export const Speech = null;
+export const SplashScreen = null;
 export const SQLite = null;
 export const StoreReview = null;
 export const TaskManager = null;

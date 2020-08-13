@@ -18,7 +18,8 @@
     <item name="android:windowBackground">@color/white</item>
   </style>
 
-  <style name="Theme.Exponent.Light.LightStatusBar" parent="Theme.Exponent.Light">
+  <style name="Theme.Exponent.HomeActivity" parent="Theme.Exponent.Light">
     <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowBackground">@drawable/splashscreen</item>
   </style>
 </resources>

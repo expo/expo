@@ -153,7 +153,6 @@ dependencies {
       exclude      : [
         'expo-module-template',
         'expo-in-app-purchases',
-        'expo-splash-screen',
         'expo-gl-cpp-legacy'
       ]
   ])
@@ -171,7 +170,6 @@ dependencies {
       exclude      : [
           'expo-module-template',
           'expo-in-app-purchases',
-          'expo-splash-screen'
       ]
   ])
 

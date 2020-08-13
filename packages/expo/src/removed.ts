@@ -681,6 +681,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  SplashScreen: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { SplashScreen } from 'expo' -> import * as SplashScreen from 'expo-splash-screen'`,
+        'SplashScreen',
+        'expo-splash-screen'
+      );
+    },
+  },
+
   SQLite: {
     enumerable: true,
     get() {
