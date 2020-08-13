@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/Networking/Requests/BranchSpotlightUrlRequest.h
+../../../Branch/Branch-SDK/Networking/Requests/BranchSpotlightUrlRequest.h

@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchDeepLinkingController.h
+../../../Branch/Branch-SDK/BranchDeepLinkingController.h

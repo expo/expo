@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCApplication.h
+../../../Branch/Branch-SDK/BNCApplication.h

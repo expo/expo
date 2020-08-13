@@ -1510,9 +1510,7 @@ PODS:
   - AppAuth/Core (1.2.0)
   - AppAuth/ExternalUserAgent (1.2.0)
   - boost-for-react-native (1.63.0)
-  - Branch (0.29.0):
-    - Branch/Core (= 0.29.0)
-  - Branch/Core (0.29.0)
+  - Branch (0.34.0)
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
@@ -1552,7 +1550,7 @@ PODS:
   - EXBlur (8.1.2):
     - UMCore
   - EXBranch (2.2.1):
-    - Branch (= 0.29.0)
+    - Branch (= 0.34.0)
     - React
     - UMCore
   - EXBrightness (8.2.1):
@@ -3651,7 +3649,7 @@ SPEC CHECKSUMS:
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Branch: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
+  Branch: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: b3d7cc9bfd445ecb145b5ce19b3973ab2a075292
@@ -3665,7 +3663,7 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 02c41a2bb7c0747dc96a96ee30b0aa80a0fc4168
   EXBattery: 367aef7eba65f488587610564224952411f1b48b
   EXBlur: b622dc0f8a8fe74f05fb437cfb1c5ee16259dab1
-  EXBranch: d88a69d32b6a161611497f1dc264cf1cb32be886
+  EXBranch: 7511ad43362e358a1fdbc2af73cd50da83834b3a
   EXBrightness: e02018c74baedcb51825cd91e16886973c81d029
   EXCalendar: edf6531b9beef7db26b431953f323eddb848f175
   EXCamera: efef30c8f5016b46fa3119a0c685cf75b841f453
@@ -3730,7 +3728,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
   FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
   FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
-  FirebaseMLVisionFaceModel: d6ba42000f263df52187aee936262bc2002b3389
+  FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875

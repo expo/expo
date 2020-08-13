@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchCSSearchableItemAttributeSet.h
+../../../Branch/Branch-SDK/BranchCSSearchableItemAttributeSet.h
