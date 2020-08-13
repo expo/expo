@@ -396,21 +396,18 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 }
 
-function Facebook({ usePKCE, prompt, useProxy }: any) {
+function Facebook({ usePKCE, useProxy }: any) {
   const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
     {
       clientId: '145668956753819',
       usePKCE,
-      // selectAccount: !!prompt,
-      // responseType: AuthSession.ResponseType.Token,
-      // redirectUri,
       // scopes: ['user_likes'],
-      // selectAccount: true,
       // language: 'fr',
     },
     {
       path: 'redirect',
       preferLocalhost: true,
+      useProxy,
     }
   );
   // Add fetch user example

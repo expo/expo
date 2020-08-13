@@ -570,6 +570,7 @@ An object containing the discovery URLs used for Google auth.
 import * as Facebook from 'expo-auth-session/providers/Facebook';
 ```
 
+- Uses implicit auth (`ResponseType.Token`) by default.
 - See the guide for more info on usage: [Facebook Authentication](/guides/authentication#facebook).
 - Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
 - Uses `display=popup` for better UI results.

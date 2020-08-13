@@ -112,8 +112,6 @@ function Facebook({ language }: ProviderProps) {
     {
       clientId: '145668956753819',
       language,
-      // selectAccount,
-      responseType: AuthSession.ResponseType.Token,
     },
     {
       path: 'redirect',

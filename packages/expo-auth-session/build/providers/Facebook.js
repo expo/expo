@@ -38,6 +38,10 @@ class FacebookAuthRequest extends AuthRequest {
             // TODO: maybe warn that you shouldn't store the client secret on the client
             inputClientSecret = clientSecret;
         }
+        // Default to implicit auth
+        if (!config.responseType) {
+            config.responseType = ResponseType.Token;
+        }
         super({
             ...config,
             clientSecret: inputClientSecret,
