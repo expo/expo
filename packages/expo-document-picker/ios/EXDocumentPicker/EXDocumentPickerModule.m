@@ -9,10 +9,33 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+  #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #endif
 
-// TODO (iOS 14): Update this to use UTType instead of string identifiers
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+  API_AVAILABLE(ios(14.0))
+  static UTType* EXConvertMimeTypeToUTType(NSString *mimeType)
+  {
+    // UTType#typeWithMIMEType doesn't work with wildcard mimetypes
+    // so support common top level types with wildcards here.
+    if ([mimeType isEqualToString:@"*/*"]) {
+      return UTTypeData;
+    } else if ([mimeType isEqualToString:@"image/*"]) {
+      return UTTypeImage;
+    } else if ([mimeType isEqualToString:@"video/*"]) {
+      return UTTypeMovie;
+    } else if ([mimeType isEqualToString:@"audio/*"]) {
+      return UTTypeAudio;
+    } else if ([mimeType isEqualToString:@"text/*"]) {
+      return UTTypeText;
+    } else {
+      return [UTType typeWithMIMEType:mimeType];
+    }
+  }
+#endif
+
+// Deprecated in iOS 14
 static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 {
   CFStringRef uti;
@@ -24,7 +47,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
   } else if ([mimeType isEqualToString:@"image/*"]) {
     uti = kUTTypeImage;
   } else if ([mimeType isEqualToString:@"video/*"]) {
-    uti = kUTTypeVideo;
+    uti = kUTTypeMovie;
   } else if ([mimeType isEqualToString:@"audio/*"]) {
     uti = kUTTypeAudio;
   } else if ([mimeType isEqualToString:@"text/*"]) {
@@ -75,7 +98,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _resolve = resolve;
   _reject = reject;
   
-  NSString *type = EXConvertMimeTypeToUTI(options[@"type"] ?: @"*/*");
+  NSString *mimeType = options[@"type"] ?: @"*/*";
   
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
@@ -86,12 +109,13 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
     UIDocumentPickerViewController *documentPickerVC;
 
     @try {
-      if(@available(iOS 14, *)) {
+      if (@available(iOS 14, *)) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
-        UTType *utType = [UTType typeWithIdentifier:type];
+        UTType* utType = EXConvertMimeTypeToUTType(mimeType);
         documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[utType] asCopy:YES];
 #endif
       } else {
+        NSString* type = EXConvertMimeTypeToUTI(mimeType);
         documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
                                                                                   inMode:UIDocumentPickerModeImport];
       }
