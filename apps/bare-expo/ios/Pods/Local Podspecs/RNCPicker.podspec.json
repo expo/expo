@@ -1,6 +1,6 @@
 {
   "name": "RNCPicker",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "summary": "React Native Picker for iOS & Android",
   "license": "MIT",
   "authors": "",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/react-native-community/react-native-picker.git",
-    "tag": "v1.6.5"
+    "tag": "v1.6.6"
   },
   "source_files": "ios/**/*.{h,m}",
   "dependencies": {
