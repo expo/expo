@@ -27,33 +27,47 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      * This Google Client ID must be setup as follows:
      *
      * - **Application Type**: Web Application
-     * - **URIs**: https://yourwebsite.com | https://localhost:19006
-     * - **Authorized redirect URIs**: https://yourwebsite.com | https://localhost:19006
+     * - Give it a name (e.g. "Web App").
+     * - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
+     * - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
+     * - To test this be sure to start your app with `expo start:web --https`.
      */
     webClientId?: string;
     /**
-     * iOS native client ID for use in standalone, bare-workflow, and custom clients.
+     * iOS native client ID for use in standalone, bare workflow, and custom clients.
      *
      * This Google Client ID must be setup as follows:
      *
      * - **Application Type**: iOS Application
+     * - Give it a name (e.g. "iOS App").
      * - **Bundle ID**: Must match the value of `ios.bundleIdentifier` in your `app.json`.
      * - Your app needs to conform to the URI scheme matching your bundle identifier.
-     *   - **Standalone**: Automatically added, do nothing.
-     *   - **Bare-workflow**: Run `npx uri-scheme add <your bundle id> --ios`
+     *   - _Standalone_: Automatically added, do nothing.
+     *   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
+     * - To test this you can:
+     *   1. Eject to bare: `expo eject` and run `yarn ios`
+     *   2. Create a custom client: `expo client:ios`
+     *   3. Build a production IPA: `expo build:ios`
+     * - Whenever you change the values in `app.json` you'll need to rebuild the native app.
      */
     iosClientId?: string;
     /**
-     * Android native client ID for use in standalone, bare-workflow, and custom clients.
+     * Android native client ID for use in standalone, and bare workflow.
      *
      * This Google Client ID must be setup as follows:
      *
      * - **Application Type**: Android Application
+     * - Give it a name (e.g. "Android App").
      * - **Package name**: Must match the value of `android.package` in your `app.json`.
-     * - **Signing-certificate fingerprint**: Run `openssl rand -base64 32 | openssl sha1 -c` for the results.
-     * - Your app needs to conform to the URI scheme matching your android package.
-     *   - **Standalone**: Automatically added, do nothing.
-     *   - **Bare-workflow**: Run `npx uri-scheme add <your android package> --android`
+     * - Your app needs to conform to the URI scheme matching your `android.package` (ex. `com.myname.mycoolapp:/`).
+     *   - _Standalone_: Automatically added, do nothing.
+     *   - _Bare workflow_: Run `npx uri-scheme add <your android.package> --android`
+     * - **Signing-certificate fingerprint**:
+     *   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
+     *   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
+     * - To test this you can:
+     *   1. Eject to bare: `expo eject` and run `yarn ios`
+     *   2. Build a production IPA: `expo build:android`
      */
     androidClientId?: string;
     /**
