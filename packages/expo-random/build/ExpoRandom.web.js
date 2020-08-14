@@ -4,11 +4,13 @@ export default {
     },
     getRandomBytes(length) {
         const array = new Uint8Array(length);
-        return window.crypto.getRandomValues(array);
+        // @ts-ignore
+        return (window.crypto ?? window.msCrypto).getRandomValues(array);
     },
     async getRandomBytesAsync(length) {
         const array = new Uint8Array(length);
-        return window.crypto.getRandomValues(array);
+        // @ts-ignore
+        return (window.crypto ?? window.msCrypto).getRandomValues(array);
     },
 };
 //# sourceMappingURL=ExpoRandom.web.js.map
