@@ -49,5 +49,6 @@ android {
 }
 
 dependencies {
-  implementation project(path: ':ReactAndroid')
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
 }
