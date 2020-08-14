@@ -19,7 +19,7 @@ function assertByteCount(value: any, methodName: string): void {
 export function getRandomBytes(byteCount: number): Uint8Array {
   assertByteCount(byteCount, 'getRandomBytes');
   const validByteCount = Math.floor(byteCount);
-  if (ExpoRandom.getRandomBytesAsync) {
+  if (ExpoRandom.getRandomBytes) {
     return ExpoRandom.getRandomBytes(validByteCount);
   } else if (ExpoRandom.getRandomBase64String) {
     const base64 = ExpoRandom.getRandomBase64String(validByteCount);
