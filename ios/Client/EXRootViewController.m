@@ -71,10 +71,21 @@ NS_ASSUME_NONNULL_BEGIN
   [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
 
+- (BOOL)_isHomeVisible {
+  return [EXKernel sharedInstance].appRegistry.homeAppRecord == [EXKernel sharedInstance].visibleApp;
+}
+
 // this is different from Util.reload()
 // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
 - (void)reloadVisibleApp
 {
+  if ([self _isHomeVisible]) {
+    EXReactAppManager *homeAppManager = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+    // reloadBridge will only reload the app if developer tools are enabled for the app
+    [homeAppManager reloadBridge];
+    return;
+  }
+
   [[EXDevMenuManager sharedInstance] close];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
