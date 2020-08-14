@@ -41,7 +41,7 @@
   UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
-  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] init];
+  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")] databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
   [moduleRegistry registerInternalModule:updatesBinding];
 #endif
 

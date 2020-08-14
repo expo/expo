@@ -38,12 +38,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) dispatch_queue_t appLoaderQueue;
 
+@property (nonatomic, nullable) EXUpdatesConfig *config;
+@property (nonatomic, nullable) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, nullable) id<EXUpdatesAppLauncher> appLauncher;
+
 @end
 
 @implementation EXAppLoaderExpoUpdates
 
 @synthesize manifestUrl = _manifestUrl;
 @synthesize bundle = _bundle;
+@synthesize config = _config;
+@synthesize selectionPolicy = _selectionPolicy;
+@synthesize appLauncher = _appLauncher;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
 {
@@ -167,6 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
   _confirmedManifest = [self _processManifest:launcher.launchedUpdate.rawManifest];
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
+  _appLauncher = launcher;
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }
@@ -231,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_startLoaderTask
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+  _config = [EXUpdatesConfig configWithDictionary:@{
     @"EXUpdatesURL": [[self class] _httpUrlFromManifestUrl:_manifestUrl].absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
     @"EXUpdatesScopeKey": _manifestUrl.absoluteString,
@@ -243,12 +251,12 @@ NS_ASSUME_NONNULL_BEGIN
   }];
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
-  EXUpdatesSelectionPolicyNewest *selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersions:[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion]];
+  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersions:[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion]];
 
-  EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:config
+  EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:updatesDatabaseManager.database
                                                                             directory:updatesDatabaseManager.updatesDirectory
-                                                                      selectionPolicy:selectionPolicy
+                                                                      selectionPolicy:_selectionPolicy
                                                                         delegateQueue:_appLoaderQueue];
   loaderTask.delegate = self;
   [loaderTask start];

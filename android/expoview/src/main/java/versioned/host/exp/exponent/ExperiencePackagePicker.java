@@ -62,6 +62,7 @@ import expo.modules.speech.SpeechPackage;
 import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.updates.UpdatesPackage;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
 import expo.modules.device.DevicePackage;
@@ -124,6 +125,7 @@ public class ExperiencePackagePicker {
       new SplashScreenPackage(),
       new StripePackage(),
       new TaskManagerPackage(),
+      new UpdatesPackage(),
       new VideoThumbnailsPackage(),
       new WebBrowserPackage()
   );
