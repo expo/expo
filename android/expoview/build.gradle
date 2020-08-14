@@ -213,7 +213,6 @@ dependencies {
   api "androidx.room:room-runtime:2.1.0"
 
   api 'com.squareup.picasso:picasso:2.5.2'
-  api 'com.google.android.gms:play-services-gcm:17.0.0'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
   api 'com.google.android.gms:play-services-maps:17.0.0'
   api 'com.google.android.gms:play-services-auth:17.0.0'

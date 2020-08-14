@@ -48,11 +48,11 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
+import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider;
 import host.exp.exponent.kernel.DevMenuManager;
-import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentUrls;
@@ -149,7 +149,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         mLoadingProgressPopupController.hide();
         interruptLoading();
       });
-     }
+    }
   };
 
   /*
@@ -259,8 +259,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     addNotification(null);
     Analytics.logEventWithManifestUrl(Analytics.EXPERIENCE_APPEARED, mManifestUrl);
-
-    registerForNotifications();
   }
 
   @Override
