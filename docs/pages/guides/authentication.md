@@ -454,7 +454,7 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import * as Facebook from 'expo-auth-session/providers/Facebook';
+import * as Facebook from 'expo-auth-session/providers/facebook';
 import { ResponseType } from 'expo-auth-session';
 import { Button } from 'react-native';
 
@@ -505,7 +505,7 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import * as Facebook from 'expo-auth-session/providers/Facebook';
+import * as Facebook from 'expo-auth-session/providers/facebook';
 import { ResponseType } from 'expo-auth-session';
 import { Button } from 'react-native';
 
@@ -557,7 +557,7 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import * as Facebook from 'expo-auth-session/providers/Facebook';
+import * as Facebook from 'expo-auth-session/providers/facebook';
 import { ResponseType } from 'expo-auth-session';
 import firebase from 'firebase';
 import { Button } from 'react-native';
@@ -1027,7 +1027,7 @@ export default function App() {
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { ResponseType } from 'expo-auth-session';
-import * as Google from 'expo-auth-session/providers/Google';
+import * as Google from 'expo-auth-session/providers/google';
 import firebase from 'firebase';
 import { Button } from 'react-native';
 

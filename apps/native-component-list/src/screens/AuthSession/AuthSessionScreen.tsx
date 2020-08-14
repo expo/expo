@@ -1,8 +1,8 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
 import { useAuthRequest } from 'expo-auth-session';
-import * as GoogleAuthSession from 'expo-auth-session/providers/Google';
-import * as FacebookAuthSession from 'expo-auth-session/providers/Facebook';
+import * as GoogleAuthSession from 'expo-auth-session/providers/google';
+import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';

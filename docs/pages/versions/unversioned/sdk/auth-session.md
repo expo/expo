@@ -534,7 +534,7 @@ AuthSession has built-in support for some popular providers to make usage as eas
 ## Google
 
 ```tsx
-import * as Google from 'expo-auth-session/providers/Google';
+import * as Google from 'expo-auth-session/providers/google';
 ```
 
 - See the guide for more info on usage: [Google Authentication](/guides/authentication#google).
@@ -568,7 +568,7 @@ An object containing the discovery URLs used for Google auth.
 ## Facebook
 
 ```tsx
-import * as Facebook from 'expo-auth-session/providers/Facebook';
+import * as Facebook from 'expo-auth-session/providers/facebook';
 ```
 
 - Uses implicit auth (`ResponseType.Token`) by default.
