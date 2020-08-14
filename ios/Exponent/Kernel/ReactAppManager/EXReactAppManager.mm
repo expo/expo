@@ -479,7 +479,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService preventSplashScreenAutoHideFor:(UIViewController *) _appRecord.viewController
                                       successCallback:^(BOOL hasEffect) {}
-                                      failureCallback:^(NSString * _Nonnull message) { UMLogWarn(message); }];
+                                      failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
   _viewTestTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
                                                     target:self
                                                   selector:@selector(_preSDK39CheckAppFinishedLoading:)
@@ -525,7 +525,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
       [splashScreenService hideSplashScreenFor:(UIViewController *) _appRecord.viewController
                                successCallback:^(BOOL hasEffect) {}
-                               failureCallback:^(NSString * _Nonnull message) { UMLogWarn(message); }];
+                               failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
       [self _appLoadingFinished];
     }
   }
