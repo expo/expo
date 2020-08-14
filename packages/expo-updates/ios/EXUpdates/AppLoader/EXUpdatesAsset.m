@@ -18,18 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)filename
 {
-  if (!_filename) {
-    // for legacy purposes, we try to use the asset URL as the basis for the filename on disk
-    // and fall back to the key if it doesn't exist
-    if (_url) {
-      _filename = [NSString stringWithFormat:@"%@.%@",
-                   [EXUpdatesUtils sha256WithData:[_url.absoluteString dataUsingEncoding:NSUTF8StringEncoding]],
-                   _type];
-    } else {
-      _filename = _key;
-    }
-  }
-  return _filename;
+  return _key;
 }
 
 @end
