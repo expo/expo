@@ -47,13 +47,14 @@ jobs:
           restore-keys: |
             docs-next-${{ hashFiles('docs/yarn.lock') }}-
             docs-next-
-#       - name: Cache Babel folder
-#         uses: actions/cache@v2
-#         with:
-#           path: docs/node_modules/.cache/babel-loader
-#           key: docs-babel-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/common/**') }}
-#           restore-keys: |
-#             docs-babel-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/common/**') }}
+      - name: Cache Babel MDX folder
+        uses: actions/cache@v2
+        with:
+          path: docs/node_modules/.cache/babel-mdx-loader
+          key: docs-babel-mdx-${{ hashFiles('docs/yarn.lock') }}
+          restore-keys: |
+            docs-babel-mdx-${{ hashFiles('docs/yarn.lock') }}
+            docs-babel-mdx-
       - run: yarn export
         timeout-minutes: 15
       - name: test links
