@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add a synchronous version of `getRandomBytesAsync` called `getRandomBytes`
+- Add a synchronous version of `getRandomBytesAsync` called `getRandomBytes`. ([#9750](https://github.com/expo/expo/pull/9750) by [@brentvatne](https://github.com/brentvatne))
 
 ### 🐛 Bug fixes
 
