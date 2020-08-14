@@ -73,7 +73,9 @@
     return;
   }
 
-  self.window.hidden = YES;
+  if (self.window) {
+    self.window.hidden = YES;
+  }
 }
 
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress
@@ -81,6 +83,8 @@
   if (!_enabled) {
     return;
   }
+  
+  [self show];
   
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
