@@ -3,8 +3,7 @@
 const cloneDeep = require('lodash/cloneDeep');
 const isEqual = require('lodash/isEqual');
 // Derive the Expo Jest preset from the React Native one
-const jestPresetOrigin = require('react-native/jest-preset');
-const jestPreset = cloneDeep(jestPresetOrigin);
+const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 // transform
 if (!jestPreset.transform) {
