@@ -41,6 +41,7 @@ import expo.modules.splashscreen.SplashScreen;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentIntentService;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LauncherActivity;
@@ -624,7 +625,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void emitUpdatesEvent(JSONObject params) {
-    KernelProvider.getInstance().addEventForExperience(mManifestUrl, new KernelConstants.ExperienceEvent(AppLoader.UPDATES_EVENT_NAME, params.toString()));
+    String eventName = ABIVersion.toNumber("39.0.0") <= ABIVersion.toNumber(mSDKVersion)
+      ? ExpoUpdatesAppLoader.UPDATES_EVENT_NAME
+      : AppLoader.UPDATES_EVENT_NAME;
+    KernelProvider.getInstance().addEventForExperience(mManifestUrl, new KernelConstants.ExperienceEvent(eventName, params.toString()));
   }
 
   @Override

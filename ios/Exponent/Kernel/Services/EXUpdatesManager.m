@@ -12,6 +12,9 @@
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 
+NSString * const EXUpdatesEventNameNew = @"Expo.nativeUpdatesEvent";
+NSString * const EXUpdatesUpdateAvailableEventType = @"updateAvailable";
+
 @interface EXUpdatesManager ()
 
 @property (nonatomic, strong) EXAppLoader *manifestAppLoader;
@@ -26,6 +29,7 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
             error:(NSError * _Nullable)error;
 {
   NSDictionary *body;
+  NSDictionary *bodyLegacy;
   if (error) {
     body = @{
              @"type": EXUpdatesErrorEventType,
@@ -36,8 +40,12 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
       // prevent a crash, but this shouldn't ever happen
       manifest = @{};
     }
+    bodyLegacy = @{
+                   @"type": EXUpdatesDownloadFinishedEventType,
+                   @"manifest": manifest
+                   };
     body = @{
-             @"type": EXUpdatesDownloadFinishedEventType,
+             @"type": EXUpdatesUpdateAvailableEventType,
              @"manifest": manifest
              };
   } else {
@@ -46,8 +54,13 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
              };
   }
   RCTBridge *bridge = appRecord.appManager.reactBridge;
-  if (appRecord.status == kEXKernelAppRecordStatusRunning && [self _doesBridgeSupportUpdatesModule:bridge]) {
-    [bridge.scopedModules.updates sendEventWithBody:body];
+  if (appRecord.status == kEXKernelAppRecordStatusRunning) {
+    // for SDK 38 and below
+    if ([self _doesBridgeSupportUpdatesModule:bridge]) {
+      [bridge.scopedModules.updates sendEventWithBody:bodyLegacy ?: body];
+    }
+    // for SDK 39+
+    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventNameNew, body]];
   }
 }
 
