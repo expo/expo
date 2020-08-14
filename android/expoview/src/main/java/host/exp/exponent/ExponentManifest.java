@@ -13,6 +13,7 @@ import android.util.Log;
 import android.util.LruCache;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -595,7 +596,7 @@ public class ExponentManifest {
     return manifest;
   }
 
-
+  @WorkerThread
   public Bitmap loadIconBitmapSync(final String iconUrl) {
     Bitmap icon = getIconFromCache(iconUrl);
     if (icon != null) {
