@@ -13,8 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -130,8 +132,6 @@ public class ExpoUpdatesAppLoader {
 
     HashMap<String, Object> configMap = new HashMap<>();
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
-    // TODO: if we want to use a scopeKey from the manifest here,
-    //  need to either keep track of URL -> scopeKey mapping separately
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, false);
@@ -149,7 +149,9 @@ public class ExpoUpdatesAppLoader {
     UpdatesConfiguration configuration = new UpdatesConfiguration();
     configuration.loadValuesFromMap(configMap);
 
-    SelectionPolicy selectionPolicy = new SelectionPolicyNewest(Constants.SDK_VERSIONS_LIST);
+    List<String> sdkVersionsList = new ArrayList<>(Constants.SDK_VERSIONS_LIST);
+    sdkVersionsList.add(RNObject.UNVERSIONED);
+    SelectionPolicy selectionPolicy = new SelectionPolicyNewest(sdkVersionsList);
 
     File directory;
     try {
