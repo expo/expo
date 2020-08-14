@@ -57,7 +57,7 @@ class PickerResultsStore(context: Context) {
                 return@let
               }
 
-              if (decodedBundle.containsKey("base64") && decodedBundle.getBoolean("base64")) {
+              if (decodedBundle.getBoolean("base64", false)) {
                 readAsBase64(decodedPath)?.let {
                   decodedBundle.putString("base64", it)
                 }
