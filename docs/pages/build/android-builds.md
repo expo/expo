@@ -75,7 +75,7 @@ android {
 }
 
 project.afterEvaluate {
-  /* @info This is where you configure the release signing config */android.signingConfigs.release/* @end */ { config ->
+  /* @info This is where we configure the release signing config */android.signingConfigs.release/* @end */ { config ->
     def debug = gradle.startParameter.taskNames.any { it.toLowerCase().contains('debug') }
 
     /* @info Don't read credentials.json if the task name contains debug */
