@@ -24,6 +24,7 @@ ABI38_0_0EX_DEFINE_SCOPED_MODULE_GETTER(ABI38_0_0EXUpdates, updates)
 @implementation ABI38_0_0EXUpdates
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 ABI38_0_0EX_EXPORT_SCOPED_MODULE(ExponentUpdates, UpdatesManager)
 
@@ -86,46 +87,24 @@ ABI38_0_0RCT_EXPORT_METHOD(fetchUpdateAsync:(ABI38_0_0RCTPromiseResolveBlock)res
     reject(@"E_FETCH_UPDATE_FAILED", @"Cannot fetch updates in dev mode", nil);
     return;
   }
-  [_kernelUpdatesServiceDelegate updatesModule:self didRequestManifestWithCacheBehavior:ABI38_0_0EXManifestPrepareToCache success:^(NSDictionary * _Nonnull manifest) {
-    NSString *currentRevisionId = self->_manifest[@"revisionId"];
-    NSString *newRevisionId = manifest[@"revisionId"];
-    if (currentRevisionId && newRevisionId && [currentRevisionId isEqualToString:newRevisionId]) {
+  [_kernelUpdatesServiceDelegate updatesModule:self didRequestBundleWithCompletionQueue:_methodQueue start:^{
+    [self sendEventWithBody:@{ @"type": ABI38_0_0EXUpdatesDownloadStartEventType }];
+  } success:^(NSDictionary * _Nullable manifest) {
+    if (manifest) {
+      [self sendEventWithBody:@{
+        @"type": ABI38_0_0EXUpdatesDownloadFinishedEventType,
+        @"manifest": manifest
+      }];
+      resolve(manifest);
+    } else {
       [self sendEventWithBody:@{ @"type": ABI38_0_0EXUpdatesNotAvailableEventType }];
       resolve(nil);
-      return;
     }
-
-    void (^progressBlock)(NSDictionary * _Nonnull) = ^void(NSDictionary * _Nonnull progressDict) {
-      NSMutableDictionary *eventBody = [progressDict mutableCopy];
-      eventBody[@"type"] = ABI38_0_0EXUpdatesDownloadProgressEventType;
-      [self sendEventWithBody:eventBody];
-    };
-    void (^successBlock)(NSData * _Nonnull) = ^void(NSData * _Nonnull data) {
-      [self sendEventWithBody:@{
-                                 @"type": ABI38_0_0EXUpdatesDownloadFinishedEventType,
-                                 @"manifest": manifest
-                                 }];
-      resolve(manifest);
-    };
-    void (^errorBlock)(NSError * _Nonnull) = ^void(NSError * _Nonnull error) {
-      [self sendEventWithBody:@{
-                                 @"type": ABI38_0_0EXUpdatesErrorEventType,
-                                 @"message": @"Failed to fetch new update"
-                                 }];
-      reject(@"E_FETCH_BUNDLE_FAILED", @"Failed to fetch new update", error);
-    };
-
-    [self sendEventWithBody:@{ @"type": ABI38_0_0EXUpdatesDownloadStartEventType }];
-    [self->_kernelUpdatesServiceDelegate updatesModule:self
-                          didRequestBundleWithManifest:manifest
-                                              progress:progressBlock
-                                               success:successBlock
-                                               failure:errorBlock];
   } failure:^(NSError * _Nonnull error) {
     [self sendEventWithBody:@{
-                               @"type": ABI38_0_0EXUpdatesErrorEventType,
-                               @"message": error.localizedDescription
-                               }];
+      @"type": ABI38_0_0EXUpdatesErrorEventType,
+      @"message": error.localizedDescription
+    }];
     reject(@"E_CHECK_UPDATE_FAILED", error.localizedDescription, error);
   }];
 }

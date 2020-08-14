@@ -55,9 +55,9 @@ public class ExpoUpdatesAppLoader {
   private static final String TAG = ExpoUpdatesAppLoader.class.getSimpleName();
 
   public static final String UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent";
-  private static final String UPDATE_AVAILABLE_EVENT = "updateAvailable";
-  private static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
-  private static final String UPDATE_ERROR_EVENT = "error";
+  public static final String UPDATE_AVAILABLE_EVENT = "updateAvailable";
+  public static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
+  public static final String UPDATE_ERROR_EVENT = "error";
 
   private String mManifestUrl;
   private AppLoaderCallback mCallback;
