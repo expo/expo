@@ -70,7 +70,7 @@ The schema of a build profile for a generic Android project looks like this:
 - `credentialsSource` defines the credentials source for the project build. If you want to take advantage of your own `credentials.json` file, set it to `local` ([learn more on this here](../advanced-credentials/)). If you always want to use credentials stored on Expo servers, choose `remote`. If you're not sure what to do but you probably won't be needing to run builds from a CI, choose `auto` (this is the default option).
 - `withoutCredentials` when set to `true`, Expo CLI won't require you to configure credentials when building the app using this profile. It comes in handy when you want to build debug binaries and the debug keystore is checked in to the repository. The default is `false`.
 - `gradleCommand` defines the Gradle task to be run on Expo servers to build your project. You can set it to any valid Gradle task, e.g. `:app:assembleDebug` to build a debug binary. The default Gradle command is `:app:bundleRelease`.
-- `artifactPath` is the path where EAS Builds is going to look for the build artifact. The default is `android/app/build/outputs/bundle/release/app-release.aab`.
+- `artifactPath` is the path where EAS Builds is going to look for the build artifact. The default is `android/app/build/outputs/bundle/release/app-release.aab`. For some older projects that default might not be correct and you might need to change that to `android/app/build/outputs/bundle/release/app.aab`.
 
 #### Examples
 
