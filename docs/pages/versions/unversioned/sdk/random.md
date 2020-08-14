@@ -14,25 +14,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-random" />
 
-## Usage
-
-```javascript
-import React from 'react';
-import { View } from 'react-native';
-import * as Random from 'expo-random';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const randomBytes = await Random.getRandomBytesAsync(16);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
-```
-
 ## API
 
 ```js
@@ -41,43 +22,31 @@ import * as Random from 'expo-random';
 
 ## Methods
 
-### `getRandomBytes(byteCount)`
+- [`Random.getRandomBytes(byteCount)`](#randomgetrandombytesbytecount)
+- [`Random.getRandomBytesAsync(byteCount)`](#networkgetipaddressasync)
 
-```js
-getRandomBytes(byteCount: number): Uint8Array
-```
-
-Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
-
-**Parameters**
-
-| Name      | Type     | Description                                                                     |
-| --------- | -------- | ------------------------------------------------------------------------------- |
-| byteCount | `number` | A number within the range: **0...1024**. Anything else will throw a `TypeError` |
-
-**Returns**
-
-| Name        | Type                  | Description                                                      |
-| ----------- | --------------------- | ---------------------------------------------------------------- |
-| randomBytes | `Uint8Array` | An array of random bytes with the same length as the `byteCount` |
-
-
-### `getRandomBytesAsync(byteCount)`
-
-```js
-getRandomBytesAsync(byteCount: number): Promise<Uint8Array>
-```
+### `Random.getRandomBytes(byteCount)`
 
 Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
 
-**Parameters**
+## Arguments
 
-| Name      | Type     | Description                                                                     |
-| --------- | -------- | ------------------------------------------------------------------------------- |
-| byteCount | `number` | A number within the range: **0...1024**. Anything else will throw a `TypeError` |
+- **byteCount (_number_)** -- A number within the range: **0...1024**. Anything else will throw a `TypeError`.
 
-**Returns**
+## Returns
 
-| Name        | Type                  | Description                                                      |
-| ----------- | --------------------- | ---------------------------------------------------------------- |
-| randomBytes | `Promise<Uint8Array>` | An array of random bytes with the same length as the `byteCount` |
+- **randomBytes (_Uint8Array_)** -- An array of random bytes with the same length as the `byteCount`.
+
+
+### `Random.getRandomBytesAsync(byteCount)`
+
+Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
+
+## Arguments
+
+- **byteCount (_number_)** -- A number within the range: **0...1024**. Anything else will throw a `TypeError`.
+
+## Returns
+
+- **randomBytes (_Promise&lt;Uint8Array&gt;_)** -- An array of random bytes with the same length as the `byteCount`.
+
