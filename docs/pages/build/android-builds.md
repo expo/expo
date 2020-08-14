@@ -75,10 +75,10 @@ android {
 }
 
 project.afterEvaluate {
-  /* @info configure the release signing config */android.signingConfigs.release/* @end */ { config ->
+  /* @info This is where you configure the release signing config */android.signingConfigs.release/* @end */ { config ->
     def debug = gradle.startParameter.taskNames.any { it.toLowerCase().contains('debug') }
 
-    /* @info don't read credentials.json if the task name contains debug */
+    /* @info Don't read credentials.json if the task name contains debug */
     if (debug) {
       return
     }
@@ -87,14 +87,14 @@ project.afterEvaluate {
     def credentialsJson = rootProject.file("../credentials.json");
 
     if (credentialsJson.exists()) {
-      /* @info don't do anything if the release signing config is already defined in build.gradle */
+      /* @info Don't do anything if the release signing config is already defined in build.gradle */
       if (config.storeFile) {
         println("Path to release keystore file is already set, ignoring 'credentials.json'")
       }/* @end */ else {
         try {
           def credentials = new groovy.json.JsonSlurper().parse(credentialsJson)
 
-          /* @info configure the signing config with the credentials.json data */
+          /* @info Use the data from credentials.json for the signing config */
           storeFile rootProject.file("../" + credentials.android.keystore.keystorePath)
           storePassword credentials.android.keystore.keystorePassword
           keyAlias credentials.android.keystore.keyAlias
@@ -111,7 +111,7 @@ project.afterEvaluate {
     }
   }
 
-  /* @info use the above signing config for the release build type */
+  /* @info Use the above signing config for the release build type */
   android.buildTypes.release { config ->
     config.signingConfig android.signingConfigs.release
   }

@@ -6,11 +6,11 @@ Follow these instructions to get ready for using EAS Builds.
 
 ## 1. Install Expo CLI
 
-Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). If you already have it, make sure you're using the latest version. EAS Builds is in alpha and it's changing rapidly, so the only way to ensure that you will have a good experience is to use the latest expo-cli version.
+Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). If you already have it, make sure you're using the latest version. EAS Builds is in alpha and it's changing rapidly, so the only way to ensure that you will have the best experience is to use the latest expo-cli version.
 
 ## 2. Sign In
 
-Sign in with `expo login` or sign up with `expo register` if you don't have an Expo account yet. You can check if you're logged in by running `expo whoami`.
+Sign in with `expo login`, or sign up with `expo register` if you don't have an Expo account yet. You can check if you're logged in by running `expo whoami`.
 
 ## 3. Create eas.json
 
@@ -37,7 +37,7 @@ Let's start with the following minimal configuration:
 
 If you want to learn more about the configuration options see the [Configuring with eas.json](../eas-json/) page.
 
-## 4. Eject Managed Project
+## 4. Eject Your Managed Project
 
 **⚠️ Do not follow this step if you are using the bare workflow or a vanilla React Native project.**
 
@@ -47,7 +47,7 @@ In the meantime, if you wish to build a managed project, you'll have to run `exp
 
 ## 5. If Building for Android...
 
-If you wish to build your application for Android but this is the first doing this, you'll have to generate a keystore. To do so, you'll need the `keytool` command installed and searchable in `PATH`. `keytool` is distributed with Java Development Kit. We recommend you [install JDK version 8](https://jdk.java.net/) as this specific version is needed for building Android apps.
+If you're building your Android application for the first time, you'll have to generate a keystore. To do so, you'll need the `keytool` command installed and searchable in `PATH`. `keytool` is distributed with Java Development Kit. We recommend you [install JDK version 8](https://jdk.java.net/) as this specific version is needed for building Android apps.
 
 See the [Android Credentials](../advanced-credentials-configuration/#android-credentials) section in the **Advanced Credentials Configuration** page to learn more about Android credentials.
 
@@ -57,17 +57,17 @@ You’ll need a **paid** [Apple Developer Account](https://developer.apple.com/p
 
 See the [iOS Credentials](../advanced-credentials-configuration/#ios-credentials) section in the **Advanced Credentials Configuration** page to learn more about iOS credentials.
 
-## 7. Run The Build
+## 7. Run the Build
 
 Run `expo eas:build --platform android` to build for Android, `expo eas:build --platform ios` to build for iOS, or `expo eas:build --platform all` to build for both platforms.
 
 ## 8. Check the Status of Your Builds
 
-By default, the `expo eas:build` command is waiting for your build to complete. However, if you interrupt this command you can still monitor the progress of your builds by either visiting [the Expo website](https://expo.io/) or running the `expo eas:build:status` command.
+By default, the `expo eas:build` command will wait for your build to complete. However, if you interrupt this command you can still monitor the progress of your builds by either visiting [the Expo website](https://expo.io/) or running the `expo eas:build:status` command.
 
-## 9. See Other Docs and Stay Tuned
+## 9. Learn More
 
 - Read the [Configuring with eas.json](../eas-json/) guide to get familiar with EAS Builds configuration options.
-- If you want to learn more about internals of Android and iOS builds, check out [Android Builds](../android-builds/) and [iOS Builds](../ios-builds/) pages.
-- Lastly, if you're feeling an expert on the credentials configuration, see the [Advanced Credentials Configuration](../advanced-credentials-configuration/) guide to customize the build process even further.
+- If you want to learn more about the internals of Android and iOS builds, check out our [Android Builds](../android-builds/) and [iOS Builds](../ios-builds/) pages.
+- Lastly, if you feel like an expert on credentials configuration, see the [Advanced Credentials Configuration](../advanced-credentials-configuration/) guide to customize the build process even further.
 - Other than that, stay tuned - more features are coming to EAS Builds soon!
