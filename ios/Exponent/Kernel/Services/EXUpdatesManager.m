@@ -56,8 +56,56 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
 - (EXAppLoader *)_appLoaderWithScopedModule:(id)scopedModule
 {
   NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
+  return [self _appLoaderWithExperienceId:experienceId];
+}
+
+- (EXAppLoader *)_appLoaderWithExperienceId:(NSString *)experienceId
+{
   EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:experienceId];
   return appRecord.appLoader;
+}
+
+# pragma mark - EXUpdatesBindingDelegate
+
+- (EXUpdatesConfig *)configForExperienceId:(NSString *)experienceId
+{
+  return [self _appLoaderWithExperienceId:experienceId].config;
+}
+
+- (id<EXUpdatesSelectionPolicy>)selectionPolicyForExperienceId:(NSString *)experienceId
+{
+  return [self _appLoaderWithExperienceId:experienceId].selectionPolicy;
+}
+
+- (nullable EXUpdatesUpdate *)launchedUpdateForExperienceId:(NSString *)experienceId
+{
+  return [self _appLoaderWithExperienceId:experienceId].appLauncher.launchedUpdate;
+}
+
+- (nullable NSDictionary *)assetFilesMapForExperienceId:(NSString *)experienceId
+{
+  return [self _appLoaderWithExperienceId:experienceId].appLauncher.assetFilesMap;
+}
+
+- (BOOL)isUsingEmbeddedAssetsForExperienceId:(NSString *)experienceId
+{
+  return NO;
+}
+
+- (BOOL)isStartedForExperienceId:(NSString *)experienceId
+{
+  return [self _appLoaderWithExperienceId:experienceId].appLauncher != nil;
+}
+
+- (BOOL)isEmergencyLaunchForExperienceId:(NSString *)experienceId
+{
+  return NO;
+}
+
+- (void)requestRelaunchForExperienceId:(NSString *)experienceId withCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
+{
+  [[EXKernel sharedInstance] reloadAppFromCacheWithExperienceId:experienceId];
+  completion(YES);
 }
 
 # pragma mark - EXUpdatesScopedModuleDelegate

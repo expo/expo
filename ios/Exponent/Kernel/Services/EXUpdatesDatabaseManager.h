@@ -3,9 +3,11 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <Foundation/Foundation.h>
 
+#import "EXUpdatesBinding.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXUpdatesDatabaseManager : NSObject
+@interface EXUpdatesDatabaseManager : NSObject <EXUpdatesDatabaseBindingDelegate>
 
 @property (nonatomic, strong, readonly) NSURL *updatesDirectory;
 @property (nonatomic, strong, readonly) EXUpdatesDatabase *database;
