@@ -11,7 +11,7 @@ export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
 
 // @ts-ignore
-export { Updates, Linking, Notifications } from './deprecated';
+export { Linking, Notifications } from './deprecated';
 
 // @ts-ignore
 export {
@@ -153,6 +153,8 @@ export {
   Transition,
   // @ts-ignore
   Transitioning,
+  // @ts-ignore
+  Updates,
   // @ts-ignore
   Video,
   // @ts-ignore

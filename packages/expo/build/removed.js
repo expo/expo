@@ -409,6 +409,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { TaskManager } from 'expo' -> import * as TaskManager from 'expo-task-manager'`, 'TaskManager', 'expo-task-manager');
         },
     },
+    Updates: {
+        enumerable: true,
+        get() {
+            removedModule(`import { Updates } from 'expo' -> import * as Updates from 'expo-updates'`, 'Updates', 'expo-updates');
+        },
+    },
     WebBrowser: {
         enumerable: true,
         get() {

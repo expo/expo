@@ -27,12 +27,6 @@ Object.defineProperty(exports, "DangerZone", {
     return _DangerZone.default;
   }
 });
-Object.defineProperty(exports, "Updates", {
-  enumerable: true,
-  get: function () {
-    return _deprecated.Updates;
-  }
-});
 Object.defineProperty(exports, "Linking", {
   enumerable: true,
   get: function () {
@@ -457,6 +451,12 @@ Object.defineProperty(exports, "Transitioning", {
   enumerable: true,
   get: function () {
     return _removed.Transitioning;
+  }
+});
+Object.defineProperty(exports, "Updates", {
+  enumerable: true,
+  get: function () {
+    return _removed.Updates;
   }
 });
 Object.defineProperty(exports, "Video", {

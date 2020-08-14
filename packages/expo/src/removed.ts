@@ -725,6 +725,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  Updates: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { Updates } from 'expo' -> import * as Updates from 'expo-updates'`,
+        'Updates',
+        'expo-updates'
+      );
+    },
+  },
+
   WebBrowser: {
     enumerable: true,
     get() {
