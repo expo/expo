@@ -875,6 +875,8 @@ export default function App() {
 
 [c-google]: https://console.developers.google.com/apis/credentials
 
+> Be sure to install the peerDependency `yarn add expo-application`
+
 There are 4 different types of client IDs you can provide:
 
 - `expoClientId`: Proxy client ID for use in the **Expo client** on iOS and Android.
@@ -887,48 +889,67 @@ To create a client ID, go to the [Credentials Page][c-google]:
 - Create an app for your project if you haven't already.
 - Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
 
-##### `expoClientId`
+#### Development in the Expo Client
 
-Google will provide you with a custom `redirectUri` which you **cannot** use in the Expo client. You can only use web login (`useProxy: true`) in the Expo client.
+While developing in the Expo client, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
+
+First, be sure to login to your Expo account `expo login`. This will be part of the redirect URL.
+
+[Create a new Google Client ID][c-google] that will be used with `expoClientId`.
 
 - **Application Type**: Web Application
 - Give it a name (e.g. "Expo Client Proxy").
 - **URIs** (Authorized JavaScript origins): https://auth.expo.io
 - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
 
-##### `iosClientId`
+#### iOS Native
 
-This can only be used in Standalone, custom clients, and bare-workflow apps. This method cannot be used in the Expo client.
+This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo client.
+
+[Create a new Google Client ID][c-google] that will be used with `iosClientId`.
 
 - **Application Type**: iOS Application
 - Give it a name (e.g. "iOS App").
 - **Bundle ID**: Must match the value of `ios.bundleIdentifier` in your `app.json`.
 - Your app needs to conform to the URI scheme matching your bundle identifier.
-  - **Standalone**: Automatically added, do nothing.
-  - **Bare-workflow**: Run `npx uri-scheme add <your bundle id> --ios`
-- To test this you can either eject to bare-workflow (`expo eject`) or create a custom client (`expo client:ios`). Whenever you change the values in `app.json` you'll need to rebuild the native app.
+  - _Standalone_: Automatically added, do nothing.
+  - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
+- To test this you can:
+  1. Eject to bare: `expo eject` and run `yarn ios`
+  2. Create a custom client: `expo client:ios`
+  3. Build a production IPA: `expo build:ios`
+- Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
-##### `androidClientId`
+#### Android Native
 
-This can only be used in Standalone, custom clients, and bare-workflow apps. This method cannot be used in the Expo client.
+This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo client.
+
+[Create a new Google Client ID][c-google] that will be used with `androidClientId`.
 
 - **Application Type**: Android Application
 - Give it a name (e.g. "Android App").
 - **Package name**: Must match the value of `android.package` in your `app.json`.
-- **Signing-certificate fingerprint**: Run `openssl rand -base64 32 | openssl sha1 -c` for the results, it will output a string that looks like `A1:B2:C3` but longer.
-- Your app needs to conform to the URI scheme matching your android package (ex. `com.myname.mycoolapp:/`).
-  - **Standalone**: Automatically added, do nothing.
-  - **Bare-workflow**: Run `npx uri-scheme add <your android package> --android`
-- To test this you can eject to bare-workflow (`expo eject`). Whenever you change the values in `app.json` you'll need to rebuild the native app.
+- Your app needs to conform to the URI scheme matching your `android.package` (ex. `com.myname.mycoolapp:/`).
+  - _Standalone_: Automatically added, do nothing.
+  - _Bare workflow_: Run `npx uri-scheme add <your android.package> --android`
+- **Signing-certificate fingerprint**:
+  - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
+  - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
+- To test this you can:
+  1. Eject to bare: `expo eject` and run `yarn ios`
+  2. Build a production IPA: `expo build:android`
+- Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
-##### `webClientId`
+#### Web Apps
 
 Expo web client ID for use in the browser.
 
+[Create a new Google Client ID][c-google] that will be used with `webClientId`.
+
 - **Application Type**: Web Application
 - Give it a name (e.g. "Web App").
-- **URIs** (Authorized JavaScript origins): https://yourwebsite.com | https://localhost:19006
-- **Authorized redirect URIs**: https://yourwebsite.com | https://localhost:19006
+- **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
+- **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
 - To test this be sure to start your app with `expo start:web --https`.
 
 <AuthMethodTabSwitcher tabs={["Standard", "Firebase"]}>

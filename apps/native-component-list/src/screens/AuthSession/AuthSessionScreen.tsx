@@ -443,13 +443,13 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 }
 
-function Facebook({ usePKCE, useProxy }: any) {
+function Facebook({ usePKCE, useProxy, language }: any) {
   const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
     {
       clientId: '145668956753819',
       usePKCE,
-      // scopes: ['user_likes'],
-      // language: 'fr',
+      language,
+      scopes: ['user_likes'],
     },
     {
       path: 'redirect',
