@@ -137,14 +137,17 @@ public class LoaderTask {
 
       @Override
       public void onSuccess() {
+        if (mLauncher.getLaunchedUpdate() != null &&
+          !mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate())) {
+          return;
+        }
+
         synchronized (LoaderTask.this) {
           mIsReadyToLaunch = true;
           maybeFinish();
         }
 
-        if (shouldCheckForUpdate &&
-            (mLauncher.getLaunchedUpdate() == null ||
-            mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate()))) {
+        if (shouldCheckForUpdate) {
           launchRemoteUpdate();
         }
       }
