@@ -92,6 +92,10 @@ module.exports = {
     scheduleNotificationWithTimer: { type: 'function', functionType: 'promise' },
     setBadgeNumberAsync: { type: 'function', functionType: 'promise' },
   },
+  ExpoRandom: {
+    getRandomBase64StringAsync: { type: 'function', functionType: 'promise' },
+    getRandomBase64String: { type: 'function' },
+  },
   ExponentScopedModuleRegistry: {},
   ExponentSplashScreen: {
     getConstants: { type: 'function' },
@@ -371,7 +375,6 @@ module.exports = {
         ],
         ExpoPublisherBannerView: [],
         ExpoPushTokenManager: [{ key: 0, argumentsCount: 0, name: 'getDevicePushTokenAsync' }],
-        ExpoRandom: [{ key: 0, argumentsCount: 1, name: 'getRandomBase64StringAsync' }],
         ExpoSMS: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 3, name: 'sendSMSAsync' },

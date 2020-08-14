@@ -30,6 +30,9 @@ target 'Exponent' do
     }
   })
 
+  # Expo modules that are not unimodules
+  pod 'EXRandom', path: '../packages/expo-random/ios'
+
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'
 

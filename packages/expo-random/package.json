@@ -38,9 +38,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },

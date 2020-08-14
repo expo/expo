@@ -54,6 +54,7 @@ const Notification = optionalRequire(() => require('../screens/NotificationScree
 const Pedometer = optionalRequire(() => require('../screens/PedometerScreen'));
 const Permissions = optionalRequire(() => require('../screens/PermissionsScreen'));
 const Print = optionalRequire(() => require('../screens/PrintScreen'));
+const Random = optionalRequire(() => require('../screens/RandomScreen'));
 const Recording = optionalRequire(() => require('../screens/AV/RecordingScreen'));
 const Reminders = optionalRequire(() => require('../screens/RemindersScreen'));
 const SafeAreaContext = optionalRequire(() => require('../screens/SafeAreaContextScreen'));
@@ -119,6 +120,7 @@ const optionalScreens: {
   Permissions,
   Print,
   Recording,
+  Random,
   Reminders,
   SafeAreaContext,
   ScreenOrientation,

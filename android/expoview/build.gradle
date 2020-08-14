@@ -156,6 +156,7 @@ dependencies {
         'expo-gl-cpp-legacy'
       ]
   ])
+  compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -172,6 +173,9 @@ dependencies {
           'expo-in-app-purchases',
       ]
   ])
+
+  // expo-random is no longer a unimodule
+  api project(':expo-random')
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
