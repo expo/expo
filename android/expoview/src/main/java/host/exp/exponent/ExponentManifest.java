@@ -676,7 +676,7 @@ public class ExponentManifest {
     }
   }
 
-  private boolean isAnonymousExperience(final JSONObject manifest) {
+  public boolean isAnonymousExperience(final JSONObject manifest) {
     if (manifest.has(MANIFEST_ID_KEY)) {
       final String id = manifest.optString(MANIFEST_ID_KEY);
       if (id != null && id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX)) {

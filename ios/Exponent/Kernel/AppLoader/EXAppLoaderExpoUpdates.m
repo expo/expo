@@ -153,18 +153,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
-  _optimisticManifest = update.rawManifest;
-  if (self.delegate) {
-    [self.delegate appLoader:self didLoadOptimisticManifest:update.rawManifest];
-  }
+  [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
 {
   if ([EXAppFetcher areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
+    // in dev mode, we need to set an optimistic manifest even if the LoaderTask never sent one
+    if (!_optimisticManifest) {
+      [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
+    }
     return;
   }
-  _confirmedManifest = launcher.launchedUpdate.rawManifest;
+  _confirmedManifest = [self _processManifest:launcher.launchedUpdate.rawManifest];
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
@@ -253,6 +254,14 @@ NS_ASSUME_NONNULL_BEGIN
   [loaderTask start];
 }
 
+- (void)_setOptimisticManifest:(NSDictionary *)manifest
+{
+  _optimisticManifest = manifest;
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+  }
+}
+
 - (void)_loadDevelopmentJavaScriptResource
 {
   EXAppFetcher *appFetcher = [[EXAppFetcher alloc] initWithAppLoader:self];
@@ -272,6 +281,38 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }];
 }
+
+# pragma mark - manifest processing
+
+- (NSDictionary *)_processManifest:(NSDictionary *)manifest
+{
+  NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+  if (![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
+    // the manifest id determines the namespace/experience id an app is sandboxed with
+    // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
+    // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
+    // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
+    NSString *securityPrefix = [_httpManifestUrl.scheme isEqualToString:@"https"] ? @"" : @"UNVERIFIED-";
+    NSString *slugSuffix = manifest[@"slug"] ? [@"-" stringByAppendingString:manifest[@"slug"]]: @"";
+    mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path ?: @"", slugSuffix];
+    mutableManifest[@"isVerified"] = @(YES);
+  }
+  if (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [self _isAnonymousExperience:manifest]) {
+    mutableManifest[@"isVerified"] = @(YES);
+  }
+  if (mutableManifest[@"isVerified"] == nil) {
+    mutableManifest[@"isVerified"] = @(NO);
+  }
+  return [mutableManifest copy];
+}
+
+- (BOOL)_isAnonymousExperience:(NSDictionary *)manifest
+{
+  NSString *experienceId = manifest[@"id"];
+  return experienceId != nil && [experienceId hasPrefix:@"@anonymous/"];
+}
+
+#pragma mark - headers
 
 - (NSDictionary *)_requestHeaders
 {
