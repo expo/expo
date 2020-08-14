@@ -20,6 +20,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
+- Removed GCM entirely from the Android client and standalone apps since the server APIs have been shut down. ([#6071](https://github.com/expo/expo/pull/6071), [#9735](https://github.com/expo/expo/pull/9735) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

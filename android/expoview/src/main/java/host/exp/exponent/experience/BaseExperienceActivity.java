@@ -2,25 +2,19 @@
 
 package host.exp.exponent.experience;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
-import androidx.annotation.Nullable;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
@@ -273,24 +267,5 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // Override
   protected void onError(final ExponentError error) {
     // Called for each JS error
-  }
-
-  protected void registerForNotifications() {
-    try {
-      int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-      if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-        if (!Constants.FCM_ENABLED) {
-          Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-          startService(intent);
-        }
-      }
-    } catch (IllegalStateException e) {
-      // This is pretty hacky but we need to prevent crashes when trying to start this service in
-      // the background, which fails on Android 9 and above.
-      // TODO(eric): find a better fix for this.
-      // Probably we need to either remove GCM entirely from the clients, or update the
-      // implementation to ensure we only try to register in the foreground (like we do with FCM).
-      Log.e(TAG, "Failed to register for GCM notifications", e);
-    }
   }
 }

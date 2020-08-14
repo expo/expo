@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 
 import com.facebook.react.ReactRootView;
@@ -22,6 +21,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
@@ -88,8 +88,6 @@ public class HomeActivity extends BaseExperienceActivity {
     SoLoader.init(this, false);
 
     Analytics.logEvent("HOME_APPEARED");
-
-    registerForNotifications();
   }
 
   //endregion Activity Lifecycle
@@ -100,7 +98,8 @@ public class HomeActivity extends BaseExperienceActivity {
    * It needs to continue to live since it is needed for DevMenu to work as expected (it relies on ExponentKernelModule from that react context).
    */
   @Override
-  protected void destroyReactInstanceManager() {}
+  protected void destroyReactInstanceManager() {
+  }
 
   private void tryInstallLeakCanary(boolean shouldAskForPermissions) {
     if (BuildConfig.DEBUG && Constants.ENABLE_LEAK_CANARY) {
@@ -144,20 +143,20 @@ public class HomeActivity extends BaseExperienceActivity {
 
   public static List<Package> homeExpoPackages() {
     return Arrays.<Package>asList(
-        new ConstantsPackage(),
-        new PermissionsPackage(),
-        new FileSystemPackage(),
-        new FontLoaderPackage(),
-        new BarCodeScannerPackage(),
-        new KeepAwakePackage(),
-        new AmplitudePackage(),
-        new CameraPackage(),
-        new FaceDetectorPackage(),
-        new MediaLibraryPackage(),
-        new NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
-        new TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
-        new DevicePackage(),
-        new SplashScreenPackage()
+      new ConstantsPackage(),
+      new PermissionsPackage(),
+      new FileSystemPackage(),
+      new FontLoaderPackage(),
+      new BarCodeScannerPackage(),
+      new KeepAwakePackage(),
+      new AmplitudePackage(),
+      new CameraPackage(),
+      new FaceDetectorPackage(),
+      new MediaLibraryPackage(),
+      new NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
+      new TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
+      new DevicePackage(),
+      new SplashScreenPackage()
     );
   }
 }
