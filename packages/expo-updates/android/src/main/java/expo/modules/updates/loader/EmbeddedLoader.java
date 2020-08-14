@@ -80,7 +80,10 @@ public class EmbeddedLoader {
     if (sEmbeddedManifest == null) {
       try (InputStream stream = context.getAssets().open(MANIFEST_FILENAME)) {
         String manifestString = IOUtils.toString(stream, "UTF-8");
-        sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(new JSONObject(manifestString), configuration, context);
+        JSONObject manifestJson = new JSONObject(manifestString);
+        // automatically verify embedded manifest since it was already codesigned
+        manifestJson.put("isVerified", true);
+        sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(manifestJson, configuration, context);
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
         throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.getMessage());

@@ -26,7 +26,6 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicyNewest;
-import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.analytics.Analytics;
@@ -191,8 +190,27 @@ public abstract class ExpoUpdatesAppLoader {
   }
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
-    // TODO: process third-party hosted manifests
-    manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
+    Uri parsedManifestUrl = Uri.parse(mManifestUrl);
+    if (isThirdPartyHosted(parsedManifestUrl) && !Constants.isStandaloneApp()) {
+      // Sandbox third party apps and consider them verified
+      // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
+      // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
+      String protocol = parsedManifestUrl.getScheme();
+      String securityPrefix = protocol.equals("https") || protocol.equals("exps") ? "" : "UNVERIFIED-";
+      String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
+      String slug = manifest.has(ExponentManifest.MANIFEST_SLUG) ? manifest.getString(ExponentManifest.MANIFEST_SLUG) : "";
+      String sandboxedId = securityPrefix + parsedManifestUrl.getHost() + path + "-" + slug;
+      manifest.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId);
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
+    }
+    if (mExponentManifest.isAnonymousExperience(manifest)) {
+      // automatically verified
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
+    }
+    if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false);
+    }
+
     String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
 
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_MANIFEST);
@@ -201,6 +219,12 @@ public abstract class ExpoUpdatesAppLoader {
     ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
 
     return manifest;
+  }
+
+  private boolean isThirdPartyHosted(Uri uri) {
+    String host = uri.getHost();
+    return !(host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
+      host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"));
   }
 
   private boolean isDevelopmentMode(JSONObject manifest) {

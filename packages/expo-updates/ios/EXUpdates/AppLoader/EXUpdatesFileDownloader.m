@@ -86,12 +86,33 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
-    id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
-    NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+    id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
+    if (err) {
+      errorBlock(err, response);
+      return;
+    }
+
+    NSDictionary *manifest = [self _extractManifest:parsedJson error:&err];
+    if (err) {
+      errorBlock(err, response);
+      return;
+    }
 
     id innerManifestString = manifest[@"manifestString"];
     id signature = manifest[@"signature"];
-    if (innerManifestString && signature) {
+    BOOL isSigned = innerManifestString != nil && signature != nil;
+
+    // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
+    // We should treat these manifests as unsigned rather than signed with an invalid signature.
+    if (isSigned && [signature isKindOfClass:[NSString class]] && [(NSString *)signature isEqualToString:@"UNSIGNED"]) {
+      isSigned = NO;
+
+      NSError *err;
+      manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+      NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+    }
+
+    if (isSigned) {
       NSAssert([innerManifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
       NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
@@ -103,7 +124,9 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                     NSError *err;
                                                     id innerManifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
                                                     NSAssert(!err && innerManifest && [innerManifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)innerManifest
+                                                    NSMutableDictionary *mutableInnerManifest = [(NSDictionary *)innerManifest mutableCopy];
+                                                    mutableInnerManifest[@"isVerified"] = @(YES);
+                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableInnerManifest copy]
                                                                                                            config:self->_config
                                                                                                          database:database];
                                                     successBlock(update);
@@ -159,6 +182,29 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     }
   }];
   [task resume];
+}
+
+- (nullable NSDictionary *)_extractManifest:(id)parsedJson error:(NSError **)error
+{
+  if ([parsedJson isKindOfClass:[NSDictionary class]]) {
+    return (NSDictionary *)parsedJson;
+  } else if ([parsedJson isKindOfClass:[NSArray class]]) {
+    // TODO: either add support for runtimeVersion or deprecate multi-manifests
+    for (id providedManifest in (NSArray *)parsedJson) {
+      if ([providedManifest isKindOfClass:[NSDictionary class]] && providedManifest[@"sdkVersion"]){
+        NSString *sdkVersion = providedManifest[@"sdkVersion"];
+        NSArray<NSString *> *supportedSdkVersions = [_config.sdkVersion componentsSeparatedByString:@","];
+        if ([supportedSdkVersions containsObject:sdkVersion]){
+          return providedManifest;
+        }
+      }
+    }
+  }
+
+  if (error) {
+    *error = [NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:1009 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible update found at %@. Only %@ are supported.", _config.updateUrl.absoluteString, _config.sdkVersion]}];
+  }
+  return nil;
 }
 
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request

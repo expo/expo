@@ -41,7 +41,10 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
                                      userInfo:@{}];
       } else {
         NSAssert([manifest isKindOfClass:[NSDictionary class]], @"embedded manifest should be a valid JSON file");
-        embeddedManifest = [EXUpdatesUpdate updateWithEmbeddedManifest:(NSDictionary *)manifest
+        NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+        // automatically verify embedded manifest since it was already codesigned
+        mutableManifest[@"isVerified"] = @(YES);
+        embeddedManifest = [EXUpdatesUpdate updateWithEmbeddedManifest:[mutableManifest copy]
                                                                 config:config
                                                               database:database];
         if (!embeddedManifest.updateId) {
