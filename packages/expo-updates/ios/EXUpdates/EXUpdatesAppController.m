@@ -14,6 +14,10 @@ static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContro
 
 static NSString * const EXUpdatesConfigPlistName = @"Expo";
 
+static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
+static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
+static NSString * const EXUpdatesErrorEventName = @"error";
+
 @interface EXUpdatesAppController ()
 
 @property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
@@ -225,9 +229,17 @@ static NSString * const EXUpdatesConfigPlistName = @"Expo";
   [self _emergencyLaunchWithFatalError:error];
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFireEventWithType:(NSString *)type body:(NSDictionary *)body
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didCompleteBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
-  [EXUpdatesUtils sendEventToBridge:_bridge withType:type body:body];
+  if (status == EXUpdatesBackgroundUpdateStatusError) {
+    NSAssert(error != nil, @"Background update with error status must have a nonnull error object");
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
+  } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
+    NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest}];
+  } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
+  }
 }
 
 # pragma mark - internal
