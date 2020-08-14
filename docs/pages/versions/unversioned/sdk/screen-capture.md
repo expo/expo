@@ -63,7 +63,6 @@ export default class ScreenCaptureExample extends React.Component {
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Button onPress={this._activate}>Activate</Button>
         <Button onPress={this._deactivate}>Deactivate</Button>
-        <Button onPress={this._listen}>Listen for screenshots</Button>
       </View>
     );
   }
