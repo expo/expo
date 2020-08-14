@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded. The two most common reasons you may want to prevent screen capture are:
+**`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded, as well as be notified if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
 
 - If a screen is displaying sensitive information (password, credit card data, etc.)
 - You are displaying paid content that you don't want recorded and shared
@@ -24,7 +24,7 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ## Usage
 
-### Example: hook
+### Example: prevent screen capture hook
 
 ```javascript
 import { usePreventScreenCapture } from 'expo-screen-capture';
@@ -46,11 +46,18 @@ export default function ScreenCaptureExample {
 ### Example: functions
 
 ```javascript
-import { preventScreenCaptureAsync, allowScreenCaptureAsync } from 'expo-screen-capture';
+import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
 import { Button, View } from 'react-native';
 
 export default class ScreenCaptureExample extends React.Component {
+  componentDidMount() {
+    /* @info The provided function will be run whenever a screenshot of your app is taken. */
+    ScreenCapture.addScreenshotListener(() => {
+      alert('Thanks for screenshotting my beautiful app 😊');
+    }); /* @end */
+  }
+
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -60,16 +67,14 @@ export default class ScreenCaptureExample extends React.Component {
     );
   }
 
-  _activate = () => {
+  _activate = async () => {
     /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
-    preventScreenCaptureAsync(); /* @end */
-
+    await ScreenCapture.preventScreenCaptureAsync(); /* @end */
   };
 
-  _deactivate = () => {
+  _deactivate = async () => {
     /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
-    allowScreenCaptureAsync(); /* @end */
-
+    await ScreenCapture.allowScreenCaptureAsync(); /* @end */
   };
 }
 ```
@@ -77,18 +82,14 @@ export default class ScreenCaptureExample extends React.Component {
 ## API
 
 ```js
-import {
-  usePreventScreenCapture,
-  preventScreenCaptureAsync,
-  allowScreenCaptureAsync
-} from 'expo-screen-capture';
+import * as ScreenCapture from 'expo-screen-capture';
 ```
 
-<TableOfContentSection title='Methods' contents={['usePreventScreenCapture()', 'preventScreenCaptureAsync()', 'allowScreenCaptureAsync()']} />
+<TableOfContentSection title='Methods' contents={['usepreventscreencapture(key)', 'preventScreenCaptureAsync(key)', 'allowScreenCaptureAsync(key)', 'addScreenshotListener(listener)', 'removeScreenshotListener(subscription)']} />
 
 ## Methods
 
-### `usePreventScreenCapture(key?: String)`
+### `usePreventScreenCapture(key)`
 
 A React hook to prevent screen capturing for as long as the owner component is mounted.
 
@@ -96,7 +97,7 @@ A React hook to prevent screen capturing for as long as the owner component is m
 
 - **key (string)** [Optional] If provided, this will prevent multiple instances of this hook or the `preventScreenCaptureAsync` and `allowScreenCaptureAsync` methods from conflicting with each other. This argument is useful if you have multiple active components using the `allowScreenCaptureAsync` hook. Defaults to `default`.
 
-### `preventScreenCaptureAsync(key?: String)`
+### `preventScreenCaptureAsync(key)`
 
 Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called. If you are already preventing screen capture, this method does nothing (unless you pass a new and unique `key`).
 
@@ -106,10 +107,40 @@ Please note that on iOS, this will only prevent screen recordings, and is only a
 
 - **key (string)** [Optional] If provided, this will help prevent multiple instances of the `preventScreenCaptureAsync` and `allowScreenCaptureAsync` methods (and `usePreventScreenCapture` hook) from conflicting with each other. When using multiple keys, you'll have to re-allow each one in order to re-enable screen capturing. Defaults to `default`.
 
-### `allowScreenCaptureAsync(key?: String)`
+### `allowScreenCaptureAsync(key)`
 
 Re-allows the user to screen record or screenshot your app. If you haven't called `preventScreenCaptureAsync()` yet, this method does nothing
 
 #### Arguments
 
 - **key (string)** [Optional] The value must be the same as the `key` passed to `preventScreenCaptureAsync` in order to re-enable screen capturing.
+
+### `addScreenshotListener(listener)`
+
+Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission- you can request this with [`Permissions.askAsync(Permissions.CAMERA_ROLL)`](../sdk/permissions/#permissionscamera_roll).
+
+#### Arguments
+
+- **listener (function)** The function that will be executed when the user takes a screenshot. This function accepts no arguments.
+
+#### Returns
+
+A `Subscription` object that you can use to unregister the listener, either by calling `.remove()` or passing it to `removeScreenshotListener`.
+
+### `removeScreenshotListener(subscription)`
+
+Removes the subscription you provide, so that you are no longer listening for screen shots.
+
+#### Arguments
+
+- **subscription (Subscription)** `Subscription` returned by `addScreenshotListener`. If you prefer, you can also call `.remove` on that `Subscription` object, e.g.
+
+```js
+let mySubscription = addScreenshotListener(() => {
+  console.log("You took a screenshot!");
+})
+...
+mySubscription.remove();
+// OR
+removeScreenshotListener(mySubscription);
+```
