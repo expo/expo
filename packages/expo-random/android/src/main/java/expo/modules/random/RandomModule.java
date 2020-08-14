@@ -3,7 +3,6 @@ package expo.modules.random;
 import android.util.Base64;
 
 import java.security.SecureRandom;
-import java.security.NoSuchAlgorithmException;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
