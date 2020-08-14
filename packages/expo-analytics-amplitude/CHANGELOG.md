@@ -4,7 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- Renamed `logEvent` method to `logEventAsync`, and `logEventWithProperties` to `logEventWithPropertiesAsync`. The previous two methods will remain included, but show warnings, so apps aren't broken when updating.
+- Renamed all methods to include the 'Async' suffix, and they now each return a promise:
+  - `initialize` to `initializeAsync`
+  - `setUserId` to `setUserIdAsync`
+  - `setUserProperties` to `setUserPropertiesAsync`
+  - `clearUserProperties` to `clearUserPropertiesAsync`
+  - `logEvent` to `logEventAsync`
+  - `logEventWithProperties` to `logEventWithPropertiesAsync`
+  - `setGroup` to `setGroupAsync`
+  - `setTrackingOptions` to `setTrackingOptionsAsync`
 
 ### 🎉 New features
 
