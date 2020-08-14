@@ -39,7 +39,7 @@ If you want to learn more about the configuration options see the [Configuring w
 
 ## 4. Eject Managed Project
 
-**⚠️ Do not follow this step if you are using the bare workflow or a generic React Native project.**
+**⚠️ Do not follow this step if you are using the bare workflow or a vanilla React Native project.**
 
 Building managed Expo projects with EAS Builds is not supported yet. We're working hard to deliver this soon!
 
