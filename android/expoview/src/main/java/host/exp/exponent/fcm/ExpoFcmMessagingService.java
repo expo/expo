@@ -66,8 +66,10 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
         dispatchToLegacyNotificationModule(remoteMessage);
       } catch (JSONException e) {
         e.printStackTrace();
-        EXL.e("expo-notifications", "No experience found for id " + remoteMessage.getData().get("experienceId"));
+        EXL.e("expo-notifications", "Couldn't parse the manifest.");
       }
+    } else {
+      EXL.e("expo-notifications", "No experience found for id " + remoteMessage.getData().get("experienceId"));
     }
   }
 
