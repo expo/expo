@@ -170,7 +170,7 @@ public class ExpoUpdatesAppLoader {
       @Override
       public boolean onCachedUpdateLoaded(UpdateEntity update) {
         boolean shouldForceRemote = false;
-        if (isDevelopmentMode(update.metadata)) {
+        if (isUsingDeveloperTool(update.metadata)) {
           shouldForceRemote = true;
         } else {
           try {
@@ -205,7 +205,7 @@ public class ExpoUpdatesAppLoader {
           mCallback.onManifestCompleted(manifest);
 
           // ReactAndroid will load the bundle on its own in development mode
-          if (!isDevelopmentMode(manifest)) {
+          if (!ExponentManifest.isDebugModeEnabled(manifest)) {
             mCallback.onBundleCompleted(launcher.getLaunchAssetFile());
           }
         } catch (Exception e) {
@@ -269,7 +269,7 @@ public class ExpoUpdatesAppLoader {
       host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"));
   }
 
-  private boolean isDevelopmentMode(JSONObject manifest) {
+  private boolean isUsingDeveloperTool(JSONObject manifest) {
     try {
       return manifest.has(ExponentManifest.MANIFEST_DEVELOPER_KEY) &&
         manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPER_KEY).has(ExponentManifest.MANIFEST_DEVELOPER_TOOL_KEY);
