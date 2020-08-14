@@ -143,7 +143,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXRandom (8.2.1):
-    - UMCore
+    - React
   - EXScreenCapture (1.0.1):
     - UMCore
   - EXScreenOrientation (2.0.0):
@@ -993,7 +993,7 @@ SPEC CHECKSUMS:
   EXPermissions: ecac8bbc91ee6fa7160d1bf834728e56858fce5b
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: edff21b0746bc0c2d2912b21efcb47e8d500b8c9
-  EXRandom: a375fb6bed8a0919a795766b8d5218b1200538b7
+  EXRandom: 9af668c0f6460e52c4d83779b84bfd666e42dd38
   EXScreenCapture: ed9b1813758bf0057fc3780043bfa4dc0956a9b5
   EXScreenOrientation: 9110f49798fae74322f6fa959eab1da5d4805cf0
   EXSecureStore: 579cbccd9cd093e6f4336aba073b059008bd78e0
@@ -1081,6 +1081,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 10d44fa3eb6327bcb52c62fb56bf1b2a80693c6b
+PODFILE CHECKSUM: 7d68d76a495ecc0b27376c8d1495ac39d662f779
 
 COCOAPODS: 1.9.3
