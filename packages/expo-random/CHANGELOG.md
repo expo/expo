@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a synchronous version of `getRandomBytesAsync` called `getRandomBytes`
+
 ### 🐛 Bug fixes
 
 ## 8.2.1 — 2020-05-29
