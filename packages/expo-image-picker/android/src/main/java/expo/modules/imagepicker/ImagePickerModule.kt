@@ -38,14 +38,21 @@ import org.unimodules.interfaces.permissions.PermissionsStatus
 import java.io.IOException
 import java.lang.ref.WeakReference
 
-class ImagePickerModule(private val mContext: Context,
-                        val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate(),
-                        private val pickerResultStore: PickerResultsStore = PickerResultsStore(mContext))
-  : ExportedModule(mContext), ActivityEventListener, LifecycleEventListener {
+class ImagePickerModule(
+  private val mContext: Context,
+  val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate(),
+  private val pickerResultStore: PickerResultsStore = PickerResultsStore(mContext)
+) : ExportedModule(mContext), ActivityEventListener, LifecycleEventListener {
 
   private var mCameraCaptureURI: Uri? = null
   private var mPromise: Promise? = null
   private var mPickerOptions: ImagePickerOptions? = null
+
+  /**
+   * Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes.
+   * Moreover, the react context will be reloaded again in such a case. We need to handle this situation.
+   * To do it we track if the current activity was destroyed.
+   */
   private var mWasDestroyed = false
 
   private val mImageLoader: ImageLoader by moduleRegistry()
@@ -67,7 +74,6 @@ class ImagePickerModule(private val mContext: Context,
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryPropertyDelegate.onCreate(moduleRegistry)
-
     mUIManager.registerLifecycleEventListener(this)
   }
 
@@ -96,12 +102,8 @@ class ImagePickerModule(private val mContext: Context,
   }
 
   @ExpoMethod
-  fun startObserving(promise: Promise) {
-    for (result in pickerResultStore.getAllPendingResults()) {
-      mEventEmitter.emit(ImagePickerConstants.PENDING_RESULT_EVENT, result)
-    }
-
-    promise.resolve(null)
+  fun getPendingResultAsync(promise: Promise) {
+    promise.resolve(pickerResultStore.getAllPendingResults())
   }
 
   // NOTE: Currently not reentrant / doesn't support concurrent requests
@@ -258,12 +260,28 @@ class ImagePickerModule(private val mContext: Context,
     if (shouldHandleOnActivityResult(activity, requestCode)) {
       mUIManager.unregisterActivityEventListener(this)
 
-      val promise = if (mWasDestroyed) {
-        PendingPromise(pickerResultStore)
+      var pickerOptions = mPickerOptions!!
+      val promise = if (mWasDestroyed && mPromise !is PendingPromise) {
+        if (pickerOptions.isBase64) {
+          // we know that the activity was killed and we don't want to store
+          // base64 into `SharedPreferences`...
+          pickerOptions = ImagePickerOptions(
+            pickerOptions.quality,
+            pickerOptions.isAllowsEditing,
+            pickerOptions.forceAspect,
+            false,
+            pickerOptions.mediaTypes,
+            pickerOptions.isExif,
+            pickerOptions.videoMaxDuration
+          )
+          //...but we need to remember to add it later.
+          PendingPromise(pickerResultStore, isBase64 = true)
+        } else {
+          PendingPromise(pickerResultStore)
+        }
       } else {
         mPromise!!
       }
-      val pickerOptions = mPickerOptions!!
 
       mPromise = null
       mPickerOptions = null
@@ -363,7 +381,6 @@ class ImagePickerModule(private val mContext: Context,
 
   override fun onHostDestroy() {
     mWasDestroyed = true
-
     mUIManager.unregisterLifecycleEventListener(this)
   }
 

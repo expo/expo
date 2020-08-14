@@ -160,7 +160,7 @@ Otherwise, this method returns information about the selected media item. When t
 - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
 - The `duration` property is the length of the video in milliseconds.
 
-> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.addOnPendingResultListener](#imagepickeraddonpendingresultlistenerlistener).
+> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
 
 ### `ImagePicker.launchCameraAsync(options)`
 
@@ -201,15 +201,17 @@ Otherwise, this method returns information about the selected media item. When t
 - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
 - The `duration` property is the length of the video in milliseconds.
 
-> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.addOnPendingResultListener](#imagepickeraddonpendingresultlistenerlistener).
+> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
 
-### `ImagePicker.addOnPendingResultListener(listener)`
+### `ImagePicker.getPendingResultAsync()`
 
-Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost data in this situation adding the pending result listener. It will be called after the `MainActivity` reloads. We recommend to adding this in the global scope of your JavaScript bundle.
+Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost data by calling `getPendingResultAsync`. You can test this functionality by turning on `Don't keep activities` in the developer options.
 
-#### Arguments
+#### Returns
 
-- **listener (_function_)** - This function is called when `ImagePicker` has pending results. It receives an object of a type similar to the result of the `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker` finished successfully. Otherwise, it receives [ImagePicker.ImagePickerErrorResult](#imagepickerimagepickererrorresult).
+**On Android:** a promise that resolves to an array of objects of exactly same type as in `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker` finished successfully. Otherwise to the array of [ImagePicker.ImagePickerErrorResult](#imagepickerimagepickererrorresult).
+
+**On other platforms:** an empty array.
 
 ## Enums
 

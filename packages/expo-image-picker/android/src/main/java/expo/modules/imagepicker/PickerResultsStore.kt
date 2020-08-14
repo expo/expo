@@ -6,7 +6,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Parcel
 import android.util.Base64
+import android.util.Log
+import org.apache.commons.io.IOUtils
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -28,7 +33,8 @@ class PickerResultsStore(context: Context) {
     val uuid = UUID.randomUUID().toString()
     val encodedBundle = Base64.encodeToString(bundleToBytes(bundle), 0)
 
-    sharedPreferences.edit()
+    sharedPreferences
+      .edit()
       .putString(uuid, encodedBundle)
       .apply()
   }
@@ -38,20 +44,29 @@ class PickerResultsStore(context: Context) {
     val now = Date().time
     for ((_, value) in sharedPreferences.all) {
       if (value is String) {
-        bytesToBundle(Base64.decode(value, 0))?.let { decodedBundle ->
-          // The picked file is in the cache folder, so the android could delete it.
-          if (decodedBundle.containsKey("uri")
-            && !File(Uri.parse(decodedBundle.getString("uri")).path!!).exists()) {
-            return@let
-          }
+        bytesToBundle(Base64.decode(value, 0))
+          ?.let { decodedBundle ->
+            if (decodedBundle.containsKey("uri")) {
+              if (decodedBundle.getLong(EXPIRE_KEY) < now) {
+                return@let
+              }
 
-          if (decodedBundle.getLong(EXPIRE_KEY) < now) {
-            return@let
-          }
+              val decodedPath = Uri.parse(decodedBundle.getString("uri")).path!!
+              // The picked file is in the cache folder, so the android could delete it.
+              if (!File(decodedPath).exists()) {
+                return@let
+              }
 
-          decodedBundle.remove(EXPIRE_KEY)
-          result.add(decodedBundle)
-        }
+              if (decodedBundle.containsKey("base64") && decodedBundle.getBoolean("base64")) {
+                readAsBase64(decodedPath)?.let {
+                  decodedBundle.putString("base64", it)
+                }
+              }
+            }
+
+            decodedBundle.remove(EXPIRE_KEY)
+            result.add(decodedBundle)
+          }
       }
     }
 
@@ -63,13 +78,25 @@ class PickerResultsStore(context: Context) {
     return result
   }
 
+  private fun readAsBase64(path: String): String? {
+    try {
+      FileInputStream(File(path)).use {
+        val output = ByteArrayOutputStream()
+        IOUtils.copy(it, output)
+        return Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)
+      }
+    } catch (e: IOException) {
+      Log.e(ImagePickerConstants.TAG, e.message, e)
+      return null
+    }
+  }
+
   private fun bundleToBytes(bundle: Bundle) = Parcel.obtain().run {
     writeBundle(bundle)
     val bytes = marshall()
     recycle()
     bytes
   }
-
 
   private fun bytesToBundle(bytes: ByteArray) = Parcel.obtain().run {
     unmarshall(bytes, 0, bytes.size)

@@ -6,11 +6,14 @@ import org.unimodules.core.Promise
 /**
  * Class that represents a promise, which will not resolve immediately but saves results to the [PickerResultsStore].
  */
-class PendingPromise(private val pickerResultsStore: PickerResultsStore) : Promise {
+class PendingPromise(private val pickerResultsStore: PickerResultsStore, private val isBase64: Boolean = false) : Promise {
 
   @Throws(IllegalArgumentException::class)
   override fun resolve(value: Any?) {
     if (value is Bundle) {
+      if (isBase64 && value.containsKey("type")) {
+        value.putBoolean("base64", value.getString("type") == "image")
+      }
       pickerResultsStore.addPendingResult(value)
       return
     }
