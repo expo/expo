@@ -23,8 +23,6 @@
 
 -dontnote **
 
--keep class host.exp.exponent.notifications.NotificationsScoper { *; }
-
 -keep class host.exp.exponent.generated.AppConstants { *; }
 
 ##### Crashlytics #####
