@@ -67,6 +67,7 @@ Please make sure these permissions are absolutely required for the core function
   _or_
   - Keep it in when you are confident it's required for the primary functionality of the API, and add it to [the XDL schema](https://github.com/expo/universe/blob/5c84d1b6e82ba3eca483170be72deee49d29d916/server/www/xdl-schemas/UNVERSIONED-schema.json#L686).
     - Make sure to add the permission to the [XDL blacklist](https://github.com/expo/expo-cli/blob/d75089b2e9f11b36f936967313d847fcc45f4e76/packages/xdl/src/detach/AndroidShellApp.js#L780) to allow users to opt-out of the permissions, by excluding it from the \`android.permissions\` manifest property.
+    - Also double-check if the permission needs to be added to the [bare template](https://github.com/expo/expo/tree/master/templates) Android manifests.
 </details>
 `.trim());
 }
