@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();
 const emitter = new EventEmitter(ExpoScreenCapture);
-const onScreenShotEventName = 'onScreenShot';
+const onScreenshotEventName = 'onScreenshot';
 /**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
@@ -78,28 +78,28 @@ export function usePreventScreenCapture(key = 'default') {
  *
  * @example
  * ```typescript
- * addScreenShotListener(() => {
+ * addScreenshotListener(() => {
  *   alert('Screenshots are fun!');
  * });
  * ```
  */
-export function addScreenShotListener(listener) {
-    return emitter.addListener(onScreenShotEventName, listener);
+export function addScreenshotListener(listener) {
+    return emitter.addListener(onScreenshotEventName, listener);
 }
 /**
- * Removes the listener added by addScreenShotListener
+ * Removes the listener added by addScreenshotListener
  *
- * @param subscription The subscription to remove (created by addScreenShotListener).
+ * @param subscription The subscription to remove (created by addScreenshotListener).
  *
  * @example
  * ```typescript
- * const subscription = addScreenShotListener(() => {
+ * const subscription = addScreenshotListener(() => {
  *   alert('Screenshots are fun!');
  * });
- * removeScreenShotListener(subscription);
+ * removeScreenshotListener(subscription);
  * ```
  */
-export function removeScreenShotListener(subscription) {
+export function removeScreenshotListener(subscription) {
     emitter.removeSubscription(subscription);
 }
 //# sourceMappingURL=ScreenCapture.js.map

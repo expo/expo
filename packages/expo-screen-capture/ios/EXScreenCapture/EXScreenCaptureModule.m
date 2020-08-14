@@ -4,7 +4,7 @@
 
 #import <UMCore/UMEventEmitterService.h>
 
-static NSString * const onScreenShotEventName = @"onScreenShot";
+static NSString * const onScreenshotEventName = @"onScreenshot";
 
 @interface EXScreenCaptureModule ()
 
@@ -86,7 +86,7 @@ UM_EXPORT_METHOD_AS(allowScreenCapture,
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[onScreenShotEventName];
+  return @[onScreenshotEventName];
 }
 
 - (void)startObserving
@@ -114,8 +114,9 @@ UM_EXPORT_METHOD_AS(allowScreenCapture,
   }
 }
 
-- (void)listenForScreenCapture {
-  [_eventEmitter sendEventWithName:onScreenShotEventName body:nil];
+- (void)listenForScreenCapture
+{
+  [_eventEmitter sendEventWithName:onScreenshotEventName body:nil];
 }
 
 @end

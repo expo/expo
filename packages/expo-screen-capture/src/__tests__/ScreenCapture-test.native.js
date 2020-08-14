@@ -14,12 +14,12 @@ describe('ScreenCapture methods are defined', () => {
     expect(ScreenCapture.usePreventScreenCapture).toBeDefined();
   });
 
-  it('addScreenShotListener is defined', async () => {
-    expect(ScreenCapture.addScreenShotListener).toBeDefined();
+  it('addScreenshotListener is defined', async () => {
+    expect(ScreenCapture.addScreenshotListener).toBeDefined();
   });
 
-  it('removeScreenShotListener is defined', async () => {
-    expect(ScreenCapture.removeScreenShotListener).toBeDefined();
+  it('removeScreenshotListener is defined', async () => {
+    expect(ScreenCapture.removeScreenshotListener).toBeDefined();
   });
 });
 

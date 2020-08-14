@@ -24,7 +24,7 @@ import org.unimodules.core.interfaces.services.UIManager
 import java.lang.Exception
 
 class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistry) : LifecycleEventListener {
-  private val onScreenShotEventName: String = "onScreenShot"
+  private val onScreenshotEventName: String = "onScreenshot"
   private var isListening: Boolean = true
   private lateinit var eventEmitter: EventEmitter
   private var previousPath: String = ""
@@ -44,7 +44,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
           val path = getFilePathFromContentResolver(context, uri)
           if (path != null && isPathOfNewScreenshot(path)) {
             previousPath = path
-            eventEmitter.emit(onScreenShotEventName, Bundle())
+            eventEmitter.emit(onScreenshotEventName, Bundle())
           }
         }
       }

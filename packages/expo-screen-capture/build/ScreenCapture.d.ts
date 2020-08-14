@@ -56,23 +56,23 @@ export declare function usePreventScreenCapture(key?: string): void;
  *
  * @example
  * ```typescript
- * addScreenShotListener(() => {
+ * addScreenshotListener(() => {
  *   alert('Screenshots are fun!');
  * });
  * ```
  */
-export declare function addScreenShotListener(listener: () => void): Subscription;
+export declare function addScreenshotListener(listener: () => void): Subscription;
 /**
- * Removes the listener added by addScreenShotListener
+ * Removes the listener added by addScreenshotListener
  *
- * @param subscription The subscription to remove (created by addScreenShotListener).
+ * @param subscription The subscription to remove (created by addScreenshotListener).
  *
  * @example
  * ```typescript
- * const subscription = addScreenShotListener(() => {
+ * const subscription = addScreenshotListener(() => {
  *   alert('Screenshots are fun!');
  * });
- * removeScreenShotListener(subscription);
+ * removeScreenshotListener(subscription);
  * ```
  */
-export declare function removeScreenShotListener(subscription: Subscription): void;
+export declare function removeScreenshotListener(subscription: Subscription): void;

@@ -6,7 +6,7 @@ import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags: Set<string> = new Set();
 const emitter = new EventEmitter(ExpoScreenCapture);
 
-const onScreenShotEventName = 'onScreenShot';
+const onScreenshotEventName = 'onScreenshot';
 
 /**
  * Prevents screenshots and screen recordings. If you are
@@ -86,28 +86,28 @@ export function usePreventScreenCapture(key: string = 'default'): void {
  *
  * @example
  * ```typescript
- * addScreenShotListener(() => {
+ * addScreenshotListener(() => {
  *   alert('Screenshots are fun!');
  * });
  * ```
  */
-export function addScreenShotListener(listener: () => void): Subscription {
-  return emitter.addListener<void>(onScreenShotEventName, listener);
+export function addScreenshotListener(listener: () => void): Subscription {
+  return emitter.addListener<void>(onScreenshotEventName, listener);
 }
 
 /**
- * Removes the listener added by addScreenShotListener
+ * Removes the listener added by addScreenshotListener
  *
- * @param subscription The subscription to remove (created by addScreenShotListener).
+ * @param subscription The subscription to remove (created by addScreenshotListener).
  *
  * @example
  * ```typescript
- * const subscription = addScreenShotListener(() => {
+ * const subscription = addScreenshotListener(() => {
  *   alert('Screenshots are fun!');
  * });
- * removeScreenShotListener(subscription);
+ * removeScreenshotListener(subscription);
  * ```
  */
-export function removeScreenShotListener(subscription: Subscription) {
+export function removeScreenshotListener(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }

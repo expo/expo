@@ -53,7 +53,7 @@ import { Button, View } from 'react-native';
 export default class ScreenCaptureExample extends React.Component {
   componentDidMount() {
     /* @info The provided function will be run whenever a screenshot of your app is taken. */
-    ScreenCapture.addScreenShotListener(() => {
+    ScreenCapture.addScreenshotListener(() => {
       alert('Thanks for screenshotting my beautiful app 😊');
     }); /* @end */
   }
@@ -86,7 +86,7 @@ export default class ScreenCaptureExample extends React.Component {
 import * as ScreenCapture from 'expo-screen-capture';
 ```
 
-<TableOfContentSection title='Methods' contents={['usepreventscreencapture(key)', 'preventScreenCaptureAsync(key)', 'allowScreenCaptureAsync(key)', 'addScreenShotListener(listener)', 'removeScreenShotListener(subscription)']} />
+<TableOfContentSection title='Methods' contents={['usepreventscreencapture(key)', 'preventScreenCaptureAsync(key)', 'allowScreenCaptureAsync(key)', 'addScreenshotListener(listener)', 'removeScreenshotListener(subscription)']} />
 
 ## Methods
 
@@ -116,7 +116,7 @@ Re-allows the user to screen record or screenshot your app. If you haven't calle
 
 - **key (string)** [Optional] The value must be the same as the `key` passed to `preventScreenCaptureAsync` in order to re-enable screen capturing.
 
-### `addScreenShotListener(listener)`
+### `addScreenshotListener(listener)`
 
 Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission- you can request this with [`Permissions.askAsync(Permissions.CAMERA_ROLL)`](../sdk/permissions/#permissionscamera_roll).
 
@@ -126,22 +126,22 @@ Adds a listener that will fire whenever the user takes a screenshot while the ap
 
 #### Returns
 
-A `Subscription` object that you can use to unregister the listener, either by calling `.remove()` or passing it to `removeScreenShotListener`.
+A `Subscription` object that you can use to unregister the listener, either by calling `.remove()` or passing it to `removeScreenshotListener`.
 
-### `removeScreenShotListener(subscription)`
+### `removeScreenshotListener(subscription)`
 
 Removes the subscription you provide, so that you are no longer listening for screen shots.
 
 #### Arguments
 
-- **subscription (Subscription)** `Subscription` returned by `addScreenShotListener`. If you prefer, you can also call `.remove` on that `Subscription` object, e.g.
+- **subscription (Subscription)** `Subscription` returned by `addScreenshotListener`. If you prefer, you can also call `.remove` on that `Subscription` object, e.g.
 
 ```js
-let mySubscription = addScreenShotListener(() => {
+let mySubscription = addScreenshotListener(() => {
   console.log("You took a screenshot!");
 })
 ...
 mySubscription.remove();
 // OR
-removeScreenShotListener(mySubscription);
+removeScreenshotListener(mySubscription);
 ```

@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `addScreenShotListener` and `removeScreenShotListener` methods so you can take action in your app whenever a user takes a screenshot. ([] by [@cruzach](https://github.com/cruzach))
+- Added `addScreenshotListener` and `removeScreenshotListener` methods so you can take action in your app whenever a user takes a screenshot. ([#9747](https://github.com/expo/expo/pull/9747) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes
 
