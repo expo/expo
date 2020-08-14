@@ -26,6 +26,17 @@ title: Publishing Websites
   - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa`
 - You can now deploy or host this anywhere you like.
 
+**Tips**
+
+- Serving your site in a subfolder? Add the path to your `package.json`:
+
+```js
+/* package.json */
+{
+    "homepage": "/webapp"
+}
+``` 
+
 [webpack-optimize]: https://webpack.js.org/configuration/optimization/
 
 ### Serving Locally
