@@ -220,8 +220,6 @@ static NSString * const EXUpdatesErrorEventName = @"error";
       [self->_delegate appController:self didStartWithSuccess:YES];
     }];
   }
-
-  [self _runReaper];
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error

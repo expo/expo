@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.DatabaseHolder;
+import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
@@ -109,6 +110,7 @@ public class LoaderTask {
           @Override
           public void onFailure(Exception e) {
             finish(e);
+            runReaper();
           }
 
           @Override
@@ -117,6 +119,7 @@ public class LoaderTask {
               mIsReadyToLaunch = true;
             }
             finish(null);
+            runReaper();
           }
         });
       }
@@ -149,6 +152,8 @@ public class LoaderTask {
 
         if (shouldCheckForUpdate) {
           launchRemoteUpdate();
+        } else {
+          runReaper();
         }
       }
     });
@@ -291,6 +296,14 @@ public class LoaderTask {
             });
           }
         });
+    });
+  }
+
+  private void runReaper() {
+    AsyncTask.execute(() -> {
+      UpdatesDatabase database = mDatabaseHolder.getDatabase();
+      Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mLauncher.getLaunchedUpdate(), mSelectionPolicy);
+      mDatabaseHolder.releaseDatabase();
     });
   }
 }
