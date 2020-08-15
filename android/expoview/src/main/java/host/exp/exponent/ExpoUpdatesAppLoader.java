@@ -7,15 +7,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
-import com.facebook.react.bridge.WritableMap;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +24,7 @@ import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
+import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicyNewest;
 import expo.modules.updates.loader.LoaderTask;
@@ -69,6 +67,7 @@ public class ExpoUpdatesAppLoader {
   private File mUpdatesDirectory;
   private SelectionPolicy mSelectionPolicy;
   private Launcher mLauncher;
+  private boolean mIsEmergencyLaunch = false;
 
   private boolean isStarted = false;
 
@@ -120,6 +119,10 @@ public class ExpoUpdatesAppLoader {
     return mLauncher;
   }
 
+  public boolean isEmergencyLaunch() {
+    return mIsEmergencyLaunch;
+  }
+
   public void start(Context context) {
     if (isStarted) {
       throw new IllegalStateException("AppLoader for " + mManifestUrl + " was started twice. AppLoader.start() may only be called once per instance.");
@@ -134,7 +137,7 @@ public class ExpoUpdatesAppLoader {
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, false);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, Constants.isStandaloneApp());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY, Constants.ARE_REMOTE_UPDATES_ENABLED);
     if (mUseCacheOnly) {
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "NEVER");
@@ -169,10 +172,20 @@ public class ExpoUpdatesAppLoader {
     mUpdatesDirectory = directory;
     mSelectionPolicy = selectionPolicy;
 
+    if (!configuration.isEnabled()) {
+      launchWithNoDatabase(context, null);
+      return;
+    }
+
     new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
-        mCallback.onError(e);
+        if (Constants.isStandaloneApp()) {
+          mIsEmergencyLaunch = true;
+          launchWithNoDatabase(context, e);
+        } else {
+          mCallback.onError(e);
+        }
       }
 
       @Override
@@ -246,6 +259,12 @@ public class ExpoUpdatesAppLoader {
         }
       }
     }).start(context);
+  }
+
+  private void launchWithNoDatabase(Context context, Exception e) {
+    mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
+    mCallback.onManifestCompleted(mLauncher.getLaunchedUpdate().metadata);
+    mCallback.onBundleCompleted(mLauncher.getLaunchAssetFile());
   }
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {

@@ -122,7 +122,7 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
 
 - (BOOL)isEmergencyLaunchForExperienceId:(NSString *)experienceId
 {
-  return NO;
+  return [self _appLoaderWithExperienceId:experienceId].isEmergencyLaunch;
 }
 
 - (void)requestRelaunchForExperienceId:(NSString *)experienceId withCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
