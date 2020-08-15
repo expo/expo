@@ -12,10 +12,12 @@
 #import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
 
+#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
@@ -41,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) EXUpdatesConfig *config;
 @property (nonatomic, nullable) id<EXUpdatesSelectionPolicy> selectionPolicy;
 @property (nonatomic, nullable) id<EXUpdatesAppLauncher> appLauncher;
+@property (nonatomic, assign) BOOL isEmergencyLaunch;
 
 @end
 
@@ -51,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize config = _config;
 @synthesize selectionPolicy = _selectionPolicy;
 @synthesize appLauncher = _appLauncher;
+@synthesize isEmergencyLaunch = _isEmergencyLaunch;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
 {
@@ -74,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
   _appLauncher = nil;
   _error = nil;
   _shouldUseCacheOnly = NO;
+  _isEmergencyLaunch = NO;
 }
 
 - (EXAppLoaderStatus)status
@@ -186,9 +191,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error
 {
-  _error = error;
-  if (self.delegate) {
-    [self.delegate appLoader:self didFailWithError:error];
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    _isEmergencyLaunch = YES;
+    [self _launchWithNoDatabaseAndError:error];
+  } else {
+    _error = error;
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:error];
+    }
   }
 }
 
@@ -249,12 +259,17 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesURL": [[self class] _httpUrlFromManifestUrl:_manifestUrl].absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
     @"EXUpdatesScopeKey": _manifestUrl.absoluteString,
-    @"EXUpdatesHasEmbeddedUpdate": @(NO),
-    @"EXUpdatesEnabled": @(YES),
+    @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
+    @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": _shouldUseCacheOnly ? @(0) : @(10000),
     @"EXUpdatesCheckOnLaunch": _shouldUseCacheOnly ? @"NEVER" : @"ALWAYS",
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
+
+  if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
+    [self _launchWithNoDatabaseAndError:nil];
+    return;
+  }
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 
@@ -269,6 +284,33 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         delegateQueue:_appLoaderQueue];
   loaderTask.delegate = self;
   [loaderTask start];
+}
+
+- (void)_launchWithNoDatabaseAndError:(nullable NSError *)error
+{
+  EXUpdatesAppLauncherNoDatabase *appLauncher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
+  [appLauncher launchUpdateWithConfig:_config fatalError:error];
+
+  _confirmedManifest = [self _processManifest:appLauncher.launchedUpdate.rawManifest];
+  _optimisticManifest = _confirmedManifest;
+  _bundle = [NSData dataWithContentsOfURL:appLauncher.launchAssetUrl];
+  _appLauncher = appLauncher;
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadOptimisticManifest:_confirmedManifest];
+    [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
+  }
+}
+
+- (void)_runReaper
+{
+  if (_appLauncher.launchedUpdate) {
+    EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
+    [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
+                                        database:updatesDatabaseManager.database
+                                       directory:updatesDatabaseManager.updatesDirectory
+                                 selectionPolicy:_selectionPolicy
+                                  launchedUpdate:_appLauncher.launchedUpdate];
+  }
 }
 
 - (void)_setOptimisticManifest:(NSDictionary *)manifest

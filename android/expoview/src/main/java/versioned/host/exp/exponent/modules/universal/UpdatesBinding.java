@@ -70,7 +70,7 @@ public class UpdatesBinding implements InternalModule, UpdatesInterface {
 
   @Override
   public boolean isEmergencyLaunch() {
-    return false;
+    return mAppLoader.isEmergencyLaunch();
   }
 
   @Override
