@@ -68,6 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
   _confirmedManifest = nil;
   _optimisticManifest = nil;
+  _bundle = nil;
+  _config = nil;
+  _selectionPolicy = nil;
+  _appLauncher = nil;
   _error = nil;
   _shouldUseCacheOnly = NO;
 }
@@ -117,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)supportsBundleReload
 {
   if (_optimisticManifest) {
-    return [EXAppFetcher areDevToolsEnabledWithManifest:_optimisticManifest];
+    return [[self class] areDevToolsEnabledWithManifest:_optimisticManifest];
   }
   return NO;
 }
@@ -146,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if ([EXAppFetcher areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
+  if ([[self class] areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
     if (_shouldUseCacheOnly) {
       _shouldUseCacheOnly = NO;
       dispatch_async(_appLoaderQueue, ^{
@@ -165,7 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
 {
-  if ([EXAppFetcher areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
+  if ([[self class] areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
     // in dev mode, we need to set an optimistic manifest even if the LoaderTask never sent one
     if (!_optimisticManifest) {
       [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
@@ -320,6 +324,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSString *experienceId = manifest[@"id"];
   return experienceId != nil && [experienceId hasPrefix:@"@anonymous/"];
+}
+
++ (BOOL)areDevToolsEnabledWithManifest:(NSDictionary *)manifest
+{
+  NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
+  BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
+  return (isDeployedFromTool);
 }
 
 #pragma mark - headers

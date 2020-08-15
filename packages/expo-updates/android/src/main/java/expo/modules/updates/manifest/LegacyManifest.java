@@ -66,7 +66,7 @@ public class LegacyManifest implements Manifest {
   public static LegacyManifest fromLegacyManifestJson(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
     UUID id;
     Date commitTime;
-    if (isDevelopmentMode(manifestJson)) {
+    if (isUsingDeveloperTool(manifestJson)) {
       // xdl doesn't always serve a releaseId, but we don't need one in dev mode
       id = UUID.randomUUID();
       commitTime = new Date();
@@ -183,6 +183,17 @@ public class LegacyManifest implements Manifest {
   }
 
   private static boolean isDevelopmentMode(final JSONObject manifest) {
+    try {
+      return (manifest != null &&
+        manifest.has("developer") &&
+        manifest.has("packagerOpts") &&
+        manifest.getJSONObject("packagerOpts").optBoolean("dev", false));
+    } catch (JSONException e) {
+      return false;
+    }
+  }
+
+  private static boolean isUsingDeveloperTool(final JSONObject manifest) {
     try {
       return (manifest != null &&
         manifest.has("developer") &&

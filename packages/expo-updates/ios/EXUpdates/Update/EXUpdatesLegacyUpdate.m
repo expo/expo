@@ -28,8 +28,6 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
     // we do not need these so we just stub them out
     update.updateId = [NSUUID UUID];
     update.commitTime = [NSDate date];
-    update.isDevelopmentMode = YES;
-    update.status = EXUpdatesUpdateStatusDevelopment;
   } else {
     id updateId = manifest[@"releaseId"];
     NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
@@ -39,7 +37,12 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
     id commitTimeString = manifest[@"commitTime"];
     NSAssert([commitTimeString isKindOfClass:[NSString class]], @"commitTime should be a string");
     update.commitTime = [RCTConvert NSDate:commitTimeString];
+  }
 
+  if ([[self class] isDevelopmentModeManifest:manifest]) {
+    update.isDevelopmentMode = YES;
+    update.status = EXUpdatesUpdateStatusDevelopment;
+  } else {
     update.status = EXUpdatesUpdateStatusPending;
   }
 
@@ -128,7 +131,13 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
   }
 }
 
-+ (BOOL)areDevToolsEnabledWithManifest:(NSDictionary * _Nonnull)manifest
++ (BOOL)isDevelopmentModeManifest:(NSDictionary *)manifest
+{
+  NSDictionary *manifestPackagerOptsConfig = manifest[@"packagerOpts"];
+  return (manifest[@"developer"] != nil && manifestPackagerOptsConfig != nil && [@(YES) isEqualToNumber:manifestPackagerOptsConfig[@"dev"]]);
+}
+
++ (BOOL)areDevToolsEnabledWithManifest:(NSDictionary *)manifest
 {
   NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
   BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
