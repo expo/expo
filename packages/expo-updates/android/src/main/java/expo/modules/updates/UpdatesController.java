@@ -248,7 +248,6 @@ public class UpdatesController {
       public void onSuccess(Launcher launcher) {
         mLauncher = launcher;
         notifyController();
-        runReaper();
       }
 
       @Override
