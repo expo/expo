@@ -16,7 +16,10 @@ export type FetchRequest = {
 
 // TODO(Bacon): pending react-native-adapter publish after sdk 38
 const isDOMAvailable =
-  Platform.OS === 'web' && typeof window !== 'undefined' && !!window.document?.createElement;
+  Platform.OS === 'web' &&
+  typeof window !== 'undefined' &&
+  !!window.document?.createElement &&
+  !!window.URL;
 
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
   if (Platform.OS === 'web' && !isDOMAvailable) {
