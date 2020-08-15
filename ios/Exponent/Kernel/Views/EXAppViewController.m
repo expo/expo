@@ -362,7 +362,6 @@ NS_ASSUME_NONNULL_BEGIN
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
   [self _rebuildBridge];
-  [self.appLoadingProgressWindowController show];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
