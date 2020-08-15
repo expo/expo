@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) EXUpdatesConfig *config;
 @property (nonatomic, readonly, nullable) id<EXUpdatesSelectionPolicy> selectionPolicy;
 @property (nonatomic, readonly, nullable) id<EXUpdatesAppLauncher> appLauncher;
+@property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
 
 /**
  * Fetch JS bundle without any side effects or interaction with the timer.
