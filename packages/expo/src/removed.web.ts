@@ -68,6 +68,7 @@ export const SplashScreen = null;
 export const SQLite = null;
 export const StoreReview = null;
 export const TaskManager = null;
+export const Updates = null;
 export const WebBrowser = null;
 export const GestureHandler = null;
 export const Icon = null;
