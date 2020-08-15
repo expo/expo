@@ -9,12 +9,12 @@ const fakeManifest = {
 let old__DEV__;
 beforeAll(() => {
   old__DEV__ = __DEV__;
-  //@ts-ignore
+  //@ts-expect-error: __DEV__ is usually not assignable but we need to set it to false for this test
   __DEV__ = false;
 });
 
 afterAll(() => {
-  //@ts-ignore
+  //@ts-expect-error: __DEV__ is usually not assignable but we need to set it to false for this test
   __DEV__ = old__DEV__;
 });
 
