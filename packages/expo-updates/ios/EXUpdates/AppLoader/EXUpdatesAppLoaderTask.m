@@ -3,6 +3,7 @@
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
+#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
@@ -113,6 +114,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
+      } else {
+        [self _runReaper];
       }
     }];
   }];
@@ -161,6 +164,17 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     self->_isTimerFinished = YES;
     [self _maybeFinish];
   });
+}
+
+- (void)_runReaper
+{
+  if (_launcher.launchedUpdate) {
+    [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
+                                        database:_database
+                                       directory:_directory
+                                 selectionPolicy:_selectionPolicy
+                                  launchedUpdate:_launcher.launchedUpdate];
+  }
 }
 
 - (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
@@ -236,9 +250,11 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
             [self _finishWithError:error];
             NSLog(@"Downloaded update but failed to relaunch: %@", error.localizedDescription);
           }
+          [self _runReaper];
         }];
       } else {
         [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:update error:nil];
+        [self _runReaper];
       }
     } else {
       // there's no update, so signal we're ready to launch
@@ -248,6 +264,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       } else {
         [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusNoUpdateAvailable manifest:nil error:nil];
       }
+      [self _runReaper];
     }
   });
 }
