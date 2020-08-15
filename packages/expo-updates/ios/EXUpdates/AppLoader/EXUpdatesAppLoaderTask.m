@@ -101,15 +101,15 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
         }
         NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
       } else {
+        if (self->_delegate &&
+            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+          return;
+        }
         self->_isReadyToLaunch = YES;
         [self _maybeFinish];
       }
 
       if (shouldCheckForUpdate) {
-        if (success && self->_delegate &&
-            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
-          return;
-        }
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
