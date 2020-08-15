@@ -6,7 +6,6 @@
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
 #import "EXScopedModuleRegistry.h"
-#import "EXUpdates.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
 
@@ -16,8 +15,17 @@
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 
-NSString * const EXUpdatesEventNameNew = @"Expo.nativeUpdatesEvent";
+NSString * const EXUpdatesEventName = @"Expo.nativeUpdatesEvent";
+NSString * const EXUpdatesErrorEventType = @"error";
 NSString * const EXUpdatesUpdateAvailableEventType = @"updateAvailable";
+NSString * const EXUpdatesNotAvailableEventType = @"noUpdateAvailable";
+
+// legacy events
+// TODO: remove once SDK 38 is phased out
+NSString * const EXUpdatesEventNameLegacy = @"Exponent.nativeUpdatesEvent";
+NSString * const EXUpdatesDownloadStartEventType = @"downloadStart";
+NSString * const EXUpdatesDownloadProgressEventType = @"downloadProgress";
+NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
 
 @interface EXUpdatesManager ()
 
@@ -60,11 +68,9 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
   RCTBridge *bridge = appRecord.appManager.reactBridge;
   if (appRecord.status == kEXKernelAppRecordStatusRunning) {
     // for SDK 38 and below
-    if ([self _doesBridgeSupportUpdatesModule:bridge]) {
-      [bridge.scopedModules.updates sendEventWithBody:bodyLegacy ?: body];
-    }
+    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventNameLegacy, bodyLegacy ?: body]];
     // for SDK 39+
-    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventNameNew, body]];
+    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventName, body]];
   }
 }
 
@@ -163,10 +169,6 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
   }];
 }
 
-- (void)updatesModule:(nonnull id)scopedModule didRequestBundleWithManifest:(nonnull NSDictionary *)manifest progress:(nonnull void (^)(NSDictionary * _Nonnull))progress success:(nonnull void (^)(NSData * _Nonnull))success failure:(nonnull void (^)(NSError * _Nonnull))failure {
-  // TODO: remove this stub
-}
-
 
 - (void)updatesModule:(id)scopedModule
 didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
@@ -198,12 +200,6 @@ didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
   } error:^(NSError * _Nonnull error) {
     failure(error);
   }];
-}
-
-- (BOOL)_doesBridgeSupportUpdatesModule:(RCTBridge *)bridge
-{
-  // sdk versions prior to 26 didn't include this module.
-  return ([bridge.scopedModules respondsToSelector:@selector(updates)]);
 }
 
 @end

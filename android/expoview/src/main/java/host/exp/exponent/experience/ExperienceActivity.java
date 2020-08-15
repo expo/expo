@@ -203,7 +203,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     if (mManifestUrl != null && shouldOpenImmediately) {
       boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
-      new AppLoader(mManifestUrl, forceCache) {
+      new ExpoUpdatesAppLoader(mManifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
         @Override
         public void onOptimisticManifest(final JSONObject optimisticManifest) {
           Exponent.getInstance().runOnUiThread(() -> setOptimisticManifest(optimisticManifest));
@@ -224,7 +224,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         @Override
         public void onBundleCompleted(String localBundlePath) {
-          setBundle(localBundlePath);
+          Exponent.getInstance().runOnUiThread(() -> {
+            setBundle(localBundlePath);
+          });
         }
 
         @Override
@@ -234,14 +236,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         @Override
         public void onError(Exception e) {
-          mKernel.handleError(e);
+          Exponent.getInstance().runOnUiThread(() -> {
+            mKernel.handleError(e);
+          });
         }
-
-        @Override
-        public void onError(String e) {
-          mKernel.handleError(e);
-        }
-      }.start();
+      }, forceCache).start(this);
     }
 
     mKernel.setOptimisticActivity(this, getTaskId());

@@ -65,6 +65,7 @@ export declare const SplashScreen: null;
 export declare const SQLite: null;
 export declare const StoreReview: null;
 export declare const TaskManager: null;
+export declare const Updates: null;
 export declare const WebBrowser: null;
 export declare const GestureHandler: null;
 export declare const Icon: null;

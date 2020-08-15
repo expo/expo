@@ -40,7 +40,6 @@ import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
-import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearanceModule;
 import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearancePackage;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
@@ -167,8 +166,7 @@ public class ExponentPackage implements ReactPackage {
     List<NativeModule> nativeModules = new ArrayList<>(Arrays.<NativeModule>asList(
         new URLHandlerModule(reactContext),
         new ShakeModule(reactContext),
-        new KeyboardModule(reactContext),
-        new UpdatesModule(reactContext, mExperienceProperties, mManifest)
+        new KeyboardModule(reactContext)
     ));
 
     if (mIsKernel) {

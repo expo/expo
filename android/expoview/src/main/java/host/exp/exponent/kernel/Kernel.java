@@ -661,7 +661,7 @@ public class Kernel extends KernelInterface {
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
     if (existingTask == null) {
-      new AppLoader(manifestUrl, forceCache) {
+      new ExpoUpdatesAppLoader(manifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
         @Override
         public void onOptimisticManifest(final JSONObject optimisticManifest) {
           Exponent.getInstance().runOnUiThread(() -> sendOptimisticManifestToExperienceActivity(optimisticManifest));
@@ -680,7 +680,9 @@ public class Kernel extends KernelInterface {
 
         @Override
         public void onBundleCompleted(String localBundlePath) {
-          sendBundleToExperienceActivity(localBundlePath);
+          Exponent.getInstance().runOnUiThread(() -> {
+            sendBundleToExperienceActivity(localBundlePath);
+          });
         }
 
         @Override
@@ -696,14 +698,11 @@ public class Kernel extends KernelInterface {
 
         @Override
         public void onError(Exception e) {
-          handleError(e);
+          Exponent.getInstance().runOnUiThread(() -> {
+            handleError(e);
+          });
         }
-
-        @Override
-        public void onError(String e) {
-          handleError(e);
-        }
-      }.start();
+      }, forceCache).start(mContext);
     }
   }
 

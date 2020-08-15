@@ -1,12 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelAppRecord.h"
-#import "EXUpdates.h"
 #import "EXUpdatesBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXUpdatesManager : NSObject <EXUpdatesScopedModuleDelegate, EXUpdatesBindingDelegate>
+@interface EXUpdatesManager : NSObject <EXUpdatesBindingDelegate>
 
 - (void)notifyApp:(EXKernelAppRecord *)appRecord
 ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
