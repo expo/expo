@@ -117,7 +117,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
       @Override
       public void onError(Exception e) {
-        mCallback.onComplete(false, new Exception(e.getMessage()));
+        Exponent.getInstance().runOnUiThread(() -> {
+          mCallback.onComplete(false, new Exception(e.getMessage()));
+        });
       }
     }, true).start(mContext);
 

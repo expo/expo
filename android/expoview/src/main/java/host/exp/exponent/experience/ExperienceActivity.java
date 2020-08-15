@@ -236,7 +236,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         @Override
         public void onError(Exception e) {
-          mKernel.handleError(e);
+          Exponent.getInstance().runOnUiThread(() -> {
+            mKernel.handleError(e);
+          });
         }
       }, forceCache).start(this);
     }

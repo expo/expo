@@ -698,7 +698,9 @@ public class Kernel extends KernelInterface {
 
         @Override
         public void onError(Exception e) {
-          handleError(e);
+          Exponent.getInstance().runOnUiThread(() -> {
+            handleError(e);
+          });
         }
       }, forceCache).start(mContext);
     }
