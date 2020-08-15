@@ -158,7 +158,7 @@ export default function App() {
       <Button
         title="Press to schedule a notification"
         onPress={async () => {
-          await schedulePushNotification();
+          await sendPushNotification();
         }}
       />
     </View>
