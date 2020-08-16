@@ -190,25 +190,19 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public boolean onCachedUpdateLoaded(UpdateEntity update) {
-        boolean shouldForceRemote = false;
         if (isUsingDeveloperTool(update.metadata)) {
-          shouldForceRemote = true;
+          return false;
         } else {
           try {
             String experienceId = update.metadata.getString(ExponentManifest.MANIFEST_ID_KEY);
             // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
             JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
             if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
-              shouldForceRemote = true;
+              return false;
             }
           } catch (Exception e) {
-            shouldForceRemote = false;
+            return true;
           }
-        }
-
-        if (shouldForceRemote && configuration.getCheckOnLaunch() != UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS) {
-          new ExpoUpdatesAppLoader(mManifestUrl, mCallback, false).start(context);
-          return false;
         }
         return true;
       }
