@@ -131,10 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.appLoadingCancelView];
     [self.view bringSubviewToFront:self.appLoadingCancelView];
   }
-  
-  // show LoadingProgressWindow in managed apps and dev home app only
-  BOOL isDevelopmentHomeApp = self.isHomeApp && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone || isDevelopmentHomeApp];
+
+  // show LoadingProgressWindow in the development client for all apps other than production home
+  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone && !isProductionHomeApp];
 
   // show SplashScreen in standalone apps and home app only
   // SplashScreen for managed is shown once the manifest is available
@@ -148,7 +148,11 @@ NS_ASSUME_NONNULL_BEGIN
   } else if (self.isStandalone) {
     [splashScreenService showSplashScreenFor:self];
   }
-  
+
+  NSString *loadingViewText = [self _loadingViewTextForStatus:_appRecord.appLoader.remoteUpdateStatus];
+  if (loadingViewText) {
+    [self.appLoadingProgressWindowController updateStatusWithText:loadingViewText];
+  }
 
   self.view.backgroundColor = [UIColor whiteColor];
   _appRecord.appManager.delegate = self;
@@ -349,6 +353,17 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status
+{
+  if (status == kEXAppLoaderRemoteUpdateStatusChecking) {
+    return @"Checking for new release...";
+  } else if (status == kEXAppLoaderRemoteUpdateStatusDownloading) {
+    return @"New release available, downloading...";
+  } else {
+    return nil;
+  }
+}
+
 #pragma mark - EXAppLoaderDelegate
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
@@ -362,6 +377,11 @@ NS_ASSUME_NONNULL_BEGIN
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
   [self _rebuildBridge];
+
+  NSString *loadingViewText = [self _loadingViewTextForStatus:appLoader.remoteUpdateStatus];
+  if (loadingViewText) {
+    [self.appLoadingProgressWindowController updateStatusWithText:loadingViewText];
+  }
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress

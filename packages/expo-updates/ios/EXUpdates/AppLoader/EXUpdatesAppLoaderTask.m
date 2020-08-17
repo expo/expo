@@ -219,13 +219,16 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 {
   _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    if (self->_delegate) {
-      dispatch_async(self->_delegateQueue, ^{
-        [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
-      });
+    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate]) {
+      if (self->_delegate) {
+        dispatch_async(self->_delegateQueue, ^{
+          [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
+        });
+      }
+      return YES;
+    } else {
+      return NO;
     }
-
-    return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate];
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {
