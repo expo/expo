@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed iOS bug, where it could be impossible to select only videos. ([#9720](https://github.com/expo/expo/pull/9720) by [@barthap](https://github.com/barthap))
+
 ## 8.3.0 — 2020-07-27
 
 ### 🐛 Bug fixes
