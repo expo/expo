@@ -19,7 +19,7 @@ const isDOMAvailable =
   Platform.OS === 'web' &&
   typeof window !== 'undefined' &&
   !!window.document?.createElement &&
-  !!window.URL;
+  typeof window['URL'] !== 'undefined';
 
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
   if (Platform.OS === 'web' && !isDOMAvailable) {

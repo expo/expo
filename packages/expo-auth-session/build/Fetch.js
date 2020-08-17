@@ -4,7 +4,7 @@ import qs from 'qs';
 const isDOMAvailable = Platform.OS === 'web' &&
     typeof window !== 'undefined' &&
     !!window.document?.createElement &&
-    !!window.URL;
+    typeof window['URL'] !== 'undefined';
 export async function requestAsync(requestUrl, fetchRequest) {
     if (Platform.OS === 'web' && !isDOMAvailable) {
         // @ts-ignore
