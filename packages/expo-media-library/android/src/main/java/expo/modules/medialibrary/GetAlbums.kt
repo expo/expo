@@ -1,6 +1,7 @@
 package expo.modules.medialibrary
 
 import android.content.Context
+import android.database.Cursor.FIELD_TYPE_NULL
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
@@ -36,14 +37,16 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
           while (asset.moveToNext()) {
             val id = asset.getString(bucketIdIndex)
 
-            val album = albums[id] ?: let {
-              Album(
+            if (asset.getType(bucketDisplayNameIndex) == FIELD_TYPE_NULL) {
+              continue
+            }
+
+            val album = albums[id] ?: Album(
                 id = id,
                 title = asset.getString(bucketDisplayNameIndex)
               ).also {
                 albums[id] = it
               }
-            }
 
             album.count++
           }
@@ -53,7 +56,7 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
     } catch (e: SecurityException) {
       mPromise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e)
-    } catch (e: IllegalArgumentException) {
+    } catch (e: RuntimeException) {
       mPromise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD, "Could not get albums.", e)
     }
     return null
