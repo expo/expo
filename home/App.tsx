@@ -10,11 +10,9 @@ import Store from './redux/Store';
 
 import './menu/DevMenuApp';
 
-export default function App() {
-  React.useEffect(() => {
-    SplashScreen.preventAutoHideAsync();
-  }, []);
+SplashScreen.preventAutoHideAsync();
 
+export default function App() {
   return (
     <AppearanceProvider>
       <ReduxProvider store={Store}>

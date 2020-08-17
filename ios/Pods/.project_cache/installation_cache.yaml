@@ -8507,8 +8507,6 @@ CACHE_KEYS:
         :release: 438696b27ec330435c6762015b94a5f9
     CHECKSUM: 9423d258b71afa5bf128a83dcb57b636d9900a74
     FILES:
-      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenConfiguration.h"
-      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenConfiguration.m"
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.h"

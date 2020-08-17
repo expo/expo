@@ -1,6 +1,6 @@
-#import <EXSplashScreen/EXSplashScreenConfiguration.h>
+#import "EXManagedAppSplashScreenConfiguration.h"
 
-@implementation EXSplashScreenConfiguration
+@implementation EXManagedAppSplashScreenConfiguration
 
 - (instancetype)initWithBackgroundColor:(UIColor *)backgroundColor
                                imageUrl:(NSString *)imageUrl

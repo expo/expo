@@ -222,6 +222,7 @@
 		8767F5B824D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F5B724D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m */; };
 		8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F97224D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m */; };
 		8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */; };
+		87750C4D24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 87750C4924EADFDB00CEF3DE /* EXManagedAppSplashScreenConfiguration.m */; };
 		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -834,6 +835,8 @@
 		8767F97224D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenViewProvider.m; sourceTree = "<group>"; };
 		8767F97424D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXHomeAppSplashScreenViewProvider.h; sourceTree = "<group>"; };
 		8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXHomeAppSplashScreenViewProvider.m; sourceTree = "<group>"; };
+		87750C4924EADFDB00CEF3DE /* EXManagedAppSplashScreenConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenConfiguration.m; sourceTree = "<group>"; };
+		87750C4C24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenConfiguration.h; sourceTree = "<group>"; };
 		878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressWindowController.h; sourceTree = "<group>"; };
 		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
 		8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObjectManager.m; sourceTree = "<group>"; };
@@ -1919,6 +1922,8 @@
 		B5A473DD204A673E0035C61C /* Loading */ = {
 			isa = PBXGroup;
 			children = (
+				87750C4C24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.h */,
+				87750C4924EADFDB00CEF3DE /* EXManagedAppSplashScreenConfiguration.m */,
 				B54D2911205307380019411A /* EXAppLoadingCancelView.h */,
 				B54D2912205307380019411A /* EXAppLoadingCancelView.m */,
 				878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */,
@@ -2935,6 +2940,7 @@
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
 				31AD99E72285B51100F19090 /* AIRGoogleMapCircle.m in Sources */,
 				31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */,
+				87750C4D24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.m in Sources */,
 				31AD99DE2285B51100F19090 /* AIRGoogleMapPolygonManager.m in Sources */,
 				B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */,
 				78C832B023545ECE00448582 /* REAEventNode.m in Sources */,
