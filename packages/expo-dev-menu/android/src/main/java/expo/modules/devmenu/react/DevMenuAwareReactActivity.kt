@@ -1,10 +1,12 @@
 package expo.modules.devmenu.react
 
+import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactActivity
-import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
+import expo.modules.devmenu.DevMenuDefaultDelegate
 import expo.modules.devmenu.DevMenuManager
+import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 
 /**
  * Basic [ReactActivity] which knows about expo-dev-menu.
@@ -20,6 +22,14 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
     }
   }
   private val threeFingerLongPressDetector = ThreeFingerLongPressDetector(longPressListener)
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    if (!wasInitialized) {
+      wasInitialized = true
+      DevMenuManager.setDelegate(DevMenuDefaultDelegate(reactNativeHost))
+    }
+  }
 
   override fun onResume() {
     super.onResume()
@@ -42,5 +52,11 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
       return true
     }
     return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyDown(keyCode, event)
+  }
+
+  companion object {
+    @get:Synchronized
+    @set:Synchronized
+    var wasInitialized = false
   }
 }

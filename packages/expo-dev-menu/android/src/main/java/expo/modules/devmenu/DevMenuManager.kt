@@ -15,10 +15,10 @@ import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
 import expo.modules.devmenu.extensions.items.KeyCommand
-import expo.modules.devmenu.modules.DevMenuSettings
 import expo.modules.devmenu.interfaces.DevMenuDelegateInterface
 import expo.modules.devmenu.interfaces.DevMenuExtensionInterface
 import expo.modules.devmenu.interfaces.DevMenuManagerInterface
+import expo.modules.devmenu.modules.DevMenuSettings
 import org.unimodules.adapters.react.ModuleRegistryAdapter
 import org.unimodules.adapters.react.ReactModuleRegistryProvider
 
@@ -72,27 +72,34 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   //region init
 
   @Suppress("UNCHECKED_CAST")
-  fun initDevMenuHost(application: Application) {
-    devMenuHost = DevMenuHost(application)
-    val packages = devMenuHost
-      .getReactModules()
-      .toMutableList()
-      .apply {
-        val expoModules = application.getExpoModules()
-        add(ModuleRegistryAdapter(ReactModuleRegistryProvider(expoModules)))
+  fun maybeInitDevMenuHost(application: Application) {
+    if (!this::devMenuHost.isInitialized) {
+      devMenuHost = DevMenuHost(application)
+      val packages = devMenuHost
+        .getReactModules()
+        .toMutableList()
+        .apply {
+          val expoModules = application.getExpoModules()
+          add(ModuleRegistryAdapter(ReactModuleRegistryProvider(expoModules)))
+        }
+      devMenuHost.setPackages(packages)
+
+      UiThreadUtil.runOnUiThread {
+        devMenuHost.reactInstanceManager.createReactContextInBackground()
       }
-    devMenuHost.setPackages(packages)
-    UiThreadUtil.runOnUiThread {
-      devMenuHost.reactInstanceManager.createReactContextInBackground()
     }
   }
 
   /**
-   * Gets [DevMenuSettings] for current delegate and prepare for opening menu at launch if needed.
+   * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuSettings].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
    * So we wait until the [reactContext] activity will be ready.
    */
   private fun handleLoadedDelegate(reactContext: ReactContext) {
+    maybeInitDevMenuHost(reactContext.currentActivity?.application
+      ?: reactContext.applicationContext as Application)
+    maybeStartDetectingShakes(devMenuHost.getContext())
+
     settings = reactContext
       .getNativeModule(DevMenuSettings::class.java)
       .also {
@@ -185,21 +192,18 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
 
     val keyCommand = KeyCommand(keyCode, event.modifiers)
-    delegateActions.forEach {
-      if (it.keyCommand == keyCommand) {
-        it.action()
-        return true
-      }
-    }
-
-    return false
+    return delegateActions
+      .find { it.keyCommand == keyCommand }
+      ?.run {
+        action()
+        true
+      } ?: false
   }
 
   override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
     // removes event listener for old delegate
     delegateReactContext?.removeLifecycleEventListener(this)
 
-    maybeStartDetectingShakes(devMenuHost.getContext())
     delegate = newDelegate.run {
       if (reactInstanceManager().currentReactContext == null) {
         reactInstanceManager().addReactInstanceEventListener(this@DevMenuManager::handleLoadedDelegate)

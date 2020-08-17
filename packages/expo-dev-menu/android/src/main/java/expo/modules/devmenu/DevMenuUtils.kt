@@ -16,7 +16,7 @@ internal fun Application.getExpoModules(): List<Package> {
 
 internal fun ReactNativeHost.getReactModules(): List<ReactPackage> {
   val packageListClass = Class.forName("com.facebook.react.PackageList")
-  val constructor = packageListClass.getConstructor(this::class.java)
+  val constructor = packageListClass.getConstructor(ReactNativeHost::class.java)
   val packageList = constructor.newInstance(this)
   val getPackageList = packageListClass.getMethod("getPackages")
   @Suppress("UNCHECKED_CAST")
