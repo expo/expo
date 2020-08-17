@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed handling albums without name on Android. ([#9787](https://github.com/expo/expo/pull/9787) by [@barthap](https://github.com/barthap))
+
 ## 9.1.0 — 2020-08-13
 
 ### 🎉 New features
