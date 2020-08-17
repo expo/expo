@@ -24,12 +24,14 @@ target 'Exponent' do
       'expo-module-template',
       'expo-in-app-purchases',
       'expo-payments-stripe',
-      'expo-splash-screen',
     ],
     flags: {
       :inhibit_warnings => false
     }
   })
+
+  # Expo modules that are not unimodules
+  pod 'EXRandom', path: '../packages/expo-random/ios'
 
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'

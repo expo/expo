@@ -3,14 +3,12 @@
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
+#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
-static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
-static NSString * const EXUpdatesErrorEventName = @"error";
 static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
 
 @interface EXUpdatesAppLoaderTask ()
@@ -104,18 +102,20 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
         }
         NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
       } else {
+        if (self->_delegate &&
+            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+          return;
+        }
         self->_isReadyToLaunch = YES;
         [self _maybeFinish];
       }
 
       if (shouldCheckForUpdate) {
-        if (success && self->_delegate &&
-            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
-          return;
-        }
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
+      } else {
+        [self _runReaper];
       }
     }];
   }];
@@ -164,6 +164,17 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     self->_isTimerFinished = YES;
     [self _maybeFinish];
   });
+}
+
+- (void)_runReaper
+{
+  if (_launcher.launchedUpdate) {
+    [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
+                                        database:_database
+                                       directory:_directory
+                                 selectionPolicy:_selectionPolicy
+                                  launchedUpdate:_launcher.launchedUpdate];
+  }
 }
 
 - (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
@@ -239,29 +250,30 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
             [self _finishWithError:error];
             NSLog(@"Downloaded update but failed to relaunch: %@", error.localizedDescription);
           }
+          [self _runReaper];
         }];
       } else {
-        [self _sendEventWithType:EXUpdatesUpdateAvailableEventName
-                            body:@{@"manifest": update.rawManifest}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:update error:nil];
+        [self _runReaper];
       }
     } else {
       // there's no update, so signal we're ready to launch
       [self _finishWithError:nil];
       if (error) {
-        [self _sendEventWithType:EXUpdatesErrorEventName
-                            body:@{@"message": error.localizedDescription}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusError manifest:nil error:error];
       } else {
-        [self _sendEventWithType:EXUpdatesNoUpdateAvailableEventName body:@{}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusNoUpdateAvailable manifest:nil error:nil];
       }
+      [self _runReaper];
     }
   });
 }
 
-- (void)_sendEventWithType:(NSString *)type body:(NSDictionary *)body
+- (void)_didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status manifest:(nullable EXUpdatesUpdate *)manifest error:(nullable NSError *)error
 {
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      [self->_delegate appLoaderTask:self didFireEventWithType:type body:body];
+      [self->_delegate appLoaderTask:self didFinishBackgroundUpdateWithStatus:status update:manifest error:error];
     });
   }
 }

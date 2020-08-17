@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.DatabaseHolder;
+import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
@@ -26,9 +27,9 @@ public class LoaderTask {
 
   private static final String TAG = LoaderTask.class.getSimpleName();
 
-  private static final String UPDATE_AVAILABLE_EVENT = "updateAvailable";
-  private static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
-  private static final String UPDATE_ERROR_EVENT = "error";
+  public enum BackgroundUpdateStatus {
+    ERROR, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE
+  }
 
   public interface LoaderTaskCallback {
     void onFailure(Exception e);
@@ -44,7 +45,7 @@ public class LoaderTask {
     boolean onCachedUpdateLoaded(UpdateEntity update);
     void onRemoteManifestLoaded(Manifest manifest);
     void onSuccess(Launcher launcher);
-    void onEvent(String eventName, WritableMap params);
+    void onBackgroundUpdateFinished(BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception);
   }
 
   private interface Callback {
@@ -109,6 +110,7 @@ public class LoaderTask {
           @Override
           public void onFailure(Exception e) {
             finish(e);
+            runReaper();
           }
 
           @Override
@@ -117,6 +119,7 @@ public class LoaderTask {
               mIsReadyToLaunch = true;
             }
             finish(null);
+            runReaper();
           }
         });
       }
@@ -137,15 +140,20 @@ public class LoaderTask {
 
       @Override
       public void onSuccess() {
+        if (mLauncher.getLaunchedUpdate() != null &&
+          !mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate())) {
+          return;
+        }
+
         synchronized (LoaderTask.this) {
           mIsReadyToLaunch = true;
           maybeFinish();
         }
 
-        if (shouldCheckForUpdate &&
-            (mLauncher.getLaunchedUpdate() == null ||
-            mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate()))) {
+        if (shouldCheckForUpdate) {
           launchRemoteUpdate();
+        } else {
+          runReaper();
         }
       }
     });
@@ -240,11 +248,7 @@ public class LoaderTask {
           public void onFailure(Exception e) {
             mDatabaseHolder.releaseDatabase();
             remoteUpdateCallback.onFailure(e);
-
-            WritableMap params = Arguments.createMap();
-            params.putString("message", e.getMessage());
-            mCallback.onEvent(UPDATE_ERROR_EVENT, params);
-
+            mCallback.onBackgroundUpdateFinished(BackgroundUpdateStatus.ERROR, null, e);
             Log.e(TAG, "Failed to download remote update", e);
           }
 
@@ -283,17 +287,23 @@ public class LoaderTask {
 
                 if (hasLaunched) {
                   if (update == null) {
-                    mCallback.onEvent(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);
+                    mCallback.onBackgroundUpdateFinished(BackgroundUpdateStatus.NO_UPDATE_AVAILABLE, null, null);
                   } else {
-                    WritableMap params = Arguments.createMap();
-                    params.putString("manifestString", update.metadata.toString());
-                    mCallback.onEvent(UPDATE_AVAILABLE_EVENT, params);
+                    mCallback.onBackgroundUpdateFinished(BackgroundUpdateStatus.UPDATE_AVAILABLE, update, null);
                   }
                 }
               }
             });
           }
         });
+    });
+  }
+
+  private void runReaper() {
+    AsyncTask.execute(() -> {
+      UpdatesDatabase database = mDatabaseHolder.getDatabase();
+      Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mLauncher.getLaunchedUpdate(), mSelectionPolicy);
+      mDatabaseHolder.releaseDatabase();
     });
   }
 }

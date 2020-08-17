@@ -7507,11 +7507,10 @@ CACHE_KEYS:
       Branch:
         :debug: 9d186888e388d0c6920574cb9733ddc3
         :release: 9d186888e388d0c6920574cb9733ddc3
-    CHECKSUM: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
+    CHECKSUM: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
     PROJECT_NAME: Branch
     SPECS:
-      - Branch (0.29.0)
-      - Branch/Core (0.29.0)
+      - Branch (0.34.0)
   CocoaLumberjack:
     BUILD_SETTINGS_CHECKSUM:
       CocoaLumberjack:
@@ -7741,7 +7740,7 @@ CACHE_KEYS:
       EXBranch:
         :debug: a2a7a793c27f88a63feac1a8a5851249
         :release: a2a7a793c27f88a63feac1a8a5851249
-    CHECKSUM: d88a69d32b6a161611497f1dc264cf1cb32be886
+    CHECKSUM: 7511ad43362e358a1fdbc2af73cd50da83834b3a
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.m"
@@ -8062,7 +8061,7 @@ CACHE_KEYS:
       EXGL_CPP:
         :debug: 99468d5c41520658b3565507679a1e9a
         :release: 99468d5c41520658b3565507679a1e9a
-    CHECKSUM: c5294a946598c996585553fde565f90404b067b8
+    CHECKSUM: 63ff12e6af07087f974697334ec553c970945ff6
     FILES:
       - "../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -8266,7 +8265,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: 184fe62dba3fecadb085abc9343b63dc
         :release: 184fe62dba3fecadb085abc9343b63dc
-    CHECKSUM: 588b27235785fae12add07801f1333f8689a8130
+    CHECKSUM: 7ecb84ccf31fdd25a39c4c55910816688331f57d
     FILES:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -8278,7 +8277,7 @@ CACHE_KEYS:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (9.0.0)
+      - EXMediaLibrary (9.1.0)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork:
@@ -8374,9 +8373,9 @@ CACHE_KEYS:
   EXRandom:
     BUILD_SETTINGS_CHECKSUM:
       EXRandom:
-        :debug: 09dc0cb0d42b4b64abf3c5c763a954bf
-        :release: 09dc0cb0d42b4b64abf3c5c763a954bf
-    CHECKSUM: a375fb6bed8a0919a795766b8d5218b1200538b7
+        :debug: cf0fc244a5cff207ba734b93651c9754
+        :release: cf0fc244a5cff207ba734b93651c9754
+    CHECKSUM: 9af668c0f6460e52c4d83779b84bfd666e42dd38
     FILES:
       - "../../packages/expo-random/ios/EXRandom/EXRandom.h"
       - "../../packages/expo-random/ios/EXRandom/EXRandom.m"
@@ -8501,6 +8500,27 @@ CACHE_KEYS:
     PROJECT_NAME: EXSpeech
     SPECS:
       - EXSpeech (8.3.0)
+  EXSplashScreen:
+    BUILD_SETTINGS_CHECKSUM:
+      EXSplashScreen:
+        :debug: 438696b27ec330435c6762015b94a5f9
+        :release: 438696b27ec330435c6762015b94a5f9
+    CHECKSUM: 9423d258b71afa5bf128a83dcb57b636d9900a74
+    FILES:
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenConfiguration.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenConfiguration.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
+    PROJECT_NAME: EXSplashScreen
+    SPECS:
+      - EXSplashScreen (0.5.0)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
@@ -8942,8 +8962,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1910f945196637840f28109182d0284b
-      Release: 1910f945196637840f28109182d0284b
+      Debug: 43b2d98bf58cabcae557565e34d424cb
+      Release: 43b2d98bf58cabcae557565e34d424cb
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -8956,12 +8976,12 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: bf89e25db4c233e74fd006aac0fa09ef
-      Release: bf89e25db4c233e74fd006aac0fa09ef
+      Debug: 339c0f5d93cfd1dc7125d914a20bffc0
+      Release: 339c0f5d93cfd1dc7125d914a20bffc0
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: bf89e25db4c233e74fd006aac0fa09ef
-      Release: bf89e25db4c233e74fd006aac0fa09ef
+      Debug: 339c0f5d93cfd1dc7125d914a20bffc0
+      Release: 339c0f5d93cfd1dc7125d914a20bffc0
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:

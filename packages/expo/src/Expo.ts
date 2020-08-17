@@ -1,6 +1,5 @@
 import './Expo.fx';
 
-import * as SplashScreen from './launch/SplashScreen';
 import * as Logs from './logs/Logs';
 
 export { Logs };
@@ -8,12 +7,11 @@ export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
 
 // The following should all be extracted from this package
-export { SplashScreen };
 export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
 
 // @ts-ignore
-export { Updates, Linking, Notifications } from './deprecated';
+export { Linking, Notifications } from './deprecated';
 
 // @ts-ignore
 export {
@@ -142,6 +140,8 @@ export {
   // @ts-ignore
   Speech,
   // @ts-ignore
+  SplashScreen,
+  // @ts-ignore
   SQLite,
   // @ts-ignore
   Svg,
@@ -153,6 +153,8 @@ export {
   Transition,
   // @ts-ignore
   Transitioning,
+  // @ts-ignore
+  Updates,
   // @ts-ignore
   Video,
   // @ts-ignore

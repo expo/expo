@@ -36,6 +36,12 @@ export type ImageInfo = {
   base64?: string;
 };
 
+export type ImagePickerErrorResult = {
+  code: string;
+  message: string;
+  exception?: string;
+};
+
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 
 export type ImagePickerMultipleResult =

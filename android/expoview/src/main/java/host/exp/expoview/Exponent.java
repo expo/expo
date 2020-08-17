@@ -207,17 +207,6 @@ public class Exponent {
     }
   }
 
-
-
-  private String mGCMSenderId;
-  public void setGCMSenderId(final String senderId) {
-    mGCMSenderId = senderId;
-  }
-
-  public String getGCMSenderId() {
-    return mGCMSenderId;
-  }
-
   private CopyOnWriteArrayList<ActivityResultListener> mActivityResultListeners = new CopyOnWriteArrayList<>();
 
   public static class InstanceManagerBuilderProperties {

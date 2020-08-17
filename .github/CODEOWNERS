@@ -4,6 +4,7 @@
 /packages/@unimodules/core                      @sjchmiela @tsapeta
 /packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne
+/packages/danger                                @lukmccall @bbarthec
 /packages/expo-ads-admob                        @sjchmiela
 /packages/expo-ads-facebook                     @sjchmiela
 /packages/expo-analytics-amplitude              @sjchmiela

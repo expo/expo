@@ -1,9 +1,10 @@
 import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
-import { CameraPermissionResponse, CameraRollPermissionResponse, ImagePickerResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset, ExpandImagePickerResult } from './ImagePicker.types';
+import { CameraPermissionResponse, CameraRollPermissionResponse, ImagePickerResult, ImagePickerErrorResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset, ExpandImagePickerResult } from './ImagePicker.types';
 export declare function getCameraPermissionsAsync(): Promise<CameraPermissionResponse>;
 export declare function getCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse>;
 export declare function requestCameraPermissionsAsync(): Promise<CameraPermissionResponse>;
 export declare function requestCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse>;
+export declare function getPendingResultAsync(): Promise<(ImagePickerResult | ImagePickerErrorResult)[]>;
 export declare function launchCameraAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
 export declare function launchImageLibraryAsync<T extends ImagePickerOptions>(options: T): Promise<ExpandImagePickerResult<T>>;
-export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, VideoExportPreset, CameraPermissionResponse, CameraRollPermissionResponse, PermissionStatus, PermissionExpiration, };
+export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, VideoExportPreset, CameraPermissionResponse, CameraRollPermissionResponse, PermissionStatus, PermissionExpiration, };

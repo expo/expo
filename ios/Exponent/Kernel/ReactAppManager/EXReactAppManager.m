@@ -15,6 +15,7 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <EXSplashScreen/EXSplashScreenService.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
@@ -29,7 +30,10 @@
 
 typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
 
-@protocol EXSplashScreenManagerProtocol
+/**
+ * TODO: Remove once SDK 38 is phased out.
+ */
+@protocol PreSDK39EXSplashScreenManagerProtocol
 
 @property (assign) BOOL started;
 @property (assign) BOOL finished;
@@ -370,6 +374,14 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:[self versionedString:RCTJavaScriptDidFailToLoadNotification]
                                              object:bridge];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_handleReactContentEvent:)
+                                               name:[self versionedString:RCTContentDidAppearNotification]
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_handleBridgeEvent:)
+                                               name:[self versionedString:RCTBridgeWillReloadNotification]
+                                             object:bridge];
 }
 
 - (void)_stopObservingBridgeNotifications
@@ -377,6 +389,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptWillStartLoadingNotification] object:_reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidLoadNotification] object:_reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTContentDidAppearNotification] object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:[self versionedString:RCTBridgeWillReloadNotification] object:_reactBridge];
 }
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
@@ -392,46 +406,89 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
 {
-  __weak typeof(self) weakSelf = self;
   if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidLoadNotification]]) {
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading];
     [self appStateDidBecomeActive];
-    [self _beginWaitingForAppLoading];
+    
+    // TODO: To be removed once SDK 38 is phased out
+    // Above SDK 38 this code is invoked in different place
+    if ([self _compareVersionTo:39] == NSOrderedAscending) {
+      [self _preSDK39BeginWaitingForAppLoading];
+    }
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+
+    UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      __strong typeof(self) strongSelf = weakSelf;
-      if (strongSelf) {
-        [strongSelf.delegate reactAppManager:strongSelf failedToLoadJavaScriptWithError:error];
+      UM_ENSURE_STRONGIFY(self);
+      [self.delegate reactAppManager:self failedToLoadJavaScriptWithError:error];
+    });
+  }
+}
+
+# pragma mark app loading & splash screen
+
+- (void)_handleReactContentEvent:(NSNotification *)notification
+{
+  if ([notification.name isEqualToString:[self versionedString:RCTContentDidAppearNotification]]
+      && notification.object == self.reactRootView) {
+    UM_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UM_ENSURE_STRONGIFY(self);
+      [self.delegate reactAppManagerAppContentDidAppear:self];
+      
+      if ([self _compareVersionTo:38] == NSOrderedDescending) {
+        // Post SDK 38 code
+        // Up to SDK 38 this code is invoked in different place
+        [self _appLoadingFinished];
       }
     });
   }
 }
 
-- (void)_beginWaitingForAppLoading
+- (void)_handleBridgeEvent:(NSNotification *)notification
+{
+  if ([notification.name isEqualToString:[self versionedString:RCTBridgeWillReloadNotification]]) {
+    UM_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UM_ENSURE_STRONGIFY(self);
+      [self.delegate reactAppManagerAppContentWillReload:self];
+    });
+  }
+}
+
+/**
+ * TODO: Remove once SDK 38 is phased out.
+ */
+- (void)_preSDK39BeginWaitingForAppLoading
 {
   if (_viewTestTimer) {
     [_viewTestTimer invalidate];
     _viewTestTimer = nil;
   }
+  
+  // SplashScreen.preventAutoHide is called despite actual JS method call.
+  // Prior SDK 39, SplashScreen was basing on started & finished flags that are set via legacy Expo.SplashScreen JS methods calls.
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  [splashScreenService preventSplashScreenAutoHideFor:(UIViewController *) _appRecord.viewController
+                                      successCallback:^(BOOL hasEffect) {}
+                                      failureCallback:^(NSString * _Nonnull message) { UMLogWarn(message); }];
   _viewTestTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
                                                     target:self
-                                                  selector:@selector(_checkAppFinishedLoading:)
+                                                  selector:@selector(_preSDK39CheckAppFinishedLoading:)
                                                   userInfo:nil
                                                    repeats:YES];
 }
 
-- (id)_appLoadingManagerInstance
+/**
+ * TODO: Remove once SDK 38 is phased out.
+ */
+- (id)_preSDK39AppLoadingManagerInstance
 {
-  Class loadingManagerClass;
-  if ([self _compareVersionTo:29] == NSOrderedAscending) {
-    loadingManagerClass = [self versionedClassFromString:@"EXAppLoadingManager"];
-  } else {
-    loadingManagerClass = [self versionedClassFromString:@"EXSplashScreen"];
-  }
+  Class loadingManagerClass = [self versionedClassFromString:@"EXSplashScreen"];
   for (Class class in [self.reactBridge moduleClasses]) {
     if ([class isSubclassOfClass:loadingManagerClass]) {
       return [self.reactBridge moduleForClass:loadingManagerClass];
@@ -440,7 +497,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return nil;
 }
 
-- (void)_checkAppFinishedLoading:(NSTimer *)timer
+/**
+ * TODO: Remove once SDK 38 is phased out.
+ */
+- (void)_preSDK39CheckAppFinishedLoading:(NSTimer *)timer
 {
   // When root view has been filled with something, there are two cases:
   //   1. AppLoading was never mounted, in which case we hide the loading indicator immediately
@@ -448,9 +508,20 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   if ([_appRecord.appManager rootView] &&
       [_appRecord.appManager rootView].subviews.count > 0 &&
       [_appRecord.appManager rootView].subviews.firstObject.subviews.count > 0) {
-    id<EXSplashScreenManagerProtocol> splashManager = [self _appLoadingManagerInstance];
+
+    // Remove once SDK 38 is phased out.
+    id<PreSDK39EXSplashScreenManagerProtocol> splashManager = [self _preSDK39AppLoadingManagerInstance];
     
+    // SplashScreen: at this point SplashScreen is prevented from autohiding,
+    // so we can safely hide it when the flags set.
     if (!splashManager || !splashManager.started || splashManager.finished) {
+      [_viewTestTimer invalidate];
+      _viewTestTimer = nil;
+      
+      EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+      [splashScreenService hideSplashScreenFor:(UIViewController *) _appRecord.viewController
+                               successCallback:^(BOOL hasEffect) {}
+                               failureCallback:^(NSString * _Nonnull message) { UMLogWarn(message); }];
       [self _appLoadingFinished];
     }
   }
@@ -458,15 +529,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)_appLoadingFinished
 {
-  [_viewTestTimer invalidate];
-  _viewTestTimer = nil;
-  __weak typeof(self) weakSelf = self;
+  UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf) {
-      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:strongSelf.appRecord.experienceId];
-      [strongSelf.delegate reactAppManagerFinishedLoadingJavaScript:strongSelf];
-    }
+    UM_ENSURE_STRONGIFY(self);
+    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:self.appRecord.experienceId];
+    [self.delegate reactAppManagerFinishedLoadingJavaScript:self];
   });
 }
 

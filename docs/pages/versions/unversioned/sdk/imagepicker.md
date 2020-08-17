@@ -154,10 +154,13 @@ Display the system UI for choosing an image or a video from the phone's library.
 If the user cancelled the picking, returns `{ cancelled: true }`.
 
 Otherwise, this method returns information about the selected media item. When the chosen item is an image, this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`; when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
-  - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
-  - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-  - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
-  - The `duration` property is the length of the video in milliseconds.
+
+- The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
+- The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `duration` property is the length of the video in milliseconds.
+
+> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
 
 ### `ImagePicker.launchCameraAsync(options)`
 
@@ -192,10 +195,23 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 If the user cancelled the action, the method returns `{ cancelled: true }`.
 
 Otherwise, this method returns information about the selected media item. When the chosen item is an image, this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`; when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
-  - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
-  - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-  - The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
-  - The `duration` property is the length of the video in milliseconds.
+
+- The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
+- The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `duration` property is the length of the video in milliseconds.
+
+> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
+
+### `ImagePicker.getPendingResultAsync()`
+
+Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost data by calling `getPendingResultAsync`. You can test this functionality by turning on `Don't keep activities` in the developer options.
+
+#### Returns
+
+**On Android:** a promise that resolves to an array of objects of exactly same type as in `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker` finished successfully. Otherwise to the array of [ImagePicker.ImagePickerErrorResult](#imagepickerimagepickererrorresult).
+
+**On other platforms:** an empty array.
 
 ## Enums
 
@@ -237,3 +253,11 @@ Otherwise, this method returns information about the selected media item. When t
 ### `ImagePicker.CameraPermissionResponse`
 
 `ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.
+
+### `ImagePicker.ImagePickerErrorResult`
+
+Object of type `ImagePickerErrorResult` contains following keys:
+
+- **code (_string_)** - The error code.
+- **message (_string_)** - The error message.
+- **exception (_string | undefined_)** - The exception which caused the error.

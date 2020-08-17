@@ -39,6 +39,7 @@ target 'BareExpo' do
 
   pod 'EXDevMenu', path: '../../../packages/expo-dev-menu'
   pod 'expo-image', path: '../../../packages/expo-image'
+  pod 'EXRandom', path: '../../../packages/expo-random/ios'
 
   # Fix Google Sign-in
   post_install do |installer|

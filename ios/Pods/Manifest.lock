@@ -1510,9 +1510,7 @@ PODS:
   - AppAuth/Core (1.2.0)
   - AppAuth/ExternalUserAgent (1.2.0)
   - boost-for-react-native (1.63.0)
-  - Branch (0.29.0):
-    - Branch/Core (= 0.29.0)
-  - Branch/Core (0.29.0)
+  - Branch (0.34.0)
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
@@ -1552,7 +1550,7 @@ PODS:
   - EXBlur (8.1.2):
     - UMCore
   - EXBranch (2.2.1):
-    - Branch (= 0.29.0)
+    - Branch (= 0.34.0)
     - React
     - UMCore
   - EXBrightness (8.2.1):
@@ -1653,7 +1651,7 @@ PODS:
   - EXMailComposer (8.3.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (9.0.0):
+  - EXMediaLibrary (9.1.0):
     - React
     - UMCore
     - UMFileSystemInterface
@@ -1670,7 +1668,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXRandom (8.2.1):
-    - UMCore
+    - React
   - EXScreenCapture (1.0.1):
     - UMCore
   - EXScreenOrientation (2.0.0):
@@ -1692,6 +1690,9 @@ PODS:
     - UMCore
     - UMPermissionsInterface
   - EXSpeech (8.3.0):
+    - UMCore
+  - EXSplashScreen (0.5.0):
+    - React
     - UMCore
   - EXSQLite (8.3.0):
     - UMCore
@@ -2492,6 +2493,7 @@ DEPENDENCIES:
   - EXSharing (from `../packages/expo-sharing/ios`)
   - EXSMS (from `../packages/expo-sms/ios`)
   - EXSpeech (from `../packages/expo-speech/ios`)
+  - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../packages/expo-store-review/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
@@ -3266,6 +3268,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sms/ios"
   EXSpeech:
     :path: "../packages/expo-speech/ios"
+  EXSplashScreen:
+    :path: "../packages/expo-splash-screen/ios"
   EXSQLite:
     :path: "../packages/expo-sqlite/ios"
   EXStoreReview:
@@ -3645,7 +3649,7 @@ SPEC CHECKSUMS:
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Branch: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
+  Branch: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: b3d7cc9bfd445ecb145b5ce19b3973ab2a075292
@@ -3659,7 +3663,7 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 02c41a2bb7c0747dc96a96ee30b0aa80a0fc4168
   EXBattery: 367aef7eba65f488587610564224952411f1b48b
   EXBlur: b622dc0f8a8fe74f05fb437cfb1c5ee16259dab1
-  EXBranch: d88a69d32b6a161611497f1dc264cf1cb32be886
+  EXBranch: 7511ad43362e358a1fdbc2af73cd50da83834b3a
   EXBrightness: e02018c74baedcb51825cd91e16886973c81d029
   EXCalendar: edf6531b9beef7db26b431953f323eddb848f175
   EXCamera: efef30c8f5016b46fa3119a0c685cf75b841f453
@@ -3677,7 +3681,7 @@ SPEC CHECKSUMS:
   EXFirebaseCore: 7e720f6f3725795b960b9e59dfcd46e674b30774
   EXFont: e583875d5d37a9e272d1cdba7f383bd576952919
   EXGL: 0a320f8e1345376e4c67e33d71722fd062073515
-  EXGL_CPP: c5294a946598c996585553fde565f90404b067b8
+  EXGL_CPP: 63ff12e6af07087f974697334ec553c970945ff6
   EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
   EXGoogleSignIn: 02f0db1efb39c8e2508832a0175319f0ce08a80f
   EXHaptics: 5428b344a216ca5d9df6ca8f65720b2a1ad9f109
@@ -3690,12 +3694,12 @@ SPEC CHECKSUMS:
   EXLocalization: b5bcfc925ed83123b585d46d3bd54d7b7118f307
   EXLocation: 7615a912e30e8834679d9a07c86d99602f45b479
   EXMailComposer: c5126fc71f20770ebde5fee3965d54097320ef6d
-  EXMediaLibrary: 588b27235785fae12add07801f1333f8689a8130
+  EXMediaLibrary: 7ecb84ccf31fdd25a39c4c55910816688331f57d
   EXNetwork: 64a87db404f4a3c53b2dc707d0df2183ccfdedcb
   EXNotifications: ff56c1dda5d77f3212005bd66c57f306423b905c
   EXPermissions: ecac8bbc91ee6fa7160d1bf834728e56858fce5b
   EXPrint: edff21b0746bc0c2d2912b21efcb47e8d500b8c9
-  EXRandom: a375fb6bed8a0919a795766b8d5218b1200538b7
+  EXRandom: 9af668c0f6460e52c4d83779b84bfd666e42dd38
   EXScreenCapture: ed9b1813758bf0057fc3780043bfa4dc0956a9b5
   EXScreenOrientation: 9110f49798fae74322f6fa959eab1da5d4805cf0
   EXSecureStore: 579cbccd9cd093e6f4336aba073b059008bd78e0
@@ -3704,6 +3708,7 @@ SPEC CHECKSUMS:
   EXSharing: 05c66cc124b0ea49a0525ba0e9816c5f39d368f9
   EXSMS: 62b990a7d9e6132904062b2438002f09418b4f0b
   EXSpeech: 688c85808df422fda01ea6ecedf54009da2db2fe
+  EXSplashScreen: 9423d258b71afa5bf128a83dcb57b636d9900a74
   EXSQLite: 601f14b74257682303afe30eda34620afec27807
   EXStoreReview: b74c5e58e7ab74f28eaaefb1dfd4659e80a22c91
   EXTaskManager: 556abb392e1b2f3ab3fa7ee81479e95d3fbd65b3
@@ -3778,6 +3783,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 35e4878c7b2ce3f9d32395a078b8c0a761bd5909
+PODFILE CHECKSUM: 73c82261666abeb9afab7646a7d0e3ac811f7141
 
 COCOAPODS: 1.9.3

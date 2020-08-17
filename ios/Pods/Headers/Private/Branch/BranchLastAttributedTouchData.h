@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchLastAttributedTouchData.h
+../../../Branch/Branch-SDK/BranchLastAttributedTouchData.h

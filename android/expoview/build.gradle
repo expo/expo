@@ -153,10 +153,10 @@ dependencies {
       exclude      : [
         'expo-module-template',
         'expo-in-app-purchases',
-        'expo-splash-screen',
         'expo-gl-cpp-legacy'
       ]
   ])
+  compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -171,9 +171,11 @@ dependencies {
       exclude      : [
           'expo-module-template',
           'expo-in-app-purchases',
-          'expo-splash-screen'
       ]
   ])
+
+  // expo-random is no longer a unimodule
+  api project(':expo-random')
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -215,7 +217,6 @@ dependencies {
   api "androidx.room:room-runtime:2.1.0"
 
   api 'com.squareup.picasso:picasso:2.5.2'
-  api 'com.google.android.gms:play-services-gcm:17.0.0'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
   api 'com.google.android.gms:play-services-maps:17.0.0'
   api 'com.google.android.gms:play-services-auth:17.0.0'

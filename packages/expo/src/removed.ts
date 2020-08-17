@@ -681,6 +681,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  SplashScreen: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { SplashScreen } from 'expo' -> import * as SplashScreen from 'expo-splash-screen'`,
+        'SplashScreen',
+        'expo-splash-screen'
+      );
+    },
+  },
+
   SQLite: {
     enumerable: true,
     get() {
@@ -710,6 +721,17 @@ Object.defineProperties(module.exports, {
         `import { TaskManager } from 'expo' -> import * as TaskManager from 'expo-task-manager'`,
         'TaskManager',
         'expo-task-manager'
+      );
+    },
+  },
+
+  Updates: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { Updates } from 'expo' -> import * as Updates from 'expo-updates'`,
+        'Updates',
+        'expo-updates'
       );
     },
   },

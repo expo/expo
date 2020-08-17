@@ -8,6 +8,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, EXUpdatesBackgroundUpdateStatus) {
+  EXUpdatesBackgroundUpdateStatusError = 0,
+  EXUpdatesBackgroundUpdateStatusNoUpdateAvailable = 1,
+  EXUpdatesBackgroundUpdateStatusUpdateAvailable = 2
+};
+
 @class EXUpdatesAppLoaderTask;
 
 @protocol EXUpdatesAppLoaderTaskDelegate <NSObject>
@@ -25,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update;
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher;
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error;
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFireEventWithType:(NSString *)type body:(NSDictionary *)body;
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error;
 
 @end
 

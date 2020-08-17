@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCAvailability.h
+../../../Branch/Branch-SDK/BNCAvailability.h

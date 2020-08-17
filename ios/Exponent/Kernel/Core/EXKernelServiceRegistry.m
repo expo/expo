@@ -161,6 +161,7 @@
                                   self.remoteNotificationManager,
                                   self.screenOrientationManager,
                                   self.sensorManager,
+                                  self.updatesDatabaseManager,
                                   self.updatesManager,
                                   self.notificationsManager,
                                   self.notificationCenter

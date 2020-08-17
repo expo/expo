@@ -878,7 +878,7 @@ static NSDictionary* customCertificatesForHost;
  */
 -(UIViewController *)topViewControllerWithRootViewController:(UIViewController *)viewController{
   if (viewController==nil) return nil;
-  if (viewController.presentedViewController!=nil) {
+  if (viewController.presentedViewController!=nil && viewController.presentedViewController.isBeingPresented) {
     return [self topViewControllerWithRootViewController:viewController.presentedViewController];
   } else if ([viewController isKindOfClass:[UITabBarController class]]){
     return [self topViewControllerWithRootViewController:[(UITabBarController *)viewController selectedViewController]];

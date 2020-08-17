@@ -131,13 +131,12 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)_removePlayer
 {
   if (_requestedFullscreenChangeRejecter) {
-    NSString *errorMessage = @"Player is being removed, cancelling fullscreen change request.";
-    _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
+    _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", @"Player is being removed, cancelling fullscreen change request.", nil);
     _requestedFullscreenChangeResolver = nil;
     _requestedFullscreenChangeRejecter = nil;
     _requestedFullscreenChange = NO;
   }
-
+  
   // Any ViewController/layer updates need to be
   // executed on the main UI thread.
   UM_WEAKIFY(self);
@@ -248,9 +247,9 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                         @"height": @(presentationSize.height),
                         @"orientation": @"landscape"};
       }
-
+      
       _onReadyForDisplay(@{@"naturalSize": naturalSize,
-                             @"status": [_data getStatus]});
+                           @"status": [_data getStatus]});
     }
     
     // On iOS 11 or lower, use video-bounds monitoring to detect changes in the full-screen
@@ -287,7 +286,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     [_statusToSet addEntriesFromDictionary:[_data getStatus]];
     [self _removeData];
   }
-    
+  
   [self _removePlayer];
   
   if (initialStatus) {
@@ -324,21 +323,21 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                                     withSource:source
                                     withStatus:statusToInitiallySet
                            withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
-                             UM_ENSURE_STRONGIFY(self);
-                             if (success) {
-                               [self _updateForNewPlayer];
-                               if (resolve) {
-                                 resolve(successStatus);
-                               }
-                             } else {
-                               [self _removeData];
-                               [self _removePlayer];
-                               if (reject) {
-                                 reject(@"E_VIDEO_NOTCREATED", error, UMErrorWithMessage(error));
-                               }
-                               [self _callErrorCallback:error];
-                             }
-                           }];
+    UM_ENSURE_STRONGIFY(self);
+    if (success) {
+      [self _updateForNewPlayer];
+      if (resolve) {
+        resolve(successStatus);
+      }
+    } else {
+      [self _removeData];
+      [self _removePlayer];
+      if (reject) {
+        reject(@"E_VIDEO_NOTCREATED", error, nil);
+      }
+      [self _callErrorCallback:error];
+    }
+  }];
   [_data setStatusUpdateCallback:statusUpdateCallback];
   [_data setErrorCallback:errorCallback];
   
@@ -382,15 +381,13 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   if (!_data) {
     // Tried to set fullscreen for an unloaded component.
     if (reject) {
-      NSString *errorMessage = @"Fullscreen encountered an error: video is not loaded.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", @"Fullscreen encountered an error: video is not loaded.", nil);
     }
     return;
   } else if (!_playerHasLoaded) {
     // `setUri` has been called, but the video has not yet loaded.
     if (_requestedFullscreenChangeRejecter) {
-      NSString *errorMessage = @"Received newer request, cancelling fullscreen mode change request.";
-      _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
+      _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", @"Received newer request, cancelling fullscreen mode change request.", nil);
     }
     
     _requestedFullscreenChange = value;
@@ -401,14 +398,14 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     UM_WEAKIFY(self);
     if (value && !_fullscreenPlayerPresented && !_fullscreenPlayerViewController) {
       _fullscreenPlayerViewController = [self _createNewPlayerViewController];
-
+      
       // Resize mode must be set before layer is added
       // to prevent video from being animated when `resizeMode` is `cover`
       [self _updateNativeResizeMode];
-
+      
       // Set presentation style to fullscreen
       [_fullscreenPlayerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
-
+      
       // Find the nearest view controller
       UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
       UIViewController *presentedController = controller.presentedViewController;
@@ -416,10 +413,10 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
         controller = presentedController;
         presentedController = controller.presentedViewController;
       }
-
+      
       _presentingViewController = controller;
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
-
+      
       dispatch_async(dispatch_get_main_queue(), ^{
         UM_ENSURE_STRONGIFY(self);
         self.fullscreenPlayerViewController.showsPlaybackControls = YES;
@@ -434,7 +431,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       });
     } else if (!value && _fullscreenPlayerPresented && !_fullscreenPlayerIsDismissing) {
       [self videoPlayerViewControllerWillDismiss:_fullscreenPlayerViewController];
-
+      
       dispatch_async(dispatch_get_main_queue(), ^{
         UM_ENSURE_STRONGIFY(self);
         [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
@@ -447,22 +444,18 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       });
     } else if (value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
       // Fullscreen player should be presented, is being presented, but hasn't been presented yet.
-      NSString *errorMessage = @"Fullscreen player is already being presented. Await the first change request.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", @"Fullscreen player is already being presented. Await the first change request.", nil);
     } else if (!value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
       // Fullscreen player should be dismissing, is already dismissing, but hasn't dismissed yet.
-      NSString *errorMessage = @"Fullscreen player is already being dismissed. Await the first change request.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", @"Fullscreen player is already being dismissed. Await the first change request.", nil);
     } else if (!value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
       // Fullscreen player is being presented and we receive request to dismiss it.
-      NSString *errorMessage = @"Fullscreen player is being presented. Await the `present` request and then dismiss the player.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", @"Fullscreen player is being presented. Await the `present` request and then dismiss the player.", nil);
     } else if (value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
       // Fullscreen player is being dismissed and we receive request to present it.
-      NSString *errorMessage = @"Fullscreen player is being dismissed. Await the `dismiss` request and then present the player again.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", @"Fullscreen player is being dismissed. Await the `dismiss` request and then present the player again.", nil);
     } else if (resolve) {
-       // Fullscreen is already appropriately set.
+      // Fullscreen is already appropriately set.
       resolve([self getStatus]);
     }
   }
@@ -485,9 +478,9 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (NSDictionary *)source
 {
   return @{
-           EXVideoSourceURIKeyPath: (_data != nil && _data.url != nil) ? _data.url.absoluteString : @"",
-           EXVideoSourceHeadersKeyPath: _data.headers
-           };
+    EXVideoSourceURIKeyPath: (_data != nil && _data.url != nil) ? _data.url.absoluteString : @"",
+    EXVideoSourceHeadersKeyPath: _data.headers
+  };
 }
 
 - (void)setUseNativeControls:(BOOL)useNativeControls

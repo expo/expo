@@ -1,7 +1,5 @@
 package host.exp.exponent.fcm;
 
-import android.util.Log;
-
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONException;
@@ -15,6 +13,7 @@ import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
+import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
@@ -40,44 +39,38 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
       return;
     }
 
-    ExponentDB.experienceIdToExperience(remoteMessage.getData().get("experienceId"), new ExponentDB.ExperienceResultListener() {
-      @Override
-      public void onSuccess(ExperienceDBObject experience) {
-        try {
-          JSONObject manifest = new JSONObject(experience.manifest);
-          int sdkVersion = ABIVersion.toNumber(manifest.getString("sdkVersion")) / 10000;
+    ExperienceDBObject experienceDBObject = ExponentDB.experienceIdToExperienceSync(remoteMessage.getData().get("experienceId"));
+    if (experienceDBObject != null) {
+      try {
+        JSONObject manifest = new JSONObject(experienceDBObject.manifest);
+        int sdkVersion = ABIVersion.toNumber(manifest.getString("sdkVersion")) / 10000;
 
-          // If an experience is on SDK newer than 39, that is SDK40 and beyond up till UNVERSIONED
-          // we only use the new notifications API as it is going to be removed from SDK40.
-          if (sdkVersion >= 40) {
-            dispatchToNextNotificationModule(remoteMessage);
-            return;
-          } else if (sdkVersion == 38 || sdkVersion == 39) {
-            // In SDK38 and 39 we want to let people decide which notifications API to use,
-            // the next or the legacy one.
-            JSONObject androidSection = manifest.optJSONObject("android");
-            if (androidSection != null) {
-              boolean useNextNotificationsApi = androidSection.optBoolean("useNextNotificationsApi", false);
-              if (useNextNotificationsApi) {
-                dispatchToNextNotificationModule(remoteMessage);
-                return;
-              }
+        // If an experience is on SDK newer than 39, that is SDK40 and beyond up till UNVERSIONED
+        // we only use the new notifications API as it is going to be removed from SDK40.
+        if (sdkVersion >= 40) {
+          dispatchToNextNotificationModule(remoteMessage);
+          return;
+        } else if (sdkVersion == 38 || sdkVersion == 39) {
+          // In SDK38 and 39 we want to let people decide which notifications API to use,
+          // the next or the legacy one.
+          JSONObject androidSection = manifest.optJSONObject("android");
+          if (androidSection != null) {
+            boolean useNextNotificationsApi = androidSection.optBoolean("useNextNotificationsApi", false);
+            if (useNextNotificationsApi) {
+              dispatchToNextNotificationModule(remoteMessage);
+              return;
             }
           }
-          // If it's an older experience or useNextNotificationsApi is set to false, let's use the legacy notifications API
-          dispatchToLegacyNotificationModule(remoteMessage);
-        } catch (JSONException e) {
-          e.printStackTrace();
-          onFailure();
         }
-      }
-
-      @Override
-      public void onFailure() {
-        Log.w("expo-notifications", "Couldn't get experience from remote message.", null);
+        // If it's an older experience or useNextNotificationsApi is set to false, let's use the legacy notifications API
         dispatchToLegacyNotificationModule(remoteMessage);
+      } catch (JSONException e) {
+        e.printStackTrace();
+        EXL.e("expo-notifications", "Couldn't parse the manifest.");
       }
-    });
+    } else {
+      EXL.e("expo-notifications", "No experience found for id " + remoteMessage.getData().get("experienceId"));
+    }
   }
 
   private void dispatchToNextNotificationModule(RemoteMessage remoteMessage) {

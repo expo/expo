@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCSpotlightService.h
+../../../Branch/Branch-SDK/BNCSpotlightService.h

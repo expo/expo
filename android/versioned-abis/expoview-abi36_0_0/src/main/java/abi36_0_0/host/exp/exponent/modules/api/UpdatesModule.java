@@ -1,5 +1,7 @@
 package abi36_0_0.host.exp.exponent.modules.api;
 
+import android.os.AsyncTask;
+
 import abi36_0_0.com.facebook.react.bridge.Arguments;
 import abi36_0_0.com.facebook.react.bridge.Promise;
 import abi36_0_0.com.facebook.react.bridge.ReactApplicationContext;
@@ -15,8 +17,15 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import expo.modules.updates.db.DatabaseHolder;
+import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.loader.FileDownloader;
+import expo.modules.updates.loader.RemoteLoader;
+import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
@@ -31,7 +40,7 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
   private JSONObject mManifest;
 
   @Inject
-  ExponentManifest mExponentManifest;
+  DatabaseHolder mDatabaseHolder;
 
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
@@ -70,33 +79,30 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
     }
     try {
       String manifestUrl = (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
-      final String currentRevisionId = mManifest.getString(ExponentManifest.MANIFEST_REVISION_ID_KEY);
-
-      mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
+      ExpoUpdatesAppLoader appLoader = KernelProvider.getInstance().getAppLoaderForManifestUrl(manifestUrl);
+      FileDownloader.downloadManifest(appLoader.getUpdatesConfiguration(), getReactApplicationContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
-        public void onCompleted(JSONObject manifest) {
-          try {
-            String newRevisionId = manifest.getString(ExponentManifest.MANIFEST_REVISION_ID_KEY);
-            if (currentRevisionId.equals(newRevisionId)) {
-              promise.resolve(false);
-            } else {
-              promise.resolve(manifest.toString());
-            }
-          } catch (Exception e) {
-            onError(e);
+        public void onFailure(String message, Exception e) {
+          promise.reject("E_FETCH_MANIFEST_FAILED", e);
+        }
+
+        @Override
+        public void onSuccess(Manifest manifest) {
+          UpdateEntity launchedUpdate = appLoader.getLauncher().getLaunchedUpdate();
+          if (launchedUpdate == null) {
+            // this shouldn't ever happen, but if we don't have anything to compare
+            // the new manifest to, let the user know an update is available
+            promise.resolve(manifest.getRawManifestJson().toString());
+            return;
+          }
+
+          if (appLoader.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+            promise.resolve(manifest.getRawManifestJson().toString());
+          } else {
+            promise.resolve(false);
           }
         }
-
-        @Override
-        public void onError(Exception e) {
-          promise.reject("E_FETCH_MANIFEST_FAILED", e);
-        }
-
-        @Override
-        public void onError(String e) {
-          promise.reject("E_FETCH_MANIFEST_FAILED", e);
-        }
-      }, false);
+      });
     } catch (Exception e) {
       promise.reject("E_CHECK_UPDATE_FAILED", e);
     }
@@ -113,32 +119,48 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
       return;
     }
     String manifestUrl = (String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY);
-    final String currentRevisionId = mManifest.optString(ExponentManifest.MANIFEST_REVISION_ID_KEY, "");
-    mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
-      @Override
-      public void onCompleted(JSONObject manifest) {
-        try {
-          String newRevisionId = manifest.getString(ExponentManifest.MANIFEST_REVISION_ID_KEY);
-          if (currentRevisionId.equals(newRevisionId)) {
-            // no update available
-            sendEventAndResolve(AppLoader.UPDATE_NO_UPDATE_AVAILABLE_EVENT, promise);
-            return;
+    ExpoUpdatesAppLoader appLoader = KernelProvider.getInstance().getAppLoaderForManifestUrl(manifestUrl);
+    AsyncTask.execute(() -> {
+      new RemoteLoader(getReactApplicationContext(), appLoader.getUpdatesConfiguration(), mDatabaseHolder.getDatabase(), appLoader.getUpdatesDirectory())
+        .start(
+          appLoader.getUpdatesConfiguration().getUpdateUrl(),
+          new RemoteLoader.LoaderCallback() {
+            @Override
+            public void onFailure(Exception e) {
+              mDatabaseHolder.releaseDatabase();
+              sendErrorAndReject("E_FETCH_BUNDLE_FAILED", "Failed to fetch new update", e, promise);
+            }
+
+            @Override
+            public boolean onManifestLoaded(Manifest manifest) {
+              boolean isNew = appLoader.getSelectionPolicy().shouldLoadNewUpdate(
+                manifest.getUpdateEntity(),
+                appLoader.getLauncher().getLaunchedUpdate()
+              );
+              if (isNew) {
+                sendEventToJS(AppLoader.UPDATE_DOWNLOAD_START_EVENT, null);
+              }
+              return isNew;
+            }
+
+            @Override
+            public void onSuccess(@Nullable UpdateEntity update) {
+              mDatabaseHolder.releaseDatabase();
+              if (update == null) {
+                sendEventAndResolve(AppLoader.UPDATE_NO_UPDATE_AVAILABLE_EVENT, promise);
+              } else {
+                String manifestString = update.metadata.toString();
+                WritableMap params = Arguments.createMap();
+                params.putString("manifestString", manifestString);
+
+                sendEventToJS(AppLoader.UPDATE_DOWNLOAD_FINISHED_EVENT, params);
+                promise.resolve(manifestString);
+
+                mExponentSharedPreferences.updateSafeManifest((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY), update.metadata);
+              }
+            }
           }
-        } catch (Exception e) {
-        }
-        sendEventToJS(AppLoader.UPDATE_DOWNLOAD_START_EVENT, null);
-        fetchJSBundleAsync(manifest, promise);
-      }
-
-      @Override
-      public void onError(Exception e) {
-        sendErrorAndReject("E_FETCH_MANIFEST_FAILED", "Unable to fetch updated manifest", e, promise);
-      }
-
-      @Override
-      public void onError(String e) {
-        sendErrorAndReject("E_FETCH_MANIFEST_FAILED", "Unable to fetch updated manifest", new Exception(e), promise);
-      }
+        );
     });
   }
 
@@ -148,35 +170,6 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
       promise.resolve(Exponent.getInstance().clearAllJSBundleCache(abiVersion));
     } catch (IOException e) {
       promise.reject(e);
-    }
-  }
-
-  private void fetchJSBundleAsync(final JSONObject manifest, final Promise promise) {
-    try {
-      String bundleUrl = manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-      String id = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-      String sdkVersion = manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-
-      Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
-        @Override
-        public void onError(Exception e) {
-          sendErrorAndReject("E_FETCH_BUNDLE_FAILED", "Failed to fetch new update", e, promise);
-        }
-
-        @Override
-        public void onBundleLoaded(String localBundlePath) {
-          String manifestString = manifest.toString();
-          WritableMap params = Arguments.createMap();
-          params.putString("manifestString", manifestString);
-
-          sendEventToJS(AppLoader.UPDATE_DOWNLOAD_FINISHED_EVENT, params);
-          promise.resolve(manifestString);
-
-          mExponentSharedPreferences.updateSafeManifest((String) mExperienceProperties.get(KernelConstants.MANIFEST_URL_KEY), manifest);
-        }
-      });
-    } catch (Exception e) {
-      sendErrorAndReject("E_FETCH_BUNDLE_FAILED", "Failed to fetch new update", e, promise);
     }
   }
 

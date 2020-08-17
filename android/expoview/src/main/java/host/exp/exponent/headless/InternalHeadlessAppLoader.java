@@ -24,6 +24,7 @@ import java.util.Map;
 
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
@@ -84,7 +85,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     mCallback = callback;
     mActivityId = ExpoActivityIds.getNextHeadlessActivityId();
 
-    new AppLoader(mManifestUrl, true) {
+    new ExpoUpdatesAppLoader(mManifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
       }
@@ -105,7 +106,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
       @Override
       public void onBundleCompleted(String localBundlePath) {
-        setBundle(localBundlePath);
+        Exponent.getInstance().runOnUiThread(() -> {
+          setBundle(localBundlePath);
+        });
       }
 
       @Override
@@ -114,14 +117,11 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
       @Override
       public void onError(Exception e) {
-        mCallback.onComplete(false, new Exception(e.getMessage()));
+        Exponent.getInstance().runOnUiThread(() -> {
+          mCallback.onComplete(false, new Exception(e.getMessage()));
+        });
       }
-
-      @Override
-      public void onError(String e) {
-        mCallback.onComplete(false, new Exception(e));
-      }
-    }.start();
+    }, true).start(mContext);
 
     return mAppRecord;
   }

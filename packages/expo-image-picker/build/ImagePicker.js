@@ -30,6 +30,12 @@ export async function requestCameraPermissionsAsync() {
 export async function requestCameraRollPermissionsAsync() {
     return ExponentImagePicker.requestCameraRollPermissionsAsync();
 }
+export async function getPendingResultAsync() {
+    if (ExponentImagePicker.getPendingResultAsync) {
+        return ExponentImagePicker.getPendingResultAsync();
+    }
+    return [];
+}
 export async function launchCameraAsync(options = {}) {
     if (!ExponentImagePicker.launchCameraAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');

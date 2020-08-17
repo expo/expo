@@ -188,6 +188,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation project(":expo-image")
+    implementation project(":expo-random")
 
     def packageJsonFile = new File(rootProject.projectDir, '../package.json')
     def packageJson = new JsonSlurper().parseText(packageJsonFile.text)

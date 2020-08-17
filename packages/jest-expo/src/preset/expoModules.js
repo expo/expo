@@ -92,6 +92,10 @@ module.exports = {
     scheduleNotificationWithTimer: { type: 'function', functionType: 'promise' },
     setBadgeNumberAsync: { type: 'function', functionType: 'promise' },
   },
+  ExpoRandom: {
+    getRandomBase64StringAsync: { type: 'function', functionType: 'promise' },
+    getRandomBase64String: { type: 'function' },
+  },
   ExponentScopedModuleRegistry: {},
   ExponentSplashScreen: {
     getConstants: { type: 'function' },
@@ -371,7 +375,6 @@ module.exports = {
         ],
         ExpoPublisherBannerView: [],
         ExpoPushTokenManager: [{ key: 0, argumentsCount: 0, name: 'getDevicePushTokenAsync' }],
-        ExpoRandom: [{ key: 0, argumentsCount: 1, name: 'getRandomBase64StringAsync' }],
         ExpoSMS: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 3, name: 'sendSMSAsync' },
@@ -405,6 +408,11 @@ module.exports = {
           { key: 3, argumentsCount: 0, name: 'getRegisteredTasksAsync' },
           { key: 4, argumentsCount: 1, name: 'getTaskOptionsAsync' },
           { key: 5, argumentsCount: 2, name: 'notifyTaskFinishedAsync' },
+        ],
+        ExpoUpdates: [
+          { key: 0, argumentsCount: 0, name: 'reload' },
+          { key: 1, argumentsCount: 0, name: 'checkForUpdateAsync' },
+          { key: 2, argumentsCount: 0, name: 'fetchUpdateAsync' },
         ],
         ExpoVideoManager: [{ key: 0, argumentsCount: 2, name: 'setFullscreen' }],
         ExpoVideoThumbnails: [{ key: 0, argumentsCount: 2, name: 'getThumbnail' }],

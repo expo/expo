@@ -10,6 +10,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
 const ActionSheet = optionalRequire(() => require('../screens/ActionSheetScreen'));
+const Alert = optionalRequire(() => require('../screens/AlertScreen'));
 const AppAuth = optionalRequire(() => require('../screens/AppAuthScreen'));
 const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
@@ -20,6 +21,7 @@ const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
 const Branch = optionalRequire(() => require('../screens/BranchScreen'));
 const Brightness = optionalRequire(() => require('../screens/BrightnessScreen'));
 const Calendars = optionalRequire(() => require('../screens/CalendarsScreen'));
+const Clipboard = optionalRequire(() => require('../screens/ClipboardScreen'));
 const Constants = optionalRequire(() => require('../screens/ConstantsScreen'));
 const ContactDetail = optionalRequire(() => require('../screens/Contacts/ContactDetailScreen'));
 const Contacts = optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
@@ -52,6 +54,7 @@ const Notification = optionalRequire(() => require('../screens/NotificationScree
 const Pedometer = optionalRequire(() => require('../screens/PedometerScreen'));
 const Permissions = optionalRequire(() => require('../screens/PermissionsScreen'));
 const Print = optionalRequire(() => require('../screens/PrintScreen'));
+const Random = optionalRequire(() => require('../screens/RandomScreen'));
 const Recording = optionalRequire(() => require('../screens/AV/RecordingScreen'));
 const Reminders = optionalRequire(() => require('../screens/RemindersScreen'));
 const SafeAreaContext = optionalRequire(() => require('../screens/SafeAreaContextScreen'));
@@ -60,6 +63,7 @@ const SecureStore = optionalRequire(() => require('../screens/SecureStoreScreen'
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Sharing = optionalRequire(() => require('../screens/SharingScreen'));
 const SMS = optionalRequire(() => require('../screens/SMSScreen'));
+const StatusBar = optionalRequire(() => require('../screens/StatusBarScreen'));
 const StoreReview = optionalRequire(() => require('../screens/StoreReview'));
 const TaskManager = optionalRequire(() => require('../screens/TaskManagerScreen'));
 const TextToSpeech = optionalRequire(() => require('../screens/TextToSpeechScreen'));
@@ -70,6 +74,9 @@ const WebBrowser = optionalRequire(() => require('../screens/WebBrowserScreen'))
 const optionalScreens: {
   [key: string]: React.ComponentType | null;
 } = {
+  StatusBar,
+  Alert,
+  Clipboard,
   Accelerometer,
   ActionSheet,
   AppAuth,
@@ -113,6 +120,7 @@ const optionalScreens: {
   Permissions,
   Print,
   Recording,
+  Random,
   Reminders,
   SafeAreaContext,
   ScreenOrientation,

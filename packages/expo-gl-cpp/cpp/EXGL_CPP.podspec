@@ -14,7 +14,8 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.source_files   = '**/*.{h,c,cpp,mm}'
   s.preserve_paths = '**/*.{h,c,cpp,mm}'
-  s.compiler_flags = '-x objective-c++ -std=c++1z'
+  s.compiler_flags = '-x objective-c++ -std=c++1z -fno-aligned-allocation'
+  # aligned-allocation can be enabled when support for iOS 10 is dropped
   s.requires_arc   = true
 
   s.pod_target_xcconfig = {

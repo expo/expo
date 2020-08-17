@@ -6,6 +6,7 @@ import {
   CameraPermissionResponse,
   CameraRollPermissionResponse,
   ImagePickerResult,
+  ImagePickerErrorResult,
   MediaTypeOptions,
   ImagePickerOptions,
   VideoExportPreset,
@@ -59,6 +60,15 @@ export async function requestCameraRollPermissionsAsync(): Promise<CameraRollPer
   return ExponentImagePicker.requestCameraRollPermissionsAsync();
 }
 
+export async function getPendingResultAsync(): Promise<
+  (ImagePickerResult | ImagePickerErrorResult)[]
+> {
+  if (ExponentImagePicker.getPendingResultAsync) {
+    return ExponentImagePicker.getPendingResultAsync();
+  }
+  return [];
+}
+
 export async function launchCameraAsync(
   options: ImagePickerOptions = {}
 ): Promise<ImagePickerResult> {
@@ -81,6 +91,7 @@ export {
   MediaTypeOptions,
   ImagePickerOptions,
   ImagePickerResult,
+  ImagePickerErrorResult,
   VideoExportPreset,
   CameraPermissionResponse,
   CameraRollPermissionResponse,
