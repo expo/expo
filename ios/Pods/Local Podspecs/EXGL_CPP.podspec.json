@@ -14,7 +14,7 @@
   },
   "source_files": "**/*.{h,c,cpp,mm}",
   "preserve_paths": "**/*.{h,c,cpp,mm}",
-  "compiler_flags": "-x objective-c++ -std=c++1z",
+  "compiler_flags": "-x objective-c++ -std=c++1z -fno-aligned-allocation",
   "requires_arc": true,
   "pod_target_xcconfig": {
     "CLANG_WARN_COMMA": "NO",
