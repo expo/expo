@@ -387,7 +387,7 @@ UM_EXPORT_MODULE(ExponentAV);
   if (data) {
     block(data);
   } else {
-    reject(@"E_AUDIO_NOPLAYER", @"Player does not exist.", nil);
+    reject(@"E_AUDIO_NOPLAYER", @"Sound object not loaded. Did you unload it using Audio.unloadAsync?", nil);
   }
 }
 
@@ -494,7 +494,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 - (NSError *)_createNewAudioRecorder
 {
   if (_audioRecorder) {
-    return UMErrorWithMessage(@"Recorder already exists.");
+    return UMErrorWithMessage(@"Recorder is already prepared.");
   }
   
   id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
@@ -540,7 +540,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 - (BOOL)_checkAudioRecorderExistsOrReject:(UMPromiseRejectBlock)reject
 {
   if (_audioRecorder == nil) {
-    reject(@"E_AUDIO_NORECORDER", @"Recorder does not exist.", nil);
+    reject(@"E_AUDIO_NORECORDER", @"Recorder does not exist. Prepare it first using Audio.prepareToRecordAsync.", nil);
   }
   return _audioRecorder != nil;
 }
