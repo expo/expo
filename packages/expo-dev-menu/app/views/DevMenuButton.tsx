@@ -1,19 +1,13 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  TouchableOpacity as TouchableOpacityRN,
-  View,
-  Text,
-} from 'react-native';
-import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
 
 import { DevMenuKeyCommand } from '../DevMenuInternal';
+import DevMenuKeyCommandLabel from '../components/DevMenuKeyCommandLabel';
 import { StyledText } from '../components/Text';
+import { TouchableOpacity } from '../components/Touchables';
 import { StyledIcon } from '../components/Views';
 import Colors from '../constants/Colors';
-import DevMenuKeyCommandLabel from '../components/DevMenuKeyCommandLabel';
 
 type Props = {
   buttonKey: string;
@@ -24,9 +18,6 @@ type Props = {
   detail?: string;
   keyCommand?: DevMenuKeyCommand;
 };
-
-// When rendered inside bottom sheet, touchables from RN don't work on Android, but the ones from GH don't work on iOS.
-const TouchableOpacity = Platform.OS === 'android' ? TouchableOpacityGH : TouchableOpacityRN;
 
 const LIGHT_DISABLED_TEXT_COLOR = '#9ca0a6';
 const DARK_DISABLED_TEXT_COLOR = 'rgba(255, 255, 255, 0.7)';
