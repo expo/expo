@@ -1,0 +1,71 @@
+name: Android Shell App
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseShellAndroid:
+        description: 'type "release-shell-android" to confirm upload'
+        required: false
+  schedule:
+    - cron: '20 5 * * 2,4,6' # 5:20 AM UTC time on every Tuesday, Thursday and Saturday
+  push:
+    paths:
+      - .github/workflows/shell-app-android.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get cache key of git lfs files
+        id: git-lfs
+        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
+      - uses: actions/cache@v2
+        with:
+          path: .git/lfs
+          key: ${{ steps.git-lfs.outputs.sha256 }}
+      - run: git lfs pull
+      - name: Set up bin paths and env
+        run: |
+          echo "::add-path::$(pwd)/bin"
+          echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
+      - run: sudo apt-get install awscli
+      - name: Check that Android packages are up-to-date
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: expotools check-android-packages
+      - name: Build shell app tarball
+        run: ./buildAndroidTarballLocally.sh
+      - name: Make an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-shell-app
+          path: artifacts/android-shell-builder.tar.gz
+      - name: Upload shell app tarball to S3
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_URI: s3://exp-artifacts/android-shell-builder-${{ github.sha }}.tar.gz
+        run: |
+          aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+          echo "Release tarball uploaded to $S3_URI"
+          echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
+          echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
+      - name: Set the description for slack message
+        if: ${{ github.event_name != 'push' }}
+        run: |
+          if [ ${{ github.event_name }} == 'schedule' ]; then
+            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::scheduled"
+          else
+            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::triggered by ${{ github.actor }}"
+          fi
+      - uses: 8398a7/action-slack@v3
+        if: ${{ github.event_name != 'push' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_ANDROID }}
+        with:
+          channel: '#platform-android'
+          status: ${{ job.status }}
+          fields: job,commit,ref,eventName,author,took
+          author_name: Android Shell App (${{ env.SLACK_MESSAGE_DESCRIPTION }})
