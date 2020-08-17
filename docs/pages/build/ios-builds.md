@@ -55,7 +55,7 @@ Next, this is what happens when EAS Builds picks up your request:
 7. Run `fastlane gym` in the `ios` directory.
 8. Upload the build artifact to a private AWS S3 bucket.
 
-   The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`.
+   The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
 
 ## Building iOS Projects With Fastlane
 
