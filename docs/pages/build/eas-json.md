@@ -30,9 +30,9 @@ Generally, the schema of this file looks like this:
 ```json
 {
   "builds": {
-    "PLATFORM_NAME": {
-      "BUILD_PROFILE_NAME_1": { ... },
-      "BUILD_PROFILE_NAME_2": { ... },
+    /* @info valid values: android, ios */"PLATFORM_NAME"/* @end */: {
+      /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: { ... },
+      /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: { ... },
       ...,
     },
     ...
@@ -67,7 +67,7 @@ The schema of a build profile for a generic Android project looks like this:
 ```
 
 - `"workflow": "generic"` indicates that your project is a generic one.
-- `credentialsSource` defines the credentials source for the project build. If you want to take advantage of your own `credentials.json` file, set it to `local` ([learn more on this here](../advanced-credentials/)). If you always want to use credentials stored on Expo servers, choose `remote`. If you're not sure what to do but you probably won't be needing to run builds from a CI, choose `auto` (this is the default option).
+- `credentialsSource` defines the source of credentials for this build profile. If you want to take advantage of your own `credentials.json` file, set this to `local` ([learn more on this here](../advanced-credentials-configuration/)). If you want to use the credentials Expo already has stored for you, choose `remote`. If you're not sure what to do but you probably won't be running builds from a CI, choose `auto` (this is the default option).
 - `withoutCredentials` when set to `true`, Expo CLI won't require you to configure credentials when building the app using this profile. It comes in handy when you want to build debug binaries and the debug keystore is checked in to the repository. The default is `false`.
 - `gradleCommand` defines the Gradle task to be run on Expo servers to build your project. You can set it to any valid Gradle task, e.g. `:app:assembleDebug` to build a debug binary. The default Gradle command is `:app:bundleRelease`.
 - `artifactPath` is the path where EAS Builds is going to look for the build artifact. The default is `android/app/build/outputs/bundle/release/app-release.aab`. For some older projects that default might not be correct and you might need to change that to `android/app/build/outputs/bundle/release/app.aab`.
@@ -130,7 +130,7 @@ The schema of a build profile for a generic iOS project looks like this:
 ```
 
 - `"workflow": "generic"` indicates that your project is a generic one.
-- `credentialsSource` defines the credentials source for the project build. If you want to take advantage of your own `credentials.json` file, set it to `local` ([learn more on this here](../advanced-credentials/)). If you always want to use credentials stored on Expo servers, choose `remote`. If you're not sure what to do but you probably won't be needing to run builds from a CI, choose `auto` (this is the default option).
+- `credentialsSource` defines the source of credentials for this build profile. If you want to take advantage of your own `credentials.json` file, set this to `local` ([learn more on this here](../advanced-credentials-configuration/)). If you want to use the credentials Expo already has stored for you, choose `remote`. If you're not sure what to do but you probably won't be running builds from a CI, choose `auto` (this is the default option).
 - `artifactPath` is the path where EAS Builds is going to look for the build artifact. You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
 
 #### Examples
@@ -143,12 +143,12 @@ This is the minimal working example. Expo CLI will ask you for the app's credent
 }
 ```
 
-If you'd like to build your iOS project with your custom `Gymfile` ([learn more on this here](../ios/)) and you've defined a different output directory than `ios/build` use the following example:
+If you'd like to build your iOS project with a custom `Gymfile` ([learn more on this here](../ios-builds/#building-ios-projects-with-fastlane)) where you've defined a different output directory than `ios/build`, use the following example:
 
 ```json
 {
   "workflow": "generic",
-  "artifactPath": "ios/my/build/directory/RNApp.ipa"
+  "artifactPath": /* @info determined by output_directory and output_name in Gymfile */ "ios/my/build/directory/RNApp.ipa" /* @end */
 }
 ```
 
