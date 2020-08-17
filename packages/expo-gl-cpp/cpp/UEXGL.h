@@ -76,7 +76,7 @@ void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GL
 // [GL thread] Get the underlying OpenGL object an EXGL object maps to.
 GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId);
 
-void UEXGLInvalidateJsiCache();
+void UEXGLInvalidateJsiCache(void);
 
 #ifdef __cplusplus
 }

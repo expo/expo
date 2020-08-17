@@ -12,10 +12,10 @@ namespace jsi = facebook::jsi;
 
 template <typename T>
 inline std::vector<T> jsArrayToVector(jsi::Runtime &runtime, const jsi::Array &jsArray) {
-  int length = jsArray.length(runtime);
+  size_t length = jsArray.length(runtime);
   std::vector<T> values(length);
 
-  for (int i = 0; i < length; i++) {
+  for (size_t i = 0; i < length; i++) {
     values[i] = static_cast<T>(jsArray.getValueAtIndex(runtime, i).asNumber());
   }
   return values;
@@ -23,10 +23,10 @@ inline std::vector<T> jsArrayToVector(jsi::Runtime &runtime, const jsi::Array &j
 
 template <>
 inline std::vector<std::string> jsArrayToVector(jsi::Runtime &runtime, const jsi::Array &jsArray) {
-  int length = jsArray.length(runtime);
+  size_t length = jsArray.length(runtime);
   std::vector<std::string> strings(length);
 
-  for (int i = 0; i < length; i++) {
+  for (size_t i = 0; i < length; i++) {
     strings[i] = jsArray.getValueAtIndex(runtime, i).asString(runtime).utf8(runtime);
   }
   return strings;
