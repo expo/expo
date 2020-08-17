@@ -24,13 +24,12 @@ class LoadingProgressPopupController(activity: Activity) {
   private var mContainer: ViewGroup? = null
 
   fun show() {
-    if (mPopupWindow != null && mPopupWindow!!.isShowing) {
-      // already showing
-      return
-    }
-
     mWeakActivity.get()?.let { activity ->
       activity.runOnUiThread {
+        if (mPopupWindow != null) {
+          // already showing
+          return@runOnUiThread
+        }
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         @SuppressLint("InflateParams")
         mContainer = (inflater.inflate(R.layout.loading_progress_popup, null) as ViewGroup).also {
@@ -41,7 +40,9 @@ class LoadingProgressPopupController(activity: Activity) {
         }
         mPopupWindow = PopupWindow(mContainer, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also {
           it.isTouchable = false
-          it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+          activity.window.decorView.post {
+            it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+          }
         }
       }
     }

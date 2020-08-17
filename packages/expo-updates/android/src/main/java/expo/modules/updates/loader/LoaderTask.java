@@ -255,11 +255,14 @@ public class LoaderTask {
 
           @Override
           public boolean onManifestLoaded(Manifest manifest) {
-            mCallback.onRemoteManifestLoaded(manifest);
-            return mSelectionPolicy.shouldLoadNewUpdate(
-              manifest.getUpdateEntity(),
-              mLauncher == null ? null : mLauncher.getLaunchedUpdate()
-            );
+            if (mSelectionPolicy.shouldLoadNewUpdate(
+                  manifest.getUpdateEntity(),
+                  mLauncher == null ? null : mLauncher.getLaunchedUpdate())) {
+              mCallback.onRemoteManifestLoaded(manifest);
+              return true;
+            } else {
+              return false;
+            }
           }
 
           @Override

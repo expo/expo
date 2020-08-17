@@ -235,6 +235,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         }
 
         @Override
+        public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+          setLoadingProgressStatus(status);
+        }
+
+        @Override
         public void onError(Exception e) {
           Exponent.getInstance().runOnUiThread(() -> {
             mKernel.handleError(e);
@@ -378,6 +383,30 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     } else {
       mManagedAppSplashScreenViewProvider.updateSplashScreenViewWithManifest(this, manifest);
     }
+
+    ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+    if (appLoader != null) {
+      setLoadingProgressStatus(appLoader.getStatus());
+    }
+  }
+
+  private String getLoadingProgressText(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+    if (status == ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE) {
+      return "Checking for new release...";
+    } else if (status == ExpoUpdatesAppLoader.AppLoaderStatus.DOWNLOADING_NEW_UPDATE) {
+      return "New release available, downloading...";
+    }
+    return null;
+  }
+
+  public void setLoadingProgressStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+    if (Constants.isStandaloneApp()) {
+      return;
+    }
+    if (status == null) {
+      return;
+    }
+    UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.updateProgress(getLoadingProgressText(status), null, null));
   }
 
   public void setOptimisticManifest(final JSONObject optimisticManifest) {
