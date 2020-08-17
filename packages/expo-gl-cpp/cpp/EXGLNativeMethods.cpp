@@ -184,7 +184,7 @@ NATIVE_METHOD(getParameter) {
       GLint glInt;
       addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
       for (const auto &pair : objects) {
-        if (pair.second == glInt) {
+        if (static_cast<int>(pair.second) == glInt) {
           return static_cast<double>(pair.first);
         }
       }
@@ -430,11 +430,11 @@ NATIVE_METHOD(invalidateFramebuffer) {
   auto jsAttachments = ARG(1, jsi::Array);
 
   std::vector<GLenum> attachments(jsAttachments.size(runtime));
-  for (int i = 0; i < attachments.size(); i++) {
+  for (size_t i = 0; i < attachments.size(); i++) {
     attachments[i] = jsAttachments.getValueAtIndex(runtime, i).asNumber();
   }
   addToNextBatch([=, attachaments{std::move(attachments)}] {
-    glInvalidateFramebuffer(target, attachments.size(), attachments.data());
+    glInvalidateFramebuffer(target, static_cast<GLsizei>(attachments.size()), attachments.data());
   });
   return nullptr; // breaking change TypedArray -> Array (bug in previous implementation)
 }
@@ -447,11 +447,12 @@ NATIVE_METHOD(invalidateSubFramebuffer) {
   auto width = ARG(4, GLint);
   auto height = ARG(5, GLint);
   std::vector<GLenum> attachments(jsAttachments.size(runtime));
-  for (int i = 0; i < attachments.size(); i++) {
+  for (size_t i = 0; i < attachments.size(); i++) {
     attachments[i] = jsAttachments.getValueAtIndex(runtime, i).asNumber();
   }
   addToNextBatch([=, attachments{std::move(attachments)}] {
-    glInvalidateSubFramebuffer(target, attachments.size(), attachments.data(), x, y, width, height);
+    glInvalidateSubFramebuffer(
+        target, static_cast<GLsizei>(attachments.size()), attachments.data(), x, y, width, height);
   });
   return nullptr;
 }
@@ -1225,7 +1226,8 @@ SIMPLE_NATIVE_METHOD(
 
 NATIVE_METHOD(drawBuffers) {
   auto data = jsArrayToVector<GLenum>(runtime, ARG(0, jsi::Array));
-  addToNextBatch([data{std::move(data)}] { glDrawBuffers(data.size(), data.data()); });
+  addToNextBatch(
+      [data{std::move(data)}] { glDrawBuffers(static_cast<GLsizei>(data.size()), data.data()); });
   return nullptr;
 }
 
@@ -1409,7 +1411,10 @@ NATIVE_METHOD(transformFeedbackVaryings) {
         });
 
     glTransformFeedbackVaryings(
-        lookupObject(program), varyingsRaw.size(), varyingsRaw.data(), bufferMode);
+        lookupObject(program),
+        static_cast<GLsizei>(varyingsRaw.size()),
+        varyingsRaw.data(),
+        bufferMode);
   });
   return nullptr;
 }
@@ -1462,7 +1467,7 @@ NATIVE_METHOD(getUniformIndices) {
   std::vector<GLuint> indices(uniformNames.size());
   addBlockingToNextBatch([&] {
     glGetUniformIndices(
-        lookupObject(program), uniformNames.size(), uniformNamesRaw.data(), &indices[0]);
+        lookupObject(program), static_cast<GLsizei>(uniformNames.size()), uniformNamesRaw.data(), &indices[0]);
   });
   return TypedArray<TypedArrayKind::Uint32Array>(runtime, indices);
 }
