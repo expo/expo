@@ -1,6 +1,12 @@
 name: SDK
 
 on:
+  workflow_dispatch:
+    inputs:
+      checkAll:
+        description: 'type "check-all" to force checking all packages'
+        required: false
+        default: ''
   push:
     branches: [master, 'sdk-*']
     paths:
@@ -42,15 +48,15 @@ jobs:
       - name: Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [[ ${{ github.event_name }} == "schedule" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]]; then
             # Check all packages on scheduled events
             bin/expotools check-packages --all
-          elif [[ ${{ github.event_name }} == "push" ]]; then
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
             # On push event check packages changed since previous remote head
-            bin/expotools check-packages --since ${{ github.event.before }}
+            bin/expotools check-packages --since ${{ github.event.before || 'master' }}
           else
             # In pull requests check all packages changed in the entire PR
-            bin/expotools check-packages --since ${{ github.base_ref }}
+            bin/expotools check-packages --since ${{ github.base_ref || 'master' }}
           fi
       - uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))

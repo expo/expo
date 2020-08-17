@@ -35,6 +35,13 @@ const CUSTOM_WORKFLOWS = {
       releaseSimulator: 'release-simulator',
     },
   },
+  'sdk-all': {
+    name: 'SDK All',
+    baseWorkflowSlug: 'sdk',
+    inputs: {
+      checkAll: 'check-all',
+    },
+  },
 };
 
 export default (program: Command) => {
@@ -159,7 +166,7 @@ async function promptWorkflowAsync(workflows: Workflow[]): Promise<Workflow> {
       message: 'Which workflow do you want to dispatch?',
       choices: workflows.map((workflow) => {
         return {
-          name: `${workflow.name} (${chalk.green(workflow.slug)})`,
+          name: `${chalk.yellow(workflow.name)} (${chalk.green.italic(workflow.slug)})`,
           value: workflow,
         };
       }),
