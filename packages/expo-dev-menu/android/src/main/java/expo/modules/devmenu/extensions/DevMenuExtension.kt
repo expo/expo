@@ -15,10 +15,10 @@ import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
 import expo.modules.devmenu.extensions.items.DevMenuItemImportance
 import expo.modules.devmenu.extensions.items.KeyCommand
-import expo.modules.devmenu.protocoles.DevMenuExtensionProtocol
+import expo.modules.devmenu.interfaces.DevMenuExtensionInterface
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
-  : ReactContextBaseJavaModule(reactContext), DevMenuExtensionProtocol {
+  : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
   private val devSupportManager: DevSupportManager?

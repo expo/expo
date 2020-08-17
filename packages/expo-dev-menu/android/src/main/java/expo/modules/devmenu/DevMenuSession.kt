@@ -8,7 +8,8 @@ import androidx.core.content.pm.PackageInfoCompat
 import com.facebook.react.ReactInstanceManager
 
 /**
- * Class that represents a "session" as of the dev menu is open until it gets closed.
+ * Class that represents a "session".
+ * A session represents lifecycle/state of the dev menu while it is opened (between opening it and closing it).
  */
 class DevMenuSession(private val reactInstanceManager: ReactInstanceManager, initAppInfo: Bundle?) {
   val appInfo = initAppInfo ?: guessAppInfo()

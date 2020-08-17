@@ -61,7 +61,7 @@ android {
 
 task copyAssets(type: Copy) {
   from('../assets') {
-    exclude "*.ios.js"
+    exclude "*.ios.*"
   }
   into 'src/main/assets'
 }
@@ -99,6 +99,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
   implementation project(':react-native-gesture-handler')
+  implementation project(':react-native-reanimated')
   // Fixes
   // Cannot access 'androidx....' which is a supertype of 'expo.modules.devmenu.DevMenuActivity'.
   // Check your module classpath for missing or conflicting dependencies

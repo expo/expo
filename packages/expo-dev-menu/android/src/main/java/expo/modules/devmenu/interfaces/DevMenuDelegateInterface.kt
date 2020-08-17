@@ -1,9 +1,9 @@
-package expo.modules.devmenu.protocoles
+package expo.modules.devmenu.interfaces
 
 import android.os.Bundle
 import com.facebook.react.ReactInstanceManager
 
-interface DevMenuDelegateProtocol {
+interface DevMenuDelegateInterface {
   /**
    * Returns a `Bundle` with the most important information about the current app.
    */

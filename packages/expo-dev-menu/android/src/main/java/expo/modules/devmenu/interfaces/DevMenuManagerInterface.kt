@@ -1,4 +1,4 @@
-package expo.modules.devmenu.protocoles
+package expo.modules.devmenu.interfaces
 
 import android.app.Activity
 import android.os.Bundle
@@ -7,41 +7,41 @@ import expo.modules.devmenu.DevMenuHost
 import expo.modules.devmenu.DevMenuSession
 import expo.modules.devmenu.modules.DevMenuSettings
 
-interface DevMenuManagerProtocol {
+interface DevMenuManagerInterface {
   /**
-   * Open menu in provided [activity]
+   * Opens the dev menu in provided [activity]
    */
   fun openMenu(activity: Activity)
 
   /**
-   * Close menu.
+   * Closes the dev menu.
    * This method will trigger the js code, which should smoothly hide the menu.
    */
   fun closeMenu()
 
   /**
-   * Hide menu.
+   * Hides the dev menu.
    * This method will destroyed the current dev menu [Activity].
    */
   fun hideMenu()
 
   /**
-   * Toggle menu in provided [activity]
+   * Toggles the dev menu in provided [activity]
    */
   fun toggleMenu(activity: Activity)
 
   /**
-   * Handle `onKeyEvent`. It will trigger [expo.modules.devmenu.DevMenuActivity] if [DevMenuSettings.keyCommandsEnabled] is true.
+   * Handles `onKeyEvent`. It will trigger [expo.modules.devmenu.DevMenuActivity] if [DevMenuSettings.keyCommandsEnabled] is true.
    */
   fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean
 
   /**
-   * Initialize the dev menu manager to work with provided delegate.
+   * Initializes the dev menu manager to work with provided delegate.
    */
-  fun setDelegate(newDelegate: DevMenuDelegateProtocol)
+  fun setDelegate(newDelegate: DevMenuDelegateInterface)
 
   /**
-   * Fin and dispatch action with provided [actionId].
+   * Finds and dispatches action with provided [actionId].
    * If such action doesn't exist, ignore it.
    */
   fun dispatchAction(actionId: String)

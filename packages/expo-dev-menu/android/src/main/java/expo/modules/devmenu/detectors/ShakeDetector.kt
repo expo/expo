@@ -7,27 +7,31 @@ import android.hardware.SensorManager
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-// Number of nanoseconds that must elapse before we start detecting next gesture.
+/**
+ * Number of nanoseconds that must elapse before we start detecting next gesture.
+ */
 private val MIN_TIME_AFTER_SHAKE_NS = TimeUnit.NANOSECONDS.convert(600, TimeUnit.MILLISECONDS)
 
-// Required force to constitute a rage shake. Need to multiply gravity by 1.33 because a rage
-// shake in one direction should have more force than just the magnitude of free fall.
+/**
+ * Required force to constitute a rage shake. Need to multiply gravity by 1.33 because a rage
+ * shake in one direction should have more force than just the magnitude of free fall.
+ */
 private const val REQUIRED_FORCE = SensorManager.GRAVITY_EARTH * 1.33f
 
 /**
  * Listens for the user shaking their phone. Allocation-less once it starts listening.
  */
 class ShakeDetector(private val shakeListener: () -> Unit) : SensorEventListener {
-  private var accelerationX: Float = 0.toFloat()
-  private var accelerationY: Float = 0.toFloat()
-  private var accelerationZ: Float = 0.toFloat()
+  private var accelerationX = 0F
+  private var accelerationY = 0F
+  private var accelerationZ = 0F
 
   private var sensorManager: SensorManager? = null
-  private var numShakes: Int = 0
+  private var numShakes = 0
 
-  private var lastDispatchedShakeTimestamp: Long = 0
+  private var lastDispatchedShakeTimestamp = 0L
 
-  var minRecordedShakes: Int = 3
+  var minRecordedShakes = 3
 
   //region publics
 
@@ -35,12 +39,14 @@ class ShakeDetector(private val shakeListener: () -> Unit) : SensorEventListener
    * Start listening for shakes.
    */
   fun start(manager: SensorManager) {
-    manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
-      sensorManager = manager
-      manager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
-      lastDispatchedShakeTimestamp = 0
-      reset()
-    }
+    manager
+      .getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+      ?.let {
+        sensorManager = manager
+        manager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        lastDispatchedShakeTimestamp = 0
+        reset()
+      }
   }
 
   /**
@@ -63,16 +69,21 @@ class ShakeDetector(private val shakeListener: () -> Unit) : SensorEventListener
     val ay = sensorEvent.values[1]
     val az = sensorEvent.values[2] - SensorManager.GRAVITY_EARTH
 
-    if (atLeastRequiredForce(ax) && ax * accelerationX <= 0) {
-      numShakes++
-      accelerationX = ax
-    } else if (atLeastRequiredForce(ay) && ay * accelerationY <= 0) {
-      numShakes++
-      accelerationY = ay
-    } else if (atLeastRequiredForce(az) && az * accelerationZ <= 0) {
-      numShakes++
-      accelerationZ = az
+    when {
+      atLeastRequiredForce(ax) && ax * accelerationX <= 0 -> {
+        numShakes++
+        accelerationX = ax
+      }
+      atLeastRequiredForce(ay) && ay * accelerationY <= 0 -> {
+        numShakes++
+        accelerationY = ay
+      }
+      atLeastRequiredForce(az) && az * accelerationZ <= 0 -> {
+        numShakes++
+        accelerationZ = az
+      }
     }
+
     if (numShakes >= minRecordedShakes) {
       reset()
       shakeListener.invoke()
@@ -100,9 +111,7 @@ class ShakeDetector(private val shakeListener: () -> Unit) : SensorEventListener
    * @return true if the magnitude of the force exceeds the minimum required amount of force. false
    * otherwise.
    */
-  private fun atLeastRequiredForce(a: Float): Boolean {
-    return abs(a) > REQUIRED_FORCE
-  }
+  private fun atLeastRequiredForce(a: Float) = abs(a) > REQUIRED_FORCE
 
   //endregion internals
 }

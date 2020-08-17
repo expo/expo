@@ -5,17 +5,19 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import org.unimodules.core.interfaces.Package
 
-fun getExpoModules(application: Application): List<Package> {
-  val basePackageListClass = Class.forName(application.packageName + ".generated.BasePackageList")
+const val DEV_MENU_TAG = "ExpoDevMenu"
+
+internal fun Application.getExpoModules(): List<Package> {
+  val basePackageListClass = Class.forName("$packageName.generated.BasePackageList")
   val getPackageList = basePackageListClass.getMethod("getPackageList")
   @Suppress("UNCHECKED_CAST")
   return getPackageList.invoke(basePackageListClass.newInstance()) as List<Package>
 }
 
-fun getReactModules(reactNativeHost: ReactNativeHost): List<ReactPackage> {
+internal fun ReactNativeHost.getReactModules(): List<ReactPackage> {
   val packageListClass = Class.forName("com.facebook.react.PackageList")
-  val constructor = packageListClass.getConstructor(ReactNativeHost::class.java)
-  val packageList = constructor.newInstance(reactNativeHost)
+  val constructor = packageListClass.getConstructor(this::class.java)
+  val packageList = constructor.newInstance(this)
   val getPackageList = packageListClass.getMethod("getPackages")
   @Suppress("UNCHECKED_CAST")
   return getPackageList.invoke(packageList) as List<ReactPackage>

@@ -8,7 +8,7 @@ class DevMenuModule(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext) {
   override fun getName() = "ExpoDevMenu"
 
-  private val devMenuManger by lazy {
+  private val devMenuManager by lazy {
     reactContext
       .getNativeModule(DevMenuManagerProvider::class.java)
       .getDevMenuManager()
@@ -16,8 +16,10 @@ class DevMenuModule(reactContext: ReactApplicationContext)
 
   @ReactMethod
   fun openMenu() {
-    reactApplicationContext.currentActivity?.run {
-      devMenuManger.openMenu(this)
-    }
+    reactApplicationContext
+      .currentActivity
+      ?.run {
+        devMenuManager.openMenu(this)
+      }
   }
 }

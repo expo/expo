@@ -8,7 +8,10 @@ import com.facebook.react.devsupport.DevInternalSettings
  * Class representing react's internal [DevInternalSettings] class, which we want to replace to change [packagerConnectionSettings] and others settings.
  * It is only use when [expo.modules.devmenu.DevMenuHost.getUseDeveloperSupport] returns true.
  */
-class DevMenuReactInternalSettings(serverIp: String, application: Context) : DevInternalSettings(application, {}) {
+class DevMenuReactInternalSettings(
+  serverIp: String,
+  application: Context
+) : DevInternalSettings(application, {}) {
   private val packagerConnectionSettings = DevMenuPackagerConnectionSettings(serverIp, application)
 
   override fun isElementInspectorEnabled() = false

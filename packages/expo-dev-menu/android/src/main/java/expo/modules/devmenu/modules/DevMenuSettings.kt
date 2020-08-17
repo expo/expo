@@ -11,7 +11,7 @@ private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedprefere
 private const val DEV_MENU_SETTINGS_MODULE = "DevMenuSettings"
 
 /**
- * Class that represents all settings connected with the current [expo.modules.devmenu.protocoles.DevMenuDelegateProtocol].
+ * Class that represents all settings connected with the current [expo.modules.devmenu.interfaces.DevMenuDelegateInterface].
  */
 @ReactModule(name = DEV_MENU_SETTINGS_MODULE)
 class DevMenuSettings(context: ReactApplicationContext) : BaseJavaModule() {

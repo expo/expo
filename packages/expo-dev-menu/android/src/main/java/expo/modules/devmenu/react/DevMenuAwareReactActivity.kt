@@ -7,14 +7,14 @@ import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.DevMenuManager
 
 /**
- * Basic [ReactActivity] which know about expo-dev-menu.
+ * Basic [ReactActivity] which knows about expo-dev-menu.
  * It can detect a long press and dispatch key events.
  */
 abstract class DevMenuAwareReactActivity : ReactActivity() {
   private val longPressListener: () -> Unit = {
     DevMenuManager.getSettings()?.let {
       if (it.touchGestureEnabled) {
-        threeFingerLongPressDetector.isEnable = false
+        threeFingerLongPressDetector.isEnabled = false
         DevMenuManager.openMenu(this)
       }
     }
@@ -23,12 +23,12 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
 
   override fun onResume() {
     super.onResume()
-    threeFingerLongPressDetector.isEnable = true
+    threeFingerLongPressDetector.isEnabled = true
   }
 
   override fun onPause() {
     super.onPause()
-    threeFingerLongPressDetector.isEnable = false
+    threeFingerLongPressDetector.isEnabled = false
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

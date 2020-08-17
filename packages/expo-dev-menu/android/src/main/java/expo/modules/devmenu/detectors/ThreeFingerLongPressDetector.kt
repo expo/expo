@@ -19,20 +19,19 @@ private const val NEEDED_PRESS_TIME = 800
  */
 class ThreeFingerLongPressDetector(val longPressListener: () -> Unit) {
   private var startedDetecting = false
-  private var startTime: Long = Long.MAX_VALUE
+  private var startTime = Long.MAX_VALUE
   private var startPosition = Array(3) { MotionEvent.PointerCoords() }
 
   /**
    * Whether to enable detector.
    */
-  var isEnable: Boolean = true
-
+  var isEnabled: Boolean = true
 
   /**
-   * Handle touch event. If it detects long press then [longPressListener] is called.
+   * Handles touch event. If it detects long press then [longPressListener] is called.
    */
   fun onTouchEvent(event: MotionEvent?) {
-    if (!isEnable) {
+    if (!isEnabled) {
       return
     }
 

@@ -16,17 +16,17 @@ import expo.modules.devmenu.extensions.items.DevMenuAction
 import expo.modules.devmenu.extensions.items.DevMenuItem
 import expo.modules.devmenu.extensions.items.KeyCommand
 import expo.modules.devmenu.modules.DevMenuSettings
-import expo.modules.devmenu.protocoles.DevMenuDelegateProtocol
-import expo.modules.devmenu.protocoles.DevMenuExtensionProtocol
-import expo.modules.devmenu.protocoles.DevMenuManagerProtocol
+import expo.modules.devmenu.interfaces.DevMenuDelegateInterface
+import expo.modules.devmenu.interfaces.DevMenuExtensionInterface
+import expo.modules.devmenu.interfaces.DevMenuManagerInterface
 import org.unimodules.adapters.react.ModuleRegistryAdapter
 import org.unimodules.adapters.react.ReactModuleRegistryProvider
 
-object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
+object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var shakeDetector: ShakeDetector? = null
   private var session: DevMenuSession? = null
   private var settings: DevMenuSettings? = null
-  private var delegate: DevMenuDelegateProtocol? = null
+  private var delegate: DevMenuDelegateInterface? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
   private lateinit var cachedDevMenuItems: List<DevMenuItem>
@@ -45,11 +45,11 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   private val hostActivity: Activity?
     get() = hostReactContext?.currentActivity
 
-  private val delegateExtensions: Collection<DevMenuExtensionProtocol>
+  private val delegateExtensions: Collection<DevMenuExtensionInterface>
     get() = delegateReactContext
       ?.catalystInstance
       ?.nativeModules
-      ?.filterIsInstance<DevMenuExtensionProtocol>()
+      ?.filterIsInstance<DevMenuExtensionInterface>()
       ?: emptyList()
 
   private val delegateMenuItems: List<DevMenuItem>
@@ -74,10 +74,11 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   @Suppress("UNCHECKED_CAST")
   fun initDevMenuHost(application: Application) {
     devMenuHost = DevMenuHost(application)
-    val packages = getReactModules(devMenuHost)
+    val packages = devMenuHost
+      .getReactModules()
       .toMutableList()
       .apply {
-        val expoModules = getExpoModules(application)
+        val expoModules = application.getExpoModules()
         add(ModuleRegistryAdapter(ReactModuleRegistryProvider(expoModules)))
       }
     devMenuHost.setPackages(packages)
@@ -87,17 +88,19 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   }
 
   /**
-   * Get [DevMenuSettings] for current delegate and prepare for opening menu at launch if needed.
+   * Gets [DevMenuSettings] for current delegate and prepare for opening menu at launch if needed.
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
-   * So, we wait until the [reactContext] activity will be ready
+   * So we wait until the [reactContext] activity will be ready.
    */
   private fun handleLoadedDelegate(reactContext: ReactContext) {
-    settings = reactContext.getNativeModule(DevMenuSettings::class.java).also {
-      shouldLaunchDevMenuOnStart = it.showsAtLaunch
-      if (shouldLaunchDevMenuOnStart) {
-        reactContext.addLifecycleEventListener(this)
+    settings = reactContext
+      .getNativeModule(DevMenuSettings::class.java)
+      .also {
+        shouldLaunchDevMenuOnStart = it.showsAtLaunch
+        if (shouldLaunchDevMenuOnStart) {
+          reactContext.addLifecycleEventListener(this)
+        }
       }
-    }
   }
 
   //endregion
@@ -155,8 +158,10 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
   }
 
+  /**
+   * Sends an event to JS triggering the animation that collapses the dev menu.
+   */
   override fun closeMenu() {
-    // Sends an event to JS triggering the animation that collapses the dev menu.
     hostReactContext
       ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       ?.emit("closeDevMenu", null)
@@ -190,8 +195,8 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
     return false
   }
 
-  override fun setDelegate(newDelegate: DevMenuDelegateProtocol) {
-    // remove event listener for old delegate
+  override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
+    // removes event listener for old delegate
     delegateReactContext?.removeLifecycleEventListener(this)
 
     maybeStartDetectingShakes(devMenuHost.getContext())
@@ -206,12 +211,9 @@ object DevMenuManager : DevMenuManagerProtocol, LifecycleEventListener {
   }
 
   override fun dispatchAction(actionId: String) {
-    delegateMenuItems.forEach {
-      if (it is DevMenuAction && it.actionId == actionId) {
-        it.action()
-        return
-      }
-    }
+    delegateActions
+      .find { it.actionId == actionId }
+      ?.run { action() }
   }
 
   override fun serializedItems(): List<Bundle> = delegateMenuItems.map { it.serialize() }
