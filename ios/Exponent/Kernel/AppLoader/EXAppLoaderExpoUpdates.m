@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary *optimisticManifest;
 @property (nonatomic, strong, nullable) NSData *bundle;
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
+@property (nonatomic, assign) BOOL isUpToDate;
 
 @property (nonatomic, strong, nullable) NSError *error;
 
@@ -57,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize selectionPolicy = _selectionPolicy;
 @synthesize appLauncher = _appLauncher;
 @synthesize isEmergencyLaunch = _isEmergencyLaunch;
+@synthesize isUpToDate = _isUpToDate;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
 {
@@ -82,6 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
   _shouldUseCacheOnly = NO;
   _isEmergencyLaunch = NO;
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusChecking;
+  _isUpToDate = NO;
 }
 
 - (EXAppLoaderStatus)status
@@ -170,11 +173,12 @@ NS_ASSUME_NONNULL_BEGIN
   [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
   if (!_optimisticManifest) {
     [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
   }
+  _isUpToDate = isUpToDate;
   if ([[self class] areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
     // in dev mode, we need to set an optimistic manifest but nothing else
     return;

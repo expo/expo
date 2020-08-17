@@ -364,6 +364,22 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)_showCachedExperienceAlert
+{
+  if (self.isStandalone) {
+    return;
+  }
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIAlertController *alert = [UIAlertController
+                                alertControllerWithTitle:@"Loading app from cache"
+                                message:@"Expo was unable to fetch the latest version of this app. A previously downloaded version has been launched. To ensure you're up-to-date, check your network connection and reload the app."
+                                preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+  });
+}
+
 #pragma mark - EXAppLoaderDelegate
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
@@ -395,6 +411,10 @@ NS_ASSUME_NONNULL_BEGIN
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
+  }
+  
+  if (!appLoader.isUpToDate) {
+    [self _showCachedExperienceAlert];
   }
 }
 
