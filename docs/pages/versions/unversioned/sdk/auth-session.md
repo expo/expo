@@ -552,7 +552,7 @@ A hook used for opinionated Google authentication that works across platforms.
 
 #### Arguments
 
-- **config (_Partial<GoogleAuthRequestConfig>_)** -- An object with client IDs for each platform that should be supported.
+- **config (_GoogleAuthRequestConfig_)** -- An object with client IDs for each platform that should be supported.
 - **redirectUriOptions (_AuthSessionRedirectUriOptions_)** -- Optional properties used to construct the redirect URI (passed to `makeRedirectUriAsync()`).
 
 #### Returns
@@ -586,7 +586,7 @@ A hook used for opinionated Facebook authentication that works across platforms.
 
 #### Arguments
 
-- **config (_Partial<FacebookAuthRequestConfig>_)** -- An object with client IDs for each platform that should be supported.
+- **config (_FacebookAuthRequestConfig_)** -- An object with client IDs for each platform that should be supported.
 - **redirectUriOptions (_AuthSessionRedirectUriOptions_)** -- Optional properties used to construct the redirect URI (passed to `makeRedirectUriAsync()`).
 
 #### Returns
