@@ -72,6 +72,7 @@ public class ExpoUpdatesAppLoader {
   private SelectionPolicy mSelectionPolicy;
   private Launcher mLauncher;
   private boolean mIsEmergencyLaunch = false;
+  private boolean mIsUpToDate = true;
   private AppLoaderStatus mStatus;
 
   private boolean isStarted = false;
@@ -127,6 +128,10 @@ public class ExpoUpdatesAppLoader {
 
   public boolean isEmergencyLaunch() {
     return mIsEmergencyLaunch;
+  }
+
+  public boolean isUpToDate() {
+    return mIsUpToDate;
   }
 
   public AppLoaderStatus getStatus() {
@@ -229,8 +234,9 @@ public class ExpoUpdatesAppLoader {
       }
 
       @Override
-      public void onSuccess(Launcher launcher) {
+      public void onSuccess(Launcher launcher, boolean isUpToDate) {
         mLauncher = launcher;
+        mIsUpToDate = isUpToDate;
         try {
           JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
           mCallback.onManifestCompleted(manifest);

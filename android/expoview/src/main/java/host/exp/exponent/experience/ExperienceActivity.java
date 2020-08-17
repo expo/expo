@@ -2,10 +2,12 @@
 
 package host.exp.exponent.experience;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -597,6 +599,21 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           AsyncCondition.remove(READY_FOR_BUNDLE);
         }
       });
+    }
+
+    if (!Constants.isStandaloneApp()) {
+      ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+      if (appLoader != null && !appLoader.isUpToDate()) {
+        new AlertDialog.Builder(this)
+          .setTitle("Loading app from cache")
+          .setMessage("Expo was unable to fetch the latest version of this app. A previously downloaded version has been launched. To ensure you're up-to-date, check your network connection and reload the app.")
+          .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+          })
+          .show();
+      }
     }
   }
 
