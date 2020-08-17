@@ -2,7 +2,7 @@ package expo.modules.medialibrary
 
 import android.content.Context
 import android.os.Bundle
-import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
 import org.junit.Assert.assertEquals
@@ -36,7 +36,7 @@ class GetAlbumsTests {
       arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
       arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
     ))
-    cursor.setColumnNames(arrayListOf(*cursor.columnNames, MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
+    cursor.setColumnNames(arrayListOf(*cursor.columnNames, Media.BUCKET_DISPLAY_NAME))
 
     val context = mockContext with mockContentResolver(cursor)
 
@@ -51,6 +51,28 @@ class GetAlbumsTests {
       assertEquals(MockData.MOCK_ALBUM_ID, firstAlbum.getString("id"))
       assertEquals(2, firstAlbum.getInt("assetCount"))
       assertEquals(bucketDisplayName, firstAlbum.getString("title"))
+    }
+  }
+
+  @Test
+  fun `GetAlbums should not list albums with null name`() {
+    //arrange
+    val bucketId = 123456
+    val bucketDisplayName = null
+
+    val cursor = mockCursor(arrayOf(
+      arrayOf(bucketId, bucketDisplayName)
+    ))
+    cursor.setColumnNames(arrayListOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME))
+
+    val context = mockContext with mockContentResolver(cursor)
+
+    //act
+    TestGetAlbums(context, promise).execute()
+
+    //assert
+    promiseResolvedWithType<List<Bundle>>(promise) {
+      assertEquals(0, it.size)
     }
   }
 
