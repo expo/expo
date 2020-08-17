@@ -1062,7 +1062,7 @@ public class Kernel extends KernelInterface {
       // stackTraceElements starts with a bunch of stuff we don't care about.
       for (int i = 2; i < stackTraceElements.length; i++) {
         StackTraceElement element = stackTraceElements[i];
-        if (element.getFileName().startsWith(Kernel.class.getSimpleName()) &&
+        if (element.getFileName() != null && element.getFileName().startsWith(Kernel.class.getSimpleName()) &&
             (element.getMethodName().equals("handleReactNativeError") ||
                 element.getMethodName().equals("handleError"))) {
           // Ignore these base error handling methods.
