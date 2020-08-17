@@ -89,6 +89,9 @@ export async function setTrackingOptionsAsync(options: AmplitudeTrackingOptions)
  * These should be removed in SDK 41
  */
 
+/**
+ * @deprecated Use initializeAsync instead
+ */
 export async function initialize(apiKey: string): Promise<void> {
   console.warn(
     "'Amplitude.initialize' is deprecated in favor of 'Amplitude.initializeAsync'. Please use the new method, which contains no user-facing changes."
@@ -96,6 +99,9 @@ export async function initialize(apiKey: string): Promise<void> {
   return await initializeAsync(apiKey);
 }
 
+/**
+ * @deprecated Use setUserIdAsync instead
+ */
 export async function setUserId(userId: string): Promise<void> {
   console.warn(
     "'Amplitude.setUserId' is deprecated in favor of 'Amplitude.setUserIdAsync'. Please use the new method, which contains no user-facing changes."
@@ -103,6 +109,9 @@ export async function setUserId(userId: string): Promise<void> {
   return await setUserIdAsync(userId);
 }
 
+/**
+ * @deprecated Use setUserPropertiesAsync instead
+ */
 export async function setUserProperties(userProperties: { [name: string]: any }): Promise<void> {
   console.warn(
     "'Amplitude.setUserProperties' is deprecated in favor of 'Amplitude.setUserPropertiesAsync'. Please use the new method, which contains no user-facing changes."
@@ -110,6 +119,9 @@ export async function setUserProperties(userProperties: { [name: string]: any })
   return await setUserPropertiesAsync(userProperties);
 }
 
+/**
+ * @deprecated Use clearUserPropertiesAsync instead
+ */
 export async function clearUserProperties(): Promise<void> {
   console.warn(
     "'Amplitude.clearUserProperties' is deprecated in favor of 'Amplitude.clearUserPropertiesAsync'. Please use the new method, which contains no user-facing changes."
@@ -117,6 +129,9 @@ export async function clearUserProperties(): Promise<void> {
   return await clearUserPropertiesAsync();
 }
 
+/**
+ * @deprecated Use logEventAsync instead
+ */
 export async function logEvent(eventName: string): Promise<void> {
   console.warn(
     "'Amplitude.logEvent' is deprecated in favor of 'Amplitude.logEventAsync'. Please use the new method, which contains no user-facing changes."
@@ -124,6 +139,9 @@ export async function logEvent(eventName: string): Promise<void> {
   return await logEventAsync(eventName);
 }
 
+/**
+ * @deprecated Use logEventWithPropertiesAsync instead
+ */
 export async function logEventWithProperties(
   eventName: string,
   properties: { [name: string]: any }
@@ -134,6 +152,9 @@ export async function logEventWithProperties(
   return await logEventWithPropertiesAsync(eventName, properties);
 }
 
+/**
+ * @deprecated Use setGroupAsync instead
+ */
 export async function setGroup(groupType: string, groupNames: string[]): Promise<void> {
   console.warn(
     "'Amplitude.setGroup' is deprecated in favor of 'Amplitude.setGroupAsync'. Please use the new method, which contains no user-facing changes."
@@ -141,6 +162,9 @@ export async function setGroup(groupType: string, groupNames: string[]): Promise
   return await setGroupAsync(groupType, groupNames);
 }
 
+/**
+ * @deprecated Use setTrackingOptionsAsync instead
+ */
 export async function setTrackingOptions(options: AmplitudeTrackingOptions): Promise<void> {
   console.warn(
     "'Amplitude.setTrackingOptions' is deprecated in favor of 'Amplitude.setTrackingOptionsAsync'. Please use the new method, which contains no user-facing changes."

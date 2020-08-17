@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Renamed all methods to include the 'Async' suffix, and they now each return a promise:
+- Renamed all methods to include the 'Async' suffix:
   - `initialize` to `initializeAsync`
   - `setUserId` to `setUserIdAsync`
   - `setUserProperties` to `setUserPropertiesAsync`
@@ -13,12 +13,13 @@
   - `logEventWithProperties` to `logEventWithPropertiesAsync`
   - `setGroup` to `setGroupAsync`
   - `setTrackingOptions` to `setTrackingOptionsAsync`
+    ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Besides the two asynchronous methods `logEventAsync` and `logEventWithPropertiesAsync`, all methods no longer say they return promises.
+- All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 
 ## 8.2.1 — 2020-05-29
 
