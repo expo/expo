@@ -9,6 +9,7 @@ import {
   dispatchWorkflowEventAsync,
   getLatestDispatchedWorkflowRunAsync,
   Workflow,
+  getJobsForWorkflowRunAsync,
 } from '../GitHubActions';
 import { deepCloneObject } from '../Utils';
 import logger from '../Logger';
@@ -92,19 +93,18 @@ async function main(workflowSlug: string | undefined, options: CommandOptions) {
   await dispatchWorkflowEventAsync(workflow.id, ref, workflow.inputs);
 
   const workflowRun = await getLatestDispatchedWorkflowRunAsync(workflow.id);
+  const jobs = workflowRun && (await getJobsForWorkflowRunAsync(workflowRun.id));
 
-  if (workflowRun) {
+  if (workflowRun && jobs?.[0]) {
+    const url = jobs[0].html_url;
+
     if (options.open) {
-      await open(workflowRun.html_url);
+      await open(url);
     } else {
-      logger.log(
-        `🧭 You can open ${chalk.magenta(workflow.html_url)} to track the new workflow run.`
-      );
+      logger.log(`🧭 You can open ${chalk.magenta(url)} to track the new workflow run.`);
     }
   } else {
-    logger.warn(
-      `\n⚠️  Cannot find any triggered workflow runs for slug ${chalk.green(workflow.slug)}`
-    );
+    logger.warn(`\n⚠️  Cannot find any triggered jobs for ${chalk.green(workflow.slug)} workflow`);
   }
 }
 

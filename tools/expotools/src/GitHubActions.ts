@@ -1,6 +1,7 @@
 import {
   ActionsListRepoWorkflowsResponseData,
   ActionsListWorkflowRunsForRepoResponseData,
+  ActionsListJobsForWorkflowRunResponseData,
 } from '@octokit/types';
 import { request } from '@octokit/request';
 import fs from 'fs-extra';
@@ -17,6 +18,7 @@ export type Workflow = ActionsListRepoWorkflowsResponseData['workflows'][0] & {
 };
 export type WorkflowRun = ActionsListWorkflowRunsForRepoResponseData['workflow_runs'][0];
 export type WorkflowDispatchEventInputs = Record<string, string>;
+export type Job = ActionsListJobsForWorkflowRunResponseData['jobs'][0];
 
 /**
  * Requests for the list of active workflows.
@@ -76,6 +78,18 @@ export async function getLatestDispatchedWorkflowRunAsync(
 ): Promise<WorkflowRun | null> {
   const workflowRuns = await getWorkflowRunsAsync(workflowId, 'workflow_dispatch');
   return workflowRuns[0] ?? null;
+}
+
+/**
+ * Requests for the list of job for workflow run with given ID.
+ */
+export async function getJobsForWorkflowRunAsync(workflowRunId: number): Promise<Job[]> {
+  const response = await request('GET /repos/:owner/:repo/actions/runs/:run_id/jobs', {
+    owner: 'expo',
+    repo: 'expo',
+    run_id: workflowRunId,
+  });
+  return response.data.jobs;
 }
 
 /**
