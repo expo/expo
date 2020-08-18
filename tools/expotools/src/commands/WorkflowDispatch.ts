@@ -11,7 +11,7 @@ import {
   Workflow,
   getJobsForWorkflowRunAsync,
 } from '../GitHubActions';
-import { deepCloneObject } from '../Utils';
+import { deepCloneObject, retryAsync } from '../Utils';
 import logger from '../Logger';
 
 type CommandOptions = {
@@ -54,8 +54,8 @@ export default (program: Command) => {
       'The reference of the workflow run. The reference can be a branch, tag, or a commit SHA.'
     )
     .option(
-      '-o, --open',
-      'Whether to automatically open a page with workflow runs containing the one that has just been triggered.',
+      '--no-open',
+      "Whether not to automatically open a page with workflow's job run containing the one that has just been triggered.",
       false
     )
     .description(
@@ -90,21 +90,34 @@ async function main(workflowSlug: string | undefined, options: CommandOptions) {
     return;
   }
 
+  // Get previously dispatched workflow run.
+  const previousWorkflowRun = await getLatestDispatchedWorkflowRunAsync(workflow.id);
+
+  // Dispatch `workflow_dispatch` event.
   await dispatchWorkflowEventAsync(workflow.id, ref, workflow.inputs);
 
-  const workflowRun = await getLatestDispatchedWorkflowRunAsync(workflow.id);
-  const jobs = workflowRun && (await getJobsForWorkflowRunAsync(workflowRun.id));
+  // Let's wait a little bit for the new workflow run to start and appear in the API response.
+  logger.info('⏳ Waiting for the new workflow run to start...');
+  const newWorkflowRun = await retryAsync(2000, 10, async () => {
+    const run = await getLatestDispatchedWorkflowRunAsync(workflow.id);
 
-  if (workflowRun && jobs?.[0]) {
+    // Compare the result with previous workflow run.
+    return previousWorkflowRun?.id !== run?.id ? run : undefined;
+  });
+
+  // Get a list of jobs for the new workflow run.
+  const jobs = newWorkflowRun && (await getJobsForWorkflowRunAsync(newWorkflowRun.id));
+
+  // If the job exists, open it in web browser or print the link.
+  if (jobs?.[0]) {
     const url = jobs[0].html_url;
 
-    if (options.open) {
+    if (options.open && !process.env.CI) {
       await open(url);
-    } else {
-      logger.log(`🧭 You can open ${chalk.magenta(url)} to track the new workflow run.`);
     }
+    logger.log(`🧭 You can open ${chalk.magenta(url)} to track the new workflow run.`);
   } else {
-    logger.warn(`\n⚠️  Cannot find any triggered jobs for ${chalk.green(workflow.slug)} workflow`);
+    logger.warn(`⚠️  Cannot find any triggered jobs for ${chalk.green(workflow.slug)} workflow`);
   }
 }
 

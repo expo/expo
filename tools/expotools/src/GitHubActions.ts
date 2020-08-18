@@ -24,10 +24,7 @@ export type Job = ActionsListJobsForWorkflowRunResponseData['jobs'][0];
  * Requests for the list of active workflows.
  */
 export async function getWorkflowsAsync(): Promise<Workflow[]> {
-  const response = await request('GET /repos/:owner/:repo/actions/workflows', {
-    owner: 'expo',
-    repo: 'expo',
-  });
+  const response = await request('GET /repos/:owner/:repo/actions/workflows', makeExpoOptions({}));
 
   // We need to filter out some workflows because they might have
   // - empty `name` or `path` (why?)
@@ -60,11 +57,10 @@ export async function getWorkflowRunsAsync(
   workflowId: number,
   event?: string
 ): Promise<WorkflowRun[]> {
-  const response = await request('GET /repos/:owner/:repo/actions/runs', {
-    owner: 'expo',
-    repo: 'expo',
-    event,
-  });
+  const response = await request(
+    'GET /repos/:owner/:repo/actions/runs',
+    makeExpoOptions({ event })
+  );
   return response.data.workflow_runs.filter(
     (workflowRun) => workflowRun.workflow_id === workflowId
   );
@@ -84,11 +80,12 @@ export async function getLatestDispatchedWorkflowRunAsync(
  * Requests for the list of job for workflow run with given ID.
  */
 export async function getJobsForWorkflowRunAsync(workflowRunId: number): Promise<Job[]> {
-  const response = await request('GET /repos/:owner/:repo/actions/runs/:run_id/jobs', {
-    owner: 'expo',
-    repo: 'expo',
-    run_id: workflowRunId,
-  });
+  const response = await request(
+    'GET /repos/:owner/:repo/actions/runs/:run_id/jobs',
+    makeExpoOptions({
+      run_id: workflowRunId,
+    })
+  );
   return response.data.jobs;
 }
 
@@ -102,20 +99,32 @@ export async function dispatchWorkflowEventAsync(
 ): Promise<void> {
   const response = await request(
     'POST /repos/:owner/:repo/actions/workflows/:workflow_id/dispatches',
-    {
-      headers: {
-        authorization: `token ${process.env.GITHUB_TOKEN}`,
-      },
-      owner: 'expo',
-      repo: 'expo',
+    makeExpoOptions({
       workflow_id: workflowId,
       ref,
       inputs: inputs ?? {},
-    }
+    })
   );
   if (response.status !== 204) {
     logger.error('💥 Dispatching workflow failed with response', JSON.stringify(response, null, 2));
     process.exit(1);
   }
   logger.success('🎉 Successfully dispatched workflow event ');
+}
+
+/**
+ * Copies given object with params specific for `expo/expo` repository and with authorization token.
+ */
+function makeExpoOptions<T>(
+  options: T & { headers?: object }
+): T & { owner: string; repo: string } {
+  return {
+    headers: {
+      authorization: `token ${process.env.GITHUB_TOKEN}`,
+      ...options?.headers,
+    },
+    owner: 'expo',
+    repo: 'expo',
+    ...options,
+  };
 }
