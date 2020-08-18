@@ -68,7 +68,7 @@ jobs:
       - name: Build iOS shell app for simulators
         working-directory: tools-public
         timeout-minutes: 30
-        run: gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+        run: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - run: brew install awscli
       - name: set tarball name
         id: tarball
