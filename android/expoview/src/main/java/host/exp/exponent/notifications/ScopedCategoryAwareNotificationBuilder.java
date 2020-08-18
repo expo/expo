@@ -15,6 +15,7 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
 public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificationBuilder {
@@ -31,7 +32,7 @@ public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificati
 
     if (content.getCategoryId() != null) {
       NotificationRequest requester = getNotification().getNotificationRequest();
-      String scopedCategoryIdentifier = String.format("%s-%s", ((ScopedNotificationRequest) requester).getExperienceIdString(), content.getCategoryId());
+      String scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(ExperienceId.create(((ScopedNotificationRequest) requester).getExperienceIdString()), content.getCategoryId());
       List<NotificationAction> actions = Collections.emptyList();
       try {
         NotificationCategory category = super.mStore.getNotificationCategory(scopedCategoryIdentifier);
@@ -39,7 +40,7 @@ public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificati
           actions = category.getActions();
         }
       } catch (ClassNotFoundException | IOException e) {
-        Log.e("expo-notifications", String.format("Could not read category with identifer: %s. %s", scopedCategoryIdentifier, e.getMessage()));
+        Log.e("expo-notifications", String.format("Could not read category with identifier: %s. %s", scopedCategoryIdentifier, e.getMessage()));
         e.printStackTrace();
       }
       for (NotificationAction action : actions) {
