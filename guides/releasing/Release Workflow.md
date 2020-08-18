@@ -75,6 +75,7 @@
 - Run `et update-vendored-module --list-outdated`.
 - Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
+- Pay extra attention to messages and warnings printed along the way for each module. Sometimes these's need for some extra manual work to be done in the updated files.
 - Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
 - Make sure that each individual library update lands on `master` as a **separate commit** so that it's easy to revert later on if needed.
 
