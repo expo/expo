@@ -62,7 +62,7 @@ The schema of a build profile for a generic Android project looks like this:
   "credentialsSource": "local" | "remote" | "auto", // default: "auto"
   "withoutCredentials": boolean, // default: false
   "gradleCommand": string, // default: ":app:bundleRelease"
-  "artifactPath": string // default: "android/app/build/outputs/bundle/release/app-release.aab"
+  "artifactPath": string // default: "android/app/build/outputs/**/*.{apk,aab}"
 }
 ```
 
@@ -70,7 +70,7 @@ The schema of a build profile for a generic Android project looks like this:
 - `credentialsSource` defines the source of credentials for this build profile. If you want to take advantage of your own `credentials.json` file, set this to `local` ([learn more on this here](../advanced-credentials-configuration/)). If you want to use the credentials Expo already has stored for you, choose `remote`. If you're not sure what to do but you probably won't be running builds from a CI, choose `auto` (this is the default option).
 - `withoutCredentials` when set to `true`, Expo CLI won't require you to configure credentials when building the app using this profile. It comes in handy when you want to build debug binaries and the debug keystore is checked in to the repository. The default is `false`.
 - `gradleCommand` defines the Gradle task to be run on Expo servers to build your project. You can set it to any valid Gradle task, e.g. `:app:assembleDebug` to build a debug binary. The default Gradle command is `:app:bundleRelease`.
-- `artifactPath` is the path where EAS Builds is going to look for the build artifact. The default is `android/app/build/outputs/bundle/release/app-release.aab`. For some older projects that default might not be correct and you might need to change that to `android/app/build/outputs/bundle/release/app.aab`.
+- `artifactPath` is the path (or pattern) where EAS Builds is going to look for the build artifacts. EAS Builds uses the `fast-glob` npm package for pattern matching, [see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax). The default value is `android/app/build/outputs/**/*.{apk,aab}`.
 
 #### Examples
 
@@ -131,7 +131,7 @@ The schema of a build profile for a generic iOS project looks like this:
 
 - `"workflow": "generic"` indicates that your project is a generic one.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to take advantage of your own `credentials.json` file, set this to `local` ([learn more on this here](../advanced-credentials-configuration/)). If you want to use the credentials Expo already has stored for you, choose `remote`. If you're not sure what to do but you probably won't be running builds from a CI, choose `auto` (this is the default option).
-- `artifactPath` is the path where EAS Builds is going to look for the build artifact. You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
+- `artifactPath` is the path (or pattern) where EAS Builds is going to look for the build artifacts. EAS Builds uses the `fast-glob` npm package for pattern matching, [see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
 
 #### Examples
 
