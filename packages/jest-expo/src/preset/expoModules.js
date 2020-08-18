@@ -98,11 +98,6 @@ module.exports = {
     setBadgeNumberAsync: { type: 'function', functionType: 'promise' },
   },
   ExponentScopedModuleRegistry: {},
-  ExponentSplashScreen: {
-    getConstants: { type: 'function' },
-    hide: { type: 'function', functionType: 'async' },
-    preventAutoHide: { type: 'function', functionType: 'async' },
-  },
   ExponentTest: {
     getConstants: { type: 'function' },
     isInCI: { type: 'number', mock: 0 },
