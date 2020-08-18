@@ -369,6 +369,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   public void startLoading() {
     mIsLoading = true;
     showOrReconfigureManagedAppSplashScreen(mManifest);
+    maybeSetLoadingProgressStatus();
   }
 
   /**
@@ -385,7 +386,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     } else {
       mManagedAppSplashScreenViewProvider.updateSplashScreenViewWithManifest(this, manifest);
     }
+  }
 
+  private void maybeSetLoadingProgressStatus() {
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
     if (appLoader != null) {
       setLoadingProgressStatus(appLoader.getStatus());
@@ -425,6 +428,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(optimisticManifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, optimisticManifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(optimisticManifest);
+      maybeSetLoadingProgressStatus();
     });
   }
 
@@ -572,6 +576,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(manifest);
+      maybeSetLoadingProgressStatus();
     });
   }
 
@@ -607,11 +612,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         new AlertDialog.Builder(this)
           .setTitle("Loading app from cache")
           .setMessage("Expo was unable to fetch the latest version of this app. A previously downloaded version has been launched. To ensure you're up-to-date, check your network connection and reload the app.")
-          .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-          })
+          .setPositiveButton(android.R.string.ok, null)
           .show();
       }
     }

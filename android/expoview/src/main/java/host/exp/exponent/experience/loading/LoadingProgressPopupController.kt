@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
+import host.exp.exponent.Constants
+import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.expoview.R
 import java.lang.ref.WeakReference
 import java.util.*
@@ -56,6 +58,26 @@ class LoadingProgressPopupController(activity: Activity) {
         val percent: Float = done.toFloat() / total * 100
         mPercentageTextView!!.text = String.format(Locale.getDefault(), "%.2f%%", percent)
       }
+    }
+  }
+
+  fun setLoadingProgressStatus(status: ExpoUpdatesAppLoader.AppLoaderStatus) {
+    if (Constants.isStandaloneApp()) {
+      return
+    }
+
+    val text = when (status) {
+      ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE -> {
+        "Checking for new release..."
+      }
+      ExpoUpdatesAppLoader.AppLoaderStatus.DOWNLOADING_NEW_UPDATE -> {
+        "New release available, downloading..."
+      }
+    }
+
+    show()
+    mWeakActivity.get()?.runOnUiThread {
+      mStatusTextView!!.text = text
     }
   }
 
