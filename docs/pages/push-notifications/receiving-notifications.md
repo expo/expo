@@ -76,6 +76,11 @@ export default class App extends React.Component {
 - `shouldPlaySound`
 - `shouldSetBadge`
 
+
+## Closed Notification Behavior Android
+
+**Important Note**: Due to certain battery optimisation settings from several android vendors, the operating system may prevent background tasks when the app is **closed**, preventing notifications being delivered.
+
 ## Notification Event Listeners
 
 Event listeners added using `addNotificationReceivedListener` and `addNotificationResponseReceivedListener` will receive an object when a notification is received or interacted with, respectively. See the [documentation](../../versions/latest/sdk/notifications/#notification) for information on these objects.
