@@ -350,7 +350,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showCachedExperienceAlert
 {
-  if (self.isStandalone) {
+  if (self.isStandalone || self.isHomeApp) {
     return;
   }
 
