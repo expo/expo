@@ -1,6 +1,6 @@
 ---
 title: AuthSession
-sourceCodeUrl: 'https://github.com/expo/expo/sdk-38/master/packages/expo-auth-session'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-auth-session'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
