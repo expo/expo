@@ -15,7 +15,7 @@ fi
 #   1. Upload JS files in \`_next/**\` folder
 #      > Uploads the new generated JS files, containing hashes to not-collide with previous deployment
 #   2. Upload new asset files in \`static/**\` folder
-#      > Contains large files and might take some/slow down overwrite of HTML files
+#      > Contains large files and might slow down overwrite of HTML files
 #   3. Overwrite all HTML and other files, not located in \`_next/**\` or \`static/**\` folder
 #      > Switches the website over to the new JS/asset files
 #   4. Clean up outdated files from previous deployments
