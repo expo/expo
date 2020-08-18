@@ -255,7 +255,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
           'useSharedPool'
         )} property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.`
       ),
-      chalk.bold.yellow(`See commit ${chalk.cyan('0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
+      chalk.bold.yellow(`See commit ${chalk.cyan('https://github.com/expo/expo/commit/0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
     ],
   },
   'react-native-safe-area-context': {
