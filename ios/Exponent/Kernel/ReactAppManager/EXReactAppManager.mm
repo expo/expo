@@ -18,7 +18,10 @@
 #import <EXSplashScreen/EXSplashScreenService.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTCxxBridgeDelegate.h>
+#import <React/JSCExecutorFactory.h>
 #import <React/RCTRootView.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 @interface EXVersionManager (Legacy)
 // TODO: remove after non-unimodules SDK versions are dropped
@@ -57,12 +60,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 @end
 
-@interface EXReactAppManager () <RCTBridgeDelegate>
+@interface EXReactAppManager () <RCTBridgeDelegate, RCTCxxBridgeDelegate>
 
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
 @property (nonatomic, strong) NSDictionary *initialProps;
 @property (nonatomic, strong) NSTimer *viewTestTimer;
+@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 
 @end
 
@@ -475,7 +479,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService preventSplashScreenAutoHideFor:(UIViewController *) _appRecord.viewController
                                       successCallback:^(BOOL hasEffect) {}
-                                      failureCallback:^(NSString * _Nonnull message) { UMLogWarn(message); }];
+                                      failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
   _viewTestTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
                                                     target:self
                                                   selector:@selector(_preSDK39CheckAppFinishedLoading:)
@@ -489,8 +493,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (id)_preSDK39AppLoadingManagerInstance
 {
   Class loadingManagerClass = [self versionedClassFromString:@"EXSplashScreen"];
-  for (Class class in [self.reactBridge moduleClasses]) {
-    if ([class isSubclassOfClass:loadingManagerClass]) {
+  for (Class klass in [self.reactBridge moduleClasses]) {
+    if ([klass isSubclassOfClass:loadingManagerClass]) {
       return [self.reactBridge moduleForClass:loadingManagerClass];
     }
   }
@@ -521,7 +525,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
       [splashScreenService hideSplashScreenFor:(UIViewController *) _appRecord.viewController
                                successCallback:^(BOOL hasEffect) {}
-                               failureCallback:^(NSString * _Nonnull message) { UMLogWarn(message); }];
+                               failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
       [self _appLoadingFinished];
     }
   }
@@ -714,6 +718,23 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
   NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
   return [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
+}
+
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+  __weak __typeof(self) weakSelf = self;
+  return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    __typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                             delegate:strongSelf.versionManager
+                                                                            jsInvoker:bridge.jsCallInvoker];
+      [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
+    }
+  });
 }
 
 @end

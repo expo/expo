@@ -24,7 +24,13 @@
 #import <React/RCTPackagerConnection.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-
+#import <React/RCTDataRequestHandler.h>
+#import <React/RCTFileRequestHandler.h>
+#import <React/RCTHTTPRequestHandler.h>
+#import <React/RCTNetworking.h>
+#import <React/RCTLocalAssetImageLoader.h>
+#import <React/RCTGIFImageDecoder.h>
+#import <React/RCTImageLoader.h>
 #import <React/RCTAsyncLocalStorage.h>
 
 #import <objc/message.h>
@@ -33,11 +39,17 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-// used for initializing scoped modules which don't tie in to any kernel service.
-#define EX_KERNEL_SERVICE_NONE @"EXKernelServiceNone"
+#import <React/RCTCxxBridgeDelegate.h>
+#import <React/CoreModulesPlugins.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
+#import <React/JSCExecutorFactory.h>
+#import <strings.h>
+
+RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 
 // this is needed because RCTPerfMonitor does not declare a public interface
 // anywhere that we can import.
@@ -47,35 +59,6 @@
 - (void)show;
 
 @end
-
-static NSMutableDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses;
-void EXRegisterScopedModule(Class, ...);
-void EXRegisterScopedModule(Class moduleClass, ...)
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    EXScopedModuleClasses = [NSMutableDictionary dictionary];
-  });
-  
-  NSString *kernelServiceClassName;
-  va_list argumentList;
-  NSMutableDictionary *unversionedKernelServiceClassNames = [[NSMutableDictionary alloc] init];
-  
-  va_start(argumentList, moduleClass);
-    while ((kernelServiceClassName = va_arg(argumentList, NSString*))) {
-      if ([kernelServiceClassName isEqualToString:@"nil"]) {
-        unversionedKernelServiceClassNames[kernelServiceClassName] = EX_KERNEL_SERVICE_NONE;
-      } else {
-        unversionedKernelServiceClassNames[kernelServiceClassName] = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
-      }
-    }
-  va_end(argumentList);
-  
-  NSString *moduleClassName = NSStringFromClass(moduleClass);
-  if (moduleClassName) {
-    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassNames;
-  }
-}
 
 @interface RCTBridgeHack <NSObject>
 
@@ -110,7 +93,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
  */
 - (instancetype)initWithParams:(NSDictionary *)params
                   fatalHandler:(void (^)(NSError *))fatalHandler
-                   logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
+                   logFunction:(RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
 {
   if (self = [super init]) {
@@ -286,11 +269,12 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 }
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
-                         logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
+                         logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
+  RCTEnableTurboModule(YES);
   RCTSetFatalHandler(fatalHandler);
-  RCTSetLogThreshold(threshold);
+  RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
 }
 
@@ -301,26 +285,16 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
-  BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && !manifest[@"developer"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
                                   @[
                                     [[EXAppState alloc] init],
-                                    [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:(!isOpeningHomeInProductionMode && isDeveloper)],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXStatusBarManager alloc] init],
                                     ]];
   
   // add scoped modules
   [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
-
-  id exceptionsManagerDelegate = params[@"exceptionsManagerDelegate"];
-  if (exceptionsManagerDelegate) {
-    RCTExceptionsManager *exceptionsManager = [[RCTExceptionsManager alloc] initWithDelegate:exceptionsManagerDelegate];
-    [extraModules addObject:exceptionsManager];
-  } else {
-    RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
-  }
   
   if (params[@"testEnvironment"]) {
     EXTestEnvironment testEnvironment = (EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
@@ -338,18 +312,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     [extraModules addObject:homeModule];
   }
 
-  if ([params[@"isStandardDevMenuAllowed"] boolValue] && isDeveloper) {
-    [extraModules addObject:[[RCTDevMenu alloc] init]];
-  } else {
-    // non-kernel, or non-development kernel, uses expo menu instead of RCTDevMenu
-    [extraModules addObject:[[EXDisabledDevMenu alloc] init]];
-  }
-  if (!isDeveloper) {
-    // user-facing (not debugging).
-    // additionally disable RCTRedBox
-    [extraModules addObject:[[EXDisabledRedBox alloc] init]];
-  }
-
   UMModuleRegistryProvider *moduleRegistryProvider = [[UMModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [EXScopedModuleRegistryDelegate class];
@@ -365,16 +327,13 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
 
-  id<UMFileSystemInterface> fileSystemModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
-  NSString *localStorageDirectory = [fileSystemModule.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
-  [extraModules addObject:[[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory]];
-
   return extraModules;
 }
 
 - (NSArray *)_newScopedModulesWithExperienceId: (NSString *)experienceId services:(NSDictionary *)services params:(NSDictionary *)params
 {
   NSMutableArray *result = [NSMutableArray array];
+  NSDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses = EXGetScopedModuleClasses();
   if (EXScopedModuleClasses) {
     [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSDictionary * _Nonnull kernelServiceClassNames, BOOL * _Nonnull stop) {
       NSMutableDictionary *moduleServices = [[NSMutableDictionary alloc] init];
@@ -400,6 +359,91 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     }];
   }
   return result;
+}
+
+- (Class)getModuleClassFromName:(const char *)name
+{
+  if (std::string(name) == "DevSettings") {
+    return EXDevSettings.class;
+  }
+  if (std::string(name) == "DevMenu") {
+    if (![_params[@"isStandardDevMenuAllowed"] boolValue] || ![_params[@"isDeveloper"] boolValue]) {
+      // non-kernel, or non-development kernel, uses expo menu instead of RCTDevMenu
+      return EXDisabledDevMenu.class;
+    }
+  }
+  if (std::string(name) == "RedBox") {
+    if (![_params[@"isDeveloper"] boolValue]) {
+      // user-facing (not debugging).
+      // additionally disable RCTRedBox
+      return EXDisabledRedBox.class;
+    }
+  }
+  return RCTCoreModulesClassProvider(name);
+}
+
+/**
+ Returns a pure C++ object wrapping an exported unimodule instance.
+ */
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return nullptr;
+}
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  // Standard
+  if (moduleClass == RCTImageLoader.class) {
+    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
+      return @[[RCTLocalAssetImageLoader new]];
+    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
+      return @[[RCTGIFImageDecoder new]];
+    }];
+  } else if (moduleClass == RCTNetworking.class) {
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *{
+      return @[
+        [RCTHTTPRequestHandler new],
+        [RCTDataRequestHandler new],
+        [RCTFileRequestHandler new],
+      ];
+    }];
+  }
+
+  // Expo-specific
+  if (moduleClass == EXDevSettings.class) {
+    BOOL isDevelopment = ![self _isOpeningHomeInProductionMode] && [_params[@"isDeveloper"] boolValue];
+    return [[moduleClass alloc] initWithExperienceId:[self _experienceId] isDevelopment:isDevelopment];
+  } else if (moduleClass == RCTExceptionsManagerCls()) {
+    id exceptionsManagerDelegate = _params[@"exceptionsManagerDelegate"];
+    if (exceptionsManagerDelegate) {
+      return [[moduleClass alloc] initWithDelegate:exceptionsManagerDelegate];
+    } else {
+      RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
+    }
+  } else if (moduleClass == RCTAsyncLocalStorageCls()) {
+    NSString *documentDirectory;
+    if (_params[@"fileSystemDirectories"]) {
+      documentDirectory = _params[@"fileSystemDirectories"][@"documentDirectory"];
+    } else {
+      NSArray<NSString *> *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+      documentDirectory = [documentPaths objectAtIndex:0];
+    }
+    NSString *localStorageDirectory = [documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
+    return [[moduleClass alloc] initWithStorageDirectory:localStorageDirectory];
+  }
+
+  return [moduleClass new];
+}
+
+- (NSString *)_experienceId
+{
+  return _params[@"manifest"][@"id"];
+}
+
+- (BOOL)_isOpeningHomeInProductionMode
+{
+  return _params[@"browserModuleClass"] && !_params[@"manifest"][@"developer"];
 }
 
 @end
