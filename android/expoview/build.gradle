@@ -243,7 +243,7 @@ dependencies {
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:20.1.2'
+  api 'com.google.firebase:firebase-messaging:20.2.4'
   api 'com.google.maps.android:android-maps-utils:0.5'
   api 'com.jakewharton:butterknife:10.2.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
