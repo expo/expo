@@ -32,8 +32,16 @@ public class ScopedNotificationsChannelUtils {
 
     String[] idFragments = scopedId.split(SEPARATOR);
     StringBuilder sb = new StringBuilder();
-    for (int i = 3; i < idFragments.length; i++) {
-      sb.append(idFragments[i]);
+    if (idFragments.length < 3) {
+      return scopedId;
+    } else if(idFragments.length == 3) {
+      // unlogged user
+      // The scopedId looks like: EXPO_CHANNEL/UNVERIFIED-192.168.83.49-sandbox/test-channel-id
+      sb.append(idFragments[2]);
+    } else {
+      for (int i = 3; i < idFragments.length; i++) {
+        sb.append(idFragments[i]);
+      }
     }
 
     return sb.toString();
@@ -59,8 +67,13 @@ public class ScopedNotificationsChannelUtils {
   }
 
   private static String getExperienceIdFromScopedId(@NonNull String scopedId) {
-    // Scoped id looks like this: `EXPOCHANNEL/@expo/sandbox/id`.
     String[] idFragments = scopedId.split(SEPARATOR);
+    if (idFragments.length == 3) {
+      // unlogged user
+      // Scoped id looks like: `EXPO_CHANNEL/UNVERIFIED-192.168.83.49-sandbox/test-channel-id`
+      return idFragments[1];
+    }
+    // Scoped id looks like this: `EXPOCHANNEL/@expo/sandbox/id`.
     return idFragments[1] + SEPARATOR + idFragments[2];
   }
 }
