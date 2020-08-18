@@ -245,7 +245,7 @@ public class UpdatesController {
       public void onRemoteManifestLoaded(Manifest manifest) { }
 
       @Override
-      public void onSuccess(Launcher launcher) {
+      public void onSuccess(Launcher launcher, boolean isUpToDate) {
         mLauncher = launcher;
         notifyController();
       }

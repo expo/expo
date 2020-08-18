@@ -6,9 +6,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
-
 import java.io.File;
 
 import androidx.annotation.Nullable;
@@ -42,7 +39,7 @@ public class LoaderTask {
      */
     boolean onCachedUpdateLoaded(UpdateEntity update);
     void onRemoteManifestLoaded(Manifest manifest);
-    void onSuccess(Launcher launcher);
+    void onSuccess(Launcher launcher, boolean isUpToDate);
     void onBackgroundUpdateFinished(BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception);
   }
 
@@ -61,6 +58,7 @@ public class LoaderTask {
   private boolean mIsReadyToLaunch = false;
   private boolean mTimeoutFinished = false;
   private boolean mHasLaunched = false;
+  private boolean mIsUpToDate = false;
   private HandlerThread mHandlerThread;
   private Launcher mLauncher;
 
@@ -175,11 +173,15 @@ public class LoaderTask {
     if (!mIsReadyToLaunch || mLauncher == null || mLauncher.getLaunchedUpdate() == null) {
       mCallback.onFailure(e != null ? e : new Exception("LoaderTask encountered an unexpected error and could not launch an update."));
     } else {
-      mCallback.onSuccess(mLauncher);
+      mCallback.onSuccess(mLauncher, mIsUpToDate);
     }
 
     if (!mTimeoutFinished) {
       stopTimer();
+    }
+
+    if (e != null) {
+      Log.e(TAG, "Unexpected error encountered while loading this app", e);
     }
   }
 
@@ -255,11 +257,16 @@ public class LoaderTask {
 
           @Override
           public boolean onManifestLoaded(Manifest manifest) {
-            mCallback.onRemoteManifestLoaded(manifest);
-            return mSelectionPolicy.shouldLoadNewUpdate(
-              manifest.getUpdateEntity(),
-              mLauncher == null ? null : mLauncher.getLaunchedUpdate()
-            );
+            if (mSelectionPolicy.shouldLoadNewUpdate(
+                  manifest.getUpdateEntity(),
+                  mLauncher == null ? null : mLauncher.getLaunchedUpdate())) {
+              mIsUpToDate = false;
+              mCallback.onRemoteManifestLoaded(manifest);
+              return true;
+            } else {
+              mIsUpToDate = true;
+              return false;
+            }
           }
 
           @Override
@@ -282,6 +289,7 @@ public class LoaderTask {
                 boolean hasLaunched = mHasLaunched;
                 if (!hasLaunched) {
                   mLauncher = newLauncher;
+                  mIsUpToDate = true;
                 }
 
                 remoteUpdateCallback.onSuccess();

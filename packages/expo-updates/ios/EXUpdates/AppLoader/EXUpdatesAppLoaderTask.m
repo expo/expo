@@ -28,6 +28,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 @property (nonatomic, assign) BOOL isReadyToLaunch;
 @property (nonatomic, assign) BOOL isTimerFinished;
 @property (nonatomic, assign) BOOL hasLaunched;
+@property (nonatomic, assign) BOOL isUpToDate;
 @property (nonatomic, strong) dispatch_queue_t loaderTaskQueue;
 
 
@@ -46,6 +47,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     _database = database;
     _directory = directory;
     _selectionPolicy = selectionPolicy;
+    _isUpToDate = NO;
     _delegateQueue = delegateQueue;
     _loaderTaskQueue = dispatch_queue_create("expo.loader.LoaderTaskQueue", DISPATCH_QUEUE_SERIAL);
   }
@@ -138,7 +140,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
       if (self->_isReadyToLaunch && (self->_launcher.launchAssetUrl || self->_launcher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
-        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher];
+        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher isUpToDate:self->_isUpToDate];
       } else {
         [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
           NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask encountered an unexpected error and could not launch an update."
@@ -219,13 +221,18 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 {
   _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    if (self->_delegate) {
-      dispatch_async(self->_delegateQueue, ^{
-        [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
-      });
+    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate]) {
+      self->_isUpToDate = NO;
+      if (self->_delegate) {
+        dispatch_async(self->_delegateQueue, ^{
+          [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
+        });
+      }
+      return YES;
+    } else {
+      self->_isUpToDate = YES;
+      return NO;
     }
-
-    return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate];
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {
@@ -251,6 +258,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
             if (!self->_hasLaunched) {
               self->_launcher = self->_candidateLauncher;
               self->_isReadyToLaunch = YES;
+              self->_isUpToDate = YES;
               [self _finishWithError:nil];
             }
           } else {

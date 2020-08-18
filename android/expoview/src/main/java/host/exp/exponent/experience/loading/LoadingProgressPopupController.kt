@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
+import host.exp.exponent.Constants
+import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.expoview.R
 import java.lang.ref.WeakReference
 import java.util.*
@@ -24,13 +26,12 @@ class LoadingProgressPopupController(activity: Activity) {
   private var mContainer: ViewGroup? = null
 
   fun show() {
-    if (mPopupWindow != null && mPopupWindow!!.isShowing) {
-      // already showing
-      return
-    }
-
     mWeakActivity.get()?.let { activity ->
       activity.runOnUiThread {
+        if (mPopupWindow != null) {
+          // already showing
+          return@runOnUiThread
+        }
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         @SuppressLint("InflateParams")
         mContainer = (inflater.inflate(R.layout.loading_progress_popup, null) as ViewGroup).also {
@@ -41,7 +42,9 @@ class LoadingProgressPopupController(activity: Activity) {
         }
         mPopupWindow = PopupWindow(mContainer, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also {
           it.isTouchable = false
-          it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+          activity.window.decorView.post {
+            it.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
+          }
         }
       }
     }
@@ -55,6 +58,26 @@ class LoadingProgressPopupController(activity: Activity) {
         val percent: Float = done.toFloat() / total * 100
         mPercentageTextView!!.text = String.format(Locale.getDefault(), "%.2f%%", percent)
       }
+    }
+  }
+
+  fun setLoadingProgressStatus(status: ExpoUpdatesAppLoader.AppLoaderStatus) {
+    if (Constants.isStandaloneApp()) {
+      return
+    }
+
+    val text = when (status) {
+      ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE -> {
+        "Checking for new release..."
+      }
+      ExpoUpdatesAppLoader.AppLoaderStatus.DOWNLOADING_NEW_UPDATE -> {
+        "New release available, downloading..."
+      }
+    }
+
+    show()
+    mWeakActivity.get()?.runOnUiThread {
+      mStatusTextView!!.text = text
     }
   }
 
