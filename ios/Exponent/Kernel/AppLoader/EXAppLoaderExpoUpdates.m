@@ -156,13 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
   if ([[self class] areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
-    if (_shouldUseCacheOnly) {
-      _shouldUseCacheOnly = NO;
-      dispatch_async(_appLoaderQueue, ^{
-        [self _startLoaderTask];
-      });
-      return NO;
-    }
+    return NO;
   }
   return YES;
 }

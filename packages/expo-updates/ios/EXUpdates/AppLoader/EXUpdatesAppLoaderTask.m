@@ -84,7 +84,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     return;
   }
 
-  BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdateWithConfig:_config];
+  __block BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdateWithConfig:_config];
   NSNumber *launchWaitMs = _config.launchWaitMs;
   if ([launchWaitMs isEqualToNumber:@(0)] || !shouldCheckForUpdate) {
     self->_isTimerFinished = YES;
@@ -104,10 +104,14 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       } else {
         if (self->_delegate &&
             ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
-          return;
+          // ignore timer and other settings and force launch a remote update.
+          self->_launcher = nil;
+          [self _stopTimer];
+          shouldCheckForUpdate = YES;
+        } else {
+          self->_isReadyToLaunch = YES;
+          [self _maybeFinish];
         }
-        self->_isReadyToLaunch = YES;
-        [self _maybeFinish];
       }
 
       if (shouldCheckForUpdate) {
@@ -143,10 +147,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     });
   }
 
-  if (_timer) {
-    [_timer invalidate];
-  }
-  _isTimerFinished = YES;
+  [self _stopTimer];
 }
 
 - (void)_maybeFinish
@@ -164,6 +165,15 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     self->_isTimerFinished = YES;
     [self _maybeFinish];
   });
+}
+
+- (void)_stopTimer
+{
+  if (_timer) {
+    [_timer invalidate];
+    _timer = nil;
+  }
+  _isTimerFinished = YES;
 }
 
 - (void)_runReaper
@@ -230,10 +240,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
   // Otherwise, we've already launched. Send an event to the notify JS of the new update.
 
   dispatch_async(_loaderTaskQueue, ^{
-    if (self->_timer) {
-      [self->_timer invalidate];
-    }
-    self->_isTimerFinished = YES;
+    [self _stopTimer];
 
     if (update) {
       if (!self->_hasLaunched) {
