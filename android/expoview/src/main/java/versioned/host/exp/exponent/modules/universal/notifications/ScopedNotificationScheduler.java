@@ -19,6 +19,7 @@ import expo.modules.notifications.notifications.service.NotificationSchedulingHe
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
+import host.exp.exponent.utils.ScopedContext;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
   private final ExperienceId mExperienceId;
@@ -28,6 +29,14 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
     super(context);
     mExperienceId = experienceId;
     mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
+  }
+
+  @Override
+  protected Context getSchedulingContext() {
+    if (getContext() instanceof ScopedContext) {
+      return ((ScopedContext) getContext()).getBaseContext();
+    }
+    return getContext();
   }
 
   @Override
@@ -49,7 +58,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
 
   @Override
   public void cancelScheduledNotificationAsync(String identifier, final Promise promise) {
-    NotificationSchedulingHelper.enqueueFetch(getContext(), identifier, new ResultReceiver(HANDLER) {
+    NotificationSchedulingHelper.enqueueFetch(getSchedulingContext(), identifier, new ResultReceiver(HANDLER) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -70,7 +79,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
 
   @Override
   public void cancelAllScheduledNotificationsAsync(Promise promise) {
-    NotificationSchedulingHelper.enqueueFetchAll(getContext(), new ResultReceiver(HANDLER) {
+    NotificationSchedulingHelper.enqueueFetchAll(getSchedulingContext(), new ResultReceiver(HANDLER) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -106,7 +115,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
   }
 
   private void cancelSelectedNotificationsAsync(String[] identifiers, final Promise promise) {
-    NotificationSchedulingHelper.enqueueRemoveSelected(getContext(), identifiers, new ResultReceiver(HANDLER) {
+    NotificationSchedulingHelper.enqueueRemoveSelected(getSchedulingContext(), identifiers, new ResultReceiver(HANDLER) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);

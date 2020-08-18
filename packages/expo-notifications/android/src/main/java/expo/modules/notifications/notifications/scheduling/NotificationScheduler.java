@@ -41,9 +41,13 @@ public class NotificationScheduler extends ExportedModule {
     return EXPORTED_NAME;
   }
 
+  protected Context getSchedulingContext() {
+    return getContext();
+  }
+
   @ExpoMethod
   public void getAllScheduledNotificationsAsync(final Promise promise) {
-    NotificationSchedulingHelper.enqueueFetchAll(getContext(), new ResultReceiver(HANDLER) {
+    NotificationSchedulingHelper.enqueueFetchAll(getSchedulingContext(), new ResultReceiver(HANDLER) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -67,7 +71,7 @@ public class NotificationScheduler extends ExportedModule {
     try {
       NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(notificationContentMap).build();
       NotificationRequest request = createNotificationRequest(identifier, content, triggerFromParams(triggerParams));
-      NotificationSchedulingHelper.enqueueSchedule(getContext(), request, new ResultReceiver(HANDLER) {
+      NotificationSchedulingHelper.enqueueSchedule(getSchedulingContext(), request, new ResultReceiver(HANDLER) {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
           super.onReceiveResult(resultCode, resultData);
@@ -92,7 +96,7 @@ public class NotificationScheduler extends ExportedModule {
 
   @ExpoMethod
   public void cancelScheduledNotificationAsync(String identifier, final Promise promise) {
-    NotificationSchedulingHelper.enqueueRemove(getContext(), identifier, new ResultReceiver(HANDLER) {
+    NotificationSchedulingHelper.enqueueRemove(getSchedulingContext(), identifier, new ResultReceiver(HANDLER) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -108,7 +112,7 @@ public class NotificationScheduler extends ExportedModule {
 
   @ExpoMethod
   public void cancelAllScheduledNotificationsAsync(final Promise promise) {
-    NotificationSchedulingHelper.enqueueRemoveAll(getContext(), new ResultReceiver(HANDLER) {
+    NotificationSchedulingHelper.enqueueRemoveAll(getSchedulingContext(), new ResultReceiver(HANDLER) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
