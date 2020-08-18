@@ -42,7 +42,7 @@ Next, this is what happens when EAS Builds picks up your request:
 
 6. Upload the build artifact to AWS S3.
 
-   The artifact path can be configured in `eas.json` at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/bundle/release/app-release.aab`.
+   The artifact path can be configured in `eas.json` at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
 
 ## Project Auto-Configuration
 
