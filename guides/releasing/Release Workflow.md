@@ -8,7 +8,8 @@
     - [0.5. Tag React Native fork](#05-tag-react-native-fork)
     - [0.6. Generate new mocks](#06-generate-new-mocks)
     - [0.7. Publishing next packages](#07-publishing-next-packages)
-    - [0.8. Generate new SDK docs](#08-generate-new-sdk-docs)
+    - [0.8. Merge and cutoff changelogs](#08-merge-and-cutoff-changelogs)
+    - [0.9. Generate new SDK docs](#09-generate-new-sdk-docs)
   - [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
     - [1.1. Cutting off release branch](#11-cutting-off-release-branch)
     - [1.2. Update React Native](#12-update-react-native)
@@ -133,7 +134,16 @@
 
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
 
-## 0.8. Generate new SDK docs
+## 0.8. Merge and cutoff changelogs
+
+**Why:** We need to concatenate all new entries from packages' CHANGELOGs and add them to our main CHANGELOG file.
+
+**How:**
+
+- Run `et merge-changelogs --cut-off`.
+- Review the entries, commit and push changes to master.
+
+## 0.9. Generate new SDK docs
 
 **Why:** We store separate versions of docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on master between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
 
@@ -141,7 +151,6 @@
 
 - Do this step immediately before cutting the release branch.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
-- Update the `sourceCodeUrl` frontmatter in the SDK docs to point to the new SDK version (find and replace in editor).
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to master.
 
