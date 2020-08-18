@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
-- On iOS the name of the LaunchScreen file is read from the project configuration and fallbacks to default `SplashScreen` if not found. ([#9622](https://github.com/expo/expo/pull/9622) by [@bbarthec](https://github.com/bbarthec))
-
 ### 🐛 Bug fixes
+
+## 0.6.0 — 2020-08-18
+
+### 🎉 New features
+
+- On iOS the name of the LaunchScreen file is read from the project configuration and fallbacks to default `SplashScreen` if not found. ([#9622](https://github.com/expo/expo/pull/9622) by [@bbarthec](https://github.com/bbarthec))
 
 ## 0.5.0 — 2020-07-30
 

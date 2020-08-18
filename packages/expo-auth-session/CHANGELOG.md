@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 1.4.2 — 2020-08-18
+
+_This version does not introduce any user-facing changes._
+
 ## 1.4.1 — 2020-06-23
 
 ### 🎉 New features

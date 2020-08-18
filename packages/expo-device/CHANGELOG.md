@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 2.3.0 — 2020-08-18
+
+### 🐛 Bug fixes
+
 - Remove "request install packages" permission to make it opt-in. ([#8969](https://github.com/expo/expo/pull/8969) by [@bycedric](https://github.com/bycedric))
 
 ## 2.2.1 — 2020-05-29

@@ -1,6 +1,6 @@
 {
   "name": "EXInAppPurchases",
-  "version": "8.2.1",
+  "version": "9.0.0",
   "summary": "Expo unimodule for accepting in-app purchases",
   "description": "Expo unimodule for accepting in-app purchases",
   "license": "MIT",

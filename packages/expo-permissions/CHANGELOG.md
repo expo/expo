@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- Fixed motion permission bug on web. ([#9670](https://github.com/expo/expo/pull/9670) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 9.3.0 — 2020-08-18
+
+### 🛠 Breaking changes
+
+- Fixed motion permission bug on web. ([#9670](https://github.com/expo/expo/pull/9670) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.2.0 — 2020-08-11
 
