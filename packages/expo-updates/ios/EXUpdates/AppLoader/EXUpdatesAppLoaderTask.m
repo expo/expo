@@ -171,6 +171,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 {
   if (_timer) {
     [_timer invalidate];
+    _timer = nil;
   }
   _isTimerFinished = YES;
 }
