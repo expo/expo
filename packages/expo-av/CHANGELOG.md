@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.6.0 — 2020-08-18
+
+_This version does not introduce any user-facing changes._
+
 ## 8.5.0 — 2020-08-11
 
 ### 🐛 Bug fixes

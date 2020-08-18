@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.1.0 — 2020-08-18
+
+### 🐛 Bug fixes
+
 - Fix bug preventing GLView from rendering in SSR environments. ([#9691](https://github.com/expo/expo/pull/9691) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.0.0 — 2020-08-11

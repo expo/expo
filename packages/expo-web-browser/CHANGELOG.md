@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.5.0 — 2020-08-18
+
+### 🐛 Bug fixes
+
 - Removed unncecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
 - Fixed `openAuthSessionAsync` crashing when cancelled on iOS. ([#9722](https://github.com/expo/expo/pull/9722) by [@barthap](https://github.com/barthap))
 

@@ -86,10 +86,10 @@
     "@react-native-community/segmented-control": "2.1.1",
     "@react-native-community/slider": "3.0.3",
     "@react-native-community/viewpager": "4.1.6",
-    "expo": "~38.0.0",
+    "expo": "~39.0.0",
     "expo-dev-menu": "0.1.0",
     "expo-image": "~1.0.0-alpha.0",
-    "expo-notifications": "~0.6.0",
+    "expo-notifications": "~0.7.0",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.13.1",
@@ -102,7 +102,7 @@
     "react-native-screens": "~2.10.1",
     "react-native-shared-element": "0.7.0",
     "react-native-svg": "12.1.0",
-    "react-native-unimodules": "~0.10.1",
+    "react-native-unimodules": "~0.11.0",
     "react-native-view-shot": "3.1.2",
     "react-native-webview": "10.7.0",
     "test-suite": "*"
@@ -112,12 +112,12 @@
     "@types/react": "~16.9.41",
     "@types/react-native": "~0.63.2",
     "babel-plugin-module-resolver": "^4.0.0",
-    "babel-preset-expo": "~8.2.3",
+    "babel-preset-expo": "~8.3.0",
     "detox": "^17.3.1",
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",
-    "jest-expo": "~38.0.0",
-    "jest-expo-puppeteer": "^1.0.2",
+    "jest-expo": "~39.0.0",
+    "jest-expo-puppeteer": "^1.0.3",
     "puppeteer": "^2.1.1"
   }
 }
