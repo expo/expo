@@ -260,8 +260,9 @@ async function processMkFileAsync(filename: string, abiVersion: string) {
 }
 
 async function processJavaCodeAsync(libName: string, abiVersion: string) {
+  const abiName = `abi${abiVersion}`;
   return spawnAsync(
-    `find ${versionedReactAndroidJavaPath} -iname '*.java' -type f -print0 | ` +
+    `find ${versionedReactAndroidJavaPath} ${versionedExpoviewAbiPath(abiName)} -iname '*.java' -type f -print0 | ` +
       `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
     [],
     { shell: true }
@@ -298,11 +299,14 @@ async function renameJniLibsAsync(version: string) {
   }
 
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
-  let [reactCommonMkFiles, reactAndroidMkFiles] = await Promise.all([
+  let [reactCommonMkFiles, 
+    reactAndroidMkFiles,
+    reanimatedMKFiles] = await Promise.all([
     glob(path.join(versionedReactCommonPath, '**/*.mk')),
     glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
+    glob(path.join(versionedAbiPath, '**/*.mk')),
   ]);
-  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles]; 
+  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles, ...reanimatedMKFiles]; 
   await Promise.all(filenames.map((filename) => processMkFileAsync(filename, abiVersion)));
 
   // Rename references to JNI libs in Java code
@@ -317,14 +321,14 @@ async function renameJniLibsAsync(version: string) {
 
   console.log('\nThese are the JNI lib names we modified:');
   await spawnAsync(
-    `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "_abi${abiVersion}"`,
+    `find ${versionedReactAndroidJavaPath} ${versionedAbiPath} -name "*.java" | xargs grep -i "_abi${abiVersion}"`,
     [],
     { shell: true, stdio: 'inherit' }
   );
 
   console.log('\nAnd here are all instances of loadLibrary:');
   await spawnAsync(
-    `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "loadLibrary"`,
+    `find ${versionedReactAndroidJavaPath} ${versionedAbiPath} -name "*.java" | xargs grep -i "loadLibrary"`,
     [],
     { shell: true, stdio: 'inherit' }
   );
@@ -507,9 +511,9 @@ async function prepareReanimatedAsync(version: string): Promise<void> {
   const versionedExpoviewPath = versionedExpoviewAbiPath(abiName);
 
   const buildReanimatedSO = async () => {
-    await spawnAsync('./gradle :packageNdkLibs', [], {
+    await spawnAsync(`./gradlew :expoview-${abiName}:packageNdkLibs`, [], {
       shell: true,
-      cwd: versionedExpoviewPath,
+      cwd: path.join(versionedExpoviewPath, '../../'),
     });
   }
 
@@ -547,20 +551,20 @@ export async function addVersionAsync(version: string) {
   
   console.log(' ✅  2/9: Finished\n\n');
 
-  console.log(' 🛠   3/9: Building versioned ReactAndroid AAR...');
+  console.log(' 🛠   3/9: Renaming JNI libs in android/versioned-react-native and Reanimated...');
+  await renameJniLibsAsync(version);
+  console.log(' ✅  3/9: Finished\n\n');
+
+  console.log(' 🛠   4/9: prepare versioned Reanimated...');
+  await prepareReanimatedAsync(version);
+  console.log(' ✅  4/9: Finished\n\n');
+
+  console.log(' 🛠   5/9: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',
   });
-  console.log(' ✅  3/9: Finished\n\n');
-
-  console.log(' 🛠   4/9: Renaming JNI libs in android/versioned-react-native and Reanimated...');
-  await renameJniLibsAsync(version);
-  console.log(' ✅  4/9: Finished\n\n');
-
-  console.log(' 🛠   5/9: prepare versioned Reanimated...');
-  await prepareReanimatedAsync(version);
   console.log(' ✅  5/9: Finished\n\n');
 
   console.log(' 🛠   6/9: Creating versioned unimodule packages...');
