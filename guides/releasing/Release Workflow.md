@@ -118,7 +118,7 @@
 
 **How:**
 
-- Please follow another guide: [Generating Jest Mocks](Generating%20Jest%20Mocks.md).
+- Please follow another guide: [Generating Jest Mocks](../Generating%20Jest%20Mocks.md).
 
 ## 0.7. Publishing `next` packages
 
