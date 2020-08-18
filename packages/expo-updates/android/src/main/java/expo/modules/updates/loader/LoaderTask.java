@@ -34,13 +34,11 @@ public class LoaderTask {
   public interface LoaderTaskCallback {
     void onFailure(Exception e);
     /**
-     * This method gives the calling class an opportunity to abort the LoaderTask early if, for
-     * example, we need to restart with a different configuration after getting the initial
-     * manifest.
-     *
-     * Return value should indicate whether to continue loading this app. `true` will continue
-     * loading with the provided configuration, `false` will abort the task and no other callback
-     * methods will be fired.
+     * This method gives the calling class a backdoor option to ignore the cached update and force
+     * a remote load if it decides the cached update is not runnable. Returning false from this
+     * callback will force a remote load, overriding the timeout and configuration settings for
+     * whether or not to check for a remote update. Returning true from this callback will make
+     * LoaderTask proceed as usual.
      */
     boolean onCachedUpdateLoaded(UpdateEntity update);
     void onRemoteManifestLoaded(Manifest manifest);
@@ -142,18 +140,21 @@ public class LoaderTask {
       public void onSuccess() {
         if (mLauncher.getLaunchedUpdate() != null &&
           !mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate())) {
-          return;
-        }
-
-        synchronized (LoaderTask.this) {
-          mIsReadyToLaunch = true;
-          maybeFinish();
-        }
-
-        if (shouldCheckForUpdate) {
+          // ignore timer and other settings and force launch a remote update
+          stopTimer();
+          mLauncher = null;
           launchRemoteUpdate();
         } else {
-          runReaper();
+          synchronized (LoaderTask.this) {
+            mIsReadyToLaunch = true;
+            maybeFinish();
+          }
+
+          if (shouldCheckForUpdate) {
+            launchRemoteUpdate();
+          } else {
+            runReaper();
+          }
         }
       }
     });
@@ -171,7 +172,7 @@ public class LoaderTask {
     }
     mHasLaunched = true;
 
-    if (!mIsReadyToLaunch || mLauncher == null) {
+    if (!mIsReadyToLaunch || mLauncher == null || mLauncher.getLaunchedUpdate() == null) {
       mCallback.onFailure(e != null ? e : new Exception("LoaderTask encountered an unexpected error and could not launch an update."));
     } else {
       mCallback.onSuccess(mLauncher);
@@ -257,7 +258,7 @@ public class LoaderTask {
             mCallback.onRemoteManifestLoaded(manifest);
             return mSelectionPolicy.shouldLoadNewUpdate(
               manifest.getUpdateEntity(),
-              mLauncher.getLaunchedUpdate()
+              mLauncher == null ? null : mLauncher.getLaunchedUpdate()
             );
           }
 
@@ -301,9 +302,11 @@ public class LoaderTask {
 
   private void runReaper() {
     AsyncTask.execute(() -> {
-      UpdatesDatabase database = mDatabaseHolder.getDatabase();
-      Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mLauncher.getLaunchedUpdate(), mSelectionPolicy);
-      mDatabaseHolder.releaseDatabase();
+      if (mLauncher.getLaunchedUpdate() != null) {
+        UpdatesDatabase database = mDatabaseHolder.getDatabase();
+        Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mLauncher.getLaunchedUpdate(), mSelectionPolicy);
+        mDatabaseHolder.releaseDatabase();
+      }
     });
   }
 }

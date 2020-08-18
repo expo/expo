@@ -19,13 +19,11 @@ typedef NS_ENUM(NSInteger, EXUpdatesBackgroundUpdateStatus) {
 @protocol EXUpdatesAppLoaderTaskDelegate <NSObject>
 
 /**
- * This method gives the calling class an opportunity to abort the task early if, for
- * example, we need to restart with a different configuration after getting the initial
- * manifest.
- *
- * Return value should indicate whether to continue loading this app. `YES` will continue
- * loading with the provided configuration, `NO` will abort the task and no other delegate
- * methods will be fired.
+ * This method gives the delegate a backdoor option to ignore the cached update and force
+ * a remote load if it decides the cached update is not runnable. Returning NO from this
+ * callback will force a remote load, overriding the timeout and configuration settings for
+ * whether or not to check for a remote update. Returning YES from this callback will make
+ * EXUpdatesAppLoaderTask proceed as usual.
  */
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update;
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update;
