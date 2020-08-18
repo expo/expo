@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelGroupManager;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.notifications.ScopedNotificationsIdUtils;
 
 public class ScopedNotificationsChannelManager extends AndroidXNotificationsChannelManager {
 
@@ -29,7 +30,7 @@ public class ScopedNotificationsChannelManager extends AndroidXNotificationsChan
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannel getNotificationChannel(@NonNull String channelId) {
-    NotificationChannel scopedChannel = super.getNotificationChannel(ScopedNotificationsChannelUtils.getScopedChannelId(mExperienceId, channelId));
+    NotificationChannel scopedChannel = super.getNotificationChannel(ScopedNotificationsIdUtils.getScopedChannelId(mExperienceId, channelId));
     if (scopedChannel != null) {
       return scopedChannel;
     }
@@ -45,7 +46,7 @@ public class ScopedNotificationsChannelManager extends AndroidXNotificationsChan
     ArrayList<NotificationChannel> result = new ArrayList<>();
     List<NotificationChannel> notificationChannels = super.getNotificationChannels();
     for (NotificationChannel channel : notificationChannels) {
-      if (ScopedNotificationsChannelUtils.checkIfChannelBelongsToExperience(mExperienceId, channel)) {
+      if (ScopedNotificationsIdUtils.checkIfChannelBelongsToExperience(mExperienceId, channel)) {
         result.add(channel);
       }
     }
@@ -65,6 +66,6 @@ public class ScopedNotificationsChannelManager extends AndroidXNotificationsChan
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannel createNotificationChannel(@NonNull String channelId, CharSequence name, int importance, ReadableArguments channelOptions) {
-    return super.createNotificationChannel(ScopedNotificationsChannelUtils.getScopedChannelId(mExperienceId, channelId), name, importance, channelOptions);
+    return super.createNotificationChannel(ScopedNotificationsIdUtils.getScopedChannelId(mExperienceId, channelId), name, importance, channelOptions);
   }
 }
