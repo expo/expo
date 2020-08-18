@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.notifications.ScopedNotificationsIdUtils;
 
 public class ScopedNotificationsGroupManager extends AndroidXNotificationsChannelGroupManager {
   private ExperienceId mExperienceId;
@@ -27,7 +28,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannelGroup getNotificationChannelGroup(@NonNull String channelGroupId) {
-    NotificationChannelGroup scopedGroup = super.getNotificationChannelGroup(ScopedNotificationsChannelUtils.getScopedGroupId(mExperienceId, channelGroupId));
+    NotificationChannelGroup scopedGroup = super.getNotificationChannelGroup(ScopedNotificationsIdUtils.getScopedGroupId(mExperienceId, channelGroupId));
     if (scopedGroup != null) {
       return scopedGroup;
     }
@@ -43,7 +44,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
     ArrayList<NotificationChannelGroup> result = new ArrayList<>();
     List<NotificationChannelGroup> channelGroups = super.getNotificationChannelGroups();
     for (NotificationChannelGroup group : channelGroups) {
-      if (ScopedNotificationsChannelUtils.checkIfGroupBelongsToExperience(mExperienceId, group)) {
+      if (ScopedNotificationsIdUtils.checkIfGroupBelongsToExperience(mExperienceId, group)) {
         result.add(group);
       }
     }
@@ -54,7 +55,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannelGroup createNotificationChannelGroup(@NonNull String groupId, @NonNull CharSequence name, ReadableArguments groupOptions) {
-    return super.createNotificationChannelGroup(ScopedNotificationsChannelUtils.getScopedGroupId(mExperienceId, groupId), name, groupOptions);
+    return super.createNotificationChannelGroup(ScopedNotificationsIdUtils.getScopedGroupId(mExperienceId, groupId), name, groupOptions);
   }
 
   @Override
