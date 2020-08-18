@@ -34,9 +34,14 @@ public class FragmentAdapter extends FragmentStateAdapter {
         return childrenViewIDs.get(position);
     }
 
+    @Override
+    public boolean containsItem(long itemId) {
+        return childrenViewIDs.contains((int) itemId);
+    }
+
     public void addFragment(View child, int index) {
-        childrenViewIDs.add(child.getId());
-        notifyItemChanged(index);
+        childrenViewIDs.add(index, child.getId());
+        notifyItemInserted(index);
     }
 
     public void removeFragment(View child) {
