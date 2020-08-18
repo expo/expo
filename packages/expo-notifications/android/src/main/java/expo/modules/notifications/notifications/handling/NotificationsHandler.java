@@ -1,6 +1,8 @@
 package expo.modules.notifications.notifications.handling;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -41,6 +43,16 @@ public class NotificationsHandler extends ExportedModule implements Notification
   private NotificationsHelper mNotificationsHelper;
   private ModuleRegistry mModuleRegistry;
 
+  /**
+   * {@link HandlerThread} which is the host to the notifications handler.
+   */
+  private HandlerThread mNotificationsHandlerThread = null;
+
+  /**
+   * {@link Handler} on which lifecycle events are executed.
+   */
+  private Handler mHandler = null;
+
   private Map<String, SingleNotificationHandlerTask> mTasksMap = new HashMap<>();
 
   public NotificationsHandler(Context context) {
@@ -61,6 +73,10 @@ public class NotificationsHandler extends ExportedModule implements Notification
     // Deregistration happens in onDestroy callback.
     mNotificationManager = moduleRegistry.getSingletonModule("NotificationManager", NotificationManager.class);
     mNotificationManager.addListener(this);
+
+    mNotificationsHandlerThread = new HandlerThread("NotificationsHandlerThread - " + this.getClass().toString());
+    mNotificationsHandlerThread.start();
+    mHandler = new Handler(mNotificationsHandlerThread.getLooper());
   }
 
   @Override
@@ -70,6 +86,9 @@ public class NotificationsHandler extends ExportedModule implements Notification
     for (SingleNotificationHandlerTask task : tasks) {
       task.stop();
     }
+
+    // We don't have to use `quitSafely` here, cause all tasks were stopped
+    mNotificationsHandlerThread.quit();
   }
 
   /**
@@ -115,7 +134,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   @Override
   public void onNotificationReceived(Notification notification) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, notification, mNotificationsHelper, this);
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(mHandler, mModuleRegistry, notification, mNotificationsHelper, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
