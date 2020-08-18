@@ -91,6 +91,7 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
   }
 
+  // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
   tasks.withType(JavaCompile) {
     compileTask ->
       compileTask.dependsOn(packageNdkLibs)
@@ -100,6 +101,7 @@ android {
     extractHeaders
     extractJNI
   }
+  // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
   buildTypes {
     release {
@@ -294,6 +296,9 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 }
 
+
+// WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
+
 // reanimated
 
 import java.nio.file.Paths
@@ -304,6 +309,16 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 def reactProperties = new Properties()
 def reactNative = new File("$projectDir/../../react-native-lab/react-native")
+
+def isVersioned = true;
+
+// WHEN_VERSIONING_REMOVE_FROM_HERE
+isVersioned = false;
+// WHEN_VERSIONING_REMOVE_TO_HERE
+
+if (isVersioned) {
+  reactNative = new File("$projectDir/../../versioned-react-native")
+}
 
 file("$reactNative/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
@@ -663,8 +678,9 @@ task cleanNdkLibs(type: Exec) {
 
 task packageNdkLibs(dependsOn: buildReanimated, type: Copy) {
   from("$buildDir/reanimated-ndk/all")
-  include("**/libreanimated.so")
+  include("**/lib*reanimated.so")
   into("$projectDir/src/main/JNILibs")
 }
 
+// WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 

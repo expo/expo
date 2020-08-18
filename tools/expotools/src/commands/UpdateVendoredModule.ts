@@ -98,7 +98,7 @@ const ReanimatedModifier: ModuleModifier = async function (moduleConfig: Vendore
         ncp(path.join(androidMainPathReanimated, dir),
             path.join(androidMainPathExpoview, dir),
             { dereference: true },
-            () => { res();  });
+            () => { res(); });
       });
     }
   }

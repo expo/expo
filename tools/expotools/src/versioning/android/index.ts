@@ -277,13 +277,19 @@ async function updateVersionedReactNativeAsync() {
 
 async function renameJniLibsAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
+  const abiPrefix = `abi${abiVersion}`
+  const versionedAbiPath = path.join(
+    Directories.getAndroidDir(),
+    'versioned-abis', 
+    `expoview-${abiPrefix}`,
+  );
 
   // Update JNI methods
   const packagesToRename = await getJavaPackagesToRename();
   for (const javaPackage of packagesToRename) {
     const pathForPackage = javaPackage.replace(/\./g, '\\/');
     await spawnAsync(
-      `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} -type f ` +
+      `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} ${versionedAbiPath} -type f ` +
         `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
         `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
       [],
@@ -495,43 +501,81 @@ async function cleanUpAsync(version: string) {
   );
 }
 
+async function prepareReanimatedAsync(version: string): Promise<void> {
+  const abiVersion = version.replace(/\./g, '_');
+  const abiName = `abi${abiVersion}`;
+  const versionedExpoviewPath = versionedExpoviewAbiPath(abiName);
+
+  const buildReanimatedSO = async () => {
+    await spawnAsync('./gradle :packageNdkLibs', [], {
+      shell: true,
+      cwd: versionedExpoviewPath,
+    });
+  }
+
+  const removeLeftoverDirectories = async () => {
+    const mainPath = path.join(versionedExpoviewPath, 'src', 'main');
+    const toRemove = ['Common', 'JNI', 'cpp'];
+    for (let dir of toRemove) {
+      await fs.remove(path.join(mainPath, dir));
+    }    
+  }
+
+  const removeLeftoversFromGradle = async () => {
+    await spawnAsync('./android-remove-reanimated-code-from-gradle.sh', [version], {
+      shell: true,
+      cwd: SCRIPT_DIR,
+      stdio: 'inherit',
+    });
+  }
+
+  await buildReanimatedSO();
+  await removeLeftoverDirectories();
+  await removeLeftoversFromGradle();
+}
+
 export async function addVersionAsync(version: string) {
-  console.log(' 🛠   1/8: Updating android/versioned-react-native...');
+  console.log(' 🛠   1/9: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync();
-  console.log(' ✅  1/8: Finished\n\n');
+  console.log(' ✅  1/9: Finished\n\n');
 
-  console.log(' 🛠   2/8: Renaming JNI libs in android/versioned-react-native...');
-  await renameJniLibsAsync(version);
-  console.log(' ✅  2/8: Finished\n\n');
+  console.log(' 🛠   2/9: Creating versioned expoview package...');
+  await spawnAsync('./android-copy-expoview.sh', [version], {
+    shell: true,
+    cwd: SCRIPT_DIR,
+  });
+  
+  console.log(' ✅  2/9: Finished\n\n');
 
-  console.log(' 🛠   3/8: Building versioned ReactAndroid AAR...');
+  console.log(' 🛠   3/9: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',
   });
-  console.log(' ✅  3/8: Finished\n\n');
+  console.log(' ✅  3/9: Finished\n\n');
 
-  console.log(' 🛠   4/8: Creating versioned expoview package...');
-  await spawnAsync('./android-copy-expoview.sh', [version], {
-    shell: true,
-    cwd: SCRIPT_DIR,
-  });
-  console.log(' ✅  4/8: Finished\n\n');
+  console.log(' 🛠   4/9: Renaming JNI libs in android/versioned-react-native and Reanimated...');
+  await renameJniLibsAsync(version);
+  console.log(' ✅  4/9: Finished\n\n');
 
-  console.log(' 🛠   5/8: Creating versioned unimodule packages...');
+  console.log(' 🛠   5/9: prepare versioned Reanimated...');
+  await prepareReanimatedAsync(version);
+  console.log(' ✅  5/9: Finished\n\n');
+
+  console.log(' 🛠   6/9: Creating versioned unimodule packages...');
   await copyUnimodulesAsync(version);
-  console.log(' ✅  5/8: Finished\n\n');
+  console.log(' ✅  6/9: Finished\n\n');
 
-  console.log(' 🛠   6/8: Adding extra versioned activites to AndroidManifest...');
+  console.log(' 🛠   7/9: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  6/8: Finished\n\n');
+  console.log(' ✅  7/9: Finished\n\n');
 
-  console.log(' 🛠   7/8: Registering new version under sdkVersions config...');
+  console.log(' 🛠   8/9: Registering new version under sdkVersions config...');
   await registerNewVersionUnderSdkVersions(version);
-  console.log(' ✅  7/8: Finished\n\n');
+  console.log(' ✅  8/9: Finished\n\n');
 
-  console.log(' 🛠   8/8: Misc cleanup...');
+  console.log(' 🛠   9/9: Misc cleanup...');
   await cleanUpAsync(version);
-  console.log(' ✅  8/8: Finished');
+  console.log(' ✅  9/9: Finished');
 }
