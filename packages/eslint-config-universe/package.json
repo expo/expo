@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.5.0",
-    "eslint": "^7.2.0",
+    "eslint": "^7.7.0",
     "jest": "^26.0.1",
     "prettier": "^1.19.1"
   }
