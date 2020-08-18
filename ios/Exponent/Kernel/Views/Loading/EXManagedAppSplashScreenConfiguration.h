@@ -7,7 +7,7 @@ typedef NS_ENUM(NSInteger, EXSplashScreenImageResizeMode) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXSplashScreenConfiguration : NSObject
+@interface EXManagedAppSplashScreenConfiguration : NSObject
 
 @property (strong, nonatomic, nonnull, readonly) UIColor *backgroundColor;
 @property (strong, nonatomic, nullable, readonly) NSString *imageUrl;

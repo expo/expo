@@ -16,19 +16,19 @@ static const NSString *kImageResizeModeCover = @"cover";
 
 @implementation EXManagedAppSplashScreenConfigurationBuilder
 
-+ (EXSplashScreenConfiguration *)parseManifest:(NSDictionary *)manifest
++ (EXManagedAppSplashScreenConfiguration *)parseManifest:(NSDictionary *)manifest
 {
   UIColor *backgroundColor = [[self class] parseBackgroundColor:manifest];
   NSString *imageUrl = [[self class] parseImageUrl:manifest];
   EXSplashScreenImageResizeMode imageResizeMode = [[self class] parseImageResizeMode:manifest];
-  return [[EXSplashScreenConfiguration alloc] initWithBackgroundColor:backgroundColor
-                                                             imageUrl:imageUrl
-                                                      imageResizeMode:imageResizeMode];
+  return [[EXManagedAppSplashScreenConfiguration alloc] initWithBackgroundColor:backgroundColor
+                                                                       imageUrl:imageUrl
+                                                                imageResizeMode:imageResizeMode];
 }
 
 + (UIColor * _Nonnull)parseBackgroundColor:(NSDictionary *)manifest
 {
-  // TODO: (@bbarthec) is backgroundColor always in HEX format on iOS? (most possibly it is not)
+  // TODO: (@bbarthec) backgroundColor is recommended to be in HEX format for now, but it should be any css-valid format
   NSString *hexString = [[self class] getStringFromManifest:manifest
                                                       paths:@[
                                                         @[kManifestIosKey, kManifestSplashKey, kManifestBackgroundColorKey],
