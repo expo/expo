@@ -301,30 +301,7 @@
 			};
 			name = Release;
 		};
-		48CA147CB44AAE90EC6B8B7EC6EAB38C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A629BD3B466B73E209679CA256E489BD /* GoogleDataTransportCCTSupport.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = GoogleDataTransportCCTSupport;
-				PRODUCT_NAME = GoogleDataTransportCCTSupport;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		BB48F413925AAA66FD470E319AA58579 /* Debug */ = {
+		455DBF6F4A7A29C852D6DF5BC69F16DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 36D9C9E2A9580A4223FCDF86AD6523D3 /* GoogleDataTransportCCTSupport.debug.xcconfig */;
 			buildSettings = {
@@ -342,9 +319,34 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		9F9583205962318023EA22B66AAE919C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A629BD3B466B73E209679CA256E489BD /* GoogleDataTransportCCTSupport.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = GoogleDataTransportCCTSupport;
+				PRODUCT_NAME = GoogleDataTransportCCTSupport;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		E1C9FE49D9DA28B0480C07D1EE48D982 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -416,8 +418,8 @@
 		7A6335768FFDEB83C9189F03E3908C23 /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BB48F413925AAA66FD470E319AA58579 /* Debug */,
-				48CA147CB44AAE90EC6B8B7EC6EAB38C /* Release */,
+				455DBF6F4A7A29C852D6DF5BC69F16DF /* Debug */,
+				9F9583205962318023EA22B66AAE919C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

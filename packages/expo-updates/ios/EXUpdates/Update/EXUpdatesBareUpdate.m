@@ -1,8 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesBareUpdate.h>
-#import <EXUpdates/EXUpdatesConfig.h>
+#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
@@ -11,8 +10,12 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation EXUpdatesBareUpdate
 
 + (EXUpdatesUpdate *)updateWithBareManifest:(NSDictionary *)manifest
+                                     config:(EXUpdatesConfig *)config
+                                   database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest];
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+                                                                  config:config
+                                                                database:database];
 
   id updateId = manifest[@"id"];
   id commitTime = manifest[@"commitTime"];
@@ -30,9 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
   NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesBareEmbeddedBundleFileType];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesBareEmbeddedBundleFileType];
   jsBundleAsset.isLaunchAsset = YES;
-  jsBundleAsset.mainBundleFilename = kEXUpdatesBareEmbeddedBundleFilename;
+  jsBundleAsset.mainBundleFilename = EXUpdatesBareEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
 
   for (NSDictionary *assetDict in (NSArray *)assets) {
@@ -58,13 +61,19 @@ NS_ASSUME_NONNULL_BEGIN
 
   update.updateId = uuid;
   update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
-  update.runtimeVersion = [EXUpdatesUtils getRuntimeVersionWithConfig:EXUpdatesConfig.sharedInstance];
+  update.runtimeVersion = [EXUpdatesUtils getRuntimeVersionWithConfig:config];
   if (metadata) {
     update.metadata = (NSDictionary *)metadata;
   }
   update.status = EXUpdatesUpdateStatusEmbedded;
   update.keep = YES;
   update.assets = processedAssets;
+
+  if ([update.runtimeVersion containsString:@","]) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Should not be initializing EXUpdatesBareUpdate in an environment with multiple runtime versions."
+                                 userInfo:@{}];
+  }
 
   return update;
 }

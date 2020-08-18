@@ -73,14 +73,14 @@ Subscribe for updates to the Magnetometer.
 
 ### Example: basic subscription
 
-<SnackInline label='SVG' dependencies={['react-native-svg']}>
+<SnackInline label='Magnetometer' dependencies={['expo-sensors']}>
 
 ```javascript
 import { Magnetometer } from 'expo-sensors';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export function Compass() {
+export default function Compass() {
   const [data, setData] = React.useState({
     x: 0,
     y: 0,
@@ -113,7 +113,7 @@ export function Compass() {
 
   const _subscribe = () => {
     setSubscription(
-      Magnetometer.addListener((result) => {
+      Magnetometer.addListener(result => {
         setData(result);
       })
     );
@@ -183,4 +183,3 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
-

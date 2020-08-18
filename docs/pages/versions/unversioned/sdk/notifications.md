@@ -48,6 +48,8 @@ Open your `app.json` and add the following inside of the "expo" field:
 }
 ```
 
+On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
+
 ## API
 
 ```js
@@ -95,6 +97,10 @@ The following methods are exported by the `expo-notifications` module:
   - [`getNotificationChannelGroupAsync`](#getnotificationchannelgroupasyncidentifier-string-promisenotificationchannelgroup--null) -- fetches information about a specific notification channel group
   - [`setNotificationChannelGroupAsync`](#setnotificationchannelgroupasyncidentifier-string-channel-notificationchannelgroupinput-promisenotificationchannelgroup--null) -- saves a notification channel group configuration
   - [`deleteNotificationChannelGroupAsync`](#deletenotificationchannelgroupasyncidentifier-string-promisevoid) -- deletes a notification channel group
+  - **managing notification categories (interactive notifications)**
+  - [`setNotificationCategoryAsync`](#setnotificationcategoryasyncidentifier-string-actions-notificationaction-options-categoryoptions-promisenotificationcategory) -- creates a new notification category for interactive notifications
+  - [`getNotificationCategoriesAsync`](#getnotificationcategoriesasync-promisenotificationcategory) -- fetches information about all active notification categories
+  - [`deleteNotificationCategoryAsync`](#deletenotificationcategoryasyncidentifier-string-promiseboolean) -- deletes a notification category
 
 <TableOfContentSection title='Types' contents={['DevicePushToken', 'PushTokenListener', 'ExpoPushToken', 'Subscription', 'Notification', 'NotificationRequest', 'NotificationContent', 'NotificationContentInput', 'NotificationRequestInput', 'AndroidNotificationPriority', 'NotificationTrigger', 'PushNotificationTrigger', 'FirebaseRemoteMessage', 'TimeIntervalNotificationTrigger', 'DailyNotificationTrigger', 'CalendarNotificationTrigger', 'LocationNotificationTrigger', 'UnknownNotificationTrigger', 'NotificationTriggerInput', 'DateTriggerInput', 'TimeIntervalTriggerInput', 'DailyTriggerInput', 'CalendarTriggerInput', 'NotificationResponse', 'NotificationBehavior', 'NotificationChannel', 'NotificationChannelInput', 'NotificationChannelGroup', 'NotificationChannelGroupInput' ]} />
 
@@ -106,7 +112,7 @@ Check out the Snack below to see Notifications in action, but be sure to use a p
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -120,18 +126,23 @@ Notifications.setNotificationHandler({
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-    Notifications.addNotificationReceivedListener(notification => {
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
-    Notifications.addNotificationResponseReceivedListener(response => {
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
     });
 
     return () => {
-      Notifications.removeAllNotificationListeners();
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
     };
   }, []);
 
@@ -149,33 +160,23 @@ export default function App() {
         <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
       </View>
       <Button
-        title="Press to Send Notification"
+        title="Press to schedule a notification"
         onPress={async () => {
-          await sendPushNotification(expoPushToken);
+          await schedulePushNotification();
         }}
       />
     </View>
   );
 }
 
-// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
-async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: expoPushToken,
-    sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
-    data: { data: 'goes here' },
-  };
-
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
+async function schedulePushNotification() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "You've got mail! 📬",
+      body: 'Here is the notification body',
+      data: { data: 'goes here' },
     },
-    body: JSON.stringify(message),
+    trigger: { seconds: 2 },
   });
 }
 
@@ -213,7 +214,7 @@ async function registerForPushNotificationsAsync() {
 
 </SnackInline>
 
-> **Note** this demo might not fully work when you run it from the snack, because `app.json` needs to contain `useNextNotificationsApi` flag. Unfortunately, the snack doesn't support custom `app.json`.
+> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom `app.json` files.
 
 ## Android push notification payload specification
 
@@ -659,7 +660,7 @@ Notifications.scheduleNotificationAsync({
 
 Schedules a notification to be triggered in the future.
 
-> **Note:** Please note that this does not mean that the notification will be presented when it is triggereed. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) that will return an appropriate notification behavior. For more information see the example below.
+> **Note:** Please note that this does not mean that the notification will be presented when it is triggered. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) that will return an appropriate notification behavior. For more information see the example below.
 
 #### Arguments
 
@@ -890,6 +891,65 @@ First and only argument to the method is the channel group identifier.
 
 A `Promise` resolving once the channel group is removed (or if there was no channel group for given identifier).
 
+## Managing notification categories (interactive notifications)
+
+Notification categories allow you to create interactive push notifications, so that a user can respond directly to the incoming notification either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
+
+<img width="50%" src="/static/images/sdk/notifications/categories.png" style={{width: 800}} alt="image of notification categories on iOS and Android"/>
+
+On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
+
+Calling one of the following methods is a no-op on Web.
+
+### `setNotificationCategoryAsync(identifier: string, actions: NotificationAction[], options: CategoryOptions): Promise<NotificationCategory | null>`
+
+#### Arguments
+
+- `identifier`: A string to associate as the ID of this category. You will pass this string in as the `categoryIdentifier` in your [`NotificationContent`](#notificationcontent) to associate a notification with this category.
+- `actions`: An array of [`NotificationAction`s](#notificationaction), which describe the actions associated with this category. Each of these actions takes the shape:
+  - `identifier`: A unique string that identifies this action. If a user takes this action (i.e. selects this button in the system's Notification UI), your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void).
+  - `buttonTitle`: The title of the button triggering this action.
+  - `textInput`: **Optional** object which, if provided, will result in a button that prompts the user for a text response.
+    - `submitButtonTitle`: A string which will be used as the title for the button used for submitting the text response.
+    - `placeholder`: A string that serves as a placeholder until the user begins typing. Defaults to no placeholder string.
+  - `options`: **Optional** object of additional configuration options.
+    - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app.
+    - `isAuthenticationRequired`: (**iOS only**) Boolean indicating whether triggering the action will require authentication from the user.
+    - `isDestructive`: (**iOS only**) Boolean indicating whether the button title will be highlighted a different color (usually red). This usually signifies a destructive action such as deleting data.
+- `options`: An optional object of additional configuration options for your category (**these are all iOS only**):
+  - `previewPlaceholder`: Customizable placeholder for the notification preview text. This is shown if the user has disabled notification previews for the app. Defaults to the localized iOS system default placeholder (`Notification`).
+  - `intentIdentifiers`: Array of [Intent Class Identifiers](https://developer.apple.com/documentation/sirikit/intent_class_identifiers). When a notification is delivered, the presence of an intent identifier lets the system know that the notification is potentially related to the handling of a request made through Siri. Defaults to an empty array.
+  - `categorySummaryFormat`: A format string for the summary description used when the system groups the category’s notifications.
+  - `customDismissAction`: A boolean indicating whether to send actions for handling when the notification is dismissed (the user must explicitly dismiss the notification interface- ignoring a notification or flicking away a notification banner does not trigger this action). Defaults to `false`.
+  - `allowInCarPlay`: A boolean indicating whether to allow CarPlay to display notifications of this type. **Apps must be approved for CarPlay to make use of this feature.** Defaults to `false`.
+  - `showTitle`: A boolean indicating whether to show the notification's title, even if the user has disabled notification previews for the app. Defaults to `false`.
+  - `showSubtitle`: A boolean indicating whether to show the notification's subtitle, even if the user has disabled notification previews for the app. Defaults to `false`.
+  - `allowAnnouncment`: A boolean indicating whether to allow notifications to be automatically read by Siri when the user is using AirPods. Defaults to `false`.
+
+#### Returns
+
+A `Promise` resolving to the category you just created.
+
+### `getNotificationCategoriesAsync(): Promise<NotificationCategory[]>`
+
+Fetches information about all known notification categories.
+
+#### Returns
+
+A `Promise` resolving to an array of `NotificationCategory`s. On platforms that do not support notification channels, it will always resolve to an empty array.
+
+### `deleteNotificationCategoryAsync(identifier: string): Promise<boolean>`
+
+Deletes the category associated with the provided identifier.
+
+#### Arguments
+
+Identifier initially provided to `setNotificationCategoryAsync` when creating the category.
+
+#### Returns
+
+A `Promise` resolving to `true` if the category was successfully deleted, or `false` if it was not. An example of when this method would return `false` is if you try to delete a category that doesn't exist.
+
 ## Types
 
 ### `DevicePushToken`
@@ -1009,7 +1069,8 @@ export type NotificationContent = {
       vibrationPattern?: number[];
       // Format: '#AARRGGBB'
       color?: string;
-    });
+    }
+);
 ```
 
 ### `NotificationContentInput`
@@ -1025,6 +1086,7 @@ export interface NotificationContentInput {
   data?: { [key: string]: unknown };
   badge?: number;
   sound?: boolean | string;
+
   // Android-specific fields
   // See https://developer.android.com/reference/android/app/Notification.html#fields
   // for more information on specific fields.
@@ -1041,6 +1103,11 @@ export interface NotificationContentInput {
   // - https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean),
   // - https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification.FIELDS.sticky
   autoDismiss?: boolean;
+  // If set to true, the notification cannot be dismissed by swipe. This setting defaults
+  // to false if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
+  // See: https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean)
+  sticky?: boolean;
+
   // iOS-specific fields
   // See https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent?language=objc
   // for more information on specific fields.
@@ -1269,10 +1336,21 @@ A type representing possible triggers with which you can schedule notifications.
 ```ts
 export type NotificationTriggerInput =
   | null
+  | ChannelAwareTriggerInput
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | CalendarTriggerInput;
+```
+
+### `ChannelAwareTriggerInput`
+
+A trigger that will cause the notification to be delivered immediately.
+
+```ts
+export type ChannelAwareTriggerInput = {
+  channelId: string;
+};
 ```
 
 ### `DateTriggerInput`
@@ -1280,7 +1358,7 @@ export type NotificationTriggerInput =
 A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
 
 ```ts
-export type DateTriggerInput = Date | number;
+export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
 ```
 
 ### `TimeIntervalTriggerInput`
@@ -1289,6 +1367,7 @@ A trigger that will cause the notification to be delivered once or many times (d
 
 ```ts
 export interface TimeIntervalTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   seconds: number;
 }
@@ -1300,6 +1379,7 @@ A trigger that will cause the notification to be delivered once per day.
 
 ```ts
 export interface DailyTriggerInput {
+  channelId?: string;
   hour: number;
   minute: number;
   repeats: true;
@@ -1314,6 +1394,7 @@ A trigger that will cause the notification to be delivered once or many times wh
 
 ```ts
 export interface CalendarTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   timezone?: string;
 
@@ -1479,5 +1560,43 @@ An object representing a notification channel group to be set.
 export interface NotificationChannelGroupInput {
   name: string | null;
   description?: string | null;
+}
+```
+
+### `NotificationCategory`
+
+```ts
+export interface NotificationCategory {
+  identifier: string;
+  actions: NotificationAction[];
+  options: {
+    // These options are ALL iOS-only
+    previewPlaceholder?: string;
+    intentIdentifiers?: string[];
+    categorySummaryFormat?: string;
+    customDismissAction?: boolean;
+    allowInCarPlay?: boolean;
+    showTitle?: boolean;
+    showSubtitle?: boolean;
+    allowAnnouncement?: boolean;
+  };
+}
+```
+
+### `NotificationAction`
+
+```ts
+export interface NotificationAction {
+  identifier: string;
+  buttonTitle: string;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
+  options: {
+    isDestructive?: boolean;
+    isAuthenticationRequired?: boolean;
+    opensAppToForeground?: boolean;
+  };
 }
 ```

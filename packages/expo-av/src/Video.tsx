@@ -361,6 +361,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
         'onPlaybackStatusUpdate',
         'usePoster',
         'posterSource',
+        'posterStyle',
         ...Object.keys(status)
       ),
       style: StyleSheet.flatten([_STYLES.base, this.props.style]),

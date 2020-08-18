@@ -11,6 +11,8 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/4166' }} />
 
+> **Note:** Only one active BarCodeScanner preview is supported currently. When using navigation, the best practice is to unmount any previously rendered BarCodeScanner component so the following screens can use `<BarCodeScanner />` without issues.
+
 ## Installation
 
 <InstallSection packageName="expo-barcode-scanner" />

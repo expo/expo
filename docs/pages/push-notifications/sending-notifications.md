@@ -264,3 +264,11 @@ Each message must be a JSON object with the given fields (only the `to` field is
   }]
 }
 ```
+
+# Delivery Guarantees
+
+Expo makes a best effort to deliver notifications to the push notification services operated by Apple and Google. Expo's infrastructure is designed for at-least-once delivery to the underlying push notification services; it is more likely for a notification to be delivered to Apple or Google more than once rather than not at all, though both are uncommon but possible.
+
+After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful; a push receipt denotes whether the underlying push notification service received the notification.
+
+Finally, the push notification services from Apple, Google, etc... make a best effort to deliver the notification to the device according to their own policies.

@@ -62,7 +62,7 @@ For more customization (like https redirects) please refer to the native docs: [
 
 Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
 
-<SnackInline>
+<SnackInline dependencies={['expo-app-auth']}>
 
 ```js
 import React, { useEffect, useState } from 'react';

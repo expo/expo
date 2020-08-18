@@ -13,7 +13,7 @@
     "fs-extra": "^4.0.2",
     "gulp": "^4.0.0",
     "ip": "^1.1.5",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "minimist": "^1.2.3",
     "request": "^2.72.0",
     "request-promise-native": "^1.0.5",

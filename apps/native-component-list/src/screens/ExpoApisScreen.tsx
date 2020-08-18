@@ -29,22 +29,24 @@ if (Platform.OS !== 'web')
 const screens = [
   'Accelerometer',
   'ActionSheet',
+  'Alert',
   'AppAuth',
   'Appearance',
   'AppleAuthentication',
   'Audio',
   'AuthSession',
-  'Battery',
   'BackgroundFetch',
+  'Battery',
   'Branch',
   'Brightness',
   'Calendars',
+  'Clipboard',
   'Constants',
   'Contacts',
   'Device',
   'DocumentPicker',
-  'FacebookLogin',
   'FaceDetector',
+  'FacebookLogin',
   'FileSystem',
   'FirebaseRecaptcha',
   'Font',
@@ -52,8 +54,8 @@ const screens = [
   'Google',
   'GoogleSignIn',
   'Haptics',
-  'ImagePicker',
   'ImageManipulator',
+  'ImagePicker',
   'InAppPurchases',
   'IntentLauncher',
   'KeepAwake',
@@ -68,24 +70,26 @@ const screens = [
   'Pedometer',
   'Permissions',
   'Print',
+  'Random',
   'Recording',
+  'SMS',
   'SafeAreaContext',
   'ScreenOrientation',
-  'Sensor',
   'SecureStore',
+  'Sensor',
   'Sharing',
-  'SMS',
+  'StatusBar',
   'StoreReview',
   'TaskManager',
   'TextToSpeech',
-  'WebBrowser',
   'ViewShot',
+  'WebBrowser',
 ];
 
 export default function ExpoApisScreen() {
   const apis = React.useMemo(() => {
     return screens
-      .map(name => ({ name, isAvailable: !!Screens[name] }))
+      .map(name => ({ name, route: `/apis/${name.toLowerCase()}`, isAvailable: !!Screens[name] }))
       .sort((a, b) => {
         if (a.isAvailable !== b.isAvailable) {
           if (a.isAvailable) {

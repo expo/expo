@@ -1,9 +1,9 @@
 const packageVersion = require('../package.json').version;
 const prevaledNavigationData = require('./navigation-data');
 
-// Groups of sections
-// - Each section is a top-level folder within the version directory
-// - The groups of sections are expressed only below, there is no representation of them in the filesystem
+// Groups of sections: these groups are exclusively expressed below, there is no
+// representation of them in the filesystem!
+// Groups -> Sections -> Pages
 const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
@@ -18,13 +18,31 @@ const GROUPS = {
   'Expo SDK': ['Expo SDK'],
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
+  Preview: ['Preview'],
+  'EAS Builds': ['EAS Builds'],
 };
 
-// This array provides the ordering for pages within each section
+// This array provides the **ordering** for pages within each section
 const sections = [
   {
+    name: 'Preview',
+    reference: ['Introduction', 'Support and feedback'],
+  },
+  {
+    name: 'EAS Builds',
+    reference: [
+      'Introduction',
+      'EAS Builds in 5 Minutes',
+      'Setup',
+      'Configuring with eas.json',
+      'Android Builds',
+      'iOS Builds',
+      'Advanced Credentials Configuration',
+    ],
+  },
+  {
     name: 'Get Started',
-    reference: ['Installation', 'Create a new app'],
+    reference: ['Installation', 'Create a new app', 'Errors and debugging'],
   },
   {
     name: 'Conceptual Overview',
@@ -47,7 +65,6 @@ const sections = [
       'Sharing the image',
       'Handling platform differences',
       'Configuring a splash screen and app icon',
-      'Errors and debugging',
       'Learning more',
     ],
   },
@@ -107,11 +124,11 @@ const sections = [
     reference: [
       'Overview',
       'Building Standalone Apps',
-      'App signing',
+      'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
-      'Hosting An App on Your Servers',
+      'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',
       'Uploading Apps to the Apple App Store and Google Play',
       'App Transfers',
@@ -294,8 +311,8 @@ const ROOT = [
   'Regulatory Compliance',
   'Assorted Guides',
   'Essentials',
-  'Expo SDK',
   'Configuration Files',
+  'Expo SDK',
   'React Native',
   'ExpoKit',
 ];
@@ -371,11 +388,14 @@ const sortedReference = Object.assign(
 
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
+const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
+  previewDirectories: prevaledNavigationData.previewDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
+  preview: sortedPreview,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
 };

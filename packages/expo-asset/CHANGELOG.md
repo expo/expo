@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 8.2.0 — 2020-08-18
+
+### 🎉 New features
+
 - Add `useAssets` hook to simplify assets handling. ([#8928](https://github.com/expo/expo/pull/8928) by [@bycedric](https://github.com/bycedric))
 
 ### 🐛 Bug fixes
+
+- Fixed `Asset.loadAsync()` TypeScript signature to match `Asset.fromModule()` types. ([#9246](https://github.com/expo/expo/pull/9246) by [@barthap](https://github.com/barthap))
 
 ## 8.1.7 — 2020-05-29
 

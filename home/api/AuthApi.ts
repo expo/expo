@@ -1,6 +1,7 @@
 import ApiV2HttpClient from './ApiV2HttpClient';
 
 type SignInResult = {
+  id: string;
   sessionSecret: boolean;
 };
 

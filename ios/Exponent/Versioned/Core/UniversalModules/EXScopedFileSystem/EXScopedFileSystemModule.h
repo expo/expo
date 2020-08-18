@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedFileSystemModule : EXFileSystem
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding;
-
 @end
 
 NS_ASSUME_NONNULL_END

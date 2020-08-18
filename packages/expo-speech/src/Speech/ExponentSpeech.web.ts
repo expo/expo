@@ -1,12 +1,22 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { SyntheticPlatformEmitter, CodedError } from '@unimodules/core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
+
+//https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
+const MAX_SPEECH_INPUT_LENGTH = 32767;
 
 export default {
   get name(): string {
     return 'ExponentSpeech';
   },
   async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
+    if (text.length > MAX_SPEECH_INPUT_LENGTH) {
+      throw new CodedError(
+        'ERR_SPEECH_INPUT_LENGTH',
+        'Speech input text is too long! Limit of input length is: ' + MAX_SPEECH_INPUT_LENGTH
+      );
+    }
+
     const message = new SpeechSynthesisUtterance();
 
     if (typeof options.rate === 'number') {
@@ -78,4 +88,5 @@ export default {
   async resume(): Promise<void> {
     return window.speechSynthesis.resume();
   },
+  maxSpeechInputLength: MAX_SPEECH_INPUT_LENGTH,
 };

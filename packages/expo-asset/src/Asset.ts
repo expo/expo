@@ -69,7 +69,7 @@ export class Asset {
     }
   }
 
-  static loadAsync(moduleId: number | number[]): Promise<Asset[]> {
+  static loadAsync(moduleId: number | number[] | string | string[]): Promise<Asset[]> {
     const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
     return Promise.all(moduleIds.map(moduleId => Asset.fromModule(moduleId).downloadAsync()));
   }

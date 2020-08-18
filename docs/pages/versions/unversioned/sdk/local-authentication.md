@@ -15,6 +15,10 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 <InstallSection packageName="expo-local-authentication" />
 
+## Configuration
+
+On Android, this module requires permissions to access the biometric data for authentication purposes. The `USE_BIOMETRIC` and `USE_FINGERPRINT` permissions are automatically added.
+
 ## API
 
 ```js

@@ -9,6 +9,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+// these unused imports must stay because of versioning
+import expo.modules.updates.UpdatesConfiguration;
+import expo.modules.updates.UpdatesController;
+
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;

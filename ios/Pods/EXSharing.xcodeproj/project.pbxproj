@@ -213,6 +213,31 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1AA9066DEFE1B9B69C580F45FA3E983F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 96A45E77DF5F81954E5168E23055F67F /* EXSharing.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSharing/EXSharing-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSharing;
+				PRODUCT_NAME = EXSharing;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		215DA6CCE2C1BF05CAE6718CEA945910 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -273,31 +298,7 @@
 			};
 			name = Release;
 		};
-		8EBFC4A817AE7472A408B5F3A5F2360E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 96A45E77DF5F81954E5168E23055F67F /* EXSharing.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSharing/EXSharing-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSharing;
-				PRODUCT_NAME = EXSharing;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		C438C3F65B8338DB7753160EB75227D0 /* Release */ = {
+		A25BECE36537C6A56CF20A91B561AA43 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 018C201115C91E4517ABA2AF3F770A8D /* EXSharing.release.xcconfig */;
 			buildSettings = {
@@ -317,6 +318,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -392,8 +394,8 @@
 		1420350743A22FA96A2BE106D8AAC86B /* Build configuration list for PBXNativeTarget "EXSharing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8EBFC4A817AE7472A408B5F3A5F2360E /* Debug */,
-				C438C3F65B8338DB7753160EB75227D0 /* Release */,
+				1AA9066DEFE1B9B69C580F45FA3E983F /* Debug */,
+				A25BECE36537C6A56CF20A91B561AA43 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

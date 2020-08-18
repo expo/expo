@@ -7,7 +7,20 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-community/datetimepicker` from `2.4.0` to `3.0.0`. ([#9543](https://github.com/expo/expo/pull/9543), [#9706](https://github.com/expo/expo/pull/9706) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `@react-native-community/netinfo` from `5.9.2` to `5.9.6`. ([#9564](https://github.com/expo/expo/pull/9564), [#9737](https://github.com/expo/expo/pull/9737) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `@react-native-community/picker` from `1.6.0` to `1.6.6`. ([#9533](https://github.com/expo/expo/pull/9533), [#9737](https://github.com/expo/expo/pull/9737) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `@react-native-community/segmented-control` from `1.6.1` to `2.1.1`. ([`ae45e23`](https://github.com/expo/expo/commit/ae45e23931745e6973e9d5221bf6837757031ef5), [#9534](https://github.com/expo/expo/pull/9534), [#9737](https://github.com/expo/expo/pull/9737) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `@react-native-community/slider` from `3.0.0` to `3.0.3`. ([#9532](https://github.com/expo/expo/pull/9532) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `@react-native-community/viewpager` from `3.3.0` to `4.1.6`. ([#9535](https://github.com/expo/expo/pull/9535), [#9737](https://github.com/expo/expo/pull/9737) by [@sjchmiela](https://github.com/sjchmiela), [#9807](https://github.com/expo/expo/pull/9807) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-reanimated` from `1.9.0` to `1.13.0`. ([#9608](https://github.com/expo/expo/pull/9608), [#9738](https://github.com/expo/expo/pull/9738) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `react-native-safe-area-context` from `3.0.2` to `3.1.4`. ([#9548](https://github.com/expo/expo/pull/9548), [#9737](https://github.com/expo/expo/pull/9737) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `react-native-screens` from `2.9.0` to `2.10.1`. ([#9611](https://github.com/expo/expo/pull/9611) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `react-native-webview` from `9.4.0` to `10.7.0`. ([#9549](https://github.com/expo/expo/pull/9549), [#9737](https://github.com/expo/expo/pull/9737) by [@sjchmiela](https://github.com/sjchmiela), [#9803](https://github.com/expo/expo/pull/9803) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🛠 Breaking changes
+
+- Removed GCM entirely from the Android client and standalone apps since the server APIs have been shut down. ([#6071](https://github.com/expo/expo/pull/6071), [#9735](https://github.com/expo/expo/pull/9735) by [@esamelson](https://github.com/esamelson))
 
 ### 🎉 New features
 

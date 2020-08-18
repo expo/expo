@@ -25,19 +25,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0AED8C0102F15C03233953D4C5098DDB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
 		1401437ECD68C82E4014B97A85F0248B /* RNCPickerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCPickerManager.h; path = ios/RNCPickerManager.h; sourceTree = "<group>"; };
 		26C80A2E5F6F90764D65499CE9A0A953 /* RNCPicker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNCPicker.release.xcconfig; sourceTree = "<group>"; };
 		31A9CA1FED22EDBE5A5F223635659C49 /* RNCPicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNCPicker.debug.xcconfig; sourceTree = "<group>"; };
 		38F06AE70E8F2365AB7822F83BA69FD1 /* libRNCPicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRNCPicker.a; path = libRNCPicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4458CDC9BA96BDEF6F52E5A161AF163B /* LICENCE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENCE; sourceTree = "<group>"; };
 		473CAB28524EBE11E0E325CDA8F25E3E /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		522D4EA96D44A06FE4DA1C19174EF377 /* RNCPickerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCPickerManager.m; path = ios/RNCPickerManager.m; sourceTree = "<group>"; };
 		5F8C27265CC9F8FF1FA2E4D0B5A44999 /* RNCPicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNCPicker-prefix.pch"; sourceTree = "<group>"; };
 		825D5DA7FA532F9FAF94736114C28936 /* RNCPicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCPicker.m; path = ios/RNCPicker.m; sourceTree = "<group>"; };
+		89834D52FF87440B20F7724683325E51 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		B7CD962CDF471F5E9882FBAA9CFC8ED0 /* RNCPicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNCPicker-dummy.m"; sourceTree = "<group>"; };
-		B88FCBCCF78EAD93FF10F97ED6FC686A /* RNCPicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNCPicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		C1607E88E4AF31F1D993701AAF6549A2 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		D6B7B73F1642329C8EBE46452DEDE8DE /* RNCPicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCPicker.h; path = ios/RNCPicker.h; sourceTree = "<group>"; };
+		E7FED862C2FAC091A293A14BC3439000 /* RNCPicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNCPicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,7 +93,7 @@
 				825D5DA7FA532F9FAF94736114C28936 /* RNCPicker.m */,
 				1401437ECD68C82E4014B97A85F0248B /* RNCPickerManager.h */,
 				522D4EA96D44A06FE4DA1C19174EF377 /* RNCPickerManager.m */,
-				EC266B3F23E8FD321A44FF36F651D1EA /* Pod */,
+				D8DFB3E43C0BBA2DF1FF809A89003B78 /* Pod */,
 				B7CFAC1336FE553DEA270770152FFE0A /* Support Files */,
 			);
 			name = RNCPicker;
@@ -110,12 +110,12 @@
 			);
 			sourceTree = "<group>";
 		};
-		EC266B3F23E8FD321A44FF36F651D1EA /* Pod */ = {
+		D8DFB3E43C0BBA2DF1FF809A89003B78 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				4458CDC9BA96BDEF6F52E5A161AF163B /* LICENCE */,
-				C1607E88E4AF31F1D993701AAF6549A2 /* README.md */,
-				B88FCBCCF78EAD93FF10F97ED6FC686A /* RNCPicker.podspec */,
+				0AED8C0102F15C03233953D4C5098DDB /* LICENSE */,
+				89834D52FF87440B20F7724683325E51 /* README.md */,
+				E7FED862C2FAC091A293A14BC3439000 /* RNCPicker.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";

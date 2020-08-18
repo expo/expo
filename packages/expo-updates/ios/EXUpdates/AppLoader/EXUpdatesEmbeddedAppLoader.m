@@ -1,28 +1,37 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const kEXUpdatesEmbeddedManifestName = @"app";
-NSString * const kEXUpdatesEmbeddedManifestType = @"manifest";
-NSString * const kEXUpdatesEmbeddedBundleFilename = @"app";
-NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
-NSString * const kEXUpdatesBareEmbeddedBundleFilename = @"main";
-NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
+NSString * const EXUpdatesEmbeddedManifestName = @"app";
+NSString * const EXUpdatesEmbeddedManifestType = @"manifest";
+NSString * const EXUpdatesEmbeddedBundleFilename = @"app";
+NSString * const EXUpdatesEmbeddedBundleFileType = @"bundle";
+NSString * const EXUpdatesBareEmbeddedBundleFilename = @"main";
+NSString * const EXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
+
+static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbeddedAppLoader";
 
 @implementation EXUpdatesEmbeddedAppLoader
 
-+ (nullable EXUpdatesUpdate *)embeddedManifest
++ (nullable EXUpdatesUpdate *)embeddedManifestWithConfig:(EXUpdatesConfig *)config
+                                                database:(nullable EXUpdatesDatabase *)database
 {
   static EXUpdatesUpdate *embeddedManifest;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    if (!embeddedManifest) {
-      NSString *path = [[NSBundle mainBundle] pathForResource:kEXUpdatesEmbeddedManifestName ofType:kEXUpdatesEmbeddedManifestType];
-      // TODO: handle nil manifestData in Expo client case
+    if (!config.hasEmbeddedUpdate) {
+      embeddedManifest = nil;
+    } else if (!embeddedManifest) {
+      NSString *path = [[NSBundle mainBundle] pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
+      if (!manifestData) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
+                                     userInfo:@{}];
+      }
 
       NSError *err;
       id manifest = [NSJSONSerialization JSONObjectWithData:manifestData options:kNilOptions error:&err];
@@ -32,7 +41,12 @@ NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
                                      userInfo:@{}];
       } else {
         NSAssert([manifest isKindOfClass:[NSDictionary class]], @"embedded manifest should be a valid JSON file");
-        embeddedManifest = [EXUpdatesUpdate updateWithEmbeddedManifest:(NSDictionary *)manifest];
+        NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+        // automatically verify embedded manifest since it was already codesigned
+        mutableManifest[@"isVerified"] = @(YES);
+        embeddedManifest = [EXUpdatesUpdate updateWithEmbeddedManifest:[mutableManifest copy]
+                                                                config:config
+                                                              database:database];
         if (!embeddedManifest.updateId) {
           @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                          reason:@"The embedded manifest is invalid. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
@@ -44,20 +58,29 @@ NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
   return embeddedManifest;
 }
 
-- (void)loadUpdateFromEmbeddedManifestWithSuccess:(EXUpdatesAppLoaderSuccessBlock)success
-                                            error:(EXUpdatesAppLoaderErrorBlock)error
+- (void)loadUpdateFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                                           success:(EXUpdatesAppLoaderSuccessBlock)success
+                                             error:(EXUpdatesAppLoaderErrorBlock)error
 {
-  self.successBlock = success;
-  self.errorBlock = error;
-  [self startLoadingFromManifest:[[self class] embeddedManifest]];
+  EXUpdatesUpdate *embeddedManifest = [[self class] embeddedManifestWithConfig:self.config
+                                                                      database:self.database];
+  if (embeddedManifest) {
+    self.manifestBlock = manifestBlock;
+    self.successBlock = success;
+    self.errorBlock = error;
+    [self startLoadingFromManifest:embeddedManifest];
+  } else {
+    error([NSError errorWithDomain:EXUpdatesEmbeddedAppLoaderErrorDomain
+                              code:1008
+                          userInfo:@{NSLocalizedDescriptionKey: @"Failed to load embedded manifest. Make sure you have configured expo-updates correctly."}]);
+  }
 }
 
 - (void)downloadAsset:(EXUpdatesAsset *)asset
 {
-  NSURL *updatesDirectory = [EXUpdatesAppController sharedInstance].updatesDirectory;
-  NSURL *destinationUrl = [updatesDirectory URLByAppendingPathComponent:asset.filename];
+  NSURL *destinationUrl = [self.directory URLByAppendingPathComponent:asset.filename];
 
-  dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
+  dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     if ([[NSFileManager defaultManager] fileExistsAtPath:[destinationUrl path]]) {
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self handleAssetDownloadAlreadyExists:asset];

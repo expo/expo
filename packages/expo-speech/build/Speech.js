@@ -90,4 +90,5 @@ function setSpeakingListener(eventName, callback) {
 function removeSpeakingListener(eventName) {
     SpeechEventEmitter.removeAllListeners(eventName);
 }
+export const maxSpeechInputLength = ExponentSpeech.maxSpeechInputLength || Number.MAX_VALUE;
 //# sourceMappingURL=Speech.js.map

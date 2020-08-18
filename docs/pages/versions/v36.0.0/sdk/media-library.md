@@ -51,7 +51,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
@@ -68,7 +68,9 @@ An object representing an [asset](#asset).
 
 ### `MediaLibrary.saveToLibraryAsync(localUri)`
 
-Saves the file at given `localUri` to the user's media library. On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
+
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key. 
 
 #### Arguments
 
@@ -251,7 +253,7 @@ Removes all listeners.
 | height           | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
 | creationTime     | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
 | modificationTime | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
-| duration         | _number_  | both      | Duration of the video or audio asset                                                                          |                                                                                                      |
+| duration         | _number_  | both      | Duration of the video or audio asset in seconds                                                               |                                                                                                      |
 | mediaSubtypes    | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
 | albumId          | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
 | localUri \*      | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |

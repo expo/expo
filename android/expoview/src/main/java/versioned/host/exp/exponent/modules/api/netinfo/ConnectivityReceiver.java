@@ -6,15 +6,12 @@
  */
 package versioned.host.exp.exponent.modules.api.netinfo;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.net.ConnectivityManagerCompat;
 
 import com.facebook.react.bridge.Arguments;
@@ -115,8 +112,10 @@ abstract class ConnectivityReceiver {
         WritableMap event = Arguments.createMap();
 
         // Add if WiFi is ON or OFF
-        boolean isEnabled = mWifiManager.isWifiEnabled();
-        event.putBoolean("isWifiEnabled", isEnabled);
+        if (NetInfoUtils.isAccessWifiStatePermissionGranted(getReactContext())) {
+            boolean isEnabled = mWifiManager.isWifiEnabled();
+            event.putBoolean("isWifiEnabled", isEnabled);
+        }
 
         // Add the connection type information
         event.putString("type", requestedInterface != null ? requestedInterface : mConnectionType.label);
@@ -161,8 +160,7 @@ abstract class ConnectivityReceiver {
                 }
                 break;
             case "wifi":
-                if (ContextCompat.checkSelfPermission(getReactContext(),
-                        Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+                if (NetInfoUtils.isAccessWifiStatePermissionGranted(getReactContext())) {
                     WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
                     if (wifiInfo != null) {
                         // Get the SSID

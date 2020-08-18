@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 0.3.0 — 2020-08-18
+
+### 🎉 New features
+
 - Easier to follow installation instructions by moving them to the Expo documentation ([#9145](https://github.com/expo/expo/pull/9145)).
 
+## 0.2.12 — 2020-07-24
+
 ### 🐛 Bug fixes
+
+- Fetch asset manifest through programmatic CLI interface instead of depending on a running React Native CLI server, so `./gradlew :app:assembleRelease` works as expected without needing to run `react-native start` beforehand. ([#9372](https://github.com/expo/expo/pull/9372)).
 
 ## 0.2.11 — 2020-06-29
 

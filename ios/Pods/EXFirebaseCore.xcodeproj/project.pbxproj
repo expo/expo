@@ -225,7 +225,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0DDFC2521D549983C379813855D02D7C /* Debug */ = {
+		9DBFB4DB3728CF76E9D1EC66A2A1ADA8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9A9223A96120659843C90BF08A4C5FA2 /* EXFirebaseCore.debug.xcconfig */;
 			buildSettings = {
@@ -245,34 +245,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		4B88C3331EA652F9E0797C3695A185C2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79E70E1EFFADAB9202216FE2C562F23F /* EXFirebaseCore.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFirebaseCore/EXFirebaseCore-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFirebaseCore;
-				PRODUCT_NAME = EXFirebaseCore;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		A7F60851ACEEFBC86FA6C9887F36F4BA /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -398,6 +374,32 @@
 			};
 			name = Debug;
 		};
+		D4E16F185B42E868E38137DD4C7E5362 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 79E70E1EFFADAB9202216FE2C562F23F /* EXFirebaseCore.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFirebaseCore/EXFirebaseCore-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFirebaseCore;
+				PRODUCT_NAME = EXFirebaseCore;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -413,8 +415,8 @@
 		C649305474112FF3F9EC8DB2CD80D8E5 /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0DDFC2521D549983C379813855D02D7C /* Debug */,
-				4B88C3331EA652F9E0797C3695A185C2 /* Release */,
+				9DBFB4DB3728CF76E9D1EC66A2A1ADA8 /* Debug */,
+				D4E16F185B42E868E38137DD4C7E5362 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

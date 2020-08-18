@@ -11,5 +11,6 @@ export const WebBrowserResultType = {
      * Android only
      */
     OPENED: 'opened',
+    LOCKED: 'locked',
 };
 //# sourceMappingURL=WebBrowser.types.js.map

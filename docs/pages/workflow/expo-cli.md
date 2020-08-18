@@ -599,7 +599,7 @@ Alias: `expo u`
 </p>
 </details>
 
-<details><summary><h3>expo webhooks:set</h3><p>Set a webhook for the project.</p></summary>
+<details><summary><h3>expo webhooks:add</h3><p>Create a new webhook for the project.</p></summary>
 <p>
 
 | Option              | Description                                                                                                             |
@@ -612,7 +612,7 @@ Alias: `expo u`
 </p>
 </details>
 
-<details><summary><h3>expo webhooks:show</h3><p>See webhooks for a project.</p></summary>
+<details><summary><h3>expo webhooks</h3><p>List all webhooks for a project.</p></summary>
 <p>
 
 | Option            | Description                 |
@@ -622,14 +622,29 @@ Alias: `expo u`
 </p>
 </details>
 
-<details><summary><h3>expo webhooks:clear</h3><p>Clear a webhook associated with an Expo project.
+<details><summary><h3>expo webhooks:remove</h3><p>Delete a webhook associated with an Expo project.
 </p></summary>
 <p>
 
-| Option            | Description                   |
-| ----------------- | ----------------------------- |
-| `--event` [type]  | The type of webhook: [build]. |
-| `--config` [path] | Specify a path to app.json.   |
+| Option            | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| `--id` [id]       | ID of the webhook to remove (see `expo webhooks`) |
+| `--config` [path] | Specify a path to app.json.                       |
+
+</p>
+</details>
+
+<details><summary><h3>expo webhooks:update</h3><p>Update a webhook associated with an Expo project.
+</p></summary>
+<p>
+
+| Option              | Description                                                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `--id` [id]         | ID of the webhook to remove (see `expo webhooks`)                                                                       |
+| `--url` [url]       | Webhook to be called after building the app.                                                                            |
+| `--event` [type]    | The type of webhook: [build].                                                                                           |
+| `--secret` [secret] | Secret to be used to calculate the webhook request payload signature. See docs for more details. Must be 16 chars long. |
+| `--config` [path]   | Specify a path to app.json.                                                                                             |
 
 </p>
 </details>

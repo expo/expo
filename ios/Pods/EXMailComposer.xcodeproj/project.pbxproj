@@ -213,7 +213,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2165AD5673ADD54AC52E6D48D0E664C4 /* Release */ = {
+		09BBE67460A7E985B1FE287F4B8841C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CAA27822E77F737D2C64B02B99965F79 /* EXMailComposer.release.xcconfig */;
 			buildSettings = {
@@ -233,6 +233,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -298,30 +299,6 @@
 			};
 			name = Release;
 		};
-		85D4C5DA34785828A158E787636A1606 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 092DA9E0A5B71FB803DF32C051A4CB48 /* EXMailComposer.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXMailComposer;
-				PRODUCT_NAME = EXMailComposer;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		98A661790499223437837ED8B813F8C1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -386,6 +363,31 @@
 			};
 			name = Debug;
 		};
+		D26E5971132ED1BF738573E21646B87B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 092DA9E0A5B71FB803DF32C051A4CB48 /* EXMailComposer.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMailComposer;
+				PRODUCT_NAME = EXMailComposer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -401,8 +403,8 @@
 		6A7441A1B25FB2C81A2ED770C2386D70 /* Build configuration list for PBXNativeTarget "EXMailComposer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85D4C5DA34785828A158E787636A1606 /* Debug */,
-				2165AD5673ADD54AC52E6D48D0E664C4 /* Release */,
+				D26E5971132ED1BF738573E21646B87B /* Debug */,
+				09BBE67460A7E985B1FE287F4B8841C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

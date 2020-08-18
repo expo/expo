@@ -131,13 +131,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
   },
   'amazon-cognito-identity-js': {
-    repoUrl: 'https://github.com/aws/amazon-cognito-identity-js.git',
+    repoUrl: 'https://github.com/aws-amplify/amplify-js.git',
     installableInManagedApps: false,
     steps: [
       {
-        sourceIosPath: 'ios',
+        sourceIosPath: 'packages/amazon-cognito-identity-js/ios',
         targetIosPath: 'Api/Cognito',
-        sourceAndroidPath: 'android/src/main/java/com/amazonaws',
+        sourceAndroidPath: 'packages/amazon-cognito-identity-js/android/src/main/java/com/amazonaws',
         targetAndroidPath: 'modules/api/cognito',
         sourceAndroidPackage: 'com.amazonaws',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.cognito',
@@ -255,7 +255,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
           'useSharedPool'
         )} property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.`
       ),
-      chalk.bold.yellow(`See commit ${chalk.cyan('0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
+      chalk.bold.yellow(`See commit ${chalk.cyan('https://github.com/expo/expo/commit/0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
     ],
   },
   'react-native-safe-area-context': {
@@ -290,6 +290,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
       },
+    ],
+    warnings: [
+      `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(
+        'ReactAndroid'
+      )}. Please ensure that ${chalk.magenta(
+        'resourceName'
+      )}s used for grabbing style of dialogs are being resolved properly.`,
     ],
   },
   '@react-native-community/masked-view': {

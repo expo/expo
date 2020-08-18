@@ -83,6 +83,8 @@ export async function coolDownAsync(browserPackage?: string): Promise<WebBrowser
   }
 }
 
+let browserLocked = false;
+
 export async function openBrowserAsync(
   url: string,
   browserParams: WebBrowserOpenOptions = {}
@@ -90,7 +92,29 @@ export async function openBrowserAsync(
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
-  return await ExponentWebBrowser.openBrowserAsync(url, browserParams);
+
+  if (browserLocked) {
+    // Prevent multiple sessions from running at the same time, WebBrowser doesn't
+    // support it this makes the behavior predictable.
+    if (__DEV__) {
+      console.warn(
+        'Attempted to call WebBrowser.openBrowserAsync multiple times while already active. Only one WebBrowser controller can be active at any given time.'
+      );
+    }
+
+    return { type: 'locked' };
+  }
+  browserLocked = true;
+
+  let result: WebBrowserResult;
+  try {
+    result = await ExponentWebBrowser.openBrowserAsync(url, browserParams);
+  } finally {
+    // WebBrowser session complete, unset lock
+    browserLocked = false;
+  }
+
+  return result;
 }
 
 export function dismissBrowser(): void {

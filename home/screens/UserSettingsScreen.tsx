@@ -1,138 +1,123 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
-import { NavigationInjectedProps } from 'react-navigation';
-import { connect } from 'react-redux';
+import { Platform, StyleSheet, View } from 'react-native';
+import { ColorSchemeName } from 'react-native-appearance';
 
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
 import SectionFooter from '../components/SectionFooter';
 import SectionHeader from '../components/SectionHeader';
+import { useDispatch, useSelector } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 import SettingsActions from '../redux/SettingsActions';
 
-type PreferredAppearance = 'light' | 'dark' | 'no-preference';
+export default function UserSettingsScreen() {
+  return (
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="always"
+      keyboardDismissMode="on-drag">
+      <AppearanceItem />
+      {Platform.OS === 'ios' && <MenuGestureItem />}
+      <SignOutItem />
+    </ScrollView>
+  );
+}
 
-type Props = NavigationInjectedProps & {
-  preferredAppearance: PreferredAppearance;
-  devMenuSettings: any;
-};
+function AppearanceItem() {
+  const dispatch = useDispatch();
+  const preferredAppearance = useSelector(data => data.settings.preferredAppearance);
 
-@connect(data => UserSettingsScreen.getDataProps(data))
-export default class UserSettingsScreen extends React.Component<Props> {
-  static navigationOptions = {
-    title: 'Options',
-  };
+  const onSelectAppearance = React.useCallback(
+    (preferredAppearance: ColorSchemeName) => {
+      dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
+    },
+    [dispatch]
+  );
 
-  static getDataProps(data) {
-    const { settings } = data;
+  return (
+    <View style={styles.marginTop}>
+      <SectionHeader title="Theme" />
+      <ListItem
+        title="Automatic"
+        checked={preferredAppearance === 'no-preference'}
+        onPress={() => onSelectAppearance('no-preference')}
+      />
+      <ListItem
+        title="Light"
+        checked={preferredAppearance === 'light'}
+        onPress={() => onSelectAppearance('light')}
+      />
+      <ListItem
+        last
+        margins={false}
+        title="Dark"
+        checked={preferredAppearance === 'dark'}
+        onPress={() => onSelectAppearance('dark')}
+      />
+      <SectionFooter
+        title="Automatic is only supported on operating systems that allow you to control the
+            system-wide color scheme."
+      />
+    </View>
+  );
+}
 
-    return {
-      preferredAppearance: settings.preferredAppearance,
-      devMenuSettings: settings.devMenuSettings,
-    };
-  }
+function MenuGestureItem() {
+  const dispatch = useDispatch();
+  const devMenuSettings = useSelector(data => data.settings.devMenuSettings);
 
-  render() {
-    return (
-      <ScrollView
-        style={styles.container}
-        keyboardShouldPersistTaps="always"
-        keyboardDismissMode="on-drag">
-        {this._renderAppearanceOptions()}
-        {this._renderMenuGestureOptions()}
-        {this._renderSignOut()}
-      </ScrollView>
-    );
-  }
-
-  _handlePressSignOut = () => {
-    this.props.dispatch(SessionActions.signOut());
-    requestAnimationFrame(this.props.navigation.pop);
-  };
-
-  _setPreferredAppearance = (preferredAppearance: PreferredAppearance) => {
-    this.props.dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
-  };
-
-  _toggleMotionGesture = () => {
-    this.props.dispatch(
+  const onToggleMotionGesture = React.useCallback(() => {
+    dispatch(
       SettingsActions.setDevMenuSetting(
         'motionGestureEnabled',
-        !this.props.devMenuSettings.motionGestureEnabled
+        !devMenuSettings.motionGestureEnabled
       )
     );
-  };
+  }, [dispatch, devMenuSettings]);
 
-  _toggleTouchGesture = () => {
-    this.props.dispatch(
-      SettingsActions.setDevMenuSetting(
-        'touchGestureEnabled',
-        !this.props.devMenuSettings.touchGestureEnabled
-      )
+  const onToggleTouchGesture = React.useCallback(() => {
+    dispatch(
+      SettingsActions.setDevMenuSetting('touchGestureEnabled', !devMenuSettings.touchGestureEnabled)
     );
-  };
+  }, [dispatch, devMenuSettings]);
 
-  _renderAppearanceOptions() {
-    const { preferredAppearance } = this.props;
-
-    return (
-      <View style={styles.marginTop}>
-        <SectionHeader title="Theme" />
-        <ListItem
-          title="Automatic"
-          checked={preferredAppearance === 'no-preference'}
-          onPress={() => this._setPreferredAppearance('no-preference')}
-        />
-        <ListItem
-          title="Light"
-          checked={preferredAppearance === 'light'}
-          onPress={() => this._setPreferredAppearance('light')}
-        />
-        <ListItem
-          last
-          margins={false}
-          title="Dark"
-          checked={preferredAppearance === 'dark'}
-          onPress={() => this._setPreferredAppearance('dark')}
-        />
-        <SectionFooter
-          title="Automatic is only supported on operating systems that allow you to control the
-            system-wide color scheme."
-        />
-      </View>
-    );
+  if (!devMenuSettings) {
+    return null;
   }
 
-  _renderMenuGestureOptions() {
-    const { devMenuSettings } = this.props;
+  return (
+    <View style={styles.marginTop}>
+      <SectionHeader title="Developer Menu Gestures" />
+      <ListItem
+        title="Shake device"
+        checked={devMenuSettings.motionGestureEnabled}
+        onPress={onToggleMotionGesture}
+      />
+      <ListItem
+        title="Three-finger long press"
+        checked={devMenuSettings.touchGestureEnabled}
+        onPress={onToggleTouchGesture}
+      />
+      <SectionFooter title="Selected gestures will toggle the developer menu while inside an experience. The menu allows you to reload or return to home in a published experience, and exposes developer tools in development mode." />
+    </View>
+  );
+}
 
-    if (!devMenuSettings || Platform.OS !== 'ios') {
-      return null;
-    }
+function SignOutItem() {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-    return (
-      <View style={styles.marginTop}>
-        <SectionHeader title="Developer Menu Gestures" />
-        <ListItem
-          title="Shake device"
-          checked={devMenuSettings.motionGestureEnabled}
-          onPress={this._toggleMotionGesture}
-        />
-        <ListItem
-          title="Three-finger long press"
-          checked={devMenuSettings.touchGestureEnabled}
-          onPress={this._toggleTouchGesture}
-        />
-        <SectionFooter title="Selected gestures will toggle the developer menu while inside an experience. The menu allows you to reload or return to home in a published experience, and exposes developer tools in development mode." />
-      </View>
-    );
-  }
+  const onPress = React.useCallback(() => {
+    dispatch(SessionActions.signOut());
+    requestAnimationFrame(navigation.goBack);
+  }, [dispatch, navigation]);
 
-  _renderSignOut() {
-    return (
-      <ListItem style={styles.marginTop} title="Sign Out" onPress={this._handlePressSignOut} last />
-    );
-  }
+  return (
+    <View style={styles.marginTop}>
+      <ListItem title="Sign Out" onPress={onPress} last />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

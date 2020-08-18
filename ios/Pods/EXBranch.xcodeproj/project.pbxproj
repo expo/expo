@@ -7,31 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01AFB6222402D897D0DD84FB8E240AD6 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 227F8EDD965DCEFF8169B44991E2BDB4 /* BranchLinkProperties+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
+		02FB39C79AC4F36AD8A0F2C9EAEF8CF9 /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 0408EAEDD8C5F2C7DE13186FEA9780AC /* RNBranchAgingDictionary.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
 		09E667E700CC4E0254DAA7E46F609B13 /* RNBranchConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = FBB8820BC4BA6354D1A539497EB3878D /* RNBranchConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0BEEA0AB06F9D66E05034EA647FAFC7B /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B0378C3F77CE743C8F1F667A29BD3A1 /* RNBranchAgingItem.m */; };
+		10D9AE7C2C28C94E5FCC056D6A635DDB /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC846CED7112AD22B456B6872FDCB5B0 /* RNBranchConfig.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
 		2C44327C6D014EA37FF4B87DB58BB1B3 /* RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 1913AB56E9E15DA715C2FAD6EC38A608 /* RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		304DFD7EE9A35BE1E613A2048AC2B13D /* BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A75C5B4B99FEAB6C6289934237847CF /* BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4612D5B177DBAEA0672BB758BEFB3053 /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC846CED7112AD22B456B6872FDCB5B0 /* RNBranchConfig.m */; };
-		53DC55DDFECA81CD92359C02125EFBA7 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = A49284DB92623A95BDD6838C29A2E08C /* BranchUniversalObject+RNBranch.m */; };
+		3657C9E63B27B8B64BB141F2298357CE /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B0378C3F77CE743C8F1F667A29BD3A1 /* RNBranchAgingItem.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
+		3B306C3BB0DBC5312589F4BDD21A8EA3 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 5869FC31C05162BFE86A176FD168D47A /* RNBranchProperty.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
 		56817BD70B4713C713C324F0B6F364C4 /* NSObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = DD502BA9AF259EC1668F3E383D87096A /* NSObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5B3C1FBF33F8A97EE7D36AEB6F666048 /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = ABE20E48C163D720F1D480164BCC9531 /* BranchContentMetadata+RNBranch.m */; };
+		5B378FA750CA1A6C760B0CB55274466D /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = A49284DB92623A95BDD6838C29A2E08C /* BranchUniversalObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
 		60390B7373AB158846A316BDC2C0A9DD /* BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCDBD391513D3E9717B5B069D05EE3A0 /* BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6691202412B6F2EA449704202A646611 /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = F578E53307D55899C5B0DC4A90599CE7 /* BranchEvent+RNBranch.m */; };
-		67442A9F7EC129C692FA9C818D5D1C22 /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = F71FA1790B3FD346FD9936D7B3C40848 /* RNBranchEventEmitter.m */; };
 		73BEFF02E2DCDB1C8C9831948FC10BD7 /* EXBranchManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F58E871A9E1A906784D9326F5DB39481 /* EXBranchManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		82D3C91DD37804E02C7D5FF344B26CB2 /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D8BA527861562FD3003030F829EFFE8 /* RNBranch.m */; };
-		8C7A3D9CA26939B46FAEB42E8FC178C0 /* EXBranch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF1568ABF3083F98AF93A71BFFA06E14 /* EXBranch-dummy.m */; };
-		8E8ABDD222F25CBFEF55E56736AB30F6 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 5869FC31C05162BFE86A176FD168D47A /* RNBranchProperty.m */; };
-		8E92F2CD2D23A1D5CFCAEAC4E8745A04 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4CCD85FEDD116B2A028E006059981B /* EXBranchManager.m */; };
+		85614AD7143D4AD58581DFE195D3EE16 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4CCD85FEDD116B2A028E006059981B /* EXBranchManager.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
+		8697A1059C2615A301BF68F5972615E8 /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = F71FA1790B3FD346FD9936D7B3C40848 /* RNBranchEventEmitter.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
+		942AF5523C4AA3BFC7273CC7B42D733D /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 785144F632D5590E1708B2ACABF843D9 /* NSObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
 		9D39BD1FC96F54266A78326DA343EA33 /* RNBranchProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = B61B1240DCB86E3918226FA2AA3C445D /* RNBranchProperty.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B282BFD8B4E969F7CB788242A3ED4768 /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 0408EAEDD8C5F2C7DE13186FEA9780AC /* RNBranchAgingDictionary.m */; };
+		9EF3FE6CD4E33A77445BE55ED07D0431 /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = ABE20E48C163D720F1D480164BCC9531 /* BranchContentMetadata+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
 		BA63E53BD226249EF078DC065BD6B844 /* BranchUniversalObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = A186CB1DF0BB2E97AAB84C6B5CC44A5A /* BranchUniversalObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BFAB2EEFB82D6F2EE60EC14C7DEAAB84 /* RNBranchEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2C821DE21EFF1135F05D62BC3DC69D /* RNBranchEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C1D9D7E2F760F3F70C79B5D27CE6E408 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 227F8EDD965DCEFF8169B44991E2BDB4 /* BranchLinkProperties+RNBranch.m */; };
+		ED58E040BE84EA86D9C333F59C9B779A /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D8BA527861562FD3003030F829EFFE8 /* RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
+		EE79C0E858A235015FCB9A63701D758C /* EXBranch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF1568ABF3083F98AF93A71BFFA06E14 /* EXBranch-dummy.m */; };
 		F0FD2A188FA0D6CB02B999916C7C8150 /* BranchContentMetadata+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FEE6B483C9899C1CFC712FE3075054 /* BranchContentMetadata+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F3A87201EE3529BA3177A26A223437FF /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = F578E53307D55899C5B0DC4A90599CE7 /* BranchEvent+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\""; }; };
 		F3E3066D4A6D5A6C39713F3E94A9D098 /* RNBranchAgingDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = F29C1448B1E8FBA0ACB593BED739CCA7 /* RNBranchAgingDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FA21838512640674BD094549F4F1EF03 /* RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B7DA9F1B5F4265545BF0CDD29E9368E /* RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FE9E2FE83A43960C0B73CD61385B3065 /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 785144F632D5590E1708B2ACABF843D9 /* NSObject+RNBranch.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -233,7 +233,7 @@
 			buildConfigurationList = 2ADEE8F16177995F4C07B8DF2E245485 /* Build configuration list for PBXNativeTarget "EXBranch" */;
 			buildPhases = (
 				65E7CDFC69D073AC9CDC16DDC3832187 /* Headers */,
-				F1C0B76E985F75253DD8DBF7881B9DAA /* Sources */,
+				6B3AE2E3E4D85226441928766613B2A8 /* Sources */,
 				0C31E644B50509E759D0DDC72B125336 /* Frameworks */,
 			);
 			buildRules = (
@@ -287,23 +287,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F1C0B76E985F75253DD8DBF7881B9DAA /* Sources */ = {
+		6B3AE2E3E4D85226441928766613B2A8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5B3C1FBF33F8A97EE7D36AEB6F666048 /* BranchContentMetadata+RNBranch.m in Sources */,
-				6691202412B6F2EA449704202A646611 /* BranchEvent+RNBranch.m in Sources */,
-				C1D9D7E2F760F3F70C79B5D27CE6E408 /* BranchLinkProperties+RNBranch.m in Sources */,
-				53DC55DDFECA81CD92359C02125EFBA7 /* BranchUniversalObject+RNBranch.m in Sources */,
-				8C7A3D9CA26939B46FAEB42E8FC178C0 /* EXBranch-dummy.m in Sources */,
-				8E92F2CD2D23A1D5CFCAEAC4E8745A04 /* EXBranchManager.m in Sources */,
-				FE9E2FE83A43960C0B73CD61385B3065 /* NSObject+RNBranch.m in Sources */,
-				82D3C91DD37804E02C7D5FF344B26CB2 /* RNBranch.m in Sources */,
-				B282BFD8B4E969F7CB788242A3ED4768 /* RNBranchAgingDictionary.m in Sources */,
-				0BEEA0AB06F9D66E05034EA647FAFC7B /* RNBranchAgingItem.m in Sources */,
-				4612D5B177DBAEA0672BB758BEFB3053 /* RNBranchConfig.m in Sources */,
-				67442A9F7EC129C692FA9C818D5D1C22 /* RNBranchEventEmitter.m in Sources */,
-				8E8ABDD222F25CBFEF55E56736AB30F6 /* RNBranchProperty.m in Sources */,
+				9EF3FE6CD4E33A77445BE55ED07D0431 /* BranchContentMetadata+RNBranch.m in Sources */,
+				F3A87201EE3529BA3177A26A223437FF /* BranchEvent+RNBranch.m in Sources */,
+				01AFB6222402D897D0DD84FB8E240AD6 /* BranchLinkProperties+RNBranch.m in Sources */,
+				5B378FA750CA1A6C760B0CB55274466D /* BranchUniversalObject+RNBranch.m in Sources */,
+				EE79C0E858A235015FCB9A63701D758C /* EXBranch-dummy.m in Sources */,
+				85614AD7143D4AD58581DFE195D3EE16 /* EXBranchManager.m in Sources */,
+				942AF5523C4AA3BFC7273CC7B42D733D /* NSObject+RNBranch.m in Sources */,
+				ED58E040BE84EA86D9C333F59C9B779A /* RNBranch.m in Sources */,
+				02FB39C79AC4F36AD8A0F2C9EAEF8CF9 /* RNBranchAgingDictionary.m in Sources */,
+				3657C9E63B27B8B64BB141F2298357CE /* RNBranchAgingItem.m in Sources */,
+				10D9AE7C2C28C94E5FCC056D6A635DDB /* RNBranchConfig.m in Sources */,
+				8697A1059C2615A301BF68F5972615E8 /* RNBranchEventEmitter.m in Sources */,
+				3B306C3BB0DBC5312589F4BDD21A8EA3 /* RNBranchProperty.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,7 +452,7 @@
 			};
 			name = Release;
 		};
-		6D9DFC5611180C8D76D90EE55E152BD1 /* Debug */ = {
+		74519617923D5BAE3F17BCB1A43954D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0B89DF68BE8B6B7A1549FD48149F8EEA /* EXBranch.debug.xcconfig */;
 			buildSettings = {
@@ -472,11 +472,12 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		D7B629E75F0A6CB32BD658902BB31A5D /* Release */ = {
+		ACA3CF01BEE8128C99925B491120BDD4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DBB2F64B9DCCE60CDC3BCFED51E77660 /* EXBranch.release.xcconfig */;
 			buildSettings = {
@@ -496,6 +497,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -507,8 +509,8 @@
 		2ADEE8F16177995F4C07B8DF2E245485 /* Build configuration list for PBXNativeTarget "EXBranch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6D9DFC5611180C8D76D90EE55E152BD1 /* Debug */,
-				D7B629E75F0A6CB32BD658902BB31A5D /* Release */,
+				74519617923D5BAE3F17BCB1A43954D4 /* Debug */,
+				ACA3CF01BEE8128C99925B491120BDD4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

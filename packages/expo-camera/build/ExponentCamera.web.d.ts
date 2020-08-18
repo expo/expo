@@ -1,24 +1,10 @@
-import React from 'react';
-import { CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions } from './Camera.types';
-import CameraModule from './CameraModule/CameraModule';
-export default class ExponentCamera extends React.Component<CameraNativeProps> {
-    video?: number | null;
-    camera?: CameraModule;
-    state: {
-        type: null;
-    };
-    componentWillUnmount(): void;
-    componentDidUpdate(nextProps: any): void;
-    _updateCameraProps: ({ type, pictureSize, ...webCameraSettings }: CameraNativeProps) => Promise<void>;
-    getCamera: () => CameraModule;
+import * as React from 'react';
+import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions } from './Camera.types';
+export interface ExponentCameraRef {
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
     resumePreview: () => Promise<void>;
     pausePreview: () => Promise<void>;
-    onCameraReady: () => void;
-    onMountError: ({ nativeEvent }: {
-        nativeEvent: CameraMountError;
-    }) => void;
-    _setRef: (ref: any) => void;
-    render(): JSX.Element;
 }
+declare const ExponentCamera: React.ForwardRefExoticComponent<Pick<CameraNativeProps, "pointerEvents" | "style" | "zoom" | "ratio" | "focusDepth" | "type" | "onCameraReady" | "useCamera2Api" | "flashMode" | "whiteBalance" | "autoFocus" | "pictureSize" | "onMountError" | "barCodeScannerSettings" | "onBarCodeScanned" | "faceDetectorSettings" | "onFacesDetected" | "onFaceDetectionError" | "onPictureSaved" | "barCodeScannerEnabled" | "faceDetectorEnabled"> & React.RefAttributes<ExponentCameraRef>>;
+export default ExponentCamera;

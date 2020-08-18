@@ -23,6 +23,8 @@ Expo can bundle assets into your standalone binary during the build process so t
 - Your users may not have internet the first time they open your app, or
 - If your app relies on a nontrivial amount of assets for the very first screen to function properly.
 
+### Managed workflow
+
 To bundle assets in your binary, use the [assetBundlePatterns](../../workflow/configuration/) key in `app.json` to provide a list of paths in your project directory:
 
 ```
@@ -32,6 +34,10 @@ To bundle assets in your binary, use the [assetBundlePatterns](../../workflow/co
 ```
 
 Images with paths matching the given patterns will be bundled into your native binaries next time you run `expo build`.
+
+### Bare workflow
+
+In the bare workflow, Xcode and Android Studio don't automatically run `expo publish` as part of the build process, so the `assetBundlePatterns` key doesn't apply in this case. Instead, any assets that are explicitly `require()`'d anywhere in your codebase (including in your dependencies) are bundled into your binary. This is the same behavior as with regular React Native apps.
 
 ## Listen for changes in network availability
 

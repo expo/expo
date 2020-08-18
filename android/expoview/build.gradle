@@ -74,9 +74,10 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 1
     versionName "1.0"
+
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -151,12 +152,11 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
-        'expo-bluetooth',
         'expo-in-app-purchases',
-        'expo-updates',
-        'expo-splash-screen'
+        'expo-gl-cpp-legacy'
       ]
   ])
+  compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -170,11 +170,12 @@ dependencies {
       target       : 'react-native',
       exclude      : [
           'expo-module-template',
-          'expo-bluetooth',
           'expo-in-app-purchases',
-          'expo-splash-screen'
       ]
   ])
+
+  // expo-random is no longer a unimodule
+  api project(':expo-random')
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -213,9 +214,9 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
+  api "androidx.room:room-runtime:2.1.0"
 
   api 'com.squareup.picasso:picasso:2.5.2'
-  api 'com.google.android.gms:play-services-gcm:17.0.0'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
   api 'com.google.android.gms:play-services-maps:17.0.0'
   api 'com.google.android.gms:play-services-auth:17.0.0'
@@ -242,7 +243,7 @@ dependencies {
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:20.1.2'
+  api 'com.google.firebase:firebase-messaging:20.2.4'
   api 'com.google.maps.android:android-maps-utils:0.5'
   api 'com.jakewharton:butterknife:10.2.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
@@ -268,4 +269,7 @@ dependencies {
   api "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
+
+  // @react-native-community/viewpager
+  api 'com.github.troZee:ViewPager2:v1.0.6'
 }

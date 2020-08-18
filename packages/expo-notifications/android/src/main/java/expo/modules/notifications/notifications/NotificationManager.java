@@ -11,7 +11,7 @@ import java.util.WeakHashMap;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.ExpoNotificationsService;
+import expo.modules.notifications.notifications.service.NotificationsHelper;
 
 public class NotificationManager implements SingletonModule, expo.modules.notifications.notifications.interfaces.NotificationManager {
   private static final String SINGLETON_NAME = "NotificationManager";
@@ -28,7 +28,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
 
     // Registers this singleton instance in static ExpoNotificationsService listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
-    ExpoNotificationsService.addListener(this);
+    NotificationsHelper.addListener(this);
   }
 
   @Override

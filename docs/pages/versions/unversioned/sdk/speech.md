@@ -6,6 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-speech'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
 
@@ -65,13 +66,29 @@ const styles = StyleSheet.create({
 import * as Speech from 'expo-speech';
 ```
 
+<TableOfContentSection title='Constants' contents={['Speech.maxSpeechInputLength']} />
+
+<TableOfContentSection title='Methods' contents={['Speech.speak(text, options)', 'Speech.stop()', 'Speech.pause()', 'Speech.resume()', 'Speech.isSpeakingAsync()', 'Speech.getAvailableVoicesAsync()']} />
+
+<TableOfContentSection title='Enum Types' contents={['Speech.VoiceQuality']} />
+
+<TableOfContentSection title='Error Codes' contents={['ERR_SPEECH_INPUT_LENGTH']} />
+
+## Constants
+
+### `Speech.maxSpeechInputLength`
+
+Maximum possible text length acceptable by `Speech.speak()` method. It is platform-dependent. On iOS, this returns `Number.MAX_VALUE`.
+
+## Methods
+
 ### `Speech.speak(text, options)`
 
 Speak out loud the `text` given `options`. Calling this when another text is being spoken adds an utterance to queue.
 
 #### Arguments
 
-- **text (_string_)** -- The text to be spoken.
+- **text (_string_)** -- The text to be spoken. Cannot be longer than [`Speech.maxSpeechInputLength`](#speechmaxspeechinputlength).
 - **options (_object_)** --
 
   A map of options:
@@ -84,6 +101,11 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
   - **onDone (_function_)** -- A callback that is invoked when speaking finishes.
   - **onStopped (_function_)** -- A callback that is invoked when speaking is stopped by calling `Speech.stop()`.
   - **onError (_function_)** -- (Android only). A callback that is invoked when an error occurred while speaking.
+
+#### Error Codes
+
+- [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
+
 
 ### `Speech.stop()`
 
@@ -122,6 +144,15 @@ List of `Voice` objects.
 |  quality   | enum Speech.VoiceQuality |
 |  language  |          string          |
 
-##### enum `Speech.VoiceQuality`
+## Enum Types
 
-possible values: `Default` or `Enhanced`.
+### `Speech.VoiceQuality`
+
+- **`VoiceQuality.Default`**
+- **`VoiceQuality.Enhanced`**
+
+## Error Codes
+
+### `ERR_SPEECH_INPUT_LENGTH`
+
+An error occurred when length of `text` parameter provided to `Speech.speak()` exceeds its limit. To see the limit, use `Speech.maxSpeechInputLength`.

@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCCommerceEvent.h
+../../../Branch/Branch-SDK/BNCCommerceEvent.h

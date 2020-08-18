@@ -6,6 +6,4 @@ The [managed workflow](../../introduction/managed-vs-bare/#managed-workflow) has
 
 The process of ejecting is easily reversible so don't worry about experimenting with it. Just commit any changes you want to keep and then follow along with this guide. If you decide you want to abort it, just check out your most recent commit. You can also reverse it in the future by deleting the `ios` and `android` directories.
 
-To eject to the bare workflow, you can run `expo eject` and choose the "Bare" option. You will prompted with several questions and then the native iOS and Android projects will be created.
-
-> Note: We don't recommend the [ExpoKit](../../expokit/overview/) eject option; it is deprecated and we will no longer support it after SDK 38.
+To eject to the bare workflow, you can run `expo eject` and follow the instructions. Head over to the [bare workflow walkthrough](../../bare/exploring-bare-workflow/) to learn more about what the workflow will look like after ejecting.

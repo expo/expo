@@ -1,6 +1,7 @@
 {
   "name": "jest-expo-puppeteer",
-  "version": "1.0.2",
+  "version": "1.0.3",
+  "description": "Run end-to-end tests on your Expo web projects with Jest, Puppeteer, and the Expo CLI.",
   "license": "MIT",
   "main": "build",
   "files": [
@@ -36,8 +37,7 @@
   },
   "devDependencies": {
     "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "~1.2.0",
-    "react": "16.11.0"
+    "expo-module-scripts": "~1.2.0"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

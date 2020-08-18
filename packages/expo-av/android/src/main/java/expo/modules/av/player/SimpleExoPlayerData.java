@@ -149,8 +149,6 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer.setPlaybackParameters(new PlaybackParameters(mRate, mShouldCorrectPitch ? 1.0f : mRate));
 
     mSimpleExoPlayer.setPlayWhenReady(mShouldPlay);
-
-    beginUpdatingProgressIfNecessary();
   }
 
   @Override
@@ -301,8 +299,12 @@ class SimpleExoPlayerData extends PlayerData
       && playbackState != mLastPlaybackState
       && playbackState == Player.STATE_ENDED) {
       callStatusUpdateListenerWithDidJustFinish();
+      stopUpdatingProgressIfNecessary();
     } else {
       callStatusUpdateListener();
+      if (playWhenReady && (playbackState == Player.STATE_READY)) {
+        beginUpdatingProgressIfNecessary();
+      }
     }
     mLastPlaybackState = playbackState;
   }
@@ -343,7 +345,7 @@ class SimpleExoPlayerData extends PlayerData
       final LoadCompletionListener listener = mLoadCompletionListener;
       mLoadCompletionListener = null;
       listener.onLoadError(error.toString());
-    } else {
+    } else if (mErrorListener != null) {
       mErrorListener.onError("Player error: " + error.getMessage());
     }
     release();

@@ -13,7 +13,8 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 <PlatformsSection android ios web />
 
 > **Notes:**
-> - Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
+>
+> - Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount any previously rendered `Camera` component so the following screens can use `<Camera />` without issues.
 > - Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
 
 ## Installation
@@ -246,13 +247,15 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 #### Returns
 
-Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file (useable as the source for an `Image` element) and `width, height` specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (useable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-The local image URI is temporary. Use [`FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+
+On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser. The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings), if available.
 
 ### `recordAsync()`
 
-Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation. Flipping camera during a recording results in stopping it.
+Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation. Flipping camera during a recording results in stopping it. This is not available on web.
 
 #### Arguments
 
@@ -320,7 +323,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ## Web Support
 
-Luckily most browsers support at least some form of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream).
+Luckily most browsers support at least some form of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream). Image URIs are always returned as base64 strings because local file system paths are not available in the browser.
 
 ### Chrome iframe usage
 

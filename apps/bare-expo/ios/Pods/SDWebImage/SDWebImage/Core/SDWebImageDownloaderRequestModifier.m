@@ -37,3 +37,35 @@
 }
 
 @end
+
+@implementation SDWebImageDownloaderRequestModifier (Conveniences)
+
+- (instancetype)initWithMethod:(NSString *)method {
+    return [self initWithMethod:method headers:nil body:nil];
+}
+
+- (instancetype)initWithHeaders:(NSDictionary<NSString *,NSString *> *)headers {
+    return [self initWithMethod:nil headers:headers body:nil];
+}
+
+- (instancetype)initWithBody:(NSData *)body {
+    return [self initWithMethod:nil headers:nil body:body];
+}
+
+- (instancetype)initWithMethod:(NSString *)method headers:(NSDictionary<NSString *,NSString *> *)headers body:(NSData *)body {
+    method = method ? [method copy] : @"GET";
+    headers = [headers copy];
+    body = [body copy];
+    return [self initWithBlock:^NSURLRequest * _Nullable(NSURLRequest * _Nonnull request) {
+        NSMutableURLRequest *mutableRequest = [request mutableCopy];
+        mutableRequest.HTTPMethod = method;
+        mutableRequest.HTTPBody = body;
+        for (NSString *header in headers) {
+            NSString *value = headers[header];
+            [mutableRequest setValue:value forHTTPHeaderField:header];
+        }
+        return [mutableRequest copy];
+    }];
+}
+
+@end

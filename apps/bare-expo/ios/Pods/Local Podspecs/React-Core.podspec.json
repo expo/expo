@@ -1,17 +1,22 @@
 {
   "name": "React-Core",
-  "version": "0.62.2",
+  "version": "0.63.2",
   "summary": "The core of React Native.",
-  "homepage": "http://facebook.github.io/react-native/",
+  "homepage": "https://reactnative.dev/",
   "license": "MIT",
   "authors": "Facebook, Inc. and its affiliates",
   "platforms": {
-    "ios": "9.0",
-    "tvos": "9.2"
+    "ios": "10.0",
+    "tvos": "10.0"
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.62.2"
+    "tag": "v0.63.2"
+  },
+  "resource_bundles": {
+    "AccessibilityResources": [
+      "React/AccessibilityResources/*.lproj"
+    ]
   },
   "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation",
   "header_dir": "React",
@@ -26,16 +31,16 @@
   "default_subspecs": "Default",
   "dependencies": {
     "Folly": [
-      "2018.10.22.00"
+      "2020.01.13.00"
     ],
     "React-cxxreact": [
-      "0.62.2"
+      "0.63.2"
     ],
     "React-jsi": [
-      "0.62.2"
+      "0.63.2"
     ],
     "React-jsiexecutor": [
-      "0.62.2"
+      "0.63.2"
     ],
     "Yoga": [
 
@@ -78,13 +83,13 @@
       ],
       "dependencies": {
         "React-Core/Default": [
-          "0.62.2"
+          "0.63.2"
         ],
         "React-Core/RCTWebSocket": [
-          "0.62.2"
+          "0.63.2"
         ],
         "React-jsinspector": [
-          "0.62.2"
+          "0.63.2"
         ]
       }
     },
@@ -93,7 +98,7 @@
       "source_files": "Libraries/WebSocket/*.{h,m}",
       "dependencies": {
         "React-Core/Default": [
-          "0.62.2"
+          "0.63.2"
         ]
       }
     },

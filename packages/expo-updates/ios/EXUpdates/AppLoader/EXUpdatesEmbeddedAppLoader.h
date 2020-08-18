@@ -4,18 +4,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString * const kEXUpdatesEmbeddedManifestName;
-extern NSString * const kEXUpdatesEmbeddedManifestType;
-extern NSString * const kEXUpdatesEmbeddedBundleFilename;
-extern NSString * const kEXUpdatesEmbeddedBundleFileType;
-extern NSString * const kEXUpdatesBareEmbeddedBundleFilename;
-extern NSString * const kEXUpdatesBareEmbeddedBundleFileType;
+extern NSString * const EXUpdatesEmbeddedManifestName;
+extern NSString * const EXUpdatesEmbeddedManifestType;
+extern NSString * const EXUpdatesEmbeddedBundleFilename;
+extern NSString * const EXUpdatesEmbeddedBundleFileType;
+extern NSString * const EXUpdatesBareEmbeddedBundleFilename;
+extern NSString * const EXUpdatesBareEmbeddedBundleFileType;
 
 @interface EXUpdatesEmbeddedAppLoader : EXUpdatesAppLoader
 
-+ (nullable EXUpdatesUpdate *)embeddedManifest;
-- (void)loadUpdateFromEmbeddedManifestWithSuccess:(EXUpdatesAppLoaderSuccessBlock)success
-                                            error:(EXUpdatesAppLoaderErrorBlock)error;
++ (nullable EXUpdatesUpdate *)embeddedManifestWithConfig:(EXUpdatesConfig *)config
+                                                database:(nullable EXUpdatesDatabase *)database;
+
+- (void)loadUpdateFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                                           success:(EXUpdatesAppLoaderSuccessBlock)success
+                                             error:(EXUpdatesAppLoaderErrorBlock)error;
 
 @end
 

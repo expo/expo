@@ -46,7 +46,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) int soundDictionaryKeyCount;
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, EXAVPlayerData *> *soundDictionary;
 @property (nonatomic, assign) BOOL isBeingObserved;
-@property (nonatomic, strong) NSMutableSet <NSObject<EXAVObject> *> *videoSet;
+@property (nonatomic, strong) NSHashTable <NSObject<EXAVObject> *> *videoSet;
 
 @property (nonatomic, strong) NSString *audioRecorderFilename;
 @property (nonatomic, strong) NSDictionary *audioRecorderSettings;
@@ -79,7 +79,7 @@ UM_EXPORT_MODULE(ExponentAV);
     _soundDictionaryKeyCount = 0;
     _soundDictionary = [NSMutableDictionary new];
     _isBeingObserved = NO;
-    _videoSet = [NSMutableSet new];
+    _videoSet = [NSHashTable weakObjectsHashTable];
     
     _audioRecorderFilename = nil;
     _audioRecorderSettings = nil;
@@ -99,12 +99,12 @@ UM_EXPORT_MODULE(ExponentAV);
 - (NSDictionary *)constantsToExport
 {
   return @{
-           @"Qualities": @{
-               @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,
-               @"Medium": AVAudioTimePitchAlgorithmTimeDomain,
-               @"High": AVAudioTimePitchAlgorithmSpectral
-               }
-           };
+    @"Qualities": @{
+        @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,
+        @"Medium": AVAudioTimePitchAlgorithmTimeDomain,
+        @"High": AVAudioTimePitchAlgorithmSpectral
+    }
+  };
 }
 
 #pragma mark - Expo experience lifecycle
@@ -114,7 +114,9 @@ UM_EXPORT_MODULE(ExponentAV);
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] unregisterAppLifecycleListener:self];
   _moduleRegistry = moduleRegistry;
   _kernelAudioSessionManagerDelegate = [_moduleRegistry getSingletonModuleForName:@"AudioSessionManager"];
-//  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
+  if (!_isBackgrounded) {
+    [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
+  }
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
   _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
   [UMPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
@@ -135,7 +137,7 @@ UM_EXPORT_MODULE(ExponentAV);
   _isBackgrounded = YES;
   if (!_staysActiveInBackground) {
     [self _deactivateAudioSession]; // This will pause all players and stop all recordings
-
+    
     [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
       [exAVObject appDidBackground];
     }];
@@ -238,11 +240,11 @@ UM_EXPORT_MODULE(ExponentAV);
         break;
     }
   }
-
+  
   if ([[_kernelAudioSessionManagerDelegate activeCategory] isEqual:requiredAudioCategory] && [_kernelAudioSessionManagerDelegate activeCategoryOptions] == requiredAudioCategoryOptions) {
     return nil;
   }
-
+  
   return [_kernelAudioSessionManagerDelegate setCategory:requiredAudioCategory withOptions:requiredAudioCategoryOptions forModule:self];
 }
 
@@ -273,7 +275,7 @@ UM_EXPORT_MODULE(ExponentAV);
   if (!_audioIsEnabled) {
     return UMErrorWithMessage(@"Expo Audio is disabled, so the audio session could not be activated.");
   }
-  if (_isBackgrounded && ![_kernelAudioSessionManagerDelegate isActiveForModule:self]) {
+  if (_isBackgrounded && !_staysActiveInBackground && ![_kernelAudioSessionManagerDelegate isActiveForModule:self]) {
     return UMErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
   }
   
@@ -284,12 +286,12 @@ UM_EXPORT_MODULE(ExponentAV);
   }
   
   NSError *error;
-
+  
   error = [self _updateAudioSessionCategoryForAudioSessionMode:audioSessionModeRequired];
   if (error) {
     return error;
   }
-
+  
   error = [_kernelAudioSessionManagerDelegate setActive:YES forModule:self];
   if (error) {
     return error;
@@ -314,7 +316,7 @@ UM_EXPORT_MODULE(ExponentAV);
   }
   
   NSError *error = [_kernelAudioSessionManagerDelegate setActive:NO forModule:self];
-
+  
   if (!error) {
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
@@ -340,7 +342,7 @@ UM_EXPORT_MODULE(ExponentAV);
     }
     return error;
   }
-
+  
   // We require the session to be inactive and it is active, let's deactivate it!
   return [self _deactivateAudioSession];
 }
@@ -385,7 +387,7 @@ UM_EXPORT_MODULE(ExponentAV);
   if (data) {
     block(data);
   } else {
-    reject(@"E_AUDIO_NOPLAYER", nil, UMErrorWithMessage(@"Player does not exist."));
+    reject(@"E_AUDIO_NOPLAYER", @"Sound object not loaded. Did you unload it using Audio.unloadAsync?", nil);
   }
 }
 
@@ -394,9 +396,9 @@ UM_EXPORT_MODULE(ExponentAV);
   EXAVPlayerData *data = _soundDictionary[key];
   if (data) {
     [data pauseImmediately];
+    _soundDictionary[key] = nil;
     [self demoteAudioSessionIfPossible];
   }
-  _soundDictionary[key] = nil;
 }
 
 #pragma mark - Internal video playback helper method
@@ -411,8 +413,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     if ([view isKindOfClass:[EXVideoView class]]) {
       block(view);
     } else {
-      NSString *errorMessage = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view];
-      reject(@"E_VIDEO_TAGINCORRECT", errorMessage, UMErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_TAGINCORRECT", [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view], nil);
     }
   } forView:reactTag ofClass:[EXVideoView class]];
 }
@@ -478,13 +479,13 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     }
   }
   recorderSettings[AVEncoderBitRateStrategyKey] = bitRateStrategy;
-
+  
   if (
       iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey] &&
       [iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey] isKindOfClass:[NSString class]]
       ) {
     recorderSettings[AVFormatIDKey] =
-      @([self _getFormatIDFromString:iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey]]);
+    @([self _getFormatIDFromString:iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey]]);
   }
   
   _audioRecorderSettings = recorderSettings;
@@ -493,7 +494,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 - (NSError *)_createNewAudioRecorder
 {
   if (_audioRecorder) {
-    return UMErrorWithMessage(@"Recorder already exists.");
+    return UMErrorWithMessage(@"Recorder is already prepared.");
   }
   
   id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
@@ -539,7 +540,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 - (BOOL)_checkAudioRecorderExistsOrReject:(UMPromiseRejectBlock)reject
 {
   if (_audioRecorder == nil) {
-    reject(@"E_AUDIO_NORECORDER", nil, UMErrorWithMessage(@"Recorder does not exist."));
+    reject(@"E_AUDIO_NORECORDER", @"Recorder does not exist. Prepare it first using Audio.prepareToRecordAsync.", nil);
   }
   return _audioRecorder != nil;
 }
@@ -601,36 +602,34 @@ UM_EXPORT_METHOD_AS(loadForSound,
                     rejecter:(UMPromiseRejectBlock)loadError)
 {
   NSNumber *key = @(_soundDictionaryKeyCount++);
-
-  __weak __typeof__(self) weakSelf = self;
+  
+  UM_WEAKIFY(self);
   EXAVPlayerData *data = [[EXAVPlayerData alloc] initWithEXAV:self
                                                    withSource:source
                                                    withStatus:status
-                                         withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
-                                           if (success) {
-                                             loadSuccess(@[key, successStatus]);
-                                           } else {
-                                             [weakSelf _removeSoundForKey:key];
-                                             loadError(@"EXAV", error, nil);
-                                           }
-                                         }];
-  data.errorCallback = ^(NSString *error) {
-    __strong __typeof__(self) strongSelf = weakSelf;
-    
-    if (strongSelf) {
-      [strongSelf sendEventWithName:@"ExponentAV.onError" body:@{
-                                                      @"key": key,
-                                                      @"error": error
-                                                      }];
-      [strongSelf _removeSoundForKey:key];
+                                          withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
+    UM_ENSURE_STRONGIFY(self);
+    if (success) {
+      loadSuccess(@[key, successStatus]);
+    } else {
+      [self _removeSoundForKey:key];
+      loadError(@"EXAV", error, nil);
     }
+  }];
+  data.errorCallback = ^(NSString *error) {
+    UM_ENSURE_STRONGIFY(self);
+    [self sendEventWithName:@"ExponentAV.onError" body:@{
+      @"key": key,
+      @"error": error
+    }];
+    [self _removeSoundForKey:key];
   };
   
   data.statusUpdateCallback = ^(NSDictionary *status) {
-    __strong __typeof__(weakSelf) strongSelf = weakSelf;
-    if (strongSelf && strongSelf.isBeingObserved) {
+    UM_ENSURE_STRONGIFY(self);
+    if (self.isBeingObserved) {
       NSDictionary<NSString *, id> *response = @{@"key": key, @"status": status};
-      [strongSelf sendEventWithName:EXDidUpdatePlaybackStatusEventName body:response];
+      [self sendEventWithName:EXDidUpdatePlaybackStatusEventName body:response];
     }
   };
   
@@ -780,10 +779,10 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
     return;
   }
   if (!_allowsAudioRecording) {
-    reject(@"E_AUDIO_AUDIOMODE", nil, UMErrorWithMessage(@"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync"));
+    reject(@"E_AUDIO_AUDIOMODE", @"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync.", nil);
     return;
   }
-
+  
   [self _setNewAudioRecorderFilenameAndSettings:options];
   NSError *error = [self _createNewAudioRecorder];
   
@@ -791,17 +790,21 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
     _audioRecorderIsPreparing = true;
     error = [self promoteAudioSessionIfNecessary];
     if (error) {
-      reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: audio session not activated!", error);
+      _audioRecorderIsPreparing = false;
+      [self _removeAudioRecorder:YES];
+      reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
+      return;
     } else if ([_audioRecorder prepareToRecord]) {
       resolve(@{@"uri": [[_audioRecorder url] absoluteString],
                 @"status": [self _getAudioRecorderStatus]});
     } else {
-      reject(@"E_AUDIO_RECORDERNOTCREATED", nil, UMErrorWithMessage(@"Prepare encountered an error: recorder not prepared."));
+      [self _removeAudioRecorder:YES];
+      reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: recorder not prepared.", nil);
     }
     _audioRecorderIsPreparing = false;
     [self demoteAudioSessionIfPossible];
   } else {
-    reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: recorder not created.", error);
+    reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
   }
 }
 
@@ -815,7 +818,7 @@ UM_EXPORT_METHOD_AS(startAudioRecording,
   }
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (!_allowsAudioRecording) {
-      reject(@"E_AUDIO_AUDIOMODE", nil, UMErrorWithMessage(@"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync"));
+      reject(@"E_AUDIO_AUDIOMODE", @"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync.", nil);
     } else if (!_audioRecorder.recording) {
       _audioRecorderShouldBeginRecording = true;
       NSError *error = [self promoteAudioSessionIfNecessary];
@@ -823,10 +826,10 @@ UM_EXPORT_METHOD_AS(startAudioRecording,
         if ([_audioRecorder record]) {
           resolve([self _getAudioRecorderStatus]);
         } else {
-          reject(@"E_AUDIO_RECORDING", nil, UMErrorWithMessage(@"Start encountered an error: recording not started."));
+          reject(@"E_AUDIO_RECORDING", @"Start encountered an error: recording not started.", nil);
         }
       } else {
-        reject(@"E_AUDIO_RECORDING", @"Start encountered an error: audio session not activated.", error);
+        reject(@"E_AUDIO_RECORDING", [NSString stringWithFormat:@"Start encountered an error: %@", error.description], error);
       }
     } else {
       resolve([self _getAudioRecorderStatus]);

@@ -17,7 +17,7 @@ UM_REGISTER_MODULE();
 
 - (EXUpdatesConfig *)config
 {
-  return EXUpdatesConfig.sharedInstance;
+  return EXUpdatesAppController.sharedInstance.config;
 }
 
 - (EXUpdatesDatabase *)database

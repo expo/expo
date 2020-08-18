@@ -46,7 +46,7 @@ That was pretty easy but we aren't done here yet. Notice that there is a white b
 
 ### Configuring the splash screen background color
 
-So far we have been making all of our changes to `App.js`. There are some aspects of our app that we want to configure without running our app JavaScipt code and the splash screen is one of these &mdash; it is visible before the app has had a chance to load and it is hidden once the app is ready for use (unless otherwise specified).
+So far we have been making all of our changes to `App.js`. There are some aspects of our app that we want to configure without running our app JavaScript code and the splash screen is one of these &mdash; it is visible before the app has had a chance to load and it is hidden once the app is ready for use (unless otherwise specified).
 
 Open up `app.json` from your project directory in your code editor and make the following change in the `splash` section:
 

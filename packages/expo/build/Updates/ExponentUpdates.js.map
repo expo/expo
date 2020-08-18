@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentUpdates.js","sourceRoot":"","sources":["../../src/Updates/ExponentUpdates.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAC7C,eAAe,aAAa,CAAC,eAAe,CAAC","sourcesContent":["import { NativeModules } from 'react-native';\nexport default NativeModules.ExponentUpdates;\n"]}

@@ -3,6 +3,9 @@ package expo.modules.updates;
 import java.io.File;
 import java.util.Map;
 
+// this unused import must stay because of versioning
+import expo.modules.updates.UpdatesConfiguration;
+
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;

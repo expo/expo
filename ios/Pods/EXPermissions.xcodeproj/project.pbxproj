@@ -281,6 +281,31 @@
 			};
 			name = Release;
 		};
+		30F6F78021ED68DA4D43785CD1D77C44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B2A8664CB34743392F2D2E0EBB327D7F /* EXPermissions.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPermissions;
+				PRODUCT_NAME = EXPermissions;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		4523848AF98B335121EB81A3C940A764 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -345,31 +370,7 @@
 			};
 			name = Debug;
 		};
-		B514DDF6803A538B48BC66F8F40C9DF1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B2A8664CB34743392F2D2E0EBB327D7F /* EXPermissions.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXPermissions;
-				PRODUCT_NAME = EXPermissions;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D069FEA119F358AF41746D348E5349B4 /* Release */ = {
+		76F88F8F4D099FF2E0F773FC708951EC /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B6173B53A22A3EA29FBD34586ED8EEE8 /* EXPermissions.release.xcconfig */;
 			buildSettings = {
@@ -389,6 +390,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -400,8 +402,8 @@
 		2395E9E43D24EA4D5617188E0A57A578 /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B514DDF6803A538B48BC66F8F40C9DF1 /* Debug */,
-				D069FEA119F358AF41746D348E5349B4 /* Release */,
+				30F6F78021ED68DA4D43785CD1D77C44 /* Debug */,
+				76F88F8F4D099FF2E0F773FC708951EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

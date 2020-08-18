@@ -21,6 +21,11 @@ typedef enum EXAppLoaderStatus {
   kEXAppLoaderStatusError,
 } EXAppLoaderStatus;
 
+typedef enum EXAppLoaderRemoteUpdateStatus {
+  kEXAppLoaderRemoteUpdateStatusChecking,
+  kEXAppLoaderRemoteUpdateStatusDownloading
+} EXAppLoaderRemoteUpdateStatus;
+
 @protocol EXAppLoaderDelegate <NSObject>
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest;
@@ -38,6 +43,8 @@ typedef enum EXAppLoaderStatus {
 @property (nonatomic, readonly) NSDictionary * _Nullable cachedManifest; // we definitely have this manifest and its bundle on the device
 @property (nonatomic, readonly) NSData * _Nullable bundle;
 @property (nonatomic, readonly) EXAppLoaderStatus status;
+@property (nonatomic, readonly) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
+@property (nonatomic, readonly) BOOL isUpToDate;
 
 @property (nonatomic, weak) id<EXAppLoaderDelegate> delegate;
 @property (nonatomic, weak) id<EXAppFetcherDataSource> dataSource;

@@ -189,7 +189,7 @@ If you restart the server this error should go away.
 By default Next.js won't load your statically imported images (images that you include in your project with `require('./path/to/image.png')`) like an Expo project will. If you want to load static images into your `<Image />` components or use `react-native-svg` then you can do the following:
 
 - Install the plugin - `yarn add next-images`
-  - [`next-images`][next-images] injects a Webpack loader to handle fonts.
+  - [`next-images`][next-images] injects a Webpack loader to handle images.
   - [`next-optimized-images`][next-optimized-images] is another good solution that you could check out.
 - Wrap your Next.js configuration object with the the image method and the Expo method in your `next.config.js`:
 

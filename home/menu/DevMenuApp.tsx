@@ -1,8 +1,9 @@
+import { ThemeProvider } from '@react-navigation/native';
 import React from 'react';
-import { AppRegistry, StyleSheet } from 'react-native';
+import { AppRegistry } from 'react-native';
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
-import { ThemeContext } from 'react-navigation';
 
+import * as Themes from '../constants/Themes';
 import LocalStorage from '../storage/LocalStorage';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuView from './DevMenuView';
@@ -22,6 +23,17 @@ function useUserSettings(renderId): { preferredAppearance?: string } {
   return settings;
 }
 
+function useAppColorScheme(uuid: string) {
+  const colorScheme = useColorScheme();
+  const { preferredAppearance = 'no-preference' } = useUserSettings(uuid);
+
+  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+  if (theme === 'no-preference') {
+    theme = 'light';
+  }
+  return theme;
+}
+
 class DevMenuRoot extends React.PureComponent<any, any> {
   render() {
     return <DevMenuApp {...this.props} />;
@@ -29,29 +41,16 @@ class DevMenuRoot extends React.PureComponent<any, any> {
 }
 
 function DevMenuApp(props) {
-  const colorScheme = useColorScheme();
-  const { preferredAppearance = 'no-preference' } = useUserSettings(props.uuid);
-
-  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
-  if (theme === 'no-preference') {
-    theme = 'light';
-  }
-
+  const theme = useAppColorScheme(props.uuid);
   return (
-    <AppearanceProvider style={styles.rootView}>
+    <AppearanceProvider>
       <DevMenuBottomSheet uuid={props.uuid}>
-        <ThemeContext.Provider value={theme}>
+        <ThemeProvider value={Themes[theme]}>
           <DevMenuView {...props} />
-        </ThemeContext.Provider>
+        </ThemeProvider>
       </DevMenuBottomSheet>
     </AppearanceProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  rootView: {
-    flex: 1,
-  },
-});
 
 AppRegistry.registerComponent('HomeMenu', () => DevMenuRoot);

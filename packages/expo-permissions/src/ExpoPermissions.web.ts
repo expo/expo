@@ -219,19 +219,24 @@ async function getPermissionAsync(
       if (shouldAsk) {
         const status = await askSensorPermissionAsync();
         return {
-          status: await askSensorPermissionAsync(),
+          status,
           expires: 'never',
           granted: status === PermissionStatus.GRANTED,
           canAskAgain: false,
         };
       }
+
       // We can infer from the requestor if this is an older browser.
-      const hasInsecureSensors = !isIOS() && !getRequestMotionPermission();
+      const status = getRequestMotionPermission()
+        ? PermissionStatus.UNDETERMINED
+        : isIOS()
+        ? PermissionStatus.DENIED
+        : PermissionStatus.GRANTED;
       return {
-        status: hasInsecureSensors ? PermissionStatus.GRANTED : PermissionStatus.UNDETERMINED,
+        status,
         expires: 'never',
         canAskAgain: true,
-        granted: false,
+        granted: status === PermissionStatus.GRANTED,
       };
     }
     case 'location':
@@ -344,9 +349,12 @@ export default {
   },
 };
 
-export function getRequestMotionPermission(): () => Promise<PermissionState> | null {
-  // @ts-ignore: requestPermission does not exist
-  return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
+export function getRequestMotionPermission(): (() => Promise<PermissionState>) | null {
+  if (typeof DeviceMotionEvent !== 'undefined' && !!DeviceMotionEvent?.requestPermission) {
+    return DeviceMotionEvent.requestPermission;
+  }
+
+  return null;
 }
 
 // https://stackoverflow.com/a/9039885/4047926

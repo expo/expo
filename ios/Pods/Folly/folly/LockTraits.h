@@ -1,11 +1,11 @@
 /*
- * Copyright 2016-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,10 +41,10 @@ namespace folly {
 namespace detail {
 
 namespace member {
-FOLLY_CREATE_MEMBER_INVOKE_TRAITS(lock, lock);
-FOLLY_CREATE_MEMBER_INVOKE_TRAITS(try_lock_for, try_lock_for);
-FOLLY_CREATE_MEMBER_INVOKE_TRAITS(lock_shared, lock_shared);
-FOLLY_CREATE_MEMBER_INVOKE_TRAITS(lock_upgrade, lock_upgrade);
+FOLLY_CREATE_MEMBER_INVOKER(lock_invoker, lock);
+FOLLY_CREATE_MEMBER_INVOKER(try_lock_for_invoker, try_lock_for);
+FOLLY_CREATE_MEMBER_INVOKER(lock_shared_invoker, lock_shared);
+FOLLY_CREATE_MEMBER_INVOKER(lock_upgrade_invoker, lock_upgrade);
 } // namespace member
 
 /**
@@ -86,7 +86,7 @@ class LockInterfaceDispatcher {
  private:
   // assert that the mutex type has basic lock and unlock functions
   static_assert(
-      member::lock::is_invocable<Mutex>::value,
+      folly::is_invocable<member::lock_invoker, Mutex>::value,
       "The mutex type must support lock and unlock functions");
 
   using duration = std::chrono::milliseconds;
@@ -94,11 +94,11 @@ class LockInterfaceDispatcher {
  public:
   static constexpr bool has_lock_unique = true;
   static constexpr bool has_lock_timed =
-      member::try_lock_for::is_invocable<Mutex, duration>::value;
+      folly::is_invocable<member::try_lock_for_invoker, Mutex, duration>::value;
   static constexpr bool has_lock_shared =
-      member::lock_shared::is_invocable<Mutex>::value;
+      folly::is_invocable<member::lock_shared_invoker, Mutex>::value;
   static constexpr bool has_lock_upgrade =
-      member::lock_upgrade::is_invocable<Mutex>::value;
+      folly::is_invocable<member::lock_upgrade_invoker, Mutex>::value;
 };
 
 /**
@@ -370,6 +370,8 @@ struct LockTraitsImpl<Mutex, MutexLevel::UPGRADE, true>
  */
 template <template <typename...> class LockTraits>
 struct UnlockPolicyExclusive {
+  constexpr static bool allows_concurrent_access = false;
+
   template <typename Mutex>
   static void unlock(Mutex& mutex) {
     LockTraits<Mutex>::unlock(mutex);
@@ -377,6 +379,8 @@ struct UnlockPolicyExclusive {
 };
 template <template <typename...> class LockTraits>
 struct UnlockPolicyShared {
+  constexpr static bool allows_concurrent_access = true;
+
   template <typename Mutex>
   static void unlock(Mutex& mutex) {
     LockTraits<Mutex>::unlock_shared(mutex);
@@ -384,6 +388,8 @@ struct UnlockPolicyShared {
 };
 template <template <typename...> class LockTraits>
 struct UnlockPolicyUpgrade {
+  constexpr static bool allows_concurrent_access = true;
+
   template <typename Mutex>
   static void unlock(Mutex& mutex) {
     LockTraits<Mutex>::unlock_upgrade(mutex);

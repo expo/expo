@@ -32,7 +32,7 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
-@interface ABI38_0_0RCTPlatform () <NativePlatformConstantsIOSSpec>
+@interface ABI38_0_0RCTPlatform () <ABI38_0_0NativePlatformConstantsIOSSpec>
 @end
 
 @implementation ABI38_0_0RCTPlatform

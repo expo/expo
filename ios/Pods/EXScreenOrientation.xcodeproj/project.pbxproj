@@ -237,9 +237,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		437AC041147BD242507429C2DE876218 /* Release */ = {
+		22B1A828AB81F5B6AFCC3F10C1D65381 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 034F9A0AE662DAD2DCA489427BF3B55D /* EXScreenOrientation.release.xcconfig */;
+			baseConfigurationReference = B15FB0C6841456E5068505897E38ABB4 /* EXScreenOrientation.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -257,10 +257,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		9EC46603FB8DD5B527FD88F23AD6A495 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -386,9 +386,9 @@
 			};
 			name = Release;
 		};
-		DFB0983105F477A998D37A72A14180CE /* Debug */ = {
+		BB4EDF6C65F1566DE993F61D80A8C820 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B15FB0C6841456E5068505897E38ABB4 /* EXScreenOrientation.debug.xcconfig */;
+			baseConfigurationReference = 034F9A0AE662DAD2DCA489427BF3B55D /* EXScreenOrientation.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -406,9 +406,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -416,8 +418,8 @@
 		121CCAA931E12AC4CCD2FBB67C4EDE0C /* Build configuration list for PBXNativeTarget "EXScreenOrientation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DFB0983105F477A998D37A72A14180CE /* Debug */,
-				437AC041147BD242507429C2DE876218 /* Release */,
+				22B1A828AB81F5B6AFCC3F10C1D65381 /* Debug */,
+				BB4EDF6C65F1566DE993F61D80A8C820 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

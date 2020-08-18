@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCContentDiscoveryManager.h
+../../../Branch/Branch-SDK/BNCContentDiscoveryManager.h

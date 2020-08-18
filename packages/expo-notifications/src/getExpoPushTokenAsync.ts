@@ -61,6 +61,9 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const response = await fetch(url, {
     method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
     body: JSON.stringify(body),
   }).catch(error => {
     throw new CodedError(

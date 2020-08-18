@@ -213,7 +213,33 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		54A30B5F893FD5A1220B4E24A227E06A /* Debug */ = {
+		1C8B963DC8A4046104D4C83329630ED1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A7768A36D86B546AFC05CB10E750E9D /* EXSQLite.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSQLite;
+				PRODUCT_NAME = EXSQLite;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		20D294E79B80FCBDA84A61C767639664 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D5541DF53BD99DF8AA10A752B5F97AB8 /* EXSQLite.debug.xcconfig */;
 			buildSettings = {
@@ -233,6 +259,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -361,39 +388,14 @@
 			};
 			name = Release;
 		};
-		E7F29BE346AC7E7310F69632C8574F4D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2A7768A36D86B546AFC05CB10E750E9D /* EXSQLite.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSQLite;
-				PRODUCT_NAME = EXSQLite;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		383C479324D98B5C06D0E0FCCB995460 /* Build configuration list for PBXNativeTarget "EXSQLite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				54A30B5F893FD5A1220B4E24A227E06A /* Debug */,
-				E7F29BE346AC7E7310F69632C8574F4D /* Release */,
+				20D294E79B80FCBDA84A61C767639664 /* Debug */,
+				1C8B963DC8A4046104D4C83329630ED1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

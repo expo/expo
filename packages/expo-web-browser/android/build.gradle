@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 group = 'host.exp.exponent'
-version = '8.3.1'
+version = '8.5.0'
 
 
 buildscript {
@@ -51,9 +51,9 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 14
-    versionName '8.3.1'
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    versionCode 16
+    versionName '8.5.0'
   }
   lintOptions {
     abortOnError false
@@ -62,11 +62,6 @@ android {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
   }
-
-  useLibrary 'android.test.runner'
-
-  useLibrary 'android.test.base'
-  useLibrary 'android.test.mock'
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {

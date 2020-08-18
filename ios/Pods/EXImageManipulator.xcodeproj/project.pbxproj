@@ -295,7 +295,7 @@
 			};
 			name = Debug;
 		};
-		55B9C9EF499C64498662400250C89052 /* Release */ = {
+		4F09DB7ACC24A411EF27CA8B3E8CC894 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 463BCB499A6B9D89AA84BFC470F3A3C4 /* EXImageManipulator.release.xcconfig */;
 			buildSettings = {
@@ -315,12 +315,13 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		59DC0395F71ACDA5F6A043F10F3F6A8F /* Debug */ = {
+		ABB9CC35361E0E2E7EBBDB75CFF1DA6A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B18D859777AEF9A753C9A82E6A45949C /* EXImageManipulator.debug.xcconfig */;
 			buildSettings = {
@@ -340,6 +341,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -410,8 +412,8 @@
 		2F4CBBF731762860365A1831451A1CE6 /* Build configuration list for PBXNativeTarget "EXImageManipulator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				59DC0395F71ACDA5F6A043F10F3F6A8F /* Debug */,
-				55B9C9EF499C64498662400250C89052 /* Release */,
+				ABB9CC35361E0E2E7EBBDB75CFF1DA6A /* Debug */,
+				4F09DB7ACC24A411EF27CA8B3E8CC894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -306,9 +306,11 @@ Returns a promise that resolves to a `boolean` that represents whether the calli
 **Examples**
 
 ```js
-await Device.isSideLoadingEnabled();
+await Device.isSideLoadingEnabledAsync();
 // true or false
 ```
+
+> This method requires the [`REQUEST_INSTALL_PACKAGES`](https://developer.android.com/reference/android/Manifest.permission#REQUEST_INSTALL_PACKAGES) permission to detect if sideloading is possible on the user's device.
 
 ### `Device.getPlatformFeaturesAsync()`
 

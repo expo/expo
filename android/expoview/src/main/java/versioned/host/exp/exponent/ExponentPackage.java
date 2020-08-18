@@ -12,9 +12,7 @@ import com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
@@ -41,9 +39,7 @@ import versioned.host.exp.exponent.modules.api.KeyboardModule;
 import versioned.host.exp.exponent.modules.api.PedometerModule;
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule;
 import versioned.host.exp.exponent.modules.api.ShakeModule;
-import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
-import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearanceModule;
 import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearancePackage;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
@@ -67,12 +63,11 @@ import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
-import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
-import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
-import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
+// This is an Expo module but not a unimodule
+import expo.modules.random.RandomModule;
 
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
@@ -171,9 +166,7 @@ public class ExponentPackage implements ReactPackage {
     List<NativeModule> nativeModules = new ArrayList<>(Arrays.<NativeModule>asList(
         new URLHandlerModule(reactContext),
         new ShakeModule(reactContext),
-        new KeyboardModule(reactContext),
-        new UpdatesModule(reactContext, mExperienceProperties, mManifest),
-        new ExponentIntentModule(reactContext, mExperienceProperties)
+        new KeyboardModule(reactContext)
     ));
 
     if (mIsKernel) {
@@ -191,16 +184,15 @@ public class ExponentPackage implements ReactPackage {
         ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
-        nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
+        nativeModules.add(new RandomModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new PedometerModule(reactContext));
         nativeModules.add(new ScreenOrientationModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new ReanimatedModule(reactContext));
-        nativeModules.add(new SplashScreenModule(reactContext, experienceId));
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
@@ -230,8 +222,6 @@ public class ExponentPackage implements ReactPackage {
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
-    } else {
-      nativeModules.add(new ExponentUnsignedAsyncStorageModule(reactContext));
     }
 
     return nativeModules;

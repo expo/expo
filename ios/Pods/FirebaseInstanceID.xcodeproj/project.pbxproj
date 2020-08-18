@@ -449,7 +449,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5F9F12D46628CC39868A2903C28F473A /* Debug */ = {
+		82EFC9F8E8CD15369472D8031819E1CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 20618168FF04C6B9DDDC56F830AC9168 /* FirebaseInstanceID.debug.xcconfig */;
 			buildSettings = {
@@ -467,32 +467,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		6BA2DE1E503D31544AAD8AD5C1586857 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1F2166CFA87EBC15F26A91079F527BBD /* FirebaseInstanceID.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = FirebaseInstanceID;
-				PRODUCT_NAME = FirebaseInstanceID;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		AA51C518A44F28C483E783685B342995 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -618,14 +596,38 @@
 			};
 			name = Release;
 		};
+		B7D4808C36FE4AB91B13E125AB18D3DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1F2166CFA87EBC15F26A91079F527BBD /* FirebaseInstanceID.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = FirebaseInstanceID;
+				PRODUCT_NAME = FirebaseInstanceID;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		9D68491851677D673AC8B81FE64B1697 /* Build configuration list for PBXNativeTarget "FirebaseInstanceID" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5F9F12D46628CC39868A2903C28F473A /* Debug */,
-				6BA2DE1E503D31544AAD8AD5C1586857 /* Release */,
+				82EFC9F8E8CD15369472D8031819E1CD /* Debug */,
+				B7D4808C36FE4AB91B13E125AB18D3DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -17,7 +17,7 @@ Save this image to the `assets` directory inside of your project and call it `lo
 
 ## Displaying the image in the app
 
-We have displayed text using the `Text` component from React Native, and we can display the image using the `Image` component.
+We have displayed text using the `Text` component from React Native, and we can display the image using the `Image` component. When creating an `Image` component, you will need to explicitly specify a width and height, or the image won't be visible.
 
 ```js
 import React from 'react';

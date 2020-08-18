@@ -237,7 +237,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		14677523113226F9EF1EF5A32A3F7F47 /* Release */ = {
+		029ECC2B3F5A7BD5068E2F159B377AE9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D032553B2D0AE6D050EA27E87EADBF22 /* EXPrint.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPrint;
+				PRODUCT_NAME = EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2F7D5787646A3EBCFE8C053608D22E95 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 34D474B15BA72CAD8FA34E158F06628C /* EXPrint.release.xcconfig */;
 			buildSettings = {
@@ -257,6 +282,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -321,30 +347,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		73C22A6DCDB9EFAC741B3F798FA314C4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D032553B2D0AE6D050EA27E87EADBF22 /* EXPrint.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXPrint;
-				PRODUCT_NAME = EXPrint;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		D342E10E13C15D162E96260A5B901400 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -425,8 +427,8 @@
 		FF266557DDFDEBE6380C65866E26D2D3 /* Build configuration list for PBXNativeTarget "EXPrint" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				73C22A6DCDB9EFAC741B3F798FA314C4 /* Debug */,
-				14677523113226F9EF1EF5A32A3F7F47 /* Release */,
+				029ECC2B3F5A7BD5068E2F159B377AE9 /* Debug */,
+				2F7D5787646A3EBCFE8C053608D22E95 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.expoview.ExpoViewBuildConfig;
@@ -80,6 +81,11 @@ public class ExpoViewKernel extends KernelInterface {
   @Override
   public void openExperience(KernelConstants.ExperienceOptions options) {
 
+  }
+
+  @Override
+  public ExpoUpdatesAppLoader getAppLoaderForManifestUrl(String manifestUrl) {
+    return null;
   }
 
   @Override

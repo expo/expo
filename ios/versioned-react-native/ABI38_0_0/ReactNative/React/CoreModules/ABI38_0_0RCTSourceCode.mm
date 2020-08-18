@@ -15,7 +15,7 @@
 
 using namespace ABI38_0_0facebook::ABI38_0_0React;
 
-@interface ABI38_0_0RCTSourceCode () <NativeSourceCodeSpec>
+@interface ABI38_0_0RCTSourceCode () <ABI38_0_0NativeSourceCodeSpec>
 @end
 
 @implementation ABI38_0_0RCTSourceCode

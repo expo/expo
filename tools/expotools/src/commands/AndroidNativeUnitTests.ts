@@ -9,7 +9,6 @@ const ANDROID_DIR = Directories.getAndroidDir();
 
 const excludedInTests = [
   'expo-module-template',
-  'expo-bluetooth',
   'expo-notifications',
   'expo-in-app-purchases',
   'expo-splash-screen',

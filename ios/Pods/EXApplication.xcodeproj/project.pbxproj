@@ -203,7 +203,33 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		7AFF348D40F1038B47921744B54F8AF3 /* Debug */ = {
+		2108063BEF866CC29F108FBFD57A70AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7BEEFD2035C8A359DAC91ACB435AE13D /* EXApplication.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXApplication;
+				PRODUCT_NAME = EXApplication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		246C6DCC625D39235ECE244479C1960E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EF6D3AE3781AF52F43EAFCDA2B2BC15E /* EXApplication.debug.xcconfig */;
 			buildSettings = {
@@ -223,6 +249,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -351,31 +378,6 @@
 			};
 			name = Release;
 		};
-		F81441428C6FC3B13C832539A0BC6889 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7BEEFD2035C8A359DAC91ACB435AE13D /* EXApplication.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXApplication;
-				PRODUCT_NAME = EXApplication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -391,8 +393,8 @@
 		FEE3E852AB6EA3B2E17EFE58FD9AAE85 /* Build configuration list for PBXNativeTarget "EXApplication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7AFF348D40F1038B47921744B54F8AF3 /* Debug */,
-				F81441428C6FC3B13C832539A0BC6889 /* Release */,
+				246C6DCC625D39235ECE244479C1960E /* Debug */,
+				2108063BEF866CC29F108FBFD57A70AC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

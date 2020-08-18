@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/Branch+Validator.h
+../../../Branch/Branch-SDK/Branch+Validator.h

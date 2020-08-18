@@ -6,7 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesNewUpdate : NSObject
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(NSDictionary *)manifest;
++ (EXUpdatesUpdate *)updateWithNewManifest:(NSDictionary *)manifest
+                                    config:(EXUpdatesConfig *)config
+                                  database:(EXUpdatesDatabase *)database;
 
 @end
 

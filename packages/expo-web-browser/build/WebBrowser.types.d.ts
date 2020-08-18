@@ -60,6 +60,7 @@ export declare const WebBrowserResultType: {
      * Android only
      */
     readonly OPENED: "opened";
+    readonly LOCKED: "locked";
 };
 export declare type WebBrowserResultType = typeof WebBrowserResultType[keyof typeof WebBrowserResultType];
 export declare type WebBrowserResult = {

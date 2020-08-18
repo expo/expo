@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,8 +72,9 @@ struct FormatArg {
    * message will contain the argument string as well as any passed-in
    * arguments to enforce, formatted using folly::to<std::string>.
    */
-  template <typename... Args>
-  void enforce(bool v, Args&&... args) const {
+  template <typename Check, typename... Args>
+  void enforce(Check const& v, Args&&... args) const {
+    static_assert(std::is_constructible<bool, Check>::value, "not castable");
     if (UNLIKELY(!v)) {
       error(std::forward<Args>(args)...);
     }
@@ -268,12 +269,9 @@ inline int FormatArg::splitIntKey() {
     nextKeyMode_ = NextKeyMode::NONE;
     return nextIntKey_;
   }
-  try {
-    return to<int>(doSplitKey<true>());
-  } catch (const std::out_of_range&) {
-    error("integer key required");
-    return 0; // unreached
-  }
+  auto result = tryTo<int>(doSplitKey<true>());
+  enforce(result, "integer key required");
+  return *result;
 }
 
 } // namespace folly

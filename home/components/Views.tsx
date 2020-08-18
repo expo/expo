@@ -1,7 +1,8 @@
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { useTheme } from '@react-navigation/native';
+import { BlurView } from 'expo-blur';
 import * as React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { useTheme } from 'react-navigation';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 
@@ -21,25 +22,30 @@ interface StyledScrollViewProps extends ScrollViewProps {
 
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-function useThemeBackgroundColor(props: Props | StyledScrollViewProps, colorName: ThemedColors) {
+function useThemeName(): string {
   const theme = useTheme();
-  const colorFromProps = props[`${theme}BackgroundColor`];
+  return theme.dark ? 'dark' : 'light';
+}
+function useThemeBackgroundColor(props: Props | StyledScrollViewProps, colorName: ThemedColors) {
+  const themeName = useThemeName();
+  const colorFromProps = props[`${themeName}BackgroundColor`];
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return Colors[themeName][colorName];
   }
 }
 
 function useThemeBorderColor(props: Props, colorName: ThemedColors) {
-  const theme = useTheme();
-  const colorFromProps = props[`${theme}BorderColor`];
+  const themeName = useThemeName();
+
+  const colorFromProps = props[`${themeName}BorderColor`];
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return Colors[themeName][colorName];
   }
 }
 
@@ -53,26 +59,27 @@ export const StyledScrollView = React.forwardRef(
 );
 
 export const Separator = (props: View['props']) => {
-  const theme = useTheme();
+  const themeName = useThemeName();
+
   const { style, ...otherProps } = props;
 
   return (
     <View
-      style={[styles.separator, { backgroundColor: Colors[theme].separator }, style]}
+      style={[styles.separator, { backgroundColor: Colors[themeName].separator }, style]}
       {...otherProps}
     />
   );
 };
 
 export const SectionLabelContainer = (props: View['props']) => {
-  const theme = useTheme();
+  const themeName = useThemeName();
   const { style, ...otherProps } = props;
 
   return (
     <View
       style={[
         styles.sectionLabelContainer,
-        { backgroundColor: Colors[theme].sectionLabelBackgroundColor },
+        { backgroundColor: Colors[themeName].sectionLabelBackgroundColor },
         style,
       ]}
       {...otherProps}
@@ -81,7 +88,7 @@ export const SectionLabelContainer = (props: View['props']) => {
 };
 
 export const GenericCardContainer = (props: View['props']) => {
-  const theme = useTheme();
+  const themeName = useThemeName();
   const { style, ...otherProps } = props;
 
   return (
@@ -89,8 +96,8 @@ export const GenericCardContainer = (props: View['props']) => {
       style={[
         styles.genericCardContainer,
         {
-          backgroundColor: Colors[theme].cardBackground,
-          borderBottomColor: Colors[theme].cardSeparator,
+          backgroundColor: Colors[themeName].cardBackground,
+          borderBottomColor: Colors[themeName].cardSeparator,
         },
         style,
       ]}
@@ -132,12 +139,32 @@ export const StyledView = (props: Props) => {
   );
 };
 
+export const StyledBlurView = (props: React.ComponentProps<typeof View> & { children?: any }) => {
+  // Use a styled view on android and a blur view on iOS.
+  if (Platform.OS === 'android') {
+    return (
+      <StyledView
+        lightBackgroundColor={Colors.light.bodyBackground}
+        darkBackgroundColor={Colors.dark.cardBackground}
+        {...props}
+      />
+    );
+  }
+  return <ThemedBlurView {...props} />;
+};
+
+function ThemedBlurView(props: React.ComponentProps<typeof View> & { children?: any }) {
+  const theme = useTheme();
+
+  return <BlurView intensity={100} tint={theme.dark ? 'dark' : 'light'} {...props} />;
+}
+
 type ButtonProps = Props & TouchableNativeFeedbackSafe['props'];
 
 // Extend this if you ever need to customize ripple color
 function useRippleColor(_props: any) {
   const theme = useTheme();
-  return theme === 'light' ? '#ccc' : '#fff';
+  return theme.dark ? '#fff' : '#ccc';
 }
 
 export const StyledButton = (props: ButtonProps) => {

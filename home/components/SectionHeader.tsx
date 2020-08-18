@@ -14,26 +14,29 @@ type Props = {
   onLongPress?: () => any;
 };
 
-export default class SectionHeader extends React.PureComponent<Props> {
-  render() {
-    const { title, buttonLabel, onPress, onLongPress, leftContent } = this.props;
-    return (
-      <SectionLabelContainer>
-        <View style={styles.textContainer}>
-          {leftContent}
-          <SectionLabelText>{title.toUpperCase()}</SectionLabelText>
-        </View>
-        {buttonLabel && (
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={onPress}
-            onLongPress={onLongPress}>
-            <Text style={styles.buttonText}>{buttonLabel.toUpperCase()}</Text>
-          </TouchableOpacity>
-        )}
-      </SectionLabelContainer>
-    );
-  }
+export default function SectionHeader({
+  title,
+  buttonLabel,
+  onPress,
+  onLongPress,
+  leftContent,
+}: Props) {
+  return (
+    <SectionLabelContainer>
+      <View style={styles.textContainer}>
+        {leftContent}
+        <SectionLabelText>{title.toUpperCase()}</SectionLabelText>
+      </View>
+      {buttonLabel && (
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={onPress}
+          onLongPress={onLongPress}>
+          <Text style={styles.buttonText}>{buttonLabel.toUpperCase()}</Text>
+        </TouchableOpacity>
+      )}
+    </SectionLabelContainer>
+  );
 }
 
 const styles = StyleSheet.create({

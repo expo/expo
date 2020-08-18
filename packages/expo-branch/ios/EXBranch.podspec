@@ -15,8 +15,9 @@ Pod::Spec.new do |s|
   s.source_files   = 'EXBranch/**/*.{h,m}'
   s.preserve_paths = 'EXBranch/**/*.{h,m}'
   s.requires_arc   = true
+  s.compiler_flags = %[-DRNBRANCH_VERSION=@\\"#{package["dependencies"]["react-native-branch"]}\\"]
 
   s.dependency 'UMCore'
   s.dependency 'React'
-  s.dependency 'Branch', '0.29.0'
+  s.dependency 'Branch', '0.34.0'
 end

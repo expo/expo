@@ -6,5 +6,6 @@
 @protocol UMJavaScriptContextProvider <NSObject>
 
 - (JSGlobalContextRef)javaScriptContextRef;
+- (void *)javaScriptRuntimePointer;
 
 @end

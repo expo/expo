@@ -1,6 +1,6 @@
 # jest-expo
 
-A [Jest](https://facebook.github.io/jest/) preset to painlessly test your Expo apps.
+A [Jest](https://facebook.github.io/jest/) preset to painlessly test your Expo / React Native apps.
 
 If you have problems with the code in this repository, please file issues & bug reports
 at https://github.com/expo/expo. Thanks!

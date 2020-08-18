@@ -28,6 +28,14 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
+/**
+ * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync() {
+    return !!ExpoCalendar.getCalendarsAsync;
+}
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -444,7 +452,10 @@ function stringifyIfDate(date) {
 function stringifyDateValues(obj) {
     return Object.keys(obj).reduce((acc, key) => {
         const value = obj[key];
-        if (typeof value === 'object' && !(value instanceof Date)) {
+        if (value != null && typeof value === 'object' && !(value instanceof Date)) {
+            if (Array.isArray(value)) {
+                return { ...acc, [key]: value.map(stringifyDateValues) };
+            }
             return { ...acc, [key]: stringifyDateValues(value) };
         }
         acc[key] = stringifyIfDate(value);

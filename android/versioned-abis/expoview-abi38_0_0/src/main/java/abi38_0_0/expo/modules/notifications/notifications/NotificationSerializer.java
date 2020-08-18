@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import abi38_0_0.org.unimodules.core.arguments.MapArguments;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import abi38_0_0.expo.modules.notifications.notifications.triggers.DailyTrigger;
+import abi38_0_0.expo.modules.notifications.notifications.triggers.DateTrigger;
+import abi38_0_0.expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
+import abi38_0_0.org.unimodules.core.arguments.MapArguments;
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
@@ -20,9 +23,6 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
-import abi38_0_0.expo.modules.notifications.notifications.triggers.DailyTrigger;
-import abi38_0_0.expo.modules.notifications.notifications.triggers.DateTrigger;
-import abi38_0_0.expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {

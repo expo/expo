@@ -104,8 +104,10 @@ UM_EXPORT_METHOD_AS(composeAsync,
         CFStringRef identifier = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
         CFStringRef typeRef = UTTypeCopyPreferredTagWithClass (identifier, kUTTagClassMIMEType);
         CFRelease(identifier);
-        mimeType = [NSString stringWithString:(__bridge NSString *)(typeRef)];
-        CFRelease(typeRef);
+        if (typeRef != NULL) {
+          mimeType = [NSString stringWithString:(__bridge NSString *)(typeRef)];
+          CFRelease(typeRef);
+        }
       }
 
       NSData *fileData = [NSData dataWithContentsOfFile:path];

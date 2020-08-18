@@ -1,6 +1,6 @@
 {
   "name": "EXPermissions",
-  "version": "9.0.1",
+  "version": "9.3.0",
   "summary": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "license": "MIT",

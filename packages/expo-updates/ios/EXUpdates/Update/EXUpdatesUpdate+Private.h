@@ -14,8 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readwrite) BOOL keep;
 @property (nonatomic, strong, readwrite) NSURL *bundleUrl;
 @property (nonatomic, strong, readwrite) NSArray<EXUpdatesAsset *> *assets;
+@property (nonatomic, assign, readwrite) BOOL isDevelopmentMode;
 
-- (instancetype)initWithRawManifest:(NSDictionary *)manifest;
+@property (nonatomic, strong) EXUpdatesConfig *config;
+@property (nonatomic, strong, nullable) EXUpdatesDatabase *database;
+
+- (instancetype)initWithRawManifest:(NSDictionary *)manifest
+                             config:(EXUpdatesConfig *)config
+                           database:(nullable EXUpdatesDatabase *)database;
 
 @end
 

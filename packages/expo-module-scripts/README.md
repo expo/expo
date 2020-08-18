@@ -10,7 +10,7 @@ This package contains a collection of common scripts for all Expo modules and th
   - [📝 LICENSE](#-license)
   - [Side Effects](#side-effects)
   - [Entry Point and Types](#entry-point-and-types)
-  - [🔗 NPM Linking](#-npm-linking)
+  - [🔗 npm Linking](#-npm-linking)
 - [⌘ Commands](#-commands)
   - [configure](#configure)
   - [typecheck](#typecheck)
@@ -21,7 +21,8 @@ This package contains a collection of common scripts for all Expo modules and th
 - [Lifecycle Commands](#lifecycle-commands)
   - [prepare (npm lifecycle)](#prepare--npm-lifecycle-)
   - [prepublishOnly (npm lifecycle)](#prepublishonly--npm-lifecycle-)
-- [Unified dependencies](#unified-dependencies)
+- [Excluding Files from npm](#excluding-files-from-npm)
+- [Unified Dependencies](#unified-dependencies)
 
 ## Getting Started
 
@@ -38,7 +39,7 @@ npm install --save-dev expo-module-scripts
 Add the following scripts to your `package.json` and run `yarn`
 
 ```json5
-{ 
+{
   "scripts": {
       "build": "expo-module build",
       "clean": "expo-module clean",
@@ -127,9 +128,9 @@ We recommend you name the initial file after the module for easier searching. Be
 
 > 💡 You technically don't need to define the types file if it's named the same as the `main` file but Expo modules always define it (which is what TypeScript recommends).
 
-### 🔗 NPM Linking
+### 🔗 npm Linking
 
-Make your package accessible to NPM users by adding the following fields:
+Make your package accessible to npm users by adding the following fields:
 
 Expo modules use the long form object when possible to better accommodate monorepos and hyperlinks:
 
@@ -177,7 +178,7 @@ These are the commands:
 
 ### configure
 
-This generates common configuration files like `tsonfig.json` for the package. These auto-generated files are meant to be read-only and committed to Git.
+This generates common configuration files like `tsconfig.json` for the package. These auto-generated files are meant to be read-only and committed to Git.
 
 ### typecheck
 
@@ -215,6 +216,10 @@ Runs `clean` and `build`.
 
 Runs `npm-proofread`, which ensures a [dist-tag](https://docs.npmjs.com/cli/dist-tag) is specified when publishing a prerelease version.
 
-## Unified dependencies
+## Excluding Files from npm
+
+By convention, `expo-module-scripts` uses `.npmignore` to exclude all top-level hidden directories (directories starting with `.`) from being published to npm. This behavior is useful for files that need to be in the Git repository but not in the npm package. =
+
+## Unified Dependencies
 
 This package depends on common development dependencies like Babel and Jest. The commands for compiling and testing JS need these dependencies, and the most important benefit is that all Expo module packages use the same version of Babel, Jest, their various plugins, and other development dependencies. This does remove the flexibility to customize the dependency versions for each module. We intentionally make this tradeoff to prioritize Expo as a whole over individual modules.

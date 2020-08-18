@@ -1,4 +1,4 @@
-import { PermissionType, PermissionResponse } from './Permissions';
+import { PermissionResponse, PermissionType } from './Permissions.types';
 /**
  * Get or ask permission for protected functionality within the app.
  * It returns the permission response after fetching or asking it.

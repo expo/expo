@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchShareLink.h
+../../../Branch/Branch-SDK/BranchShareLink.h

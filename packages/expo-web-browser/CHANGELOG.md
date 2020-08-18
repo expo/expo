@@ -6,6 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 8.5.0 — 2020-08-18
+
+### 🐛 Bug fixes
+
+- Removed unncecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
+- Fixed `openAuthSessionAsync` crashing when cancelled on iOS. ([#9722](https://github.com/expo/expo/pull/9722) by [@barthap](https://github.com/barthap))
+
+## 8.4.0 — 2020-07-29
+
+### 🎉 New features
+
+- Added `locked` state to `openBrowserAsync`. ([#9254](https://github.com/expo/expo/pull/9254) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `secondaryToolbarColor` (Android) flag for `WebBrowser` ([#8615](https://github.com/expo/expo/pull/8615) by [@jdanthinne](https://github.com/jdanthinne)))
 
 ### 🐛 Bug fixes
@@ -14,7 +28,7 @@
 
 ## 8.3.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.3.0 — 2020-05-27
 

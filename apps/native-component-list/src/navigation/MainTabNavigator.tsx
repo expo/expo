@@ -4,30 +4,14 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import * as React from 'react';
-import { Dimensions, Platform, ScaledSize, ScrollViewProps, StyleSheet } from 'react-native';
+import { Platform, ScrollViewProps, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import { Colors } from '../constants';
 import createTabNavigator from './createTabNavigator';
 import Screens from './MainNavigators';
-import { useSafeArea } from 'react-native-safe-area-context';
 
 const Tab = createTabNavigator();
-
-// TODO: Replace in RN 63 + RNW 13
-function useWindowDimensions(): ScaledSize {
-  const [dimensions, setDimensions] = React.useState(Dimensions.get('window'));
-
-  React.useEffect(() => {
-    const onDimensionsChange = ({ window }: { window: ScaledSize }) => {
-      setDimensions(window);
-    };
-
-    Dimensions.addEventListener('change', onDimensionsChange);
-
-    return () => Dimensions.removeEventListener('change', onDimensionsChange);
-  }, []);
-  return dimensions;
-}
 
 const Drawer = createDrawerNavigator();
 
@@ -47,13 +31,17 @@ function CustomDrawerContent({
 
 export default function MainTabbedNavigator(props: any) {
   const { width } = useWindowDimensions();
-
   const { left } = useSafeArea();
   const isMobile = width <= 640;
   const isTablet = !isMobile && width <= 960;
   const isLargeScreen = !isTablet && !isMobile;
-  // Use a tab bar on all except web desktop
-  if (isMobile) {
+
+  // Use a tab bar on all except web desktop.
+  // NOTE(brentvatne): if you navigate to an example screen and then resize your
+  // browser such that the navigator changes from tab to drawer or drawer to tab
+  // then it will reset to the list because the navigator has changed and the state
+  // of its children will be reset.
+  if (Platform.OS !== 'web' || isMobile) {
     return (
       <Tab.Navigator
         shifting

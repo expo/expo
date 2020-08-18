@@ -283,30 +283,6 @@
 			};
 			name = Release;
 		};
-		5BBD1CEEBE85F99B54E373ED40002D32 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1D4BF7F1FC077823A2D15B74CB3AB822 /* EXAppleAuthentication.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAppleAuthentication/EXAppleAuthentication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAppleAuthentication;
-				PRODUCT_NAME = EXAppleAuthentication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		65F0DA84B154EEF87455227A90B7B45B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -371,7 +347,32 @@
 			};
 			name = Debug;
 		};
-		B7CB9AAC581ABB396DC22EA0959049EA /* Release */ = {
+		AAEBBE285550A12ED28149B999B55F84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1D4BF7F1FC077823A2D15B74CB3AB822 /* EXAppleAuthentication.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAppleAuthentication/EXAppleAuthentication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAppleAuthentication;
+				PRODUCT_NAME = EXAppleAuthentication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D1FE0C428795EBA65D6FF14CD6D67F21 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EAA792F5B6A2AA6AF1D7258DA589A377 /* EXAppleAuthentication.release.xcconfig */;
 			buildSettings = {
@@ -391,6 +392,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -411,8 +413,8 @@
 		FB2874180965A20FA8E3098B90C080BD /* Build configuration list for PBXNativeTarget "EXAppleAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5BBD1CEEBE85F99B54E373ED40002D32 /* Debug */,
-				B7CB9AAC581ABB396DC22EA0959049EA /* Release */,
+				AAEBBE285550A12ED28149B999B55F84 /* Debug */,
+				D1FE0C428795EBA65D6FF14CD6D67F21 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

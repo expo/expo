@@ -1,7 +1,13 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 export function getRequestPermission() {
-    // @ts-ignore: requestPermission does not exist
-    return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
+    if (typeof DeviceMotionEvent !== 'undefined' && !!DeviceMotionEvent?.requestPermission) {
+        return DeviceMotionEvent.requestPermission;
+    }
+    else if (typeof DeviceOrientationEvent !== 'undefined' &&
+        !!DeviceOrientationEvent?.requestPermission) {
+        return DeviceOrientationEvent.requestPermission;
+    }
+    return null;
 }
 class PermissionError extends Error {
     constructor(eventName) {

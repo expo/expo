@@ -231,7 +231,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1B41856D52BD355C22646543BB913CA5 /* Release */ = {
+		2BADF5B8F96FB1303C6EBAB5771745F4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A397878C9F36CEB8B3F5E6EC0C647A42 /* EXImageLoader.release.xcconfig */;
 			buildSettings = {
@@ -251,34 +251,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		2FBCEDE4916CFC3928306EF8FA91DEF4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27AD49923E4B0C33DEF6BFC291D54297 /* EXImageLoader.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXImageLoader;
-				PRODUCT_NAME = EXImageLoader;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		4BF3B0D9AF2E676D6ED9FD1B89395D5B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -404,14 +381,39 @@
 			};
 			name = Release;
 		};
+		7A346D9981D95B561A8C2F9CB97E2574 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27AD49923E4B0C33DEF6BFC291D54297 /* EXImageLoader.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXImageLoader;
+				PRODUCT_NAME = EXImageLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		E0338F805DB48298B2E97D540EAB2C6A /* Build configuration list for PBXNativeTarget "EXImageLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2FBCEDE4916CFC3928306EF8FA91DEF4 /* Debug */,
-				1B41856D52BD355C22646543BB913CA5 /* Release */,
+				7A346D9981D95B561A8C2F9CB97E2574 /* Debug */,
+				2BADF5B8F96FB1303C6EBAB5771745F4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

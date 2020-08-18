@@ -6,10 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 8.2.0 — 2020-08-18
+
+### 🎉 New features
+
 - Delete `prop-types` in favor of TypeScript. ([#8676](https://github.com/expo/expo/pull/8676) by [@EvanBacon](https://github.com/EvanBacon))
 - Convert Android and web to class components. ([#8856](https://github.com/expo/expo/pull/8856) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ## 8.1.2 — 2020-05-29
 

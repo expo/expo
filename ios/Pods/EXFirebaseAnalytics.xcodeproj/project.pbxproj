@@ -291,31 +291,7 @@
 			};
 			name = Release;
 		};
-		9147455B8540E6EEEFC4B455B68B5AE8 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27CF28E692BC08EF57E6125BAC7B93C6 /* EXFirebaseAnalytics.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFirebaseAnalytics/EXFirebaseAnalytics-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFirebaseAnalytics;
-				PRODUCT_NAME = EXFirebaseAnalytics;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		9477FB677CF661B7BC5B936DF8DC46CC /* Release */ = {
+		57CC445A5EE4EA7D62FCA10145723272 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3DADACCB41D9952432B09DDDAB0379E3 /* EXFirebaseAnalytics.release.xcconfig */;
 			buildSettings = {
@@ -335,10 +311,36 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		8FF40C9EDE71CF1477A400A1D1CF64DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27CF28E692BC08EF57E6125BAC7B93C6 /* EXFirebaseAnalytics.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFirebaseAnalytics/EXFirebaseAnalytics-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFirebaseAnalytics;
+				PRODUCT_NAME = EXFirebaseAnalytics;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		FD3BFCE94AF527AAF35585A3EAFAEFB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -419,8 +421,8 @@
 		FA1D3C932CB614152A261A081657B372 /* Build configuration list for PBXNativeTarget "EXFirebaseAnalytics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9147455B8540E6EEEFC4B455B68B5AE8 /* Debug */,
-				9477FB677CF661B7BC5B936DF8DC46CC /* Release */,
+				8FF40C9EDE71CF1477A400A1D1CF64DF /* Debug */,
+				57CC445A5EE4EA7D62FCA10145723272 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

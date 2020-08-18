@@ -1,3 +1,12 @@
+import { PermissionResponse } from 'unimodules-permissions-interface';
+
+export { PermissionResponse as CameraPermissionResponse };
+
+export type CameraRollPermissionResponse = PermissionResponse & {
+  // iOS only
+  accessPrivileges?: 'all' | 'limited' | 'none';
+};
+
 export enum MediaTypeOptions {
   All = 'All',
   Videos = 'Videos',
@@ -27,17 +36,28 @@ export type ImageInfo = {
   base64?: string;
 };
 
+export type ImagePickerErrorResult = {
+  code: string;
+  message: string;
+  exception?: string;
+};
+
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
+
+export type ImagePickerMultipleResult =
+  | { cancelled: true }
+  | { cancelled: false; selected: ImageInfo[] };
 
 export type ImagePickerOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
-  allowsMultipleSelection?: boolean;
   mediaTypes?: MediaTypeOptions;
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
+  allowsMultipleSelection?: boolean;
+  videoMaxDuration?: number;
 };
 
 export type OpenFileBrowserOptions = {
@@ -45,3 +65,11 @@ export type OpenFileBrowserOptions = {
   capture?: boolean;
   allowsMultipleSelection: boolean;
 };
+
+export type ExpandImagePickerResult<
+  T extends ImagePickerOptions | OpenFileBrowserOptions
+> = T extends {
+  allowsMultipleSelection: true;
+}
+  ? ImagePickerMultipleResult
+  : ImagePickerResult;

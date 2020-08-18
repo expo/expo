@@ -38,5 +38,17 @@
   XCTAssert([@"1.0" isEqualToString:[EXUpdatesUtils getRuntimeVersionWithConfig:bothConfig]], @"should return runtime version if both are specified");
 }
 
+- (void)testNormalizedURLOrigin
+{
+  NSURL *urlNoPort = [NSURL URLWithString:@"https://exp.host/test"];
+  XCTAssert([@"https://exp.host" isEqualToString:[EXUpdatesConfig normalizedURLOrigin:urlNoPort]], @"should return a normalized URL origin with no port if none is specified");
+
+  NSURL *urlDefaultPort = [NSURL URLWithString:@"https://exp.host:443/test"];
+  XCTAssert([@"https://exp.host" isEqualToString:[EXUpdatesConfig normalizedURLOrigin:urlDefaultPort]], @"should return a normalized URL origin with no port if default port is specified");
+
+  NSURL *urlOtherPort = [NSURL URLWithString:@"https://exp.host:47/test"];
+  XCTAssert([@"https://exp.host:47" isEqualToString:[EXUpdatesConfig normalizedURLOrigin:urlOtherPort]], @"should return a normalized URL origin with port if non-default port is specified");
+}
+
 @end
 

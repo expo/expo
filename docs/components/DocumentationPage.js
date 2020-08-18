@@ -28,8 +28,20 @@ const STYLES_DOCUMENT = css`
     border-bottom: 0px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
     padding: 20px 16px 48px 16px;
+  }
+`;
+
+const HIDDEN_ON_MOBILE = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+    display: none;
+  }
+`;
+
+const HIDDEN_ON_DESKTOP = css`
+  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+    display: none;
   }
 `;
 
@@ -62,27 +74,29 @@ export default class DocumentationPage extends React.Component {
   }
 
   _handleResize = () => {
-    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileStrictValue) {
       window.scrollTo(0, 0);
     }
   };
 
-  _handleSetVersion = version => {
+  _handleSetVersion = (version) => {
     this._version = version;
-    let newPath = '/versions/' + version;
+    let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
-    // TODO: Find what's stripping trailing slashes from these
-    if (version.startsWith('v')) {
+    if (!newPath.endsWith('/')) {
       newPath += '/';
     }
 
-    Router.push(newPath + '/');
+    // note: we can do this without validating if the page exists or not.
+    // the error page will redirect users to the versioned-index page when a page doesn't exists.
+    Router.push(newPath);
   };
 
   _handleShowMenu = () => {
     this.setState({
       isMenuActive: true,
     });
+    this._handleHideSearch();
   };
 
   _handleHideMenu = () => {
@@ -91,18 +105,38 @@ export default class DocumentationPage extends React.Component {
     });
   };
 
+  _handleToggleSearch = () => {
+    this.setState((prevState) => ({
+      isMobileSearchActive: !prevState.isMobileSearchActive,
+    }));
+  };
+
+  _handleHideSearch = () => {
+    this.setState({
+      isMobileSearchActive: false,
+    });
+  };
+
   _isReferencePath = () => {
     return this.props.url.pathname.startsWith('/versions');
   };
 
   _isGeneralPath = () => {
-    return !this._isReferencePath() && !this._isGettingStartedPath();
+    return some(navigation.generalDirectories, (name) =>
+      this.props.url.pathname.startsWith(`/${name}`)
+    );
   };
 
   _isGettingStartedPath = () => {
     return (
       this.props.url.pathname === '/' ||
-      some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
+      some(navigation.startingDirectories, (name) => this.props.url.pathname.startsWith(`/${name}`))
+    );
+  };
+
+  _isPreviewPath = () => {
+    return some(navigation.previewDirectories, (name) =>
+      this.props.url.pathname.startsWith(`/${name}`)
     );
   };
 
@@ -134,10 +168,8 @@ export default class DocumentationPage extends React.Component {
     if (this._isReferencePath()) {
       const version = this._getVersion();
       return navigation.reference[version];
-    } else if (this._isGeneralPath()) {
-      return navigation.general;
-    } else if (this._isGettingStartedPath()) {
-      return navigation.starting;
+    } else {
+      return navigation[this._getActiveTopLevelSection()];
     }
   };
 
@@ -148,11 +180,16 @@ export default class DocumentationPage extends React.Component {
       return 'general';
     } else if (this._isGettingStartedPath()) {
       return 'starting';
+    } else if (this._isPreviewPath()) {
+      return 'preview';
     }
   };
 
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
+
+    // note: we should probably not keep this version property outside of react.
+    // right now, it's used in non-deterministic ways and depending on variable states.
     const version = this._getVersion();
     const routes = this._getRoutes();
 
@@ -162,10 +199,12 @@ export default class DocumentationPage extends React.Component {
         pathname={this.props.url.pathname}
         version={this._version}
         isMenuActive={this.state.isMenuActive}
+        isMobileSearchActive={this.state.isMobileSearchActive}
         isAlogiaSearchHidden={this.state.isMenuActive}
         onSetVersion={this._handleSetVersion}
         onShowMenu={this._handleShowMenu}
         onHideMenu={this._handleHideMenu}
+        onToggleSearch={this._handleToggleSearch}
       />
     );
 
@@ -186,6 +225,7 @@ export default class DocumentationPage extends React.Component {
         header={headerElement}
         sidebar={sidebarElement}
         isMenuActive={this.state.isMenuActive}
+        isMobileSearchActive={this.state.isMobileSearchActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           <AlgoliaDocsearchMeta
@@ -193,7 +233,9 @@ export default class DocumentationPage extends React.Component {
             isReferencePage={this._isReferencePath()}
           />
 
-          {this._version === 'unversioned' && <meta name="robots" content="noindex" />}
+          {(this._version === 'unversioned' || this._isPreviewPath()) && (
+            <meta name="robots" content="noindex" />
+          )}
           {this._version !== 'unversioned' && (
             <link rel="canonical" href={this._getCanonicalUrl()} />
           )}
@@ -212,14 +254,29 @@ export default class DocumentationPage extends React.Component {
             />
           </div>
         ) : (
-          <DocumentationSidebar
-            url={this.props.url}
-            asPath={this.props.asPath}
-            routes={routes}
-            version={this._version}
-            onSetVersion={this._handleSetVersion}
-            isVersionSelectorHidden={!this._isReferencePath()}
-          />
+          <div>
+            <div className={`${STYLES_DOCUMENT} ${HIDDEN_ON_MOBILE}`}>
+              <H1>{this.props.title}</H1>
+              <DocumentationPageContext.Provider value={{ version: this._version }}>
+                {this.props.children}
+              </DocumentationPageContext.Provider>
+              <DocumentationFooter
+                title={this.props.title}
+                asPath={this.props.asPath}
+                sourceCodeUrl={this.props.sourceCodeUrl}
+              />
+            </div>
+            <div className={HIDDEN_ON_DESKTOP}>
+              <DocumentationSidebar
+                url={this.props.url}
+                asPath={this.props.asPath}
+                routes={routes}
+                version={this._version}
+                onSetVersion={this._handleSetVersion}
+                isVersionSelectorHidden={!this._isReferencePath()}
+              />
+            </div>
+          </div>
         )}
       </DocumentationNestedScrollLayout>
     );

@@ -15,12 +15,6 @@ Object.defineProperty(exports, "registerRootComponent", {
     return _registerRootComponent.default;
   }
 });
-Object.defineProperty(exports, "Notifications", {
-  enumerable: true,
-  get: function () {
-    return _Notifications.default;
-  }
-});
 Object.defineProperty(exports, "AppLoading", {
   enumerable: true,
   get: function () {
@@ -33,16 +27,16 @@ Object.defineProperty(exports, "DangerZone", {
     return _DangerZone.default;
   }
 });
-Object.defineProperty(exports, "Updates", {
-  enumerable: true,
-  get: function () {
-    return _deprecated.Updates;
-  }
-});
 Object.defineProperty(exports, "Linking", {
   enumerable: true,
   get: function () {
     return _deprecated.Linking;
+  }
+});
+Object.defineProperty(exports, "Notifications", {
+  enumerable: true,
+  get: function () {
+    return _deprecated.Notifications;
   }
 });
 Object.defineProperty(exports, "Accelerometer", {
@@ -417,6 +411,12 @@ Object.defineProperty(exports, "Speech", {
     return _removed.Speech;
   }
 });
+Object.defineProperty(exports, "SplashScreen", {
+  enumerable: true,
+  get: function () {
+    return _removed.SplashScreen;
+  }
+});
 Object.defineProperty(exports, "SQLite", {
   enumerable: true,
   get: function () {
@@ -453,6 +453,12 @@ Object.defineProperty(exports, "Transitioning", {
     return _removed.Transitioning;
   }
 });
+Object.defineProperty(exports, "Updates", {
+  enumerable: true,
+  get: function () {
+    return _removed.Updates;
+  }
+});
 Object.defineProperty(exports, "Video", {
   enumerable: true,
   get: function () {
@@ -471,13 +477,9 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = void 0;
+exports.Logs = void 0;
 
 require("./Expo.fx");
-
-var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
-
-exports.SplashScreen = SplashScreen;
 
 var Logs = _interopRequireWildcard(require("./logs/Logs"));
 
@@ -486,8 +488,6 @@ exports.Logs = Logs;
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
-
-var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 
 var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
 

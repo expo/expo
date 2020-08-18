@@ -11,7 +11,9 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 @interface EXUpdatesConfig : NSObject
 
 @property (nonatomic, readonly) BOOL isEnabled;
+@property (nonatomic, readonly) NSString *scopeKey;
 @property (nonatomic, readonly) NSURL *updateUrl;
+@property (nonatomic, readonly) NSDictionary *requestHeaders;
 @property (nonatomic, readonly) NSString *releaseChannel;
 @property (nonatomic, readonly) NSNumber *launchWaitMs;
 @property (nonatomic, readonly) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
@@ -20,10 +22,12 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;
 
 @property (nonatomic, readonly) BOOL usesLegacyManifest;
+@property (nonatomic, readonly) BOOL hasEmbeddedUpdate;
 
-+ (instancetype)sharedInstance;
-
++ (instancetype)configWithDictionary:(NSDictionary *)config;
 - (void)loadConfigFromDictionary:(NSDictionary *)config;
+
++ (NSString *)normalizedURLOrigin:(NSURL *)url;
 
 @end
 

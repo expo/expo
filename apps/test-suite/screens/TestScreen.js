@@ -28,7 +28,8 @@ export default class TestScreen extends React.Component {
   _scrollViewRef = null;
 
   componentDidMount() {
-    const selectedTestNames = this.props.route.params?.tests ?? [];
+    const selectionQuery = this.props.route.params?.tests ?? [];
+    const selectedTestNames = selectionQuery.split(' ');
 
     // We get test modules here to make sure that React Native will reload this component when tests were changed.
     const selectedModules = getTestModules().filter(m => selectedTestNames.includes(m.name));

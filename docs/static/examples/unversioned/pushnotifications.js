@@ -1,21 +1,13 @@
-import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
-import { Text, View, Button, Platform } from 'react-native';
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
 export default class AppContainer extends React.Component {
   state = {
     expoPushToken: '',
-    notification: { request: { content: { body: '', title: '', data: {} } } },
+    notification: {},
   };
 
   registerForPushNotificationsAsync = async () => {
@@ -30,7 +22,7 @@ export default class AppContainer extends React.Component {
         alert('Failed to get push token for push notification!');
         return;
       }
-      const { data: token } = await Notifications.getExpoPushTokenAsync();
+      token = await Notifications.getExpoPushTokenAsync();
       console.log(token);
       this.setState({ expoPushToken: token });
     } else {
@@ -38,42 +30,27 @@ export default class AppContainer extends React.Component {
     }
 
     if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
+      Notifications.createChannelAndroidAsync('default', {
         name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
       });
     }
   };
 
   componentDidMount() {
     this.registerForPushNotificationsAsync();
-
-    this.onReceivedListener = Notifications.addNotificationReceivedListener(this.onReceived);
-    this.onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
-      this.onResponseReceived
-    );
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
 
-  componentWillUnmount() {
-    this.onReceivedListener.remove();
-    this.onResponseReceivedListener.remove();
-  }
-
-  // Called when a notification comes in while the app is foregrounded
-  onReceived = notification => {
+  _handleNotification = notification => {
+    Vibration.vibrate();
+    this.setState({ notification: notification });
     console.log(notification);
-    this.setState({ notification });
   };
 
-  // Called when a user taps on or interacts with a notification, whether the app is foregrounded, backgrounded, or closed.
-  onResponseReceived = response => {
-    console.log(response);
-  };
-
-  // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
-  sendPushNotification = async () => {
+  sendNotification = async () => {
     const message = {
       to: this.state.expoPushToken,
       sound: 'default',
@@ -101,13 +78,11 @@ export default class AppContainer extends React.Component {
           alignItems: 'center',
           justifyContent: 'space-around',
         }}>
-        <Text>Your expo push token: {this.state.expoPushToken}</Text>
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Text>Title: {this.state.notification.request.content.title}</Text>
-          <Text>Body: {this.state.notification.request.content.body}</Text>
-          <Text>Data: {JSON.stringify(this.state.notification.request.content.data)}</Text>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
-        <Button title="Press to Send Notification" onPress={() => this.sendPushNotification()} />
+        <Button title={'Press to Send Notification'} onPress={this.sendNotification} />
       </View>
     );
   }

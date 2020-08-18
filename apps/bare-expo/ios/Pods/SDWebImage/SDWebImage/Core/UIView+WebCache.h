@@ -34,15 +34,15 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
 /**
  * Get the current image operation key. Operation key is used to identify the different queries for one view instance (like UIButton).
  * See more about this in `SDWebImageContextSetImageOperationKey`.
- * @note You can use method `UIView+WebCacheOperation` to invesigate different queries' operation.
+ * @note You can use method `UIView+WebCacheOperation` to investigate different queries' operation.
  */
 @property (nonatomic, strong, readonly, nullable) NSString *sd_latestOperationKey;
 
 /**
  * The current image loading progress associated to the view. The unit count is the received size and excepted size of download.
  * The `totalUnitCount` and `completedUnitCount` will be reset to 0 after a new image loading start (change from current queue). And they will be set to `SDWebImageProgressUnitCountUnknown` if the progressBlock not been called but the image loading success to mark the progress finished (change from main queue).
- * @note You can use Key-Value Observing on the progress, but you should take care that the change to progress is from a background queue during download(the same as progressBlock). If you want to using KVO and update the UI, make sure to dispatch on the main queue. And it's recommand to use some KVO libs like KVOController because it's more safe and easy to use.
- * @note The getter will create a progress instance if the value is nil. But by default, we don't create one. If you need to use Key-Value Observing, you must trigger the getter or set a custom progresss instance before the loading start. The default value is nil.
+ * @note You can use Key-Value Observing on the progress, but you should take care that the change to progress is from a background queue during download(the same as progressBlock). If you want to using KVO and update the UI, make sure to dispatch on the main queue. And it's recommend to use some KVO libs like KVOController because it's more safe and easy to use.
+ * @note The getter will create a progress instance if the value is nil. But by default, we don't create one. If you need to use Key-Value Observing, you must trigger the getter or set a custom progress instance before the loading start. The default value is nil.
  * @note Note that because of the limitations of categories this property can get out of sync if you update the progress directly.
  */
 @property (nonatomic, strong, null_resettable) NSProgress *sd_imageProgress;
@@ -66,7 +66,7 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
  *   The forth parameter is an `SDImageCacheType` enum indicating if the image was retrieved from the local cache
  *   or from the memory cache or from the network.
  *
- *   The fith parameter normally is always YES. However, if you provide SDWebImageAvoidAutoSetImage with SDWebImageProgressiveLoad options to enable progressive downloading and set the image yourself. This block is thus called repeatedly with a partial image. When image is fully downloaded, the
+ *   The fifth parameter normally is always YES. However, if you provide SDWebImageAvoidAutoSetImage with SDWebImageProgressiveLoad options to enable progressive downloading and set the image yourself. This block is thus called repeatedly with a partial image. When image is fully downloaded, the
  *   block is called a last time with the full image and the last parameter set to YES.
  *
  *   The last parameter is the original image URL
@@ -90,7 +90,7 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
 
 /**
  The image transition when image load finished. See `SDWebImageTransition`.
- If you specify nil, do not do transition. Defautls to nil.
+ If you specify nil, do not do transition. Defaults to nil.
  */
 @property (nonatomic, strong, nullable) SDWebImageTransition *sd_imageTransition;
 

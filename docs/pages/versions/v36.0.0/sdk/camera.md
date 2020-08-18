@@ -13,9 +13,9 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 <PlatformsSection android ios web />
 
 > **Note**:
-
-- Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
-- Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
+>
+> - Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount any previously rendered `Camera` component so the following screens can use `<Camera />` without issues.
+> - Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
 
 ## Installation
 

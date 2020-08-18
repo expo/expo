@@ -1,6 +1,6 @@
 {
   "name": "EXFileSystem",
-  "version": "9.0.1",
+  "version": "9.2.0",
   "summary": "Provides access to the local file system on the device.",
   "description": "Provides access to the local file system on the device.",
   "license": "MIT",

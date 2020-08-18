@@ -1,6 +1,6 @@
+import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StyleSheet, Text } from 'react-native';
-import { useTheme } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
@@ -14,12 +14,13 @@ type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 function useThemeColor(props: Props, colorName: ThemedColors) {
   const theme = useTheme();
-  const colorFromProps = props[`${theme}Color`];
+  const themeName = theme.dark ? 'dark' : 'light';
+  const colorFromProps = props[`${themeName}Color`];
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return Colors[themeName][colorName];
   }
 }
 

@@ -195,9 +195,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		243B35F1F2ACA749E27145EA718136EF /* Release */ = {
+		43950FAE52A9C5C09ECD780491BE8334 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6E6963B7BAD3833C7E30FECB7E21C75A /* EXBattery.release.xcconfig */;
+			baseConfigurationReference = 20D2B48DCC559DEDD8B47783B6F6E1BC /* EXBattery.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -215,10 +215,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		65F23FB5944F73966050DBDC3B8A55D1 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -344,9 +344,9 @@
 			};
 			name = Debug;
 		};
-		D1E3593C2436DF21C29FFC0C08422E9F /* Debug */ = {
+		EA1FA9D885A7BDFB262A9A3090AB6624 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 20D2B48DCC559DEDD8B47783B6F6E1BC /* EXBattery.debug.xcconfig */;
+			baseConfigurationReference = 6E6963B7BAD3833C7E30FECB7E21C75A /* EXBattery.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -364,9 +364,11 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -383,8 +385,8 @@
 		EEDE382C106603AF1DC811CBC74AD5B9 /* Build configuration list for PBXNativeTarget "EXBattery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D1E3593C2436DF21C29FFC0C08422E9F /* Debug */,
-				243B35F1F2ACA749E27145EA718136EF /* Release */,
+				43950FAE52A9C5C09ECD780491BE8334 /* Debug */,
+				EA1FA9D885A7BDFB262A9A3090AB6624 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

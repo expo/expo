@@ -1,0 +1,30 @@
+{
+  "name": "EXGL_CPP_LEGACY",
+  "version": "8.4.0",
+  "summary": "Legacy C++ bindings for WebGL 2.0 used in Expo GL module",
+  "description": "Legacy C++ bindings for WebGL 2.0 used in Expo GL module",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/gl-view/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "**/*.{h,c,cpp,mm}",
+  "preserve_paths": "**/*.{h,c,cpp,mm}",
+  "exclude_files": "**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*",
+  "requires_arc": true,
+  "pod_target_xcconfig": {
+    "CLANG_WARN_COMMA": "NO",
+    "CLANG_WARN_UNGUARDED_AVAILABILITY": "NO"
+  },
+  "subspecs": [
+    {
+      "name": "EXGLContext",
+      "source_files": "**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*",
+      "compiler_flags": "-x objective-c++"
+    }
+  ]
+}

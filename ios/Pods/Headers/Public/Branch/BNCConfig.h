@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCConfig.h
+../../../Branch/Branch-SDK/BNCConfig.h

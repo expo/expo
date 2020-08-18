@@ -11,7 +11,6 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,15 +25,17 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
@@ -81,17 +82,13 @@ public class NativeViewHierarchyManager {
 
     public final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
 
-    public final SparseArray<SparseIntArray> mTagsToPendingIndicesToDelete = new SparseArray<>();
-
-    public final int[] mDroppedViewArray = new int[100];
-
     public final RectF mBoundingBox = new RectF();
 
     public boolean mLayoutAnimationEnabled;
 
     public PopupMenu mPopupMenu;
 
-    public int mDroppedViewIndex = 0;
+    public HashMap<Integer, Set<Integer>> mPendingDeletionsForTag;
 
     public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
         this(viewManagers, new RootViewManager());
@@ -116,8 +113,7 @@ public class NativeViewHierarchyManager {
     public final synchronized ViewManager resolveViewManager(int tag) {
         ViewManager viewManager = mTagsToViewManagers.get(tag);
         if (viewManager == null) {
-            boolean alreadyDropped = Arrays.asList(mDroppedViewArray).contains(tag);
-            throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found.\n View already dropped? " + alreadyDropped + ".\nLast index " + mDroppedViewIndex + " in last 100 views" + mDroppedViewArray.toString());
+            throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found.\n");
         }
         return viewManager;
     }
@@ -306,29 +302,14 @@ public class NativeViewHierarchyManager {
         return stringBuilder.toString();
     }
 
-    /**
-   * Given an index to action on under synchronous deletes, return an updated index factoring in
-   * asynchronous deletes (where the async delete operations have not yet been performed)
-   */
-    private int normalizeIndex(int index, SparseIntArray pendingIndices) {
-        int normalizedIndex = index;
-        for (int i = 0; i <= index; i++) {
-            normalizedIndex += pendingIndices.get(i);
+    private Set<Integer> getPendingDeletionsForTag(int tag) {
+        if (mPendingDeletionsForTag == null) {
+            mPendingDeletionsForTag = new HashMap<>();
         }
-        return normalizedIndex;
-    }
-
-    /**
-   * Given React tag, return sparse array of direct child indices that are pending deletion (due to
-   * async view deletion)
-   */
-    private SparseIntArray getOrCreatePendingIndicesToDelete(int tag) {
-        SparseIntArray pendingIndicesToDelete = mTagsToPendingIndicesToDelete.get(tag);
-        if (pendingIndicesToDelete == null) {
-            pendingIndicesToDelete = new SparseIntArray();
-            mTagsToPendingIndicesToDelete.put(tag, pendingIndicesToDelete);
+        if (!mPendingDeletionsForTag.containsKey(tag)) {
+            mPendingDeletionsForTag.put(tag, new HashSet<Integer>());
         }
-        return pendingIndicesToDelete;
+        return mPendingDeletionsForTag.get(tag);
     }
 
     /**
@@ -337,11 +318,10 @@ public class NativeViewHierarchyManager {
    * @param viewsToAdd ordered (asc based on mIndex property) list of tag-index pairs that represent
    *     a view which should be added at the specified index
    * @param tagsToDelete list of tags corresponding to views that should be removed
-   * @param indicesToDelete parallel list to tagsToDelete, list of indices of those tags
    */
-    public synchronized void manageChildren(int tag, @Nullable int[] indicesToRemove, @Nullable ViewAtIndex[] viewsToAdd, @Nullable int[] tagsToDelete, @Nullable int[] indicesToDelete) {
+    public synchronized void manageChildren(final int tag, @Nullable int[] indicesToRemove, @Nullable ViewAtIndex[] viewsToAdd, @Nullable int[] tagsToDelete) {
         UiThreadUtil.assertOnUiThread();
-        final SparseIntArray pendingIndicesToDelete = getOrCreatePendingIndicesToDelete(tag);
+        final Set<Integer> pendingDeletionTags = getPendingDeletionsForTag(tag);
         final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
         final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
         if (viewToManage == null) {
@@ -364,13 +344,12 @@ public class NativeViewHierarchyManager {
                 if (indexToRemove >= lastIndexToRemove) {
                     throw new IllegalViewOperationException("Trying to remove an out of order view index:" + indexToRemove + " view tag: " + tag + "\n detail: " + constructManageChildrenErrorMessage(viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
                 }
-                int normalizedIndexToRemove = normalizeIndex(indexToRemove, pendingIndicesToDelete);
-                View viewToRemove = viewManager.getChildAt(viewToManage, normalizedIndexToRemove);
+                View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
                 if (mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToRemove) && arrayContains(tagsToDelete, viewToRemove.getId())) {
                 // The view will be removed and dropped by the 'delete' layout animation
                 // instead, so do nothing
                 } else {
-                    viewManager.removeViewAt(viewToManage, normalizedIndexToRemove);
+                    viewManager.removeViewAt(viewToManage, indexToRemove);
                 }
                 lastIndexToRemove = indexToRemove;
             }
@@ -378,14 +357,12 @@ public class NativeViewHierarchyManager {
         if (tagsToDelete != null) {
             for (int i = 0; i < tagsToDelete.length; i++) {
                 int tagToDelete = tagsToDelete[i];
-                final int indexToDelete = indicesToDelete[i];
                 final View viewToDestroy = mTagsToViews.get(tagToDelete);
                 if (viewToDestroy == null) {
                     throw new IllegalViewOperationException("Trying to destroy unknown view tag: " + tagToDelete + "\n detail: " + constructManageChildrenErrorMessage(viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
                 }
                 if (mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
-                    int updatedCount = pendingIndicesToDelete.get(indexToDelete, 0) + 1;
-                    pendingIndicesToDelete.put(indexToDelete, updatedCount);
+                    pendingDeletionTags.add(tagToDelete);
                     mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
 
                         @Override
@@ -395,8 +372,10 @@ public class NativeViewHierarchyManager {
                             UiThreadUtil.assertOnUiThread();
                             viewManager.removeView(viewToManage, viewToDestroy);
                             dropView(viewToDestroy);
-                            int count = pendingIndicesToDelete.get(indexToDelete, 0);
-                            pendingIndicesToDelete.put(indexToDelete, Math.max(0, count - 1));
+                            pendingDeletionTags.remove(viewToDestroy.getId());
+                            if (pendingDeletionTags.isEmpty()) {
+                                mPendingDeletionsForTag.remove(tag);
+                            }
                         }
                     });
                 } else {
@@ -411,9 +390,26 @@ public class NativeViewHierarchyManager {
                 if (viewToAdd == null) {
                     throw new IllegalViewOperationException("Trying to add unknown view tag: " + viewAtIndex.mTag + "\n detail: " + constructManageChildrenErrorMessage(viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
                 }
-                int normalizedIndexToAdd = normalizeIndex(viewAtIndex.mIndex, pendingIndicesToDelete);
-                viewManager.addView(viewToManage, viewToAdd, normalizedIndexToAdd);
+                int normalizedIndex = viewAtIndex.mIndex;
+                if (!pendingDeletionTags.isEmpty()) {
+                    normalizedIndex = 0;
+                    int counter = 0;
+                    while (normalizedIndex < viewToManage.getChildCount()) {
+                        if (counter == viewAtIndex.mIndex) {
+                            break;
+                        }
+                        View v = viewToManage.getChildAt(normalizedIndex);
+                        if (!pendingDeletionTags.contains(v.getId())) {
+                            counter++;
+                        }
+                        normalizedIndex++;
+                    }
+                }
+                viewManager.addView(viewToManage, viewToAdd, normalizedIndex);
             }
+        }
+        if (pendingDeletionTags.isEmpty()) {
+            mPendingDeletionsForTag.remove(tag);
         }
     }
 
@@ -470,20 +466,12 @@ public class NativeViewHierarchyManager {
         view.setId(tag);
     }
 
-    private void cacheDroppedTag(int tag) {
-        mDroppedViewArray[mDroppedViewIndex] = tag;
-        mDroppedViewIndex = (mDroppedViewIndex + 1) % 100;
-    }
-
     /** Releases all references to given native View. */
     protected synchronized void dropView(View view) {
         UiThreadUtil.assertOnUiThread();
         if (view == null) {
             // Ignore this drop operation when view is null.
             return;
-        }
-        if (ReactFeatureFlags.logDroppedViews) {
-            cacheDroppedTag(view.getId());
         }
         if (mTagsToViewManagers.get(view.getId()) == null) {
             // execution). Ignore this drop operation.
@@ -507,7 +495,6 @@ public class NativeViewHierarchyManager {
             }
             viewGroupManager.removeAllViews(viewGroup);
         }
-        mTagsToPendingIndicesToDelete.remove(view.getId());
         mTagsToViews.remove(view.getId());
         mTagsToViewManagers.remove(view.getId());
     }
@@ -645,7 +632,7 @@ public class NativeViewHierarchyManager {
         UiThreadUtil.assertOnUiThread();
         View view = mTagsToViews.get(reactTag);
         if (view == null) {
-            throw new IllegalViewOperationException("Trying to send command to a non-existing view " + "with tag " + reactTag);
+            throw new RetryableMountingLayerException("Trying to send command to a non-existing view with tag [" + reactTag + "] and command " + commandId);
         }
         ViewManager viewManager = resolveViewManager(reactTag);
         viewManager.receiveCommand(view, commandId, args);
@@ -655,7 +642,7 @@ public class NativeViewHierarchyManager {
         UiThreadUtil.assertOnUiThread();
         View view = mTagsToViews.get(reactTag);
         if (view == null) {
-            throw new IllegalViewOperationException("Trying to send command to a non-existing view " + "with tag " + reactTag);
+            throw new RetryableMountingLayerException("Trying to send command to a non-existing view with tag [" + reactTag + "] and command " + commandId);
         }
         ViewManager viewManager = resolveViewManager(reactTag);
         viewManager.receiveCommand(view, commandId, args);

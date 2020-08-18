@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDAuthStateErrorDelegate.h
+../../../AppAuth/Source/AppAuthCore/OIDAuthStateErrorDelegate.h

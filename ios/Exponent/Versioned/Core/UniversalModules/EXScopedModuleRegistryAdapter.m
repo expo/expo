@@ -18,6 +18,7 @@
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
 #import "EXScopedFirebaseCore.h"
+#import "EXUpdatesBinding.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
@@ -27,6 +28,7 @@
 #import "EXScopedNotificationBuilder.h"
 #import "EXScopedNotificationSchedulerModule.h"
 #import "EXScopedNotificationPresentationModule.h"
+#import "EXScopedNotificationCategoriesModule.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -37,6 +39,11 @@
 - (UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params forExperienceId:(NSString *)experienceId withKernelServices:(NSDictionary *)kernelServices
 {
   UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
+
+#if __has_include(<EXUpdates/EXUpdatesService.h>)
+  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")] databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
+  [moduleRegistry registerInternalModule:updatesBinding];
+#endif
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
@@ -52,7 +59,16 @@
 #endif
 
 #if __has_include(<EXFileSystem/EXFileSystem.h>)
-  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  EXScopedFileSystemModule *fileSystemModule;
+  if (params[@"fileSystemDirectories"]) {
+    NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
+    NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
+    fileSystemModule = [[EXScopedFileSystemModule alloc] initWithDocumentDirectory:documentDirectory
+                                                                   cachesDirectory:cachesDirectory
+                                                                   bundleDirectory:nil];
+  } else {
+    fileSystemModule = [EXScopedFileSystemModule new];
+  }
   [moduleRegistry registerExportedModule:fileSystemModule];
   [moduleRegistry registerInternalModule:fileSystemModule];
 #endif
@@ -150,6 +166,11 @@
 #if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
   EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:notificationPresentationModule];
+#endif
+  
+#if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
+  EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:categoriesModule];
 #endif
   return moduleRegistry;
 }

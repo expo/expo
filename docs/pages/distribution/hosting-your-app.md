@@ -1,14 +1,14 @@
 ---
-title: Hosting An App on Your Servers
+title: Hosting Updates on Your Servers
 ---
 
-Normally, when over-the-air (OTA) updates are enabled, your app will fetch JS bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, OTA updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your app on your own servers to better suit your use case.
+Normally, when over-the-air (OTA) updates are enabled, your app will fetch updates comprising JavaScript bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, OTA updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your updates on your own servers to better suit your use cases.
 
-For simplicity, the rest of this article will refer to hosting an app for the Android platform, but you could swap out Android for iOS at any point and everything would still be true.
+For simplicity, the rest of this article will refer to hosting an update for the Android platform, but you could swap out Android for iOS at any point and everything would still be true.
 
-## Export app
+## Exporting the update
 
-First, you’ll need to export all the static files of your app so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app’s static files to a directory named `dist`. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the md5 hash of their content. Your output directory should look something like this now:
+First, you’ll need to export all the static files of your update so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app’s static files to a directory named `dist`. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the MD5 hash of their content. Your output directory should look something like this now:
 
 ```
 .
@@ -23,7 +23,7 @@ First, you’ll need to export all the static files of your app so they can be s
 
 ## Hosting your static files
 
-Once you've exported your app's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to Github. You can enable [Github Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on Github, you'd do something like this:
+Once you've exported your update's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to Github. You can enable [Github Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on Github, you'd do something like this:
 
 ```
 # run this from your project directory
@@ -36,11 +36,11 @@ git add * && git commit -m "Update my app with this JS bundle"
 git push origin master
 ```
 
-To setup a QR code to view your hosted app, or if you want to host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section.
+To setup a QR code to view your hosted update, or if you want to host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section.
 
 ### HTTP Headers
 
-In some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of Javascript files as `"application/javascript"` so that [OTA Updates](https://docs.expo.io/guides/configuring-ota-updates/) work correctly. Otherwise [Updates.checkForUpdateAsync()](https://docs.expo.io/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
+On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of JavaScript files as `"application/javascript"` so that [OTA Updates](https://docs.expo.io/guides/configuring-ota-updates/) work correctly. Otherwise [Updates.checkForUpdateAsync()](https://docs.expo.io/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
 
 Here's an example of `firebase.json` configuration, with a [deploy target](https://firebase.google.com/docs/cli/targets) named "native".
 
@@ -74,7 +74,7 @@ expo export --public-url https://my-app-native.firebaseapp.com/
 firebase deploy --only hosting:native -m "Deploy my app"`
 ```
 
-## Build standalone app
+## Building the standalone app
 
 In order to configure your standalone binary to pull OTA updates from your server, you’ll need to define the URL where you will host your `index.json` file. Pass the URL to your hosted `index.json` file to the `expo build` command.
 
@@ -86,7 +86,7 @@ For Android builds, run the following commands from your terminal:
 
 ## Loading QR Code/URL in Development
 
-You can also load an app hosted on your own servers as a QR code/URL into the Expo mobile client for development purposes.
+You can also load an update hosted on your own servers as a QR code/URL into the Expo mobile client for development purposes.
 
 ### QR code:
 
@@ -120,7 +120,7 @@ QR code: Generate a QR code using your URI from a website like https://www.qr-co
 
 ### URL
 
-If you are loading in your app into the expo client by passing in a URL string, you will need to pass in an URL pointing to your json file.
+If you are loading in your update into a development client by passing in a URL string, you will need to pass in an URL pointing to your JSON manifest file.
 
 Here is an example URL from a remote server: [https://expo.github.io/self-hosting-example/android-index.json](https://expo.github.io/self-hosting-example/android-index.json)
 
@@ -130,7 +130,7 @@ Here is an example URL from localhost: `http://localhost:8000/android-index.json
 
 ### Debugging
 
-When we bundle your app, minification is always enabled. In order to see the original source code of your app for debugging purposes, you can generate source maps. Here is an example workflow:
+When Expo CLI bundles your update, minification is always enabled. In order to see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
 
 1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the `bundles` directory.
 2. A `debug.html` file will also be created at the root of your output directory.
@@ -141,13 +141,13 @@ When we bundle your app, minification is always enabled. In order to see the ori
 ### Multimanifests
 
 As new Expo SDK versions are released, you may want to serve multiple versions of your app from your server endpoint. For example, if you first released your app with SDK 29 and later upgraded to SDK 30, you'd want users with your old standalone binary to receive the SDK 29 version, and those with the new standalone binary to receive the SDK 30 version.
-In order to do this, you can run `expo export` with some merge flags to combine previously exported apps into a single multiversion app which you can serve from your servers.
+In order to do this, you can run `expo export` with some merge flags to combine previously exported updates into a single multiversion update which you can serve from your servers.
 
 Here is an example workflow:
 
-1. Release your app with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the app (SDK 29) to a directory named `sdk29`.
+1. Release your update with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the update (SDK 29) to a directory named `sdk29`.
 
-2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion app in the `dist` output directory. The `asset` and `bundle` folders contain everything that the source directories had, and the `index.json` file contains an array of the individual `index.json` files found in the source directories.
+2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion update in the `dist` output directory. The `asset` and `bundle` folders contain everything that the source directories had, and the `index.json` file contains an array of the individual `index.json` files found in the source directories.
 
 ### Asset Hosting
 

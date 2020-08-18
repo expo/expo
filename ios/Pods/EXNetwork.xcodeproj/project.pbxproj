@@ -195,31 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		06B62A38E263428A54C20D28F4E898F9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5E0AA4916DF329DE74AB5284BE1F931 /* EXNetwork.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXNetwork;
-				PRODUCT_NAME = EXNetwork;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		0C7AF16C66695BFF4FD335243B3BD6A6 /* Release */ = {
+		4320FA5575FDB32D21EA39BBEC92F0E8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2A8C24710304EAFE405CBC95C4F69942 /* EXNetwork.release.xcconfig */;
 			buildSettings = {
@@ -239,6 +215,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -368,6 +345,31 @@
 			};
 			name = Debug;
 		};
+		CE32FE729E55C073B69DEC1535383FC0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5E0AA4916DF329DE74AB5284BE1F931 /* EXNetwork.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXNetwork;
+				PRODUCT_NAME = EXNetwork;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -383,8 +385,8 @@
 		FC50712A6D79D545272F95935F1BECAC /* Build configuration list for PBXNativeTarget "EXNetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06B62A38E263428A54C20D28F4E898F9 /* Debug */,
-				0C7AF16C66695BFF4FD335243B3BD6A6 /* Release */,
+				CE32FE729E55C073B69DEC1535383FC0 /* Debug */,
+				4320FA5575FDB32D21EA39BBEC92F0E8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

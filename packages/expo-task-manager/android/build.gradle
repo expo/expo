@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '8.3.0'
+version = '8.5.0'
 
 // Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
@@ -39,9 +39,9 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 19
-    versionName "8.3.0"
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    versionCode 21
+    versionName "8.5.0"
   }
   lintOptions {
     abortOnError false
@@ -56,8 +56,8 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
-            "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
-            "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
+      "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
 }
 
 dependencies {
@@ -70,5 +70,5 @@ dependencies {
   api "androidx.core:core:1.0.0"
 }
 repositories {
-    mavenCentral()
+  mavenCentral()
 }

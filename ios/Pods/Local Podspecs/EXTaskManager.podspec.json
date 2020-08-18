@@ -1,6 +1,6 @@
 {
   "name": "EXTaskManager",
-  "version": "8.3.0",
+  "version": "8.5.0",
   "summary": "Expo module that provides support for tasks that can run in the background.",
   "description": "Expo module that provides support for tasks that can run in the background.",
   "license": "MIT",

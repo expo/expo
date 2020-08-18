@@ -29,6 +29,13 @@ Run `npx pod-install` after installing the npm package.
 
 No additional set up necessary.
 
+This module requires permission to control vibration on the device, it's added automatically.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.VIBRATE" />
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

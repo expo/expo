@@ -1,6 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 
 #import <sqlite3.h>
@@ -14,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
-static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
+static NSString * const EXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
+static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
 
 @implementation EXUpdatesDatabase
 
@@ -29,10 +28,10 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
   return self;
 }
 
-- (BOOL)openDatabaseWithError:(NSError ** _Nullable)error
+- (BOOL)openDatabaseInDirectory:(NSURL *)directory withError:(NSError ** _Nullable)error
 {
   sqlite3 *db;
-  NSURL *dbUrl = [[EXUpdatesAppController sharedInstance].updatesDirectory URLByAppendingPathComponent:kEXUpdatesDatabaseFilename];
+  NSURL *dbUrl = [directory URLByAppendingPathComponent:EXUpdatesDatabaseFilename];
   BOOL shouldInitializeDatabase = ![[NSFileManager defaultManager] fileExistsAtPath:[dbUrl path]];
   int resultCode = sqlite3_open([[dbUrl path] UTF8String], &db);
   if (resultCode != SQLITE_OK) {
@@ -40,8 +39,8 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
     sqlite3_close(db);
 
     if (resultCode == SQLITE_CORRUPT || resultCode == SQLITE_NOTADB) {
-      NSString *archivedDbFilename = [NSString stringWithFormat:@"%f-%@", [[NSDate date] timeIntervalSince1970], kEXUpdatesDatabaseFilename];
-      NSURL *destinationUrl = [[EXUpdatesAppController sharedInstance].updatesDirectory URLByAppendingPathComponent:archivedDbFilename];
+      NSString *archivedDbFilename = [NSString stringWithFormat:@"%f-%@", [[NSDate date] timeIntervalSince1970], EXUpdatesDatabaseFilename];
+      NSURL *destinationUrl = [directory URLByAppendingPathComponent:archivedDbFilename];
       NSError *err;
       if ([[NSFileManager defaultManager] moveItemAtURL:dbUrl toURL:destinationUrl error:&err]) {
         NSLog(@"Moved corrupt SQLite db to %@", archivedDbFilename);
@@ -55,7 +54,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
       } else {
         NSString *description = [NSString stringWithFormat:@"Could not move existing corrupt database: %@", [err localizedDescription]];
         if (error != nil) {
-          *error = [NSError errorWithDomain:kEXUpdatesDatabaseErrorDomain
+          *error = [NSError errorWithDomain:EXUpdatesDatabaseErrorDomain
                                        code:1004
                                    userInfo:@{ NSLocalizedDescriptionKey: description, NSUnderlyingErrorKey: err }];
         }
@@ -96,7 +95,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
    PRAGMA foreign_keys = ON;\
    CREATE TABLE \"updates\" (\
    \"id\"  BLOB UNIQUE,\
-   \"project_identifier\"  TEXT NOT NULL,\
+   \"scope_key\"  TEXT NOT NULL,\
    \"commit_time\"  INTEGER NOT NULL,\
    \"runtime_version\"  TEXT NOT NULL,\
    \"launch_asset_id\" INTEGER,\
@@ -125,7 +124,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
    FOREIGN KEY(\"update_id\") REFERENCES \"updates\"(\"id\") ON DELETE CASCADE,\
    FOREIGN KEY(\"asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
    );\
-   CREATE UNIQUE INDEX \"index_updates_project_identifier_commit_time\" ON \"updates\" (\"project_identifier\", \"commit_time\");\
+   CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\");\
    CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id\");\
    ";
 
@@ -144,13 +143,13 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 
 - (void)addUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"project_identifier\", \"commit_time\", \"runtime_version\", \"metadata\", \"status\" , \"keep\")\
+  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"metadata\", \"status\" , \"keep\")\
   VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1);";
 
   [self _executeSql:sql
            withArgs:@[
                       update.updateId,
-                      update.projectIdentifier,
+                      update.scopeKey,
                       @([update.commitTime timeIntervalSince1970] * 1000),
                       update.runtimeVersion,
                       update.metadata ?: [NSNull null],
@@ -274,7 +273,9 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  update.status = EXUpdatesUpdateStatusReady;
+  if (update.status != EXUpdatesUpdateStatusDevelopment) {
+    update.status = EXUpdatesUpdateStatusReady;
+  }
   NSString * const updateSql = @"UPDATE updates SET status = ?1, keep = 1 WHERE id = ?2;";
   [self _executeSql:updateSql
            withArgs:@[
@@ -352,40 +353,41 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 
 # pragma mark - select
 
-- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithError:(NSError ** _Nullable)error
+- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT * FROM updates;";
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
+  NSString * const sql = @"SELECT * FROM updates WHERE scope_key = ?1;";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
   if (!rows) {
     return nil;
   }
 
   NSMutableArray<EXUpdatesUpdate *> *launchableUpdates = [NSMutableArray new];
   for (NSDictionary *row in rows) {
-    [launchableUpdates addObject:[self _updateWithRow:row]];
+    [launchableUpdates addObject:[self _updateWithRow:row config:config]];
   }
   return launchableUpdates;
 }
 
-- (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithError:(NSError ** _Nullable)error
+- (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
-  WHERE status IN (%li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded];
+  WHERE scope_key = ?1\
+  AND status IN (%li, %li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded, (long)EXUpdatesUpdateStatusDevelopment];
 
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
   if (!rows) {
     return nil;
   }
   
   NSMutableArray<EXUpdatesUpdate *> *launchableUpdates = [NSMutableArray new];
   for (NSDictionary *row in rows) {
-    [launchableUpdates addObject:[self _updateWithRow:row]];
+    [launchableUpdates addObject:[self _updateWithRow:row config:config]];
   }
   return launchableUpdates;
 }
 
-- (nullable EXUpdatesUpdate *)updateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error
+- (nullable EXUpdatesUpdate *)updateWithId:(NSUUID *)updateId config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
   NSString * const sql = @"SELECT *\
   FROM updates\
@@ -395,7 +397,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
   if (!rows || ![rows count]) {
     return nil;
   } else {
-    return [self _updateWithRow:rows[0]];
+    return [self _updateWithRow:rows[0] config:config];
   }
 }
 
@@ -568,12 +570,12 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
   int code = sqlite3_errcode(db);
   int extendedCode = sqlite3_extended_errcode(db);
   NSString *message = [NSString stringWithUTF8String:sqlite3_errmsg(db)];
-  return [NSError errorWithDomain:kEXUpdatesDatabaseErrorDomain
+  return [NSError errorWithDomain:EXUpdatesDatabaseErrorDomain
                               code:extendedCode
                           userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Error code %i: %@ (extended error code %i)", code, message, extendedCode]}];
 }
 
-- (EXUpdatesUpdate *)_updateWithRow:(NSDictionary *)row
+- (EXUpdatesUpdate *)_updateWithRow:(NSDictionary *)row config:(EXUpdatesConfig *)config
 {
   NSError *error;
   id metadata = nil;
@@ -587,7 +589,9 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
                                            runtimeVersion:row[@"runtime_version"]
                                                  metadata:metadata
                                                    status:(EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
-                                                     keep:[(NSNumber *)row[@"keep"] boolValue]];
+                                                     keep:[(NSNumber *)row[@"keep"] boolValue]
+                                                   config:config
+                                                 database:self];
   return update;
 }
 

@@ -119,8 +119,8 @@
             UTType = kUTTypeScalableVectorGraphics;
             break;
         default:
-            // default is kUTTypePNG
-            UTType = kUTTypePNG;
+            // default is kUTTypeImage abstract type
+            UTType = kUTTypeImage;
             break;
     }
     return UTType;

@@ -6,12 +6,12 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.ReactViewManager;
 
 import java.util.EnumSet;
 
-public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
+public class SafeAreaViewManager extends ReactViewManager {
   public SafeAreaViewManager() {
     super();
   }

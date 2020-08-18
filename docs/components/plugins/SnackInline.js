@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import { SNACK_URL, getSnackFiles } from '../../common/snack';
+
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 
 const DEFAULT_PLATFORM = 'android';
@@ -7,20 +10,19 @@ const LATEST_VERSION = `v${require('../../package.json').version}`;
 export default class SnackInline extends React.Component {
   static contextType = DocumentationPageContext;
   contentRef = React.createRef();
-  formRef = React.createRef();
 
   static defaultProps = {
     dependencies: [],
   };
 
   state = {
-    showLink: false,
+    ready: false,
   };
 
   componentDidMount() {
     // render the link only on the client side, because it depends on accessing DOM
     // eslint-disable-next-line react/no-did-mount-set-state
-    this.setState({ showLink: true });
+    this.setState({ ready: true });
   }
 
   // Filter out `latest` and use the concrete latest version instead. We want to
@@ -28,12 +30,8 @@ export default class SnackInline extends React.Component {
   // find the examples in the static dir, and we don't have a `latest` version
   // there, but we do have `unversioned`.
   _getSelectedDocsVersion = () => {
-    let { version } = this.context;
-    if (version === 'latest') {
-      return LATEST_VERSION;
-    }
-
-    return version;
+    const { version } = this.context;
+    return version === 'latest' ? LATEST_VERSION : version;
   };
 
   // Get a SDK version that Snack will understand. `latest` and `unversioned`
@@ -55,68 +53,43 @@ export default class SnackInline extends React.Component {
     return [...this.props.dependencies].join(',');
   };
 
-  _getSnackUrl = () => {
-    let label = this.props.label;
-    let templateId = this.props.templateId;
-
-    let baseUrl =
-      `https://snack.expo.io?platform=${this.props.defaultPlatform || DEFAULT_PLATFORM}&name=` +
-      encodeURIComponent(label) +
-      `&sdkVersion=${this._getSnackSdkVersion()}` +
-      `&dependencies=${encodeURIComponent(this._getDependencies())}`;
-
-    if (templateId) {
-      let templateUrl = `${this._getExamplesPath()}/${templateId}.js`;
-      return `${baseUrl}&sourceUrl=${encodeURIComponent(templateUrl)}`;
-    } else {
-      return `${baseUrl}&code=${encodeURIComponent(this._getCode())}`;
-    }
-  };
-
   _getCode = () => {
-    if (this.contentRef.current) {
-      return this.contentRef.current.textContent;
-    } else {
-      return '';
-    }
+    return this.contentRef.current ? this.contentRef.current.textContent : '';
   };
 
   render() {
-    if (this.props.templateId) {
-      return (
-        <div>
-          <div ref={this.contentRef}>{this.props.children}</div>
-          {this.state.showLink ? (
-            <a className="snack-inline-example-button" href={this._getSnackUrl()} target="_blank">
-              Try this example on Snack <OpenIcon />
-            </a>
-          ) : null}
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <div ref={this.contentRef}>{this.props.children}</div>
-
-          {/* TODO: this should be a POST request, need to change Snack to support it though */}
-          <form ref={this.formRef} action="https://snack.expo.io" method="POST" target="_blank">
+    return (
+      <div>
+        <div ref={this.contentRef}>{this.props.children}</div>
+        <form action={SNACK_URL} method="POST" target="_blank">
+          <input
+            type="hidden"
+            name="platform"
+            value={this.props.defaultPlatform || DEFAULT_PLATFORM}
+          />
+          <input type="hidden" name="name" value={this.props.label || 'Example'} />
+          <input type="hidden" name="dependencies" value={this._getDependencies()} />
+          <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
+          {this.state.ready && (
             <input
               type="hidden"
-              name="platform"
-              value={this.props.defaultPlatform || DEFAULT_PLATFORM}
+              name="files"
+              value={JSON.stringify(
+                getSnackFiles({
+                  templateId: this.props.templateId,
+                  code: this._getCode(),
+                  files: this.props.files,
+                  baseURL: this._getExamplesPath(),
+                })
+              )}
             />
-            <input type="hidden" name="name" value={this.props.label || 'Example'} />
-            <input type="hidden" name="dependencies" value={this._getDependencies()} />
-            <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
-            <input type="hidden" name="code" value={this._getCode()} />
-
-            <button className="snack-inline-example-button">
-              Try this example on Snack <OpenIcon />
-            </button>
-          </form>
-        </div>
-      );
-    }
+          )}
+          <button className="snack-inline-example-button" disabled={!this.state.ready}>
+            Try this example on Snack <OpenIcon />
+          </button>
+        </form>
+      </div>
+    );
   }
 }
 

@@ -359,32 +359,7 @@
 			};
 			name = Debug;
 		};
-		36C431C9F5100B5A0349A77511A0AB45 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 32264672994E55F5ECD4C39AD73D0F22 /* EXSensors.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSensors/EXSensors-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSensors;
-				PRODUCT_NAME = EXSensors;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		89601BC1DF2DD6CFA6A5E1118AD14BFD /* Debug */ = {
+		987AC7B4B08D5991ADFA5136A55090BC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 49B94DF5A8C2C14998E702F60AD45470 /* EXSensors.debug.xcconfig */;
 			buildSettings = {
@@ -404,9 +379,36 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		D8088DA8FC72AB2DA67D4DB9ABC41938 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 32264672994E55F5ECD4C39AD73D0F22 /* EXSensors.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSensors/EXSensors-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSensors;
+				PRODUCT_NAME = EXSensors;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		E9F069537583DBDC545F3B94C0D69994 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -474,8 +476,8 @@
 		4F17CF7CC08EE60A002B7D65BBF9C26C /* Build configuration list for PBXNativeTarget "EXSensors" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				89601BC1DF2DD6CFA6A5E1118AD14BFD /* Debug */,
-				36C431C9F5100B5A0349A77511A0AB45 /* Release */,
+				987AC7B4B08D5991ADFA5136A55090BC /* Debug */,
+				D8088DA8FC72AB2DA67D4DB9ABC41938 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

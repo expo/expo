@@ -277,6 +277,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0D45CD6245D99BB8FE5386782B117C89 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAdsFacebook/EXAdsFacebook-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAdsFacebook;
+				PRODUCT_NAME = EXAdsFacebook;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		28E7C0B54B5088C7294C655AA13522AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -401,32 +427,7 @@
 			};
 			name = Debug;
 		};
-		8E87935A90DC621D3053CEE1A482F0B9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAdsFacebook/EXAdsFacebook-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAdsFacebook;
-				PRODUCT_NAME = EXAdsFacebook;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		FEE418E58F16A493579BC1F19391F66D /* Debug */ = {
+		55DFE12B1DB1C41C3A45E27B8C12A2FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */;
 			buildSettings = {
@@ -446,6 +447,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -465,8 +467,8 @@
 		E8E1996D52354CEFF0F05B2F9E647C69 /* Build configuration list for PBXNativeTarget "EXAdsFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FEE418E58F16A493579BC1F19391F66D /* Debug */,
-				8E87935A90DC621D3053CEE1A482F0B9 /* Release */,
+				55DFE12B1DB1C41C3A45E27B8C12A2FF /* Debug */,
+				0D45CD6245D99BB8FE5386782B117C89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

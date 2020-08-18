@@ -6,7 +6,7 @@ import {
   Octicons,
 } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Camera } from 'expo-camera';
+import { Camera, BarCodeScanningResult } from 'expo-camera';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import * as Permissions from 'expo-permissions';
@@ -105,13 +105,12 @@ export default class CameraScreen extends React.Component<{}, State> {
   camera?: Camera;
 
   async componentDidMount() {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ permission: status, permissionsGranted: status === 'granted' });
 
+    if (Platform.OS === 'web') {
+      return;
+    }
     try {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
     } catch (error) {
@@ -167,7 +166,8 @@ export default class CameraScreen extends React.Component<{}, State> {
     this.setState({ newPhotos: true });
   };
 
-  onBarCodeScanned = (code: { type: string; data: string }) => {
+  onBarCodeScanned = (code: BarCodeScanningResult) => {
+    console.log('Found: ', code);
     this.setState({ barcodeScanning: !this.state.barcodeScanning }, () =>
       Alert.alert(`Barcode found: ${code.data}`)
     );
@@ -204,7 +204,8 @@ export default class CameraScreen extends React.Component<{}, State> {
   };
 
   renderGallery() {
-    return <GalleryScreen onPress={this.toggleView} />;
+    const localPhotos = photos.map(photo => photo.uri);
+    return <GalleryScreen onPress={this.toggleView} photos={localPhotos} />;
   }
 
   renderFaces = () => (

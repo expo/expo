@@ -3,15 +3,13 @@
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
+#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesUpdateAvailableEventName = @"updateAvailable";
-static NSString * const kEXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
-static NSString * const kEXUpdatesErrorEventName = @"error";
-static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
+static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
 
 @interface EXUpdatesAppLoaderTask ()
 
@@ -30,6 +28,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 @property (nonatomic, assign) BOOL isReadyToLaunch;
 @property (nonatomic, assign) BOOL isTimerFinished;
 @property (nonatomic, assign) BOOL hasLaunched;
+@property (nonatomic, assign) BOOL isUpToDate;
 @property (nonatomic, strong) dispatch_queue_t loaderTaskQueue;
 
 
@@ -48,6 +47,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
     _database = database;
     _directory = directory;
     _selectionPolicy = selectionPolicy;
+    _isUpToDate = NO;
     _delegateQueue = delegateQueue;
     _loaderTaskQueue = dispatch_queue_create("expo.loader.LoaderTaskQueue", DISPATCH_QUEUE_SERIAL);
   }
@@ -59,7 +59,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   if (!_config.isEnabled) {
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
-                  didFinishWithError:[NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
+                  didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
                     NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling EXUpdatesAppLoaderTask, or enable updates in the configuration."
                   }]];
     });
@@ -69,7 +69,7 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   if (!_config.updateUrl) {
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
-                  didFinishWithError:[NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
+                  didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
                     NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use EXUpdatesAppLoaderTask to load updates."
                   }]];
     });
@@ -79,14 +79,14 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   if (!_directory) {
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
-                  didFinishWithError:[NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
+                  didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
                     NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask directory must be nonnull."
                   }]];
     });
     return;
   }
 
-  BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdateWithConfig:_config];
+  __block BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdateWithConfig:_config];
   NSNumber *launchWaitMs = _config.launchWaitMs;
   if ([launchWaitMs isEqualToNumber:@(0)] || !shouldCheckForUpdate) {
     self->_isTimerFinished = YES;
@@ -104,14 +104,24 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
         }
         NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
       } else {
-        self->_isReadyToLaunch = YES;
-        [self _maybeFinish];
+        if (self->_delegate &&
+            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+          // ignore timer and other settings and force launch a remote update.
+          self->_launcher = nil;
+          [self _stopTimer];
+          shouldCheckForUpdate = YES;
+        } else {
+          self->_isReadyToLaunch = YES;
+          [self _maybeFinish];
+        }
       }
 
       if (shouldCheckForUpdate) {
         [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
+      } else {
+        [self _runReaper];
       }
     }];
   }];
@@ -129,20 +139,17 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      if (self->_isReadyToLaunch && self->_launcher.launchAssetUrl) {
-        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher];
+      if (self->_isReadyToLaunch && (self->_launcher.launchAssetUrl || self->_launcher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
+        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher isUpToDate:self->_isUpToDate];
       } else {
-        [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:kEXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
+        [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
           NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask encountered an unexpected error and could not launch an update."
         }]];
       }
     });
   }
 
-  if (_timer) {
-    [_timer invalidate];
-  }
-  _isTimerFinished = YES;
+  [self _stopTimer];
 }
 
 - (void)_maybeFinish
@@ -162,12 +169,37 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   });
 }
 
+- (void)_stopTimer
+{
+  if (_timer) {
+    [_timer invalidate];
+    _timer = nil;
+  }
+  _isTimerFinished = YES;
+}
+
+- (void)_runReaper
+{
+  if (_launcher.launchedUpdate) {
+    [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
+                                        database:_database
+                                       directory:_directory
+                                 selectionPolicy:_selectionPolicy
+                                  launchedUpdate:_launcher.launchedUpdate];
+  }
+}
+
 - (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
 {
-  [EXUpdatesAppLauncherWithDatabase launchableUpdateWithSelectionPolicy:_selectionPolicy completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
-    if ([self->_selectionPolicy shouldLoadNewUpdate:[EXUpdatesEmbeddedAppLoader embeddedManifest] withLaunchedUpdate:launchableUpdate]) {
-      self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithCompletionQueue:self->_loaderTaskQueue];
-      [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithSuccess:^(EXUpdatesUpdate * _Nullable update) {
+  [EXUpdatesAppLauncherWithDatabase launchableUpdateWithConfig:_config database:_database selectionPolicy:_selectionPolicy completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
+    if (self->_config.hasEmbeddedUpdate &&
+        [self->_selectionPolicy shouldLoadNewUpdate:[EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
+                                 withLaunchedUpdate:launchableUpdate]) {
+      self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+      [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+        // we already checked using selection policy, so we don't need to check again
+        return YES;
+      } success:^(EXUpdatesUpdate * _Nullable update) {
         completion();
       } error:^(NSError * _Nonnull error) {
         completion();
@@ -180,15 +212,28 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
 
 - (void)_launchWithCompletion:(void (^)(NSError * _Nullable error, BOOL success))completion
 {
-  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithCompletionQueue:_loaderTaskQueue];
+  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   _launcher = launcher;
   [launcher launchUpdateWithSelectionPolicy:_selectionPolicy completion:completion];
 }
 
 - (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update))completion
 {
-  _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithCompletionQueue:_loaderTaskQueue];
-  [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl success:^(EXUpdatesUpdate * _Nullable update) {
+  _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
+  [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate]) {
+      self->_isUpToDate = NO;
+      if (self->_delegate) {
+        dispatch_async(self->_delegateQueue, ^{
+          [self->_delegate appLoaderTask:self didStartLoadingUpdate:update];
+        });
+      }
+      return YES;
+    } else {
+      self->_isUpToDate = YES;
+      return NO;
+    }
+  } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {
     completion(error, nil);
@@ -202,48 +247,48 @@ static NSString * const kEXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoade
   // Otherwise, we've already launched. Send an event to the notify JS of the new update.
 
   dispatch_async(_loaderTaskQueue, ^{
-    if (self->_timer) {
-      [self->_timer invalidate];
-    }
-    self->_isTimerFinished = YES;
+    [self _stopTimer];
 
     if (update) {
       if (!self->_hasLaunched) {
-        EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithCompletionQueue:self->_loaderTaskQueue];
+        EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
         self->_candidateLauncher = launcher;
         [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
           if (success) {
             if (!self->_hasLaunched) {
               self->_launcher = self->_candidateLauncher;
+              self->_isReadyToLaunch = YES;
+              self->_isUpToDate = YES;
               [self _finishWithError:nil];
             }
           } else {
             [self _finishWithError:error];
             NSLog(@"Downloaded update but failed to relaunch: %@", error.localizedDescription);
           }
+          [self _runReaper];
         }];
       } else {
-        [self _sendEventWithType:kEXUpdatesUpdateAvailableEventName
-                            body:@{@"manifest": update.rawManifest}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:update error:nil];
+        [self _runReaper];
       }
     } else {
       // there's no update, so signal we're ready to launch
       [self _finishWithError:nil];
       if (error) {
-        [self _sendEventWithType:kEXUpdatesErrorEventName
-                            body:@{@"message": error.localizedDescription}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusError manifest:nil error:error];
       } else {
-        [self _sendEventWithType:kEXUpdatesNoUpdateAvailableEventName body:@{}];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusNoUpdateAvailable manifest:nil error:nil];
       }
+      [self _runReaper];
     }
   });
 }
 
-- (void)_sendEventWithType:(NSString *)type body:(NSDictionary *)body
+- (void)_didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status manifest:(nullable EXUpdatesUpdate *)manifest error:(nullable NSError *)error
 {
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      [self->_delegate appLoaderTask:self didFireEventWithType:type body:body];
+      [self->_delegate appLoaderTask:self didFinishBackgroundUpdateWithStatus:status update:manifest error:error];
     });
   }
 }

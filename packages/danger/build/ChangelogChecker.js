@@ -102,7 +102,7 @@ ${message}`);
 
   #### Apply suggested changes:
 ${diff}
-${pr} 
+${pr}
 </details>`);
 }
 /**

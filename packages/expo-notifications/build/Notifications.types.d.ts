@@ -113,20 +113,29 @@ export interface UnknownNotificationTrigger {
     type: 'unknown';
 }
 export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | UnknownNotificationTrigger;
+export declare type ChannelAwareTriggerInput = {
+    channelId: string;
+};
 export declare type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+    channelId?: string;
     repeats?: boolean;
 };
 export interface TimeIntervalTriggerInput {
+    channelId?: string;
     repeats?: boolean;
     seconds: number;
 }
 export interface DailyTriggerInput {
+    channelId?: string;
     hour: number;
     minute: number;
     repeats: true;
 }
-export declare type DateTriggerInput = Date | number;
-export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
+export declare type DateTriggerInput = Date | number | {
+    channelId?: string;
+    date: Date | number;
+};
+export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
     LOW = "low",
@@ -187,6 +196,8 @@ export interface NotificationContentInput {
      */
     color?: string;
     autoDismiss?: boolean;
+    categoryIdentifier?: string;
+    sticky?: boolean;
     attachments?: {
         url: string;
         identifier?: string;
@@ -220,5 +231,32 @@ export interface NotificationBehavior {
     shouldPlaySound: boolean;
     shouldSetBadge: boolean;
     priority?: AndroidNotificationPriority;
+}
+export interface NotificationAction {
+    identifier: string;
+    buttonTitle: string;
+    textInput?: {
+        submitButtonTitle: string;
+        placeholder: string;
+    };
+    options?: {
+        isDestructive?: boolean;
+        isAuthenticationRequired?: boolean;
+        opensAppToForeground?: boolean;
+    };
+}
+export interface NotificationCategory {
+    identifier: string;
+    actions: NotificationAction[];
+    options?: {
+        previewPlaceholder?: string;
+        intentIdentifiers?: string[];
+        categorySummaryFormat?: string;
+        customDismissAction?: boolean;
+        allowInCarPlay?: boolean;
+        showTitle?: boolean;
+        showSubtitle?: boolean;
+        allowAnnouncement?: boolean;
+    };
 }
 export {};

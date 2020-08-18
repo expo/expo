@@ -21,6 +21,10 @@
 
 - All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 
+## 8.3.0 — 2020-08-18
+
+_This version does not introduce any user-facing changes._
+
 ## 8.2.1 — 2020-05-29
 
 _This version does not introduce any user-facing changes._

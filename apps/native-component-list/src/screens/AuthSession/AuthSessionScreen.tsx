@@ -78,6 +78,7 @@ function AuthSessionProviders(props: {
   const providers = [
     Facebook,
     Spotify,
+    Strava,
     Twitch,
     Dropbox,
     Google,
@@ -541,6 +542,57 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
   return (
     <AuthSection
       title="spotify"
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
+  const discovery = {
+    authorizationEndpoint: 'https://www.strava.com/oauth/mobile/authorize',
+    tokenEndpoint: 'https://www.strava.com/oauth/token',
+  };
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: '51935',
+      redirectUri,
+      scopes: ['activity:read_all'],
+      usePKCE,
+      prompt,
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    if (request && result?.type === 'success' && result.params.code) {
+      AuthSession.exchangeCodeAsync(
+        {
+          clientId: request?.clientId,
+          redirectUri,
+          code: result.params.code,
+          extraParams: {
+            // You must use the extraParams variation of clientSecret.
+            client_secret: '...',
+          },
+        },
+        discovery
+      ).then(result => {
+        console.log('RES: ', result);
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [result]);
+
+  return (
+    <AuthSection
+      title="strava"
       request={request}
       result={result}
       promptAsync={promptAsync}

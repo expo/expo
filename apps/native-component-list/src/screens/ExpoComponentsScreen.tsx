@@ -5,38 +5,59 @@ import { Screens } from '../navigation/ExpoComponents';
 import ComponentListScreen from './ComponentListScreen';
 
 const screens = [
+  'ActivityIndicator',
   'AdMob',
   'BarCodeScanner',
   'BlurView',
+  'Button',
   'Camera',
+  'CheckBox',
   'DateTimePicker',
+  'DrawerLayoutAndroid',
   'FacebookAds',
+  'GL',
   'GestureHandlerList',
   'GestureHandlerPinch',
   'GestureHandlerSwipeable',
   'Gif',
-  'GL',
   'HTML',
   'Image',
   'LinearGradient',
   'Lottie',
   'Maps',
   'MaskedView',
+  'Modal',
+  'Picker',
+  'Pressable',
+  'ProgressBarAndroid',
+  'ProgressViewIOS',
+  'QRCode',
   'ReanimatedImagePreview',
   'ReanimatedProgress',
-  'SegmentedControl',
-  'Screens',
-  'SharedElement',
   'SVG',
-  'ViewPager',
+  'Screens',
+  'ScrollView',
+  'SegmentedControl',
+  'SharedElement',
+  'Slider',
+  'Switch',
+  'Text',
+  'TextInput',
+  'TouchableBounce',
+  'Touchables',
   'Video',
+  'ViewPager',
   'WebView',
 ];
 
 export default function ExpoComponentsScreen() {
   const apis = React.useMemo(() => {
     return screens
-      .map(name => ({ name, isAvailable: !!Screens[name] }))
+      .map(name => ({
+        name,
+        route: `/components/${name.toLowerCase()}`,
+        isAvailable: !!Screens[name],
+      }))
       .sort((a, b) => {
         if (a.isAvailable !== b.isAvailable) {
           if (a.isAvailable) {

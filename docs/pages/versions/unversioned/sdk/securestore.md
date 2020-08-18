@@ -28,6 +28,14 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 import * as SecureStore from 'expo-secure-store';
 ```
 
+### `SecureStore.isAvailableAsync()`
+
+Returns whether the SecureStore API is enabled on the current device.
+
+#### Returns
+
+Async `boolean`, indicating whether the SecureStore API is available on the current device. Currently this resolves `true` on iOS and Android only.
+
 ### `SecureStore.setItemAsync(key, value, options)`
 
 Store a key–value pair.

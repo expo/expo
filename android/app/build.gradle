@@ -21,7 +21,7 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 128
@@ -120,7 +120,6 @@ dependencies {
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
-  implementation 'com.google.android.gms:play-services-gcm:15.0.1'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
@@ -143,6 +142,7 @@ dependencies {
   implementation "androidx.exifinterface:exifinterface:1.0.0"
   implementation 'com.squareup.okio:okio:1.9.0'
   implementation 'com.facebook.soloader:soloader:0.8.2'
+  implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -179,7 +179,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 
   // BEGIN_SDK_UNVERSIONED
-  implementation(project(path: ':expoview'))
+  implementation(project(':expoview'))
 
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // END_SDK_UNVERSIONED
@@ -223,11 +223,9 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
-        'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-payments-stripe',
-        'expo-updates',
-        'expo-splash-screen'
+        'expo-gl-cpp-legacy'
       ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */

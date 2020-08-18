@@ -8,6 +8,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import expo.modules.updates.UpdatesConfiguration;
+
 public class ManifestFactory {
 
   private static final String TAG = ManifestFactory.class.getSimpleName();
@@ -26,26 +28,26 @@ public class ManifestFactory {
     return sIsLegacy;
   }
 
-  public static Manifest getManifest(Context context, JSONObject manifestJson) throws JSONException {
+  public static Manifest getManifest(JSONObject manifestJson, UpdatesConfiguration configuration, Context context) throws JSONException {
     if (isLegacy(context)) {
-      return LegacyManifest.fromLegacyManifestJson(manifestJson);
+      return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
     } else {
-      return NewManifest.fromManifestJson(manifestJson);
+      return NewManifest.fromManifestJson(manifestJson, configuration);
     }
   }
 
-  public static Manifest getEmbeddedManifest(Context context, JSONObject manifestJson) throws JSONException {
+  public static Manifest getEmbeddedManifest(JSONObject manifestJson, UpdatesConfiguration configuration, Context context) throws JSONException {
     if (isLegacy(context)) {
       if (manifestJson.has("releaseId")) {
-        return LegacyManifest.fromLegacyManifestJson(manifestJson);
+        return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
       } else {
-        return BareManifest.fromManifestJson(manifestJson);
+        return BareManifest.fromManifestJson(manifestJson, configuration);
       }
     } else {
       if (manifestJson.has("runtimeVersion")) {
-        return NewManifest.fromManifestJson(manifestJson);
+        return NewManifest.fromManifestJson(manifestJson, configuration);
       } else {
-        return BareManifest.fromManifestJson(manifestJson);
+        return BareManifest.fromManifestJson(manifestJson, configuration);
       }
     }
   }

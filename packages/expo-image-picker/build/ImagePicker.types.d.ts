@@ -1,3 +1,8 @@
+import { PermissionResponse } from 'unimodules-permissions-interface';
+export { PermissionResponse as CameraPermissionResponse };
+export declare type CameraRollPermissionResponse = PermissionResponse & {
+    accessPrivileges?: 'all' | 'limited' | 'none';
+};
 export declare enum MediaTypeOptions {
     All = "All",
     Videos = "Videos",
@@ -26,23 +31,38 @@ export declare type ImageInfo = {
     };
     base64?: string;
 };
+export declare type ImagePickerErrorResult = {
+    code: string;
+    message: string;
+    exception?: string;
+};
 export declare type ImagePickerResult = {
     cancelled: true;
 } | ({
     cancelled: false;
 } & ImageInfo);
+export declare type ImagePickerMultipleResult = {
+    cancelled: true;
+} | {
+    cancelled: false;
+    selected: ImageInfo[];
+};
 export declare type ImagePickerOptions = {
     allowsEditing?: boolean;
     aspect?: [number, number];
     quality?: number;
-    allowsMultipleSelection?: boolean;
     mediaTypes?: MediaTypeOptions;
     exif?: boolean;
     base64?: boolean;
     videoExportPreset?: VideoExportPreset;
+    allowsMultipleSelection?: boolean;
+    videoMaxDuration?: number;
 };
 export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
     capture?: boolean;
     allowsMultipleSelection: boolean;
 };
+export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
+    allowsMultipleSelection: true;
+} ? ImagePickerMultipleResult : ImagePickerResult;

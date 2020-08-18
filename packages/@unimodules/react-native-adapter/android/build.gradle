@@ -18,7 +18,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 group = 'org.unimodules'
-version = '5.4.0'
+version = '5.6.0'
 
 
 // Simple helper that allows the root project to override versions declared by this library.
@@ -56,9 +56,9 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 18
-    versionName "5.4.0"
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    versionCode 20
+    versionName "5.6.0"
   }
   lintOptions {
     abortOnError false

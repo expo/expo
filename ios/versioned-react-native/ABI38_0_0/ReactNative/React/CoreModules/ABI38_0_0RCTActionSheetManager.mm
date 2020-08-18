@@ -20,7 +20,7 @@
 
 using namespace ABI38_0_0facebook::ABI38_0_0React;
 
-@interface ABI38_0_0RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
+@interface ABI38_0_0RCTActionSheetManager () <UIActionSheetDelegate, ABI38_0_0NativeActionSheetManagerSpec>
 @end
 
 @implementation ABI38_0_0RCTActionSheetManager

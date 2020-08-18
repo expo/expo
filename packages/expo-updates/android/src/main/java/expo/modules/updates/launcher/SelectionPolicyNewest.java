@@ -3,6 +3,7 @@ package expo.modules.updates.launcher;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,17 +17,21 @@ import java.util.List;
  */
 public class SelectionPolicyNewest implements SelectionPolicy {
 
-  private String mRuntimeVersion;
+  private List<String> mRuntimeVersions;
+
+  public SelectionPolicyNewest(List<String> runtimeVersions) {
+    mRuntimeVersions = runtimeVersions;
+  }
 
   public SelectionPolicyNewest(String runtimeVersion) {
-    mRuntimeVersion = runtimeVersion;
+    mRuntimeVersions = Arrays.asList(runtimeVersion);
   }
 
   @Override
   public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates) {
     UpdateEntity updateToLaunch = null;
     for (UpdateEntity update : updates) {
-      if (!mRuntimeVersion.equals(update.runtimeVersion)) {
+      if (!mRuntimeVersions.contains(update.runtimeVersion)) {
         continue;
       }
       if (updateToLaunch == null || updateToLaunch.commitTime.before(update.commitTime)) {

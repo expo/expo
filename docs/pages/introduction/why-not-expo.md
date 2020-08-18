@@ -66,6 +66,16 @@ You can easily build your app for submission to stores without even installing X
 </p>
 </details>
 
+<details><summary><h4>Updates (JS and assets) for OTA updates and builds are size-limited</h4></summary>
+<p>
+
+Expo's current update service supports updates around 50 MiB. Updates are published both for OTA updates and to build standalone apps, which embed updates. See more about [optimizing updates](../../distribution/optimizing-updates/).
+
+You also can use the [bare workflow](../../bare/exploring-bare-workflow/) with the [`expo-updates`](../../versions/latest/sdk/updates/) library, which supports arbitrarily large updates that are self-hosted or embedded in apps compiled on your own computer.
+
+</p>
+</details>
+
 <br />
 
 > 👉 We are either actively working on or planning to build solutions to all of the limitations listed above, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests) or the [forums](http://forums.expo.io/).

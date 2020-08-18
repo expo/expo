@@ -28,7 +28,7 @@ static NSInteger ABI36_0_0RCTImageBytesForImage(UIImage *image)
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
-@interface ABI36_0_0RCTImageLoader() <NativeImageLoaderSpec>
+@interface ABI36_0_0RCTImageLoader() <ABI36_0_0NativeImageLoaderSpec>
 
 @end
 

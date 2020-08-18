@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+## 9.2.0 — 2020-08-18
+
+### 🐛 Bug fixes
+
+- Added docs about Android permissions and removed old storage permission. ([#9447](https://github.com/expo/expo/pull/9447) by [@bycedric](https://github.com/bycedric))
+
+## 9.1.0 — 2020-07-27
+
+### 🐛 Bug fixes
+
 - Fix background URL session completion handler not being called. ([#8599](https://github.com/expo/expo/pull/8599) by [@lukmccall](https://github.com/lukmccall))
 - Fix compilation error on macOS Catalyst ([#9055](https://github.com/expo/expo/pull/9055) by [@andymatuschak](https://github.com/andymatuschak))
 - Fixed `uploadAsync` native signature on Android. ([#9076](https://github.com/expo/expo/pull/9076) by [@lukmccall](https://github.com/lukmccall))

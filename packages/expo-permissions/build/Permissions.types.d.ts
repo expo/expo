@@ -7,14 +7,12 @@ export interface PermissionMap {
     [permissionType: string]: PermissionInfo;
 }
 export interface PermissionInfo extends UMPermissionResponse {
-    ios?: PermissionDetailsLocationIOS;
+    accessPrivileges?: 'all' | 'limited' | 'none';
+    scope?: 'whenInUse' | 'always' | 'none';
     android?: PermissionDetailsLocationAndroid;
 }
 export { PermissionStatus };
 export { PermissionExpiration };
-export declare type PermissionDetailsLocationIOS = {
-    scope: 'whenInUse' | 'always';
-};
 export declare type PermissionDetailsLocationAndroid = {
-    scope: 'fine' | 'coarse' | 'none';
+    accuracy: 'fine' | 'coarse' | 'none';
 };

@@ -4,9 +4,28 @@
 
 ### 🛠 Breaking changes
 
-- `SplashScreen.show()` native method changes it's signature. Its third argument is now a `Boolean` flag that tells the system whether the `StatusBar` component should be `translucent`. Pass `false` to preserve the previous default behavior. ([#8535](https://github.com/expo/expo/pull/8535) by [@bbarthec](https://github.com/bbarthec))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 0.6.0 — 2020-08-18
 
 ### 🎉 New features
+
+- On iOS the name of the LaunchScreen file is read from the project configuration and fallbacks to default `SplashScreen` if not found. ([#9622](https://github.com/expo/expo/pull/9622) by [@bbarthec](https://github.com/bbarthec))
+
+## 0.5.0 — 2020-07-30
+
+### 🐛 Bug fixes
+
+- Bump dependency on @expo/configure-splash-screen to transitively bump logkitty version pulled in through @react-native-community/cli-platform-android.
+- Fixed crash adding `splashScreenView` to parent when it was already added on Android. ([#9451](https://github.com/expo/expo/pull/9451) by [@RodolfoGS](https://github.com/RodolfoGS))
+
+## 0.4.0 — 2020-07-16
+
+### 🛠 Breaking changes
+
+- `SplashScreen.show()` native method changes it's signature. Its third argument is now a `Boolean` flag that tells the system whether the `StatusBar` component should be `translucent`. Pass `false` to preserve the previous default behavior. ([#8535](https://github.com/expo/expo/pull/8535) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
 

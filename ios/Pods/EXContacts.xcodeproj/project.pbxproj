@@ -255,7 +255,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		47B18350608B7AE000F2535EAA2C3A83 /* Debug */ = {
+		30F81A16DA877E415626EA96DBA97399 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 399B4034041086FAC815447BF9DAAD57 /* EXContacts.debug.xcconfig */;
 			buildSettings = {
@@ -275,34 +275,10 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		71825C7289F49D6E4B0C04BA9E289E0B /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FF08F638089A876BB293FB4D8B88288B /* EXContacts.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXContacts/EXContacts-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXContacts;
-				PRODUCT_NAME = EXContacts;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		B1F331C8708609A6D5369868E460FA38 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -428,6 +404,32 @@
 			};
 			name = Release;
 		};
+		F73100F4DE1278B73669982D928277E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FF08F638089A876BB293FB4D8B88288B /* EXContacts.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXContacts/EXContacts-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXContacts;
+				PRODUCT_NAME = EXContacts;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -443,8 +445,8 @@
 		CD466CFDD6D7BA6CEB42594638D9F5DD /* Build configuration list for PBXNativeTarget "EXContacts" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47B18350608B7AE000F2535EAA2C3A83 /* Debug */,
-				71825C7289F49D6E4B0C04BA9E289E0B /* Release */,
+				30F81A16DA877E415626EA96DBA97399 /* Debug */,
+				F73100F4DE1278B73669982D928277E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

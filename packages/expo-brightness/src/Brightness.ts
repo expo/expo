@@ -12,6 +12,15 @@ export enum BrightnessMode {
 
 export { PermissionResponse, PermissionStatus };
 
+/**
+ * Returns whether the Brightness API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Brightness API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoBrightness.getBrightnessAsync;
+}
+
 export async function getBrightnessAsync(): Promise<number> {
   if (!ExpoBrightness.getBrightnessAsync) {
     throw new UnavailabilityError('expo-brightness', 'getBrightnessAsync');

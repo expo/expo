@@ -18,6 +18,10 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <InstallSection packageName="expo-image-picker" />
 
+## Configuration
+
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)), are added automatically.
+
 ## Example Usage
 
 <SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
@@ -91,7 +95,7 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
 ### `ImagePicker.requestCameraRollPermissionsAsync()`
 
@@ -99,7 +103,7 @@ Asks the user to grant permissions for accessing user's photo. Alias for `Permis
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
@@ -107,7 +111,7 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
 ### `ImagePicker.getCameraRollPermissionsAsync()`
 
@@ -115,7 +119,7 @@ Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
@@ -149,7 +153,14 @@ Display the system UI for choosing an image or a video from the phone's library.
 
 If the user cancelled the picking, returns `{ cancelled: true }`.
 
-Otherwise, returns `{ cancelled: false, uri, width, height, type }` where `uri` is a URI to the local media file (useable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the media and `type` is one of `image` or `video` telling what kind of media has been chosen. Images can contain also `base64` and `exif` keys. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpeg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags. If a video has been picked the return object contains an additional key `duration` specifying the video's duration in miliseconds.
+Otherwise, this method returns information about the selected media item. When the chosen item is an image, this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`; when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+
+- The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
+- The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `duration` property is the length of the video in milliseconds.
+
+> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
 
 ### `ImagePicker.launchCameraAsync(options)`
 
@@ -173,6 +184,10 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   Option for videos:
 
+  - **videoMaxDuration (_number_)** -- Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit. Defaults to 0 (no limit).
+    - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes. This limit is applied automatically, if `0` or no value is specified.
+    - **On Android**, effect of this option depends on support of installed camera app.
+    - **On Web** this option has no effect - the limit is browser-dependant.
   - **videoExportPreset (_[ImagePicker.VideoExportPreset](#imagepickervideoexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.VideoExportPreset.Passthrough`.
 
 #### Returns
@@ -180,9 +195,23 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 If the user cancelled the action, the method returns `{ cancelled: true }`.
 
 Otherwise, this method returns information about the selected media item. When the chosen item is an image, this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`; when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
-The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
-The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data; prepared it with `data:image/jpeg;base64,` to create a data URI, which you can use as the source of an `Image` element, for example.
-The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
+
+- The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
+- The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `duration` property is the length of the video in milliseconds.
+
+> **Note:** make sure that you handling `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
+
+### `ImagePicker.getPendingResultAsync()`
+
+Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost data by calling `getPendingResultAsync`. You can test this functionality by turning on `Don't keep activities` in the developer options.
+
+#### Returns
+
+**On Android:** a promise that resolves to an array of objects of exactly same type as in `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker` finished successfully. Otherwise to the array of [ImagePicker.ImagePickerErrorResult](#imagepickerimagepickererrorresult).
+
+**On other platforms:** an empty array.
 
 ## Enums
 
@@ -209,3 +238,26 @@ The `exif` field is included if the `exif` option is truthy, and is an object co
 | `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
 | `VideoExportPreset.HEVC_1920x1080` | 9     | 1920 x 1080           | HEVC                        | AAC                         |
 | `VideoExportPreset.HEVC_3840x2160` | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+
+## Types
+
+### `ImagePicker.CameraRollPermissionResponse`
+
+`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+
+- `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+  - `all` if the user granted your app access to the whole photo library
+  - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
+  - `none` if user denied or hasn't yet granted the permission
+
+### `ImagePicker.CameraPermissionResponse`
+
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.
+
+### `ImagePicker.ImagePickerErrorResult`
+
+Object of type `ImagePickerErrorResult` contains following keys:
+
+- **code (_string_)** - The error code.
+- **message (_string_)** - The error message.
+- **exception (_string | undefined_)** - The exception which caused the error.
