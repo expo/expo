@@ -22,15 +22,17 @@ fi
 # Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
 # see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
 
-echo "::group::[1/4] Upload JS files in \`_next/**\` folder"
-aws s3 cp \
+echo "::group::[1/4] Sync JS/assets dependencies in \`_next/**\` and \`static/**\` folder"
+aws s3 sync \
   --no-progress \
-  --recursive \
-  "$target/_next/" \
-  "s3://${bucket}/_next/"
+  --exclude "*" \
+  --include "_next/**" \
+  --include "static/**" \
+  "$target" \
+  "s3://${bucket}"
 echo "::endgroup::"
 
-echo "::group::[2/4] Overwrite all HTML and other files, not located in \`_next/**\` or \`static/**\` folder"
+echo "::group::[2/4] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
 aws s3 cp \
   --no-progress \
   --recursive \
