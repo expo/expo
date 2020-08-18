@@ -173,7 +173,8 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     if (@available(iOS 11.0, *)) {
       self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
     }
-    
+    self.picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
+
     NSTimeInterval videoMaxDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
     
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
