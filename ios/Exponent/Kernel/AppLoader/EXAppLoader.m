@@ -37,7 +37,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @property (nonatomic, assign) BOOL hasFinished;
 @property (nonatomic, assign) BOOL shouldUseCacheOnly;
-@property (nonatomic, assign) BOOL isUpToDate;
 
 @end
 

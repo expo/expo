@@ -98,21 +98,5 @@
   });
 }
 
-- (void)updateStatusWithText:(NSString *)text
-{
-  if (!_enabled) {
-    return;
-  }
-
-  [self show];
-
-  UM_WEAKIFY(self);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
-    self.textLabel.text = text;
-    [self.textLabel setNeedsDisplay];
-  });
-}
-
 
 @end

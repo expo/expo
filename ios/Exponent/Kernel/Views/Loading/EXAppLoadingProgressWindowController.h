@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)show;
 - (void)hide;
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress;
-- (void)updateStatusWithText:(NSString *)text;
 
 @end
 
