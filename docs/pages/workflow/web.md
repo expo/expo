@@ -13,14 +13,14 @@ You get a highly performant React website with progressive web app features enab
 
 ## 📱 [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)
 
-Expo enables you to connect your mobile app to your website like nothing before by automatically generating your PWA and Desktop PWA when your website is built for production. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
+Expo makes it easy to create PWAs by generating web app data from your app config. You can customize your offline support to fully enable PWA features in your website. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
 
-- 🌐 **Offline support:** Users can store your website offline with the built in service worker.
 - ⭐️ **Share Icons:** Automatically reuse the App Icon and Splash Screens from your mobile app!
 - 💬 **Native Features:** Use secure features like the Sharing API in your PWA.
 - 🌗 **Dark Mode:** Make your site accessible with the appearance API.
 
 [Read more about building a Progressive Web App with Expo Web](../../guides/progressive-web-apps/).
+
 <!-- - Password Sharing: Expo can automatically link your native app to your website with tools like Apple App-site Association which means your users can sign-in on one platform and auto-fill on another. -->
 
 ## 🎨 Highly Customizable
@@ -29,7 +29,6 @@ You can use Expo for web with any of your favorite frameworks to create whatever
 
 - [**Next.js:**](https://dev.to/evanbacon/next-js-expo-and-react-native-for-web-3kd9) Server Side Render your website and get incredible SEO.
 - [**Gatsby:**](https://dev.to/evanbacon/gatsby-react-native-for-web-expo-2kgc) Prerender your static-site.
-- [**Electron:**](https://dev.to/evanbacon/making-desktop-apps-with-electron-react-native-and-expo-5e36) Build native desktop apps for OSX, Windows, and Linux.
 - [**Storybook:**](https://github.com/expo/examples/tree/master/with-storybook) Create and test beautiful design languages.
 
 ## 🏁 Up Next

@@ -2,7 +2,7 @@
 title: Progressive Web Apps
 ---
 
-A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo web can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, etc...
+A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo CLI can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, etc...
 
 You can test your PWA in an Emulator and Simulator by running `expo start:web --ios --android` then installing the PWA via the mobile browser.
 
