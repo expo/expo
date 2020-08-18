@@ -74,7 +74,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
     mNotificationManager = moduleRegistry.getSingletonModule("NotificationManager", NotificationManager.class);
     mNotificationManager.addListener(this);
 
-    mNotificationsHandlerThread = new HandlerThread("NotificationsHandlerThread");
+    mNotificationsHandlerThread = new HandlerThread("NotificationsHandlerThread - " + this.getClass().toString());
     mNotificationsHandlerThread.start();
     mHandler = new Handler(mNotificationsHandlerThread.getLooper());
   }
@@ -87,7 +87,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
       task.stop();
     }
 
-    // We don't have to use `quitSafely` here, cause all tasks was stopped
+    // We don't have to use `quitSafely` here, cause all tasks were stopped
     mNotificationsHandlerThread.quit();
   }
 
@@ -134,7 +134,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   @Override
   public void onNotificationReceived(Notification notification) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(mHandler,mModuleRegistry, notification, mNotificationsHelper, this);
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(mHandler, mModuleRegistry, notification, mNotificationsHelper, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
