@@ -11,14 +11,58 @@ if [ ! -d "$target" ]; then
   exit 1
 fi
 
-aws s3 sync "$target" "s3://${bucket}" --delete
+# To keep the previous website up and running, we deploy it using these steps.
+#   1. Upload JS files in \`_next/**\` folder
+#      > Uploads the new generated JS files, containing hashes to not-collide with previous deployment
+#   2. Upload new asset files in \`static/**\` folder
+#      > Contains large files and might take some/slow down overwrite of HTML files
+#   3. Overwrite all HTML and other files, not located in \`_next/**\` or \`static/**\` folder
+#      > Switches the website over to the new JS/asset files
+#   4. Clean up outdated files from previous deployments
+#   5. Add custom redirects
 
+# Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
+# see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
+
+echo "::group::[1/5] Upload JS files in \`_next/**\` folder"
 aws s3 cp \
+  --no-progress \
   --recursive \
   --metadata-directive REPLACE \
   --cache-control "public,max-age=31536000,immutable" \
-  "s3://${bucket}/_next/static/" \
-  "s3://${bucket}/_next/static/"
+  "$target/_next/" \
+  "s3://${bucket}/_next/"
+echo "::endgroup::"
+
+echo "::group::[2/5] Upload new asset files in \`static/**\` folder"
+aws s3 cp \
+  --no-progress \
+  --recursive \
+  --metadata-directive REPLACE \
+  --cache-control "public,max-age=31536000,immutable" \
+  "$target/static/" \
+  "s3://${bucket}/static/"
+echo "::endgroup::"
+
+echo "::group::[3/5] Overwrite all HTML and other files, not located in \`_next/**\` or \`static/**\` folder"
+aws s3 cp \
+  --no-progress \
+  --recursive \
+  --metadata-directive REPLACE \
+  --cache-control "public,max-age=31536000,immutable" \
+  --exclude "_next/**" \
+  --exclude "static/**" \
+  "$target" \
+  "s3://${bucket}"
+echo "::endgroup::"
+
+echo "::group::[4/5] Clean up outdated files from previous deployments"
+aws s3 sync \
+  --no-progress \
+  --delete \
+  "$target" \
+  "s3://${bucket}"
+echo "::endgroup::"
 
 declare -A redirects # associative array variable
 
@@ -45,11 +89,14 @@ redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/intro
 redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
 redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 
+echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
+    --no-progress \
     --metadata-directive REPLACE \
     --website-redirect "/${redirects[$i]}" \
     "$target/404.html" \
     "s3://${bucket}/${i}"
 done
+echo "::endgroup::"
