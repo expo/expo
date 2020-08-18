@@ -1,7 +1,7 @@
 {
   "@expo/vector-icons": "^10.0.0",
   "@react-native-community/netinfo": "5.9.6",
-  "@react-native-community/async-storage": "~1.11.0",
+  "@react-native-community/async-storage": "~1.12.0",
   "@unimodules/core": "~5.5.0",
   "@unimodules/react-native-adapter": "~5.5.0",
   "expo-ads-admob": "~8.2.1",

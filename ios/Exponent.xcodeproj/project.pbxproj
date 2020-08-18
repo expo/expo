@@ -282,7 +282,7 @@
 		B5D0D65F204F4BF500DDFC99 /* EXLog.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65D204F4BF400DDFC99 /* EXLog.m */; };
 		B5D0D673204F4C0400DDFC99 /* EXApiUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D661204F4C0400DDFC99 /* EXApiUtil.m */; };
 		B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66B204F4C0400DDFC99 /* EXFileDownloader.m */; };
-		B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */; };
+		B5D0D679204F4C0400DDFC99 /* EXReactAppManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.mm */; };
 		B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
 		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
@@ -303,6 +303,17 @@
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
 		B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A31FF6DADB001C764B /* RNViewShot.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B5FB74DE1FF6DADC001C764B /* EXVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73FC1FF6DADB001C764B /* EXVersionManager.m */; };
+		B5FB74B61FF6DADC001C764B /* EXViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A31FF6DADB001C764B /* EXViewShot.m */; };
+		B5FB74C81FF6DADC001C764B /* EXOAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73CB1FF6DADB001C764B /* EXOAuthViewController.m */; };
+		B5FB74D61FF6DADC001C764B /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73EB1FF6DADB001C764B /* BranchLinkProperties+RNBranch.m */; };
+		B5FB74D71FF6DADC001C764B /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73ED1FF6DADB001C764B /* BranchUniversalObject+RNBranch.m */; };
+		B5FB74D81FF6DADC001C764B /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73EF1FF6DADB001C764B /* NSObject+RNBranch.m */; };
+		B5FB74D91FF6DADC001C764B /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73F11FF6DADB001C764B /* RNBranch.m */; };
+		B5FB74DA1FF6DADC001C764B /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73F31FF6DADB001C764B /* RNBranchAgingDictionary.m */; };
+		B5FB74DB1FF6DADC001C764B /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73F51FF6DADB001C764B /* RNBranchAgingItem.m */; };
+		B5FB74DC1FF6DADC001C764B /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73F71FF6DADB001C764B /* RNBranchEventEmitter.m */; };
+		B5FB74DD1FF6DADC001C764B /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73F91FF6DADB001C764B /* RNBranchProperty.m */; };
+		B5FB74DE1FF6DADC001C764B /* EXVersionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73FC1FF6DADB001C764B /* EXVersionManager.mm */; };
 		B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74001FF6DADB001C764B /* EXDevSettings.m */; };
 		B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74021FF6DADB001C764B /* EXDevSettingsDataSource.m */; };
 		B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74041FF6DADB001C764B /* EXDisabledDevLoadingView.m */; };
@@ -960,7 +971,7 @@
 		B5D0D667204F4C0400DDFC99 /* EXApiUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXApiUtil.h; sourceTree = "<group>"; };
 		B5D0D66B204F4C0400DDFC99 /* EXFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloader.m; sourceTree = "<group>"; };
 		B5D0D66E204F4C0400DDFC99 /* EXReactAppExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppExceptionHandler.h; sourceTree = "<group>"; };
-		B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppManager.m; sourceTree = "<group>"; };
+		B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXReactAppManager.mm; sourceTree = "<group>"; };
 		B5D0D670204F4C0400DDFC99 /* EXReactAppManager+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXReactAppManager+Private.h"; sourceTree = "<group>"; };
 		B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppExceptionHandler.m; sourceTree = "<group>"; };
 		B5D0D672204F4C0400DDFC99 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
@@ -994,7 +1005,7 @@
 		B5FB73A31FF6DADB001C764B /* RNViewShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNViewShot.m; sourceTree = "<group>"; };
 		B5FB73FA1FF6DADB001C764B /* EXUnversioned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUnversioned.h; sourceTree = "<group>"; };
 		B5FB73FB1FF6DADB001C764B /* EXVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersionManager.h; sourceTree = "<group>"; };
-		B5FB73FC1FF6DADB001C764B /* EXVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersionManager.m; sourceTree = "<group>"; };
+		B5FB73FC1FF6DADB001C764B /* EXVersionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXVersionManager.mm; sourceTree = "<group>"; };
 		B5FB73FF1FF6DADB001C764B /* EXDevSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevSettings.h; sourceTree = "<group>"; };
 		B5FB74001FF6DADB001C764B /* EXDevSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDevSettings.m; sourceTree = "<group>"; };
 		B5FB74011FF6DADB001C764B /* EXDevSettingsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevSettingsDataSource.h; sourceTree = "<group>"; };
@@ -2096,7 +2107,7 @@
 				B5D0D66E204F4C0400DDFC99 /* EXReactAppExceptionHandler.h */,
 				B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */,
 				B5D0D672204F4C0400DDFC99 /* EXReactAppManager.h */,
-				B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */,
+				B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.mm */,
 				B5D0D670204F4C0400DDFC99 /* EXReactAppManager+Private.h */,
 			);
 			path = ReactAppManager;
@@ -2130,7 +2141,7 @@
 				31DBC6AA20B5B4C60049A476 /* UniversalModules */,
 				B5FB73FA1FF6DADB001C764B /* EXUnversioned.h */,
 				B5FB73FB1FF6DADB001C764B /* EXVersionManager.h */,
-				B5FB73FC1FF6DADB001C764B /* EXVersionManager.m */,
+				B5FB73FC1FF6DADB001C764B /* EXVersionManager.mm */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2823,6 +2834,8 @@
 				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
 				7043DF9E2283303800272D74 /* RNSVGSvgView.m in Sources */,
 				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */,
+				B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */,
+				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.mm in Sources */,
 				31AD99E82285B51100F19090 /* AIRGoogleMapCalloutManager.m in Sources */,
 				78C832A323545ECE00448582 /* REAModule.m in Sources */,
 				78C832BA23545ECF00448582 /* REATransitionManager.m in Sources */,
@@ -2980,6 +2993,8 @@
 				7043DF862283303800272D74 /* RNSVGRenderableManager.m in Sources */,
 				31AD9A3C2285B53100F19090 /* AIRMapCircleManager.m in Sources */,
 				B5FB74DE1FF6DADC001C764B /* EXVersionManager.m in Sources */,
+				B5FB74DE1FF6DADC001C764B /* EXVersionManager.mm in Sources */,
+				BB5BD32120AEFCB4007E02FC /* REAValueNode.m in Sources */,
 				31AD99E22285B51100F19090 /* AIRGoogleMapCallout.m in Sources */,
 				7043DF7A2283303800272D74 /* RNSVGUseManager.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
@@ -3289,6 +3304,7 @@
 				APP_OWNER = Expo;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -3299,6 +3315,12 @@
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DFOLLY_NO_CONFIG",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_USE_LIBCPP=1",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -3313,6 +3335,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -3324,6 +3347,7 @@
 				APP_OWNER = Expo;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -3334,6 +3358,12 @@
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DFOLLY_NO_CONFIG",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_USE_LIBCPP=1",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -3347,6 +3377,7 @@
 				STRIP_STYLE = "non-global";
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
