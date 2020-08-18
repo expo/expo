@@ -356,8 +356,8 @@ NS_ASSUME_NONNULL_BEGIN
 
   dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *alert = [UIAlertController
-                                alertControllerWithTitle:@"Loading app from cache"
-                                message:@"Expo was unable to fetch the latest version of this app. A previously downloaded version has been launched. To ensure you're up-to-date, check your network connection and reload the app."
+                                alertControllerWithTitle:@"Using a cached project"
+                                message:@"If you did not intend to use a cached project, check your network connection and reload."
                                 preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
