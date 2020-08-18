@@ -77,9 +77,9 @@ export default class App extends React.Component {
 - `shouldSetBadge`
 
 
-## Closed Notification Behavior Android
+## Closed Notification Behaviour
 
-**Important Note**: Due to certain battery optimisation settings from several android vendors, the operating system may prevent background tasks when the app is **closed**, preventing notifications being delivered.
+On Android, users can set certain OS-level settings (**usually** revolving around performance and battery optimisation), that can prevent notifications from being delivered when the app is closed. One such setting is the "Deep Clear" option on OnePlus devices.
 
 ## Notification Event Listeners
 
