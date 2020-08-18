@@ -697,6 +697,13 @@ public class Kernel extends KernelInterface {
         }
 
         @Override
+        public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+          if (mOptimisticActivity != null) {
+            mOptimisticActivity.setLoadingProgressStatus(status);
+          }
+        }
+
+        @Override
         public void onError(Exception e) {
           Exponent.getInstance().runOnUiThread(() -> {
             handleError(e);

@@ -59,6 +59,10 @@ public class ExpoUpdatesAppLoader {
   public static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
   public static final String UPDATE_ERROR_EVENT = "error";
 
+  public enum AppLoaderStatus {
+    CHECKING_FOR_UPDATE, DOWNLOADING_NEW_UPDATE
+  }
+
   private String mManifestUrl;
   private AppLoaderCallback mCallback;
   private final boolean mUseCacheOnly;
@@ -68,6 +72,8 @@ public class ExpoUpdatesAppLoader {
   private SelectionPolicy mSelectionPolicy;
   private Launcher mLauncher;
   private boolean mIsEmergencyLaunch = false;
+  private boolean mIsUpToDate = true;
+  private AppLoaderStatus mStatus;
 
   private boolean isStarted = false;
 
@@ -76,6 +82,7 @@ public class ExpoUpdatesAppLoader {
     void onManifestCompleted(JSONObject manifest);
     void onBundleCompleted(String localBundlePath);
     void emitEvent(JSONObject params);
+    void updateStatus(AppLoaderStatus status);
     void onError(Exception e);
   }
 
@@ -123,11 +130,25 @@ public class ExpoUpdatesAppLoader {
     return mIsEmergencyLaunch;
   }
 
+  public boolean isUpToDate() {
+    return mIsUpToDate;
+  }
+
+  public AppLoaderStatus getStatus() {
+    return mStatus;
+  }
+
+  private void updateStatus(AppLoaderStatus status) {
+    mStatus = status;
+    mCallback.updateStatus(status);
+  }
+
   public void start(Context context) {
     if (isStarted) {
       throw new IllegalStateException("AppLoader for " + mManifestUrl + " was started twice. AppLoader.start() may only be called once per instance.");
     }
     isStarted = true;
+    mStatus = AppLoaderStatus.CHECKING_FOR_UPDATE;
 
     mKernel.addAppLoaderForManifestUrl(mManifestUrl, this);
 
@@ -143,8 +164,7 @@ public class ExpoUpdatesAppLoader {
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "NEVER");
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 0);
     } else {
-      // TODO: decide about default launch behavior for development client
-      configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 10000);
+      configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 60000);
     }
 
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
@@ -210,11 +230,13 @@ public class ExpoUpdatesAppLoader {
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
         mCallback.onOptimisticManifest(manifest.getRawManifestJson());
+        updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
       }
 
       @Override
-      public void onSuccess(Launcher launcher) {
+      public void onSuccess(Launcher launcher, boolean isUpToDate) {
         mLauncher = launcher;
+        mIsUpToDate = isUpToDate;
         try {
           JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
           mCallback.onManifestCompleted(manifest);

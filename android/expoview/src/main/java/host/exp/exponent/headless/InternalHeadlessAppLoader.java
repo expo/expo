@@ -116,6 +116,10 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
       }
 
       @Override
+      public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+      }
+
+      @Override
       public void onError(Exception e) {
         Exponent.getInstance().runOnUiThread(() -> {
           mCallback.onComplete(false, new Exception(e.getMessage()));
