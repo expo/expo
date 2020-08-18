@@ -78,6 +78,9 @@ public class HomeActivity extends BaseExperienceActivity {
 
   @Override
   protected boolean shouldCreateLoadingView() {
+    // Home app shouldn't show LoadingView as it indicates state when the app's manifest is being
+    // downloaded and Splash info is not yet available and this is not the case for Home app
+    // (Splash info is known from the start).
     return false;
   }
 

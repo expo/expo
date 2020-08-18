@@ -136,7 +136,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
   private FrameLayout mContainerView;
   /**
-   * This view is optional and only present in 'managed workflow'
+   * This view is optional and available only when the app runs in Expo Client.
    */
   @Nullable private LoadingView mLoadingView;
   private FrameLayout mReactContainerView;
@@ -168,7 +168,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     super.onCreate(null);
 
     mContainerView = new FrameLayout(this);
-    // TODO (@bbarthec): unify color name R.color.splashBackground
     mContainerView.setBackgroundColor(ContextCompat.getColor(this, R.color.splashscreen_background));
     setContentView(mContainerView);
 

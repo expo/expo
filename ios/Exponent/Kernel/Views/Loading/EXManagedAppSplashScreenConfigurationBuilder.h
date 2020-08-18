@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <EXSplashScreen/EXSplashScreenConfiguration.h>
+#import "EXManagedAppSplashScreenConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface EXManagedAppSplashScreenConfigurationBuilder : NSObject
 
-+ (EXSplashScreenConfiguration *)parseManifest:(NSDictionary *)manifest;
++ (EXManagedAppSplashScreenConfiguration *)parseManifest:(NSDictionary *)manifest;
 
 @end
 
