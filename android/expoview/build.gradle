@@ -156,9 +156,15 @@ dependencies {
 
   testImplementation 'junit:junit:4.12'
 
+
   api("com.facebook.fbjni:fbjni-java-only:0.0.3")
+
+  // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
+
   extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
   extractJNI("com.facebook.fbjni:fbjni:0.0.2")
+
+  // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
@@ -202,6 +208,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_39
+  api 'host.exp:reactandroid-abi39_0_0:1.0.0'
+  // END_SDK_39
   // BEGIN_SDK_38
   api 'host.exp:reactandroid-abi38_0_0:1.0.0'
   // END_SDK_38
