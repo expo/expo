@@ -14,4 +14,3 @@ org.unimodules.interfaces
 expo.modules
 org.unimodules.adapters
 org.unimodules.errors
-versioned.host.exp.exponent.modules.api.reanimated
