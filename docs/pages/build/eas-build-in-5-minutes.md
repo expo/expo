@@ -1,12 +1,12 @@
 ---
-title: EAS Builds in 5 Minutes
+title: EAS Build from scratch in 5 minutes
 ---
 
 Let's get started by building Android and iOS app binaries for a fresh bare project initialized with Expo CLI.
 
 ## Prerequisites
 
-- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). _If you already have it, make sure you're using the latest version._ EAS Builds is in alpha and it's changing rapidly, so the only way to ensure that you will have the best experience is to use the latest expo-cli version. **This tutorial assumes you're using `expo-cli@3.24.0` or newer.**
+- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). _If you already have it, make sure you're using the latest version._ EAS Build is in alpha and it's changing rapidly, so the only way to ensure that you will have the best experience is to use the latest expo-cli version. **This tutorial assumes you're using `expo-cli@3.24.0` or newer.**
 - Sign in with `expo login`, or sign up with `expo register` if you don't have an Expo account yet. You can check if you're logged in by running `expo whoami`.
 
 ## Initialize a New Project
@@ -29,7 +29,7 @@ Expo CLI creates a git repository for you. However, some changes are not commite
 
 ## Create eas.json
 
-The next step towards building your native project with EAS Builds is creating the `eas.json` file in the root directory. It will contain the EAS Builds configuration. Create the file with the following contents:
+The next step towards building your native project with EAS Build is creating the `eas.json` file in the root directory. It will contain the EAS Build configuration. Create the file with the following contents:
 
 ```json
 {
@@ -57,7 +57,7 @@ After creating the file, make another commit:
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/04-eas-json.png" /></center>
 
-If you want to learn more about `eas.json` see the [Configuring with eas.json](../eas-json/) page.
+If you want to learn more about `eas.json` see the [Configuration with eas.json](../eas-json/) page.
 
 Once you've created `eas.json`, new Expo CLI commands should become available for you:
 
