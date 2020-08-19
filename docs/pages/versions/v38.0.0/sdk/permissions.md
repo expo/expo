@@ -163,7 +163,7 @@ The permission type for location access.
 
 > **Note:** If your app is being launched on Android 10 or newer, permission will be treated as granted only when user accepted it for backgrounded app. To check whether permission is granted for when app is in use, use `foregroundGranted`.
 
-> **Note:** On iOS ask for this permission type individually. Asking with other permissions (`Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` will throw an error.
+> **Note:** On iOS, you should ask for permissions one at a time. If you request multiple permissions in the same call (`Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` it will throw an error.
 
 > **Note (iOS):** In Expo client this permission will always ask the user for permission to access location data while the app is in use.
 
