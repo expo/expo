@@ -9,14 +9,23 @@ It is a component to solve the common problem of views that need to move out of 
 
 ```js
 import React from 'react';
-import { View, KeyboardAvoidingView, TextInput, StyleSheet, Text, Platform, TouchableWithoutFeedback, Button, Keyboard  } from 'react-native';
+import {
+  View,
+  KeyboardAvoidingView,
+  TextInput,
+  StyleSheet,
+  Text,
+  Platform,
+  TouchableWithoutFeedback,
+  Button,
+  Keyboard,
+} from 'react-native';
 
 export default function KeyboardAvoidingComponent() {
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS == "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
+      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+      style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
           <Text style={styles.header}>Header</Text>
@@ -28,34 +37,32 @@ export default function KeyboardAvoidingComponent() {
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   inner: {
     padding: 24,
     flex: 1,
-    justifyContent: "space-around"
+    justifyContent: 'space-around',
   },
   header: {
     fontSize: 36,
-    marginBottom: 48
+    marginBottom: 48,
   },
   textInput: {
     height: 40,
-    borderColor: "#000000",
+    borderColor: '#000000',
     borderBottomWidth: 1,
-    marginBottom: 36
+    marginBottom: 36,
   },
   btnContainer: {
-    backgroundColor: "white",
-    marginTop: 12
-  }
+    backgroundColor: 'white',
+    marginTop: 12,
+  },
 });
-
-export default KeyboardAvoidingComponent;
 ```
 
 ---

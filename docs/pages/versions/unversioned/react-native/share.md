@@ -6,15 +6,14 @@ title: Share
 ## Example
 
 ```js
-import React from "react";
-import { Share, View, Button } from "react-native";
+import React from 'react';
+import { Share, View, Button } from 'react-native';
 
 export default function ShareExample() {
   const onShare = async () => {
     try {
       const result = await Share.share({
-        message:
-          "React Native | A framework for building native apps using React",
+        message: 'React Native | A framework for building native apps using React',
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -34,7 +33,9 @@ export default function ShareExample() {
       <Button onPress={onShare} title="Share" />
     </View>
   );
-};
+}
+
+export default ShareExample;
 ```
 
 # Reference
@@ -59,7 +60,7 @@ In Android, returns a Promise which will always be resolved with action being `S
 
 #### iOS
 
-- `url` - a URL to share
+- `url` - an URL to share
 
 At least one of URL and message is required.
 
@@ -84,7 +85,7 @@ At least one of URL and message is required.
 ### `sharedAction()`
 
 ```js
-static sharedAction()
+static sharedAction
 ```
 
 The content was successfully shared.
@@ -94,7 +95,7 @@ The content was successfully shared.
 ### `dismissedAction()`
 
 ```js
-static dismissedAction()
+static dismissedAction
 ```
 
 _**iOS-only**_. The dialog has been dismissed.

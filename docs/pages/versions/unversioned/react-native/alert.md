@@ -120,7 +120,5 @@ Alert.alert(
 ### `alert()`
 
 ```js
-
 static alert(title, message?, buttons?, options?)
-
 ```

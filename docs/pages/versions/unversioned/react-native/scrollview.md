@@ -31,18 +31,17 @@ const App = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={styles.text}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+          est laborum.
         </Text>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -145,16 +144,13 @@ These styles will be applied to the scroll view content container which wraps al
 
 ```js
 function App() {
-  return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-    </ScrollView>
-  );
+  return <ScrollView contentContainerStyle={styles.contentContainer}></ScrollView>;
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
-    paddingVertical: 20
-  }
+    paddingVertical: 20,
+  },
 });
 ```
 
@@ -241,8 +237,8 @@ When true, the default JS pan responder on the ScrollView is disabled, and full 
 
 Sometimes a scrollview takes up more space than its content fills. When this is the case, this prop will fill the rest of the scrollview with a color to avoid setting a background and creating unnecessary overdraw. This is an advanced optimization that is not needed in the general case.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                                         | Required | Platform |
+| -------------------------------------------- | -------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       | Android  |
 
 ---

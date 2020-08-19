@@ -12,7 +12,7 @@ You should get a higher resolution image if you are on a high pixel density devi
 ```js
 var image = getImage({
   width: PixelRatio.getPixelSizeForLayoutSize(200),
-  height: PixelRatio.getPixelSizeForLayoutSize(100)
+  height: PixelRatio.getPixelSizeForLayoutSize(100),
 });
 <Image source={image} style={{ width: 200, height: 100 }} />;
 ```
@@ -30,14 +30,14 @@ In React Native, everything in JavaScript and within the layout engine works wit
 ## Example
 
 ```js
-import React from "react";
-import { Image, PixelRatio, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import React from 'react';
+import { Image, PixelRatio, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const size = 50;
 const cat = {
-  uri: "https://reactnative.dev/docs/assets/p_cat1.png",
+  uri: 'https://reactnative.dev/docs/assets/p_cat1.png',
   width: size,
-  height: size
+  height: size,
 };
 
 export default function App() {
@@ -58,36 +58,34 @@ export default function App() {
       </View>
       <View style={styles.container}>
         <Text>require images with a pixel width of</Text>
-        <Text style={styles.value}>
-          {PixelRatio.getPixelSizeForLayoutSize(size)} px
-        </Text>
+        <Text style={styles.value}>{PixelRatio.getPixelSizeForLayoutSize(size)} px</Text>
         <Image
           source={cat}
           style={{
             width: PixelRatio.getPixelSizeForLayoutSize(size),
-            height: PixelRatio.getPixelSizeForLayoutSize(size)
+            height: PixelRatio.getPixelSizeForLayoutSize(size),
           }}
         />
       </View>
     </ScrollView>
   );
-)
+}
 
 const styles = StyleSheet.create({
   scrollContainer: {
     flext: 1,
-    marginTop: "2em",
-    justifyContent: "center",
+    marginTop: '2em',
+    justifyContent: 'center',
   },
   container: {
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   value: {
     fontSize: 24,
     marginBottom: 12,
-    marginTop: 4
-  }
+    marginTop: 4,
+  },
 });
 ```
 
@@ -100,9 +98,7 @@ const styles = StyleSheet.create({
 ### `get()`
 
 ```js
-
 static get()
-
 ```
 
 Returns the device pixel density. Some examples:

@@ -6,43 +6,48 @@ title: Text Style Props
 ### Example
 
 ```js
-import React, { useState } from "react";
-import { FlatList, Platform, ScrollView, Slider, StyleSheet, Switch, Text, TouchableWithoutFeedback, View } from "react-native";
-import Constants from "expo-constants";
+import React, { useState } from 'react';
+import {
+  FlatList,
+  Platform,
+  ScrollView,
+  Slider,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import Constants from 'expo-constants';
 
-const fontStyles = ["normal", "italic"];
+const fontStyles = ['normal', 'italic'];
 const fontVariants = [
   undefined,
-  "small-caps",
-  "oldstyle-nums",
-  "lining-nums",
-  "tabular-nums",
-  "proportional-nums"
+  'small-caps',
+  'oldstyle-nums',
+  'lining-nums',
+  'tabular-nums',
+  'proportional-nums',
 ];
 const fontWeights = [
-  "normal",
-  "bold",
-  "100",
-  "200",
-  "300",
-  "400",
-  "500",
-  "600",
-  "700",
-  "800",
-  "900"
+  'normal',
+  'bold',
+  '100',
+  '200',
+  '300',
+  '400',
+  '500',
+  '600',
+  '700',
+  '800',
+  '900',
 ];
-const textAlignments = ["auto", "left", "right", "center", "justify"];
-const textDecorationLines = [
-  "none",
-  "underline",
-  "line-through",
-  "underline line-through"
-];
-const textDecorationStyles = ["solid", "double", "dotted", "dashed"];
-const textTransformations = ["none", "uppercase", "lowercase", "capitalize"];
-const textAlignmentsVertical = ["auto", "top", "bottom", "center"];
-const writingDirections = ["auto", "ltr", "rtl"];
+const textAlignments = ['auto', 'left', 'right', 'center', 'justify'];
+const textDecorationLines = ['none', 'underline', 'line-through', 'underline line-through'];
+const textDecorationStyles = ['solid', 'double', 'dotted', 'dashed'];
+const textTransformations = ['none', 'uppercase', 'lowercase', 'capitalize'];
+const textAlignmentsVertical = ['auto', 'top', 'bottom', 'center'];
+const writingDirections = ['auto', 'ltr', 'rtl'];
 
 const App = () => {
   const [fontSize, setFontSize] = useState(10);
@@ -61,7 +66,7 @@ const App = () => {
   const [textShadowRadius, setTextShadowRadius] = useState(0);
   const [textShadowOffset, setTextShadowOffset] = useState({
     height: 0,
-    width: 0
+    width: 0,
   });
 
   return (
@@ -84,12 +89,10 @@ const App = () => {
             textDecorationStyle: textDecorationStyles[textDecorationStyleIdx],
             writingDirection: writingDirections[writingDirectionIdx],
             textShadowOffset,
-            textShadowRadius
-          }
-        ]}
-      >
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. 112 Likes
+            textShadowRadius,
+          },
+        ]}>
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. 112 Likes
       </Text>
       <ScrollView>
         <View>
@@ -99,18 +102,14 @@ const App = () => {
             value={textShadowOffset.height}
             minimumValue={-40}
             maximumValue={40}
-            handleValueChange={val =>
-              setTextShadowOffset(prev => ({ ...prev, height: val }))
-            }
+            handleValueChange={val => setTextShadowOffset(prev => ({ ...prev, height: val }))}
           />
           <CustomSlider
             label="Text Shadow Offset - Width"
             value={textShadowOffset.width}
             minimumValue={-40}
             maximumValue={40}
-            handleValueChange={val =>
-              setTextShadowOffset(prev => ({ ...prev, width: val }))
-            }
+            handleValueChange={val => setTextShadowOffset(prev => ({ ...prev, width: val }))}
           />
           <CustomSlider
             label="Font Size"
@@ -173,11 +172,9 @@ const App = () => {
             onSelected={setTextTransformIdx}
           />
         </View>
-        {Platform.OS === "android" && (
+        {Platform.OS === 'android' && (
           <View style={styles.platformContainer}>
-            <Text style={styles.platformContainerTitle}>
-              Android only properties
-            </Text>
+            <Text style={styles.platformContainerTitle}>Android only properties</Text>
             <CustomPicker
               label="Text Vertical Align"
               data={textAlignmentsVertical}
@@ -191,11 +188,9 @@ const App = () => {
             />
           </View>
         )}
-        {Platform.OS === "ios" && (
+        {Platform.OS === 'ios' && (
           <View style={styles.platformContainer}>
-            <Text style={styles.platformContainerTitle}>
-              iOS only properties
-            </Text>
+            <Text style={styles.platformContainerTitle}>iOS only properties</Text>
             <CustomPicker
               label="Text Decoration Style"
               data={textDecorationStyles}
@@ -213,23 +208,23 @@ const App = () => {
       </ScrollView>
     </View>
   );
-}
+};
 
 const CustomSwitch = ({ label, handleValueChange, value }) => {
   return (
     <>
       <Text style={styles.title}>{label}</Text>
-      <View style={{ alignItems: "flex-start" }}>
+      <View style={{ alignItems: 'flex-start' }}>
         <Switch
-          trackColor={{ false: "#767577", true: "#DAA520" }}
-          thumbColor={value ? "#DAA520" : "#f4f3f4"}
+          trackColor={{ false: '#767577', true: '#DAA520' }}
+          thumbColor={value ? '#DAA520' : '#f4f3f4'}
           onValueChange={handleValueChange}
           value={value}
         />
       </View>
     </>
   );
-}
+};
 
 const CustomSlider = ({
   label,
@@ -237,13 +232,11 @@ const CustomSlider = ({
   step = 1,
   minimumValue = 0,
   maximumValue = 10,
-  value
+  value,
 }) => {
   return (
     <>
-      {label && (
-        <Text style={styles.title}>{`${label} (${value.toFixed(2)})`}</Text>
-      )}
+      {label && <Text style={styles.title}>{`${label} (${value.toFixed(2)})`}</Text>}
       <View style={styles.wrapperHorizontal}>
         <Slider
           thumbTintColor="#DAA520"
@@ -257,7 +250,7 @@ const CustomSlider = ({
       </View>
     </>
   );
-}
+};
 
 const CustomPicker = ({ label, data, currentIndex, onSelected }) => {
   return (
@@ -276,17 +269,15 @@ const CustomPicker = ({ label, data, currentIndex, onSelected }) => {
                 <View
                   style={[
                     styles.itemStyleHorizontal,
-                    selected && styles.itemSelectedStyleHorizontal
-                  ]}
-                >
+                    selected && styles.itemSelectedStyleHorizontal,
+                  ]}>
                   <Text
                     style={{
-                      textAlign: "center",
-                      color: selected ? "black" : "grey",
-                      fontWeight: selected ? "bold" : "normal"
-                    }}
-                  >
-                    {item + ""}
+                      textAlign: 'center',
+                      color: selected ? 'black' : 'grey',
+                      fontWeight: selected ? 'bold' : 'normal',
+                    }}>
+                    {item + ''}
                   </Text>
                 </View>
               </TouchableWithoutFeedback>
@@ -296,53 +287,53 @@ const CustomPicker = ({ label, data, currentIndex, onSelected }) => {
       </View>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#ecf0f1",
-    padding: 8
+    backgroundColor: '#ecf0f1',
+    padding: 8,
   },
   paragraph: {
-    color: "black",
-    textDecorationColor: "yellow",
-    textShadowColor: "red",
+    color: 'black',
+    textDecorationColor: 'yellow',
+    textShadowColor: 'red',
     textShadowRadius: 1,
-    margin: 24
+    margin: 24,
   },
   wrapperHorizontal: {
     height: 54,
-    justifyContent: "center",
-    color: "black",
-    marginBottom: 12
+    justifyContent: 'center',
+    color: 'black',
+    marginBottom: 12,
   },
   itemStyleHorizontal: {
     marginRight: 10,
     height: 50,
     padding: 8,
     borderWidth: 1,
-    borderColor: "grey",
+    borderColor: 'grey',
     borderRadius: 25,
-    textAlign: "center",
-    justifyContent: "center"
+    textAlign: 'center',
+    justifyContent: 'center',
   },
   itemSelectedStyleHorizontal: {
     borderWidth: 2,
-    borderColor: "#DAA520"
+    borderColor: '#DAA520',
   },
   platformContainer: {
     marginTop: 8,
-    borderTopWidth: 1
+    borderTopWidth: 1,
   },
   platformContainerTitle: {
-    marginTop: 8
+    marginTop: 8,
   },
   title: {
-    fontWeight: "bold",
-    marginVertical: 4
-  }
+    fontWeight: 'bold',
+    marginVertical: 4,
+  },
 });
 
 export default App;
@@ -362,8 +353,8 @@ export default App;
 
 ### `color`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -422,8 +413,8 @@ Specifies text alignment. The value 'justify' is only supported on iOS and fallb
 
 ### `textShadowColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -480,8 +471,8 @@ Set to `false` to remove extra font padding intended to make space for certain a
 
 ### `textDecorationColor`
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                                         | Required | Platform |
+| -------------------------------------------- | -------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       | iOS      |
 
 ---

@@ -10,23 +10,23 @@ A React component for displaying text.
 In the following example, the nested title and body text will inherit the `fontFamily` from `styles.baseText`, but the title provides its own additional styles. The title and body will stack on top of each other on account of the literal newlines:
 
 ```js
-import React, { useState } from "react";
-import { Text, StyleSheet } from "react-native";
+import React, { useState } from 'react';
+import { Text, StyleSheet } from 'react-native';
 
 const onPressTitle = () => {
-  console.log("title pressed");
+  console.log('title pressed');
 };
 
 const TextInANest = () => {
   const titleText = useState("Bird's Nest");
-  const bodyText = useState("This is not really a bird nest.");
+  const bodyText = useState('This is not really a bird nest.');
 
   return (
     <Text style={styles.baseText}>
       <Text style={styles.titleText} onPress={onPressTitle}>
         {titleText}
-        {"\\n"}
-        {"\\n"}
+        {'\\n'}
+        {'\\n'}
       </Text>
       <Text numberOfLines={5}>{bodyText}</Text>
     </Text>
@@ -35,12 +35,12 @@ const TextInANest = () => {
 
 const styles = StyleSheet.create({
   baseText: {
-    fontFamily: "Cochin"
+    fontFamily: 'Cochin',
   },
   titleText: {
     fontSize: 20,
-    fontWeight: "bold"
-  }
+    fontWeight: 'bold',
+  },
 });
 
 export default TextInANest;
@@ -65,11 +65,11 @@ const BoldAndBeautiful = () => {
 
 const styles = StyleSheet.create({
   baseText: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   innerText: {
-    color: 'red'
-  }
+    color: 'red',
+  },
 });
 
 export default BoldAndBeautiful;
@@ -148,9 +148,7 @@ You also lose the ability to set up a default font for an entire subtree. Meanwh
 
 ```js
 <View>
-  <MyAppText>
-    Text styled with the default font for the entire application
-  </MyAppText>
+  <MyAppText>Text styled with the default font for the entire application</MyAppText>
   <MyAppHeaderText>Text styled as a header</MyAppHeaderText>
 </View>
 ```
@@ -162,9 +160,7 @@ class MyAppHeaderText extends Component {
   render() {
     return (
       <MyAppText>
-        <Text style={{ fontSize: 20 }}>
-          {this.props.children}
-        </Text>
+        <Text style={{ fontSize: 20 }}>{this.props.children}</Text>
       </MyAppText>
     );
   }
@@ -414,7 +410,7 @@ e.g., `onLongPress={this.increaseSize}>`
 
 Does this view want to "claim" touch responsiveness? This is called for every touch move on the `View` when it is not the responder.
 
-`View.props.onMoveShouldSetResponder: (event) => [true | false]`, where `event` is a synthetic touch event as described above.
+`View.props.onMoveShouldSetResponder: (event) => [true | false]`, where `event` is a [PressEvent](../pressevent/).
 
 | Type     | Required |
 | -------- | -------- |
@@ -424,7 +420,7 @@ Does this view want to "claim" touch responsiveness? This is called for every to
 
 ### `onPress`
 
-This function is called on press.
+This function is called on press. The first function argument is an event in form of [PressEvent](../pressevent/).
 
 e.g., `onPress={() => console.log('1st')}`
 
@@ -438,7 +434,7 @@ e.g., `onPress={() => console.log('1st')}`
 
 The View is now responding for touch events. This is the time to highlight and show the user what is happening.
 
-`View.props.onResponderGrant: (event) => {}`, where `event` is a synthetic touch event as described above.
+`View.props.onResponderGrant: (event) => {}`, where `event` is a [PressEvent](../pressevent/).
 
 | Type     | Required |
 | -------- | -------- |
@@ -450,7 +446,7 @@ The View is now responding for touch events. This is the time to highlight and s
 
 The user is moving their finger.
 
-`View.props.onResponderMove: (event) => {}`, where `event` is a synthetic touch event as described above.
+`View.props.onResponderMove: (event) => {}`, where `event` is a [PressEvent](../pressevent/).
 
 | Type     | Required |
 | -------- | -------- |
@@ -462,7 +458,7 @@ The user is moving their finger.
 
 Fired at the end of the touch.
 
-`View.props.onResponderRelease: (event) => {}`, where `event` is a synthetic touch event as described above.
+`View.props.onResponderRelease: (event) => {}`, where `event` is a [PressEvent](../pressevent/).
 
 | Type     | Required |
 | -------- | -------- |
@@ -474,7 +470,7 @@ Fired at the end of the touch.
 
 The responder has been taken from the `View`. Might be taken by other views after a call to `onResponderTerminationRequest`, or might be taken by the OS without asking (e.g., happens with control center/ notification center on iOS)
 
-`View.props.onResponderTerminate: (event) => {}`, where `event` is a synthetic touch event as described above.
+`View.props.onResponderTerminate: (event) => {}`, where `event` is a [PressEvent](../pressevent/).
 
 | Type     | Required |
 | -------- | -------- |
@@ -486,7 +482,7 @@ The responder has been taken from the `View`. Might be taken by other views afte
 
 Some other `View` wants to become responder and is asking this `View` to release its responder. Returning `true` allows its release.
 
-`View.props.onResponderTerminationRequest: (event) => {}`.
+`View.props.onResponderTerminationRequest: (event) => {}`, where `event` is a [PressEvent](../pressevent/).
 
 | Type     | Required |
 | -------- | -------- |
@@ -498,7 +494,7 @@ Some other `View` wants to become responder and is asking this `View` to release
 
 If a parent `View` wants to prevent a child `View` from becoming responder on a touch start, it should have this handler which returns `true`.
 
-`View.props.onStartShouldSetResponderCapture: (event) => [true | false]`, where `event` is a synthetic touch event as described above.
+`View.props.onStartShouldSetResponderCapture: (event) => [true | false]`, where `event` is a [PressEvent](../pressevent/).
 
 | Type     | Required |
 | -------- | -------- |
@@ -519,6 +515,16 @@ Invoked on Text layout
 
 ---
 
+### `pressRetentionOffset`
+
+When the scroll view is disabled, this defines how far your touch may move off of the button, before deactivating the button. Once deactivated, try moving it back and you'll see that the button is once again reactivated! Move it back and forth several times while the scroll view is disabled. Ensure you pass in a constant to reduce memory allocations.
+
+| Type                                                | Required |
+| --------------------------------------------------- | -------- |
+| [Rect](https://reactnative.dev/docs/rect) or number | No       |
+
+---
+
 ### `selectable`
 
 Lets the user select text, to use the native copy and paste functionality.
@@ -533,8 +539,8 @@ Lets the user select text, to use the native copy and paste functionality.
 
 The highlight color of the text.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                                         | Required | Platform |
+| -------------------------------------------- | -------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       | Android  |
 
 ---
