@@ -137,6 +137,7 @@ export default class Player extends React.Component<Props, State> {
         onPress={onPress}>
         <Ionicons
           name={`ios-${iconName}`}
+          size={iconName === 'refresh' ? 20 : 24}
           style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
         />
         <Text style={[styles.buttonText, active && styles.activeButtonText]}>{title}</Text>
@@ -266,7 +267,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     padding: 8,
-    fontSize: 24,
     color: Colors.tintColor,
   },
   playPauseIcon: {
