@@ -71,6 +71,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   _hasFinished = NO;
   _shouldUseCacheOnly = NO;
   _manifestResource = nil;
+  _shouldShowRemoteUpdateStatus = NO;
   _isUpToDate = YES;
 }
 
