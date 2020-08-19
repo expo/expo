@@ -8,5 +8,7 @@
 @interface EXGLCameraObject : EXGLObject
 
 - (instancetype)initWithContext:(EXGLContext *)glContext andCamera:(id<UMCameraInterface>)camera;
+- (int)getPreviewWidthSize;
+- (int)getPreviewHeightSize;
 
 @end

@@ -1,7 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <AVKit/AVKit.h>
-
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
 
@@ -43,6 +42,15 @@
   }
   return self;
 }
+- (int)getPreviewWidthSize
+{
+    return self.textureWidth;
+}
+
+- (int)getPreviewHeightSize
+{
+    return self.textureHeight;
+}
 
 - (void)dealloc
 {
@@ -60,7 +68,8 @@
   CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
   GLsizei bufferWidth = (GLsizei)CVPixelBufferGetWidth(pixelBuffer);
   GLsizei bufferHeight = (GLsizei)CVPixelBufferGetHeight(pixelBuffer);
-  
+  self.textureWidth = bufferWidth;
+  self.textureHeight = bufferHeight;
   CVPixelBufferRetain(pixelBuffer);
   CVPixelBufferLockBaseAddress(pixelBuffer, 0);
 
@@ -84,7 +93,7 @@
                                                GL_UNSIGNED_BYTE,
                                                0,
                                                &textureRef);
-  
+
   if (textureRef) {
     GLuint textureName = CVOpenGLESTextureGetName(textureRef);
     UEXGLContextMapObject([self exglCtxId], [self exglObjId], textureName);

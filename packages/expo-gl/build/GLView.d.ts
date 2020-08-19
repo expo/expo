@@ -33,6 +33,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
     startARSessionAsync(): Promise<any>;
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
+    getPreviewSize(): Promise<any>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
 }
@@ -43,6 +44,8 @@ export declare class WebGLObject {
     toString(): string;
 }
 declare class WebGLTexture extends WebGLObject {
-    constructor(id: any, w: any, h: any);
+    textureWidth: number;
+    textureHeight: number;
+    constructor(id: any, textureWidth: any, textureHeight: any);
 }
 export {};

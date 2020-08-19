@@ -137,6 +137,15 @@ UM_EXPORT_METHOD_AS(destroyObjectAsync,
   resolve(@(YES));
 }
 
+UM_EXPORT_METHOD_AS(getPreviewSize,
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+    int width = self.cameraTexture.getPreviewWidthSize;
+    int height = self.cameraTexture.getPreviewHeightSize;
+    resolve(@{ @"textureWidth": @(width), @"textureHeight": @(height) });
+}
+
 UM_EXPORT_METHOD_AS(createCameraTextureAsync,
                     createTextureForContextWithId:(nonnull NSNumber *)exglCtxId
                     andCameraWithReactTag:(nonnull NSNumber *)cameraViewTag
@@ -146,7 +155,7 @@ UM_EXPORT_METHOD_AS(createCameraTextureAsync,
   [_uiManager executeUIBlock:^(id view) {
     EXGLContext *glContext = [self getContextWithId:exglCtxId];
     id<UMCameraInterface> cameraView = (id<UMCameraInterface>)view;
-      
+    
     if (glContext == nil) {
       reject(@"E_GL_BAD_VIEW_TAG", nil, UMErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXGLView"));
       return;
@@ -155,10 +164,15 @@ UM_EXPORT_METHOD_AS(createCameraTextureAsync,
       reject(@"E_GL_BAD_CAMERA_VIEW_TAG", nil, UMErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXCamera"));
       return;
     }
-
+      
     EXGLCameraObject *cameraTexture = [[EXGLCameraObject alloc] initWithContext:glContext andCamera:cameraView];
+      
     self->_objects[@(cameraTexture.exglObjId)] = cameraTexture;
-    resolve(@{ @"exglObjId": @(cameraTexture.exglObjId) });
+    
+    self.cameraTexture = cameraTexture;
+      
+    resolve(@{ @"exglObjId": @(cameraTexture.exglObjId), @"textureWidth": @(cameraTexture.textureWidth), @"textureHeight": @(cameraTexture.textureHeight) });
+      
   } forView:cameraViewTag implementingProtocol:@protocol(UMCameraInterface)];
 }
 

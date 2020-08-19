@@ -5,11 +5,13 @@
 
 #import <UMCore/UMUIManager.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <EXGL/EXGLCameraObject.h>
 
 @interface EXGLObjectManager : UMExportedModule <UMModuleRegistryConsumer>
 
 @property (nonatomic, weak, nullable) id<UMUIManager> uiManager;
 @property (nonatomic, weak, nullable) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak, nullable) EXGLCameraObject *cameraTexture;
 
 - (void)saveContext:(nonnull id)glContext;
 - (void)deleteContextWithId:(nonnull NSNumber *)contextId;

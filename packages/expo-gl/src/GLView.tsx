@@ -142,7 +142,9 @@ export class GLView extends React.Component<GLViewProps> {
     );
     return new WebGLTexture(exglObjId, textureWidth, textureHeight);
   }
-
+  async getPreviewSize() {
+    return await ExponentGLObjectManager.getPreviewSize();
+  }
   async destroyObjectAsync(glObject: WebGLObject): Promise<boolean> {
     if (!ExponentGLObjectManager.destroyObjectAsync) {
       throw new UnavailabilityError('expo-gl', 'destroyObjectAsync');
@@ -208,10 +210,12 @@ class WebGLRenderbuffer extends WebGLObject {}
 class WebGLShader extends WebGLObject {}
 
 class WebGLTexture extends WebGLObject {
-  constructor(id, w, h) {
+  textureWidth: number;
+  textureHeight: number;
+  constructor(id, textureWidth, textureHeight) {
     super(id);
-    this.w = w || -1;
-    this.h = h || -1;
+    this.textureWidth = textureWidth || -1;
+    this.textureHeight = textureHeight || -1;
   }
 }
 

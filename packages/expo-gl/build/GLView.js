@@ -70,6 +70,9 @@ let GLView = /** @class */ (() => {
             const { exglObjId, textureWidth, textureHeight, } = await ExponentGLObjectManager.createCameraTextureAsync(exglCtxId, cameraTag);
             return new WebGLTexture(exglObjId, textureWidth, textureHeight);
         }
+        async getPreviewSize() {
+            return await ExponentGLObjectManager.getPreviewSize();
+        }
         async destroyObjectAsync(glObject) {
             if (!ExponentGLObjectManager.destroyObjectAsync) {
                 throw new UnavailabilityError('expo-gl', 'destroyObjectAsync');
@@ -127,10 +130,10 @@ class WebGLRenderbuffer extends WebGLObject {
 class WebGLShader extends WebGLObject {
 }
 class WebGLTexture extends WebGLObject {
-    constructor(id, w, h) {
+    constructor(id, textureWidth, textureHeight) {
         super(id);
-        this.w = w || -1;
-        this.h = h || -1;
+        this.textureWidth = textureWidth || -1;
+        this.textureHeight = textureHeight || -1;
     }
 }
 class WebGLUniformLocation {
