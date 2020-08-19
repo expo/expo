@@ -85,7 +85,7 @@ If you don't know what this means, let us handle it! :)
   2) I want to upload my own keystore!
 ```
 
-> **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `expo build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `expo fetch:android:keystore`. If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
+> **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `expo build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `expo fetch:android:keystore`. **If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store**. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
 
 ### If you choose to build for iOS
 
@@ -93,8 +93,8 @@ You can build standalone apps for iOS with two different types, an archive (`exp
 With the simulator build, you can test your standalone app on a simulator.
 If you want to publish your app to the store or distribute it with tools like TestFlight, you have to use the archive.
 
-When building for iOS, you are given a choice of letting the Expo client create the necessary credentials for you,
-while still having a chance to provide your own overrides. Your Apple ID and password are used locally and never saved on Expo's servers.
+When building for iOS, you are given a choice of letting Expo create the necessary credentials for you,
+while still having a chance to provide your own overrides. Your Apple ID and password are used locally and are never saved on Expo's servers.
 
 ```sh
 $ expo build:ios
@@ -119,33 +119,32 @@ Note: Expo does not keep your Apple ID or your Apple ID password.
   I will provide all the credentials and files needed, Expo does limited validation
 ```
 
-We ask you if you'd like us to handle your Distribution Certificate or
-use your own. If you have previously used `expo-cli` for building a standalone app
-for a different project, then we'll ask you if you'd like to reuse your existing
-Distribution Certificate. Similar to the Android keystore, if you don't know what
-a Distribution Certificate is, just let us handle it for you. If you do need
-to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
-**Note:** this guide recommends leaving the P12's password blank, but a P12 password
-is required to upload your own certificate to Expo's service. Please enter a password
-when prompted. We'll also help you handle your
-Push Notifications service key. Remember that Push Notifications service keys
-are shared across all apps published under the same Apple Developer account.
+Unless you're very familiar with iOS credentials already, it's best to let Expo handle the creation & management of all your credentials for you. If you'd like to know more about iOS credentials, we've written a guide with everything you need to know [here](../app-signing/).
 
-> **Note:** The Expo build service supports both normal App Store distribution as well as enterprise
-> distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise
-> Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts
-> can build apps that can be submitted to the Apple App Store, and only enterprise developer
-> accounts can build apps that can be distributed using enterprise distribution methods. When you
-> call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
-> At this time, the standalone app builder does not support "ad hoc" distribution certificates
-> or provisioning profiles.
+If you plan on providing your own certificates, we recommend creating them in the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list).
+
+#### Enterprise distribution
+
+The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. When you call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
+
+#### Adhoc distribution
+
+> Since this requires you to provide credential overrides, this feature should only be used if you're comfortable with iOS credentials.
+
+It's usually easiest to test your standalone app on a simulator with the `expo build:ios -t simulator` command, and then use TestFlight for your physical device testing. But if you'd like an IPA that you can install directly onto your physical device through Xcode, you can generate one with Expo CLI:
+
+- Run `expo build:ios` once to generate some preliminary certificates, namely your app identifier, and distribution certificate.
+- Now, create a new provisioning profile [here](https://developer.apple.com/account/resources/profiles/list), and under `Distribution`, select `Adhoc`. Then provide your app identifier and the distribution certificate you created in the last step. **If you don't provide those exact certificates, your build will fail.**
+- Download the provisioning profile, and then pass it to the build command like this: `expo build:ios --provisioning-profile-path ~/Path/To/provisioningProfileYouCreated.mobileprovision`, and make sure the rest of the certificates you use match those you selected when creating your adhoc provisioning profile in the previous step.
+
+Once Expo finishes your build, you can install it onto your device via Xcode by opening the `Devices & Simulators` window, selecting your connected device, and under `Installed Apps`, click the `+` and then select the IPA Expo generated for you.
 
 > **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
 ### Switch to Push Notification Key on iOS
 
-If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
-to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifications Key for you.
+If you are using Push Notifications Certificate and want to switch to a Push Notifications Key you need
+to start the build with `--clear-push-cert`. We will remove the legacy certificate from our servers and generate a Push Notifications Key for you.
 
 ## 4. Wait for it to finish building
 
