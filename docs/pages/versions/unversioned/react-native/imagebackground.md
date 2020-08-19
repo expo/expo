@@ -19,7 +19,7 @@ const image = { uri: "https://reactjs.org/logo-og.png" };
 
 const App = () => (
   <View style={styles.container}>
-    <ImageBackground source={image} style={styles.image}>
+    <ImageBackground source={image} style={styles.imageBackground} imageStyle={styles.image}>
       <Text style={styles.text}>Inside</Text>
     </ImageBackground>
   </View>
@@ -30,11 +30,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column"
   },
-  image: {
+  imageBackground: {
     flex: 1,
-    resizeMode: "cover",
     justifyContent: "center"
   },
+  image:{
+    resizeMode: "stretch",
+  }
   text: {
     color: "grey",
     fontSize: 30,
