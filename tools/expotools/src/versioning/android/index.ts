@@ -290,9 +290,20 @@ async function renameJniLibsAsync(version: string) {
   for (const javaPackage of packagesToRename) {
     const pathForPackage = javaPackage.replace(/\./g, '\\/');
     await spawnAsync(
-      `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} ${versionedAbiPath} -type f ` +
+      `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} -type f ` +
         `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
         `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
+      [],
+      { shell: true }
+    );
+
+    // reanimated
+    const oldJNIReanimatedPackage = 'versioned\\/host\\/exp\\/exponent\\/modules\\/api\\/reanimated\\/';
+    const newJNIReanimatedPackage = 'host\\/exp\\/exponent\\/modules\\/api\\/reanimated\\/';
+    await spawnAsync(
+      `find ${versionedAbiPath} -type f ` +
+        `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
+        `xargs -0 sed -i '' 's/${oldJNIReanimatedPackage}/abi${abiVersion}\\/${newJNIReanimatedPackage}/g'`,
       [],
       { shell: true }
     );
@@ -514,6 +525,7 @@ async function prepareReanimatedAsync(version: string): Promise<void> {
     await spawnAsync(`./gradlew :expoview-${abiName}:packageNdkLibs`, [], {
       shell: true,
       cwd: path.join(versionedExpoviewPath, '../../'),
+      stdio: 'inherit',
     });
   }
 
