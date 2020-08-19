@@ -19,9 +19,6 @@ fi
 #   3. Sync assets and clean up outdated files from previous deployments
 #   4. Add custom redirects
 
-# Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
-# see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
-
 echo "::group::[1/4] Sync JS/assets dependencies in \`_next/**\` and \`static/**\` folder"
 aws s3 sync \
   --no-progress \
@@ -32,6 +29,8 @@ aws s3 sync \
   "s3://${bucket}"
 echo "::endgroup::"
 
+# Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
+# see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
 echo "::group::[2/4] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
 aws s3 cp \
   --no-progress \
