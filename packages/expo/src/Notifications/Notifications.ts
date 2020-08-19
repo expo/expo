@@ -40,7 +40,11 @@ export function emitNotification(notification) {
     }
   }
 
-  _emitter.emit('notification', notification);
+  if (_emitter) {
+    _emitter.emit('notification', notification);
+  } else {
+    throw new Error(`Must have EventEmitter available in DOM`);
+  }
 }
 
 function _processNotification(notification) {
