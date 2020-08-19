@@ -11,14 +11,43 @@ if [ ! -d "$target" ]; then
   exit 1
 fi
 
-aws s3 sync "$target" "s3://${bucket}" --delete
+# To keep the previous website up and running, we deploy it using these steps.
+#   1.  Sync JS/assets dependencies in \`_next/**\` and \`static/**\` folder
+#      > Uploads the new generated JS and asset files (stored in hashed folders to avoid collision with older deployments)
+#   2. Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder
+#      > Force overwrite of all HTML files to make sure we use the latest one
+#   3. Sync assets and clean up outdated files from previous deployments
+#   4. Add custom redirects
 
+echo "::group::[1/4] Sync JS/assets dependencies in \`_next/**\` and \`static/**\` folder"
+aws s3 sync \
+  --no-progress \
+  --exclude "*" \
+  --include "_next/**" \
+  --include "static/**" \
+  "$target" \
+  "s3://${bucket}"
+echo "::endgroup::"
+
+# Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
+# see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
+echo "::group::[2/4] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
 aws s3 cp \
+  --no-progress \
   --recursive \
-  --metadata-directive REPLACE \
-  --cache-control "public,max-age=31536000,immutable" \
-  "s3://${bucket}/_next/static/" \
-  "s3://${bucket}/_next/static/"
+  --exclude "_next/**" \
+  --exclude "static/**" \
+  "$target" \
+  "s3://${bucket}"
+echo "::endgroup::"
+
+echo "::group::[3/4] Sync assets and clean up outdated files from previous deployments"
+aws s3 sync \
+  --no-progress \
+  --delete \
+  "$target" \
+  "s3://${bucket}"
+echo "::endgroup::"
 
 declare -A redirects # associative array variable
 
@@ -45,11 +74,14 @@ redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/intro
 redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
 redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 
+echo "::group::[4/4] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
+    --no-progress \
     --metadata-directive REPLACE \
     --website-redirect "/${redirects[$i]}" \
     "$target/404.html" \
     "s3://${bucket}/${i}"
 done
+echo "::endgroup::"
