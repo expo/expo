@@ -151,7 +151,7 @@ Called if the time after `onPressIn` lasts longer than 370 milliseconds. This ti
 
 | Type                         | Required |
 | ---------------------------- | -------- |
-| [PressEvent](../pressevent/) | No       |
+| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
 
 ### `onPress`
 
@@ -159,7 +159,7 @@ Called after `onPressOut`.
 
 | Type                         | Required |
 | ---------------------------- | -------- |
-| [PressEvent](../pressevent/) | No       |
+| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
 
 ### `onPressIn`
 
@@ -167,7 +167,7 @@ Called immediately when a touch is engaged, before `onPressOut` and `onPress`.
 
 | Type                         | Required |
 | ---------------------------- | -------- |
-| [PressEvent](../pressevent/) | No       |
+| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
 
 ### `onPressOut`
 
@@ -175,7 +175,7 @@ Called when a touch is released.
 
 | Type                         | Required |
 | ---------------------------- | -------- |
-| [PressEvent](../pressevent/) | No       |
+| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
 
 ### `pressRetentionOffset`
 

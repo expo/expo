@@ -11,14 +11,16 @@ Displays a circular loading indicator.
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-const App = () => (
-  <View style={[styles.container, styles.horizontal]}>
-    <ActivityIndicator />
-    <ActivityIndicator size="large" />
-    <ActivityIndicator size="small" color="#0000ff" />
-    <ActivityIndicator size="large" color="#00ff00" />
-  </View>
-);
+export function App() {
+  return (
+    <View style={[styles.container, styles.horizontal]}>
+      <ActivityIndicator />
+      <ActivityIndicator size="large" />
+      <ActivityIndicator size="small" color="#0000ff" />
+      <ActivityIndicator size="large" color="#00ff00" />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -31,8 +33,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
-
-export default App;
 ```
 
 # Reference
@@ -57,13 +57,13 @@ Whether to show the indicator (`true`) or hide it (`false`).
 
 The foreground color of the spinner.
 
-| Type            | Required | Default                                                                                                                                                                             |
-| --------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [color](colors) | No       | `null` (system accent default color)<div class="label android">Android</div><hr/><ins style="background: #999" class="color-box"></ins>`'#999999'` <div class="label ios">iOS</div> |
+| Type                                         | Required | Default                                                                  |
+| -------------------------------------------- | -------- | ------------------------------------------------------------------------ |
+| [color](https://reactnative.dev/docs/colors) | No       | `null` (system accent default color) `[Android]`<hr/>`'#999999'` `[iOS]` |
 
 ---
 
-### `hidesWhenStopped` <div class="label ios">iOS</div>
+### `hidesWhenStopped` `[iOS]`
 
 Whether the indicator should hide when not animating.
 
@@ -77,6 +77,6 @@ Whether the indicator should hide when not animating.
 
 Size of the indicator.
 
-| Type                                                                           | Required | Default   |
-| ------------------------------------------------------------------------------ | -------- | --------- |
-| enum(`'small'`, `'large'`)<hr/>number <div class="label android">Android</div> | No       | `'small'` |
+| Type                                              | Required | Default   |
+| ------------------------------------------------- | -------- | --------- |
+| `enum('small', 'large')`<hr/>`number` `[Android]` | No       | `'small'` |

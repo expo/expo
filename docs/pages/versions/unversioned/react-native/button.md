@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 
 ### **`onPress`**
 
-Handler to be called when the user taps the button. The first function argument is an event in form of [PressEvent](../pressevent/).
+Handler to be called when the user taps the button. The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent).
 
 | Type     | Required |
 | -------- | -------- |
@@ -128,9 +128,9 @@ Text to display for blindness accessibility features.
 
 Color of the text (iOS), or background color of the button (Android).
 
-| Type                                         | Required | Default                                                                                                                                                                                                                 |
-| -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [color](https://reactnative.dev/docs/colors) | No       | <ins style="background: #2196F3" class="color-box"></ins>`'#2196F3'` <div class="label android">Android</div><hr/><ins style="background: #007AFF" class="color-box"></ins>`'#007AFF'` <div class="label ios">iOS</div> |
+| Type                                         | Required | Default                                         |
+| -------------------------------------------- | -------- | ----------------------------------------------- |
+| [color](https://reactnative.dev/docs/colors) | No       | `'#2196F3'` `[Android]`<hr/>`'#007AFF'` `[iOS]` |
 
 ---
 
@@ -144,7 +144,7 @@ If `true`, disable all interactions for this component.
 
 ---
 
-### `hasTVPreferredFocus` <div class="label tv">TV</div>
+### `hasTVPreferredFocus` `[TV]`
 
 TV preferred focus.
 
@@ -154,7 +154,7 @@ TV preferred focus.
 
 ---
 
-### `nextFocusDown` <div class="label android">Android</div><div class="label tv">TV</div>
+### `nextFocusDown` `[Android, TV]`
 
 Designates the next view to receive focus when the user navigates down. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown).
 
@@ -164,7 +164,7 @@ Designates the next view to receive focus when the user navigates down. See the 
 
 ---
 
-### `nextFocusForward` <div class="label android">Android</div><div class="label tv">TV</div>
+### `nextFocusForward` `[Android, TV]`
 
 Designates the next view to receive focus when the user navigates forward. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusForward).
 
@@ -174,7 +174,7 @@ Designates the next view to receive focus when the user navigates forward. See t
 
 ---
 
-### `nextFocusLeft` <div class="label android">Android</div><div class="label tv">TV</div>
+### `nextFocusLeft` `[Android, TV]`
 
 Designates the next view to receive focus when the user navigates left. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusLeft).
 
@@ -184,7 +184,7 @@ Designates the next view to receive focus when the user navigates left. See the 
 
 ---
 
-### `nextFocusRight` <div class="label android">Android</div><div class="label tv">TV</div>
+### `nextFocusRight` `[Android, TV]`
 
 Designates the next view to receive focus when the user navigates right. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusRight).
 
@@ -194,7 +194,7 @@ Designates the next view to receive focus when the user navigates right. See the
 
 ---
 
-### `nextFocusUp` <div class="label android">Android</div><div class="label tv">TV</div>
+### `nextFocusUp` `[Android, TV]`
 
 Designates the next view to receive focus when the user navigates up. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusUp).
 
@@ -214,7 +214,7 @@ Used to locate this view in end-to-end tests.
 
 ---
 
-### `touchSoundDisabled` <div class="label android">Android</div>
+### `touchSoundDisabled` `[Android]`
 
 If `true`, doesn't play system sound on touch.
 

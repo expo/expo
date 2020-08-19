@@ -45,7 +45,7 @@ const Item = ({ title }) => (
   </View>
 );
 
-const App = () => {
+export default function App() {
   const renderItem = ({ item }) => <Item title={item.title} />;
 
   return (
@@ -53,7 +53,7 @@ const App = () => {
       <FlatList data={DATA} renderItem={renderItem} keyExtractor={item => item.id} />
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -70,8 +70,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
-
-export default App;
 ```
 
 To render multiple columns, use the [`numColumns`](../flatlist/#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
@@ -113,7 +111,7 @@ const Item = ({ item, onPress, style }) => (
   </TouchableOpacity>
 );
 
-const App = () => {
+export default function App() {
   const [selectedId, setSelectedId] = useState(null);
 
   const renderItem = ({ item }) => {
@@ -132,7 +130,7 @@ const App = () => {
       />
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -148,8 +146,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
-
-export default App;
 ```
 
 This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/)) that aren't explicitly listed here, along with the following caveats:

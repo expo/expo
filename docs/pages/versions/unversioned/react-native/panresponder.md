@@ -13,7 +13,7 @@ It provides a predictable wrapper of the responder handlers provided by the [ges
 onPanResponderMove: (event, gestureState) => {};
 ```
 
-A native event is a synthetic touch event with form of [PressEvent](../pressevent/).
+A native event is a synthetic touch event with form of [PressEvent](https://reactnative.dev/docs/pressevent).
 
 A `gestureState` object has the following:
 

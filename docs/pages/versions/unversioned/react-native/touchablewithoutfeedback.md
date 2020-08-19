@@ -301,7 +301,7 @@ Called if the time after `onPressIn` lasts longer than 370 milliseconds. This ti
 
 ### `onPress`
 
-Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of [PressEvent](../pressevent/).
+Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent).
 
 | Type     | Required |
 | -------- | -------- |
@@ -311,7 +311,7 @@ Called when the touch is released, but not if cancelled (e.g. by a scroll that s
 
 ### `onPressIn`
 
-Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of [PressEvent](../pressevent/).
+Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
 
 | Type     | Required |
 | -------- | -------- |
@@ -321,7 +321,7 @@ Called as soon as the touchable element is pressed and invoked even before onPre
 
 ### `onPressOut`
 
-Called as soon as the touch is released even before onPress. The first function argument is an event in form of [PressEvent](../pressevent/).
+Called as soon as the touch is released even before onPress. The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
 
 | Type     | Required |
 | -------- | -------- |
