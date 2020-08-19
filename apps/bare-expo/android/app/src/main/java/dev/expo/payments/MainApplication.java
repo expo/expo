@@ -1,4 +1,3 @@
-
 package dev.expo.payments;
 
 import android.app.Application;
