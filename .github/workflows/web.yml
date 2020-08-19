@@ -1,5 +1,6 @@
 name: Publish Expo Web
 on:
+  workflow_dispatch: {}
   pull_request:
     paths:
       - .github/workflows/web.yml

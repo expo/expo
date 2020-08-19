@@ -464,9 +464,9 @@ PODS:
     - React
   - react-native-view-shot (3.1.2):
     - React
-  - react-native-viewpager (4.1.6):
+  - react-native-viewpager (4.1.4):
     - React
-  - react-native-webview (10.7.0):
+  - react-native-webview (10.4.1):
     - React
   - React-RCTActionSheet (0.63.2):
     - React-Core/RCTActionSheetHeaders (= 0.63.2)
@@ -528,7 +528,7 @@ PODS:
     - React-Core (= 0.63.2)
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
-  - RNCAsyncStorage (1.12.0):
+  - RNCAsyncStorage (1.11.0):
     - React
   - RNCMaskedView (0.1.10):
     - React
@@ -964,7 +964,7 @@ SPEC CHECKSUMS:
   EXContacts: 28ea8e112bbfeb8fe04987b06f5bf58f71e262f6
   EXCrypto: 80ee65669a5466a7ce9426a8ae985a50be7f3a5d
   EXDevice: e6ede72e08f6adc4b224d0628a9963d394ab9226
-  EXDevMenu: 83316fe0e2fabf443a2b60e5cf3bb0dc78c3d430
+  EXDevMenu: 9f15f267678c47a7700c2a6be954bba4f869fb42
   EXDocumentPicker: 417ff098decc69113ed67a5ddb5e13109583a55c
   EXErrorRecovery: 16696fe023fb46a32c3b09033abc361cfcf150a7
   EXFacebook: dd5352a2a74f825922131abf1ed438cf51d116a7
@@ -1044,8 +1044,8 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 05d93c1c7576b53189720012a3e8a3c23608d849
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
-  react-native-viewpager: f44c9e21c37d4cb76d38841c8a450e3891923461
-  react-native-webview: 6edf4d6f71b9161fc3e96083726a538ee395304d
+  react-native-viewpager: 0d85e46cfb0d2599f579be1fe04ea1759ec68ebe
+  react-native-webview: b3fb8e2306c1b7eb54ed524e0481e15729388b92
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
   React-RCTBlob: 39cf0ece1927996c4466510e25d2105f67010e13
@@ -1056,7 +1056,7 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
-  RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
+  RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPicker: 494015f2b7ec4bee5484b6f235aa19691426dcdb
   RNDateTimePicker: f47a6309133c6d013ad6942fc83b753b3f6e41d6

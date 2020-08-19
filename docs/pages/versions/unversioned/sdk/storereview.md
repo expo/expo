@@ -7,9 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, allowing you to ask the user to rate your app without ever having to leave the app itself.
-
-> If this is used in Android the device will attempt to link to the Play Store using native `Linking` and the `android.playStoreUrl` from `app.config.js` or `app.json` instead.
+**`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -32,7 +30,7 @@ import * as StoreReview from 'expo-store-review';
 ### `StoreReview.requestReview()`
 
 In the ideal circumstance this will open a native modal and allow the user to select a star rating that will then be applied to the App Store without leaving the app.
-If the users device is running a version of iOS lower than 10.3, or the user is on an Android device, this will attempt to get the store URL and link the user to it.
+If the users device is running a version of iOS lower than 10.3, or the user is on an Android version lower than 5.0, this will attempt to get the store URL and link the user to it.
 
 #### Error Codes
 
@@ -46,7 +44,7 @@ StoreReview.requestReview();
 
 ### `StoreReview.isAvailableAsync()`
 
-Determines if the platform has the capabilities to use `StoreReview.requestReview()`. On iOS, this will return `true` if the device is running iOS 10.3+. On Android, this will return `true`. On Web, this will return `false`.
+Determines if the platform has the capabilities to use `StoreReview.requestReview()`. On iOS, this will return `true` if the device is running iOS 10.3+. On Android, this will return `true` if the device is running Android 5.0+. On Web, this will return `false`.
 
 #### Example
 
@@ -87,13 +85,14 @@ Requesting an App Store review is not supported on this device. The device must 
 
 ## Usage
 
-It is important that you follow the [Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/system-capabilities/ratings-and-reviews/) when using this API.
+It is important that you follow the [Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/system-capabilities/ratings-and-reviews/) for iOS and [Guidelines](https://developer.android.com/guide/playcore/in-app-review#when-to-request) for Android when using this API.
 
 **Specifically:**
 
 - Don't call `StoreReview.requestReview()` from a button - instead try calling it after the user has finished some signature interaction in the app.
 - Don't spam the user
 - Don't request a review when the user is doing something time sensitive like navigating.
+- Don't ask the user any questions before or while presenting the rating button or card.
 
 ### Write Reviews
 

@@ -1,8 +1,9 @@
 name: Android Unit Tests
 
 on:
+  workflow_dispatch: {}
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/android-unit-tests.yml
       - 'android/**'
@@ -10,7 +11,7 @@ on:
       - 'tools/expotools/**'
       - yarn.lock
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/android-unit-tests.yml
       - 'android/**'

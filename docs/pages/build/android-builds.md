@@ -1,5 +1,5 @@
 ---
-title: Android builds in depth
+title: Android build process
 ---
 
 This page describes the process of building Android projects with EAS Build. You may want to read this if you are interested in the implementation details of the build service.

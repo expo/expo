@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Implement native [In-App Review](https://developer.android.com/guide/playcore/in-app-review) for Android
+
 ### 🐛 Bug fixes
 
 ## 2.1.3 — 2020-07-27

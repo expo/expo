@@ -1,5 +1,5 @@
 ---
-title: iOS builds in depth
+title: iOS build process
 ---
 
 This page describes the process of building iOS projects with EAS Build. You may want to read this if you are interested in the implementation details of the build service.
