@@ -40,7 +40,8 @@ UM_EXPORT_MODULE(ExponentImagePicker);
     self.defaultOptions = @{
                             @"allowsEditing": @NO,
                             @"base64": @NO,
-                            @"videoMaxDuration": @0
+                            @"videoMaxDuration": @0,
+                            @"videoQuality": UIImagePickerControllerQualityTypeHigh
                             };
     self.shouldRestoreStatusBarVisibility = NO;
   }
@@ -173,7 +174,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     if (@available(iOS 11.0, *)) {
       self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
     }
-    self.picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
+    self.picker.videoQuality = self.options[@"videoQuality"];
 
     NSTimeInterval videoMaxDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
     

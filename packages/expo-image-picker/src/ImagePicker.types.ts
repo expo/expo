@@ -27,6 +27,15 @@ export enum VideoExportPreset {
   HEVC_3840x2160 = 10,
 }
 
+export enum UIImagePickerControllerQualityType {
+  High = 0,
+  Medium = 1,
+  Low = 2,
+  VGA640x480 = 3,
+  IFrame1280x720 = 4,
+  IFrame960x540 = 5,
+}
+
 export type ImageInfo = {
   uri: string;
   width: number;
@@ -56,6 +65,7 @@ export type ImagePickerOptions = {
   exif?: boolean;
   base64?: boolean;
   videoExportPreset?: VideoExportPreset;
+  videoQuality?: UIImagePickerControllerQualityType;
   allowsMultipleSelection?: boolean;
   videoMaxDuration?: number;
 };
