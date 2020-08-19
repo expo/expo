@@ -1,4 +1,4 @@
-package host.exp.exponent.notifications.channels;
+package versioned.host.exp.exponent.modules.api.notifications.channels;
 
 import android.app.NotificationChannelGroup;
 import android.content.Context;
@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedNotificationsIdUtils;
+import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;
 
 public class ScopedNotificationsGroupManager extends AndroidXNotificationsChannelGroupManager {
   private ExperienceId mExperienceId;

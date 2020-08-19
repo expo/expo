@@ -17,6 +17,7 @@ import expo.modules.notifications.notifications.model.TextInputNotificationActio
 import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
+import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;
 
 public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificationBuilder {
 
