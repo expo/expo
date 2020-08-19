@@ -78,7 +78,6 @@ const sections = [
       'Routing & Navigation',
       'Authentication',
       'App Icons',
-      'Webhooks',
       'Create a Splash Screen',
       'Configuring the Status Bar',
       'Configuring OTA Updates',
@@ -108,6 +107,7 @@ const sections = [
     reference: [
       'Overview',
       'Building Standalone Apps',
+      'Build Webhooks',
       'App Signing',
       'Deploying to App Stores',
       'Release Channels',

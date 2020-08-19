@@ -1,5 +1,5 @@
 ---
-title: Webhooks
+title: Build Webhooks
 ---
 
 Expo can alert you as soon as your build has finished via a webhook. Webhooks need to be configured per-project, so if you want to be alerted about builds for both `@yourUsername/awesomeApp` and `@yourUsername/coolApp`, you need to run `expo webhooks:add --event build --url <webhook-url>` in each directory.
