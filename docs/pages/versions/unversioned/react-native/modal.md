@@ -11,7 +11,7 @@ The Modal component is a basic way to present content above an enclosing view.
 import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-const App = () => {
+export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={styles.centeredView}>
@@ -46,7 +46,7 @@ const App = () => {
       </TouchableHighlight>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -86,8 +86,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-export default App;
 ```
 
 ---

@@ -11,7 +11,7 @@ The most basic use case is to plop down a `TextInput` and subscribe to the `onCh
 import React, { Component } from 'react';
 import { TextInput } from 'react-native';
 
-const UselessTextInput = () => {
+export default function UselessTextInput() {
   const [value, onChangeText] = React.useState('Useless Placeholder');
 
   return (
@@ -22,8 +22,6 @@ const UselessTextInput = () => {
     />
   );
 };
-
-export default UselessTextInput;
 ```
 
 Two methods exposed via the native element are .focus() and .blur() that will focus or blur the TextInput programmatically.
@@ -44,7 +42,7 @@ const UselessTextInput = props => {
   );
 };
 
-const UselessTextInputMultiline = () => {
+export default function UselessTextInputMultiline() {
   const [value, onChangeText] = React.useState('Useless Multiline Placeholder');
 
   // If you type something in the text box that is a color, the background will change to that
@@ -64,9 +62,7 @@ const UselessTextInputMultiline = () => {
       />
     </View>
   );
-};
-
-export default UselessTextInputMultiline;
+}
 ```
 
 `TextInput` has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting `underlineColorAndroid` to transparent.

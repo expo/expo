@@ -57,13 +57,13 @@ Whether to show the indicator (`true`) or hide it (`false`).
 
 The foreground color of the spinner.
 
-| Type                                         | Required | Default                                                                  |
-| -------------------------------------------- | -------- | ------------------------------------------------------------------------ |
-| [color](https://reactnative.dev/docs/colors) | No       | `null` (system accent default color) `[Android]`<hr/>`'#999999'` `[iOS]` |
+| Type                                         | Required | Default                                                                      |
+| -------------------------------------------- | -------- | ---------------------------------------------------------------------------- |
+| [color](https://reactnative.dev/docs/colors) | No       | `null` (system accent default color) **(Android)**<hr/>`'#999999'` **(iOS)** |
 
 ---
 
-### `hidesWhenStopped` `[iOS]`
+### `hidesWhenStopped` **(iOS)**
 
 Whether the indicator should hide when not animating.
 
@@ -77,6 +77,6 @@ Whether the indicator should hide when not animating.
 
 Size of the indicator.
 
-| Type                                              | Required | Default   |
-| ------------------------------------------------- | -------- | --------- |
-| `enum('small', 'large')`<hr/>`number` `[Android]` | No       | `'small'` |
+| Type                                                | Required | Default   |
+| --------------------------------------------------- | -------- | --------- |
+| `enum('small', 'large')`<hr/>`number` **(Android)** | No       | `'small'` |

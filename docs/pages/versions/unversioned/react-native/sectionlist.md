@@ -50,16 +50,18 @@ const Item = ({ title }) => (
   </View>
 );
 
-const App = () => (
-  <SafeAreaView style={styles.container}>
-    <SectionList
-      sections={DATA}
-      keyExtractor={(item, index) => item + index}
-      renderItem={({ item }) => <Item title={item} />}
-      renderSectionHeader={({ section: { title } }) => <Text style={styles.header}>{title}</Text>}
-    />
-  </SafeAreaView>
-);
+export default function App() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <SectionList
+        sections={DATA}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({ item }) => <Item title={item} />}
+        renderSectionHeader={({ section: { title } }) => <Text style={styles.header}>{title}</Text>}
+      />
+    </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -80,8 +82,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
 });
-
-export default App;
 ```
 
 This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/) that aren't explicitly listed here, along with the following caveats:

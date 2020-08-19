@@ -17,7 +17,7 @@ const onPressTitle = () => {
   console.log('title pressed');
 };
 
-const TextInANest = () => {
+export default function TextInANest() {
   const titleText = useState("Bird's Nest");
   const bodyText = useState('This is not really a bird nest.');
 
@@ -31,7 +31,7 @@ const TextInANest = () => {
       <Text numberOfLines={5}>{bodyText}</Text>
     </Text>
   );
-};
+}
 
 const styles = StyleSheet.create({
   baseText: {
@@ -42,8 +42,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default TextInANest;
 ```
 
 ## Nested text
@@ -54,14 +52,14 @@ Both Android and iOS allow you to display formatted text by annotating ranges of
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
 
-const BoldAndBeautiful = () => {
+export function BoldAndBeautiful() {
   return (
     <Text style={styles.baseText}>
       I am bold
       <Text style={styles.innerText}> and red</Text>
     </Text>
   );
-};
+}
 
 const styles = StyleSheet.create({
   baseText: {
@@ -71,8 +69,6 @@ const styles = StyleSheet.create({
     color: 'red',
   },
 });
-
-export default BoldAndBeautiful;
 ```
 
 Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:

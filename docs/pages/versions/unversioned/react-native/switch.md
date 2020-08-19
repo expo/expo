@@ -13,7 +13,7 @@ This is a controlled component that requires an `onValueChange` callback that up
 import React, { useState } from 'react';
 import { View, Switch, StyleSheet } from 'react-native';
 
-const App = () => {
+export default function App() {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
@@ -28,7 +28,7 @@ const App = () => {
       />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -37,8 +37,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-export default App;
 ```
 
 ---

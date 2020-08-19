@@ -18,7 +18,7 @@ const wait = timeout => {
   });
 };
 
-const App = () => {
+export function App() {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
@@ -36,7 +36,7 @@ const App = () => {
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -50,8 +50,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-export default App;
 ```
 
 **Note:** `refreshing` is a controlled prop, this is why it needs to be set to true in the `onRefresh` function otherwise the refresh indicator will stop immediately.

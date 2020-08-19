@@ -23,7 +23,7 @@ After pressing [`onPressIn`](#onpressin), one of two things will happen:
 1. The person will remove their finger, triggering [`onPressOut`](#onpressout) followed by [`onPress`](#onpress).
 2. If the person leaves their finger longer than 370 milliseconds before removing it, [`onLongPress`](#onlongpress) is triggered. ([`onPressOut`](#onpressout) will still fire when they remove their finger.)
 
-<img src="/docs/assets/d_pressable_pressing.svg" width="1000" alt="Diagram of the onPress events in sequence.">
+<img src="/static/images/d_pressable_pressing.svg" width="1000" alt="Diagram of the onPress events in sequence." />
 
 Fingers are not the most precise instruments, and it is common for users to accidentally activate the wrong element or miss the activation area. To help, `Pressable` has an optional `HitRect` you can use to define how far a touch can register away from the the wrapped element. Presses can start anywhere within a `HitRect`.
 
@@ -32,7 +32,7 @@ Fingers are not the most precise instruments, and it is common for users to acci
 > The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.
 
 <figure>
-  <img src="/docs/assets/d_pressable_anatomy.svg" width="1000" alt="Diagram of HitRect and PressRect and how they work.">
+  <img src="/static/images/d_pressable_anatomy.svg" width="1000" alt="Diagram of HitRect and PressRect and how they work." />
   <figcaption>
     You can set <code>HitRect</code> with <code>hitSlop</code> and set <code>PressRect</code> with <code>pressRetentionOffset</code>.
   </figcaption>
@@ -111,7 +111,7 @@ Enables the Android ripple effect and configures its properties.
 
 | Type                                   | Required |
 | -------------------------------------- | -------- |
-| [RippleConfig](pressable#rippleconfig) | No       |
+| [RippleConfig](#rippleconfig) | No       |
 
 ### `children`
 

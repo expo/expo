@@ -130,7 +130,7 @@ Color of the text (iOS), or background color of the button (Android).
 
 | Type                                         | Required | Default                                         |
 | -------------------------------------------- | -------- | ----------------------------------------------- |
-| [color](https://reactnative.dev/docs/colors) | No       | `'#2196F3'` `[Android]`<hr/>`'#007AFF'` `[iOS]` |
+| [color](https://reactnative.dev/docs/colors) | No       | `'#2196F3'` **(Android)**<hr/>`'#007AFF'` **(iOS)** |
 
 ---
 
@@ -144,7 +144,7 @@ If `true`, disable all interactions for this component.
 
 ---
 
-### `hasTVPreferredFocus` `[TV]`
+### `hasTVPreferredFocus` **(TV)**
 
 TV preferred focus.
 
@@ -154,7 +154,7 @@ TV preferred focus.
 
 ---
 
-### `nextFocusDown` `[Android, TV]`
+### `nextFocusDown` **(Android)** **(TV)**
 
 Designates the next view to receive focus when the user navigates down. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown).
 
@@ -164,7 +164,7 @@ Designates the next view to receive focus when the user navigates down. See the 
 
 ---
 
-### `nextFocusForward` `[Android, TV]`
+### `nextFocusForward` **(Android)** **(TV)**
 
 Designates the next view to receive focus when the user navigates forward. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusForward).
 
@@ -174,7 +174,7 @@ Designates the next view to receive focus when the user navigates forward. See t
 
 ---
 
-### `nextFocusLeft` `[Android, TV]`
+### `nextFocusLeft` **(Android)** **(TV)**
 
 Designates the next view to receive focus when the user navigates left. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusLeft).
 
@@ -184,7 +184,7 @@ Designates the next view to receive focus when the user navigates left. See the 
 
 ---
 
-### `nextFocusRight` `[Android, TV]`
+### `nextFocusRight` **(Android)** **(TV)**
 
 Designates the next view to receive focus when the user navigates right. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusRight).
 
@@ -194,7 +194,7 @@ Designates the next view to receive focus when the user navigates right. See the
 
 ---
 
-### `nextFocusUp` `[Android, TV]`
+### `nextFocusUp` **(Android)** **(TV)**
 
 Designates the next view to receive focus when the user navigates up. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusUp).
 
@@ -214,7 +214,7 @@ Used to locate this view in end-to-end tests.
 
 ---
 
-### `touchSoundDisabled` `[Android]`
+### `touchSoundDisabled` **(Android)**
 
 If `true`, doesn't play system sound on touch.
 

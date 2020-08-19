@@ -26,7 +26,7 @@ import React from 'react';
 import { StyleSheet, Text, SafeAreaView, ScrollView } from 'react-native';
 import Constants from 'expo-constants';
 
-const App = () => {
+export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -41,7 +41,7 @@ const App = () => {
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -56,8 +56,6 @@ const styles = StyleSheet.create({
     fontSize: 42,
   },
 });
-
-export default App;
 ```
 
 ---
