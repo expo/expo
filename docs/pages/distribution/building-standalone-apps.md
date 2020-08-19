@@ -135,9 +135,9 @@ It's usually easiest to test your standalone app on a simulator with the `expo b
 
 - Run `expo build:ios` once to generate some preliminary certificates, namely your app identifier, and distribution certificate.
 - Now, create a new provisioning profile [here](https://developer.apple.com/account/resources/profiles/list), and under `Distribution`, select `Adhoc`. Then provide your app identifier and the distribution certificate you created in the last step. **If you don't provide those exact certificates, your build will fail.**
-- Download the provisioning profile, and then pass it to the build command like this: `expo build:ios --provisioning-profile-path ~/Path/To/provisioningProfileYouCreated.mobileprovision`, and make sure the rest of the certificates you use match those you selected when creating your adhoc provisioning profile in he previous step.
+- Download the provisioning profile, and then pass it to the build command like this: `expo build:ios --provisioning-profile-path ~/Path/To/provisioningProfileYouCreated.mobileprovision`, and make sure the rest of the certificates you use match those you selected when creating your adhoc provisioning profile in the previous step.
 
-Once Expo finishes your build, you can install it onto your device via Xcode by opening the `Devices & Simulators`, selecting your connected device, and under `Installed Apps`, click the `+` and then select the IPA Expo generated for you.
+Once Expo finishes your build, you can install it onto your device via Xcode by opening the `Devices & Simulators` window, selecting your connected device, and under `Installed Apps`, click the `+` and then select the IPA Expo generated for you.
 
 ### Switch to Push Notification Key on iOS
 
