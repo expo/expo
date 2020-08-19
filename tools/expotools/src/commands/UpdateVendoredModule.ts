@@ -103,9 +103,19 @@ const ReanimatedModifier: ModuleModifier = async function (moduleConfig: Vendore
     }
   }
 
+  const copyCommonToIOS = async () => {
+    await new Promise((res, rej) => {
+      ncp(path.join(clonedProjectPath, 'Common'),
+          path.join(clonedProjectPath, 'ios' , 'Common'),
+          { dereference: true },
+          () => { res(); });
+    });
+  }
+
   await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
+  await copyCommonToIOS();
 }
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
@@ -464,7 +474,7 @@ async function renameIOSSymbolsAsync(file: string, iosPrefix: string) {
 }
 
 async function findObjcFilesAsync(dir: string, recursive: boolean): Promise<string[]> {
-  const pattern = path.join(dir, recursive ? '**' : '', '*.[hmc]');
+  const pattern = path.join(dir, recursive ? '**' : '', '*.@(h|m|c|mm|cpp)');
   return await glob(pattern);
 }
 
