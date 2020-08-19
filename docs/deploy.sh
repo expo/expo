@@ -12,10 +12,10 @@ if [ ! -d "$target" ]; then
 fi
 
 # To keep the previous website up and running, we deploy it using these steps.
-#   1. Upload JS files in \`_next/**\` folder
-#      > Uploads the new generated JS files, containing hashes to not-collide with previous deployment
-#   2. Upload new asset files in \`static/**\` folder
-#      > Contains large files and might slow down overwrite of HTML files
+#   1.  Sync JS/assets dependencies in \`_next/**\` and \`static/**\` folder
+#      > Uploads the new generated JS and asset files (stored in hashed folders to avoid collision with older deployments)
+#   2. Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder
+#      > Force overwrite of all HTML files to make sure we use the latest one
 #   3. Sync assets and clean up outdated files from previous deployments
 #   4. Add custom redirects
 
