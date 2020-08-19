@@ -1,8 +1,8 @@
 ---
-title: Advanced Credentials Configuration
+title: Advanced credentials configuration
 ---
 
-In order to build a React Native project for distribution on app stores you will need to provide or generate credentials to sign the app. EAS Builds makes managing credentials really easy. When running `expo eas:build` you're guided through the entire credentials management process. Expo CLI will generate both Android and iOS credentials for you, and store them on the Expo servers. This makes it possible to use them for consecutive builds and also speeds up the process of starting new builds of the project for other team members.
+In order to build a React Native project for distribution on app stores you will need to provide or generate credentials to sign the app. EAS Build makes managing credentials really easy. When running `expo eas:build` you're guided through the entire credentials management process. Expo CLI will generate both Android and iOS credentials for you, and store them on the Expo servers. This makes it possible to use them for consecutive builds and also speeds up the process of starting new builds of the project for other team members.
 
 Usually, you can get away with not being an expert on credentials and choose Expo to manage them on their servers. However, there are some cases when you want to manage your keystore, certificates and profiles on your own. The most common case is when you want to build your app on CI and so you want to have the full control over which credentials will be used for your builds. Another common case is when you already have your credentials generated from building your app prior to using Expo services. We've introduced a concept of the `credentials.json` file to solve these and similar cases. **Using `credentials.json` is totally optional.**
 
@@ -153,7 +153,7 @@ The algorithm of the auto mode works like this:
 
 ### Local Mode
 
-You can configure EAS Builds so that `expo eas:build` will be reading the credentials only from `credentials.json`. Just set `"credentialsSource": "local"` in one of your [build profiles](../eas-json/) in `eas.json`.
+You can configure EAS Build so that `expo eas:build` will be reading the credentials only from `credentials.json`. Just set `"credentialsSource": "local"` in one of your [build profiles](../eas-json/) in `eas.json`.
 
 Example:
 
