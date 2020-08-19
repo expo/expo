@@ -8,26 +8,26 @@ Displays native to iOS [Action Sheet](https://developer.apple.com/design/human-i
 ## Example
 
 ```js
-import React, { useState } from "react";
-import { ActionSheetIOS, Button, StyleSheet, Text, View } from "react-native";
+import React, { useState } from 'react';
+import { ActionSheetIOS, Button, StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
-  const [result, setResult] = useState("🔮");
+  const [result, setResult] = useState('🔮');
 
   const onPress = () =>
     ActionSheetIOS.showActionSheetWithOptions(
       {
-        options: ["Cancel", "Generate number", "Reset"],
+        options: ['Cancel', 'Generate number', 'Reset'],
         destructiveButtonIndex: 2,
-        cancelButtonIndex: 0
+        cancelButtonIndex: 0,
       },
       buttonIndex => {
         if (buttonIndex === 0) {
           // cancel action
         } else if (buttonIndex === 1) {
-          setResult(Math.floor(Math.random() * 100)  1);
+          setResult(Math.floor(Math.random() * 100) + 1);
         } else if (buttonIndex === 2) {
-          setResult("🔮");
+          setResult('🔮');
         }
       }
     );
@@ -38,17 +38,17 @@ export default function App() {
       <Button onPress={onPress} title="Show Action Sheet" />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center"
+    justifyContent: 'center',
   },
   result: {
     fontSize: 64,
-    textAlign: "center"
-  }
+    textAlign: 'center',
+  },
 });
 ```
 
@@ -59,9 +59,7 @@ const styles = StyleSheet.create({
 ### `showActionSheetWithOptions()`
 
 ```js
-
 static showActionSheetWithOptions(options, callback)
-
 ```
 
 Display an iOS action sheet. The `options` object must contain one or more of:
@@ -72,7 +70,7 @@ Display an iOS action sheet. The `options` object must contain one or more of:
 - `title` (string) - a title to show above the action sheet
 - `message` (string) - a message to show below the title
 - `anchor` (number) - the node to which the action sheet should be anchored (used for iPad)
-- `tintColor` (string) - the [color](../colors/) used for non-destructive button titles
+- `tintColor` (string) - the [color](https://reactnative.dev/docs/colors) used for non-destructive button titles
 
 The 'callback' function takes one parameter, the zero-based index of the selected item.
 
@@ -83,7 +81,7 @@ ActionSheetIOS.showActionSheetWithOptions(
   {
     options: ['Cancel', 'Remove'],
     destructiveButtonIndex: 1,
-    cancelButtonIndex: 0
+    cancelButtonIndex: 0,
   },
   buttonIndex => {
     if (buttonIndex === 1) {
@@ -98,9 +96,7 @@ ActionSheetIOS.showActionSheetWithOptions(
 ### `showShareActionSheetWithOptions()`
 
 ```js
-
 static showShareActionSheetWithOptions(options, failureCallback, successCallback)
-
 ```
 
 Display the iOS share sheet. The `options` object should contain one or both of `message` and `url` and can additionally have a `subject` or `excludedActivityTypes`:

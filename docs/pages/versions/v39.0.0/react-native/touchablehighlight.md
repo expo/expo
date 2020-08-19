@@ -3,6 +3,8 @@ id: touchablehighlight
 title: TouchableHighlight
 ---
 
+> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](../pressable/) API.
+
 A wrapper for making views respond properly to touches. On press down, the opacity of the wrapped view is decreased, which allows the underlay color to show through, darkening or tinting the view.
 
 The underlay comes from wrapping the child in a new View, which can affect layout, and sometimes cause unwanted visual artifacts if not used correctly, for example if the backgroundColor of the wrapped view isn't explicitly set to an opaque color.
@@ -18,11 +20,7 @@ function MyComponent(props) {
   );
 }
 
-<TouchableHighlight
-  activeOpacity={0.6}
-  underlayColor="#DDDDDD"
-  onPress={() => alert('Pressed!')}
->
+<TouchableHighlight activeOpacity={0.6} underlayColor="#DDDDDD" onPress={() => alert('Pressed!')}>
   <MyComponent />
 </TouchableHighlight>;
 ```
@@ -30,8 +28,8 @@ function MyComponent(props) {
 ## Example
 
 ```js
-import React, { useState } from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 const TouchableHighlightExample = () => {
   const [count, setCount] = useState(0);
@@ -45,32 +43,30 @@ const TouchableHighlightExample = () => {
         </View>
       </TouchableHighlight>
       <View style={styles.countContainer}>
-        <Text style={styles.countText}>
-          {count ? count : null}
-        </Text>
+        <Text style={styles.countText}>{count ? count : null}</Text>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 10
+    justifyContent: 'center',
+    paddingHorizontal: 10,
   },
   button: {
-    alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
   },
   countContainer: {
-    alignItems: "center",
-    padding: 10
+    alignItems: 'center',
+    padding: 10,
   },
   countText: {
-    color: "#FF00FF"
-  }
+    color: '#FF00FF',
+  },
 });
 
 export default TouchableHighlightExample;
@@ -126,8 +122,8 @@ Called immediately after the underlay is shown.
 
 The color of the underlay that will show through when the touch is active.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---

@@ -10,18 +10,18 @@ This is a controlled component that requires an `onValueChange` callback that up
 ## Example
 
 ```js
-import React, { useState } from "react";
-import { View, Switch, StyleSheet } from "react-native";
+import React, { useState } from 'react';
+import { View, Switch, StyleSheet } from 'react-native';
 
-const App = () => {
+export default function App() {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
     <View style={styles.container}>
       <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+        trackColor={{ false: '#767577', true: '#81b0ff' }}
+        thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
         ios_backgroundColor="#3e3e3e"
         onValueChange={toggleSwitch}
         value={isEnabled}
@@ -33,12 +33,10 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  }
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
-
-export default App;
 ```
 
 ---
@@ -63,8 +61,8 @@ If true the user won't be able to toggle the switch. Default value is false.
 
 On iOS, custom color for the background. This background color can be seen either when the switch value is false or when the switch is disabled (and the switch is translucent).
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -93,8 +91,8 @@ Invoked when the user tries to change the value of the switch. Receives the new 
 
 Color of the foreground switch grip. If this is set on iOS, the switch grip will lose its drop shadow.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -105,8 +103,8 @@ Custom colors for the switch track.
 
 _iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](../switch/#ios_backgroundColor).
 
-| Type                                                          | Required |
-| ------------------------------------------------------------- | -------- |
+| Type                                                                                                              | Required |
+| ----------------------------------------------------------------------------------------------------------------- | -------- |
 | object: {false: [color](https://reactnative.dev/docs/colors), true: [color](https://reactnative.dev/docs/colors)} | No       |
 
 ---
