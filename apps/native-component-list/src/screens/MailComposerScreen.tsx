@@ -1,41 +1,48 @@
 import * as MailComposer from 'expo-mail-composer';
 import React from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
-type State = {
-  isAvailable?: boolean;
-};
+import { useResolvedValue } from '../utilities/useResolvedValue';
 
-export default class MailComposerScreen extends React.Component<object, State> {
-  static navigationOptions = {
-    title: 'MailComposer',
-  };
+export default function MailComposerScreen() {
+  const [isAvailable, error] = useResolvedValue(MailComposer.isAvailableAsync);
 
-  readonly state: State = {};
-
-  componentDidMount() {
-    this.checkCapabilitiesAsync();
-  }
-
-  async checkCapabilitiesAsync() {
-    const isAvailable = await MailComposer.isAvailableAsync();
-    this.setState({ isAvailable });
-  }
-
-  sendMailAsync = async () => {
-    if (!this.state.isAvailable) {
+  const warning = React.useMemo(() => {
+    if (error) {
+      return `An unknown error occurred while checking the API availability: ${error.message}`;
+    } else if (isAvailable === null) {
+      return 'Checking availability...';
+    } else if (isAvailable === false) {
       // On iOS device without Mail app installed it is possible to show mail composer,
       // but it isn't possible to send that email either way.
-      alert(
-        "It's not possible to send an email on this device. Make sure you have mail account configured and Mail app installed (iOS)."
-      );
-      return;
+      return `It's not possible to send an email on this device. Make sure you have mail account configured and Mail app installed (iOS).`;
     }
+    return null;
+  }, [error, isAvailable]);
 
+  if (warning) {
+    return (
+      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+        <Text>{warning}</Text>
+      </View>
+    );
+  }
+
+  return <MailComposerView />;
+}
+
+MailComposerScreen.navigationOptions = {
+  title: 'MailComposer',
+};
+
+function MailComposerView() {
+  const [status, setStatus] = React.useState<MailComposer.MailComposerStatus | null>(null);
+
+  const sendMailAsync = async () => {
     try {
       const { status } = await MailComposer.composeAsync({
         subject: 'Wishes',
@@ -43,27 +50,19 @@ export default class MailComposerScreen extends React.Component<object, State> {
         recipients: ['sample.mail@address.com'],
         isHtml: true,
       });
-      if (status === 'sent') {
-        Alert.alert('Mail sent!');
-      } else {
-        throw new Error(`composeAsync() returned status: ${status}`);
-      }
-    } catch (e) {
-      Alert.alert('Something went wrong: ', e.message);
+      setStatus(status);
+    } catch (error) {
+      console.log('Erro: ', error);
+      Alert.alert(`Something went wrong: ${error.message}`);
     }
   };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.capabilitiesContainer}>
-          <HeadingText>MailComposer.isAvailableAsync()</HeadingText>
-          <MonoText>{JSON.stringify(this.state.isAvailable)}</MonoText>
-        </View>
-        <Button onPress={this.sendMailAsync} title="Send birthday wishes" />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Button onPress={sendMailAsync} title="Send birthday wishes" />
+      {status && <MonoText>Status: {status}</MonoText>}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
