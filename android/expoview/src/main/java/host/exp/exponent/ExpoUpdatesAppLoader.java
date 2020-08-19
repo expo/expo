@@ -74,6 +74,7 @@ public class ExpoUpdatesAppLoader {
   private boolean mIsEmergencyLaunch = false;
   private boolean mIsUpToDate = true;
   private AppLoaderStatus mStatus;
+  private boolean mShouldShowAppLoaderStatus = true;
 
   private boolean isStarted = false;
 
@@ -136,6 +137,10 @@ public class ExpoUpdatesAppLoader {
 
   public AppLoaderStatus getStatus() {
     return mStatus;
+  }
+
+  public boolean shouldShowAppLoaderStatus() {
+    return mShouldShowAppLoaderStatus;
   }
 
   private void updateStatus(AppLoaderStatus status) {
@@ -210,6 +215,7 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public boolean onCachedUpdateLoaded(UpdateEntity update) {
+        setShouldShowAppLoaderStatus(update.metadata);
         if (isUsingDeveloperTool(update.metadata)) {
           return false;
         } else {
@@ -229,6 +235,7 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
+        setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
         mCallback.onOptimisticManifest(manifest.getRawManifestJson());
         updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
       }
@@ -327,6 +334,16 @@ public class ExpoUpdatesAppLoader {
         manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPER_KEY).has(ExponentManifest.MANIFEST_DEVELOPER_TOOL_KEY);
     } catch (JSONException e) {
       return false;
+    }
+  }
+
+  private void setShouldShowAppLoaderStatus(JSONObject manifest) {
+    try {
+      mShouldShowAppLoaderStatus = !(manifest.has(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY) &&
+        manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY)
+          .optBoolean(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_SILENT_LAUNCH_KEY, false));
+    } catch (JSONException e) {
+      mShouldShowAppLoaderStatus = true;
     }
   }
 

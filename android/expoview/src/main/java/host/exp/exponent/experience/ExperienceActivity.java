@@ -7,7 +7,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -238,7 +237,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         @Override
         public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
-          setLoadingProgressStatus(status);
+          maybeSetLoadingProgressStatus(status);
         }
 
         @Override
@@ -388,30 +387,24 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  private void maybeSetLoadingProgressStatus() {
+  public void maybeSetLoadingProgressStatus() {
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
     if (appLoader != null) {
-      setLoadingProgressStatus(appLoader.getStatus());
+      maybeSetLoadingProgressStatus(appLoader.getStatus());
     }
   }
 
-  private String getLoadingProgressText(ExpoUpdatesAppLoader.AppLoaderStatus status) {
-    if (status == ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE) {
-      return "Checking for new release...";
-    } else if (status == ExpoUpdatesAppLoader.AppLoaderStatus.DOWNLOADING_NEW_UPDATE) {
-      return "New release available, downloading...";
-    }
-    return null;
-  }
-
-  public void setLoadingProgressStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+  public void maybeSetLoadingProgressStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
     if (Constants.isStandaloneApp()) {
       return;
     }
     if (status == null) {
       return;
     }
-    UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.updateProgress(getLoadingProgressText(status), null, null));
+    ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+    if (appLoader != null && appLoader.shouldShowAppLoaderStatus()) {
+      UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.setLoadingProgressStatus(status));
+    }
   }
 
   public void setOptimisticManifest(final JSONObject optimisticManifest) {
