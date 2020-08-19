@@ -7,6 +7,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -357,6 +358,23 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (event.getActivity() == this) {
       mLoadingProgressPopupController.hide();
     }
+
+    if (!Constants.isStandaloneApp()) {
+      ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+      if (appLoader != null && !appLoader.isUpToDate() && appLoader.shouldShowAppLoaderStatus()) {
+        new AlertDialog.Builder(ExperienceActivity.this)
+          .setTitle("Using a cached project")
+          .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
+          .setPositiveButton("Use cache", null)
+          .setNegativeButton("Reload", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              mKernel.reloadVisibleExperience(mManifestUrl, false);
+            }
+          })
+          .show();
+      }
+    }
   }
 
   /*
@@ -597,17 +615,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           AsyncCondition.remove(READY_FOR_BUNDLE);
         }
       });
-    }
-
-    if (!Constants.isStandaloneApp()) {
-      ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
-      if (appLoader != null && !appLoader.isUpToDate()) {
-        new AlertDialog.Builder(this)
-          .setTitle("Loading app from cache")
-          .setMessage("Expo was unable to fetch the latest version of this app. A previously downloaded version has been launched. To ensure you're up-to-date, check your network connection and reload the app.")
-          .setPositiveButton(android.R.string.ok, null)
-          .show();
-      }
     }
   }
 
