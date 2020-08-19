@@ -362,9 +362,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
-- Open CircleCI on the release branch and go to the `client` workflow. Once `client_ios` and `client_android` jobs are finished, approve `client_ios_simulator_release_approve` and `client_android_apk_release_approve` jobs and follow the next jobs (`client_ios_simulator_release` and `client_android_apk_release`) which take and upload the artifact archives to staging.
-- Test if these simulator builds work as expected. You can install and launch them using expotools command `et client-install -p <platform>`.
-- When you're ready to sync the versions change to production, run `et promote-versions`.
+- Run `et dispatch client-{ios,android}-simulator` to trigger building the client for simulator, uploading the archive to S3 and updating URL in versions endpoint.
+- Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.
 
 ## 4.3. Submit iOS client to App Store Review
 
@@ -424,11 +423,10 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
-- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step 3.1.
-- Once you have your pull request from the release branch to master open, go to `https://circleci.com/gh/expo/workflows/expo/tree/sdk-XX` (where `XX` is the SDK number) and then choose `sdk-XX/shell_app` workflow. There are two approval jobs in this workflow, `shell_app_ios_approve_build` for iOS and `shell_app_android_approve_build` for Android. Click on the one you'd like to build and approve it. Wait for the next job to finish.
-- Open the last step called `Build and upload release tarball` and copy the url to the tarball that was uploaded to `exp-artifacts` S3 bucket.
-- Now go to `expo/turtle` repo and put the copied link into `shellTarballs/<platform>/sdkXX` file, where `<platform>` is the shell app platform you're updating.
-- Put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
+- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step [0.5](#05-tag-react-native-fork).
+- On the release branch, run `et dispatch shell-app-{ios,android}-release` and wait for it to finish.
+- Copy the url to the tarball that has been uploaded to `exp-artifacts` S3 bucket (it's printed in `Upload shell app tarball to S3` step of the workflow).
+- Now go to `expo/turtle` repo and put the copied link into `shellTarballs/{ios,android}/sdkXX` file and put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
 
 ## 5.3. Make adhoc client shell app for iOS
 
@@ -474,8 +472,8 @@ Once everything above is completed and Apple has approved the iOS client, the fi
   - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version.
 - **Android**:
   - Add a new file under `/fastlane/android/metadata/en-US/changelogs/[versionCode].txt` (it should usually read “Add support for Expo SDK XX”).
-  - Open the `client` workflow on CircleCI and find the `client_android` job. When it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
-  - Open the `client` workflow on CircleCI and approve the `client_android_approve_google_play` job. About 45 minutes later the update should be downloadable via Play Store.
+  - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
+  - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be downloadable via Play Store.
 
 ## 6.2. Deploy Turtle/ExpoKit to production
 
