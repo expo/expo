@@ -140,6 +140,8 @@ are shared across all apps published under the same Apple Developer account.
 > At this time, the standalone app builder does not support "ad hoc" distribution certificates
 > or provisioning profiles.
 
+> **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
+
 ### Switch to Push Notification Key on iOS
 
 If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
@@ -147,54 +149,9 @@ to start build with `--clear-push-cert`. We will remove certificate from our ser
 
 ## 4. Wait for it to finish building
 
-When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
+When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an `.apk`, `.aab` (both Android), or `.ipa` (iOS) file. Copy and paste the link into your browser to download the file.
 
-### Setting up a webhook
-
-Expo can also alert you once your build has finished via a webhook. Webhooks need to be configured per-project, so if you want to be alerted about builds for both `@yourUsername/awesomeApp` and `@yourUsername/coolApp`, you need to run `expo webhooks:add --event build --url <webhook-url>` in each directory.
-
-After running that command, you'll be given a webhook signing secret if you have not provided your own with the `--secret` command line option. It must be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below). We promise you that we keep your secret securely encrypted in our database.
-
-We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook with JSON object with following fields:
-
-- `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
-- `id` - the unique ID of your build
-- `artifactUrl` - the URL to the build artifact (we only include this field if the build is successful)
-- `platform` - 'ios' | 'android'
-
-Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
-
-Here's an example of how you can implement your server:
-
-```javascript
-import crypto from 'crypto';
-import express from 'express';
-import bodyParser from 'body-parser';
-import safeCompare from 'safe-compare';
-
-const app = express();
-app.use(bodyParser.text({ type: '*/*' }));
-app.post('/webhook', (req, res) => {
-  const expoSignature = req.headers['expo-signature'];
-  // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
-  const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
-  hmac.update(req.body);
-  const hash = `sha1=${hmac.digest('hex')}`;
-  if (!safeCompare(expoSignature, hash)) {
-    res.status(500).send("Signatures didn't match!");
-  } else {
-    // do sth here
-    res.send('OK!');
-  }
-});
-app.listen(8080, () => console.log('Listening on port 8080'));
-```
-
-> If you were to test the above webhook locally, you'd have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible to anyone with the URL `ngrok` gives you.
-
-You can always change your webhook URL and/or webhook secret using the same command you used to set up the webhook for the first time. To see what your webhook is currently set to, you can use `expo webhooks:show` command. If you would like us to stop sending requests to your webhook, simply run `expo webhooks:clear` in your project.
-
-> **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
+> Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](../webhooks/).
 
 ## 5. Test it on your device or simulator
 
