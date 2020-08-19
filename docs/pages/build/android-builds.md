@@ -1,12 +1,12 @@
 ---
-title: Android Builds
+title: Android builds in depth
 ---
 
-This page describes the process of building Android projects with EAS Builds. You may want to read this if you are interested in the implementation details of the build service.
+This page describes the process of building Android projects with EAS Build. You may want to read this if you are interested in the implementation details of the build service.
 
 ## Build Process
 
-Let's take a closer look at the steps for building Android projects with EAS Builds. We first run some steps on your local machine to prepare the project, and then we actually build the project on a remote service.
+Let's take a closer look at the steps for building Android projects with EAS Build. We first run some steps on your local machine to prepare the project, and then we actually build the project on a remote service.
 
 ### Local Steps
 
@@ -17,17 +17,17 @@ The first phase happens on your computer. Expo CLI is in charge of completing th
 
    Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the Expo servers. If the `auto` or `remote` mode is selected but no credentials exist yet, you're offered to generate a new keystore.
 
-3. Check if the Android project is configured to be buildable on the EAS Builds servers.
+3. Check if the Android project is configured to be buildable on the EAS Build servers.
 
    In this step, Expo CLI checks whether `android/app/build.gradle` contains `apply from: "./eas-build.gradle"`.
    If the project is not configured, Expo CLI runs auto-configuration steps ([learn more below](#project-auto-configuration)).
 
 4. Create the tarball containing your project sources - run `git archive --format=tar.gz --prefix project/ -o project.tar.gz HEAD`.
-5. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Builds.
+5. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps
 
-Next, this is what happens when EAS Builds picks up your request:
+Next, this is what happens when EAS Build picks up your request:
 
 1. Create a new Docker container for the build.
 
@@ -98,8 +98,7 @@ project.afterEvaluate {
           storeFile rootProject.file("../" + credentials.android.keystore.keystorePath)
           storePassword credentials.android.keystore.keystorePassword
           keyAlias credentials.android.keystore.keyAlias
-          keyPassword credentials.android.keystore.keyPassword
-          /* @end */
+          keyPassword credentials.android.keystore.keyPassword /* @end */ 
         } catch (Exception e) {
           println("An error occurred while parsing 'credentials.json': " + e.message)
         }
@@ -114,12 +113,12 @@ project.afterEvaluate {
   /* @info Use the above signing config for the release build type */
   android.buildTypes.release { config ->
     config.signingConfig android.signingConfigs.release
-  }
-  /* @end */
+  } /* @end */
+
 }
 ```
 
-The most important part is the `release` signing config. It's configured to read the keystore and passwords from the `credentials.json` file at the project root. Even though you're not required to create this file on your own, it's created and populated with your credentials by EAS Builds before running the build. Please note that if `android.signingConfigs.release.storeFile` is already specified in your `build.gradle` we will **not** override your configuration.
+The most important part is the `release` signing config. It's configured to read the keystore and passwords from the `credentials.json` file at the project root. Even though you're not required to create this file on your own, it's created and populated with your credentials by EAS Build before running the build. Please note that if `android.signingConfigs.release.storeFile` is already specified in your `build.gradle` we will **not** override your configuration.
 
 This file is imported in `android/app/build.gradle` like this:
 
