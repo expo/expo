@@ -8,7 +8,7 @@ title: Introduction
 
 ## Discover EAS Build
 
-- [EAS Build from scratch in 5 Minutes](../eas-build-in-5-minutes/) - This is a step-by-step tutorial that will guide you through initializing a new project and kicking off a build in less than 5 mintues. If you want to experiment with EAS Build before integrating it with your existing project, this is a good place to start.
+- [EAS Build from scratch in 5 minutes](../eas-build-in-5-minutes/) - This is a step-by-step tutorial that will guide you through initializing a new project and kicking off a build in less than 5 mintues. If you want to experiment with EAS Build before integrating it with your existing project, this is a good place to start.
 - [Set up your project and environment](../setup/) - Get your existing project ready to build.
 - [Configuration with eas.json](../eas-json/) - Learn about configuring your build workflows with the `eas.json` file.
 - [Android build process](../android-builds/) - See how Android builds work under the hood.
