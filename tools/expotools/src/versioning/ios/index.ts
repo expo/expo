@@ -1057,7 +1057,13 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     },
     {
       paths: 'Core/Api/Reanimated',
-      pattern: `s/\\([^A-Za-z0-9_+]\\)REA/\\1${versionPrefix}REA/g`,
+      pattern: `s/\\([^A-Za-z0-9_+]\\)REA/\\1${versionPrefix}REA/gm`,
+    },
+    {
+      // Prefixes all direct references to objects under `reanimated` namespace.
+      // It must be applied before versioning `namespace reanimated` so
+      // `using namespace reanimated::` don't get versioned twice.
+      pattern: `s/reanimated::/${versionPrefix}reanimated::/g`,
     },
     {
       // Prefixes reanimated namespace.
