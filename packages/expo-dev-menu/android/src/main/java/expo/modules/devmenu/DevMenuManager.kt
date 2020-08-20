@@ -45,12 +45,24 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private val hostActivity: Activity?
     get() = hostReactContext?.currentActivity
 
+  /**
+   * Returns an collection of modules conforming to [DevMenuExtensionInterface].
+   * Bridge may register multiple modules with the same name – in this case it returns only the one that overrides the others.
+   */
   private val delegateExtensions: Collection<DevMenuExtensionInterface>
-    get() = delegateReactContext
-      ?.catalystInstance
-      ?.nativeModules
-      ?.filterIsInstance<DevMenuExtensionInterface>()
-      ?: emptyList()
+    get() {
+      val catalystInstance = delegateReactContext?.catalystInstance ?: return emptyList()
+      val uniqueExtensionNames = catalystInstance
+        .nativeModules
+        .filterIsInstance<DevMenuExtensionInterface>()
+        .map { it.getName() }
+        .toSet()
+
+      return uniqueExtensionNames
+        .map { extensionName ->
+          catalystInstance.getNativeModule(extensionName) as DevMenuExtensionInterface
+        }
+    }
 
   private val delegateMenuItems: List<DevMenuItem>
     get() {
