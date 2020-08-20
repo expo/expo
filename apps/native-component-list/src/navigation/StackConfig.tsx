@@ -1,8 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { HeaderStyleInterpolators } from '@react-navigation/stack';
 import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { Colors } from '../constants';
 
@@ -34,13 +33,13 @@ const StackConfig = ({ navigation }) => ({
     headerTitleStyle: styles.headerTitle,
     headerPressColorAndroid: Colors.tintColor,
     headerRight: () => (
-      <BorderlessButton onPress={() => navigation.navigate('search')} style={{ marginRight: 16 }}>
+      <TouchableOpacity onPress={() => navigation.navigate('search')} style={{ marginRight: 16 }}>
         <Ionicons
           name="md-search"
           size={Platform.OS === 'ios' ? 22 : 25}
           color={Colors.tintColor}
         />
-      </BorderlessButton>
+      </TouchableOpacity>
     ),
   }),
 });

@@ -76,13 +76,14 @@ export default () => (
     <Stack.Screen
       name="search"
       component={SearchScreen}
-      options={({ navigation }) => ({
+      options={({ navigation, route }) => ({
         header: () => (
           <Header
             navigation={navigation}
             tintColor={Colors.tintColor}
             backButton={Platform.OS === 'android'}>
             <SearchBar
+              initialValue={route?.params?.q ?? ''}
               onChangeQuery={q => navigation.setParams({ q })}
               underlineColorAndroid={'#fff'}
               tintColor={Colors.tintColor}

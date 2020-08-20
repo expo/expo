@@ -22,6 +22,11 @@ export const linking = {
           components: MainNavigators.components.linking,
         },
       },
+      search: {
+        screens: {
+          search: 'search',
+        },
+      },
     },
   },
 };

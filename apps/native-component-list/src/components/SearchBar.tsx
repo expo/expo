@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import React from 'react';
-import { StyleSheet, TextInput, TextStyle, TouchableNativeFeedback, View } from 'react-native';
+import { StyleSheet, TextInput, TextStyle, TouchableOpacity, View, Platform } from 'react-native';
 
 import { Colors } from '../constants';
 
@@ -12,7 +12,9 @@ export default function SearchBar({
   textColor,
   onSubmit,
   onChangeQuery,
+  initialValue = '',
 }: {
+  initialValue?: string;
   selectionColor?: string;
   tintColor: string;
   placeholderTextColor?: string;
@@ -21,7 +23,7 @@ export default function SearchBar({
   onSubmit?: (query: string) => void;
   onChangeQuery?: (query: string) => void;
 }) {
-  const [text, setText] = React.useState('');
+  const [text, setText] = React.useState(initialValue);
   const _textInput = React.useRef<TextInput>(null);
 
   React.useEffect(() => {
@@ -65,13 +67,12 @@ export default function SearchBar({
       />
       <View style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
         {text ? (
-          <TouchableNativeFeedback
+          <TouchableOpacity
             onPress={_handleClear}
             hitSlop={{ top: 15, left: 10, right: 15, bottom: 15 }}
-            style={{ padding: 5 }}
-            background={TouchableNativeFeedback.Ripple(tintColor, true)}>
+            style={{ padding: 5 }}>
             <Ionicons name="md-close" size={25} color={tintColor} />
-          </TouchableNativeFeedback>
+          </TouchableOpacity>
         ) : null}
       </View>
     </View>
@@ -87,7 +88,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     marginBottom: 2,
-    paddingLeft: 5,
+    paddingLeft: Platform.select({ web: 16, default: 5 }),
     marginRight: 5,
+    outlineColor: 'transparent',
   },
 });

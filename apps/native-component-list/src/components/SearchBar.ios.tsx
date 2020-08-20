@@ -35,7 +35,9 @@ export default function SearchBar({
   onChangeQuery,
   onSubmit,
   onCancelPress,
+  initialValue = '',
 }: {
+  initialValue?: string;
   cancelButtonText?: string;
   selectionColor?: string;
   tintColor: string;
@@ -47,7 +49,7 @@ export default function SearchBar({
   onCancelPress?: (goBack: () => void) => void;
 }) {
   const navigation = useNavigation();
-  const [text, setText] = React.useState('');
+  const [text, setText] = React.useState(initialValue);
   const [showCancelButton, setShowCancelButton] = React.useState(false);
   const [inputWidth, setInputWidth] = React.useState(SearchContainerWidth);
   const _textInput = React.useRef<TextInput>(null);
