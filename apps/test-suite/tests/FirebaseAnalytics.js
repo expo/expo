@@ -34,6 +34,15 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         }
         expect(error).toBeNull();
       });
+      itWhenConfigured(`runs without params`, async () => {
+        let error = null;
+        try {
+          await Analytics.logEvent('event_name');
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeNull();
+      });
       itWhenNotConfigured('fails when not configured', async () => {
         let error = null;
         try {
