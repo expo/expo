@@ -173,12 +173,12 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}$1(`,
       },
       {
-        paths: 'reanimated',
+        paths: 'Reanimated',
         replace: /(_bridge_reanimated)\(/g,
         with: `${versionName}$1(`,
       },
       {
-        paths: 'EXVersionManager.m',
+        paths: 'EXVersionManager.mm',
         replace: /(_bridge_reanimated)\(/g,
         with: `${versionName}$1(`,
       },
