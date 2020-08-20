@@ -12,9 +12,9 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.modules.devmenu.detectors.ShakeDetector
-import expo.modules.devmenu.extensions.items.DevMenuAction
-import expo.modules.devmenu.extensions.items.DevMenuItem
-import expo.modules.devmenu.extensions.items.KeyCommand
+import expo.modules.devmenu.interfaces.items.DevMenuAction
+import expo.modules.devmenu.interfaces.items.DevMenuItem
+import expo.modules.devmenu.interfaces.items.KeyCommand
 import expo.modules.devmenu.interfaces.DevMenuDelegateInterface
 import expo.modules.devmenu.interfaces.DevMenuExtensionInterface
 import expo.modules.devmenu.interfaces.DevMenuManagerInterface

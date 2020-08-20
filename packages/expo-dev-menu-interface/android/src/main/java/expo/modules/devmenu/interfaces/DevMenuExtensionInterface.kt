@@ -1,6 +1,6 @@
 package expo.modules.devmenu.interfaces
 
-import expo.modules.devmenu.extensions.items.DevMenuItem
+import expo.modules.devmenu.interfaces.items.DevMenuItem
 
 interface DevMenuExtensionInterface {
   /**

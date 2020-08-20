@@ -1,6 +1,6 @@
-# expo-dev-menu
+# expo-dev-menu-interface
 
-Expo/React Native module with the developer menu.
+Interface for `expo-dev-menu`.
 
 # API documentation
 
@@ -18,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-dev-menu
+npm install expo-dev-menu-interface
 ```
 
 # Contributing

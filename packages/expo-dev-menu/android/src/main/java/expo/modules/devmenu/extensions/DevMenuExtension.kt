@@ -11,10 +11,10 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.devmenu.extensions.items.DevMenuAction
-import expo.modules.devmenu.extensions.items.DevMenuItem
-import expo.modules.devmenu.extensions.items.DevMenuItemImportance
-import expo.modules.devmenu.extensions.items.KeyCommand
+import expo.modules.devmenu.interfaces.items.DevMenuAction
+import expo.modules.devmenu.interfaces.items.DevMenuItem
+import expo.modules.devmenu.interfaces.items.DevMenuItemImportance
+import expo.modules.devmenu.interfaces.items.KeyCommand
 import expo.modules.devmenu.interfaces.DevMenuExtensionInterface
 
 class DevMenuExtension(reactContext: ReactApplicationContext)

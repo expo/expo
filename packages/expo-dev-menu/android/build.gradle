@@ -96,6 +96,8 @@ dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-react-native-adapter'
 
+  implementation project(":expo-dev-menu-interface")
+
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
   implementation project(':react-native-gesture-handler')
