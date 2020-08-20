@@ -1,6 +1,6 @@
 ---
 title: Application
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-application'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-application'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

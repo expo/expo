@@ -1,6 +1,6 @@
 ---
 title: Localization
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-localization'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-localization'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

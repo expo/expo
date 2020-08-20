@@ -1,6 +1,6 @@
 ---
 title: Calendar
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-calendar'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-calendar'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

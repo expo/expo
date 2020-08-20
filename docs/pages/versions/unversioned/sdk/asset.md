@@ -1,6 +1,6 @@
 ---
 title: Asset
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-asset'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-asset'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

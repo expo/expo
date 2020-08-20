@@ -1,6 +1,6 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';

@@ -1,6 +1,6 @@
 ---
 title: ImagePicker
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-picker'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-picker'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

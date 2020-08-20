@@ -1,6 +1,6 @@
 ---
 title: LocalAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-local-authentication'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-local-authentication'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
