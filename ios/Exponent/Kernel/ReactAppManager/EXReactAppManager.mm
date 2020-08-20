@@ -21,7 +21,6 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/JSCExecutorFactory.h>
 #import <React/RCTRootView.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
 
 @interface EXVersionManager (Legacy)
 // TODO: remove after non-unimodules SDK versions are dropped
@@ -66,7 +65,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
 @property (nonatomic, strong) NSDictionary *initialProps;
 @property (nonatomic, strong) NSTimer *viewTestTimer;
-@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 
 @end
 
@@ -720,21 +718,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
 }
 
-- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+- (void *)jsExecutorFactoryForBridge:(id)bridge
 {
-  __weak __typeof(self) weakSelf = self;
-  return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
-    if (!bridge) {
-      return;
-    }
-    __typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
-      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                             delegate:strongSelf.versionManager
-                                                                            jsInvoker:bridge.jsCallInvoker];
-      [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
-    }
-  });
+  return [_versionManager versionedJsExecutorFactoryForBridge:bridge];
 }
 
 @end
