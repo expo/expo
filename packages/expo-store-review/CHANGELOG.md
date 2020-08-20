@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Implement native [In-App Review](https://developer.android.com/guide/playcore/in-app-review) for Android
+- Implemented native [In-App Review](https://developer.android.com/guide/playcore/in-app-review) for Android. ([#9607](https://github.com/expo/expo/pull/9607) by [@spezzino](https://github.com/spezzino))
 
 ### 🐛 Bug fixes
 
