@@ -39,6 +39,7 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
@@ -396,7 +397,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   // Standard
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
-      return @[[RCTLocalAssetImageLoader new]];
+      return @[[RCTLocalAssetImageLoader new], [EXMediaLibraryImageLoader new]];
     } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
       return @[[RCTGIFImageDecoder new]];
     }];
