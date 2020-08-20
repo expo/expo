@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.ScopedNotificationsIdUtils;
+import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;
 
 public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCategoriesModule {
   private final ExperienceId mExperienceId;
