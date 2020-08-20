@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.content.pm.PackageInfoCompat
 import com.facebook.react.ReactInstanceManager
-import expo.modules.devmenu.interfaces.DevMenuSessionInterface
+import expo.interfaces.devmenu.DevMenuSessionInterface
 
 /**
  * Class that represents a "session".

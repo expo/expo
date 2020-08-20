@@ -6,7 +6,7 @@ import com.facebook.react.bridge.BaseJavaModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
-import expo.modules.devmenu.interfaces.DevMenuSettingsInterface
+import expo.interfaces.devmenu.DevMenuSettingsInterface
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
 private const val DEV_MENU_SETTINGS_MODULE = "DevMenuSettings"

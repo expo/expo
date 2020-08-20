@@ -1,4 +1,4 @@
-package expo.modules.devmenu.interfaces.items
+package expo.interfaces.devmenu.items
 
 import android.os.Bundle
 import android.view.KeyCharacterMap
