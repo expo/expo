@@ -830,13 +830,13 @@ CACHE_KEYS:
       EXScreenCapture:
         :debug: 2cf4d30c60c6bea2892b7e500db91630
         :release: 2cf4d30c60c6bea2892b7e500db91630
-    CHECKSUM: 602976ecab94dbbd4b939ef3b85c68e4b74ad571
+    CHECKSUM: cb33de21768c77375ec37ab744a0f4ba4c9caec2
     FILES:
       - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.h"
       - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.m"
     PROJECT_NAME: EXScreenCapture
     SPECS:
-      - EXScreenCapture (1.1.0)
+      - EXScreenCapture (1.1.1)
   EXScreenOrientation:
     BUILD_SETTINGS_CHECKSUM:
       EXScreenOrientation:
@@ -960,13 +960,13 @@ CACHE_KEYS:
       EXStoreReview:
         :debug: 75d89d81f1fecae17930ce470b32f1ec
         :release: 75d89d81f1fecae17930ce470b32f1ec
-    CHECKSUM: b74c5e58e7ab74f28eaaefb1dfd4659e80a22c91
+    CHECKSUM: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
     FILES:
       - "../../../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.h"
       - "../../../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.m"
     PROJECT_NAME: EXStoreReview
     SPECS:
-      - EXStoreReview (2.1.3)
+      - EXStoreReview (2.2.0)
   EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
       EXTaskManager:

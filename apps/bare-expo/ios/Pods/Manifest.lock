@@ -144,7 +144,7 @@ PODS:
     - UMFileSystemInterface
   - EXRandom (8.3.0):
     - React
-  - EXScreenCapture (1.1.0):
+  - EXScreenCapture (1.1.1):
     - UMCore
   - EXScreenOrientation (2.0.0):
     - React-Core
@@ -169,7 +169,7 @@ PODS:
   - EXSQLite (8.4.0):
     - UMCore
     - UMFileSystemInterface
-  - EXStoreReview (2.1.3):
+  - EXStoreReview (2.2.0):
     - UMCore
   - EXTaskManager (8.5.0):
     - UMAppLoader
@@ -994,7 +994,7 @@ SPEC CHECKSUMS:
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 969e4d8514319a74405b015cd0bf6023dcdf4b00
   EXRandom: 124ef1bb780179fbc07fd8bf0f183c713d7fa251
-  EXScreenCapture: 602976ecab94dbbd4b939ef3b85c68e4b74ad571
+  EXScreenCapture: cb33de21768c77375ec37ab744a0f4ba4c9caec2
   EXScreenOrientation: 9110f49798fae74322f6fa959eab1da5d4805cf0
   EXSecureStore: 579cbccd9cd093e6f4336aba073b059008bd78e0
   EXSegment: a354d6e65fad4dbb97701a24db763ea425d783e9
@@ -1003,7 +1003,7 @@ SPEC CHECKSUMS:
   EXSMS: 62b990a7d9e6132904062b2438002f09418b4f0b
   EXSpeech: daf271faf114448b0dccf6391b6b81f49bf44b99
   EXSQLite: d0d8677c13e60d5db2812387f059c697be27d3fb
-  EXStoreReview: b74c5e58e7ab74f28eaaefb1dfd4659e80a22c91
+  EXStoreReview: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
   EXTaskManager: 85c9d0ad555af2a393a5c4cb34c767f0e2162357
   EXVideoThumbnails: 14e86a99ba80dff030a77a0a720f494ac6c1cf84
   EXWebBrowser: 1a3ff931f6e64592c70f5faa226e4802a344d664
