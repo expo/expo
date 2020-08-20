@@ -8,6 +8,9 @@
 #include <fbjni/fbjni.h>
 #include "Logger.h"
 
+namespace reanimated
+{
+
 class AndroidErrorHandler : public JavaClass<AndroidErrorHandler>, public ErrorHandler {
   std::shared_ptr<ErrorWrapper> error;
   std::shared_ptr<Scheduler> scheduler;
@@ -21,3 +24,5 @@ class AndroidErrorHandler : public JavaClass<AndroidErrorHandler>, public ErrorH
     void setError(std::string message) override;
     virtual ~AndroidErrorHandler() {}
 };
+
+}

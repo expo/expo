@@ -3,6 +3,9 @@
 #include <string>
 #include <fbjni/fbjni.h>
 
+namespace reanimated
+{
+
 using namespace facebook::jni;
 
 AndroidErrorHandler::AndroidErrorHandler(std::shared_ptr<Scheduler> scheduler) {
@@ -35,4 +38,6 @@ void AndroidErrorHandler::setError(std::string message) {
     error->message = message;
     error->handled = false;
   }
+}
+
 }

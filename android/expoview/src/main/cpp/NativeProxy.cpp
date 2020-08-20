@@ -15,11 +15,11 @@
 #include <android/log.h>
 #include "PlatformDepMethodsHolder.h"
 
-using namespace facebook;
-using namespace react;
-
 namespace reanimated
 {
+
+using namespace facebook;
+using namespace react;
 
 NativeProxy::NativeProxy(
     jni::alias_ref<NativeProxy::javaobject> jThis,

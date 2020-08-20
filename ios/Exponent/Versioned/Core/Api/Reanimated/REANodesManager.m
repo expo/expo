@@ -24,7 +24,7 @@
 #import "Nodes/REACallFuncNode.h"
 
 // Interface below has been added in order to use private methods of RCTUIManager,
-// RCTUIManager#UpdateView is a React Method which is exported to JS but in 
+// RCTUIManager#UpdateView is a React Method which is exported to JS but in
 // Objective-C it stays private
 // RCTUIManager#setNeedsLayout is a method which updated layout only which
 // in its turn will trigger relayout if no batch has been activated
@@ -51,6 +51,7 @@
   BOOL _processingDirectEvent;
   NSMutableArray<REAOnAnimationCallback> *_onAnimationCallbacks;
   NSMutableArray<REANativeAnimationOp> *_operationsInBatch;
+  REAEventHandler _eventHandler;
 }
 
 - (instancetype)initWithModule:(REAModule *)reanimatedModule
@@ -72,6 +73,7 @@
 
 - (void)invalidate
 {
+  _eventHandler = nil;
   [self stopUpdatingOnAnimationFrame];
 }
 
@@ -108,6 +110,11 @@
   }
 }
 
+- (void)registerEventHandler:(REAEventHandler)eventHandler
+{
+  _eventHandler = eventHandler;
+}
+
 - (void)startUpdatingOnAnimationFrame
 {
   if (!_displayLink) {
@@ -133,8 +140,9 @@
 
 - (void)onAnimationFrame:(CADisplayLink *)displayLink
 {
-  // We process all enqueued events first
   _currentAnimationTimestamp = _displayLink.timestamp;
+
+  // We process all enqueued events first
   for (NSUInteger i = 0; i < _eventQueue.count; i++) {
     id<RCTEvent> event = _eventQueue[i];
     [self processEvent:event];
@@ -224,7 +232,7 @@
             @"concat": [REAConcatNode class],
             @"param": [REAParamNode class],
             @"func": [REAFunctionNode class],
-            @"callfunc": [REACallFuncNode class],
+            @"callfunc": [REACallFuncNode class]
 //            @"listener": nil,
             };
   });
@@ -247,6 +255,7 @@
 {
   REANode *node = _nodes[nodeID];
   if (node) {
+    [node onDrop];
     [_nodes removeObjectForKey:nodeID];
   }
 }
@@ -358,7 +367,7 @@
       @"topScrollEndDrag"
     ];
   });
-  
+
   return [directEventNames containsObject:RCTNormalizeInputEventName(event.eventName)];
 }
 
@@ -367,6 +376,15 @@
   NSString *key = [NSString stringWithFormat:@"%@%@",
                    event.viewTag,
                    RCTNormalizeInputEventName(event.eventName)];
+
+  NSString *eventHash = [NSString stringWithFormat:@"%@%@",
+  event.viewTag,
+  event.eventName];
+
+  if (_eventHandler != nil) {
+    _eventHandler(eventHash, event);
+  }
+
   REANode *eventNode = [_eventMapping objectForKey:key];
 
   if (eventNode != nil) {
@@ -397,6 +415,60 @@
 
   REAValueNode *valueNode = (REAValueNode *)node;
   [valueNode setValue:newValue];
+}
+
+- (void)updateProps:(nonnull NSDictionary *)props
+      ofViewWithTag:(nonnull NSNumber *)viewTag
+           viewName:(nonnull NSString *)viewName
+{
+  // TODO: refactor PropsNode to also use this function
+  NSMutableDictionary *uiProps = [NSMutableDictionary new];
+  NSMutableDictionary *nativeProps = [NSMutableDictionary new];
+  NSMutableDictionary *jsProps = [NSMutableDictionary new];
+
+  void (^addBlock)(NSString *key, id obj, BOOL * stop) = ^(NSString *key, id obj, BOOL * stop){
+    if ([self.uiProps containsObject:key]) {
+      uiProps[key] = obj;
+    } else if ([self.nativeProps containsObject:key]) {
+      nativeProps[key] = obj;
+    } else {
+      jsProps[key] = obj;
+    }
+  };
+
+  [props enumerateKeysAndObjectsUsingBlock:addBlock];
+
+  if (uiProps.count > 0) {
+    [self.uiManager
+     synchronouslyUpdateViewOnUIThread:viewTag
+     viewName:viewName
+     props:uiProps];
+    }
+    if (nativeProps.count > 0) {
+      [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps];
+    }
+    if (jsProps.count > 0) {
+      [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
+                                          body:@{@"viewTag": viewTag, @"props": jsProps }];
+    }
+}
+
+- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
+               propName:(nonnull NSString *)propName
+{
+    UIView* view = [self.uiManager viewForReactTag:viewTag];
+    
+    NSString* result = [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
+    
+    if ([propName isEqualToString:@"opacity"]) {
+        CGFloat alpha = view.alpha;
+        result = [@(alpha) stringValue];
+    } else if ([propName isEqualToString:@"zIndex"]) {
+        NSInteger zIndex = view.reactZIndex;
+        result = [@(zIndex) stringValue];
+    }
+    
+    return result;
 }
 
 @end

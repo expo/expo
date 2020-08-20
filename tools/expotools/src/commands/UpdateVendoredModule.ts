@@ -103,19 +103,25 @@ const ReanimatedModifier: ModuleModifier = async function (moduleConfig: Vendore
     }
   }
 
-  const copyCommonToIOS = async () => {
-    await new Promise((res, rej) => {
-      ncp(path.join(clonedProjectPath, 'Common'),
-          path.join(clonedProjectPath, 'ios' , 'Common'),
-          { dereference: true },
-          () => { res(); });
-    });
+  const prepareIOSNativeFiles = async () => {
+    const patternCommon = path.join(clonedProjectPath, 'Common', '**' , '*.@(h|mm|cpp)');
+    const patternNative = path.join(clonedProjectPath, 'ios', 'native', '**' , '*.@(h|mm|cpp)');
+    const commonFiles = await glob(patternCommon);
+    const iosOnlyFiles = await glob(patternNative);
+    const files = [...commonFiles, ...iosOnlyFiles];
+    for (let file of files) {
+      console.log(file);
+      const fileName = file.split(path.sep).slice(-1)[0];
+      await fs.copy(file, path.join(clonedProjectPath, 'ios', fileName));
+    }
+
+    await fs.remove(path.join(clonedProjectPath, 'ios', 'native'));
   }
 
   await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
-  await copyCommonToIOS();
+  await prepareIOSNativeFiles();
 }
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
@@ -166,6 +172,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
       )} will not be updated -- you'll need to add these to expoview manually!`,
+      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to 
+      ${chalk.magenta('\"\"')}`,
     ],
   },
   'react-native-screens': {
