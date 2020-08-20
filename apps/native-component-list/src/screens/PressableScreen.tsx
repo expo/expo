@@ -3,23 +3,25 @@
  * https://necolas.github.io/react-native-web/docs/?path=/docs/components-pressable--disabled#pressable
  */
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
 export default function PressableScreen() {
   return (
-    <Page>
-      <Section title="FeedbackEvents">
-        <FeedbackEvents />
-      </Section>
-      <Section title="Delay">
-        <DelayEvents />
-      </Section>
-      <Section title="Disabled">
-        <Disabled />
-      </Section>
-    </Page>
+    <ScrollView>
+      <Page>
+        <Section title="FeedbackEvents">
+          <FeedbackEvents />
+        </Section>
+        <Section title="Delay">
+          <DelayEvents />
+        </Section>
+        <Section title="Disabled">
+          <Disabled />
+        </Section>
+      </Page>
+    </ScrollView>
   );
 }
 
