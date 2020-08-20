@@ -438,11 +438,15 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
       return 13;
     case SKErrorMissingOfferParams:
       return 14;
-    case SKErrorOverlayTimeout:
-    case SKErrorOverlayCancelled:
     case SKErrorIneligibleForOffer:
-    case SKErrorOverlayInvalidConfiguration:
       return 15;  
+    case SKErrorOverlayCancelled:
+      return 16;
+    case SKErrorOverlayInvalidConfiguration:
+      return 17;
+    case SKErrorOverlayTimeout:
+      return 18;
+    
   }
 }
 
