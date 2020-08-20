@@ -172,6 +172,16 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /(SimAnimationDragCoefficient)\(/g,
         with: `${versionName}$1(`,
       },
+      {
+        paths: 'reanimated',
+        replace: /(_bridge_reanimated)\(/g,
+        with: `${versionName}$1(`,
+      },
+      {
+        paths: 'EXVersionManager.m',
+        replace: /(_bridge_reanimated)\(/g,
+        with: `${versionName}$1(`,
+      },
 
       // react-native-shared-element
       {
