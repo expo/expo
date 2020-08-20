@@ -119,6 +119,10 @@ Notifications.setNotificationHandler({
   }),
 });
 
+Notifications.addNotificationResponseReceivedListener(response => {
+  console.log(response);
+});
+
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
@@ -132,13 +136,8 @@ export default function App() {
       setNotification(notification);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
-
     return () => {
       Notifications.removeNotificationSubscription(notificationListener);
-      Notifications.removeNotificationSubscription(responseListener);
     };
   }, []);
 
@@ -158,14 +157,14 @@ export default function App() {
       <Button
         title="Press to schedule a notification"
         onPress={async () => {
-          await sendPushNotification();
+          await schedulePushNotification();
         }}
       />
     </View>
   );
 }
 
-async function sendPushNotification(expoPushToken) {
+async function schedulePushNotification() {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "You've got mail! 📬",
@@ -402,7 +401,7 @@ Listeners registered by this method will be called whenever a user interacts wit
 
 #### Arguments
 
-A single and required argument is a function accepting notification response ([`NotificationResponse`](#notificationresponse)) as an argument.
+A single and required argument is a function accepting a notification response ([`NotificationResponse`](#notificationresponse)) as an argument.
 
 #### Returns
 
@@ -417,15 +416,13 @@ import React from 'react';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
-export default function Container({ navigation }) {
-  React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const url = response.notification.request.content.data.url;
-      Linking.openUrl(url);
-    });
-    return () => subscription.remove();
-  }, [navigation]);
+Notifications.addNotificationResponseReceivedListener(response => {
+  const url = response.notification.request.content.data.url;
+  Linking.openUrl(url);
+});
 
+export default function App() {
+  ...
   return (
     // Your app content
   );
