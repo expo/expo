@@ -40,11 +40,11 @@ You can either let Expo generate new credentials and store them on Expo servers 
 
 ## Automatic configuration
 
-If you already have credentials configured for app with the same `slug`, `owner` (if you are using teams) and `ios.bundleIdentifier` (for iOS only) you can generate `credentials.json` file from credentials that are stored on Expo servers. To generate (or update) that file run `expo eas:credentials:sync` and in the first prompt select option to update `credentials.json` and in the second one select which platforms credentials you want to update.
+If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only) you can generate the `credentials.json` file from credentials that are stored on Expo servers. To generate (or update) that file run `expo eas:credentials:sync` and in the first prompt select option to update `credentials.json` and in the second one select for which platforms you want to update.
 
-If you don't have any credentials run `expo eas:build --platform <android|ios|all>` and follow interactive prompt, after generating all credentials you can (if you want) use sync command to generate `credentials.json`.
+If you don't have any credentials, run `expo eas:build --platform <android|ios|all>` and follow the interactive prompts. After generating all credentials, you can (if you want) use the `expo eas:credentials:sync` command to generate `credentials.json`.
 
-For android builds both keystore generation methods require you to have `keytool` installed and in your PATH. If it's not available on your system you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
+For Android builds, both keystore generation methods require you to have `keytool` installed and in your PATH. If it's not available on your system you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
 
 **Remember to gitignore all files created by above commands!**
 
