@@ -17,7 +17,7 @@ export default function ClipboardScreen() {
 }
 
 ClipboardScreen.navigationOptions = {
-  title: 'StatusBar',
+  title: 'Clipboard',
 };
 
 function GetStringExample() {

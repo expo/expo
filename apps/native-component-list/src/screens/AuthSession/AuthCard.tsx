@@ -155,10 +155,10 @@ export default function AuthCard({
   onPress,
 }: {
   name: string;
-  url?: string;
+  url?: string | null;
   disabled?: boolean;
   status?: string;
-  onPress: any;
+  onPress: (color: string) => void;
 }) {
   const provider = providers[name];
   const subtitle = statusToSubtitle[status];
@@ -167,7 +167,7 @@ export default function AuthCard({
     <Card
       disabled={disabled}
       style={{ backgroundColor: provider.color, opacity: disabled ? 0.6 : 1 }}
-      onPress={onPress}>
+      onPress={() => onPress(provider.color)}>
       <SocialImage image={{ uri: provider.image }} />
       <View style={{ marginLeft: 8 }}>
         <Text style={{ fontWeight: 'bold', color: 'white' }}>
