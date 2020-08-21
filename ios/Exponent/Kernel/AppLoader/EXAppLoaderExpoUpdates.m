@@ -8,6 +8,7 @@
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
+#import "EXManifestResource.h"
 #import "EXSession.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
@@ -203,8 +204,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self _launchWithNoDatabaseAndError:error];
   } else {
     _error = error;
+
+    // if the error payload conforms to the error protocol, we can parse it and display
+    // a slightly nicer error message to the user
+    id errorJson = [NSJSONSerialization JSONObjectWithData:[error.localizedDescription dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
+    if (errorJson && [errorJson isKindOfClass:[NSDictionary class]]) {
+      EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
+      _error = [manifestResource formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:errorJson]];
+    }
+
     if (self.delegate) {
-      [self.delegate appLoader:self didFailWithError:error];
+      [self.delegate appLoader:self didFailWithError:_error];
     }
   }
 }

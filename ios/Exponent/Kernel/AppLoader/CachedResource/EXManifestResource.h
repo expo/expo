@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)writeToCache;
 
+- (NSError *)formatError:(NSError *)error;
+
 @end
 
 NS_ASSUME_NONNULL_END
