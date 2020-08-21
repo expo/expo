@@ -63,6 +63,7 @@ Once you've created `eas.json`, new Expo CLI commands should become available fo
 
 - `expo eas:build` - manages the whole build process, which consists of: credentials management, project auto-configuration, running the build, and waiting for it to finish
 - `expo eas:build:status` - displays the status of your latest build for this project
+- `expo eas:credentials:sync` - synchronizes your local credentials.json file and your credentials that Expo has stored on our servers
 
 ## Building For Android
 
