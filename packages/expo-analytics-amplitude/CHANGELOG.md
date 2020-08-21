@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Upgraded native Amplitude iOS library. ([#9880](https://github.com/expo/expo/pull/9880) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
 
 ## 8.3.0 — 2020-08-18
