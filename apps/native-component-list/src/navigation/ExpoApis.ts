@@ -57,6 +57,7 @@ const Print = optionalRequire(() => require('../screens/PrintScreen'));
 const Random = optionalRequire(() => require('../screens/RandomScreen'));
 const Recording = optionalRequire(() => require('../screens/AV/RecordingScreen'));
 const Reminders = optionalRequire(() => require('../screens/RemindersScreen'));
+const ScreenCapture = optionalRequire(() => require('../screens/ScreenCaptureScreen'));
 const SafeAreaContext = optionalRequire(() => require('../screens/SafeAreaContextScreen'));
 const ScreenOrientation = optionalRequire(() => require('../screens/ScreenOrientationScreen'));
 const SecureStore = optionalRequire(() => require('../screens/SecureStoreScreen'));
@@ -125,6 +126,7 @@ const optionalScreens: {
   SafeAreaContext,
   ScreenOrientation,
   SecureStore,
+  ScreenCapture,
   Sensor,
   Sharing,
   SMS,

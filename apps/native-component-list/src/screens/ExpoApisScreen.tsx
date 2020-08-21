@@ -76,6 +76,7 @@ const screens = [
   'SafeAreaContext',
   'ScreenOrientation',
   'SecureStore',
+  'ScreenCapture',
   'Sensor',
   'Sharing',
   'StatusBar',
