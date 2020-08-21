@@ -40,6 +40,7 @@ const screens = [
   'Branch',
   'Brightness',
   'Calendars',
+  'Cellular',
   'Clipboard',
   'Constants',
   'Contacts',

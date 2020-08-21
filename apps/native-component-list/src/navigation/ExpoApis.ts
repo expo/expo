@@ -22,6 +22,7 @@ const Branch = optionalRequire(() => require('../screens/BranchScreen'));
 const Brightness = optionalRequire(() => require('../screens/BrightnessScreen'));
 const Calendars = optionalRequire(() => require('../screens/CalendarsScreen'));
 const Clipboard = optionalRequire(() => require('../screens/ClipboardScreen'));
+const Cellular = optionalRequire(() => require('../screens/CellularScreen'));
 const Constants = optionalRequire(() => require('../screens/ConstantsScreen'));
 const ContactDetail = optionalRequire(() => require('../screens/Contacts/ContactDetailScreen'));
 const Contacts = optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
@@ -78,6 +79,7 @@ const optionalScreens: {
   StatusBar,
   Alert,
   Clipboard,
+  Cellular,
   Accelerometer,
   ActionSheet,
   AppAuth,
