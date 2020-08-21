@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import Slider from '@react-native-community/slider';
 import React from 'react';
 import {
   GestureResponderEvent,
@@ -13,17 +14,20 @@ import {
 } from 'react-native';
 
 import Colors from '../../constants/Colors';
-import Slider from '@react-native-community/slider';
 
 interface Props {
   header?: JSX.Element;
-  extraButtons?: Array<{
-    iconName: string;
-    title: string;
-    onPress: (event: GestureResponderEvent) => void;
-    active: boolean;
-    disable?: boolean;
-  }>;
+  extraButtons?: Array<
+    () =>
+      | React.ReactNode
+      | {
+          iconName: string;
+          title: string;
+          onPress: (event: GestureResponderEvent) => void;
+          active: boolean;
+          disable?: boolean;
+        }
+  >;
   style?: StyleProp<ViewStyle>;
 
   // Functions
@@ -55,65 +59,63 @@ interface State {
   positionMillisWhenStartedDragging?: number;
 }
 
-export default class Player extends React.Component<Props, State> {
-  readonly state: State = {
-    userIsDraggingSlider: false,
-  };
+export default function Player(props: Props) {
+  const [userIsDraggingSlider, setIsScrubbing] = React.useState(false);
+  const [positionMillisWhenStartedDragging, setPositionMillisWhenStartedDragging] = React.useState<
+    undefined | number
+  >();
 
-  _play = () => this.props.playAsync();
+  const _play = () => props.playAsync();
 
-  _pause = () => this.props.pauseAsync();
+  const _pause = () => props.pauseAsync();
 
-  _playFromPosition = (position: number) =>
-    this.props
-      .setPositionAsync(position)
-      .then(() => this.setState({ userIsDraggingSlider: false }));
+  const _playFromPosition = (position: number) =>
+    props.setPositionAsync(position).then(() => setIsScrubbing(false));
 
-  _toggleLooping = () => this.props.setIsLoopingAsync(!this.props.isLooping);
+  const _toggleLooping = () => props.setIsLoopingAsync(!props.isLooping);
 
-  _toggleIsMuted = () => this.props.setIsMutedAsync(!this.props.isMuted);
+  const _toggleIsMuted = () => props.setIsMutedAsync(!props.isMuted);
 
-  _toggleSlowRate = () =>
-    this.props.setRateAsync(this.props.rate < 1 ? 1 : 0.5, this.props.shouldCorrectPitch);
+  const _toggleSlowRate = () =>
+    props.setRateAsync(props.rate < 1 ? 1 : 0.5, props.shouldCorrectPitch);
 
-  _toggleFastRate = () =>
-    this.props.setRateAsync(this.props.rate > 1 ? 1 : 2, this.props.shouldCorrectPitch);
+  const _toggleFastRate = () =>
+    props.setRateAsync(props.rate > 1 ? 1 : 2, props.shouldCorrectPitch);
 
-  _toggleShouldCorrectPitch = () =>
-    this.props.setRateAsync(this.props.rate, !this.props.shouldCorrectPitch);
+  const _toggleShouldCorrectPitch = () => props.setRateAsync(props.rate, !props.shouldCorrectPitch);
 
-  _seekForward = () => this.props.setPositionAsync(this.props.positionMillis + 5000);
+  const _seekForward = () => props.setPositionAsync(props.positionMillis + 5000);
 
-  _seekBackward = () => this.props.setPositionAsync(Math.max(0, this.props.positionMillis - 5000));
+  const _seekBackward = () => props.setPositionAsync(Math.max(0, props.positionMillis - 5000));
 
-  _renderPlayPauseButton = () => {
-    let onPress = this._pause;
+  const _renderPlayPauseButton = () => {
+    let onPress = _pause;
     let iconName = 'ios-pause';
 
-    if (!this.props.isPlaying) {
-      onPress = this._play;
+    if (!props.isPlaying) {
+      onPress = _play;
       iconName = 'ios-play';
     }
 
     return (
-      <TouchableOpacity onPress={onPress} disabled={!this.props.isLoaded}>
+      <TouchableOpacity onPress={onPress} disabled={!props.isLoaded}>
         <Ionicons name={iconName} style={[styles.icon, styles.playPauseIcon]} />
       </TouchableOpacity>
     );
   };
 
-  _maybeRenderErrorOverlay = () => {
-    if (this.props.errorMessage) {
+  const _maybeRenderErrorOverlay = () => {
+    if (props.errorMessage) {
       return (
         <ScrollView style={styles.errorMessage}>
-          <Text style={styles.errorText}>{this.props.errorMessage}</Text>
+          <Text style={styles.errorText}>{props.errorMessage}</Text>
         </ScrollView>
       );
     }
     return null;
   };
 
-  _renderAuxiliaryButton = ({
+  const _renderAuxiliaryButton = ({
     disable,
     iconName,
     title,
@@ -133,7 +135,7 @@ export default class Player extends React.Component<Props, State> {
       <TouchableOpacity
         key={title}
         style={[styles.button, active && styles.activeButton]}
-        disabled={!this.props.isLoaded}
+        disabled={!props.isLoaded}
         onPress={onPress}>
         <Ionicons
           name={`ios-${iconName}`}
@@ -145,103 +147,95 @@ export default class Player extends React.Component<Props, State> {
     );
   };
 
-  render() {
-    return (
-      <View style={this.props.style}>
-        {this.props.header}
-        <View style={styles.container}>
-          {this._renderPlayPauseButton()}
-          <Slider
-            style={styles.slider}
-            value={
-              this.state.userIsDraggingSlider
-                ? this.state.positionMillisWhenStartedDragging
-                : this.props.positionMillis
-            }
-            maximumValue={this.props.durationMillis}
-            disabled={!this.props.isLoaded}
-            minimumTrackTintColor={Colors.tintColor}
-            onSlidingComplete={this._playFromPosition}
-            onResponderGrant={() =>
-              this.setState({
-                userIsDraggingSlider: true,
-                positionMillisWhenStartedDragging: this.props.positionMillis,
-              })
-            }
-          />
-          <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
-            {_formatTime(this.props.positionMillis / 1000)} /{' '}
-            {_formatTime(this.props.durationMillis / 1000)}
-          </Text>
-        </View>
-        <View style={[styles.container, styles.buttonsContainer]}>
-          {this._renderAuxiliaryButton({
-            iconName: 'repeat',
-            title: 'Repeat',
-            onPress: this._toggleLooping,
-            active: this.props.isLooping,
-          })}
-          {this._renderAuxiliaryButton({
-            iconName: 'volume-off',
-            title: 'Mute',
-            onPress: this._toggleIsMuted,
-            active: this.props.isMuted,
-          })}
-          {this._renderAuxiliaryButton({
-            disable: Platform.OS === 'web',
-            iconName: 'stats',
-            title: 'Correct pitch',
-            onPress: this._toggleShouldCorrectPitch,
-            active: this.props.shouldCorrectPitch,
-          })}
+  return (
+    <View style={props.style}>
+      {props.header}
+      <View style={styles.container}>
+        {_renderPlayPauseButton()}
+        <Slider
+          style={styles.slider}
+          value={userIsDraggingSlider ? positionMillisWhenStartedDragging : props.positionMillis}
+          maximumValue={props.durationMillis}
+          disabled={!props.isLoaded}
+          minimumTrackTintColor={Colors.tintColor}
+          onSlidingComplete={_playFromPosition}
+          onResponderGrant={() => {
+            setIsScrubbing(true);
+            setPositionMillisWhenStartedDragging(props.positionMillis);
+          }}
+        />
+        <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
+          {_formatTime(props.positionMillis / 1000)} / {_formatTime(props.durationMillis / 1000)}
+        </Text>
+      </View>
+      <View style={[styles.container, styles.buttonsContainer]}>
+        {_renderAuxiliaryButton({
+          iconName: 'repeat',
+          title: 'Repeat',
+          onPress: _toggleLooping,
+          active: props.isLooping,
+        })}
+        {_renderAuxiliaryButton({
+          iconName: 'volume-off',
+          title: 'Mute',
+          onPress: _toggleIsMuted,
+          active: props.isMuted,
+        })}
+        {_renderAuxiliaryButton({
+          disable: Platform.OS === 'web',
+          iconName: 'stats',
+          title: 'Correct pitch',
+          onPress: _toggleShouldCorrectPitch,
+          active: props.shouldCorrectPitch,
+        })}
 
-          {this._renderAuxiliaryButton({
-            iconName: 'hourglass',
-            title: 'Slower',
-            onPress: this._toggleSlowRate,
-            active: this.props.rate < 1,
-          })}
-          {this._renderAuxiliaryButton({
-            iconName: 'speedometer',
-            title: 'Faster',
-            onPress: this._toggleFastRate,
-            active: this.props.rate > 1,
-          })}
-        </View>
-        <View style={[styles.container, styles.buttonsContainer]}>
-          {this._renderAuxiliaryButton({
-            iconName: 'refresh',
-            title: 'Replay',
-            onPress: this.props.replayAsync,
+        {_renderAuxiliaryButton({
+          iconName: 'hourglass',
+          title: 'Slower',
+          onPress: _toggleSlowRate,
+          active: props.rate < 1,
+        })}
+        {_renderAuxiliaryButton({
+          iconName: 'speedometer',
+          title: 'Faster',
+          onPress: _toggleFastRate,
+          active: props.rate > 1,
+        })}
+      </View>
+      <View style={[styles.container, styles.buttonsContainer]}>
+        {_renderAuxiliaryButton({
+          iconName: 'refresh',
+          title: 'Replay',
+          onPress: props.replayAsync,
+          active: false,
+        })}
+        {props.nextAsync &&
+          _renderAuxiliaryButton({
+            iconName: 'skip-forward',
+            title: 'Next',
+            onPress: props.nextAsync,
             active: false,
           })}
-          {this.props.nextAsync &&
-            this._renderAuxiliaryButton({
-              iconName: 'skip-forward',
-              title: 'Next',
-              onPress: this.props.nextAsync,
-              active: false,
-            })}
-          {this._renderAuxiliaryButton({
-            iconName: 'rewind',
-            title: 'Seek Backward',
-            onPress: this._seekBackward,
-          })}
-          {this._renderAuxiliaryButton({
-            iconName: 'fastforward',
-            title: 'Seek Forward',
-            onPress: this._seekForward,
-          })}
-        </View>
-        <View style={[styles.container, styles.buttonsContainer]}>
-          {this.props.extraButtons
-            ? this.props.extraButtons.map(this._renderAuxiliaryButton)
-            : null}
-        </View>
-        {this._maybeRenderErrorOverlay()}
+        {_renderAuxiliaryButton({
+          iconName: 'rewind',
+          title: 'Seek Backward',
+          onPress: _seekBackward,
+        })}
+        {_renderAuxiliaryButton({
+          iconName: 'fastforward',
+          title: 'Seek Forward',
+          onPress: _seekForward,
+        })}
       </View>
-    );
-  }
+      <View style={[styles.container, styles.buttonsContainer]}>
+        {(props.extraButtons ?? []).map(button => {
+          if (typeof button === 'function') return button();
+          return _renderAuxiliaryButton(button);
+        })}
+      </View>
+      {_maybeRenderErrorOverlay()}
+    </View>
+  );
 }
 
 const _formatTime = (duration: number) => {
