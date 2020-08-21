@@ -422,6 +422,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
     if (appLoader != null && appLoader.shouldShowAppLoaderStatus()) {
       UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.setLoadingProgressStatus(status));
+    } else {
+      UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.hide());
     }
   }
 

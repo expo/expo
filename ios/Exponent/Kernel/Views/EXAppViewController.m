@@ -366,6 +366,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (appLoader.shouldShowRemoteUpdateStatus) {
     [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
+  } else {
+    [self.appLoadingProgressWindowController hide];
   }
 }
 
