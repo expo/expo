@@ -1,6 +1,6 @@
 ---
 title: Branch
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-branch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-branch'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

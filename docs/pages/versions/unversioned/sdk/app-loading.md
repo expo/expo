@@ -1,6 +1,6 @@
 ---
 title: AppLoading
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/launch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/launch'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

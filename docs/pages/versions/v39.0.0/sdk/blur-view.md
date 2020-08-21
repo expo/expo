@@ -1,6 +1,6 @@
 ---
 title: BlurView
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-blur'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-blur'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

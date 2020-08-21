@@ -1,6 +1,6 @@
 ---
 title: DocumentPicker
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-document-picker'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-document-picker'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

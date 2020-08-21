@@ -1,6 +1,6 @@
 ---
 title: Amplitude
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
