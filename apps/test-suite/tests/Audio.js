@@ -12,7 +12,7 @@ const soundUri = 'http://www.noiseaddicts.com/samples_1w72b820/280.mp3';
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 const redirectingSoundUri = 'http://bit.ly/2qBMx80';
-const authenticatedStaticFilesBackend = 'https://authenticated-static-files-hagckpsbra.now.sh';
+const authenticatedStaticFilesBackend = 'https://authenticated-static-files.vercel.app';
 
 export function test(t) {
   t.describe('Audio class', () => {
