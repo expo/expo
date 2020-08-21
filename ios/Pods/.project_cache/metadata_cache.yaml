@@ -1138,6 +1138,10 @@ ABI38_0_0Yoga:
   LABEL: ABI38_0_0Yoga
   PROJECT_PATH: ABI38_0_0.xcodeproj
   UUID: DA3F601D30ECF5EE2006EFB42C7A6DC2
+Amplitude:
+  LABEL: Amplitude
+  PROJECT_PATH: Amplitude.xcodeproj
+  UUID: A8506691BCF493596D6E68176F7E0129
 Amplitude-iOS:
   LABEL: Amplitude-iOS
   PROJECT_PATH: Amplitude-iOS.xcodeproj

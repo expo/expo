@@ -2,8 +2,8 @@
 
 #import <EXAmplitude/EXAmplitude.h>
 
-#import <Amplitude-iOS/Amplitude.h>
-#import <Amplitude-iOS/AMPTrackingOptions.h>
+#import <Amplitude/Amplitude.h>
+#import <Amplitude/AMPTrackingOptions.h>
 
 @implementation EXAmplitude
 

@@ -22,8 +22,8 @@
     "ABI36_0_0UMConstantsInterface": [
 
     ],
-    "Amplitude-iOS": [
-      "~> 4.7.1"
+    "Amplitude": [
+      "~> 6.0.0"
     ]
   }
 }
