@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Upgraded native Amplitude iOS library. ([#9880](https://github.com/expo/expo/pull/9880) by [@bbarthec](https://github.com/bbarthec))
+- Upgraded native Amplitude iOS library from `4.7.1` to `6.0.0`. ([#9880](https://github.com/expo/expo/pull/9880) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
 
