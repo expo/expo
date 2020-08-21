@@ -118,7 +118,7 @@ module.exports = {
     'prefer-spread': 'warn',
     radix: 'warn',
     'rest-spread-spacing': ['warn', 'never'],
-    semi: 'off',
+    semi: 'warn',
     'semi-spacing': ['warn', { before: false, after: true }],
     'semi-style': ['warn', 'last'],
     'space-before-blocks': ['warn', 'always'],
@@ -135,7 +135,6 @@ module.exports = {
     yoda: ['warn', 'never', { exceptRange: true }],
 
     '@babel/no-unused-expressions': ['warn', { allowShortCircuit: true }],
-    '@babel/semi': 'warn',
 
     'import/default': 'off',
     'import/export': 'error',
