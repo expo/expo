@@ -286,9 +286,9 @@ CACHE_KEYS:
   EXDevMenu:
     BUILD_SETTINGS_CHECKSUM:
       EXDevMenu:
-        :debug: 0ca08de365def984d0e9b321d0f1a0a8
-        :release: 0ca08de365def984d0e9b321d0f1a0a8
-    CHECKSUM: 9f15f267678c47a7700c2a6be954bba4f869fb42
+        :debug: b1eba0b1d6e2b892cedf4546f1284ac1
+        :release: b1eba0b1d6e2b892cedf4546f1284ac1
+    CHECKSUM: 03e2daf1658c6538115b2fdec9530331d09a2a40
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -307,22 +307,35 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift"
       - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuMotionInterceptor.swift"
       - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/MenuItems/DevMenuAction.swift"
-      - "../../../../packages/expo-dev-menu/ios/MenuItems/DevMenuGroup.swift"
-      - "../../../../packages/expo-dev-menu/ios/MenuItems/DevMenuItem.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
-      - "../../../../packages/expo-dev-menu/ios/Protocols/DevMenuBridgeProtocol.swift"
-      - "../../../../packages/expo-dev-menu/ios/Protocols/DevMenuDelegateProtocol.swift"
-      - "../../../../packages/expo-dev-menu/ios/Protocols/DevMenuExtensionProtocol.swift"
       - "../../../../packages/expo-dev-menu/README.md"
     PROJECT_NAME: EXDevMenu
     SPECS:
       - EXDevMenu (0.1.0)
+  EXDevMenuInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      EXDevMenuInterface:
+        :debug: 6088830fd6859a94b46d7ffbe993b1aa
+        :release: 6088830fd6859a94b46d7ffbe993b1aa
+    CHECKSUM: 2c69e120acacbb868de3a9414907017612638f2c
+    FILES:
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuManagerProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuUIResponderExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuAction.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuGroup.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuItem.swift"
+      - "../../../../packages/expo-dev-menu-interface/README.md"
+    PROJECT_NAME: EXDevMenuInterface
+    SPECS:
+      - EXDevMenuInterface (0.1.0)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
@@ -1215,8 +1228,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 76816b7215772a4870f549c2b493264f
-      Release: 76816b7215772a4870f549c2b493264f
+      Debug: d16ec4bf13fa5df2eaf30f79e06c4d9d
+      Release: d16ec4bf13fa5df2eaf30f79e06c4d9d
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1228,8 +1241,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 0531aed66de38cccd84f332899442e3b
-      Release: 0531aed66de38cccd84f332899442e3b
+      Debug: b112f50525d1c17dd586653d77df0fbe
+      Release: b112f50525d1c17dd586653d77df0fbe
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

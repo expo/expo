@@ -18,3 +18,4 @@ public protocol DevMenuExtensionProtocol {
   @objc
   optional func devMenuItems() -> [DevMenuItem]?
 }
+ 
