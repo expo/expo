@@ -90,6 +90,11 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     paddingLeft: Platform.select({ web: 16, default: 5 }),
     marginRight: 5,
-    outlineColor: 'transparent',
+    ...Platform.select({
+      web: {
+        outlineColor: 'transparent',
+      },
+      default: {},
+    }),
   },
 });
