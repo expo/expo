@@ -35,18 +35,22 @@ It specifies credentials for Android and iOS (but you can configure only one of 
 
 ## Configuring credentials.json
 
-You can either let Expo generate new credentials and store them on Expo servers or create them manually and put them in credentials.json. Whichever option you choose you can always sync credentials one way or the other with `expo eas:credentials:sync`.
+You have two options for handling your app credentials:
+- Let Expo generate and manage your credentials for you, and keep them stored securely on Expo's servers, or
+- Create credentials manually, yourself, and provide them to EAS Build via the credentials.json file
+
+No matter which option you choose, you can always sync your credentials by running `expo eas:credentials:sync`, so that the ones you have stored locally match those on Expo's servers.
 
 
 ## Automatic configuration
 
-If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only) you can generate the `credentials.json` file from credentials that are stored on Expo servers. To generate (or update) that file run `expo eas:credentials:sync` and in the first prompt select option to update `credentials.json` and in the second one select for which platforms you want to update.
+If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only), you can generate the `credentials.json` file from those credentials that are stored on Expo's servers. To generate (or update) that file, run `expo eas:credentials:sync`. In the first prompt, select the option to update `credentials.json`, then in the second one, select which platform(s) you wish to update.
 
-If you don't have any credentials, run `expo eas:build --platform <android|ios|all>` and follow the interactive prompts. After generating all credentials, you can (if you want) use the `expo eas:credentials:sync` command to generate `credentials.json`.
+If you don't have any credentials yet, you can run `expo eas:build --platform <android|ios|all>` and follow the interactive prompts. After Expo guides you through generating your credentials, you can (if you wish) use the `expo eas:credentials:sync` command to generate `credentials.json` (this is only if you wish to have a local copy of your credentials).
 
-For Android builds, both keystore generation methods require you to have `keytool` installed and in your PATH. If it's not available on your system you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
+For Android builds, both keystore generation methods require you to have `keytool` installed and in your PATH. If it's not available on your system, you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
 
-**Remember to gitignore all files created by above commands!**
+**Remember to gitignore all files created by the above commands!**
 
 ## Manual configuration
 
@@ -96,7 +100,7 @@ Create `credentials.json` and configure it with the credentials:
 
 ### iOS Credentials
 
-Things become more complicated when it comes to building the iOS app binary. For starters, you need a paid Apple Developer Account. Next, you need to generate the Distribution Certificate and Provisioning Profile for your application, you can do that via the Apple Developer Portal.
+There are a few more prerequisites for building the iOS app binary. You need a paid Apple Developer Account, and then you'll need to generate the Distribution Certificate and Provisioning Profile for your application, which can be done via the [Apple Developer portal](https://developer.apple.com/account/resources/certificates/list).
 
 Once you have the Distribution Certificate and Provisioning Profile on your computer, you should move them to the appropriate directory. We recommend you keep them in the `ios/certs` directory. In the rest of this document we assume that they are named `dist.p12` and `profile.mobileprovision` respectively. **Remember to gitignore all files in the directory!** If you've placed the credentials in the suggested directory, you can ignore those files by adding the following line to `.gitignore`:
 
