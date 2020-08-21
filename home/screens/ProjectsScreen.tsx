@@ -169,6 +169,7 @@ class ProjectsView extends React.Component<Props, State> {
 
     if (prevProps.isAuthenticated && !this.props.isAuthenticated) {
       // Remove all projects except Snack, because they are tied to device id
+      // Fix this lint warning when converting to hooks
       // eslint-disable-next-line
       this.setState(({ projects }) => ({
         projects: projects.filter(p => p.source === 'snack'),
