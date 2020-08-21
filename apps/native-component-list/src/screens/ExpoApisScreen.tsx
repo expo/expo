@@ -66,6 +66,7 @@ const screens = [
   'Location',
   'MailComposer',
   'MediaLibrary',
+  'Network',
   'NetInfo',
   'Notification',
   'Pedometer',

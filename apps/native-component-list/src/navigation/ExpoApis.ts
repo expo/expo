@@ -32,6 +32,7 @@ const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
 const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
 const FileSystem = optionalRequire(() => require('../screens/FileSystemScreen'));
+const Network = optionalRequire(() => require('../screens/NetworkScreen'));
 const FirebaseRecaptcha = optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
 const Font = optionalRequire(() => require('../screens/FontScreen'));
 const Google = optionalRequire(() => require('../screens/GoogleScreen'));
@@ -116,6 +117,7 @@ const optionalScreens: {
   MailComposer,
   ...MediaLibraryScreens,
   NetInfo,
+  Network,
   Notification,
   LocalAuthentication,
   ...LocationScreens,
