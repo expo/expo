@@ -338,6 +338,8 @@ try {
 
   Stops the recording and deallocates the recorder from memory. This reverts the `Recording` instance to an unprepared state, and another `Recording` instance must be created in order to record again. This method can only be called if the `Recording` has been prepared.
 
+  NOTE: On Android this method may fail with `E_AUDIO_NODATA` when called too soon after `startAsync` and no audio data has been recorded yet. In that case the recorded file will be invalid and should be discarded.
+
   #### Returns
 
   A `Promise` that is fulfilled when recording has stopped, or rejects if recording could not be stopped. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
