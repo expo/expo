@@ -106,19 +106,17 @@ export default function VideoPlayer(props: {
         },
       ]}
       header={
-        <View style={{ flex: 1, backgroundColor: 'black' }}>
-          <Video
-            useNativeControls={useNativeControls}
-            ref={video}
-            source={props.sources[sourceIndex]}
-            resizeMode={resizeMode}
-            onError={setError}
-            style={{ height: 300 }}
-            progressUpdateIntervalMillis={100}
-            onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
-            onFullscreenUpdate={handleFullScreenUpdate}
-          />
-        </View>
+        <Video
+          useNativeControls={useNativeControls}
+          ref={video}
+          source={props.sources[sourceIndex]}
+          resizeMode={resizeMode}
+          onError={setError}
+          style={{ height: 300 }}
+          progressUpdateIntervalMillis={100}
+          onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+          onFullscreenUpdate={handleFullScreenUpdate}
+        />
       }
     />
   );

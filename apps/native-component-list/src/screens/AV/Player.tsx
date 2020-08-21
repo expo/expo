@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import SegmentedControl from '@react-native-community/segmented-control';
 import Slider from '@react-native-community/slider';
 import React from 'react';
 import {
@@ -69,14 +70,6 @@ export default function Player(props: Props) {
 
   const _toggleLooping = () => props.setIsLoopingAsync(!props.isLooping);
 
-  const _toggleIsMuted = () => props.setIsMutedAsync(!props.isMuted);
-
-  const _toggleSlowRate = () =>
-    props.setRateAsync(props.rate < 1 ? 1 : 0.5, props.shouldCorrectPitch);
-
-  const _toggleFastRate = () =>
-    props.setRateAsync(props.rate > 1 ? 1 : 2, props.shouldCorrectPitch);
-
   const _toggleShouldCorrectPitch = () => props.setRateAsync(props.rate, !props.shouldCorrectPitch);
 
   const _seekForward = () => props.setPositionAsync(props.positionMillis + 5000);
@@ -144,11 +137,14 @@ export default function Player(props: Props) {
 
   return (
     <View style={props.style}>
-      {props.header}
+      <View style={{ opacity: isScrubbing ? 0.8 : 1, backgroundColor: 'black' }}>
+        {props.header}
+      </View>
       <View style={styles.container}>
         {_renderPlayPauseButton()}
         <Slider
           style={styles.slider}
+          thumbTintColor={Colors.tintColor}
           value={isScrubbing ? initialScrubbingMillis : props.positionMillis}
           maximumValue={props.durationMillis}
           disabled={!props.isLoaded}
@@ -163,57 +159,23 @@ export default function Player(props: Props) {
           {_formatTime(props.positionMillis / 1000)} / {_formatTime(props.durationMillis / 1000)}
         </Text>
       </View>
-      <VolumeSlider
-        isMuted={props.isMuted}
-        disabled={!props.isLoaded}
-        volume={props.volume}
-        onValueChanged={({ isMuted, volume }) => {
-          props.setIsMutedAsync(isMuted);
-          props.setVolume(volume);
-        }}
-      />
       <View style={[styles.container, styles.buttonsContainer]}>
+        <VolumeSlider
+          isMuted={props.isMuted}
+          disabled={!props.isLoaded}
+          volume={props.volume}
+          onValueChanged={({ isMuted, volume }) => {
+            props.setIsMutedAsync(isMuted);
+            props.setVolume(volume);
+          }}
+        />
         {_renderAuxiliaryButton({
-          iconName: 'repeat',
-          title: 'Repeat',
-          onPress: _toggleLooping,
-          active: props.isLooping,
-        })}
-        {_renderAuxiliaryButton({
-          disable: Platform.OS === 'web',
-          iconName: 'stats',
-          title: 'Correct pitch',
-          onPress: _toggleShouldCorrectPitch,
-          active: props.shouldCorrectPitch,
-        })}
-
-        {_renderAuxiliaryButton({
-          iconName: 'hourglass',
-          title: 'Slower',
-          onPress: _toggleSlowRate,
-          active: props.rate < 1,
-        })}
-        {_renderAuxiliaryButton({
-          iconName: 'speedometer',
-          title: 'Faster',
-          onPress: _toggleFastRate,
-          active: props.rate > 1,
-        })}
-      </View>
-      <View style={[styles.container, styles.buttonsContainer]}>
-        {_renderAuxiliaryButton({
-          iconName: 'refresh',
+          iconName: 'skip-backward',
           title: 'Replay',
           onPress: props.replayAsync,
           active: false,
         })}
-        {props.nextAsync &&
-          _renderAuxiliaryButton({
-            iconName: 'skip-forward',
-            title: 'Next',
-            onPress: props.nextAsync,
-            active: false,
-          })}
+
         {_renderAuxiliaryButton({
           iconName: 'rewind',
           title: 'Seek Backward',
@@ -224,6 +186,31 @@ export default function Player(props: Props) {
           title: 'Seek Forward',
           onPress: _seekForward,
         })}
+        {props.nextAsync &&
+          _renderAuxiliaryButton({
+            iconName: 'skip-forward',
+            title: 'Next',
+            onPress: props.nextAsync,
+            active: false,
+          })}
+        {_renderAuxiliaryButton({
+          iconName: 'repeat',
+          title: 'Repeat',
+          onPress: _toggleLooping,
+          active: props.isLooping,
+        })}
+      </View>
+      <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between' }}>
+        <PitchControl
+          disabled={Platform.OS === 'web'}
+          value={props.shouldCorrectPitch}
+          onPress={_toggleShouldCorrectPitch}
+        />
+        <SpeedSegmentedControl
+          onValueChange={rate => {
+            props.setRateAsync(rate, props.shouldCorrectPitch);
+          }}
+        />
       </View>
       <View style={[styles.container, styles.buttonsContainer]}>
         {(props.extraButtons ?? []).map(button => {
@@ -232,6 +219,86 @@ export default function Player(props: Props) {
         })}
       </View>
       {_maybeRenderErrorOverlay()}
+    </View>
+  );
+}
+
+function PitchControl({
+  value,
+  disabled,
+  onPress,
+}: {
+  disabled: boolean;
+  value: boolean;
+  onPress: (value: boolean) => void;
+}) {
+  const height = 36;
+
+  const color = value ? Colors.tintColor : '#C1C1C1';
+  return (
+    <TouchableOpacity
+      disabled={disabled}
+      style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 4,
+        height: height,
+        justifyContent: 'center',
+      }}
+      onPress={() => {
+        onPress(!value);
+      }}>
+      <Ionicons name={`ios-stats`} size={24} color={color} style={{}} />
+      <Text
+        style={{
+          textDecorationLine: disabled ? 'line-through' : 'none',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          color: color,
+          marginLeft: 8,
+          fontSize: 12,
+        }}>
+        Correct Pitch
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: number) => void }) {
+  const data = ['0.5', '1.0', '1.5', '2.0'];
+  const [index, setIndex] = React.useState(1);
+
+  const renderIcon = (name: string) => (
+    <Ionicons
+      name={`ios-${name}`}
+      size={24}
+      style={{ color: Colors.tintColor, paddingHorizontal: 8 }}
+    />
+  );
+  return (
+    <View
+      style={{
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingBottom: 6,
+        margin: 10,
+        marginTop: 5,
+        flexDirection: 'row',
+      }}>
+      {renderIcon('hourglass')}
+
+      <SegmentedControl
+        style={{ width: '50%', minWidth: 260 }}
+        values={data.map(i => i + 'x')}
+        fontStyle={{ color: Colors.tintColor }}
+        selectedIndex={index}
+        tintColor={'white'}
+        onChange={event => {
+          setIndex(event.nativeEvent.selectedSegmentIndex);
+        }}
+        onValueChange={value => onValueChange(parseFloat(value))}
+      />
+      {renderIcon('speedometer')}
     </View>
   );
 }
@@ -275,12 +342,13 @@ function VolumeSlider({
     if (value !== volume) setValue(volume);
   }, [volume]);
 
+  const height = 36;
   return (
     <View
       style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }]}
       pointerEvents={disabled ? 'none' : 'auto'}>
       <TouchableOpacity
-        style={{ alignItems: 'center', width: 36, height: 36, justifyContent: 'center' }}
+        style={{ alignItems: 'center', width: height, height: height, justifyContent: 'center' }}
         onPress={() => {
           onValueChanged({ isMuted: !isMuted, volume });
         }}>
@@ -289,6 +357,7 @@ function VolumeSlider({
       <Slider
         value={isMutedActive ? 0 : value}
         maximumValue={1}
+        style={{ height: height }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
         onSlidingComplete={value => {
