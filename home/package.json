@@ -7,7 +7,7 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "jest",
-    "lint": "eslint --ext .js,.ts,.tsx,.d.ts .",
+    "lint": "eslint .",
     "report": "npx react-native-bundle-visualizer --entry-file __generated__/AppEntry.js"
   },
   "author": "Expo",

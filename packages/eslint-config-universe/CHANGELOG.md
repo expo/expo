@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Override `no-unused-expressions` and `semi` with `@babel/no-unused-expressions` and `@babel/semi` to fix a bug with optional chaining. Upgraded the minor version of various dependecies.
+
 ## 4.0.0 — 2020-07-08
 
 ### 🐛 Bug fixes

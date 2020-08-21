@@ -54,8 +54,8 @@ function ProfileView(
     }
 
     if (!props.isAuthenticated) {
-      // NOTE: this logic likely can be moved to a hook that runs
-      // whenever the prop is updated
+      // NOTE: this logic likely should be moved to a hook that runs whenever
+      // the prop is updated
       setIsOwnProfile(false);
     } else {
       getViewerUsernameAsync().then(
