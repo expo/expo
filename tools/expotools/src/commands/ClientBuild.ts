@@ -23,7 +23,6 @@ const { yellow, blue, magenta } = chalk;
 type ActionOptions = {
   platform?: Platform;
   release: boolean;
-  skipUpload: boolean;
 };
 
 export default (program: Command) => {
@@ -37,11 +36,6 @@ export default (program: Command) => {
     .option(
       '-r, --release',
       'Whether to upload and release the client build to staging versions endpoint.',
-      false
-    )
-    .option(
-      '--skip-upload',
-      "Whether to skip the uploading part. Might be useful for debugging and not to unintentionally override production's build.",
       false
     )
     .asyncAction(main);
@@ -63,10 +57,8 @@ async function main(options: ActionOptions) {
 
   await buildOrUseCacheAsync(builder);
 
-  if (sdkVersion && !options.skipUpload) {
-    await uploadAsync(builder, sdkVersion, appVersion);
-  }
   if (sdkVersion && options.release) {
+    await uploadAsync(builder, sdkVersion, appVersion);
     await releaseAsync(builder, sdkVersion, appVersion);
   }
 }
@@ -100,7 +92,8 @@ async function askToRecreateSimulatorBuildAsync(): Promise<boolean> {
 
 async function askToOverrideBuildAsync(): Promise<boolean> {
   if (process.env.CI) {
-    return true;
+    // we should never override anything in CI, too easy to accidentally mess something up in prod
+    return false;
   }
   const { override } = await inquirer.prompt<{ override: boolean }>([
     {
