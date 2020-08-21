@@ -127,9 +127,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view bringSubviewToFront:self.appLoadingCancelView];
   }
 
-  // show LoadingProgressWindow in managed apps and dev home app only
-  BOOL isDevelopmentHomeApp = self.isHomeApp && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone || isDevelopmentHomeApp];
+  // show LoadingProgressWindow in the development client for all apps other than production home
+  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone && !isProductionHomeApp];
 
   // show SplashScreen in standalone apps and home app only
   // SplashScreen for managed is shown once the manifest is available
@@ -358,9 +358,21 @@ NS_ASSUME_NONNULL_BEGIN
                                 alertControllerWithTitle:@"Using a cached project"
                                 message:@"If you did not intend to use a cached project, check your network connection and reload."
                                 preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Reload" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+      [self refresh];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Use cache" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
   });
+}
+
+- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAppLoader *)appLoader
+{
+  if (appLoader.shouldShowRemoteUpdateStatus) {
+    [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
+  } else {
+    [self.appLoadingProgressWindowController hide];
+  }
 }
 
 #pragma mark - EXAppLoaderDelegate
@@ -376,6 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
   }
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
@@ -395,7 +408,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self->_appRecord.appManager appLoaderFinished];
   }
   
-  if (!appLoader.isUpToDate) {
+  if (!appLoader.isUpToDate && appLoader.shouldShowRemoteUpdateStatus) {
     [self _showCachedExperienceAlert];
   }
 }

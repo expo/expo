@@ -44,6 +44,7 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 @property (nonatomic, readonly) NSData * _Nullable bundle;
 @property (nonatomic, readonly) EXAppLoaderStatus status;
 @property (nonatomic, readonly) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
+@property (nonatomic, readonly) BOOL shouldShowRemoteUpdateStatus;
 @property (nonatomic, readonly) BOOL isUpToDate;
 
 @property (nonatomic, weak) id<EXAppLoaderDelegate> delegate;

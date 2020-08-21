@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary *optimisticManifest;
 @property (nonatomic, strong, nullable) NSData *bundle;
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
+@property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
 @property (nonatomic, assign) BOOL isUpToDate;
 
 @property (nonatomic, strong, nullable) NSError *error;
@@ -54,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize manifestUrl = _manifestUrl;
 @synthesize bundle = _bundle;
 @synthesize remoteUpdateStatus = _remoteUpdateStatus;
+@synthesize shouldShowRemoteUpdateStatus = _shouldShowRemoteUpdateStatus;
 @synthesize config = _config;
 @synthesize selectionPolicy = _selectionPolicy;
 @synthesize appLauncher = _appLauncher;
@@ -84,6 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
   _shouldUseCacheOnly = NO;
   _isEmergencyLaunch = NO;
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusChecking;
+  _shouldShowRemoteUpdateStatus = YES;
   _isUpToDate = NO;
 }
 
@@ -160,6 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
+  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
   if ([[self class] areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
     return NO;
@@ -170,6 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
+  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
 }
 
@@ -321,6 +326,21 @@ NS_ASSUME_NONNULL_BEGIN
   if (self.delegate) {
     [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
   }
+}
+
+- (void)_setShouldShowRemoteUpdateStatus:(NSDictionary *)manifest
+{
+  if (manifest) {
+    NSDictionary *developmentClientSettings = manifest[@"developmentClient"];
+    if (developmentClientSettings && [developmentClientSettings isKindOfClass:[NSDictionary class]]) {
+      id silentLaunch = developmentClientSettings[@"silentLaunch"];
+      if (silentLaunch && [@(YES) isEqual:silentLaunch]) {
+        _shouldShowRemoteUpdateStatus = NO;
+        return;
+      }
+    }
+  }
+  _shouldShowRemoteUpdateStatus = YES;
 }
 
 - (void)_loadDevelopmentJavaScriptResource
