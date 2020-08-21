@@ -1,6 +1,6 @@
 ---
 title: FirebaseCore
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-firebase-core'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-core'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

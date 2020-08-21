@@ -1,6 +1,6 @@
 ---
 title: WebBrowser
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-web-browser'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-web-browser'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

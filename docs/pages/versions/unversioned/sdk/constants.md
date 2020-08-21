@@ -1,6 +1,6 @@
 ---
 title: Constants
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-constants'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-constants'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -72,7 +72,7 @@ async function action(options) {
         const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
         await transformFileAsync(apiFilePath, [
           {
-            pattern: /(sourceCodeUrl:.*?\/tree\/)(sdk-\d*)(\/packages[^\n]*)/,
+            pattern: /(sourceCodeUrl:.*?\/tree\/)(master)(\/packages[^\n]*)/,
             replaceWith: `$1sdk-${sdk.substring(0, 2)}$3`,
           },
         ]);

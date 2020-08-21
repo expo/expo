@@ -1,6 +1,6 @@
 ---
 title: BackgroundFetch
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-background-fetch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-background-fetch'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

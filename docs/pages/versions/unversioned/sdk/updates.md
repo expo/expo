@@ -1,6 +1,6 @@
 ---
 title: Updates
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Updates'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/Updates'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

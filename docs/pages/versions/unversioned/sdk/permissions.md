@@ -1,6 +1,6 @@
 ---
 title: Permissions
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-permissions'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-permissions'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
