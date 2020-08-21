@@ -334,10 +334,14 @@ NS_ASSUME_NONNULL_BEGIN
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
     
     EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-    [splashScreenService showSplashScreenFor:self
-                    splashScreenViewProvider:_managedAppSplashScreenViewProvider
-                             successCallback:^{}
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    UM_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UM_ENSURE_STRONGIFY(self);
+      [splashScreenService showSplashScreenFor:self
+                      splashScreenViewProvider:self.managedAppSplashScreenViewProvider
+                               successCallback:^{}
+                               failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    });
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
