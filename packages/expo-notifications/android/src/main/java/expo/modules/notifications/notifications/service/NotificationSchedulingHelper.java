@@ -21,7 +21,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.AlarmManagerCompat;
-import androidx.core.app.JobIntentService;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
@@ -32,7 +31,7 @@ import expo.modules.notifications.notifications.model.NotificationRequest;
 import static android.content.Context.ALARM_SERVICE;
 
 /**
- * {@link JobIntentService} responsible for handling events related to scheduled notifications:
+ * A POJO responsible for handling events related to scheduled notifications:
  * fetching, adding, removing and triggering. Work should be enqueued with #enqueueVerb static methods.
  */
 public class NotificationSchedulingHelper {
@@ -166,7 +165,7 @@ public class NotificationSchedulingHelper {
   private SharedPreferencesNotificationsStore mStore;
 
   /**
-   * Enqueue work to this {@link JobIntentService}.
+   * Enqueue work to this class.
    *
    * @param context Context this is being called from
    * @param intent  Work to handle
