@@ -1,5 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import { HeaderStyleInterpolators } from '@react-navigation/stack';
-import { Platform, StyleSheet } from 'react-native';
+import * as React from 'react';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { Colors } from '../constants';
 
@@ -22,7 +24,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const StackConfig = {
+const StackConfig = ({ navigation }) => ({
   cardStyle: styles.card,
   screenOptions: () => ({
     headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
@@ -30,7 +32,16 @@ const StackConfig = {
     headerTintColor: Colors.tintColor,
     headerTitleStyle: styles.headerTitle,
     headerPressColorAndroid: Colors.tintColor,
+    headerRight: () => (
+      <TouchableOpacity onPress={() => navigation.navigate('search')} style={{ marginRight: 16 }}>
+        <Ionicons
+          name="md-search"
+          size={Platform.OS === 'ios' ? 22 : 25}
+          color={Colors.tintColor}
+        />
+      </TouchableOpacity>
+    ),
   }),
-};
+});
 
 export default StackConfig;
