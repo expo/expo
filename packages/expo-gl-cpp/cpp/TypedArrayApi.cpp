@@ -43,6 +43,7 @@ class PropNameIDCache {
   void invalidate() {
     props.erase(props.begin(), props.end());
   }
+
  private:
   std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>> props;
 
@@ -56,7 +57,6 @@ void invalidateJsiPropNameIDCache() {
 }
 
 TypedArrayKind getTypedArrayKindForName(const std::string &name);
-
 
 TypedArrayBase::TypedArrayBase(jsi::Runtime &runtime, size_t size, TypedArrayKind kind)
     : TypedArrayBase(
