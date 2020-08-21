@@ -28,6 +28,6 @@
   "devDependencies": {
     "eslint": "^7.7.0",
     "expo-yarn-workspaces": "*",
-    "prettier": "^1.19.0"
+    "prettier": "^1.19.1"
   }
 }
