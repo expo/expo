@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix scheduled notifications not being displayed after five minutes of phone inactivity on Android. ([#9816](https://github.com/expo/expo/pull/9816) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed case where iOS notification category would not be set on the very first call to `setNotificationCategoryAsync`. ([#9515](https://github.com/expo/expo/pull/9515) by [@cruzach](https://github.com/cruzach))
 - Fixed notification response listener not triggering in the managed workflow on iOS when app was completely killed ([#9478](https://github.com/expo/expo/pull/9478) by [@cruzach](https://github.com/cruzach))
 - Fixed notifications being displayed when `shouldShowAlert` was `false` on Android. ([#9563](https://github.com/expo/expo/pull/9563) by [@barthap](https://github.com/barthap))
