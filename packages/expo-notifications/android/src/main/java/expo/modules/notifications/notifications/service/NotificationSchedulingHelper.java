@@ -21,7 +21,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.AlarmManagerCompat;
-import androidx.core.app.JobIntentService;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
@@ -29,11 +28,13 @@ import expo.modules.notifications.notifications.interfaces.SchedulableNotificati
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 
+import static android.content.Context.ALARM_SERVICE;
+
 /**
- * {@link JobIntentService} responsible for handling events related to scheduled notifications:
+ * A POJO responsible for handling events related to scheduled notifications:
  * fetching, adding, removing and triggering. Work should be enqueued with #enqueueVerb static methods.
  */
-public class ExpoNotificationSchedulerService extends JobIntentService {
+public class NotificationSchedulingHelper {
   private static final String NOTIFICATION_SCHEDULE_ACTION = "expo.modules.notifications.SCHEDULE_EVENT";
   private static final String NOTIFICATION_TRIGGER_ACTION = "expo.modules.notifications.TRIGGER_EVENT";
   private static final String NOTIFICATIONS_FETCH_ALL_ACTION = "expo.modules.notifications.FETCH_ALL";
@@ -59,7 +60,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   private static final String NOTIFICATION_REQUEST_KEY = "request";
   private static final String RECEIVER_KEY = "receiver";
 
-  private static final int JOB_ID = ExpoNotificationSchedulerService.class.getName().hashCode();
+  private static final int JOB_ID = NotificationSchedulingHelper.class.getName().hashCode();
   private static final int REQUEST_CODE = JOB_ID;
 
   private NotificationsHelper mNotificationsHelper;
@@ -159,29 +160,29 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
     enqueueWork(context, intent);
   }
 
+  private Context mContext;
   private AlarmManager mAlarmManager;
   private SharedPreferencesNotificationsStore mStore;
 
   /**
-   * Enqueue work to this {@link JobIntentService}.
+   * Enqueue work to this class.
    *
    * @param context Context this is being called from
    * @param intent  Work to handle
    */
   static void enqueueWork(Context context, Intent intent) {
-    enqueueWork(context, ExpoNotificationSchedulerService.class, JOB_ID, intent);
+    new NotificationSchedulingHelper(context).onHandleWork(intent);
   }
 
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    mStore = new SharedPreferencesNotificationsStore(this);
-    mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-    mNotificationsHelper = createNotificationHelper();
+  private NotificationSchedulingHelper(Context context) {
+    mContext = context;
+    mStore = new SharedPreferencesNotificationsStore(context);
+    mAlarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+    mNotificationsHelper = createNotificationHelper(context);
   }
 
-  protected NotificationsHelper createNotificationHelper() {
-    return new NotificationsHelper(this, NotificationsScoper.create(this).createReconstructor());
+  protected NotificationsHelper createNotificationHelper(Context context) {
+    return new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   /**
@@ -190,20 +191,19 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    *
    * @param intent Work to handle
    */
-  @Override
   protected void onHandleWork(@NonNull Intent intent) {
     ResultReceiver receiver = intent.getParcelableExtra(RECEIVER_KEY);
     try {
       Bundle resultData = null;
       if (NOTIFICATION_SCHEDULE_ACTION.equals(intent.getAction())) {
         scheduleNotification(
-          this,
+          mContext,
           intent.getParcelableExtra(NOTIFICATION_REQUEST_KEY)
         );
       } else if (NOTIFICATION_TRIGGER_ACTION.equals(intent.getAction())) {
-        onNotificationTriggered(this, intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
+        onNotificationTriggered(mContext, intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
       } else if (NOTIFICATION_REMOVE_ACTION.equals(intent.getAction())) {
-        removeNotification(this, intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
+        removeNotification(mContext, intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
       } else if (NOTIFICATIONS_FETCH_ALL_ACTION.equals(intent.getAction())) {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(NOTIFICATION_REQUESTS_KEY, new ArrayList<>(fetchNotifications()));
@@ -213,11 +213,11 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
         bundle.putParcelable(NOTIFICATION_REQUESTS_KEY, fetchNotification(intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY)));
         resultData = bundle;
       } else if (NOTIFICATION_REMOVE_SELECTED_ACTION.equals(intent.getAction())) {
-        removeSelectedNotifications(this, intent.getStringArrayExtra(NOTIFICATION_IDENTIFIER_KEY));
+        removeSelectedNotifications(mContext, intent.getStringArrayExtra(NOTIFICATION_IDENTIFIER_KEY));
       } else if (NOTIFICATION_REMOVE_ALL_ACTION.equals(intent.getAction())) {
-        removeAllNotifications(this);
+        removeAllNotifications(mContext);
       } else if (SETUP_ACTIONS.contains(intent.getAction())) {
-        setupNotifications(this);
+        setupNotifications(mContext);
       } else {
         throw new IllegalArgumentException(String.format("Received intent of unrecognized action: %s. Ignoring.", intent.getAction()));
       }
