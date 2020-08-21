@@ -122,9 +122,9 @@
 + (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status
 {
   if (status == kEXAppLoaderRemoteUpdateStatusChecking) {
-    return @"Checking for new release...";
+    return @"Checking for new update...";
   } else if (status == kEXAppLoaderRemoteUpdateStatusDownloading) {
-    return @"New release available, downloading...";
+    return @"New update available, downloading...";
   } else {
     return nil;
   }

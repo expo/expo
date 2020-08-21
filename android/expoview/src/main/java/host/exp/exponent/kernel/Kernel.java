@@ -698,7 +698,7 @@ public class Kernel extends KernelInterface {
         @Override
         public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
           if (mOptimisticActivity != null) {
-            mOptimisticActivity.maybeSetLoadingProgressStatus(status);
+            mOptimisticActivity.setLoadingProgressStatusIfEnabled(status);
           }
         }
 

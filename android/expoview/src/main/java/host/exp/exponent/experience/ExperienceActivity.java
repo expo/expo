@@ -238,7 +238,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         @Override
         public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
-          maybeSetLoadingProgressStatus(status);
+          setLoadingProgressStatusIfEnabled(status);
         }
 
         @Override
@@ -386,7 +386,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   public void startLoading() {
     mIsLoading = true;
     showOrReconfigureManagedAppSplashScreen(mManifest);
-    maybeSetLoadingProgressStatus();
+    setLoadingProgressStatusIfEnabled();
   }
 
   /**
@@ -405,14 +405,14 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  public void maybeSetLoadingProgressStatus() {
+  public void setLoadingProgressStatusIfEnabled() {
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
     if (appLoader != null) {
-      maybeSetLoadingProgressStatus(appLoader.getStatus());
+      setLoadingProgressStatusIfEnabled(appLoader.getStatus());
     }
   }
 
-  public void maybeSetLoadingProgressStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+  public void setLoadingProgressStatusIfEnabled(ExpoUpdatesAppLoader.AppLoaderStatus status) {
     if (Constants.isStandaloneApp()) {
       return;
     }
@@ -439,7 +439,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(optimisticManifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, optimisticManifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(optimisticManifest);
-      maybeSetLoadingProgressStatus();
+      setLoadingProgressStatusIfEnabled();
     });
   }
 
@@ -587,7 +587,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(manifest);
-      maybeSetLoadingProgressStatus();
+      setLoadingProgressStatusIfEnabled();
     });
   }
 

@@ -362,18 +362,7 @@ NS_ASSUME_NONNULL_BEGIN
   });
 }
 
-- (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status
-{
-  if (status == kEXAppLoaderRemoteUpdateStatusChecking) {
-    return @"Checking for new release...";
-  } else if (status == kEXAppLoaderRemoteUpdateStatusDownloading) {
-    return @"New release available, downloading...";
-  } else {
-    return nil;
-  }
-}
-
-- (void)_maybeSetLoadingViewTextWithAppLoader:(EXAppLoader *)appLoader
+- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAppLoader *)appLoader
 {
   if (appLoader.shouldShowRemoteUpdateStatus) {
     [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
@@ -393,7 +382,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
   }
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  [self _maybeSetLoadingViewTextWithAppLoader:appLoader];
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
