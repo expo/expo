@@ -39,10 +39,12 @@ interface Props {
   setIsMutedAsync: (isMuted: boolean) => void;
   setPositionAsync: (position: number) => Promise<any>;
   setIsLoopingAsync: (isLooping: boolean) => void;
+  setVolume: (volume: number) => void;
 
   // Status
   isLoaded: boolean;
   isLooping: boolean;
+  volume: number;
   rate: number;
   positionMillis: number;
   durationMillis: number;
@@ -54,16 +56,9 @@ interface Props {
   errorMessage?: string;
 }
 
-interface State {
-  userIsDraggingSlider: boolean;
-  positionMillisWhenStartedDragging?: number;
-}
-
 export default function Player(props: Props) {
-  const [userIsDraggingSlider, setIsScrubbing] = React.useState(false);
-  const [positionMillisWhenStartedDragging, setPositionMillisWhenStartedDragging] = React.useState<
-    undefined | number
-  >();
+  const [isScrubbing, setIsScrubbing] = React.useState(false);
+  const [initialScrubbingMillis, setInitialScrubbingMillis] = React.useState<undefined | number>();
 
   const _play = () => props.playAsync();
 
@@ -154,32 +149,35 @@ export default function Player(props: Props) {
         {_renderPlayPauseButton()}
         <Slider
           style={styles.slider}
-          value={userIsDraggingSlider ? positionMillisWhenStartedDragging : props.positionMillis}
+          value={isScrubbing ? initialScrubbingMillis : props.positionMillis}
           maximumValue={props.durationMillis}
           disabled={!props.isLoaded}
           minimumTrackTintColor={Colors.tintColor}
           onSlidingComplete={_playFromPosition}
           onResponderGrant={() => {
             setIsScrubbing(true);
-            setPositionMillisWhenStartedDragging(props.positionMillis);
+            setInitialScrubbingMillis(props.positionMillis);
           }}
         />
         <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
           {_formatTime(props.positionMillis / 1000)} / {_formatTime(props.durationMillis / 1000)}
         </Text>
       </View>
+      <VolumeSlider
+        isMuted={props.isMuted}
+        disabled={!props.isLoaded}
+        volume={props.volume}
+        onValueChanged={({ isMuted, volume }) => {
+          props.setIsMutedAsync(isMuted);
+          props.setVolume(volume);
+        }}
+      />
       <View style={[styles.container, styles.buttonsContainer]}>
         {_renderAuxiliaryButton({
           iconName: 'repeat',
           title: 'Repeat',
           onPress: _toggleLooping,
           active: props.isLooping,
-        })}
-        {_renderAuxiliaryButton({
-          iconName: 'volume-off',
-          title: 'Mute',
-          onPress: _toggleIsMuted,
-          active: props.isMuted,
         })}
         {_renderAuxiliaryButton({
           disable: Platform.OS === 'web',
@@ -234,6 +232,76 @@ export default function Player(props: Props) {
         })}
       </View>
       {_maybeRenderErrorOverlay()}
+    </View>
+  );
+}
+
+function VolumeSlider({
+  volume,
+  isMuted,
+  disabled,
+  color = Colors.tintColor,
+  onValueChanged,
+}: {
+  volume: number;
+  isMuted: boolean;
+  disabled?: boolean;
+  color?: string;
+  onValueChanged: (data: { isMuted: boolean; volume: number }) => void;
+}) {
+  const [value, setValue] = React.useState(volume);
+  const lastUserValue = React.useRef(volume);
+
+  React.useEffect(() => {
+    if (!isMuted && lastUserValue.current !== value) {
+      const value = lastUserValue.current;
+      setValue(value);
+      onValueChanged({ isMuted, volume: value });
+    }
+  }, [isMuted]);
+
+  const isMutedActive = React.useMemo(() => {
+    return isMuted || value <= 0;
+  }, [isMuted, value]);
+
+  const iconName = React.useMemo(() => {
+    if (isMutedActive) {
+      return 'volume-off';
+    }
+    return value > 0.5 ? 'volume-high' : 'volume-low';
+  }, [isMutedActive, value]);
+
+  React.useEffect(() => {
+    if (value !== volume) setValue(volume);
+  }, [volume]);
+
+  return (
+    <View
+      style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }]}
+      pointerEvents={disabled ? 'none' : 'auto'}>
+      <TouchableOpacity
+        style={{ alignItems: 'center', width: 36, height: 36, justifyContent: 'center' }}
+        onPress={() => {
+          onValueChanged({ isMuted: !isMuted, volume });
+        }}>
+        <Ionicons name={`ios-${iconName}`} size={24} color={color} style={{}} />
+      </TouchableOpacity>
+      <Slider
+        value={isMutedActive ? 0 : value}
+        maximumValue={1}
+        thumbTintColor={color}
+        minimumTrackTintColor={color}
+        onSlidingComplete={value => {
+          onValueChanged({ isMuted: value <= 0, volume: value });
+
+          if (value > 0) {
+            lastUserValue.current = value;
+          }
+        }}
+        onValueChange={value => {
+          setValue(value);
+        }}
+      />
     </View>
   );
 }

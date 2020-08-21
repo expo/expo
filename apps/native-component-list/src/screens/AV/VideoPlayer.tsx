@@ -5,8 +5,8 @@ import { AVPlaybackStatus, ResizeMode, Video, VideoFullscreenUpdateEvent } from 
 import React from 'react';
 import { StyleProp, Text, View, ViewStyle } from 'react-native';
 
-import Player from './Player';
 import { Colors } from '../../constants';
+import Player from './Player';
 
 type VideoPlayerSource =
   | number
@@ -18,51 +18,6 @@ type VideoPlayerSource =
       };
     }
   | Asset;
-
-function ResizeModeSegmentedControl({
-  onValueChange,
-}: {
-  onValueChange: (value: ResizeMode) => void;
-}) {
-  const resizeMap = {
-    contain: ResizeMode.CONTAIN,
-    cover: ResizeMode.COVER,
-    stretch: ResizeMode.STRETCH,
-  };
-  const data = Object.keys(resizeMap);
-  const [index, setIndex] = React.useState(0);
-  return (
-    <View
-      style={{
-        alignItems: 'stretch',
-        paddingBottom: 6,
-        margin: 10,
-        justifyContent: 'flex-end',
-        flex: 1,
-      }}>
-      <SegmentedControl
-        values={data}
-        fontStyle={{ color: Colors.tintColor }}
-        selectedIndex={index}
-        tintColor={'white'}
-        onChange={event => {
-          setIndex(event.nativeEvent.selectedSegmentIndex);
-        }}
-        onValueChange={value => onValueChange(resizeMap[value])}
-      />
-      <Text
-        style={{
-          textAlign: 'center',
-          fontWeight: 'bold',
-          color: Colors.tintColor,
-          marginTop: 8,
-          fontSize: 12,
-        }}>
-        Resize Mode
-      </Text>
-    </View>
-  );
-}
 
 export default function VideoPlayer(props: {
   style?: StyleProp<ViewStyle>;
@@ -113,8 +68,6 @@ export default function VideoPlayer(props: {
     setIndex(index => (index + 1) % props.sources.length);
   };
 
-  const resizeModeButton = React.useMemo(() => {}, []);
-
   return (
     <Player
       style={props.style}
@@ -127,6 +80,7 @@ export default function VideoPlayer(props: {
       shouldCorrectPitch={status.isLoaded ? status.shouldCorrectPitch : false}
       isPlaying={status.isLoaded ? status.isPlaying : false}
       isMuted={status.isLoaded ? status.isMuted : false}
+      volume={status.isLoaded ? status.volume : 1}
       playAsync={playAsync}
       pauseAsync={pauseAsync}
       replayAsync={replayAsync}
@@ -135,6 +89,7 @@ export default function VideoPlayer(props: {
       setIsLoopingAsync={setIsLoopingAsync}
       setIsMutedAsync={setIsMutedAsync}
       setRateAsync={setRateAsync}
+      setVolume={volume => video.current?.setVolumeAsync(volume)}
       extraButtons={[
         {
           iconName: 'options',
@@ -142,25 +97,7 @@ export default function VideoPlayer(props: {
           onPress: toggleNativeControls,
           active: useNativeControls,
         },
-        // {
-        //   iconName: 'move',
-        //   title: 'Resize mode – stretch',
-        //   onPress: () => setResizeMode(Video.RESIZE_MODE_STRETCH),
-        //   active: resizeMode === Video.RESIZE_MODE_STRETCH,
-        // },
         () => <ResizeModeSegmentedControl onValueChange={setResizeMode} />,
-        // {
-        //   iconName: 'log-in',
-        //   title: `Resize mode – ${resizeMode === Video.RESIZE_MODE_CONTAIN ? 'cover' : 'contain'}`,
-        //   onPress: () => setResizeMode(Video.RESIZE_MODE_CONTAIN),
-        //   active: resizeMode === Video.RESIZE_MODE_CONTAIN,
-        // },
-        // {
-        //   iconName: 'qr-scanner',
-        //   title: 'Resize mode – cover',
-        //   onPress: () => setResizeMode(Video.RESIZE_MODE_COVER),
-        //   active: resizeMode === Video.RESIZE_MODE_COVER,
-        // },
         {
           iconName: 'resize',
           title: 'Open full screen',
@@ -184,5 +121,50 @@ export default function VideoPlayer(props: {
         </View>
       }
     />
+  );
+}
+
+function ResizeModeSegmentedControl({
+  onValueChange,
+}: {
+  onValueChange: (value: ResizeMode) => void;
+}) {
+  const resizeMap = {
+    stretch: ResizeMode.STRETCH,
+    contain: ResizeMode.CONTAIN,
+    cover: ResizeMode.COVER,
+  };
+  const data = Object.keys(resizeMap);
+  const [index, setIndex] = React.useState(1);
+  return (
+    <View
+      style={{
+        alignItems: 'stretch',
+        paddingBottom: 6,
+        margin: 10,
+        justifyContent: 'flex-end',
+        flex: 1,
+      }}>
+      <SegmentedControl
+        values={data}
+        fontStyle={{ color: Colors.tintColor }}
+        selectedIndex={index}
+        tintColor={'white'}
+        onChange={event => {
+          setIndex(event.nativeEvent.selectedSegmentIndex);
+        }}
+        onValueChange={value => onValueChange(resizeMap[value])}
+      />
+      <Text
+        style={{
+          textAlign: 'center',
+          fontWeight: 'bold',
+          color: Colors.tintColor,
+          marginTop: 8,
+          fontSize: 12,
+        }}>
+        Resize Mode
+      </Text>
+    </View>
   );
 }
