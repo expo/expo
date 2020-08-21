@@ -3,7 +3,7 @@ package expo.modules.devmenu
 import android.os.Bundle
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
-import expo.modules.devmenu.interfaces.DevMenuDelegateInterface
+import expo.interfaces.devmenu.DevMenuDelegateInterface
 
 /**
  * Basic [DevMenuDelegateInterface] implementation.
