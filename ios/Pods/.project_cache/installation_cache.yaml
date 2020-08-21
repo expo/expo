@@ -57,9 +57,9 @@ CACHE_KEYS:
   ABI36_0_0EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       ABI36_0_0EXAmplitude:
-        :debug: 30ec30a5b199d5d1371aab2db9630290
-        :release: 30ec30a5b199d5d1371aab2db9630290
-    CHECKSUM: 28b99598484197ea07d9706ba4c10bf5db6bff1e
+        :debug: f4068152c5baa077cb43c1f763504241
+        :release: f4068152c5baa077cb43c1f763504241
+    CHECKSUM: 1be80f605ffbf0f32fd281063b38c3ca65b21bc8
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAmplitude/ABI36_0_0EXAmplitude/ABI36_0_0EXAmplitude.h"
       - "../versioned-react-native/ABI36_0_0/Expo/EXAmplitude/ABI36_0_0EXAmplitude/ABI36_0_0EXAmplitude.m"
@@ -682,9 +682,9 @@ CACHE_KEYS:
   ABI36_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
       ABI36_0_0ExpoKit:
-        :debug: 9a30e72b035a56510139897a92ac2d20
-        :release: 9a30e72b035a56510139897a92ac2d20
-    CHECKSUM: 733b64bf1be2fe0b6c0a4415de226a8d165495ef
+        :debug: 58f7099c6735bf90daab7a8e821e89bd
+        :release: 58f7099c6735bf90daab7a8e821e89bd
+    CHECKSUM: b89ea769144fab8adaf4a7eeb6499f4528c0def2
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/ABI36_0_0EXUnversioned.h"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/ABI36_0_0EXVersionManager.h"
@@ -2457,9 +2457,9 @@ CACHE_KEYS:
   ABI37_0_0EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       ABI37_0_0EXAmplitude:
-        :debug: 08ce3ed2acb8cc4b94de28fb62c1b303
-        :release: 08ce3ed2acb8cc4b94de28fb62c1b303
-    CHECKSUM: 0d82bb80de571a9f11e8658363817a4a20388155
+        :debug: e8c6cae9e7a5ec57b4c06cddb9bbe503
+        :release: e8c6cae9e7a5ec57b4c06cddb9bbe503
+    CHECKSUM: 48b7ccb4564f058f48433d1adced3ac65445c93c
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAmplitude/ABI37_0_0EXAmplitude/ABI37_0_0EXAmplitude.h"
       - "../versioned-react-native/ABI37_0_0/Expo/EXAmplitude/ABI37_0_0EXAmplitude/ABI37_0_0EXAmplitude.m"
@@ -3125,9 +3125,9 @@ CACHE_KEYS:
   ABI37_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
       ABI37_0_0ExpoKit:
-        :debug: b5c81640104d55431a7d89a724654d14
-        :release: b5c81640104d55431a7d89a724654d14
-    CHECKSUM: d50f54055a875dc83b936aa3add923ec9a7a6c8f
+        :debug: 90d706b28e03984c3ca0a0bb8d87b101
+        :release: 90d706b28e03984c3ca0a0bb8d87b101
+    CHECKSUM: 3bc49c314f5181d20fd52e8c4b529d9f756234f0
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/ABI37_0_0EXUnversioned.h"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/ABI37_0_0EXVersionManager.h"
@@ -4911,9 +4911,9 @@ CACHE_KEYS:
   ABI38_0_0EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       ABI38_0_0EXAmplitude:
-        :debug: 9c3363b7c007368532634de62e9d9a99
-        :release: 9c3363b7c007368532634de62e9d9a99
-    CHECKSUM: ee560228420f7c8815aa0503b41f4ddc1066e3c3
+        :debug: b44c0f87576739630d5c8ead88edcaf9
+        :release: b44c0f87576739630d5c8ead88edcaf9
+    CHECKSUM: e076fea5f0a29989631fdb3b4bf5e461751f85ad
     FILES:
       - "../versioned-react-native/ABI38_0_0/Expo/EXAmplitude/ABI38_0_0EXAmplitude/ABI38_0_0EXAmplitude.h"
       - "../versioned-react-native/ABI38_0_0/Expo/EXAmplitude/ABI38_0_0EXAmplitude/ABI38_0_0EXAmplitude.m"
@@ -5635,9 +5635,9 @@ CACHE_KEYS:
   ABI38_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
       ABI38_0_0ExpoKit:
-        :debug: 909dc8ad53692c84feb239756c5b7410
-        :release: 909dc8ad53692c84feb239756c5b7410
-    CHECKSUM: 827f7dd14c2d11aff3600176ab260673598693c0
+        :debug: e9e43f5e67de4f178563f2a4883020b1
+        :release: e9e43f5e67de4f178563f2a4883020b1
+    CHECKSUM: a08ede8fb51fde73d3d696ab1712f9d10ec1b4e9
     FILES:
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/ABI38_0_0EXUnversioned.h"
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/ABI38_0_0EXVersionManager.h"
@@ -7464,15 +7464,15 @@ CACHE_KEYS:
     PROJECT_NAME: ABI38_0_0
     SPECS:
       - ABI38_0_0Yoga (1.14.0)
-  Amplitude-iOS:
+  Amplitude:
     BUILD_SETTINGS_CHECKSUM:
-      Amplitude-iOS:
-        :debug: 0cbcb9952774673acc7a6e9a8c1266db
-        :release: 0cbcb9952774673acc7a6e9a8c1266db
-    CHECKSUM: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
-    PROJECT_NAME: Amplitude-iOS
+      Amplitude:
+        :debug: 2d34c2c14634a150915caf3b9199a4f3
+        :release: 2d34c2c14634a150915caf3b9199a4f3
+    CHECKSUM: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
+    PROJECT_NAME: Amplitude
     SPECS:
-      - Amplitude-iOS (4.7.1)
+      - Amplitude (6.0.0)
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
       Analytics:
@@ -7585,9 +7585,9 @@ CACHE_KEYS:
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude:
-        :debug: 5355ac7792059fcce7626f86d17bdf89
-        :release: 5355ac7792059fcce7626f86d17bdf89
-    CHECKSUM: 57aa88d69bd7cc8121654685b969018823f8879e
+        :debug: 470efbc0396f2d20189b325e475a15a1
+        :release: 470efbc0396f2d20189b325e475a15a1
+    CHECKSUM: 8f51332817744acd036ddb2b365f1a4ee685987a
     FILES:
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.m"
@@ -8777,7 +8777,7 @@ CACHE_KEYS:
       FirebaseMLVisionFaceModel:
         :debug: be561dec23d92ce53122582403370726
         :release: be561dec23d92ce53122582403370726
-    CHECKSUM: d6ba42000f263df52187aee936262bc2002b3389
+    CHECKSUM: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
     PROJECT_NAME: FirebaseMLVisionFaceModel
     SPECS:
       - FirebaseMLVisionFaceModel (0.19.0)
@@ -8960,26 +8960,23 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 43b2d98bf58cabcae557565e34d424cb
-      Release: 43b2d98bf58cabcae557565e34d424cb
+      Debug: ca088870eac8671cb8cb890dea5e5662
+      Release: ca088870eac8671cb8cb890dea5e5662
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der"
+      - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
       - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 339c0f5d93cfd1dc7125d914a20bffc0
-      Release: 339c0f5d93cfd1dc7125d914a20bffc0
+      Debug: f02ff9ead2090d1addc00fee7339115e
+      Release: f02ff9ead2090d1addc00fee7339115e
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 339c0f5d93cfd1dc7125d914a20bffc0
-      Release: 339c0f5d93cfd1dc7125d914a20bffc0
+      Debug: f02ff9ead2090d1addc00fee7339115e
+      Release: f02ff9ead2090d1addc00fee7339115e
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:

@@ -2,8 +2,8 @@
 
 #import <ABI38_0_0EXAmplitude/ABI38_0_0EXAmplitude.h>
 
-#import <Amplitude-iOS/Amplitude.h>
-#import <Amplitude-iOS/AMPTrackingOptions.h>
+#import <Amplitude/Amplitude.h>
+#import <Amplitude/AMPTrackingOptions.h>
 
 @implementation ABI38_0_0EXAmplitude
 
