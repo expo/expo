@@ -1,6 +1,6 @@
 ---
 title: AppleAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-apple-authentication'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-apple-authentication'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

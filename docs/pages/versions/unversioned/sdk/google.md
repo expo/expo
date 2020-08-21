@@ -1,6 +1,6 @@
 ---
 title: Google
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-google-app-auth'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-app-auth'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

@@ -1,6 +1,6 @@
 ---
 title: ScreenOrientation
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-screen-orientation'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-screen-orientation'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
