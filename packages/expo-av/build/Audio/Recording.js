@@ -129,8 +129,7 @@ export class Recording {
         this._cleanupForUnloadedRecorder = async (finalStatus) => {
             this._canRecord = false;
             this._isDoneRecording = true;
-            // $FlowFixMe(greg): durationMillis is not always defined
-            this._finalDurationMillis = finalStatus.durationMillis;
+            this._finalDurationMillis = finalStatus?.durationMillis || 0;
             _recorderExists = false;
             if (this._subscription) {
                 this._subscription.remove();
@@ -263,9 +262,18 @@ export class Recording {
         }
         // We perform a separate native API call so that the state of the Recording can be updated with
         // the final duration of the recording. (We cast stopStatus as Object to appease Flow)
-        const finalStatus = await ExponentAV.stopAudioRecording();
+        let stopResult;
+        let stopError;
+        try {
+            stopResult = await ExponentAV.stopAudioRecording();
+        }
+        catch (err) {
+            stopError = err;
+        }
+        // Clean-up and return status
         await ExponentAV.unloadAudioRecorder();
-        return this._cleanupForUnloadedRecorder(finalStatus);
+        const status = await this._cleanupForUnloadedRecorder(stopResult);
+        return stopError ? Promise.reject(stopError) : status;
     }
     // Read API
     getURI() {
