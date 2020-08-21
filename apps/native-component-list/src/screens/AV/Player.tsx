@@ -76,6 +76,18 @@ export default function Player(props: Props) {
 
   const _seekBackward = () => props.setPositionAsync(Math.max(0, props.positionMillis - 5000));
 
+  const _renderReplayButton = () => {
+    return (
+      <TouchableOpacity onPress={_toggleLooping} disabled={!props.isLoaded}>
+        <Ionicons
+          name={'ios-repeat'}
+          size={34}
+          style={[styles.icon, !props.isLooping && { color: '#C1C1C1' }]}
+        />
+      </TouchableOpacity>
+    );
+  };
+
   const _renderPlayPauseButton = () => {
     let onPress = _pause;
     let iconName = 'ios-pause';
@@ -158,6 +170,7 @@ export default function Player(props: Props) {
         <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
           {_formatTime(props.positionMillis / 1000)} / {_formatTime(props.durationMillis / 1000)}
         </Text>
+        {_renderReplayButton()}
       </View>
       <View style={[styles.container, styles.buttonsContainer]}>
         <VolumeSlider
@@ -193,11 +206,12 @@ export default function Player(props: Props) {
             onPress: props.nextAsync,
             active: false,
           })}
-        {_renderAuxiliaryButton({
-          iconName: 'repeat',
-          title: 'Repeat',
-          onPress: _toggleLooping,
-          active: props.isLooping,
+      </View>
+
+      <View style={[styles.container, styles.buttonsContainer]}>
+        {(props.extraButtons ?? []).map(button => {
+          if (typeof button === 'function') return button();
+          return _renderAuxiliaryButton(button);
         })}
       </View>
       <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between' }}>
@@ -211,12 +225,6 @@ export default function Player(props: Props) {
             props.setRateAsync(rate, props.shouldCorrectPitch);
           }}
         />
-      </View>
-      <View style={[styles.container, styles.buttonsContainer]}>
-        {(props.extraButtons ?? []).map(button => {
-          if (typeof button === 'function') return button();
-          return _renderAuxiliaryButton(button);
-        })}
       </View>
       {_maybeRenderErrorOverlay()}
     </View>
