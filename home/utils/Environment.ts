@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import semver from 'semver';
+
 import * as Kernel from '../kernel/Kernel';
 
 const isProduction = !!(

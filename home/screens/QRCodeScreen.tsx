@@ -1,10 +1,10 @@
+import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
 import { Camera } from 'expo-camera';
 import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import * as BarCodeScanner from 'expo-barcode-scanner';
 
 import QRFooterButton from '../components/QRFooterButton';
 import QRIndicator from '../components/QRIndicator';

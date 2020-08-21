@@ -19,8 +19,8 @@ import ThemedStatusBar from '../components/ThemedStatusBar';
 import HistoryActions from '../redux/HistoryActions';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
-import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Environment from '../utils/Environment';
+import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
@@ -169,6 +169,7 @@ class ProjectsView extends React.Component<Props, State> {
 
     if (prevProps.isAuthenticated && !this.props.isAuthenticated) {
       // Remove all projects except Snack, because they are tied to device id
+      // eslint-disable-next-line
       this.setState(({ projects }) => ({
         projects: projects.filter(p => p.source === 'snack'),
       }));

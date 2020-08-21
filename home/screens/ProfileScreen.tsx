@@ -36,56 +36,49 @@ export default function ProfileScreen({
   );
 }
 
-class ProfileView extends React.Component<
-  {
+function ProfileView(
+  props: {
     username: string;
     isAuthenticated: boolean;
-  } & StackScreenProps<AllStackRoutes, 'Profile'>,
-  { isOwnProfile: boolean | null }
-> {
-  constructor(props) {
-    super(props);
+  } & StackScreenProps<AllStackRoutes, 'Profile'>
+) {
+  // NOTE: An empty username prop means to display the viewer's profile. We use null to
+  // indicate we don't yet know if this is the viewer's own profile.
+  const [isOwnProfile, setIsOwnProfile] = React.useState(
+    !props.route.params?.username ? true : null
+  );
 
-    this.state = {
-      // NOTE: An empty username prop means to display the viewer's profile. We use null to
-      // indicate we don't yet know if this is the viewer's own profile.
-      isOwnProfile: !props.route.params?.username ? true : null,
-    };
-  }
-
-  componentDidMount() {
-    if (this.state.isOwnProfile !== null) {
+  React.useEffect(() => {
+    if (isOwnProfile !== null) {
       return;
     }
 
-    if (!this.props.isAuthenticated) {
-      // NOTE: this logic likely can be moved to the constructor or should be in a hook that runs
+    if (!props.isAuthenticated) {
+      // NOTE: this logic likely can be moved to a hook that runs
       // whenever the prop is updated
-      this.setState({ isOwnProfile: false });
+      setIsOwnProfile(false);
     } else {
       getViewerUsernameAsync().then(
         username => {
-          this.setState({ isOwnProfile: username === this.props.username });
+          setIsOwnProfile(username === props.username);
         },
         error => {
-          this.setState({ isOwnProfile: false });
+          setIsOwnProfile(false);
           console.warn(`There was an error fetching the viewer's username`, error);
         }
       );
     }
+  }, []);
+
+  if (isOwnProfile === null) {
+    return <View style={styles.loadingContainer} />;
+  } else if (!props.isAuthenticated && isOwnProfile) {
+    return <ProfileUnauthenticated />;
+  } else if (isOwnProfile) {
+    return <MyProfile {...props} isOwnProfile={isOwnProfile} />;
   }
 
-  render() {
-    if (this.state.isOwnProfile === null) {
-      return <View style={styles.loadingContainer} />;
-    } else if (!this.props.isAuthenticated && this.state.isOwnProfile) {
-      return <ProfileUnauthenticated />;
-    } else if (this.state.isOwnProfile) {
-      return <MyProfile {...this.props} isOwnProfile={this.state.isOwnProfile} />;
-    }
-
-    return <OtherProfile {...this.props} isOwnProfile={this.state.isOwnProfile} />;
-  }
+  return <OtherProfile {...props} isOwnProfile={isOwnProfile} />;
 }
 
 const styles = StyleSheet.create({
