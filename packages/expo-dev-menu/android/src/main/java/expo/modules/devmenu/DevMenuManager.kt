@@ -7,20 +7,22 @@ import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.KeyEvent
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.interfaces.devmenu.DevMenuDelegateInterface
+import expo.interfaces.devmenu.DevMenuExtensionInterface
+import expo.interfaces.devmenu.DevMenuManagerInterface
+import expo.interfaces.devmenu.items.DevMenuAction
+import expo.interfaces.devmenu.items.DevMenuItem
+import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devmenu.detectors.ShakeDetector
-import expo.modules.devmenu.extensions.items.DevMenuAction
-import expo.modules.devmenu.extensions.items.DevMenuItem
-import expo.modules.devmenu.extensions.items.KeyCommand
-import expo.modules.devmenu.interfaces.DevMenuDelegateInterface
-import expo.modules.devmenu.interfaces.DevMenuExtensionInterface
-import expo.modules.devmenu.interfaces.DevMenuManagerInterface
 import expo.modules.devmenu.modules.DevMenuSettings
 import org.unimodules.adapters.react.ModuleRegistryAdapter
 import org.unimodules.adapters.react.ReactModuleRegistryProvider
+import java.util.*
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var shakeDetector: ShakeDetector? = null
@@ -29,7 +31,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var delegate: DevMenuDelegateInterface? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
-  private lateinit var cachedDevMenuItems: List<DevMenuItem>
+  private val cachedDevMenuItems = WeakHashMap<ReactInstanceManager, List<DevMenuItem>>()
 
   //region helpers
 
@@ -66,14 +68,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private val delegateMenuItems: List<DevMenuItem>
     get() {
-      if (!this::cachedDevMenuItems.isInitialized) {
-        cachedDevMenuItems = delegateExtensions
+      val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
+
+      if (!cachedDevMenuItems.containsKey(delegateBridge)) {
+        cachedDevMenuItems[delegateBridge] =  delegateExtensions
           .map { it.devMenuItems() ?: emptyList() }
           .flatten()
           .sortedByDescending { it.importance }
       }
 
-      return cachedDevMenuItems
+      return cachedDevMenuItems.getOrDefault(delegateBridge, emptyList())
     }
 
   private val delegateActions: List<DevMenuAction>

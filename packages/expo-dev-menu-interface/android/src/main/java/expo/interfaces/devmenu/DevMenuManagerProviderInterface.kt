@@ -1,4 +1,4 @@
-package expo.modules.devmenu.interfaces
+package expo.interfaces.devmenu
 
 @FunctionalInterface
 interface DevMenuManagerProviderInterface {

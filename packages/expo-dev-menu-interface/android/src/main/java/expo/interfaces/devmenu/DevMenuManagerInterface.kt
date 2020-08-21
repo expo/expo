@@ -1,11 +1,9 @@
-package expo.modules.devmenu.interfaces
+package expo.interfaces.devmenu
 
 import android.app.Activity
 import android.os.Bundle
 import android.view.KeyEvent
-import expo.modules.devmenu.DevMenuHost
-import expo.modules.devmenu.DevMenuSession
-import expo.modules.devmenu.modules.DevMenuSettings
+import com.facebook.react.ReactNativeHost
 
 interface DevMenuManagerInterface {
   /**
@@ -31,7 +29,7 @@ interface DevMenuManagerInterface {
   fun toggleMenu(activity: Activity)
 
   /**
-   * Handles `onKeyEvent`. It will trigger [expo.modules.devmenu.DevMenuActivity] if [DevMenuSettings.keyCommandsEnabled] is true.
+   * Handles `onKeyEvent`. It's active only if  [DevMenuSettingsInterface.keyCommandsEnabled] is true.
    */
   fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean
 
@@ -52,19 +50,19 @@ interface DevMenuManagerInterface {
   fun serializedItems(): List<Bundle>
 
   /**
-   * @return a instance of [DevMenuSession] that keeps the details of the currently opened dev menu session,
+   * @return a instance of [DevMenuSessionInterface] that keeps the details of the currently opened dev menu session,
    * or `null` if menu isn't opened.
    */
-  fun getSession(): DevMenuSession?
+  fun getSession(): DevMenuSessionInterface?
 
   /**
-   * @return a instance of [DevMenuSettings] that keeps all settings for current dev menu delegate,
+   * @return a instance of [DevMenuSettingsInterface] that keeps all settings for current dev menu delegate,
    * or `null` if delegate wasn't provided.
    */
-  fun getSettings(): DevMenuSettings?
+  fun getSettings(): DevMenuSettingsInterface?
 
   /**
    * @return the dev menu application host.
    */
-  fun getMenuHost(): DevMenuHost
+  fun getMenuHost(): ReactNativeHost
 }

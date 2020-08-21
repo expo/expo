@@ -1,4 +1,4 @@
-package expo.modules.devmenu.interfaces
+package expo.interfaces.devmenu
 
 import android.os.Bundle
 import com.facebook.react.ReactInstanceManager

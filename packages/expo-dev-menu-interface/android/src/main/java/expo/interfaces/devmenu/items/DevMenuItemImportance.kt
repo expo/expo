@@ -1,4 +1,4 @@
-package expo.modules.devmenu.extensions.items
+package expo.interfaces.devmenu.items
 
 /**
  * Tells how important the dev menu item is. To use it with [DevMenuItem], you need to pass its [value].

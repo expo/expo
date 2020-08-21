@@ -1,4 +1,4 @@
-package expo.modules.devmenu.extensions.items
+package expo.interfaces.devmenu.items
 
 import android.os.Bundle
 import android.view.KeyCharacterMap
@@ -10,7 +10,7 @@ data class KeyCommand(val code: Int, val modifiers: Int = 0)
 /**
  * An abstract representation of the single dev menu item.
  */
-sealed class DevMenuItem {
+sealed class DevMenuItem  {
   var isAvailable = { true }
   var isEnabled = { false }
   var label = { "" }
