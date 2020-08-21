@@ -210,7 +210,7 @@ public class ExpoUpdatesAppLoader {
             JSONObject errorJson = new JSONObject(e.getMessage());
             exception = new ManifestException(e, mManifestUrl, errorJson);
           } catch (Exception ex) {
-            // do nothing, expected if the error does not come from www
+            // do nothing, expected if the error payload does not come from a conformant server
           }
           mCallback.onError(exception);
         }
