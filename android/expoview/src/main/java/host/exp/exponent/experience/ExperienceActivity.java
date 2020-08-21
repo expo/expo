@@ -238,7 +238,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         @Override
         public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
-          setLoadingProgressStatus(status);
+          setLoadingProgressStatusIfEnabled(status);
         }
 
         @Override
@@ -358,6 +358,23 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (event.getActivity() == this) {
       mLoadingProgressPopupController.hide();
     }
+
+    if (!Constants.isStandaloneApp()) {
+      ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+      if (appLoader != null && !appLoader.isUpToDate() && appLoader.shouldShowAppLoaderStatus()) {
+        new AlertDialog.Builder(ExperienceActivity.this)
+          .setTitle("Using a cached project")
+          .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
+          .setPositiveButton("Use cache", null)
+          .setNegativeButton("Reload", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              mKernel.reloadVisibleExperience(mManifestUrl, false);
+            }
+          })
+          .show();
+      }
+    }
   }
 
   /*
@@ -369,7 +386,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   public void startLoading() {
     mIsLoading = true;
     showOrReconfigureManagedAppSplashScreen(mManifest);
-    maybeSetLoadingProgressStatus();
+    setLoadingProgressStatusIfEnabled();
   }
 
   /**
@@ -388,30 +405,26 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  private void maybeSetLoadingProgressStatus() {
+  public void setLoadingProgressStatusIfEnabled() {
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
     if (appLoader != null) {
-      setLoadingProgressStatus(appLoader.getStatus());
+      setLoadingProgressStatusIfEnabled(appLoader.getStatus());
     }
   }
 
-  private String getLoadingProgressText(ExpoUpdatesAppLoader.AppLoaderStatus status) {
-    if (status == ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE) {
-      return "Checking for new release...";
-    } else if (status == ExpoUpdatesAppLoader.AppLoaderStatus.DOWNLOADING_NEW_UPDATE) {
-      return "New release available, downloading...";
-    }
-    return null;
-  }
-
-  public void setLoadingProgressStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+  public void setLoadingProgressStatusIfEnabled(ExpoUpdatesAppLoader.AppLoaderStatus status) {
     if (Constants.isStandaloneApp()) {
       return;
     }
     if (status == null) {
       return;
     }
-    UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.updateProgress(getLoadingProgressText(status), null, null));
+    ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+    if (appLoader != null && appLoader.shouldShowAppLoaderStatus()) {
+      UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.setLoadingProgressStatus(status));
+    } else {
+      UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.hide());
+    }
   }
 
   public void setOptimisticManifest(final JSONObject optimisticManifest) {
@@ -428,7 +441,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(optimisticManifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, optimisticManifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(optimisticManifest);
-      maybeSetLoadingProgressStatus();
+      setLoadingProgressStatusIfEnabled();
     });
   }
 
@@ -576,7 +589,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(manifest);
-      maybeSetLoadingProgressStatus();
+      setLoadingProgressStatusIfEnabled();
     });
   }
 
@@ -604,17 +617,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           AsyncCondition.remove(READY_FOR_BUNDLE);
         }
       });
-    }
-
-    if (!Constants.isStandaloneApp()) {
-      ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
-      if (appLoader != null && !appLoader.isUpToDate()) {
-        new AlertDialog.Builder(this)
-          .setTitle("Loading app from cache")
-          .setMessage("Expo was unable to fetch the latest version of this app. A previously downloaded version has been launched. To ensure you're up-to-date, check your network connection and reload the app.")
-          .setPositiveButton(android.R.string.ok, null)
-          .show();
-      }
     }
   }
 

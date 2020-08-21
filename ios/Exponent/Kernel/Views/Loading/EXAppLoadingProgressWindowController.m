@@ -98,5 +98,36 @@
   });
 }
 
+- (void)updateStatus:(EXAppLoaderRemoteUpdateStatus)status
+{
+  if (!_enabled) {
+    return;
+  }
+
+  NSString *statusText = [[self class] _loadingViewTextForStatus:status];
+  if (!statusText) {
+    return;
+  }
+
+  [self show];
+
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    self.textLabel.text = statusText;
+    [self.textLabel setNeedsDisplay];
+  });
+}
+
++ (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status
+{
+  if (status == kEXAppLoaderRemoteUpdateStatusChecking) {
+    return @"Checking for new update...";
+  } else if (status == kEXAppLoaderRemoteUpdateStatusDownloading) {
+    return @"New update available, downloading...";
+  } else {
+    return nil;
+  }
+}
 
 @end

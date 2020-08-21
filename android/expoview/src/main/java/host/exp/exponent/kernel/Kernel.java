@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
-import host.exp.exponent.AppLoader;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -699,7 +698,7 @@ public class Kernel extends KernelInterface {
         @Override
         public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
           if (mOptimisticActivity != null) {
-            mOptimisticActivity.setLoadingProgressStatus(status);
+            mOptimisticActivity.setLoadingProgressStatusIfEnabled(status);
           }
         }
 
