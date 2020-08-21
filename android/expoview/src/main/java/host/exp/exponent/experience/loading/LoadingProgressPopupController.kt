@@ -68,10 +68,10 @@ class LoadingProgressPopupController(activity: Activity) {
 
     val text = when (status) {
       ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE -> {
-        "Checking for new release..."
+        "Checking for new update..."
       }
       ExpoUpdatesAppLoader.AppLoaderStatus.DOWNLOADING_NEW_UPDATE -> {
-        "New release available, downloading..."
+        "New update available, downloading..."
       }
     }
 

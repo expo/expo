@@ -129,6 +129,10 @@ public class ExponentManifest {
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD = "ON_LOAD";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR = "ON_ERROR_RECOVERY";
 
+  // Development client
+  public static final String MANIFEST_DEVELOPMENT_CLIENT_KEY = "developmentClient";
+  public static final String MANIFEST_DEVELOPMENT_CLIENT_SILENT_LAUNCH_KEY = "silentLaunch";
+
   public static final String DEEP_LINK_SEPARATOR = "--";
   public static final String DEEP_LINK_SEPARATOR_WITH_SLASH = "--/";
   public static final String QUERY_PARAM_KEY_RELEASE_CHANNEL = "release-channel";
