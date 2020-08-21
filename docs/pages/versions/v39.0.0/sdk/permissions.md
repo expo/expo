@@ -308,11 +308,6 @@ _ **iOS:** it requires the `expo-notifications` module and doesn't require a mes
 
 The permission type for location access. It contains additional field when returning:
 
-### `scope`
-
-Returns whether permission is granted only for location updates when app is in use (`whenInUse`), even when app is backgrounded (`always`) or when permission is not granted (`none`).
-On devices running Android in versions lower than 10, scope value is either `always` or `none` depending on permission being granted. There is no special background location permission on Android 9 and below.
-
 - **Android:** it requires the [`ACCESS_COARSE_LOCATION`][location-android-coarse] and [`ACCESS_FINE_LOCATION`][location-android-fine] permissions in your manifest.
 - **iOS:** it requires the `expo-location` module and one of the messages below.
 
@@ -327,6 +322,11 @@ On devices running Android in versions lower than 10, scope value is either `alw
 > **Note (iOS):** In Expo client on iOS this permission will always ask the user for permission to access location data while the app is in use.
 
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
+
+#### `scope`
+
+Returns whether permission is granted only for location updates when app is in use (`whenInUse`), even when app is backgrounded (`always`) or when permission is not granted (`none`).
+On devices running Android in versions lower than 10, scope value is either `always` or `none` depending on permission being granted. There is no special background location permission on Android 9 and below.
 
 #### What location usage descriptions should I provide on iOS?
 
