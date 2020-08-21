@@ -12,7 +12,7 @@ const soundUri = 'http://www.noiseaddicts.com/samples_1w72b820/280.mp3';
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 const redirectingSoundUri = 'http://bit.ly/2qBMx80';
-const authenticatedStaticFilesBackend = 'https://authenticated-static-files-hagckpsbra.now.sh';
+const authenticatedStaticFilesBackend = 'https://authenticated-static-files.vercel.app';
 
 export function test(t) {
   t.describe('Audio class', () => {
@@ -226,11 +226,11 @@ export function test(t) {
       }
 
       t.it('redirects from HTTPS URL to HTTPS URL (302)', async () => {
+        // Redirects link shortened URL to GitHub raw audio MP3 URL for LLizard.mp3 asset.
         let error = null;
         try {
           await soundObject.loadAsync({
-            uri:
-              'https://player.vimeo.com/play/1541868671?s=371426411_1591227987_11794ef1a2ffb1b2e9f0bcb007d56cbd&loc=external&context=Vimeo%5CController%5CClipController.main',
+            uri: 'https://rb.gy/eodxez',
           });
         } catch (err) {
           error = err;
