@@ -1,8 +1,8 @@
 {
-  "name": "EXDevMenu",
+  "name": "EXDevMenuProtocole",
   "version": "0.1.0",
-  "summary": "Expo/React Native module with the developer menu.",
-  "description": "Expo/React Native module with the developer menu.",
+  "summary": "Interface for expo-dev-menu",
+  "description": "Interface for expo-dev-menu",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://docs.expo.io",
@@ -16,20 +16,11 @@
   "source_files": "ios/**/*.{h,m,swift}",
   "preserve_paths": "ios/**/*.{h,m,swift}",
   "requires_arc": true,
-  "resource_bundles": {
-    "EXDevMenu": [
-      "assets/*.ios.js",
-      "assets/dev-menu-packager-host"
-    ]
-  },
   "pod_target_xcconfig": {
     "DEFINES_MODULE": "YES"
   },
   "dependencies": {
     "React": [
-
-    ],
-    "EXDevMenuInterface": [
 
     ]
   },

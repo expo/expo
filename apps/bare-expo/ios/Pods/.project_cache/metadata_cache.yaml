@@ -94,6 +94,18 @@ EXDevMenu:
   LABEL: EXDevMenu
   PROJECT_PATH: EXDevMenu.xcodeproj
   UUID: 27DF359C8E918B12F36C792D67038350
+EXDevMenuInterface:
+  LABEL: EXDevMenuInterface
+  PROJECT_PATH: EXDevMenuInterface.xcodeproj
+  UUID: 4D3A2802599AB5CFD5DCC16429ABBF2C
+EXDevMenuProtocole:
+  LABEL: EXDevMenuProtocole
+  PROJECT_PATH: EXDevMenuProtocole.xcodeproj
+  UUID: C962ABE329C4939C48A45EBA6661D1B0
+EXDevMenuProtocoles:
+  LABEL: EXDevMenuProtocoles
+  PROJECT_PATH: EXDevMenuProtocoles.xcodeproj
+  UUID: EB3EC63A63BB9D45CDBBFDAEFE5F561A
 EXDocumentPicker:
   LABEL: EXDocumentPicker
   PROJECT_PATH: EXDocumentPicker.xcodeproj

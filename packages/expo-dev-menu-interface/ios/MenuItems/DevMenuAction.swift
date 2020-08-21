@@ -36,6 +36,6 @@ open class DevMenuAction: DevMenuItem {
 
   @objc
   open func registerKeyCommand(input: String, modifiers: UIKeyModifierFlags) {
-    keyCommand = UIKeyCommand(input: input, modifierFlags: modifiers, action: #selector(UIResponder.EXDevMenu_handleKeyCommand(_:)))
+    keyCommand = UIKeyCommand(input: input, modifierFlags: modifiers, action: #selector(DevMenuUIResponderExtensionProtocol.EXDevMenu_handleKeyCommand(_:)))
   }
 }
