@@ -31,6 +31,7 @@ import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
@@ -209,7 +210,14 @@ public class ExpoUpdatesAppLoader {
           mIsEmergencyLaunch = true;
           launchWithNoDatabase(context, e);
         } else {
-          mCallback.onError(e);
+          Exception exception = e;
+          try {
+            JSONObject errorJson = new JSONObject(e.getMessage());
+            exception = new ManifestException(e, mManifestUrl, errorJson);
+          } catch (Exception ex) {
+            // do nothing, expected if the error payload does not come from a conformant server
+          }
+          mCallback.onError(exception);
         }
       }
 
