@@ -8,6 +8,9 @@ import { DiscoveryDocument, IssuerOrDiscovery } from './Discovery';
  * @param issuerOrDiscovery
  */
 export declare function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): DiscoveryDocument | null;
+export declare function useLoadedAuthRequest(config: AuthRequestConfig, discovery: DiscoveryDocument | null, AuthRequestInstance: typeof AuthRequest): AuthRequest | null;
+declare type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+export declare function useAuthRequestResult(request: AuthRequest | null, discovery: DiscoveryDocument | null, customOptions?: AuthRequestPromptOptions): [AuthSessionResult | null, PromptMethod];
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -17,3 +20,4 @@ export declare function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): 
  * @param discovery
  */
 export declare function useAuthRequest(config: AuthRequestConfig, discovery: DiscoveryDocument | null): [AuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export {};

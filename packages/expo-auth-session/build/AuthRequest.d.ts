@@ -21,7 +21,7 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     readonly usePKCE?: boolean;
     readonly codeChallengeMethod: CodeChallengeMethod;
     readonly redirectUri: string;
-    readonly scopes: string[];
+    readonly scopes?: string[];
     readonly clientSecret?: string;
     readonly prompt?: Prompt;
     constructor(request: AuthRequestConfig);

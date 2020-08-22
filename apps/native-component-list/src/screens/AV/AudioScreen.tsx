@@ -8,7 +8,7 @@ import ListButton from '../../components/ListButton';
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
 
-export default class AuthSessionScreen extends React.Component {
+export default class AudioScreen extends React.Component {
   static navigationOptions = {
     title: 'Audio',
   };

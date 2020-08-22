@@ -34,7 +34,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/auth-session",
   "peerDependencies": {
-    "@unimodules/core": "~5.1.2"
+    "@unimodules/core": "~5.1.2",
+    "expo-application": "~2.2.1"
   },
   "dependencies": {
     "expo-constants": "^9.2.0",
