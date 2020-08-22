@@ -22,6 +22,7 @@ const Branch = optionalRequire(() => require('../screens/BranchScreen'));
 const Brightness = optionalRequire(() => require('../screens/BrightnessScreen'));
 const Calendars = optionalRequire(() => require('../screens/CalendarsScreen'));
 const Clipboard = optionalRequire(() => require('../screens/ClipboardScreen'));
+const Cellular = optionalRequire(() => require('../screens/CellularScreen'));
 const Constants = optionalRequire(() => require('../screens/ConstantsScreen'));
 const ContactDetail = optionalRequire(() => require('../screens/Contacts/ContactDetailScreen'));
 const Contacts = optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
@@ -31,6 +32,7 @@ const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
 const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
 const FileSystem = optionalRequire(() => require('../screens/FileSystemScreen'));
+const Network = optionalRequire(() => require('../screens/NetworkScreen'));
 const FirebaseRecaptcha = optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
 const Font = optionalRequire(() => require('../screens/FontScreen'));
 const Google = optionalRequire(() => require('../screens/GoogleScreen'));
@@ -57,6 +59,7 @@ const Print = optionalRequire(() => require('../screens/PrintScreen'));
 const Random = optionalRequire(() => require('../screens/RandomScreen'));
 const Recording = optionalRequire(() => require('../screens/AV/RecordingScreen'));
 const Reminders = optionalRequire(() => require('../screens/RemindersScreen'));
+const ScreenCapture = optionalRequire(() => require('../screens/ScreenCaptureScreen'));
 const SafeAreaContext = optionalRequire(() => require('../screens/SafeAreaContextScreen'));
 const ScreenOrientation = optionalRequire(() => require('../screens/ScreenOrientationScreen'));
 const SecureStore = optionalRequire(() => require('../screens/SecureStoreScreen'));
@@ -77,6 +80,7 @@ const optionalScreens: {
   StatusBar,
   Alert,
   Clipboard,
+  Cellular,
   Accelerometer,
   ActionSheet,
   AppAuth,
@@ -113,6 +117,7 @@ const optionalScreens: {
   MailComposer,
   ...MediaLibraryScreens,
   NetInfo,
+  Network,
   Notification,
   LocalAuthentication,
   ...LocationScreens,
@@ -125,6 +130,7 @@ const optionalScreens: {
   SafeAreaContext,
   ScreenOrientation,
   SecureStore,
+  ScreenCapture,
   Sensor,
   Sharing,
   SMS,
