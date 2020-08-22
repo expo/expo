@@ -27,6 +27,12 @@ const providers: Record<string, any> = {
       'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
     color: '#4285F4',
   },
+  google_firebase: {
+    name: 'Google Firebase',
+    image:
+      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
+    color: '#4285F4',
+  },
   azure: {
     name: 'Azure',
     image:
@@ -152,6 +158,7 @@ export default function AuthCard({
   name,
   disabled,
   status = '',
+  url,
   onPress,
 }: {
   name: string;
@@ -182,6 +189,17 @@ export default function AuthCard({
               color: 'white',
             }}>
             {subtitle}
+          </Text>
+        )}
+        {url && (
+          <Text
+            style={{
+              opacity: 0.9,
+              marginTop: 2,
+              fontSize: 14,
+              color: 'white',
+            }}>
+            {url}
           </Text>
         )}
       </View>
