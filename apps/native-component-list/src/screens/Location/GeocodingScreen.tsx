@@ -4,79 +4,74 @@ import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import TitleSwitch from '../../components/TitledSwitch';
-
+import { usePermissions } from '@use-expo/permissions';
+import * as Permissions from 'expo-permissions';
 // Location.setGoogleApiKey('<PROVIDE_YOUR_OWN_API_KEY HERE>');
 
-export default class GeocodingScreen extends React.PureComponent<{}, { useGoogleMaps: boolean }> {
-  private forwardGeocodingAddresses = [
-    '1 Hacker Way, CA',
-    'Palo Alto Caltrain Station',
-    'Rogers Arena, Vancouver',
-    'Zabłocie 43b, Kraków',
-    'Amsterdam Centraal',
-    ':-(',
-  ];
+const forwardGeocodingAddresses = [
+  '1 Hacker Way, CA',
+  'Palo Alto Caltrain Station',
+  'Rogers Arena, Vancouver',
+  'Zabłocie 43b, Kraków',
+  'Amsterdam Centraal',
+  ':-(',
+];
 
-  private reverseGeocodingCoords = [
-    { latitude: 49.28, longitude: -123.12 }, // Seymour St, Vancouver
-    { latitude: 50.0615298, longitude: 19.9372142 }, // Main Square, Kraków
-    { latitude: 52.3730983, longitude: 4.8909126 }, // Dam Square, Amsterdam
-    { latitude: 0, longitude: 0 }, // North Atlantic Ocean
-  ];
+const reverseGeocodingCoords = [
+  { latitude: 49.28, longitude: -123.12 }, // Seymour St, Vancouver
+  { latitude: 50.0615298, longitude: 19.9372142 }, // Main Square, Kraków
+  { latitude: 52.3730983, longitude: 4.8909126 }, // Dam Square, Amsterdam
+  { latitude: 0, longitude: 0 }, // North Atlantic Ocean
+];
 
-  state = {
-    useGoogleMaps: false,
-  };
+export default function GeocodingScreen() {
+  usePermissions(Permissions.LOCATION, { ask: true });
 
-  toggleGoogleMaps = () => {
-    this.setState({ useGoogleMaps: !this.state.useGoogleMaps });
-  };
+  const [useGoogleMaps, setGoogleMaps] = React.useState(false);
 
-  render() {
-    const { useGoogleMaps } = this.state;
+  const toggleGoogleMaps = () => setGoogleMaps(value => !value);
 
-    return (
-      <ScrollView style={styles.container}>
-        <TitleSwitch
-          style={styles.switch}
-          title="Use Google Maps API"
-          value={useGoogleMaps}
-          setValue={this.toggleGoogleMaps}
-        />
+  return (
+    <ScrollView style={styles.container}>
+      <TitleSwitch
+        style={styles.switch}
+        title="Use Google Maps API"
+        value={useGoogleMaps}
+        setValue={toggleGoogleMaps}
+      />
 
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Forward-Geocoding</Text>
-        </View>
-        {this.forwardGeocodingAddresses.map((address, index) => (
-          <SimpleActionDemo
-            key={index}
-            title={address}
-            action={() => Location.geocodeAsync(address, { useGoogleMaps })}
-          />
-        ))}
-
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Reverse-Geocoding</Text>
-        </View>
-        {this.reverseGeocodingCoords.map((coords, index) => (
-          <SimpleActionDemo
-            key={index}
-            title={`${coords.latitude}, ${coords.longitude}`}
-            action={() => Location.reverseGeocodeAsync(coords, { useGoogleMaps })}
-          />
-        ))}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>Forward-Geocoding</Text>
+      </View>
+      {forwardGeocodingAddresses.map((address, index) => (
         <SimpleActionDemo
-          title="Where am I?"
-          action={async () => {
-            const location = await Location.getCurrentPositionAsync({
-              accuracy: Location.LocationAccuracy.Lowest,
-            });
-            return Location.reverseGeocodeAsync(location.coords, { useGoogleMaps });
-          }}
+          key={index}
+          title={address}
+          action={() => Location.geocodeAsync(address, { useGoogleMaps })}
         />
-      </ScrollView>
-    );
-  }
+      ))}
+
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>Reverse-Geocoding</Text>
+      </View>
+      {reverseGeocodingCoords.map((coords, index) => (
+        <SimpleActionDemo
+          key={index}
+          title={`${coords.latitude}, ${coords.longitude}`}
+          action={() => Location.reverseGeocodeAsync(coords, { useGoogleMaps })}
+        />
+      ))}
+      <SimpleActionDemo
+        title="Where am I?"
+        action={async () => {
+          const location = await Location.getCurrentPositionAsync({
+            accuracy: Location.LocationAccuracy.Lowest,
+          });
+          return Location.reverseGeocodeAsync(location.coords, { useGoogleMaps });
+        }}
+      />
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
