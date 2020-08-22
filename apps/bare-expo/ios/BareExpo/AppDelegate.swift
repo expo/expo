@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import EXDevMenuInterface
 import EXDevMenu
 
 @UIApplicationMain
@@ -48,7 +49,7 @@ class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
 
   // MARK: DevMenuDelegateProtocol
 
-  func appBridge(forDevMenuManager manager: DevMenuManager) -> AnyObject? {
+  func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject? {
     return self.bridge
   }
 }

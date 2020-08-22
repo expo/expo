@@ -1,6 +1,6 @@
 ---
 title: Payments
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-payments-stripe'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-payments-stripe'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

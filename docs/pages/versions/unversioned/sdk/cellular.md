@@ -1,6 +1,6 @@
 ---
 title: Cellular
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-cellular'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-cellular'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

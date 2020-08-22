@@ -1,6 +1,6 @@
 ---
 title: ImageManipulator
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-image-manipulator'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-manipulator'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

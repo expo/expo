@@ -226,6 +226,14 @@ static NSDictionary* customCertificatesForHost;
   }
   wkWebViewConfig.userContentController = [WKUserContentController new];
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */
+  if (@available(iOS 13.0, *)) {
+    WKWebpagePreferences *pagePrefs = [[WKWebpagePreferences alloc]init];
+    pagePrefs.preferredContentMode = _contentMode;
+    wkWebViewConfig.defaultWebpagePreferences = pagePrefs;
+  }
+#endif
+
   // Shim the HTML5 history API:
   [wkWebViewConfig.userContentController addScriptMessageHandler:[[RNCWeakScriptMessageDelegate alloc] initWithDelegate:self]
                                                             name:HistoryShimName];
@@ -267,9 +275,13 @@ static NSDictionary* customCertificatesForHost;
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
 #if !TARGET_OS_OSX
+    if (_pullToRefreshEnabled) {
+        [self addPullToRefreshControl];
+    }
     _webView.scrollView.scrollEnabled = _scrollEnabled;
     _webView.scrollView.pagingEnabled = _pagingEnabled;
-    _webView.scrollView.bounces = _bounces;
+      //For UIRefreshControl to work correctly, the bounces should always be true
+    _webView.scrollView.bounces = _pullToRefreshEnabled || _bounces; 
     _webView.scrollView.showsHorizontalScrollIndicator = _showsHorizontalScrollIndicator;
     _webView.scrollView.showsVerticalScrollIndicator = _showsVerticalScrollIndicator;
     _webView.scrollView.directionalLockEnabled = _directionalLockEnabled;
@@ -299,7 +311,6 @@ static NSDictionary* customCertificatesForHost;
   _allowsBackForwardNavigationGestures = allowsBackForwardNavigationGestures;
   _webView.allowsBackForwardNavigationGestures = _allowsBackForwardNavigationGestures;
 }
-
 
 - (void)removeFromSuperview
 {
@@ -929,13 +940,15 @@ static NSDictionary* customCertificatesForHost;
 
   WKNavigationType navigationType = navigationAction.navigationType;
   NSURLRequest *request = navigationAction.request;
+  BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
 
   if (_onShouldStartLoadWithRequest) {
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
       @"url": (request.URL).absoluteString,
       @"mainDocumentURL": (request.mainDocumentURL).absoluteString,
-      @"navigationType": navigationTypes[@(navigationType)]
+      @"navigationType": navigationTypes[@(navigationType)],
+      @"isTopFrame": @(isTopFrame)
     }];
     if (![self.delegate webView:self
       shouldStartLoadForRequest:event
@@ -947,7 +960,6 @@ static NSDictionary* customCertificatesForHost;
 
   if (_onLoadingStart) {
     // We have this check to filter out iframe requests and whatnot
-    BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
     if (isTopFrame) {
       NSMutableDictionary<NSString *, id> *event = [self baseEvent];
       [event addEntriesFromDictionary: @{
@@ -1147,6 +1159,35 @@ static NSDictionary* customCertificatesForHost;
   }
 }
 
+- (void)addPullToRefreshControl
+{
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    _refreshControl = refreshControl;
+    [_webView.scrollView addSubview: refreshControl];
+    [refreshControl addTarget:self action:@selector(pullToRefresh:) forControlEvents: UIControlEventValueChanged];
+}
+
+- (void)pullToRefresh:(UIRefreshControl *)refreshControl
+{
+    [self reload];
+    [refreshControl endRefreshing];
+}
+
+#if !TARGET_OS_OSX
+- (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled
+{
+    _pullToRefreshEnabled = pullToRefreshEnabled;
+    
+    if (pullToRefreshEnabled) {
+        [self addPullToRefreshControl];
+    } else {
+        [_refreshControl removeFromSuperview];
+    }
+
+    [self setBounces:_bounces];
+}
+#endif // !TARGET_OS_OSX
+
 - (void)stopLoading
 {
   [_webView stopLoading];
@@ -1156,10 +1197,10 @@ static NSDictionary* customCertificatesForHost;
 - (void)setBounces:(BOOL)bounces
 {
   _bounces = bounces;
-  _webView.scrollView.bounces = bounces;
+    //For UIRefreshControl to work correctly, the bounces should always be true
+  _webView.scrollView.bounces = _pullToRefreshEnabled || bounces;
 }
 #endif // !TARGET_OS_OSX
-
 
 - (void)setInjectedJavaScript:(NSString *)source {
   _injectedJavaScript = source;

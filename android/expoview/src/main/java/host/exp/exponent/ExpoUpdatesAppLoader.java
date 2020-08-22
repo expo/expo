@@ -31,6 +31,7 @@ import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
@@ -59,6 +60,10 @@ public class ExpoUpdatesAppLoader {
   public static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
   public static final String UPDATE_ERROR_EVENT = "error";
 
+  public enum AppLoaderStatus {
+    CHECKING_FOR_UPDATE, DOWNLOADING_NEW_UPDATE
+  }
+
   private String mManifestUrl;
   private AppLoaderCallback mCallback;
   private final boolean mUseCacheOnly;
@@ -68,6 +73,9 @@ public class ExpoUpdatesAppLoader {
   private SelectionPolicy mSelectionPolicy;
   private Launcher mLauncher;
   private boolean mIsEmergencyLaunch = false;
+  private boolean mIsUpToDate = true;
+  private AppLoaderStatus mStatus;
+  private boolean mShouldShowAppLoaderStatus = true;
 
   private boolean isStarted = false;
 
@@ -76,6 +84,7 @@ public class ExpoUpdatesAppLoader {
     void onManifestCompleted(JSONObject manifest);
     void onBundleCompleted(String localBundlePath);
     void emitEvent(JSONObject params);
+    void updateStatus(AppLoaderStatus status);
     void onError(Exception e);
   }
 
@@ -123,11 +132,29 @@ public class ExpoUpdatesAppLoader {
     return mIsEmergencyLaunch;
   }
 
+  public boolean isUpToDate() {
+    return mIsUpToDate;
+  }
+
+  public AppLoaderStatus getStatus() {
+    return mStatus;
+  }
+
+  public boolean shouldShowAppLoaderStatus() {
+    return mShouldShowAppLoaderStatus;
+  }
+
+  private void updateStatus(AppLoaderStatus status) {
+    mStatus = status;
+    mCallback.updateStatus(status);
+  }
+
   public void start(Context context) {
     if (isStarted) {
       throw new IllegalStateException("AppLoader for " + mManifestUrl + " was started twice. AppLoader.start() may only be called once per instance.");
     }
     isStarted = true;
+    mStatus = AppLoaderStatus.CHECKING_FOR_UPDATE;
 
     mKernel.addAppLoaderForManifestUrl(mManifestUrl, this);
 
@@ -143,8 +170,7 @@ public class ExpoUpdatesAppLoader {
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "NEVER");
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 0);
     } else {
-      // TODO: decide about default launch behavior for development client
-      configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 10000);
+      configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 60000);
     }
 
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
@@ -184,43 +210,48 @@ public class ExpoUpdatesAppLoader {
           mIsEmergencyLaunch = true;
           launchWithNoDatabase(context, e);
         } else {
-          mCallback.onError(e);
+          Exception exception = e;
+          try {
+            JSONObject errorJson = new JSONObject(e.getMessage());
+            exception = new ManifestException(e, mManifestUrl, errorJson);
+          } catch (Exception ex) {
+            // do nothing, expected if the error payload does not come from a conformant server
+          }
+          mCallback.onError(exception);
         }
       }
 
       @Override
       public boolean onCachedUpdateLoaded(UpdateEntity update) {
-        boolean shouldForceRemote = false;
+        setShouldShowAppLoaderStatus(update.metadata);
         if (isUsingDeveloperTool(update.metadata)) {
-          shouldForceRemote = true;
+          return false;
         } else {
           try {
             String experienceId = update.metadata.getString(ExponentManifest.MANIFEST_ID_KEY);
             // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
             JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
             if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
-              shouldForceRemote = true;
+              return false;
             }
           } catch (Exception e) {
-            shouldForceRemote = false;
+            return true;
           }
-        }
-
-        if (shouldForceRemote && configuration.getCheckOnLaunch() != UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS) {
-          new ExpoUpdatesAppLoader(mManifestUrl, mCallback, false).start(context);
-          return false;
         }
         return true;
       }
 
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
+        setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
         mCallback.onOptimisticManifest(manifest.getRawManifestJson());
+        updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
       }
 
       @Override
-      public void onSuccess(Launcher launcher) {
+      public void onSuccess(Launcher launcher, boolean isUpToDate) {
         mLauncher = launcher;
+        mIsUpToDate = isUpToDate;
         try {
           JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
           mCallback.onManifestCompleted(manifest);
@@ -311,6 +342,16 @@ public class ExpoUpdatesAppLoader {
         manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPER_KEY).has(ExponentManifest.MANIFEST_DEVELOPER_TOOL_KEY);
     } catch (JSONException e) {
       return false;
+    }
+  }
+
+  private void setShouldShowAppLoaderStatus(JSONObject manifest) {
+    try {
+      mShouldShowAppLoaderStatus = !(manifest.has(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY) &&
+        manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY)
+          .optBoolean(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_SILENT_LAUNCH_KEY, false));
+    } catch (JSONException e) {
+      mShouldShowAppLoaderStatus = true;
     }
   }
 

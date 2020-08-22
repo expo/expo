@@ -2,10 +2,12 @@
 
 package host.exp.exponent.experience;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -235,6 +237,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         }
 
         @Override
+        public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+          setLoadingProgressStatusIfEnabled(status);
+        }
+
+        @Override
         public void onError(Exception e) {
           Exponent.getInstance().runOnUiThread(() -> {
             mKernel.handleError(e);
@@ -351,6 +358,23 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (event.getActivity() == this) {
       mLoadingProgressPopupController.hide();
     }
+
+    if (!Constants.isStandaloneApp()) {
+      ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+      if (appLoader != null && !appLoader.isUpToDate() && appLoader.shouldShowAppLoaderStatus()) {
+        new AlertDialog.Builder(ExperienceActivity.this)
+          .setTitle("Using a cached project")
+          .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
+          .setPositiveButton("Use cache", null)
+          .setNegativeButton("Reload", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              mKernel.reloadVisibleExperience(mManifestUrl, false);
+            }
+          })
+          .show();
+      }
+    }
   }
 
   /*
@@ -362,6 +386,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   public void startLoading() {
     mIsLoading = true;
     showOrReconfigureManagedAppSplashScreen(mManifest);
+    setLoadingProgressStatusIfEnabled();
   }
 
   /**
@@ -380,6 +405,28 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
+  public void setLoadingProgressStatusIfEnabled() {
+    ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+    if (appLoader != null) {
+      setLoadingProgressStatusIfEnabled(appLoader.getStatus());
+    }
+  }
+
+  public void setLoadingProgressStatusIfEnabled(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+    if (Constants.isStandaloneApp()) {
+      return;
+    }
+    if (status == null) {
+      return;
+    }
+    ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
+    if (appLoader != null && appLoader.shouldShowAppLoaderStatus()) {
+      UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.setLoadingProgressStatus(status));
+    } else {
+      UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.hide());
+    }
+  }
+
   public void setOptimisticManifest(final JSONObject optimisticManifest) {
     runOnUiThread(() -> {
       if (!isInForeground()) {
@@ -394,6 +441,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(optimisticManifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, optimisticManifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(optimisticManifest);
+      setLoadingProgressStatusIfEnabled();
     });
   }
 
@@ -541,6 +589,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
       showOrReconfigureManagedAppSplashScreen(manifest);
+      setLoadingProgressStatusIfEnabled();
     });
   }
 

@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <UMReactNativeAdapter/UMViewManagerAdapter.h>
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <UMReactNativeAdapter/UMViewManagerAdapterClassesRegistry.h>

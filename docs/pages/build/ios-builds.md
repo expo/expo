@@ -1,12 +1,12 @@
 ---
-title: iOS Builds
+title: iOS build process
 ---
 
-This page describes the process of building iOS projects with EAS Builds. You may want to read this if you are interested in the implementation details of the build service.
+This page describes the process of building iOS projects with EAS Build. You may want to read this if you are interested in the implementation details of the build service.
 
 ## Build Process
 
-Let's take a closer look at the steps for building iOS projects with EAS Builds. We first run some steps on your local machine to prepare the project, and then we actually build the project on a remote service.
+Let's take a closer look at the steps for building iOS projects with EAS Build. We first run some steps on your local machine to prepare the project, and then we actually build the project on a remote service.
 
 ### Local Steps
 
@@ -28,11 +28,11 @@ The first phase happens on your computer. Expo CLI is in charge of completing th
    4.2. Set the id of the provisioning profile resolved in the previous step.
 
 5. Create the tarball containing all your project sources - run `git archive --format=tar.gz --prefix project/ -o project.tar.gz HEAD`.
-6. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Builds.
+6. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps
 
-Next, this is what happens when EAS Builds picks up your request:
+Next, this is what happens when EAS Build picks up your request:
 
 1. Create a new macOS VM for the build.
 
@@ -55,13 +55,13 @@ Next, this is what happens when EAS Builds picks up your request:
 7. Run `fastlane gym` in the `ios` directory.
 8. Upload the build artifact to a private AWS S3 bucket.
 
-   The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`.
+   The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
 
 ## Building iOS Projects With Fastlane
 
 We're using [fastlane](https://fastlane.tools/) for building iOS projects. To be more precise, we're using the `fastlane gym` command ([see the fastlane docs to learn more](https://docs.fastlane.tools/actions/gym/)). This command allows you to declare the build configuration in `Gymfile`.
 
-EAS Builds can use your own `Gymfile`. All you need to do is to place this file in the `ios` directory.
+EAS Build can use your own `Gymfile`. All you need to do is to place this file in the `ios` directory.
 
 ### Default Gymfile
 

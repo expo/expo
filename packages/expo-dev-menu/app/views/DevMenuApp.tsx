@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFonts } from 'expo-font';
-import { StyleSheet, View, useColorScheme } from 'react-native';
+import { StyleSheet, View, useColorScheme, Platform } from 'react-native';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 
 import Colors from '../constants/Colors';
@@ -35,13 +35,14 @@ function DevMenuApp(props) {
 
   // @tsapeta: For production bundles probably the best way to use custom fonts is to just download them from web.
   // But maybe we should have it as an asset?
-  const [fontsLoaded] = useFonts({
-    'material-community':
-      'https://github.com/Templarian/MaterialDesign-Font/raw/master/MaterialDesignIconsDesktop.ttf',
-  });
-
-  if (!fontsLoaded) {
-    return null;
+  if (Platform.OS !== 'android') {
+    const [fontsLoaded] = useFonts({
+      'material-community':
+        'https://github.com/Templarian/MaterialDesign-Font/raw/master/MaterialDesignIconsDesktop.ttf',
+    });
+    if (!fontsLoaded) {
+      return null;
+    }
   }
   return (
     <View style={styles.rootView}>

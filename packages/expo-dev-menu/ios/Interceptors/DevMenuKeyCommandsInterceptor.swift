@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
+import EXDevMenuInterface
 
 class DevMenuKeyCommandsInterceptor {
   /**
@@ -31,7 +32,7 @@ class DevMenuKeyCommandsInterceptor {
 /**
  Extend `UIResponder` so we can put our key commands to all responders.
  */
-extension UIResponder {
+extension UIResponder: DevMenuUIResponderExtensionProtocol {
   // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
   // method gets called repeatedly if the command key is held down.
   static private var lastKeyCommandExecutionTime: TimeInterval = 0
@@ -46,7 +47,7 @@ extension UIResponder {
   }
 
   @objc
-  func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
+  public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
     if CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5 {
       let actions = DevMenuManager.shared.devMenuActions
       let action = actions.first { $0.keyCommand == key }

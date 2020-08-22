@@ -212,7 +212,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   // do nothing here for now
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
   _launcher = launcher;
   if (self->_delegate) {

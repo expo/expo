@@ -20,11 +20,6 @@
       </intent-filter>
     </service>
 
-    <service
-      android:name=".notifications.service.ExpoNotificationSchedulerService"
-      android:exported="false"
-      android:permission="android.permission.BIND_JOB_SERVICE" />
-
     <receiver
       android:name=".notifications.service.ScheduledAlarmReceiver"
       android:enabled="true"

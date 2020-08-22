@@ -86,3 +86,32 @@ export async function filterAsync<T = any>(
   const results = await Promise.all(arr.map(filter));
   return arr.filter((item, index) => results[index]);
 }
+
+/**
+ * Retries executing the function with given interval and with given retry limit.
+ * It resolves immediately once the callback returns anything else than `undefined`.
+ */
+export async function retryAsync<T = any>(
+  interval: number,
+  limit: number,
+  callback: () => T | Promise<T>
+): Promise<T> {
+  return new Promise((resolve) => {
+    let count = 0;
+
+    const timeoutCallback = async () => {
+      const result = await callback();
+
+      if (result !== undefined) {
+        resolve(result);
+        return;
+      }
+      if (++count < limit) {
+        setTimeout(timeoutCallback, interval);
+      } else {
+        resolve(undefined);
+      }
+    };
+    timeoutCallback();
+  });
+}

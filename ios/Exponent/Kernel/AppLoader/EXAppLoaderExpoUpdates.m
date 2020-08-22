@@ -8,6 +8,7 @@
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
+#import "EXManifestResource.h"
 #import "EXSession.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
@@ -33,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary *confirmedManifest;
 @property (nonatomic, strong, nullable) NSDictionary *optimisticManifest;
 @property (nonatomic, strong, nullable) NSData *bundle;
+@property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
+@property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
+@property (nonatomic, assign) BOOL isUpToDate;
 
 @property (nonatomic, strong, nullable) NSError *error;
 
@@ -51,10 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @synthesize manifestUrl = _manifestUrl;
 @synthesize bundle = _bundle;
+@synthesize remoteUpdateStatus = _remoteUpdateStatus;
+@synthesize shouldShowRemoteUpdateStatus = _shouldShowRemoteUpdateStatus;
 @synthesize config = _config;
 @synthesize selectionPolicy = _selectionPolicy;
 @synthesize appLauncher = _appLauncher;
 @synthesize isEmergencyLaunch = _isEmergencyLaunch;
+@synthesize isUpToDate = _isUpToDate;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
 {
@@ -79,6 +86,9 @@ NS_ASSUME_NONNULL_BEGIN
   _error = nil;
   _shouldUseCacheOnly = NO;
   _isEmergencyLaunch = NO;
+  _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusChecking;
+  _shouldShowRemoteUpdateStatus = YES;
+  _isUpToDate = NO;
 }
 
 - (EXAppLoaderStatus)status
@@ -154,31 +164,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
+  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
   if ([[self class] areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
-    if (_shouldUseCacheOnly) {
-      _shouldUseCacheOnly = NO;
-      dispatch_async(_appLoaderQueue, ^{
-        [self _startLoaderTask];
-      });
-      return NO;
-    }
+    return NO;
   }
   return YES;
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
+  _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
+  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
+  if (!_optimisticManifest) {
+    [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
+  }
+  _isUpToDate = isUpToDate;
   if ([[self class] areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
-    // in dev mode, we need to set an optimistic manifest even if the LoaderTask never sent one
-    if (!_optimisticManifest) {
-      [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
-    }
+    // in dev mode, we need to set an optimistic manifest but nothing else
     return;
   }
   _confirmedManifest = [self _processManifest:launcher.launchedUpdate.rawManifest];
@@ -196,8 +204,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self _launchWithNoDatabaseAndError:error];
   } else {
     _error = error;
+
+    // if the error payload conforms to the error protocol, we can parse it and display
+    // a slightly nicer error message to the user
+    id errorJson = [NSJSONSerialization JSONObjectWithData:[error.localizedDescription dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
+    if (errorJson && [errorJson isKindOfClass:[NSDictionary class]]) {
+      EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
+      _error = [manifestResource formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:errorJson]];
+    }
+
     if (self.delegate) {
-      [self.delegate appLoader:self didFailWithError:error];
+      [self.delegate appLoader:self didFailWithError:_error];
     }
   }
 }
@@ -261,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesScopeKey": _manifestUrl.absoluteString,
     @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
-    @"EXUpdatesLaunchWaitMs": _shouldUseCacheOnly ? @(0) : @(10000),
+    @"EXUpdatesLaunchWaitMs": _shouldUseCacheOnly ? @(0) : @(60000),
     @"EXUpdatesCheckOnLaunch": _shouldUseCacheOnly ? @"NEVER" : @"ALWAYS",
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
@@ -319,6 +336,21 @@ NS_ASSUME_NONNULL_BEGIN
   if (self.delegate) {
     [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
   }
+}
+
+- (void)_setShouldShowRemoteUpdateStatus:(NSDictionary *)manifest
+{
+  if (manifest) {
+    NSDictionary *developmentClientSettings = manifest[@"developmentClient"];
+    if (developmentClientSettings && [developmentClientSettings isKindOfClass:[NSDictionary class]]) {
+      id silentLaunch = developmentClientSettings[@"silentLaunch"];
+      if (silentLaunch && [@(YES) isEqual:silentLaunch]) {
+        _shouldShowRemoteUpdateStatus = NO;
+        return;
+      }
+    }
+  }
+  _shouldShowRemoteUpdateStatus = YES;
 }
 
 - (void)_loadDevelopmentJavaScriptResource

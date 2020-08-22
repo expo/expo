@@ -133,6 +133,7 @@ export default class LottieScreen extends React.Component<{}, State> {
       this.state.progress.setValue(0);
       Animated.timing(this.state.progress, {
         toValue: 1,
+        useNativeDriver: false,
         duration: this.state.config.duration,
       }).start(({ finished }) => {
         if (finished) this.forceUpdate();
@@ -147,6 +148,7 @@ export default class LottieScreen extends React.Component<{}, State> {
       this.state.progress.setValue(1);
       Animated.timing(this.state.progress, {
         toValue: 0,
+        useNativeDriver: false,
         duration: this.state.config.duration,
       }).start(({ finished }) => {
         if (finished) {

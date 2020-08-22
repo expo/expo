@@ -5,13 +5,13 @@ import * as React from 'react';
 import TabIcon from '../components/TabIcon';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { Screens } from './ExpoApis';
-import StackConfig from './StackConfig';
+import getStackConfig from './StackConfig';
 
 const Stack = createStackNavigator();
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   return (
-    <Stack.Navigator {...props} {...StackConfig}>
+    <Stack.Navigator {...props} {...getStackConfig(props)}>
       <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
 
       {Object.keys(Screens).map(name => (

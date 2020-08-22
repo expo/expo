@@ -44,7 +44,7 @@
 /packages/expo-haptics                          @tsapeta @bbarthec
 /packages/expo-image                            @sjchmiela @IjzerenHein
 /packages/expo-image-manipulator                @bbarthec @tsapeta
-/packages/expo-image-picker                     @bbarthec @tsapeta
+/packages/expo-image-picker                     @bbarthec @lukmccall
 /packages/expo-in-app-purchases                 @ide
 /packages/expo-intent-launcher                  @tsapeta @bbarthec
 /packages/expo-keep-awake                       @brentvatne

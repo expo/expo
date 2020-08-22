@@ -1,5 +1,6 @@
 name: Publish Native Component List Web
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - master

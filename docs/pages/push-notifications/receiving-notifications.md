@@ -76,6 +76,11 @@ export default class App extends React.Component {
 - `shouldPlaySound`
 - `shouldSetBadge`
 
+
+## Closed Notification Behaviour
+
+On Android, users can set certain OS-level settings (**usually** revolving around performance and battery optimisation), that can prevent notifications from being delivered when the app is closed. One such setting is the "Deep Clear" option on OnePlus devices.
+
 ## Notification Event Listeners
 
 Event listeners added using `addNotificationReceivedListener` and `addNotificationResponseReceivedListener` will receive an object when a notification is received or interacted with, respectively. See the [documentation](../../versions/latest/sdk/notifications/#notification) for information on these objects.

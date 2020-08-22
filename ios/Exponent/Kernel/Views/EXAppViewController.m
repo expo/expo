@@ -74,17 +74,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * SplashScreenViewProvider that is used only in managed workflow app.
  * Managed app does not need any specific SplashScreenViewProvider as it uses generic one povided by the SplashScreen module.
- * See also self.homeAppSplashScreenViewProvider
+ * See also EXHomeAppSplashScreenViewProvider in self.viewDidLoad
  */
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
-/**
- * SplashScreenViewProvider that is used only in home app.
- * See also self.managedAppSplashScreenViewProvider
- */
-@property (nonatomic, strong, nullable) EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider;
 
 /*
- * This view is available in managed apps only.
+ * This view is available in managed apps run in Expo Client only.
  * It is shown only before any managed app manifest is delivered by the app loader.
  */
 @property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
@@ -118,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
   [super viewDidLoad];
 
   // EXKernel.appRegistry.homeAppRecord does not contain any homeAppRecord until this point,
-  // therefore we cannot move this propoerty initialization to the constructor/initializer
+  // therefore we cannot move this property initialization to the constructor/initializer
   _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
   
   // show LoadingCancelView in managed apps only
@@ -131,24 +126,23 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.appLoadingCancelView];
     [self.view bringSubviewToFront:self.appLoadingCancelView];
   }
-  
-  // show LoadingProgressWindow in managed apps and dev home app only
-  BOOL isDevelopmentHomeApp = self.isHomeApp && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone || isDevelopmentHomeApp];
+
+  // show LoadingProgressWindow in the development client for all apps other than production home
+  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone && !isProductionHomeApp];
 
   // show SplashScreen in standalone apps and home app only
   // SplashScreen for managed is shown once the manifest is available
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   if (self.isHomeApp) {
-    self.homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
+    EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
     [splashScreenService showSplashScreenFor:self
-                    splashScreenViewProvider:self.homeAppSplashScreenViewProvider
+                    splashScreenViewProvider:homeAppSplashScreenViewProvider
                              successCallback:^{}
                              failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
   } else if (self.isStandalone) {
     [splashScreenService showSplashScreenFor:self];
   }
-  
 
   self.view.backgroundColor = [UIColor whiteColor];
   _appRecord.appManager.delegate = self;
@@ -329,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
  * - actual one served when app is fetched.
  * For each of them we should show SplashScreen,
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible. 
- * Non-managed apps (HomeApp or standalones) this function is no-op as SplashScreen is managed differently.
+ * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */ 
 - (void)_showOrReconfigureManagedAppSplashScreen:(NSDictionary *)manifest
 {
@@ -340,12 +334,44 @@ NS_ASSUME_NONNULL_BEGIN
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
     
     EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-    [splashScreenService showSplashScreenFor:self
-                    splashScreenViewProvider:_managedAppSplashScreenViewProvider
-                             successCallback:^{}
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    UM_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UM_ENSURE_STRONGIFY(self);
+      [splashScreenService showSplashScreenFor:self
+                      splashScreenViewProvider:self.managedAppSplashScreenViewProvider
+                               successCallback:^{}
+                               failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    });
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
+  }
+}
+
+- (void)_showCachedExperienceAlert
+{
+  if (self.isStandalone || self.isHomeApp) {
+    return;
+  }
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIAlertController *alert = [UIAlertController
+                                alertControllerWithTitle:@"Using a cached project"
+                                message:@"If you did not intend to use a cached project, check your network connection and reload."
+                                preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Reload" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+      [self refresh];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Use cache" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+  });
+}
+
+- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAppLoader *)appLoader
+{
+  if (appLoader.shouldShowRemoteUpdateStatus) {
+    [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
+  } else {
+    [self.appLoadingProgressWindowController hide];
   }
 }
 
@@ -354,10 +380,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
   if (_appLoadingCancelView) {
-    [_appLoadingCancelView removeFromSuperview];
-    _appLoadingCancelView = nil;
+    UM_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UM_ENSURE_STRONGIFY(self);
+      [self.appLoadingCancelView removeFromSuperview];
+      self.appLoadingCancelView = nil;
+    });
   }
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
@@ -375,6 +406,10 @@ NS_ASSUME_NONNULL_BEGIN
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
+  }
+  
+  if (!appLoader.isUpToDate && appLoader.shouldShowRemoteUpdateStatus) {
+    [self _showCachedExperienceAlert];
   }
 }
 
@@ -661,9 +696,7 @@ NS_ASSUME_NONNULL_BEGIN
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    if (isLoading) {
-      
-    } else {
+    if (!isLoading) {
       [self.appLoadingProgressWindowController hide];
     }
   });

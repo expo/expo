@@ -7,25 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C4DF8486F29DA772EF60AE0F4B56F46 /* EXDocumentPickerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9457059407C3BBB9E4FBEF90961CFAAE /* EXDocumentPickerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6A260F945DE266D9E457D159818040C7 /* EXDocumentPickerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CB02716C7B837676550E1F5A7E1B8118 /* EXDocumentPickerModule.m */; };
-		8A16EFB42261FFECFFBFD8AE6E68C70B /* EXDocumentPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B96CADA60CC9423ECB431C49266E1A /* EXDocumentPicker-dummy.m */; };
+		0253BD56042F9EC3316AD1C977DD5155 /* EXDocumentPickerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CB02716C7B837676550E1F5A7E1B8118 /* EXDocumentPickerModule.m */; };
+		E4590C6BAB922D3CFBA78A62DE7709B0 /* EXDocumentPickerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9457059407C3BBB9E4FBEF90961CFAAE /* EXDocumentPickerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FDDE40B9AD49EAE7FAC1F6C8BBB29875 /* EXDocumentPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B96CADA60CC9423ECB431C49266E1A /* EXDocumentPicker-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2CB4116C35E8C8CFE278A12E581179BE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AD20ACE0E10710598CC896AE306FCD6B /* UMFileSystemInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
-			remoteInfo = UMFileSystemInterface;
-		};
-		C9717C30C1C80350D1DA47BCC4BFECFE /* PBXContainerItemProxy */ = {
+		626825A644D4C51E7EF3660363EE5B7C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7AE9EC1AFE0FC150D12091A7EA69D9B4 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
+		};
+		D1CABA42E1EC8E4DE122BF3DB2DBA85B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD20ACE0E10710598CC896AE306FCD6B /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -43,7 +43,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1F6BF1E5B4EDFE8BE0AABCC9FC2C5ACB /* Frameworks */ = {
+		12924BFF821C40AE7978AE94213A4613 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,11 +122,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		768EE32AC8920375562A00712126E8DD /* Headers */ = {
+		D386DE007FFB99FCF23CC38D6CA45D62 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C4DF8486F29DA772EF60AE0F4B56F46 /* EXDocumentPickerModule.h in Headers */,
+				E4590C6BAB922D3CFBA78A62DE7709B0 /* EXDocumentPickerModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,17 +135,17 @@
 /* Begin PBXNativeTarget section */
 		40300EFA08DDB78C6AFF84A0F118E9CD /* EXDocumentPicker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 530B64C9A9DFE188C5270044684272FE /* Build configuration list for PBXNativeTarget "EXDocumentPicker" */;
+			buildConfigurationList = E7071EA3AFBA5E62BDEF63B15D9D4CE9 /* Build configuration list for PBXNativeTarget "EXDocumentPicker" */;
 			buildPhases = (
-				768EE32AC8920375562A00712126E8DD /* Headers */,
-				2C2F780FB0C3355F03796FECDAF70D58 /* Sources */,
-				1F6BF1E5B4EDFE8BE0AABCC9FC2C5ACB /* Frameworks */,
+				D386DE007FFB99FCF23CC38D6CA45D62 /* Headers */,
+				B01BAC56E43CD7C678957C04FB6C980D /* Sources */,
+				12924BFF821C40AE7978AE94213A4613 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				36AB1641F5CA5871319065FD64562593 /* PBXTargetDependency */,
-				1B2218293B0806E4D5A5D7F3A359A725 /* PBXTargetDependency */,
+				AC9B6C97911BBE94F6B6F2DA0D86FB61 /* PBXTargetDependency */,
+				C8A473196BC4B3F0CBD792A2E2FF8D12 /* PBXTargetDependency */,
 			);
 			name = EXDocumentPicker;
 			productName = EXDocumentPicker;
@@ -188,31 +188,57 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2C2F780FB0C3355F03796FECDAF70D58 /* Sources */ = {
+		B01BAC56E43CD7C678957C04FB6C980D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A16EFB42261FFECFFBFD8AE6E68C70B /* EXDocumentPicker-dummy.m in Sources */,
-				6A260F945DE266D9E457D159818040C7 /* EXDocumentPickerModule.m in Sources */,
+				FDDE40B9AD49EAE7FAC1F6C8BBB29875 /* EXDocumentPicker-dummy.m in Sources */,
+				0253BD56042F9EC3316AD1C977DD5155 /* EXDocumentPickerModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B2218293B0806E4D5A5D7F3A359A725 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = 2CB4116C35E8C8CFE278A12E581179BE /* PBXContainerItemProxy */;
-		};
-		36AB1641F5CA5871319065FD64562593 /* PBXTargetDependency */ = {
+		AC9B6C97911BBE94F6B6F2DA0D86FB61 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = C9717C30C1C80350D1DA47BCC4BFECFE /* PBXContainerItemProxy */;
+			targetProxy = 626825A644D4C51E7EF3660363EE5B7C /* PBXContainerItemProxy */;
+		};
+		C8A473196BC4B3F0CBD792A2E2FF8D12 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = D1CABA42E1EC8E4DE122BF3DB2DBA85B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		753322D7A66ABAEFC3FBB945C8D95623 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC8528C2E56CCB1455D86551B6E2F4AD /* EXDocumentPicker.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXDocumentPicker/EXDocumentPicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXDocumentPicker;
+				PRODUCT_NAME = EXDocumentPicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		7864B0A58DB5AE8B5046071B1C878FDD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -277,31 +303,6 @@
 			};
 			name = Debug;
 		};
-		9AC2B0FA87903E8510F3D3B83805D805 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2FC0FA5D7F4BA0E7E934A23263A655A /* EXDocumentPicker.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXDocumentPicker/EXDocumentPicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXDocumentPicker;
-				PRODUCT_NAME = EXDocumentPicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		A7BDF9F5CEBEB0D8B1EC87391B458F68 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -362,9 +363,9 @@
 			};
 			name = Release;
 		};
-		D4E1B72300BA166444EA8CF1DA298C29 /* Release */ = {
+		DC13D480985031212A8E25D42F0954D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC8528C2E56CCB1455D86551B6E2F4AD /* EXDocumentPicker.release.xcconfig */;
+			baseConfigurationReference = D2FC0FA5D7F4BA0E7E934A23263A655A /* EXDocumentPicker.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -384,18 +385,17 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		530B64C9A9DFE188C5270044684272FE /* Build configuration list for PBXNativeTarget "EXDocumentPicker" */ = {
+		E7071EA3AFBA5E62BDEF63B15D9D4CE9 /* Build configuration list for PBXNativeTarget "EXDocumentPicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9AC2B0FA87903E8510F3D3B83805D805 /* Debug */,
-				D4E1B72300BA166444EA8CF1DA298C29 /* Release */,
+				DC13D480985031212A8E25D42F0954D5 /* Debug */,
+				753322D7A66ABAEFC3FBB945C8D95623 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

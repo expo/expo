@@ -15,7 +15,7 @@ module.exports = {
     module: false,
     require: false,
   },
-  plugins: ['babel', 'import'],
+  plugins: ['@babel', 'import'],
   rules: {
     'array-bracket-spacing': ['warn', 'never'],
     'arrow-spacing': ['warn', { before: true, after: true }],
@@ -98,7 +98,7 @@ module.exports = {
     'no-unneeded-ternary': 'warn',
     'no-unreachable': 'warn',
     'no-unsafe-negation': 'warn',
-    'no-unused-expressions': ['warn', { allowShortCircuit: true }],
+    'no-unused-expressions': 'off',
     'no-unused-labels': 'warn',
     'no-unused-vars': ['warn', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
     'no-useless-computed-key': 'warn',
@@ -133,6 +133,8 @@ module.exports = {
     'valid-typeof': 'error',
     'yield-star-spacing': ['warn', 'after'],
     yoda: ['warn', 'never', { exceptRange: true }],
+
+    '@babel/no-unused-expressions': ['warn', { allowShortCircuit: true }],
 
     'import/default': 'off',
     'import/export': 'error',

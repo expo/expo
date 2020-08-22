@@ -1,8 +1,8 @@
 ---
-title: Advanced Credentials Configuration
+title: Advanced credentials configuration
 ---
 
-In order to build a React Native project for distribution on app stores you will need to provide or generate credentials to sign the app. EAS Builds makes managing credentials really easy. When running `expo eas:build` you're guided through the entire credentials management process. Expo CLI will generate both Android and iOS credentials for you, and store them on the Expo servers. This makes it possible to use them for consecutive builds and also speeds up the process of starting new builds of the project for other team members.
+In order to build a React Native project for distribution on app stores you will need to provide or generate credentials to sign the app. EAS Build makes managing credentials really easy. When running `expo eas:build` you're guided through the entire credentials management process. Expo CLI will generate both Android and iOS credentials for you, and store them on the Expo servers. This makes it possible to use them for consecutive builds and also speeds up the process of starting new builds of the project for other team members.
 
 Usually, you can get away with not being an expert on credentials and choose Expo to manage them on their servers. However, there are some cases when you want to manage your keystore, certificates and profiles on your own. The most common case is when you want to build your app on CI and so you want to have the full control over which credentials will be used for your builds. Another common case is when you already have your credentials generated from building your app prior to using Expo services. We've introduced a concept of the `credentials.json` file to solve these and similar cases. **Using `credentials.json` is totally optional.**
 
@@ -33,9 +33,28 @@ The `credentials.json` file should be located at the root of your project, next 
 It specifies credentials for Android and iOS (but you can configure only one of these platforms if you don't want to build for the other).
 **Remember to add `credentials.json` to `.gitignore` so you won't accidentally commit it to the repository (and therefore leak your secrets)**.
 
-## Android Credentials
+## Configuring credentials.json
 
-### Obtaining the Keystore
+You have two options for handling your app credentials:
+- Let Expo generate and manage your credentials for you, and keep them stored securely on Expo's servers, or
+- Create credentials manually, yourself, and provide them to EAS Build via the credentials.json file
+
+No matter which option you choose, you can always sync your credentials by running `expo eas:credentials:sync`, so that the ones you have stored locally match those on Expo's servers.
+
+
+## Automatic configuration
+
+If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only), you can generate the `credentials.json` file from those credentials that are stored on Expo's servers. To generate (or update) that file, run `expo eas:credentials:sync`. In the first prompt, select the option to update `credentials.json`, then in the second one, select which platform(s) you wish to update.
+
+If you don't have any credentials yet, you can run `expo eas:build --platform <android|ios|all>` and follow the interactive prompts. After Expo guides you through generating your credentials, you can (if you wish) use the `expo eas:credentials:sync` command to generate `credentials.json` (this is only if you wish to have a local copy of your credentials).
+
+For Android builds, both keystore generation methods require you to have `keytool` installed and in your PATH. If it's not available on your system, you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
+
+**Remember to gitignore all files created by the above commands!**
+
+## Manual configuration
+
+### Android Credentials
 
 If you want to build an Android app binary you'll need to have a keystore. If you don't have it yet, you can generate it on your own using the following command (replace `KEYSTORE_PASSWORD`, `KEY_PASSWORD`, `KEY_ALIAS` and `com.expo.your.android.package` with the values of your choice):
 
@@ -53,17 +72,11 @@ keytool \\
  -dname "CN=com.expo.your.android.package,OU=,O=,L=,S=,C=US"
 ```
 
-You can also generate it as a one of the steps in `expo eas:build --platform android`. Remember that this command does not store the newly generated keystore on your computer. If you want to take advantage of the `credentials.json` file, you'll need to download the keystore with `expo fetch:android:keystore`.
-
 Once you have the keystore file on your computer, you should move it to the appropriate directory. We recommend you keep your keystores in the `android/keystores` directory. **Remember to gitignore all your production keystores!** If you've run the above keytool command and placed the keystore at `android/keystores/release.keystore`, you can ignore that file by adding the following line to `.gitignore`:
 
 ```
 android/keystores/release.keystore
 ```
-
-Both keystore generation methods require you to have `keytool` to be installed and in your PATH. If it's not available on your system you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
-
-### Configuring credentials.json
 
 Create `credentials.json` and configure it with the credentials:
 
@@ -85,21 +98,15 @@ Create `credentials.json` and configure it with the credentials:
 - `keyAlias` is the key alias. If you've followed the previous steps it's the value of `KEY_ALIAS`.
 - `keyPassword` is the key password. If you've followed the previous steps it's the value of `KEY_PASSWORD`.
 
-## iOS Credentials
+### iOS Credentials
 
-### Obtaining the Distribution Certificate and Provisioning Profile
-
-Things become more complicated when it comes to building the iOS app binary. For starters, you need a paid Apple Developer Account. Next, you need to generate the Distribution Certificate and Provisioning Profile for your application. You can do that via the Apple Developer Portal or by choosing Expo to handle this for you.
-
-If you don't know how to do it yourself, just run `expo eas:build --platform ios` and you'll be guided through the entire process. Later, you can download the generated credentials to your computer by running `expo fetch:ios:certs`.
+There are a few more prerequisites for building the iOS app binary. You need a paid Apple Developer Account, and then you'll need to generate the Distribution Certificate and Provisioning Profile for your application, which can be done via the [Apple Developer portal](https://developer.apple.com/account/resources/certificates/list).
 
 Once you have the Distribution Certificate and Provisioning Profile on your computer, you should move them to the appropriate directory. We recommend you keep them in the `ios/certs` directory. In the rest of this document we assume that they are named `dist.p12` and `profile.mobileprovision` respectively. **Remember to gitignore all files in the directory!** If you've placed the credentials in the suggested directory, you can ignore those files by adding the following line to `.gitignore`:
 
 ```
 ios/certs/*
 ```
-
-### Configuring credentials.json
 
 Create (or edit) `credentials.json` and configure it with the credentials:
 
@@ -153,7 +160,7 @@ The algorithm of the auto mode works like this:
 
 ### Local Mode
 
-You can configure EAS Builds so that `expo eas:build` will be reading the credentials only from `credentials.json`. Just set `"credentialsSource": "local"` in one of your [build profiles](../eas-json/) in `eas.json`.
+You can configure EAS Build so that `expo eas:build` will be reading the credentials only from `credentials.json`. Just set `"credentialsSource": "local"` in one of your [build profiles](../eas-json/) in `eas.json`.
 
 Example:
 

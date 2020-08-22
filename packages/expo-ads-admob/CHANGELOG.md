@@ -6,10 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 8.3.0 — 2020-08-18
+
+### 🎉 New features
+
 - Added `isAvailableAsync`. ([#9690](https://github.com/expo/expo/pull/9690) by [@EvanBacon](https://github.com/EvanBacon))
 - Delete `prop-types` in favor of TypeScript. ([#8677](https://github.com/expo/expo/pull/8677) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ## 8.2.1 — 2020-05-29
 

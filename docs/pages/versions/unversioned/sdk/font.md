@@ -1,6 +1,6 @@
 ---
 title: Font
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-font'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-font'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

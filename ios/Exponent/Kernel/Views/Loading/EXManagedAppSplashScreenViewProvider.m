@@ -1,23 +1,17 @@
-#import <EXSplashScreen/EXSplashScreenConfiguration.h>
 #import <React/RCTImageSource.h>
 #import <React/RCTImageView.h>
 #import <UMCore/UMDefines.h>
 
-#import "EXManagedAppSplashScreenViewProvider.h"
-#import "EXManagedAppSplashScreenConfigurationBuilder.h"
 #import "EXKernel.h"
+#import "EXManagedAppSplashScreenConfiguration.h"
+#import "EXManagedAppSplashScreenConfigurationBuilder.h"
+#import "EXManagedAppSplashScreenViewProvider.h"
 #import "EXReactAppManager.h"
-
-@interface RCTImageView (EXAppLoadingView)
-
-@property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
-
-@end
 
 @interface EXManagedAppSplashScreenViewProvider ()
 
 @property (nonatomic, weak) UIView *splashScreenView;
-@property (nonatomic, strong) EXSplashScreenConfiguration *configuration;
+@property (nonatomic, strong) EXManagedAppSplashScreenConfiguration *configuration;
 @property (nonatomic, strong, nullable) RCTImageView *splashImageView;
 
 @end
@@ -66,14 +60,12 @@
 
         RCTImageSource *imageSource = [RCTConvert RCTImageSource:@{ @"uri": self.configuration.imageUrl }];
         
+        // splash image loading is taking some time that, what can result in no image visually presented during loading phase
+        // despite the fact the RCTImageView is mounted in the view hierarchy
         self.splashImageView = [[RCTImageView alloc] initWithBridge:homeAppRecord.appManager.reactBridge];
         self.splashImageView.frame = splashScreenView.bounds;
         self.splashImageView.imageSources = @[imageSource];
-        self.splashImageView.resizeMode = self.configuration.imageResizeMode == EXSplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;;
-        UM_WEAKIFY(self);
-        [self.splashImageView setOnLoadEnd:^(NSDictionary *dict) {
-          UM_ENSURE_STRONGIFY(self);
-        }];
+        self.splashImageView.resizeMode = self.configuration.imageResizeMode == EXSplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;
         [splashScreenView addSubview:self.splashImageView];
       }
     }

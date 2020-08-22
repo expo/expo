@@ -1,6 +1,6 @@
 ---
 title: Device
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-device'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-device'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
