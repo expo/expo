@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-
+import groovy.json.JsonSlurper
 import com.android.build.OutputFile
 
 /**
@@ -81,9 +81,8 @@ project.ext.react = [
     enableHermes: false
 ]
 
-apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+apply from: '../../../../node_modules/react-native-unimodules/gradle.groovy'
 apply from: "../../node_modules/react-native/react.gradle"
-apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -166,12 +165,12 @@ android {
         }
     }
 
-    packagingOptions {
-        pickFirst "lib/armeabi-v7a/libc++_shared.so"
-        pickFirst "lib/arm64-v8a/libc++_shared.so"
-        pickFirst "lib/x86/libc++_shared.so"
-        pickFirst "lib/x86_64/libc++_shared.so"
-    }
+    //packagingOptions {
+    //    pickFirst "lib/armeabi-v7a/libc++_shared.so"
+    //    pickFirst "lib/arm64-v8a/libc++_shared.so"
+    //    pickFirst "lib/x86/libc++_shared.so"
+    //    pickFirst "lib/x86_64/libc++_shared.so"
+    //}
 
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -189,24 +188,67 @@ android {
     }
 }
 
+// Original
+
+//dependencies {
+//    implementation fileTree(dir: "libs", include: ["*.jar"])
+//    //noinspection GradleDynamicVersion
+//    implementation "com.facebook.react:react-native:+"  // From node_modules
+//    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+//    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+//      exclude group:'com.facebook.fbjni'
+//    }
+//    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+//        exclude group:'com.facebook.flipper'
+//    }
+//    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
+//        exclude group:'com.facebook.flipper'
+//    }
+//    addUnimodulesDependencies()
+//
+//    if (enableHermes) {
+//        def hermesPath = "../../../../node_modules/hermes-engine/android/";
+//        debugImplementation files(hermesPath + "hermes-debug.aar")
+//        releaseImplementation files(hermesPath + "hermes-release.aar")
+//    } else {
+//        implementation jscFlavor
+//    }
+//}
+//
+//// Run this once to be able to run the application with BUCK
+//// puts all compile dependencies into folder libs for BUCK to use
+//task copyDownloadableDepsToLibs(type: Copy) {
+//    from configurations.compile
+//    into 'libs'
+//}
+//
+//apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+
+// Based on 'apps/bare-expo'
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    //noinspection GradleDynamicVersion
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-      exclude group:'com.facebook.fbjni'
-    }
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-    addUnimodulesDependencies()
+
+    //implementation project(":expo-image")
+
+    def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+    def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+    def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.excludedUnimodules : []
+
+    addUnimodulesDependencies([
+        modulesPaths : [
+            '../../../../packages'
+        ],
+        configuration: 'api',
+        target       : 'react-native',
+        exclude      : excludedUnimodules
+    ])
 
     if (enableHermes) {
-        def hermesPath = "../../node_modules/hermes-engine/android/";
+        def hermesPath = "../../../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
@@ -221,4 +263,42 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+class ExecuteSetupAndroidProject implements Plugin<Project> {
+    @Override
+    void apply(Project target) {
+        target.exec {
+            workingDir '../..'
+            commandLine "./scripts/setup-android-project.sh"
+        }
+    }
+}
+
+apply plugin: ExecuteSetupAndroidProject
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+class GenerateDynamicMacrosPlugin implements Plugin<Project> {
+    @Override
+    void apply(Project target) {
+        target.exec {
+            def configuration = target.gradle.startParameter.taskNames.any {
+                it.toLowerCase().contains("release")
+            } ? "release" : "debug"
+
+            workingDir '../../../../tools/expotools/bin'
+
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+            } else {
+                commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+            }
+        }
+    }
+}
+
+apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+applyNativeModulesAppBuildGradle(project)
+
+// [Custom]: Add Google Services file
+//apply plugin: GenerateDynamicMacrosPlugin
+//apply plugin: 'com.google.gms.google-services'

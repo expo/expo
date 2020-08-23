@@ -9,15 +9,16 @@
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "excludedUnimodules": [
+    "expo-ads-admob",
+    "expo-ads-facebook",
+    "expo-app-auth",
+    "expo-apple-authentication",
     "expo-branch",
     "expo-camera",
     "expo-face-detector",
-    "unimodules-face-detector-interface",
+    "expo-module-template",
     "expo-payments-stripe",
-    "expo-ads-facebook",
-    "expo-ads-admob",
-    "expo-apple-authentication",
-    "expo-module-template"
+    "unimodules-face-detector-interface"
   ],
   "dependencies": {
     "@react-native-community/async-storage": "~1.11.0",
@@ -30,10 +31,10 @@
     "expo-yarn-workspaces": "^1.2.1",
     "react": "~16.13.0",
     "react-dom": "~16.13.1",
-    "react-native": "~0.63.2",
+    "react-native": "0.63.2",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-reanimated": "~1.9.0",
-    "react-native-safe-area-context": "~3.0.2",
+    "react-native-safe-area-context": "3.0.2",
     "react-native-screens": "~2.9.0",
     "react-native-unimodules": "~0.10.1",
     "react-native-web": "~0.11.7"

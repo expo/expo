@@ -1,9 +1,70 @@
-rootProject.name = 'DevClientTest'
+// Original from bare project
 
-apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-includeUnimodulesProjects()
+//rootProject.name = 'DevClientTest'
+//
+//apply from: '../node_modules/react-native-unimodules/gradle.groovy'
+//includeUnimodulesProjects()
+//
+//apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+//applyNativeModulesSettingsGradle(settings)
+//
+//include ':app'
 
-apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+
+// Based on 'apps/bare-expo'
+
+import groovy.json.JsonSlurper
+
+apply from: '../../../node_modules/react-native-unimodules/gradle.groovy'
+
+apply from: file("../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
 applyNativeModulesSettingsGradle(settings)
+
+//include(":expo-image")
+//project(":expo-image").projectDir = new File("../../../packages/expo-image/android")
+
+include(":unimodules-test-core")
+project(":unimodules-test-core").projectDir = new File("../../../packages/unimodules-test-core/android")
+
+// Unimodules
+
+// [Custom] load the excluded unimodules from the package.json to ensure 
+// the iOS and Android builds have the same modules.
+def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.excludedUnimodules : []
+
+// Include unimodules.
+includeUnimodulesProjects(
+    modulesPaths : [
+        '../../../../packages',
+    ],
+    configuration: 'api',
+    target       : 'react-native',
+// [Custom] Remove `expo-task-manager` which doesn't work on Android
+// "expo-task-manager",
+// "unimodules-task-manager-interface",
+// "expo-background-fetch",
+// "expo-location",
+// [Custom] Remove branch
+// "expo-branch", 
+// [Custom] Remove the camera
+// "expo-camera",
+// "expo-face-detector",
+// "unimodules-face-detector-interface",
+// "expo-payments-stripe",
+// [Custom] FBSDK adds a lot of time to the pod install 
+// "expo-facebook",
+// "expo-ads-facebook",
+// [Custom] To avoid dealing with this error: 
+// 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
+// "expo-ads-admob",
+// [Custom] Remove non-unimodules
+// "expo-video-thumbnails",
+// "expo-module-template"
+     exclude      : excludedUnimodules
+)
+
+rootProject.name = 'DevClientTest'
 
 include ':app'

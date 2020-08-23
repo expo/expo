@@ -1,38 +1,111 @@
+// Original
+
+//buildscript {
+//    ext {
+//        buildToolsVersion = "28.0.3"
+//        minSdkVersion = 21
+//        compileSdkVersion = 28
+//        targetSdkVersion = 28
+//    }
+//    repositories {
+//        google()
+//        jcenter()
+//    }
+//    dependencies {
+//        classpath("com.android.tools.build:gradle:3.5.3")
+//
+//        // NOTE: Do not place your application dependencies here; they belong
+//        // in the individual module build.gradle files
+//    }
+//}
+//
+//allprojects {
+//    repositories {
+//        mavenLocal()
+//        maven {
+//            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+//            url("$rootDir/../node_modules/react-native/android")
+//        }
+//        maven {
+//            // Android JSC is installed from npm
+//            url("$rootDir/../node_modules/jsc-android/dist")
+//        }
+//
+//        google()
+//        jcenter()
+//        maven { url 'https://www.jitpack.io' }
+//    }
+//}
+
+
+// Based on 'apps/bare-expo'
+
+import groovy.json.JsonSlurper
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     ext {
-        buildToolsVersion = "28.0.3"
+        buildToolsVersion = "29.0.2"
+        gradlePluginVersion = '4.0.0'
         minSdkVersion = 21
-        compileSdkVersion = 28
-        targetSdkVersion = 28
+        compileSdkVersion = 29
+        targetSdkVersion = 29
+        // Some dependencies still expect supportLibVersion to be defined
+        supportLibVersion = "29.0.0"
+        kotlinVersion = '1.3.50'
     }
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.3")
+        classpath("com.android.tools.build:gradle:${gradlePluginVersion}")
+
+        // Copied version from the Exponent Android project.
+        // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
+        // but has been resolved to 17.0.0"
+        // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
+        //classpath 'com.google.gms:google-services:3.2.1'  // Google Services plugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
+def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+
+// [Custom]
+ext {
+    reactNativeVersion = packageJson.dependencies["react-native"]
+}
+
 allprojects {
+    // [Custom]
+    configurations.all {
+        resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
+    }
+
     repositories {
         mavenLocal()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
+            url "$rootDir/../node_modules/react-native/android"
         }
         maven {
             // Android JSC is installed from npm
-            url("$rootDir/../node_modules/jsc-android/dist")
+            url("$rootDir/../../../node_modules/jsc-android/dist")
         }
+        // maven {
+        //     // expo-camera bundles a custom com.google.android:cameraview
+        //     url "$rootDir/../../../packages/expo-camera/android/maven"
+        //     // [Custom]: This would normally be imported from `url "$rootDir/../node_modules/expo-camera/android/maven"`
+        // }
 
         google()
         jcenter()
-        maven { url 'https://www.jitpack.io' }
+        maven { url 'https://jitpack.io' }
     }
 }
