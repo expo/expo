@@ -23,6 +23,9 @@ applyNativeModulesSettingsGradle(settings)
 //include(":expo-image")
 //project(":expo-image").projectDir = new File("../../../packages/expo-image/android")
 
+include(":expo-development-client")
+project(":expo-development-client").projectDir = new File("../../../packages/expo-development-client/android")
+
 include(":unimodules-test-core")
 project(":unimodules-test-core").projectDir = new File("../../../packages/unimodules-test-core/android")
 
