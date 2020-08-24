@@ -7587,13 +7587,13 @@ CACHE_KEYS:
       EXAmplitude:
         :debug: 470efbc0396f2d20189b325e475a15a1
         :release: 470efbc0396f2d20189b325e475a15a1
-    CHECKSUM: 8f51332817744acd036ddb2b365f1a4ee685987a
+    CHECKSUM: caa186767e48b4efcb07cf74be76ff16f4700e48
     FILES:
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.m"
     PROJECT_NAME: EXAmplitude
     SPECS:
-      - EXAmplitude (8.3.0)
+      - EXAmplitude (8.3.1)
   EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       EXAppAuth:
@@ -8061,7 +8061,7 @@ CACHE_KEYS:
       EXGL_CPP:
         :debug: 99468d5c41520658b3565507679a1e9a
         :release: 99468d5c41520658b3565507679a1e9a
-    CHECKSUM: 2fadf72a369e6c6530125b2f740706d7fd3e7c90
+    CHECKSUM: 4e31f7789773d91da2cabae1dbff23c97fa1ff7b
     FILES:
       - "../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -8080,7 +8080,7 @@ CACHE_KEYS:
       - "../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (9.1.0)
+      - EXGL_CPP (9.1.1)
   EXGL_CPP_LEGACY:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP_LEGACY:

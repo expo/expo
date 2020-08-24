@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '9.1.0'
+version = '9.1.1'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -83,8 +83,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 27
-    versionName "9.1.0"
+    versionCode 28
+    versionName "9.1.1"
 
     ndk {
       abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
