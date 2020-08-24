@@ -5,7 +5,6 @@ ${EXPOKIT_DEPENDENCY}
 ${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 
-
   post_install do |installer|
     installer.pods_project.main_group.tab_width = '2';
     installer.pods_project.main_group.indent_width = '2';

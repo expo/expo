@@ -4,7 +4,6 @@ import mapValues from 'lodash/mapValues';
 import * as Kernel from '../kernel/Kernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 
-
 type Settings = Record<string, any>;
 
 const Keys = mapValues(

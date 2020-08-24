@@ -356,10 +356,6 @@ def follyReplaceContent = '''
   return r;
 '''
 
-task Log {
-  print("building Reanimated2")
-}
-
 task createNativeDepsDirectories {
   downloadsDir.mkdirs()
   thirdPartyNdkDir.mkdirs()
@@ -654,8 +650,6 @@ task buildReanimated(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversi
       "FIRST_PARTY=$reactNativeThirdParty/../first-party",
       "REACT_NATIVE_JNI=$reactNative/ReactAndroid/src/main/jni/react/jni",
       "REACT_NATIVE_REACT=$reactNative/ReactAndroid/src/main/jni/react",
-      "HERMES_ENGINE=$projectDir/../node_modules/hermes-engine",
-      "VM=HERMES",
       "-C", file("src/main/JNI").absolutePath,
       "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
   )
