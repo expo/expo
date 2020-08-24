@@ -48,7 +48,6 @@ interface VendoredModuleConfig {
   skipCleanup?: boolean;
   steps: VendoredModuleUpdateStep[];
   moduleModifier?: ModuleModifier;
-  targetPath?: string;
   warnings?: string[];
 }
 
@@ -841,7 +840,6 @@ async function action(options: ActionOptions) {
       }
     }
   }
-  
   const { name, version } = await JsonFile.readAsync<{
     name: string;
     version: string;

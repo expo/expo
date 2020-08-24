@@ -116,7 +116,7 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
               style={[styles.bottomSheetBackground, { opacity: this.backgroundOpacity }]}
             />
           </TouchableWithoutFeedback>
-          {/*<BottomSheet
+          <BottomSheet
             ref={this.ref}
             initialSnap={0}
             enabledInnerScrolling={false}
@@ -126,7 +126,7 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
             renderHeader={this.renderHeader}
             renderContent={this.renderContent}
             onCloseEnd={this.onCloseEnd}
-          />*/}
+          />
         </View>
       </DevMenuBottomSheetContext.Provider>
     );
