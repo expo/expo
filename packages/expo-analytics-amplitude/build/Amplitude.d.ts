@@ -7,7 +7,6 @@ export interface AmplitudeTrackingOptions {
     disableDeviceManufacturer?: boolean;
     disableDeviceModel?: boolean;
     disableDMA?: boolean;
-    disableIDFA?: boolean;
     disableIDFV?: boolean;
     disableIPAddress?: boolean;
     disableLanguage?: boolean;

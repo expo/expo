@@ -103,9 +103,6 @@ ABI38_0_0UM_EXPORT_METHOD_AS(setTrackingOptions,
   if ([options[@"disableDMA"] boolValue]) {
     [trackingOptions disableDMA];
   }
-  if ([options[@"disableIDFA"] boolValue]) {
-    [trackingOptions disableIDFA];
-  }
   if ([options[@"disableIDFV"] boolValue]) {
     [trackingOptions disableIDFV];
   }
