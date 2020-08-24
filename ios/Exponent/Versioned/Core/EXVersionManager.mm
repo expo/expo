@@ -139,7 +139,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [NSMutableDictionary new];
 
@@ -199,7 +199,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
 {
   RCTAssertMainQueue();
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
     // bridge could be an RCTBridge of any version and we need to cast it since ARC needs to know
     // the return type
@@ -239,13 +239,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (void)disableRemoteDebuggingForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   devSettings.isDebuggingRemotely = NO;
 }
 
 - (void)toggleElementInspectorForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   [devSettings toggleElementInspector];
 }
 
@@ -259,14 +259,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (id<RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
 {
-  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
-    bridge = [bridge batchedBridge];
-  }
-  RCTModuleData *data = [bridge moduleDataForName:name];
-  if (data) {
-    return [data instance];
-  }
-  return nil;
+  return [bridge moduleForClass:[self getModuleClassFromName:[name UTF8String]]];
 }
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
@@ -282,7 +275,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (NSArray *)extraModulesForBridge:(id)bridge
 {
   NSDictionary *params = _params;
-  BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
@@ -409,6 +401,10 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
         [RCTFileRequestHandler new],
       ];
     }];
+  } else if (moduleClass == RCTDevMenu.class) {
+    return [EXDisabledDevMenu new];
+  } else if (moduleClass == RCTRedBox.class) {
+    return [EXDisabledRedBox new];
   }
 
   // Expo-specific

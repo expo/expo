@@ -38,11 +38,6 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     // The awaited return value of this listener is then send back as a response
     // so the native module knows when it can fully close dev menu (detach its root view).
     this.closeSubscription = DevMenu.listenForCloseRequests(() => {
-      // Unsubscribe immediately so we don't accidentally collapse twice.
-      // Also componentWillUnmount is not called (why?) when the app is hot reloading this component,
-      // despite the componentDidMount is later called after first render.
-      this.unsubscribeCloseSubscription();
-
       // `collapse` returns a promise, so this `return` is important to finish the close event once the view is fully collapsed.
       return this.collapse();
     });
