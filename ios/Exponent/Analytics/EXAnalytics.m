@@ -6,10 +6,10 @@
 #import "EXKernel.h"
 #import "ExpoKit.h"
 
-#define HAS_AMPLITUDE __has_include(<Amplitude-iOS/Amplitude.h>)
+#define HAS_AMPLITUDE __has_include(<Amplitude/Amplitude.h>)
 
 #if HAS_AMPLITUDE
-#import <Amplitude-iOS/Amplitude.h>
+#import <Amplitude/Amplitude.h>
 #endif
 
 @import UIKit;

@@ -2,7 +2,7 @@
 
 #import <ABI36_0_0EXAmplitude/ABI36_0_0EXAmplitude.h>
 
-#import <Amplitude-iOS/Amplitude.h>
+#import <Amplitude/Amplitude.h>
 
 @implementation ABI36_0_0EXAmplitude
 
