@@ -44,7 +44,7 @@
     "unimodules-file-system-interface": "*"
   },
   "dependencies": {
-    "expo-gl-cpp": "~9.1.0",
+    "expo-gl-cpp": "~9.1.1",
     "invariant": "^2.2.4",
     "fbjs": "1.0.0"
   },
