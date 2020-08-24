@@ -1,5 +1,5 @@
 PODS:
-  - Amplitude-iOS (4.7.1)
+  - Amplitude (6.0.0)
   - Analytics (4.0.4)
   - AppAuth (1.4.0):
     - AppAuth/Core (= 1.4.0)
@@ -9,7 +9,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
   - EXAmplitude (8.3.0):
-    - Amplitude-iOS (~> 4.7.1)
+    - Amplitude (~> 6.0.0)
     - UMConstantsInterface
     - UMCore
   - EXAppAuth (9.2.0):
@@ -695,7 +695,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Amplitude-iOS
+    - Amplitude
     - Analytics
     - AppAuth
     - boost-for-react-native
@@ -950,12 +950,12 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
+  Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAmplitude: 57aa88d69bd7cc8121654685b969018823f8879e
+  EXAmplitude: 8f51332817744acd036ddb2b365f1a4ee685987a
   EXAppAuth: 0346d79802fceaacd16a18faccc80035ac9523dd
   EXApplication: c346c5ab7d1a4607f1863e93490b79fe838148b1
   EXAV: 1f679b57367f8889b5ea15067413c9e2d95039fb

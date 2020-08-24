@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Upgraded native Amplitude iOS library from `4.7.1` to `6.0.0`. This removes the IDFA code that was previously included with the Amplitude library. `disableIDFA` option for `Amplitude.setTrackingOptions` is removed. If you would like to collect the IDFA, you must be in the bare workflow. ([#9880](https://github.com/expo/expo/pull/9880) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
