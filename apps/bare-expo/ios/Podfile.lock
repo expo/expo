@@ -8,7 +8,7 @@ PODS:
   - AppAuth/ExternalUserAgent (1.4.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - EXAmplitude (8.3.0):
+  - EXAmplitude (8.3.1):
     - Amplitude (~> 6.0.0)
     - UMConstantsInterface
     - UMCore
@@ -86,7 +86,7 @@ PODS:
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL_CPP (9.1.0):
+  - EXGL_CPP (9.1.1):
     - React-jsi
   - EXGL_CPP_LEGACY (8.4.0):
     - EXGL_CPP_LEGACY/EXGLContext (= 8.4.0)
@@ -955,7 +955,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAmplitude: 8f51332817744acd036ddb2b365f1a4ee685987a
+  EXAmplitude: caa186767e48b4efcb07cf74be76ff16f4700e48
   EXAppAuth: 0346d79802fceaacd16a18faccc80035ac9523dd
   EXApplication: c346c5ab7d1a4607f1863e93490b79fe838148b1
   EXAV: 1f679b57367f8889b5ea15067413c9e2d95039fb
@@ -980,7 +980,7 @@ SPEC CHECKSUMS:
   EXFirebaseCore: d5befdb22015f9b71168ed89dda0b50dbb07fed1
   EXFont: a6a4353271395f3bb4ee528b52a5035b4b0e412a
   EXGL: d38031d89c33a617cee38db0f8b58e3003527798
-  EXGL_CPP: 2fadf72a369e6c6530125b2f740706d7fd3e7c90
+  EXGL_CPP: 4e31f7789773d91da2cabae1dbff23c97fa1ff7b
   EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
   EXGoogleSignIn: c575e4bc3c34882908167788a2c4a0cd8dfb2eb3
   EXHaptics: 4db5fa74b5a87148af4355246981b2dd2d7b9e77
