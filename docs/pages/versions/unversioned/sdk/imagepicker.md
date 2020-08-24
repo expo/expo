@@ -242,14 +242,14 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.UIImagePickerControllerType`
 
-| Preset                                       | Value | Resolution            | Video compression algorithm | Audio compression algorithm |
-| -------------------------------------------- | ----- | --------------------- | --------------------------- | --------------------------- |
-| `UIImagePickerControllerType.High`           | 0     | Highest available     | None                        | None                        |
-| `UIImagePickerControllerType.Medium`         | 1     | Depends on the device | None                        | None                        |
-| `UIImagePickerControllerType.Low`            | 2     | Depends on the device | None                        | None                        |
-| `UIImagePickerControllerType.VGA640x480`     | 3     | 640 x 480             | None                        | None                        |
-| `UIImagePickerControllerType.IFrame1280x720` | 4     | 1280 x 720            | None                        | None                        |
-| `UIImagePickerControllerType.IFrame960x540`  | 5     | 960 x 540             | None                        | None                        |
+| Preset                                       | Value | Resolution            |
+| -------------------------------------------- | ----- | --------------------- |
+| `UIImagePickerControllerType.High`           | 0     | Highest available     |
+| `UIImagePickerControllerType.Medium`         | 1     | Depends on the device |
+| `UIImagePickerControllerType.Low`            | 2     | Depends on the device |
+| `UIImagePickerControllerType.VGA640x480`     | 3     | 640 x 480             |
+| `UIImagePickerControllerType.IFrame1280x720` | 4     | 1280 x 720            |
+| `UIImagePickerControllerType.IFrame960x540`  | 5     | 960 x 540             |
 
 ## Types
 

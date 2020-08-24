@@ -64,6 +64,9 @@ export type ImagePickerOptions = {
   mediaTypes?: MediaTypeOptions;
   exif?: boolean;
   base64?: boolean;
+  /**
+   * @deprecated see [iOS videoExportPreset](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+   */
   videoExportPreset?: VideoExportPreset;
   videoQuality?: UIImagePickerControllerQualityType;
   allowsMultipleSelection?: boolean;
