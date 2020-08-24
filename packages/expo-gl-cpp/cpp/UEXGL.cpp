@@ -1,6 +1,5 @@
 #include "UEXGL.h"
 #include "EXGLContext.h"
-#include "TypedArrayApi.h"
 
 using namespace expo::gl_cpp;
 
@@ -82,8 +81,4 @@ GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) 
     return exglCtx->lookupObject(exglObjId);
   }
   return 0;
-}
-
-void UEXGLInvalidateJsiCache() {
-  invalidateJsiPropNameIDCache();
 }
