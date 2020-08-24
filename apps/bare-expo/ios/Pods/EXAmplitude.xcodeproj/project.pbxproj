@@ -7,51 +7,51 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C8FB3F83AB2F640D8C074A0E4B442545 /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = 629C0EEDE5F868571120FBC39D41CD0F /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 12B690187E9DECE2B912CEE5A821FC2D /* EXAmplitude-dummy.m */; };
-		FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE8AE8099938DD982E2D2B99203105E /* EXAmplitude.m */; };
+		3CBC472BECFC5C2AD22AD26D767212EA /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE8AE8099938DD982E2D2B99203105E /* EXAmplitude.m */; };
+		51556209C305FC06F9D4A3913DFA8F4E /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = 629C0EEDE5F868571120FBC39D41CD0F /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		54F645336C5D2CFD53168891B7C6A323 /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 12B690187E9DECE2B912CEE5A821FC2D /* EXAmplitude-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		79BB8A89C1D96B3BF397B6B85883B0E7 /* PBXContainerItemProxy */ = {
+		3440D131C86460E8DAD009703AB005A5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A4E14751E18F8137819ECD80562E6EF9 /* UMCore.xcodeproj */;
+			containerPortal = 5184B8B4813245C2A4BD4357FE078C27 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		8F40AFF8B05D111E1FC15D10E68E1D57 /* PBXContainerItemProxy */ = {
+		66D6C1511BA9D1AD27763452622A5BB3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface.xcodeproj */;
+			containerPortal = CB33E2D57F3209B959FEE906EB48EF57 /* Amplitude.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A8506691BCF493596D6E68176F7E0129;
+			remoteInfo = Amplitude;
+		};
+		A041AC9D9DB5DB71923D68CCD8142B24 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD56C4BF6DE935B05B35B89CC4FAA818 /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
-		};
-		C5B1E7134F6A93EF5CEF142148371F0E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
-			remoteInfo = "Amplitude-iOS";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		12B690187E9DECE2B912CEE5A821FC2D /* EXAmplitude-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAmplitude-dummy.m"; sourceTree = "<group>"; };
-		174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
 		3CE8AE8099938DD982E2D2B99203105E /* EXAmplitude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAmplitude.m; path = EXAmplitude/EXAmplitude.m; sourceTree = "<group>"; };
 		463402081A46EB38CD3DC1CE798D7BC7 /* libEXAmplitude.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAmplitude.a; path = libEXAmplitude.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5184B8B4813245C2A4BD4357FE078C27 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		629C0EEDE5F868571120FBC39D41CD0F /* EXAmplitude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAmplitude.h; path = EXAmplitude/EXAmplitude.h; sourceTree = "<group>"; };
 		6DC5A16FEC800C79FBA0F1D880DF4112 /* EXAmplitude.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.debug.xcconfig; sourceTree = "<group>"; };
 		88418457897E8234AAFE88211E8F25D4 /* EXAmplitude.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAmplitude.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
-		A4E14751E18F8137819ECD80562E6EF9 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		AD36EEEA945E1D90A2F3DAB8DF5F6F24 /* EXAmplitude-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAmplitude-prefix.pch"; sourceTree = "<group>"; };
+		AD56C4BF6DE935B05B35B89CC4FAA818 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
+		CB33E2D57F3209B959FEE906EB48EF57 /* Amplitude */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Amplitude; path = Amplitude.xcodeproj; sourceTree = "<group>"; };
 		E69A153912C447ACFFBC56241C944053 /* EXAmplitude.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		6327A136E639A980832C3253BB2C1E94 /* Frameworks */ = {
+		F766D5877796EC613F0BE24F6F9E09EC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -61,24 +61,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		16FF197AA0C8CFB4EDDDB6CB41567598 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				CB33E2D57F3209B959FEE906EB48EF57 /* Amplitude */,
+				AD56C4BF6DE935B05B35B89CC4FAA818 /* UMConstantsInterface */,
+				5184B8B4813245C2A4BD4357FE078C27 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		49B47C1AEB7579A59A256E5EE1A1C0C7 = {
 			isa = PBXGroup;
 			children = (
-				61E01D90471B6C4016FF52EDBF1C3E05 /* Dependencies */,
+				16FF197AA0C8CFB4EDDDB6CB41567598 /* Dependencies */,
 				9FB3BF02B743F46C2D29163045ED5D5D /* EXAmplitude */,
 				7947E6F8BC4765B612E1335D8ADA7DD2 /* Frameworks */,
 				67946ED29343B3D134035288A0D8C35F /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		61E01D90471B6C4016FF52EDBF1C3E05 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS */,
-				174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface */,
-				A4E14751E18F8137819ECD80562E6EF9 /* UMCore */,
-			);
-			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		67946ED29343B3D134035288A0D8C35F /* Products */ = {
@@ -131,11 +131,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FFCFF7394E11240C54C886B42D84BC65 /* Headers */ = {
+		9F3E94B2D4468B5210146C5ED95B6B3F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8FB3F83AB2F640D8C074A0E4B442545 /* EXAmplitude.h in Headers */,
+				51556209C305FC06F9D4A3913DFA8F4E /* EXAmplitude.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,18 +144,18 @@
 /* Begin PBXNativeTarget section */
 		700BA3D76A8C4362E721FECC92A96DFB /* EXAmplitude */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5184269E3AFE53B5379962720E6D30CC /* Build configuration list for PBXNativeTarget "EXAmplitude" */;
+			buildConfigurationList = 5F8C33019C140AC62990A801788811E3 /* Build configuration list for PBXNativeTarget "EXAmplitude" */;
 			buildPhases = (
-				FFCFF7394E11240C54C886B42D84BC65 /* Headers */,
-				70E3171D93A647B463CE54006B97B93F /* Sources */,
-				6327A136E639A980832C3253BB2C1E94 /* Frameworks */,
+				9F3E94B2D4468B5210146C5ED95B6B3F /* Headers */,
+				BA8F3278150BC46E27C599E7F4C74806 /* Sources */,
+				F766D5877796EC613F0BE24F6F9E09EC /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				FAEEACEF67EDF77451A3350C8442FB7B /* PBXTargetDependency */,
-				E0B54D8B957D70963F95E0401EE0EEE4 /* PBXTargetDependency */,
-				29C918C7F53F959AC108CD8F38A32CEA /* PBXTargetDependency */,
+				EC5D4504D7D1A11CB96BC6C3D5A868D2 /* PBXTargetDependency */,
+				B481C9028855EB47E6A6DD6C667831AD /* PBXTargetDependency */,
+				8129636515E12FC50637837AEE816C87 /* PBXTargetDependency */,
 			);
 			name = EXAmplitude;
 			productName = EXAmplitude;
@@ -184,13 +184,13 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = A4E14751E18F8137819ECD80562E6EF9 /* UMCore */;
+					ProjectRef = 5184B8B4813245C2A4BD4357FE078C27 /* UMCore */;
 				},
 				{
-					ProjectRef = 174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface */;
+					ProjectRef = AD56C4BF6DE935B05B35B89CC4FAA818 /* UMConstantsInterface */;
 				},
 				{
-					ProjectRef = 98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS */;
+					ProjectRef = CB33E2D57F3209B959FEE906EB48EF57 /* Amplitude */;
 				},
 			);
 			projectRoot = "";
@@ -201,32 +201,32 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		70E3171D93A647B463CE54006B97B93F /* Sources */ = {
+		BA8F3278150BC46E27C599E7F4C74806 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */,
-				FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */,
+				54F645336C5D2CFD53168891B7C6A323 /* EXAmplitude-dummy.m in Sources */,
+				3CBC472BECFC5C2AD22AD26D767212EA /* EXAmplitude.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		29C918C7F53F959AC108CD8F38A32CEA /* PBXTargetDependency */ = {
+		8129636515E12FC50637837AEE816C87 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 79BB8A89C1D96B3BF397B6B85883B0E7 /* PBXContainerItemProxy */;
+			targetProxy = 3440D131C86460E8DAD009703AB005A5 /* PBXContainerItemProxy */;
 		};
-		E0B54D8B957D70963F95E0401EE0EEE4 /* PBXTargetDependency */ = {
+		B481C9028855EB47E6A6DD6C667831AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMConstantsInterface;
-			targetProxy = 8F40AFF8B05D111E1FC15D10E68E1D57 /* PBXContainerItemProxy */;
+			targetProxy = A041AC9D9DB5DB71923D68CCD8142B24 /* PBXContainerItemProxy */;
 		};
-		FAEEACEF67EDF77451A3350C8442FB7B /* PBXTargetDependency */ = {
+		EC5D4504D7D1A11CB96BC6C3D5A868D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "Amplitude-iOS";
-			targetProxy = C5B1E7134F6A93EF5CEF142148371F0E /* PBXContainerItemProxy */;
+			name = Amplitude;
+			targetProxy = 66D6C1511BA9D1AD27763452622A5BB3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -288,32 +288,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		1D59CB4EC75D3B66FAE13EF608F93D5D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E69A153912C447ACFFBC56241C944053 /* EXAmplitude.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAmplitude;
-				PRODUCT_NAME = EXAmplitude;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -381,7 +355,33 @@
 			};
 			name = Debug;
 		};
-		FD9E780CFF400B999A255B3A47C9F9CD /* Debug */ = {
+		5D2A8598256EF83BCDB66CD8A7AAE5D4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E69A153912C447ACFFBC56241C944053 /* EXAmplitude.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAmplitude;
+				PRODUCT_NAME = EXAmplitude;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		78DCAFBA261E81655F8505E11F4395B4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6DC5A16FEC800C79FBA0F1D880DF4112 /* EXAmplitude.debug.xcconfig */;
 			buildSettings = {
@@ -409,11 +409,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5184269E3AFE53B5379962720E6D30CC /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
+		5F8C33019C140AC62990A801788811E3 /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FD9E780CFF400B999A255B3A47C9F9CD /* Debug */,
-				1D59CB4EC75D3B66FAE13EF608F93D5D /* Release */,
+				78DCAFBA261E81655F8505E11F4395B4 /* Debug */,
+				5D2A8598256EF83BCDB66CD8A7AAE5D4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

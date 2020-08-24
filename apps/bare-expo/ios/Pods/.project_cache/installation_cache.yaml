@@ -2,15 +2,15 @@ BUILD_CONFIGURATIONS:
   Debug: :debug
   Release: :release
 CACHE_KEYS:
-  Amplitude-iOS:
+  Amplitude:
     BUILD_SETTINGS_CHECKSUM:
-      Amplitude-iOS:
-        :debug: 0cbcb9952774673acc7a6e9a8c1266db
-        :release: 0cbcb9952774673acc7a6e9a8c1266db
-    CHECKSUM: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
-    PROJECT_NAME: Amplitude-iOS
+      Amplitude:
+        :debug: 2d34c2c14634a150915caf3b9199a4f3
+        :release: 2d34c2c14634a150915caf3b9199a4f3
+    CHECKSUM: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
+    PROJECT_NAME: Amplitude
     SPECS:
-      - Amplitude-iOS (4.7.1)
+      - Amplitude (6.0.0)
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
       Analytics:
@@ -52,9 +52,9 @@ CACHE_KEYS:
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude:
-        :debug: 61eb4bcce3e82c9da4c0d6ef87815f8c
-        :release: 61eb4bcce3e82c9da4c0d6ef87815f8c
-    CHECKSUM: 57aa88d69bd7cc8121654685b969018823f8879e
+        :debug: 1e421155a1ef4a7ee11a8374855e4ecc
+        :release: 1e421155a1ef4a7ee11a8374855e4ecc
+    CHECKSUM: 8f51332817744acd036ddb2b365f1a4ee685987a
     FILES:
       - "../../../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
       - "../../../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.m"
@@ -1215,21 +1215,18 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 76816b7215772a4870f549c2b493264f
-      Release: 76816b7215772a4870f549c2b493264f
+      Debug: b8e42dc70b416560923c2c0cc42c1ac3
+      Release: b8e42dc70b416560923c2c0cc42c1ac3
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der"
+      - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
       - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 0531aed66de38cccd84f332899442e3b
-      Release: 0531aed66de38cccd84f332899442e3b
+      Debug: 6a016f3f3277684e34f1fdc9c444bb5f
+      Release: 6a016f3f3277684e34f1fdc9c444bb5f
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

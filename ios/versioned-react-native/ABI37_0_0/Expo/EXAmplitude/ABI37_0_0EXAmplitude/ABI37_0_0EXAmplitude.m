@@ -2,8 +2,8 @@
 
 #import <ABI37_0_0EXAmplitude/ABI37_0_0EXAmplitude.h>
 
-#import <Amplitude-iOS/Amplitude.h>
-#import <Amplitude-iOS/AMPTrackingOptions.h>
+#import <Amplitude/Amplitude.h>
+#import <Amplitude/AMPTrackingOptions.h>
 
 @implementation ABI37_0_0EXAmplitude
 
@@ -102,9 +102,6 @@ ABI37_0_0UM_EXPORT_METHOD_AS(setTrackingOptions,
   }
   if ([options[@"disableDMA"] boolValue]) {
     [trackingOptions disableDMA];
-  }
-  if ([options[@"disableIDFA"] boolValue]) {
-    [trackingOptions disableIDFA];
   }
   if ([options[@"disableIDFV"] boolValue]) {
     [trackingOptions disableIDFV];
