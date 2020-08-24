@@ -263,7 +263,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
                          logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
-  RCTEnableTurboModule(YES);
+  RCTEnableTurboModule([self.params[@"manifest"][@"ios"][@"enableExperimentalTurboModules"] boolValue]);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
