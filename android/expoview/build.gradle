@@ -317,17 +317,11 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
 def reactProperties = new Properties()
-def reactNative = new File("$projectDir/../../react-native-lab/react-native")
-
-def isVersioned = true;
+def reactNative = new File("$projectDir/../../versioned-react-native")
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
-isVersioned = false;
+reactNative = new File("$projectDir/../../react-native-lab/react-native")
 // WHEN_VERSIONING_REMOVE_TO_HERE
-
-if (isVersioned) {
-  reactNative = new File("$projectDir/../../versioned-react-native")
-}
 
 file("$reactNative/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
@@ -692,4 +686,3 @@ task packageNdkLibs(dependsOn: buildReanimated, type: Copy) {
 }
 
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
-
