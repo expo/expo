@@ -22,20 +22,21 @@ BackHandler.addEventListener('hardwareBackPress', function() {
    *
    * Typically you would use the navigator here to go to the last state.
    */
+  if (!this.onMainScreen()) {
+    this.goBack();
 
-   if (!this.onMainScreen()) {
-     this.goBack();
     /**
      * When true is returned the event will not be bubbled up
      * & no other back action will execute
      */
-     return true;
-   }
+    return true;
+  }
+
   /**
    * Returning false will let the event to bubble up & let other event listeners
    * or the system's default back action to be executed.
    */
-   return false;
+  return false;
 });
 ```
 
@@ -44,27 +45,24 @@ BackHandler.addEventListener('hardwareBackPress', function() {
 The following example implements a scenario where you confirm if the user wants to exit the app:
 
 ```js
-import React, { useEffect } from "react";
-import { Text, View, StyleSheet, BackHandler, Alert } from "react-native";
+import React, { useEffect } from 'react';
+import { Text, View, StyleSheet, BackHandler, Alert } from 'react-native';
 
 export default function App() {
   useEffect(() => {
     const backAction = () => {
-      Alert.alert("Hold on!", "Are you sure you want to go back?", [
+      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
         {
-          text: "Cancel",
+          text: 'Cancel',
           onPress: () => null,
-          style: "cancel"
+          style: 'cancel',
         },
-        { text: "YES", onPress: () => BackHandler.exitApp() }
+        { text: 'YES', onPress: () => BackHandler.exitApp() },
       ]);
       return true;
     };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
   }, []);
@@ -79,13 +77,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     fontSize: 18,
-    fontWeight: "bold"
-  }
+    fontWeight: 'bold',
+  },
 });
 ```
 
@@ -94,28 +92,26 @@ const styles = StyleSheet.create({
 Additionally `BackHandler.removeEventListener` can also be used to clear the event listener. Ensure the callback has the reference to the same function used in the `addEventListener` call as shown the following example ﹣
 
 ```js
-import React, { useEffect } from "react";
-import { Text, View, StyleSheet, BackHandler, Alert } from "react-native";
+import React, { useEffect } from 'react';
+import { Text, View, StyleSheet, BackHandler, Alert } from 'react-native';
 
 export default function App() {
-  const backAction = () => {
-    Alert.alert("Hold on!", "Are you sure you want to go back?", [
-      {
-        text: "Cancel",
-        onPress: () => null,
-        style: "cancel"
-      },
-      { text: "YES", onPress: () => BackHandler.exitApp() }
-    ]);
-    return true;
-  };
-
   useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", backAction);
-
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", backAction);
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        { text: 'YES', onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
     };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
   }, []);
 
   return (
@@ -128,13 +124,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     fontSize: 18,
-    fontWeight: "bold"
-  }
+    fontWeight: 'bold',
+  },
 });
 ```
 
@@ -155,9 +151,7 @@ If you are using React Navigation to navigate across different screens, you can 
 ### `addEventListener()`
 
 ```js
-
 static addEventListener(eventName, handler)
-
 ```
 
 ---
@@ -165,9 +159,7 @@ static addEventListener(eventName, handler)
 ### `exitApp()`
 
 ```js
-
 static exitApp()
-
 ```
 
 ---
@@ -175,7 +167,5 @@ static exitApp()
 ### `removeEventListener()`
 
 ```js
-
 static removeEventListener(eventName, handler)
-
 ```

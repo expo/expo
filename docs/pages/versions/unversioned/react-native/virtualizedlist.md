@@ -18,22 +18,24 @@ const DATA = [];
 
 const getItem = (data, index) => {
   return {
-    id: Math.random().toString(12).substring(0),
-    title: `Item ${index+1}`
-  }
-}
+    id: Math.random()
+      .toString(12)
+      .substring(0),
+    title: `Item ${index + 1}`,
+  };
+};
 
-const getItemCount = (data) => {
+const getItemCount = data => {
   return 50;
-}
+};
 
-const Item = ({ title })=> {
+const Item = ({ title }) => {
   return (
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>
     </View>
   );
-}
+};
 
 const VirtualizedListExample = () => {
   return (
@@ -48,7 +50,7 @@ const VirtualizedListExample = () => {
       />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

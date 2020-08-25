@@ -8,31 +8,31 @@ Displays a circular loading indicator.
 ## Example
 
 ```js
-import React from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-const App = () => (
-  <View style={[styles.container, styles.horizontal]}>
-    <ActivityIndicator />
-    <ActivityIndicator size="large" />
-    <ActivityIndicator size="small" color="#0000ff" />
-    <ActivityIndicator size="large" color="#00ff00" />
-  </View>
-);
+export function App() {
+  return (
+    <View style={[styles.container, styles.horizontal]}>
+      <ActivityIndicator />
+      <ActivityIndicator size="large" />
+      <ActivityIndicator size="small" color="#0000ff" />
+      <ActivityIndicator size="large" color="#00ff00" />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center"
+    justifyContent: 'center',
   },
   horizontal: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10
-  }
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+  },
 });
-
-export default App;
 ```
 
 # Reference
@@ -45,38 +45,38 @@ Inherits [View Props](../view/#props).
 
 ### `animating`
 
-Whether to show the indicator (`true`, the default) or hide it (`false`).
+Whether to show the indicator (`true`) or hide it (`false`).
 
-| Type | Required |
-| ---- | -------- |
-| bool | No       |
+| Type | Required | Default |
+| ---- | -------- | ------- |
+| bool | No       | `true`  |
 
 ---
 
 ### `color`
 
-The foreground color of the spinner (default is gray on iOS and dark cyan on Android).
+The foreground color of the spinner.
 
-| Type            | Required |
-| --------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No |
+| Type                                         | Required | Default                                                                      |
+| -------------------------------------------- | -------- | ---------------------------------------------------------------------------- |
+| [color](https://reactnative.dev/docs/colors) | No       | `null` (system accent default color) **(Android)**<hr/>`'#999999'` **(iOS)** |
 
 ---
 
-### `hidesWhenStopped`
+### `hidesWhenStopped` **(iOS)**
 
-Whether the indicator should hide when not animating (true by default).
+Whether the indicator should hide when not animating.
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | iOS      |
+| Type | Required | Default |
+| ---- | -------- | ------- |
+| bool | No       | `true`  |
 
 ---
 
 ### `size`
 
-Size of the indicator (default is 'small'). Passing a number to the size prop is only supported on Android.
+Size of the indicator.
 
-| Type                               | Required |
-| ---------------------------------- | -------- |
-| enum('small', 'large'), number | No       |
+| Type                                                | Required | Default   |
+| --------------------------------------------------- | -------- | --------- |
+| `enum('small', 'large')`<hr/>`number` **(Android)** | No       | `'small'` |

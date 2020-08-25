@@ -15,7 +15,7 @@ To use, wrap your top level view with a `SafeAreaView` with a `flex: 1` style ap
 import React from 'react';
 import { StyleSheet, Text, SafeAreaView } from 'react-native';
 
-const App = () => {
+export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Text>Page content</Text>
@@ -28,8 +28,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export default App;
 ```
 
 ---
@@ -38,7 +36,9 @@ export default App;
 
 ## Props
 
-Inherits [View Props](../view/props).
+Inherits [View Props](../view/#props).
+
+As padding is used to implement the behavior of the component, padding rules in styles applied to a `SafeAreaView` will be ignored and can cause different results depending on the platform. See [#22211](https://github.com/facebook/react-native/issues/22211) for details.
 
 ### `emulateUnlessSupported`
 

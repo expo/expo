@@ -22,7 +22,7 @@ export default function App() {
         <TextInput
           style={{
             padding: 16,
-            marginTop: 50
+            marginTop: 50,
           }}
           inputAccessoryViewID={inputAccessoryViewID}
           onChangeText={text => setText(text)}
@@ -30,10 +30,7 @@ export default function App() {
         />
       </ScrollView>
       <InputAccessoryView nativeID={inputAccessoryViewID}>
-        <Button
-          onPress={() => setText(initialText)}
-          title="Reset Text"
-        />
+        <Button onPress={() => setText(initialText)} title="Reset Text" />
       </InputAccessoryView>
     </>
   );
@@ -50,8 +47,8 @@ This component can also be used to create sticky text inputs (text inputs which 
 
 ### `backgroundColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -68,8 +65,8 @@ An ID which is used to associate this `InputAccessoryView` to specified TextInpu
 
 ### `style`
 
-| Type                         | Required |
-| ---------------------------- | -------- |
+| Type                          | Required |
+| ----------------------------- | -------- |
 | [style](../view-style-props/) | No       |
 
 # Known issues

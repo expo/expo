@@ -13,17 +13,18 @@ You can alternatively use `showWithGravity(message, duration, gravity)` to speci
 The 'showWithGravityAndOffset(message, duration, gravity, xOffset, yOffset)' method adds the ability to specify an offset with in pixels.
 
 ```js
-import React from "react";
-import { View, StyleSheet, ToastAndroid, Button } from "react-native";
-import Constants from "expo-constants";
+import React from 'react';
+import { View, StyleSheet, ToastAndroid, Button } from 'react-native';
+import Constants from 'expo-constants';
 
 export default function App() {
   const showToast = () => {
-    ToastAndroid.show("A pikachu appeared nearby !", ToastAndroid.SHORT);
+    ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
   };
+
   const showToastWithGravity = () => {
     ToastAndroid.showWithGravity(
-      "All Your Base Are Belong To Us",
+      'All Your Base Are Belong To Us',
       ToastAndroid.SHORT,
       ToastAndroid.CENTER
     );
@@ -31,7 +32,7 @@ export default function App() {
 
   const showToastWithGravityAndOffset = () => {
     ToastAndroid.showWithGravityAndOffset(
-      "A wild toast appeared!",
+      'A wild toast appeared!',
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
       25,
@@ -42,10 +43,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button title="Toggle Toast" onPress={() => showToast()} />
-      <Button
-        title="Toggle Toast With Gravity"
-        onPress={() => showToastWithGravity()}
-      />
+      <Button title="Toggle Toast With Gravity" onPress={() => showToastWithGravity()} />
       <Button
         title="Toggle Toast With Gravity & Offset"
         onPress={() => showToastWithGravityAndOffset()}
@@ -57,12 +55,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#888888",
-    padding: 8
-  }
+    backgroundColor: '#888888',
+    padding: 8,
+  },
 });
+
+export default App;
 ```
 
 ### Imperative hack
@@ -70,19 +70,13 @@ const styles = StyleSheet.create({
 The ToastAndroid API is imperative, but there is a way to expose a declarative component from it as in this example:
 
 ```js
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ToastAndroid, Button } from "react-native";
-import Constants from "expo-constants";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ToastAndroid, Button } from 'react-native';
+import Constants from 'expo-constants';
 
 const Toast = ({ visible, message }) => {
   if (visible) {
-    ToastAndroid.showWithGravityAndOffset(
-      message,
-      ToastAndroid.LONG,
-      ToastAndroid.BOTTOM,
-      25,
-      50
-    );
+    ToastAndroid.showWithGravityAndOffset(message, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
     return null;
   }
   return null;
@@ -108,12 +102,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: "#888888",
-    padding: 8
-  }
+    backgroundColor: '#888888',
+    padding: 8,
+  },
 });
+
+export default App;
 ```
 
 ---

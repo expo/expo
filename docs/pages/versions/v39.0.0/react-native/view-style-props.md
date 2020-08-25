@@ -6,8 +6,8 @@ title: View Style Props
 ### Example
 
 ```js
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 
 const ViewStyleProps = () => {
   return (
@@ -17,31 +17,31 @@ const ViewStyleProps = () => {
       <View style={styles.bottom} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
     padding: 20,
     margin: 10,
   },
   top: {
     flex: 0.3,
-    backgroundColor: "grey",
+    backgroundColor: 'grey',
     borderWidth: 5,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   middle: {
     flex: 0.3,
-    backgroundColor: "beige",
+    backgroundColor: 'beige',
     borderWidth: 5,
   },
   bottom: {
     flex: 0.3,
-    backgroundColor: "pink",
+    backgroundColor: 'pink',
     borderWidth: 5,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -57,8 +57,8 @@ export default ViewStyleProps;
 
 ### `borderRightColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -73,8 +73,8 @@ export default ViewStyleProps;
 
 ### `borderBottomColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -121,24 +121,24 @@ export default ViewStyleProps;
 
 ### `borderColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
 
 ### `borderEndColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
 
 ### `borderLeftColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -163,8 +163,8 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 ### `backgroundColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -179,8 +179,8 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 ### `borderStartColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -195,8 +195,8 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 ### `borderTopColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
