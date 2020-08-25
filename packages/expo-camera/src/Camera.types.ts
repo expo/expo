@@ -122,6 +122,7 @@ export type CameraProps = ViewProps & {
   onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
   faceDetectorSettings?: object;
   onFacesDetected?: (faces: FaceDetectionResult) => void;
+  poster?: string;
 };
 
 export type CameraNativeProps = {
