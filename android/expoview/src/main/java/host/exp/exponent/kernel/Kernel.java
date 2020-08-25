@@ -276,7 +276,6 @@ public class Kernel extends KernelInterface {
                 .setApplication(mApplicationContext)
                 .setCurrentActivity(getActivityContext())
                 .setJSBundleFile(localBundlePath)
-                .setJSIModulesPackage(new ReanimatedJSIModulePackage())
                 .addPackage(new MainReactPackage())
                 .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
                 .addPackage(ExpoTurboPackage.createWithManifest(mExponentManifest.getKernelManifest()))
