@@ -36,7 +36,7 @@ NATIVE_METHOD(getContextAttributes) {
   jsi::Object jsResult(runtime);
   jsResult.setProperty(runtime, "alpha", true);
   jsResult.setProperty(runtime, "depth", true);
-  jsResult.setProperty(runtime, "stencil", false);
+  jsResult.setProperty(runtime, "stencil", true);
   jsResult.setProperty(runtime, "antialias", false);
   jsResult.setProperty(runtime, "premultipliedAlpha", false);
   return jsResult;
