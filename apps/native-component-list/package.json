@@ -23,6 +23,7 @@
     "date-format": "^2.0.0",
     "deep-object-diff": "^1.1.0",
     "expo": "~39.0.0",
+    "expo-2d-context": "^0.0.2",
     "expo-ads-admob": "~8.3.0",
     "expo-ads-facebook": "~8.4.0",
     "expo-app-auth": "~9.2.0",
