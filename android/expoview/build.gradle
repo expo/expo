@@ -644,7 +644,7 @@ task buildReanimated(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversi
       "NDK_OUT=" + temporaryDir,
       "NDK_LIBS_OUT=$buildDir/reanimated-ndk/all",
       "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
-      "JSI_PATH=$projectDir/../node_modules/react-native/ReactCommon/jsi",
+      "JSI_PATH=$reactNative/ReactCommon/jsi",
       "REACT_COMMON_DIR=$reactNative/ReactCommon",
       "REACT_SRC_DIR=$reactNative/ReactAndroid/src/main/java/com/facebook/react",
       "FIRST_PARTY=$reactNativeThirdParty/../first-party",
