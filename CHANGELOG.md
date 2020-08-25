@@ -11,6 +11,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
+- Added support for `experiments.turboModules` flag in `app.json`/`app.config.js` allowing developers to enable Turbo Modules on iOS. ([#9908](https://github.com/expo/expo/pull/9908) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🐛 Bug fixes
 
 ## 39.0.0 — 2020-08-18
