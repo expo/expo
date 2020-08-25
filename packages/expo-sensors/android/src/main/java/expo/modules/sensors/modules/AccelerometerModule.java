@@ -37,7 +37,7 @@ public class AccelerometerModule extends BaseSensorModule {
     Bundle map = new Bundle();
     map.putDouble("x", sensorEvent.values[0] / SensorManager.GRAVITY_EARTH);
     map.putDouble("y", sensorEvent.values[1] / SensorManager.GRAVITY_EARTH);
-    map.putDouble("z", sensorEvent.values[2]/  SensorManager.GRAVITY_EARTH);
+    map.putDouble("z", sensorEvent.values[2] / SensorManager.GRAVITY_EARTH);
     return map;
   }
 
