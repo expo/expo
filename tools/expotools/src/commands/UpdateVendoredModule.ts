@@ -13,7 +13,6 @@ import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
 import * as Npm from '../Npm';
-import { FileSystem } from '@expo/xdl';
 
 interface ActionOptions {
   list: boolean;
