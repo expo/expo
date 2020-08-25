@@ -553,7 +553,7 @@ export function openEventInCalendar(id: string): void {
 } // Android
 
 /**
- * @deprecated Use requestCalendarPermissionsAsync()
+ * @deprecated Use `requestCalendarPermissionsAsync()` instead
  */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   console.warn(

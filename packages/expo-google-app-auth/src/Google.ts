@@ -32,7 +32,7 @@ export type GoogleLogInConfig = {
    */
   iosStandaloneAppClientId?: string;
   /**
-   * **Deprecated:** [learn more here](https://docs.expo.io/versions/latest/sdk/google/#server-side-apis).
+   * @deprecated [learn more here](https://docs.expo.io/versions/latest/sdk/google/#server-side-apis).
    */
   webClientId?: string;
   /**
