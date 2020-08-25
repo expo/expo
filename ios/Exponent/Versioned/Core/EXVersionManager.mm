@@ -106,14 +106,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (void)bridgeWillStartLoading:(id)bridge
 {
-  // Override the "Reload" button from Redbox to reload the app from manifest
-  // Keep in mind that it is possible this will return a EXDisabledRedBox
-  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
-  [redBox setOverrideReloadAction:^{
-      [[NSNotificationCenter defaultCenter]
-     postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
-  }];
-
   // We need to check DEBUG flag here because in ejected projects RCT_DEV is set only for React and not for ExpoKit to which this file belongs to.
   // It can be changed to just RCT_DEV once we deprecate ExpoKit and set that flag for the entire standalone project.
 #if DEBUG || RCT_DEV
@@ -128,18 +120,21 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
    postNotificationName:RCTJavaScriptWillStartLoadingNotification object:bridge];
 }
 
-- (void)bridgeFinishedLoading {
-
-}
-
-- (void)invalidate
+- (void)bridgeFinishedLoading:(id)bridge
 {
-
+  // Override the "Reload" button from Redbox to reload the app from manifest
+  // Keep in mind that it is possible this will return a EXDisabledRedBox
+  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
+  [redBox setOverrideReloadAction:^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
+  }];
 }
+
+- (void)invalidate {}
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [NSMutableDictionary new];
 
@@ -199,7 +194,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
 {
   RCTAssertMainQueue();
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
     // bridge could be an RCTBridge of any version and we need to cast it since ARC needs to know
     // the return type
@@ -239,13 +234,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (void)disableRemoteDebuggingForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   devSettings.isDebuggingRemotely = NO;
 }
 
 - (void)toggleElementInspectorForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   [devSettings toggleElementInspector];
 }
 
@@ -259,14 +254,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (id<RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
 {
-  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
-    bridge = [bridge batchedBridge];
-  }
-  RCTModuleData *data = [bridge moduleDataForName:name];
-  if (data) {
-    return [data instance];
-  }
-  return nil;
+  return [bridge moduleForClass:[self getModuleClassFromName:[name UTF8String]]];
 }
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
@@ -282,7 +270,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (NSArray *)extraModulesForBridge:(id)bridge
 {
   NSDictionary *params = _params;
-  BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
