@@ -260,8 +260,9 @@ async function processMkFileAsync(filename: string, abiVersion: string) {
 }
 
 async function processJavaCodeAsync(libName: string, abiVersion: string) {
+  const abiName = `abi${abiVersion}`;
   return spawnAsync(
-    `find ${versionedReactAndroidJavaPath} -iname '*.java' -type f -print0 | ` +
+    `find ${versionedReactAndroidJavaPath} ${versionedExpoviewAbiPath(abiName)} -iname '*.java' -type f -print0 | ` +
       `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
     [],
     { shell: true }
@@ -277,6 +278,12 @@ async function updateVersionedReactNativeAsync() {
 
 async function renameJniLibsAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
+  const abiPrefix = `abi${abiVersion}`
+  const versionedAbiPath = path.join(
+    Directories.getAndroidDir(),
+    'versioned-abis', 
+    `expoview-${abiPrefix}`,
+  );
 
   // Update JNI methods
   const packagesToRename = await getJavaPackagesToRename();
@@ -289,14 +296,28 @@ async function renameJniLibsAsync(version: string) {
       [],
       { shell: true }
     );
+
+    // reanimated
+    const oldJNIReanimatedPackage = 'versioned\\/host\\/exp\\/exponent\\/modules\\/api\\/reanimated\\/';
+    const newJNIReanimatedPackage = 'host\\/exp\\/exponent\\/modules\\/api\\/reanimated\\/';
+    await spawnAsync(
+      `find ${versionedAbiPath} -type f ` +
+        `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
+        `xargs -0 sed -i '' 's/${oldJNIReanimatedPackage}/abi${abiVersion}\\/${newJNIReanimatedPackage}/g'`,
+      [],
+      { shell: true }
+    );
   }
 
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
-  let [reactCommonMkFiles, reactAndroidMkFiles] = await Promise.all([
+  let [reactCommonMkFiles, 
+    reactAndroidMkFiles,
+    reanimatedMKFiles] = await Promise.all([
     glob(path.join(versionedReactCommonPath, '**/*.mk')),
     glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
+    glob(path.join(versionedAbiPath, '**/*.mk')),
   ]);
-  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles];
+  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles, ...reanimatedMKFiles]; 
   await Promise.all(filenames.map((filename) => processMkFileAsync(filename, abiVersion)));
 
   // Rename references to JNI libs in Java code
@@ -311,14 +332,14 @@ async function renameJniLibsAsync(version: string) {
 
   console.log('\nThese are the JNI lib names we modified:');
   await spawnAsync(
-    `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "_abi${abiVersion}"`,
+    `find ${versionedReactAndroidJavaPath} ${versionedAbiPath} -name "*.java" | xargs grep -i "_abi${abiVersion}"`,
     [],
     { shell: true, stdio: 'inherit' }
   );
 
   console.log('\nAnd here are all instances of loadLibrary:');
   await spawnAsync(
-    `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "loadLibrary"`,
+    `find ${versionedReactAndroidJavaPath} ${versionedAbiPath} -name "*.java" | xargs grep -i "loadLibrary"`,
     [],
     { shell: true, stdio: 'inherit' }
   );
@@ -495,43 +516,82 @@ async function cleanUpAsync(version: string) {
   );
 }
 
+async function prepareReanimatedAsync(version: string): Promise<void> {
+  const abiVersion = version.replace(/\./g, '_');
+  const abiName = `abi${abiVersion}`;
+  const versionedExpoviewPath = versionedExpoviewAbiPath(abiName);
+
+  const buildReanimatedSO = async () => {
+    await spawnAsync(`./gradlew :expoview-${abiName}:packageNdkLibs`, [], {
+      shell: true,
+      cwd: path.join(versionedExpoviewPath, '../../'),
+      stdio: 'inherit',
+    });
+  }
+
+  const removeLeftoverDirectories = async () => {
+    const mainPath = path.join(versionedExpoviewPath, 'src', 'main');
+    const toRemove = ['Common', 'JNI', 'cpp'];
+    for (let dir of toRemove) {
+      await fs.remove(path.join(mainPath, dir));
+    }    
+  }
+
+  const removeLeftoversFromGradle = async () => {
+    await spawnAsync('./android-remove-reanimated-code-from-gradle.sh', [version], {
+      shell: true,
+      cwd: SCRIPT_DIR,
+      stdio: 'inherit',
+    });
+  }
+
+  await buildReanimatedSO();
+  await removeLeftoverDirectories();
+  await removeLeftoversFromGradle();
+}
+
 export async function addVersionAsync(version: string) {
-  console.log(' 🛠   1/8: Updating android/versioned-react-native...');
+  console.log(' 🛠   1/9: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync();
-  console.log(' ✅  1/8: Finished\n\n');
+  console.log(' ✅  1/9: Finished\n\n');
 
-  console.log(' 🛠   2/8: Renaming JNI libs in android/versioned-react-native...');
+  console.log(' 🛠   2/9: Creating versioned expoview package...');
+  await spawnAsync('./android-copy-expoview.sh', [version], {
+    shell: true,
+    cwd: SCRIPT_DIR,
+  });
+  
+  console.log(' ✅  2/9: Finished\n\n');
+
+  console.log(' 🛠   3/9: Renaming JNI libs in android/versioned-react-native and Reanimated...');
   await renameJniLibsAsync(version);
-  console.log(' ✅  2/8: Finished\n\n');
+  console.log(' ✅  3/9: Finished\n\n');
 
-  console.log(' 🛠   3/8: Building versioned ReactAndroid AAR...');
+  console.log(' 🛠   4/9: prepare versioned Reanimated...');
+  await prepareReanimatedAsync(version);
+  console.log(' ✅  4/9: Finished\n\n');
+
+  console.log(' 🛠   5/9: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',
   });
-  console.log(' ✅  3/8: Finished\n\n');
+  console.log(' ✅  5/9: Finished\n\n');
 
-  console.log(' 🛠   4/8: Creating versioned expoview package...');
-  await spawnAsync('./android-copy-expoview.sh', [version], {
-    shell: true,
-    cwd: SCRIPT_DIR,
-  });
-  console.log(' ✅  4/8: Finished\n\n');
-
-  console.log(' 🛠   5/8: Creating versioned unimodule packages...');
+  console.log(' 🛠   6/9: Creating versioned unimodule packages...');
   await copyUnimodulesAsync(version);
-  console.log(' ✅  5/8: Finished\n\n');
+  console.log(' ✅  6/9: Finished\n\n');
 
-  console.log(' 🛠   6/8: Adding extra versioned activites to AndroidManifest...');
+  console.log(' 🛠   7/9: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  6/8: Finished\n\n');
+  console.log(' ✅  7/9: Finished\n\n');
 
-  console.log(' 🛠   7/8: Registering new version under sdkVersions config...');
+  console.log(' 🛠   8/9: Registering new version under sdkVersions config...');
   await registerNewVersionUnderSdkVersions(version);
-  console.log(' ✅  7/8: Finished\n\n');
+  console.log(' ✅  8/9: Finished\n\n');
 
-  console.log(' 🛠   8/8: Misc cleanup...');
+  console.log(' 🛠   9/9: Misc cleanup...');
   await cleanUpAsync(version);
-  console.log(' ✅  8/8: Finished');
+  console.log(' ✅  9/9: Finished');
 }

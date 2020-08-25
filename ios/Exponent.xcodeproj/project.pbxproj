@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -363,6 +362,26 @@
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
 		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
+		AF898917F5C94A00ADF8ED47 /* EventHandler.cpp in Resources */ = {isa = PBXBuildFile; fileRef = EEE60406590143F384331AD9 /* EventHandler.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4C1F2EE78AC34F53965716A1 /* EventHandlerRegistry.cpp in Resources */ = {isa = PBXBuildFile; fileRef = DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		28E9B2F58D214976A0686D92 /* FrozenObject.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 08CC64AA5921475995168914 /* FrozenObject.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7653126F460D4C328509E921 /* Mapper.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 8A1219848D9846F7B932BA57 /* Mapper.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EE4681A896274B6C8E39B2CB /* MapperRegistry.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 2A61C6958F2449DCA0E47A15 /* MapperRegistry.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		74C42DC8C6AA4DF8B74D157D /* MutableValue.cpp in Resources */ = {isa = PBXBuildFile; fileRef = CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		14869DBC5F0A448187BE8AAC /* MutableValueSetterProxy.cpp in Resources */ = {isa = PBXBuildFile; fileRef = CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A845744006CE4B049D8B3A1F /* NativeMethods.mm in Resources */ = {isa = PBXBuildFile; fileRef = CC7986C2FC404501906FF740 /* NativeMethods.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7370740FD755433187FCCDC4 /* NativeProxy.mm in Resources */ = {isa = PBXBuildFile; fileRef = 4750108634CD475EAA60B7CF /* NativeProxy.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Resources */ = {isa = PBXBuildFile; fileRef = B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		25E12698EDFA4F52BD58F16C /* NativeReanimatedModuleSpec.cpp in Resources */ = {isa = PBXBuildFile; fileRef = ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		9C7C7E9CB1C14EDCAE259B74 /* REAIOSErrorHandler.mm in Resources */ = {isa = PBXBuildFile; fileRef = 750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Resources */ = {isa = PBXBuildFile; fileRef = CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Resources */ = {isa = PBXBuildFile; fileRef = 7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7CBFBC898DB74BAC99A8A218 /* REATurboModuleProvider.mm in Resources */ = {isa = PBXBuildFile; fileRef = D59284064DCC4E92818588C5 /* REATurboModuleProvider.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8CEF0EA1BF0E47189AFD108E /* RemoteObject.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 3D6010CAFED24823A4C3DED4 /* RemoteObject.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		09692FA19AC347C283AAD242 /* RuntimeDecorator.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 57CF73D162CE4B888D9693B4 /* RuntimeDecorator.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7F8A284434844347B0714FC3 /* Scheduler.cpp in Resources */ = {isa = PBXBuildFile; fileRef = C5B04112B8034322885307FE /* Scheduler.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1108,6 +1127,52 @@
 		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
 		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
 		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
+		141D4A19D11B4B209071945A /* ErrorHandler.h */ = {isa = PBXFileReference; name = "ErrorHandler.h"; path = "ErrorHandler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		EEE60406590143F384331AD9 /* EventHandler.cpp */ = {isa = PBXFileReference; name = "EventHandler.cpp"; path = "EventHandler.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AD9470D5881744E4AD45F984 /* EventHandler.h */ = {isa = PBXFileReference; name = "EventHandler.h"; path = "EventHandler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */ = {isa = PBXFileReference; name = "EventHandlerRegistry.cpp"; path = "EventHandlerRegistry.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F00D28C949584726A2B48E1C /* EventHandlerRegistry.h */ = {isa = PBXFileReference; name = "EventHandlerRegistry.h"; path = "EventHandlerRegistry.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		08CC64AA5921475995168914 /* FrozenObject.cpp */ = {isa = PBXFileReference; name = "FrozenObject.cpp"; path = "FrozenObject.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		70CF0556ED2440AA98B83B1C /* FrozenObject.h */ = {isa = PBXFileReference; name = "FrozenObject.h"; path = "FrozenObject.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		9AF0BA136E2540D397345F34 /* Logger.h */ = {isa = PBXFileReference; name = "Logger.h"; path = "Logger.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		C31084AC217949A186CD9B6E /* LoggerInterface.h */ = {isa = PBXFileReference; name = "LoggerInterface.h"; path = "LoggerInterface.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		8A1219848D9846F7B932BA57 /* Mapper.cpp */ = {isa = PBXFileReference; name = "Mapper.cpp"; path = "Mapper.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8B93B1BC6E124123A8F39891 /* Mapper.h */ = {isa = PBXFileReference; name = "Mapper.h"; path = "Mapper.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		2A61C6958F2449DCA0E47A15 /* MapperRegistry.cpp */ = {isa = PBXFileReference; name = "MapperRegistry.cpp"; path = "MapperRegistry.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		EA4A7C93824A465E80887697 /* MapperRegistry.h */ = {isa = PBXFileReference; name = "MapperRegistry.h"; path = "MapperRegistry.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */ = {isa = PBXFileReference; name = "MutableValue.cpp"; path = "MutableValue.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		152FE7D86CAE4295B6D624F4 /* MutableValue.h */ = {isa = PBXFileReference; name = "MutableValue.h"; path = "MutableValue.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */ = {isa = PBXFileReference; name = "MutableValueSetterProxy.cpp"; path = "MutableValueSetterProxy.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FE89956BF2504EB0A76B89AD /* MutableValueSetterProxy.h */ = {isa = PBXFileReference; name = "MutableValueSetterProxy.h"; path = "MutableValueSetterProxy.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		DD9E21FD38F243A6A917D7D8 /* NativeMethods.h */ = {isa = PBXFileReference; name = "NativeMethods.h"; path = "NativeMethods.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		CC7986C2FC404501906FF740 /* NativeMethods.mm */ = {isa = PBXFileReference; name = "NativeMethods.mm"; path = "NativeMethods.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		ECEB31A1DE40474593CD7AB8 /* NativeProxy.h */ = {isa = PBXFileReference; name = "NativeProxy.h"; path = "NativeProxy.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		4750108634CD475EAA60B7CF /* NativeProxy.mm */ = {isa = PBXFileReference; name = "NativeProxy.mm"; path = "NativeProxy.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */ = {isa = PBXFileReference; name = "NativeReanimatedModule.cpp"; path = "NativeReanimatedModule.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		ACF14968839847CF9ACD753E /* NativeReanimatedModule.h */ = {isa = PBXFileReference; name = "NativeReanimatedModule.h"; path = "NativeReanimatedModule.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */ = {isa = PBXFileReference; name = "NativeReanimatedModuleSpec.cpp"; path = "NativeReanimatedModuleSpec.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8D59D0FC255B4AB7B121EA2C /* NativeReanimatedModuleSpec.h */ = {isa = PBXFileReference; name = "NativeReanimatedModuleSpec.h"; path = "NativeReanimatedModuleSpec.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		F137D3AA554F4F19BCAC6475 /* PlatformDepMethodsHolder.h */ = {isa = PBXFileReference; name = "PlatformDepMethodsHolder.h"; path = "PlatformDepMethodsHolder.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		E4C29372176A43708BA02852 /* REAIOSErrorHandler.h */ = {isa = PBXFileReference; name = "REAIOSErrorHandler.h"; path = "REAIOSErrorHandler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */ = {isa = PBXFileReference; name = "REAIOSErrorHandler.mm"; path = "REAIOSErrorHandler.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3CFA08E845354AC3B662C745 /* REAIOSLogger.h */ = {isa = PBXFileReference; name = "REAIOSLogger.h"; path = "REAIOSLogger.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */ = {isa = PBXFileReference; name = "REAIOSLogger.mm"; path = "REAIOSLogger.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B8006E77A46142428C9416E5 /* REAIOSScheduler.h */ = {isa = PBXFileReference; name = "REAIOSScheduler.h"; path = "REAIOSScheduler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */ = {isa = PBXFileReference; name = "REAIOSScheduler.mm"; path = "REAIOSScheduler.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D290562E102943CEA478BC08 /* REATurboModuleProvider.h */ = {isa = PBXFileReference; name = "REATurboModuleProvider.h"; path = "REATurboModuleProvider.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D59284064DCC4E92818588C5 /* REATurboModuleProvider.mm */ = {isa = PBXFileReference; name = "REATurboModuleProvider.mm"; path = "REATurboModuleProvider.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3D6010CAFED24823A4C3DED4 /* RemoteObject.cpp */ = {isa = PBXFileReference; name = "RemoteObject.cpp"; path = "RemoteObject.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B903C16E9CD24469BA4A2E4F /* RemoteObject.h */ = {isa = PBXFileReference; name = "RemoteObject.h"; path = "RemoteObject.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		57CF73D162CE4B888D9693B4 /* RuntimeDecorator.cpp */ = {isa = PBXFileReference; name = "RuntimeDecorator.cpp"; path = "RuntimeDecorator.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		397779D94D034396B23418D9 /* RuntimeDecorator.h */ = {isa = PBXFileReference; name = "RuntimeDecorator.h"; path = "RuntimeDecorator.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		C5B04112B8034322885307FE /* Scheduler.cpp */ = {isa = PBXFileReference; name = "Scheduler.cpp"; path = "Scheduler.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A014421A042042DE8042EC31 /* Scheduler.h */ = {isa = PBXFileReference; name = "Scheduler.h"; path = "Scheduler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */ = {isa = PBXFileReference; name = "ShareableValue.cpp"; path = "ShareableValue.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3260CF60254646AB9984E4AA /* ShareableValue.h */ = {isa = PBXFileReference; name = "ShareableValue.h"; path = "ShareableValue.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		BB23392ECD264A2796364FD8 /* SharedParent.h */ = {isa = PBXFileReference; name = "SharedParent.h"; path = "SharedParent.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		4C5C373454924AC9902484F0 /* SpeedChecker.h */ = {isa = PBXFileReference; name = "SpeedChecker.h"; path = "SpeedChecker.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */ = {isa = PBXFileReference; name = "WorkletsCache.cpp"; path = "WorkletsCache.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9AD0DBC830AF42E8BC6EAE6E /* WorkletsCache.h */ = {isa = PBXFileReference; name = "WorkletsCache.h"; path = "WorkletsCache.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1542,6 +1607,52 @@
 				E5E493D6EE6840CDB98CCBB5 /* REAUtils.h */,
 				78C8326C23545ECE00448582 /* Nodes */,
 				78C8329423545ECE00448582 /* Transitioning */,
+				141D4A19D11B4B209071945A /* ErrorHandler.h */,
+				EEE60406590143F384331AD9 /* EventHandler.cpp */,
+				AD9470D5881744E4AD45F984 /* EventHandler.h */,
+				DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */,
+				F00D28C949584726A2B48E1C /* EventHandlerRegistry.h */,
+				08CC64AA5921475995168914 /* FrozenObject.cpp */,
+				70CF0556ED2440AA98B83B1C /* FrozenObject.h */,
+				9AF0BA136E2540D397345F34 /* Logger.h */,
+				C31084AC217949A186CD9B6E /* LoggerInterface.h */,
+				8A1219848D9846F7B932BA57 /* Mapper.cpp */,
+				8B93B1BC6E124123A8F39891 /* Mapper.h */,
+				2A61C6958F2449DCA0E47A15 /* MapperRegistry.cpp */,
+				EA4A7C93824A465E80887697 /* MapperRegistry.h */,
+				CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */,
+				152FE7D86CAE4295B6D624F4 /* MutableValue.h */,
+				CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */,
+				FE89956BF2504EB0A76B89AD /* MutableValueSetterProxy.h */,
+				DD9E21FD38F243A6A917D7D8 /* NativeMethods.h */,
+				CC7986C2FC404501906FF740 /* NativeMethods.mm */,
+				ECEB31A1DE40474593CD7AB8 /* NativeProxy.h */,
+				4750108634CD475EAA60B7CF /* NativeProxy.mm */,
+				B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */,
+				ACF14968839847CF9ACD753E /* NativeReanimatedModule.h */,
+				ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */,
+				8D59D0FC255B4AB7B121EA2C /* NativeReanimatedModuleSpec.h */,
+				F137D3AA554F4F19BCAC6475 /* PlatformDepMethodsHolder.h */,
+				E4C29372176A43708BA02852 /* REAIOSErrorHandler.h */,
+				750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */,
+				3CFA08E845354AC3B662C745 /* REAIOSLogger.h */,
+				CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */,
+				B8006E77A46142428C9416E5 /* REAIOSScheduler.h */,
+				7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */,
+				D290562E102943CEA478BC08 /* REATurboModuleProvider.h */,
+				D59284064DCC4E92818588C5 /* REATurboModuleProvider.mm */,
+				3D6010CAFED24823A4C3DED4 /* RemoteObject.cpp */,
+				B903C16E9CD24469BA4A2E4F /* RemoteObject.h */,
+				57CF73D162CE4B888D9693B4 /* RuntimeDecorator.cpp */,
+				397779D94D034396B23418D9 /* RuntimeDecorator.h */,
+				C5B04112B8034322885307FE /* Scheduler.cpp */,
+				A014421A042042DE8042EC31 /* Scheduler.h */,
+				5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */,
+				3260CF60254646AB9984E4AA /* ShareableValue.h */,
+				BB23392ECD264A2796364FD8 /* SharedParent.h */,
+				4C5C373454924AC9902484F0 /* SpeedChecker.h */,
+				1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */,
+				9AD0DBC830AF42E8BC6EAE6E /* WorkletsCache.h */,
 			);
 			path = Reanimated;
 			sourceTree = "<group>";
@@ -3104,6 +3215,26 @@
 				807A6CE3FB55427E8D995580 /* RCTOnPageScrollStateChanged.m in Sources */,
 				5E91B590D3BD401FB31B6D2D /* RCTOnPageSelected.m in Sources */,
 				6D0D4DF0D549439499086EC6 /* UIViewController+CreateExtension.m in Sources */,
+				AF898917F5C94A00ADF8ED47 /* EventHandler.cpp in Resources */,
+				4C1F2EE78AC34F53965716A1 /* EventHandlerRegistry.cpp in Resources */,
+				28E9B2F58D214976A0686D92 /* FrozenObject.cpp in Resources */,
+				7653126F460D4C328509E921 /* Mapper.cpp in Resources */,
+				EE4681A896274B6C8E39B2CB /* MapperRegistry.cpp in Resources */,
+				74C42DC8C6AA4DF8B74D157D /* MutableValue.cpp in Resources */,
+				14869DBC5F0A448187BE8AAC /* MutableValueSetterProxy.cpp in Resources */,
+				A845744006CE4B049D8B3A1F /* NativeMethods.mm in Resources */,
+				7370740FD755433187FCCDC4 /* NativeProxy.mm in Resources */,
+				45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Resources */,
+				25E12698EDFA4F52BD58F16C /* NativeReanimatedModuleSpec.cpp in Resources */,
+				9C7C7E9CB1C14EDCAE259B74 /* REAIOSErrorHandler.mm in Resources */,
+				3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Resources */,
+				45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Resources */,
+				7CBFBC898DB74BAC99A8A218 /* REATurboModuleProvider.mm in Resources */,
+				8CEF0EA1BF0E47189AFD108E /* RemoteObject.cpp in Resources */,
+				09692FA19AC347C283AAD242 /* RuntimeDecorator.cpp in Resources */,
+				7F8A284434844347B0714FC3 /* Scheduler.cpp in Resources */,
+				CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Resources */,
+				CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
