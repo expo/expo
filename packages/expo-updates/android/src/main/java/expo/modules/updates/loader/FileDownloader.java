@@ -103,6 +103,7 @@ public class FileDownloader {
             if (isSigned && "UNSIGNED".equals(manifestJson.getString("signature"))) {
               isSigned = false;
               manifestJson = new JSONObject(manifestJson.getString("manifestString"));
+              manifestJson.put("isVerified", false);
             }
 
             if (isSigned) {

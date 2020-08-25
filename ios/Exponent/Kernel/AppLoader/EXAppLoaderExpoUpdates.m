@@ -378,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary *)_processManifest:(NSDictionary *)manifest
 {
   NSMutableDictionary *mutableManifest = [manifest mutableCopy];
-  if (![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
+  if (!mutableManifest[@"isVerified"] && ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
     // the manifest id determines the namespace/experience id an app is sandboxed with
     // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
     // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
@@ -388,12 +388,14 @@ NS_ASSUME_NONNULL_BEGIN
     mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path ?: @"", slugSuffix];
     mutableManifest[@"isVerified"] = @(YES);
   }
-  if (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [self _isAnonymousExperience:manifest]) {
-    mutableManifest[@"isVerified"] = @(YES);
-  }
-  if (mutableManifest[@"isVerified"] == nil) {
+  if (!mutableManifest[@"isVerified"]) {
     mutableManifest[@"isVerified"] = @(NO);
   }
+
+  if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [self _isAnonymousExperience:manifest])) {
+    mutableManifest[@"isVerified"] = @(YES);
+  }
+
   return [mutableManifest copy];
 }
 

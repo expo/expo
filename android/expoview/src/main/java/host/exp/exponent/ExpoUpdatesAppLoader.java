@@ -300,7 +300,9 @@ public class ExpoUpdatesAppLoader {
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
     Uri parsedManifestUrl = Uri.parse(mManifestUrl);
-    if (isThirdPartyHosted(parsedManifestUrl) && !Constants.isStandaloneApp()) {
+    if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY) &&
+        isThirdPartyHosted(parsedManifestUrl) &&
+        !Constants.isStandaloneApp()) {
       // Sandbox third party apps and consider them verified
       // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
       // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
@@ -312,12 +314,14 @@ public class ExpoUpdatesAppLoader {
       manifest.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId);
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
-    if (mExponentManifest.isAnonymousExperience(manifest)) {
-      // automatically verified
-      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
-    }
     if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false);
+    }
+
+    if (!manifest.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
+        mExponentManifest.isAnonymousExperience(manifest)) {
+      // automatically verified
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
 
     String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
