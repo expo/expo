@@ -1,6 +1,5 @@
 ---
-title: Sending Notifications with APNS and FCM
-sidebar_title: Sending Notifications with APNS & FCM
+title: Sending Notifications with APNS & FCM
 ---
 
 Communicating directly with APNS and FCM is much more complicated than sending notifications through [Expo's push notification service](../sending-notifications/), so you should only use this feature if you're prepared to undertake that complexity. Here are a few things you'll have to handle yourself if you choose to write your own server for FCM and APNS:
