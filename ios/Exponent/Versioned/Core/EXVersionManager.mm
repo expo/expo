@@ -106,14 +106,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (void)bridgeWillStartLoading:(id)bridge
 {
-  // Override the "Reload" button from Redbox to reload the app from manifest
-  // Keep in mind that it is possible this will return a EXDisabledRedBox
-  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
-  [redBox setOverrideReloadAction:^{
-      [[NSNotificationCenter defaultCenter]
-     postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
-  }];
-
   // We need to check DEBUG flag here because in ejected projects RCT_DEV is set only for React and not for ExpoKit to which this file belongs to.
   // It can be changed to just RCT_DEV once we deprecate ExpoKit and set that flag for the entire standalone project.
 #if DEBUG || RCT_DEV
@@ -128,14 +120,17 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
    postNotificationName:RCTJavaScriptWillStartLoadingNotification object:bridge];
 }
 
-- (void)bridgeFinishedLoading {
-
-}
-
-- (void)invalidate
+- (void)bridgeFinishedLoading:(id)bridge
 {
-
+  // Override the "Reload" button from Redbox to reload the app from manifest
+  // Keep in mind that it is possible this will return a EXDisabledRedBox
+  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
+  [redBox setOverrideReloadAction:^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
+  }];
 }
+
+- (void)invalidate {}
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {
@@ -401,10 +396,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
         [RCTFileRequestHandler new],
       ];
     }];
-  } else if (moduleClass == RCTDevMenu.class) {
-    return [EXDisabledDevMenu new];
-  } else if (moduleClass == RCTRedBox.class) {
-    return [EXDisabledRedBox new];
   }
 
   // Expo-specific
