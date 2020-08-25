@@ -37,13 +37,12 @@ By default, queued tasks are executed together in a loop in one `setImmediate` b
 
 ---
 
-
 ## Example
 
 ### Basic
 
 ```js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   Animated,
@@ -52,13 +51,12 @@ import {
   StyleSheet,
   Text,
   View,
-} from "react-native";
+} from 'react-native';
 
 const instructions = Platform.select({
-  ios: "Press Cmd+R to reload,\\n" + "Cmd+D or shake for dev menu",
+  ios: 'Press Cmd+R to reload,\\n' + 'Cmd+D or shake for dev menu',
   android:
-    "Double tap R on your keyboard to reload,\\n" +
-    "Shake or press menu button for dev menu",
+    'Double tap R on your keyboard to reload,\\n' + 'Shake or press menu button for dev menu',
 });
 
 const useMount = func => useEffect(() => func(), []);
@@ -95,17 +93,17 @@ const App = () => {
   return (
     <View style={styles.container}>
       <Text>{instructions}</Text>
-      <Ball onShown={() => Alert.alert("Animation is done")} />
+      <Ball onShown={() => Alert.alert('Animation is done')} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   ball: {
     width: 100,
     height: 100,
-    backgroundColor: "salmon",
+    backgroundColor: 'salmon',
     borderRadius: 100,
   },
 });
@@ -116,7 +114,7 @@ export default App;
 ### Advanced
 
 ```js
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   Alert,
   Animated,
@@ -125,13 +123,12 @@ import {
   StyleSheet,
   Text,
   View,
-} from "react-native";
+} from 'react-native';
 
 const instructions = Platform.select({
-  ios: "Press Cmd+R to reload,\\n" + "Cmd+D or shake for dev menu",
+  ios: 'Press Cmd+R to reload,\\n' + 'Cmd+D or shake for dev menu',
   android:
-    "Double tap R on your keyboard to reload,\\n" +
-    "Shake or press menu button for dev menu",
+    'Double tap R on your keyboard to reload,\\n' + 'Shake or press menu button for dev menu',
 });
 
 const useMount = func => useEffect(() => func(), []);
@@ -142,10 +139,7 @@ const useCustomInteraction = (timeLocked = 2000) => {
   useMount(() => {
     const handle = InteractionManager.createInteractionHandle();
 
-    setTimeout(
-      () => InteractionManager.clearInteractionHandle(handle),
-      timeLocked
-    );
+    setTimeout(() => InteractionManager.clearInteractionHandle(handle), timeLocked);
 
     return () => InteractionManager.clearInteractionHandle(handle);
   });
@@ -166,17 +160,17 @@ const App = () => {
   return (
     <View style={styles.container}>
       <Text>{instructions}</Text>
-      <Ball onInteractionIsDone={() => Alert.alert("Interaction is done")} />
+      <Ball onInteractionIsDone={() => Alert.alert('Interaction is done')} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   ball: {
     width: 100,
     height: 100,
-    backgroundColor: "salmon",
+    backgroundColor: 'salmon',
     borderRadius: 100,
   },
 });
@@ -193,9 +187,7 @@ export default App;
 ### `runAfterInteractions()`
 
 ```js
-
 static runAfterInteractions(task)
-
 ```
 
 Schedule a function to run after all interactions have completed. Returns a cancellable "promise".
@@ -205,9 +197,7 @@ Schedule a function to run after all interactions have completed. Returns a canc
 ### `createInteractionHandle()`
 
 ```js
-
 static createInteractionHandle()
-
 ```
 
 Notify manager that an interaction has started.
@@ -217,9 +207,7 @@ Notify manager that an interaction has started.
 ### `clearInteractionHandle()`
 
 ```js
-
 static clearInteractionHandle(handle)
-
 ```
 
 Notify manager that an interaction has completed.
@@ -229,9 +217,7 @@ Notify manager that an interaction has completed.
 ### `setDeadline()`
 
 ```js
-
 static setDeadline(deadline)
-
 ```
 
 A positive number will use setTimeout to schedule any tasks after the eventLoopRunningTime hits the deadline value, otherwise all tasks will be executed in one setImmediate batch (default).

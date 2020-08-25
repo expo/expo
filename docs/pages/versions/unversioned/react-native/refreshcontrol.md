@@ -12,13 +12,13 @@ import React from 'react';
 import { ScrollView, RefreshControl, StyleSheet, Text, SafeAreaView } from 'react-native';
 import Constants from 'expo-constants';
 
-const wait = (timeout) => {
+const wait = timeout => {
   return new Promise(resolve => {
     setTimeout(resolve, timeout);
   });
 };
 
-const App = () => {
+export function App() {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
@@ -31,15 +31,12 @@ const App = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <Text>Pull down to see RefreshControl indicator</Text>
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -53,8 +50,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-export default App;
 ```
 
 **Note:** `refreshing` is a controlled prop, this is why it needs to be set to true in the `onRefresh` function otherwise the refresh indicator will stop immediately.
@@ -91,8 +86,8 @@ Called when the view starts refreshing.
 
 The colors (at least one) that will be used to draw the refresh indicator.
 
-| Type                        | Required | Platform |
-| --------------------------- | -------- | -------- |
+| Type                                                  | Required | Platform |
+| ----------------------------------------------------- | -------- | -------- |
 | array of [color](https://reactnative.dev/docs/colors) | No       | Android  |
 
 ---
@@ -111,8 +106,8 @@ Whether the pull to refresh functionality is enabled.
 
 The background color of the refresh indicator.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                                         | Required | Platform |
+| -------------------------------------------- | -------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       | Android  |
 
 ---
@@ -141,8 +136,8 @@ Size of the refresh indicator, see RefreshControl.SIZE.
 
 The color of the refresh indicator.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                                         | Required | Platform |
+| -------------------------------------------- | -------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       | iOS      |
 
 ---
@@ -161,6 +156,6 @@ The title displayed under the refresh indicator.
 
 Title color.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                                         | Required | Platform |
+| -------------------------------------------- | -------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       | iOS      |

@@ -3,7 +3,7 @@ id: dimensions
 title: Dimensions
 ---
 
-> [`useWindowDimensions`](../usewindowdimensions/) is the preffered API for React components. Unlike `Dimensions`, it updates as the window's dimensions update. This works nicely with the React paradigm.
+> [`useWindowDimensions`](../usewindowdimensions/) is the preferred API for React components. Unlike `Dimensions`, it updates as the window's dimensions update. This works nicely with the React paradigm.
 
 ```js
 import { Dimensions } from 'react-native';
@@ -23,11 +23,11 @@ If you are targeting foldable devices or devices which can change the screen siz
 ## Example
 
 ```js
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Dimensions } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, Dimensions } from 'react-native';
 
-const window = Dimensions.get("window");
-const screen = Dimensions.get("screen");
+const window = Dimensions.get('window');
+const screen = Dimensions.get('screen');
 
 export default function App() {
   const [dimensions, setDimensions] = useState({ window, screen });
@@ -37,9 +37,9 @@ export default function App() {
   };
 
   useEffect(() => {
-    Dimensions.addEventListener("change", onChange);
+    Dimensions.addEventListener('change', onChange);
     return () => {
-      Dimensions.removeEventListener("change", onChange);
+      Dimensions.removeEventListener('change', onChange);
     };
   });
 
@@ -54,9 +54,9 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 ```
 
@@ -101,9 +101,7 @@ Example: `const {height, width} = Dimensions.get('window');`
 ### `removeEventListener()`
 
 ```js
-
 static removeEventListener(type, handler)
-
 ```
 
 Remove an event handler.
@@ -113,9 +111,7 @@ Remove an event handler.
 ### `set()`
 
 ```js
-
 static set(dims)
-
 ```
 
 This should only be called from native code by sending the didUpdateDimensions event.

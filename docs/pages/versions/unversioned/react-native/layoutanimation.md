@@ -10,7 +10,7 @@ A common way to use this API is to call it before updating the state hook in fun
 Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
 
 ```js
-if (Platform.OS === "android") {
+if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
@@ -20,13 +20,18 @@ if (Platform.OS === "android") {
 ## Example
 
 ```js
-import React, { useState } from "react";
-import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from "react-native";
+import React, { useState } from 'react';
+import {
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -39,9 +44,8 @@ export default function App() {
         onPress={() => {
           LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
           setExpanded(!expanded);
-        }}
-      >
-        <Text>Press me to {expanded ? "collapse" : "expand"}!</Text>
+        }}>
+        <Text>Press me to {expanded ? 'collapse' : 'expand'}!</Text>
       </TouchableOpacity>
       {expanded && (
         <View style={style.tile}>
@@ -54,16 +58,16 @@ export default function App() {
 
 const style = StyleSheet.create({
   tile: {
-    background: "lightGrey",
+    background: 'lightGrey',
     borderWidth: 0.5,
-    borderColor: "#d6d7da"
+    borderColor: '#d6d7da',
   },
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden"
-  }
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
 });
 ```
 
@@ -109,9 +113,7 @@ The config that's passed to `create`, `update`, or `delete` has the following ke
 ### `create()`
 
 ```js
-
 static create(duration, type, creationProp)
-
 ```
 
 Helper that creates an object (with `create`, `update`, and `delete` fields) to pass into [`configureNext`](../layoutanimation/#configurenext). The `type` parameter is an [animation type](../layoutanimation/#types), and the `creationProp` parameter is a [layout property](../layoutanimation/#properties).
@@ -119,35 +121,21 @@ Helper that creates an object (with `create`, `update`, and `delete` fields) to 
 Example usage:
 
 ```js
-import React, { useState } from "react";
-import {
-  View,
-  Platform,
-  UIManager,
-  LayoutAnimation,
-  StyleSheet,
-  Button
-} from "react-native";
+import React, { useState } from 'react';
+import { View, Platform, UIManager, LayoutAnimation, StyleSheet, Button } from 'react-native';
 
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 export default function App() {
-  const [boxPosition, setBoxPosition] = useState("left");
+  const [boxPosition, setBoxPosition] = useState('left');
 
   const toggleBox = () => {
     LayoutAnimation.configureNext(
-      LayoutAnimation.create(
-        500,
-        LayoutAnimation.Types.spring,
-        LayoutAnimation.Properties.scaleXY
-      )
+      LayoutAnimation.create(500, LayoutAnimation.Types.spring, LayoutAnimation.Properties.scaleXY)
     );
-    setBoxPosition(boxPosition === "left" ? "right" : "left");
+    setBoxPosition(boxPosition === 'left' ? 'right' : 'left');
   };
 
   return (
@@ -155,9 +143,7 @@ export default function App() {
       <View style={styles.buttonContainer}>
         <Button title="Toggle Layout" onPress={toggleBox} />
       </View>
-      <View
-        style={[styles.box, boxPosition === "left" ? null : styles.moveRight]}
-      />
+      <View style={[styles.box, boxPosition === 'left' ? null : styles.moveRight]} />
     </View>
   );
 }
@@ -165,24 +151,24 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center"
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   box: {
     height: 100,
     width: 100,
     borderRadius: 5,
     margin: 8,
-    backgroundColor: "blue"
+    backgroundColor: 'blue',
   },
   moveRight: {
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
     height: 200,
-    width: 200
+    width: 200,
   },
   buttonContainer: {
-    alignSelf: "center"
-  }
+    alignSelf: 'center',
+  },
 });
 ```
 
@@ -247,41 +233,31 @@ Calls `configureNext()` with `Presets.spring`.
 Example usage:
 
 ```js
-import React, { useState } from "react";
-import {
-  View,
-  Platform,
-  UIManager,
-  LayoutAnimation,
-  StyleSheet,
-  Button
-} from "react-native";
+import React, { useState } from 'react';
+import { View, Platform, UIManager, LayoutAnimation, StyleSheet, Button } from 'react-native';
 
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 export default function App() {
-  const [firstBoxPosition, setFirstBoxPosition] = useState("left");
-  const [secondBoxPosition, setSecondBoxPosition] = useState("left");
-  const [thirdBoxPosition, setThirdBoxPosition] = useState("left");
+  const [firstBoxPosition, setFirstBoxPosition] = useState('left');
+  const [secondBoxPosition, setSecondBoxPosition] = useState('left');
+  const [thirdBoxPosition, setThirdBoxPosition] = useState('left');
 
   const toggleFirstBox = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setFirstBoxPosition(firstBoxPosition === "left" ? "right" : "left");
+    setFirstBoxPosition(firstBoxPosition === 'left' ? 'right' : 'left');
   };
 
   const toggleSecondBox = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-    setSecondBoxPosition(secondBoxPosition === "left" ? "right" : "left");
+    setSecondBoxPosition(secondBoxPosition === 'left' ? 'right' : 'left');
   };
 
   const toggleThirdBox = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-    setThirdBoxPosition(thirdBoxPosition === "left" ? "right" : "left");
+    setThirdBoxPosition(thirdBoxPosition === 'left' ? 'right' : 'left');
   };
 
   return (
@@ -289,30 +265,15 @@ export default function App() {
       <View style={styles.buttonContainer}>
         <Button title="EaseInEaseOut" onPress={toggleFirstBox} />
       </View>
-      <View
-        style={[
-          styles.box,
-          firstBoxPosition === "left" ? null : styles.moveRight
-        ]}
-      />
+      <View style={[styles.box, firstBoxPosition === 'left' ? null : styles.moveRight]} />
       <View style={styles.buttonContainer}>
         <Button title="Linear" onPress={toggleSecondBox} />
       </View>
-      <View
-        style={[
-          styles.box,
-          secondBoxPosition === "left" ? null : styles.moveRight
-        ]}
-      />
+      <View style={[styles.box, secondBoxPosition === 'left' ? null : styles.moveRight]} />
       <View style={styles.buttonContainer}>
         <Button title="Spring" onPress={toggleThirdBox} />
       </View>
-      <View
-        style={[
-          styles.box,
-          thirdBoxPosition === "left" ? null : styles.moveRight
-        ]}
-      />
+      <View style={[styles.box, thirdBoxPosition === 'left' ? null : styles.moveRight]} />
     </View>
   );
 }
@@ -320,21 +281,21 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center"
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   box: {
     height: 100,
     width: 100,
     borderRadius: 5,
     margin: 8,
-    backgroundColor: "blue"
+    backgroundColor: 'blue',
   },
   moveRight: {
-    alignSelf: "flex-end"
+    alignSelf: 'flex-end',
   },
   buttonContainer: {
-    alignSelf: "center"
-  }
+    alignSelf: 'center',
+  },
 });
 ```

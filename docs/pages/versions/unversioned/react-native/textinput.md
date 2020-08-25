@@ -11,7 +11,7 @@ The most basic use case is to plop down a `TextInput` and subscribe to the `onCh
 import React, { Component } from 'react';
 import { TextInput } from 'react-native';
 
-const UselessTextInput = () => {
+export default function UselessTextInput() {
   const [value, onChangeText] = React.useState('Useless Placeholder');
 
   return (
@@ -21,9 +21,7 @@ const UselessTextInput = () => {
       value={value}
     />
   );
-}
-
-export default UselessTextInput;
+};
 ```
 
 Two methods exposed via the native element are .focus() and .blur() that will focus or blur the TextInput programmatically.
@@ -34,7 +32,7 @@ Note that some props are only available with `multiline={true/false}`. Additiona
 import React, { Component } from 'react';
 import { View, TextInput } from 'react-native';
 
-const UselessTextInput = (props) => {
+const UselessTextInput = props => {
   return (
     <TextInput
       {...props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
@@ -42,9 +40,9 @@ const UselessTextInput = (props) => {
       maxLength={40}
     />
   );
-}
+};
 
-const UselessTextInputMultiline = () => {
+export default function UselessTextInputMultiline() {
   const [value, onChangeText] = React.useState('Useless Multiline Placeholder');
 
   // If you type something in the text box that is a color, the background will change to that
@@ -65,8 +63,6 @@ const UselessTextInputMultiline = () => {
     </View>
   );
 }
-
-export default UselessTextInputMultiline;
 ```
 
 `TextInput` has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting `underlineColorAndroid` to transparent.
@@ -545,8 +541,8 @@ The string that will be rendered before text input has been entered.
 
 The text color of the placeholder string.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -643,8 +639,8 @@ The start and end of the text input's selection. Set start and end to the same v
 
 The highlight and cursor color of the text input.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       |
 
 ---
@@ -769,8 +765,8 @@ see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more 
 
 [Styles](https://reactnative.dev/docs/style)
 
-| Type                  | Required |
-| --------------------- | -------- |
+| Type                   | Required |
+| ---------------------- | -------- |
 | [Text](../text/#style) | No       |
 
 ---
@@ -793,8 +789,8 @@ Set text break strategy on Android API Level 23+, possible values are `simple`, 
 
 The color of the `TextInput` underline.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                                         | Required | Platform |
+| -------------------------------------------- | -------- | -------- |
 | [color](https://reactnative.dev/docs/colors) | No       | Android  |
 
 ---
@@ -809,17 +805,17 @@ The value to show for the text input. `TextInput` is a controlled component, whi
 
 ## Methods
 
-### `.focus()`
+### `focus()`
 
-```jsx
+```js
 focus();
 ```
 
 Makes the native input request focus.
 
-### `.blur()`
+### `blur()`
 
-```jsx
+```js
 blur();
 ```
 
@@ -827,7 +823,7 @@ Makes the native input lose focus.
 
 ### `clear()`
 
-```jsx
+```js
 clear();
 ```
 
@@ -837,7 +833,7 @@ Removes all text from the `TextInput`.
 
 ### `isFocused()`
 
-```jsx
+```js
 isFocused();
 ```
 

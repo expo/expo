@@ -24,13 +24,7 @@ const App = () => {
     'space-around',
     'space-evenly',
   ];
-  const alignItemsArr = [
-    'flex-start',
-    'flex-end',
-    'center',
-    'stretch',
-    'baseline',
-  ];
+  const alignItemsArr = ['flex-start', 'flex-end', 'center', 'stretch', 'baseline'];
   const wraps = ['nowrap', 'wrap', 'wrap-reverse'];
   const directions = ['inherit', 'ltr', 'rtl'];
   const [flexDirection, setFlexDirection] = useState(0);
@@ -77,31 +71,21 @@ const App = () => {
           <View style={styles.buttonView}>
             <Button
               title="Change Flex Direction"
-              onPress={() =>
-                changeSetting(flexDirection, flexDirections, setFlexDirection)
-              }
+              onPress={() => changeSetting(flexDirection, flexDirections, setFlexDirection)}
             />
             <Text style={styles.text}>{flexDirections[flexDirection]}</Text>
           </View>
           <View style={styles.buttonView}>
             <Button
               title="Change Justify Content"
-              onPress={() =>
-                changeSetting(
-                  justifyContent,
-                  justifyContents,
-                  setJustifyContent
-                )
-              }
+              onPress={() => changeSetting(justifyContent, justifyContents, setJustifyContent)}
             />
             <Text style={styles.text}>{justifyContents[justifyContent]}</Text>
           </View>
           <View style={styles.buttonView}>
             <Button
               title="Change Align Items"
-              onPress={() =>
-                changeSetting(alignItems, alignItemsArr, setAlignItems)
-              }
+              onPress={() => changeSetting(alignItems, alignItemsArr, setAlignItems)}
             />
             <Text style={styles.text}>{alignItemsArr[alignItems]}</Text>
           </View>
@@ -113,24 +97,16 @@ const App = () => {
             <Text style={styles.text}>{directions[direction]}</Text>
           </View>
           <View style={styles.buttonView}>
-            <Button
-              title="Change Flex Wrap"
-              onPress={() => changeSetting(wrap, wraps, setWrap)}
-            />
+            <Button title="Change Flex Wrap" onPress={() => changeSetting(wrap, wraps, setWrap)} />
             <Text style={styles.text}>{wraps[wrap]}</Text>
           </View>
           <View style={styles.buttonView}>
-            <Button
-              title="Add Square"
-              onPress={() => setSquares([...squares, Square()])}
-            />
+            <Button title="Add Square" onPress={() => setSquares([...squares, Square()])} />
           </View>
           <View style={styles.buttonView}>
             <Button
               title="Delete Square"
-              onPress={() =>
-                setSquares(squares.filter((v, i) => i != squares.length - 1))
-              }
+              onPress={() => setSquares(squares.filter((v, i) => i != squares.length - 1))}
             />
           </View>
         </View>
@@ -391,7 +367,7 @@ When `flex` is -1, the component is normally sized according to `width` and `hei
 
 ### `flexShrink`
 
-[`flexShrink`](../layout-props/flexshrink) describes how to shrink children along the main axis in the case in which the total size of the children overflows the size of the container on the main axis. `flexShrink` is very similar to `flexGrow` and can be thought of in the same way if any overflowing size is considered to be negative remaining space. These two properties also work well together by allowing children to grow and shrink as needed.
+[`flexShrink`](../layout-props/#flexshrink) describes how to shrink children along the main axis in the case in which the total size of the children overflows the size of the container on the main axis. `flexShrink` is very similar to `flexGrow` and can be thought of in the same way if any overflowing size is considered to be negative remaining space. These two properties also work well together by allowing children to grow and shrink as needed.
 
 `flexShrink` accepts any floating point value >= 0, with 1 being the default value. A container will shrink its children weighted by the children’s `flexShrink` values.
 

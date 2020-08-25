@@ -3,6 +3,8 @@ id: touchablewithoutfeedback
 title: TouchableWithoutFeedback
 ---
 
+> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](../pressable/) API.
+
 Do not use unless you have a very good reason. All elements that respond to press should have a visual feedback when touched.
 
 `TouchableWithoutFeedback` supports only one child. If you wish to have several child components, wrap them in a View. Importantly, `TouchableWithoutFeedback` works by cloning its child and applying responder props to it. It is therefore required that any intermediary components pass through those props to the underlying React Native component.
@@ -26,8 +28,8 @@ function MyComponent(props) {
 ## Example
 
 ```js
-import React, { useState } from "react";
-import { StyleSheet, TouchableWithoutFeedback, Text, View } from "react-native";
+import React, { useState } from 'react';
+import { StyleSheet, TouchableWithoutFeedback, Text, View } from 'react-native';
 
 const TouchableWithoutFeedbackExample = () => {
   const [count, setCount] = useState(0);
@@ -48,26 +50,26 @@ const TouchableWithoutFeedbackExample = () => {
       </TouchableWithoutFeedback>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 10
+    justifyContent: 'center',
+    paddingHorizontal: 10,
   },
   button: {
-    alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
   },
   countContainer: {
-    alignItems: "center",
-    padding: 10
+    alignItems: 'center',
+    padding: 10,
   },
   countText: {
-    color: "#FF00FF"
-  }
+    color: '#FF00FF',
+  },
 });
 
 export default TouchableWithoutFeedbackExample;
@@ -251,9 +253,9 @@ This defines how far your touch can start away from the button. This is added to
 
 > The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.
 
-| Type                   | Required |
-| ---------------------- | -------- |
-| Rect or number | No       |
+| Type                                                | Required |
+| --------------------------------------------------- | -------- |
+| [Rect](https://reactnative.dev/docs/rect) or number | No       |
 
 ### `onBlur`
 
@@ -299,7 +301,7 @@ Called if the time after `onPressIn` lasts longer than 370 milliseconds. This ti
 
 ### `onPress`
 
-Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock).
+Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent).
 
 | Type     | Required |
 | -------- | -------- |
@@ -309,7 +311,7 @@ Called when the touch is released, but not if cancelled (e.g. by a scroll that s
 
 ### `onPressIn`
 
-Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests.
+Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
 
 | Type     | Required |
 | -------- | -------- |
@@ -319,7 +321,7 @@ Called as soon as the touchable element is pressed and invoked even before onPre
 
 ### `onPressOut`
 
-Called as soon as the touch is released even before onPress.
+Called as soon as the touch is released even before onPress. The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
 
 | Type     | Required |
 | -------- | -------- |
@@ -331,9 +333,9 @@ Called as soon as the touch is released even before onPress.
 
 When the scroll view is disabled, this defines how far your touch may move off of the button, before deactivating the button. Once deactivated, try moving it back and you'll see that the button is once again reactivated! Move it back and forth several times while the scroll view is disabled. Ensure you pass in a constant to reduce memory allocations.
 
-| Type                   | Required |
-| ---------------------- | -------- |
-| Rect or number | No       |
+| Type                                                | Required |
+| --------------------------------------------------- | -------- |
+| [Rect](https://reactnative.dev/docs/rect) or number | No       |
 
 ---
 

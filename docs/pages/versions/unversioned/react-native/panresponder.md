@@ -10,21 +10,10 @@ By default, `PanResponder` holds an `InteractionManager` handle to block long-ru
 It provides a predictable wrapper of the responder handlers provided by the [gesture responder system](https://reactnative.dev/docs/gesture-responder-system). For each handler, it provides a new `gestureState` object alongside the native event object:
 
 ```js
-onPanResponderMove: (event, gestureState) => {}
+onPanResponderMove: (event, gestureState) => {};
 ```
 
-A native event is a synthetic touch event with the following form:
-
-- `nativeEvent`
-  - `changedTouches` - Array of all touch events that have changed since the last event
-  - `identifier` - The ID of the touch
-  - `locationX` - The X position of the touch, relative to the element
-  - `locationY` - The Y position of the touch, relative to the element
-  - `pageX` - The X position of the touch, relative to the root element
-  - `pageY` - The Y position of the touch, relative to the root element
-  - `target` - The node id of the element receiving the touch event
-  - `timestamp` - A time identifier for the touch, useful for velocity calculation
-  - `touches` - Array of all current touches on the screen
+A native event is a synthetic touch event with form of [PressEvent](https://reactnative.dev/docs/pressevent).
 
 A `gestureState` object has the following:
 
@@ -42,7 +31,7 @@ A `gestureState` object has the following:
 ## Usage Pattern
 
 ```js
-export default function ExampleComponent() {
+const ExampleComponent = () => {
   const panResponder = React.useRef(
     PanResponder.create({
       // Ask to be the responder:
@@ -74,7 +63,7 @@ export default function ExampleComponent() {
         // Returns whether this component should block native components from becoming the JS
         // responder. Returns true by default. Is currently only supported on android.
         return true;
-      }
+      },
     })
   ).current;
 
@@ -87,8 +76,8 @@ export default function ExampleComponent() {
 `PanResponder` works with `Animated` API to help build complex gestures in the UI. The following example contains an animated `View` component which can be dragged freely across the screen.
 
 ```js
-import React, { useRef } from "react";
-import { Animated, View, StyleSheet, PanResponder, Text } from "react-native";
+import React, { useRef } from 'react';
+import { Animated, View, StyleSheet, PanResponder, Text } from 'react-native';
 
 export default function App() {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -99,18 +88,13 @@ export default function App() {
       onPanResponderGrant: () => {
         pan.setOffset({
           x: pan.x._value,
-          y: pan.y._value
+          y: pan.y._value,
         });
       },
-      onPanResponderMove: Animated.event(
-        [
-          null,
-          { dx: pan.x, dy: pan.y }
-        ]
-      ),
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
       onPanResponderRelease: () => {
         pan.flattenOffset();
-      }
+      },
     })
   ).current;
 
@@ -119,10 +103,9 @@ export default function App() {
       <Text style={styles.titleText}>Drag this box!</Text>
       <Animated.View
         style={{
-          transform: [{ translateX: pan.x }, { translateY: pan.y }]
+          transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
-        {...panResponder.panHandlers}
-      >
+        {...panResponder.panHandlers}>
         <View style={styles.box} />
       </Animated.View>
     </View>
@@ -132,20 +115,20 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   titleText: {
     fontSize: 14,
     lineHeight: 24,
-    fontWeight: "bold"
+    fontWeight: 'bold',
   },
   box: {
     height: 150,
     width: 150,
-    backgroundColor: "blue",
-    borderRadius: 5
-  }
+    backgroundColor: 'blue',
+    borderRadius: 5,
+  },
 });
 ```
 
@@ -169,7 +152,7 @@ static create(config)
 | ------ | ------ | -------- | ----------- |
 | config | object | Yes      | Refer below |
 
-The config object provides enhanced versions of all of the responder callbacks that provide not only the typical `ResponderSyntheticEvent`, but also the `PanResponder` gesture state, by replacing the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
+The config object provides enhanced versions of all of the responder callbacks that provide not only the [`PressEvent`](../pressevent/), but also the `PanResponder` gesture state, by replacing the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
 
 - `onMoveShouldSetPanResponder: (e, gestureState) => {...}`
 - `onMoveShouldSetPanResponderCapture: (e, gestureState) => {...}`
