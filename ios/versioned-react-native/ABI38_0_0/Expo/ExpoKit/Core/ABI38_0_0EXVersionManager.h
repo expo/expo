@@ -10,7 +10,7 @@
                    logFunction: (void (^)(NSInteger level, NSInteger source, NSString *fileName, NSNumber *lineNumber, NSString *message))logFunction
                    logThreshold: (NSInteger)threshold;
 - (void)bridgeWillStartLoading: (id)bridge;
-- (void)bridgeFinishedLoading;
+- (void)bridgeFinishedLoading:(id)bridge;
 - (void)invalidate;
 
 /**

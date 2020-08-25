@@ -11,7 +11,7 @@
                    logFunction: (RCTLogFunction)logFunction
                   logThreshold: (NSInteger)threshold;
 - (void)bridgeWillStartLoading: (id)bridge;
-- (void)bridgeFinishedLoading;
+- (void)bridgeFinishedLoading:(id)bridge;
 - (void)invalidate;
 
 /**

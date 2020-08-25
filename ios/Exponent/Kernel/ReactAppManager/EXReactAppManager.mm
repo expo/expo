@@ -413,7 +413,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidLoadNotification]]) {
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
-    [_versionManager bridgeFinishedLoading];
+    [_versionManager bridgeFinishedLoading:_reactBridge];
     [self appStateDidBecomeActive];
     
     // TODO: To be removed once SDK 38 is phased out
