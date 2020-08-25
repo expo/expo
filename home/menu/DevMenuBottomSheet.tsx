@@ -17,6 +17,10 @@ type Props = {
 };
 
 class DevMenuBottomSheet extends React.PureComponent<Props, any> {
+  // We need to track whether the bottom sheet is expanded to prevent
+  // collapsing on some unnecessary `onCloseEnd` calls.
+  hasExpandingFinished: boolean = false;
+
   ref = React.createRef<BottomSheet>();
 
   snapPoints = [0, Math.max(BottomSheet.renumber('50%'), 600), '90%'];
@@ -55,8 +59,7 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   }
 
   collapse = (): Promise<void> => {
-    // @tsapeta: There is a bug in react-native-reanimated@1.7.0 that can be workarounded by calling `snapTo` twice.
-    this.ref.current && this.ref.current.snapTo(0);
+    this.hasExpandingFinished = false;
     this.ref.current && this.ref.current.snapTo(0);
 
     // Use setTimeout until there is a better solution to execute something once the sheet is fully collapsed.
@@ -69,9 +72,11 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   };
 
   expand = () => {
-    // @tsapeta: There is a bug in react-native-reanimated@1.7.0 that can be workarounded by calling `snapTo` twice.
     this.ref.current && this.ref.current.snapTo(1);
-    this.ref.current && this.ref.current.snapTo(1);
+
+    setTimeout(() => {
+      this.hasExpandingFinished = true;
+    }, 300);
   };
 
   unsubscribeCloseSubscription = () => {
@@ -82,7 +87,9 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   };
 
   onCloseEnd = () => {
-    this.collapseAndClose();
+    if (this.hasExpandingFinished) {
+      this.collapseAndClose();
+    }
   };
 
   providedContext = {
