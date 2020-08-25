@@ -18,7 +18,7 @@ Provides an API to fetch push notification tokens and to present, schedule, rece
 
 # Installation in managed Expo projects
 
-This library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+Please refer to the [installation instructions in the Expo documentation](https://docs.expo.io/versions/latest/sdk/notifications/#installation).
 
 # Installation in bare React Native projects
 
