@@ -90,6 +90,10 @@ public abstract class Node {
     mNodesManager.postRunUpdatesAfterAnimation();
   }
 
+  public void onDrop() {
+    //noop
+  }
+
   protected final void dangerouslyRescheduleEvaluate() {
     mLastLoopID.put(mUpdateContext.callID, -1L);
     markUpdated();
