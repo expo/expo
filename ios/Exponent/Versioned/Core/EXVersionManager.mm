@@ -263,7 +263,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
                          logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
-  RCTEnableTurboModule(YES);
+  RCTEnableTurboModule([self.params[@"manifest"][@"experiments"][@"turboModules"] boolValue]);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
@@ -316,6 +316,17 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
+  
+  if (!RCTTurboModuleEnabled()) {
+    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
+    id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
+    if (exceptionsManager) {
+      [extraModules addObject:exceptionsManager];
+    }
+    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
+    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
+    [extraModules addObject:[self getModuleInstanceFromClass:RCTAsyncLocalStorageCls()]];
+  }
 
   return extraModules;
 }
