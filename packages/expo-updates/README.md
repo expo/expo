@@ -55,37 +55,37 @@ Whether updates are enabled. Setting this to `false` disables all update functio
 | --- | --- | --- | --- | --- |
 | `EXUpdatesURL` | `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | (none) | ✅ |
 
-URL to the remote server where the app should check for updates
+The URL to the remote server where the app should check for updates. A request to this URL should return a valid manifest object for the latest available update and tells expo-updates how to fetch the JS bundle and other assets that comprise the update. (Example: for apps published with `expo publish`, this URL would be `https://exp.host/@username/slug`.)
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
 | --- | --- | --- | --- | --- |
 | `EXUpdatesSDKVersion` | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
-SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server.
+The SDK version string to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
 | --- | --- | --- | --- | --- |
 | `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
-Runtime version to send under the `Expo-Runtime-Version` header in the manifest request.
+The Runtime Version string to send under the `Expo-Runtime-Version` header in the manifest request.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
 | --- | --- | --- | --- | --- |
 | `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌ |
 
-Release channel to send under the `Expo-Release-Channel` header in the manifest request
+The release channel string to send under the `Expo-Release-Channel` header in the manifest request.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
 | --- | --- | --- | --- | --- |
 | `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌ |
 
-Condition under which expo-updates should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches).
+The condition under which `expo-updates` should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches).
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
 | --- | --- | --- | --- | --- |
 | `EXUpdatesLaunchWaitMs` | `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0` | ❌ |
 
-Number of milliseconds expo-updates should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
+The number of milliseconds `expo-updates` should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
 
 # Removing pre-installed expo-updates
 

@@ -113,7 +113,7 @@ Whether updates are enabled. Setting this to `false` disables all update functio
 | --- | --- | --- | --- | --- |
 | `EXUpdatesURL` | `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | (none) | ✅ |
 
-The URL to the remote server where the app should check for updates.
+The URL to the remote server where the app should check for updates. A request to this URL should return a valid manifest object for the latest available update that tells expo-updates how to fetch the JS bundle and other assets that comprise an update. (Example: for apps published with `expo publish`, this URL would be `https://exp.host/@username/slug`.)
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
 | --- | --- | --- | --- | --- |
@@ -131,7 +131,7 @@ The Runtime Version string to send under the `Expo-Runtime-Version` header in th
 | --- | --- | --- | --- | --- |
 | `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌ |
 
-The release channel string to send under the `Expo-Release-Channel` header in the manifest request
+The release channel string to send under the `Expo-Release-Channel` header in the manifest request.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
 | --- | --- | --- | --- | --- |
