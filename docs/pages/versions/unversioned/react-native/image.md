@@ -12,7 +12,6 @@ This example shows fetching and displaying an image from local storage as well a
 ## Examples
 
 ```js
-
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
@@ -30,13 +29,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const DisplayAnImage = () => {
+export default function DisplayAnImage() {
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.tinyLogo}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      />
+      <Image style={styles.tinyLogo} source={require('@expo/snack-static/react-native-logo.png')} />
       <Image
         style={styles.tinyLogo}
         source={{
@@ -53,8 +49,6 @@ const DisplayAnImage = () => {
     </View>
   );
 }
-
-export default DisplayAnImage;
 ```
 
 You can also add `style` to an image:
@@ -74,18 +68,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const DisplayAnImageWithStyle = () => {
+export default function DisplayAnImageWithStyle() {
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.stretch}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      />
+      <Image style={styles.stretch} source={require('@expo/snack-static/react-native-logo.png')} />
     </View>
   );
 }
-
-export default DisplayAnImageWithStyle;
 ```
 
 ## GIF and WebP support on Android
@@ -133,45 +122,6 @@ dependencies {
 
 - [Transforms...](../transforms/#props)
 
-- **`borderTopRightRadius`**: number
-
-- **`backfaceVisibility`**: enum('visible', 'hidden')
-
-- **`borderBottomLeftRadius`**: number
-
-- **`borderBottomRightRadius`**: number
-
-- **`borderColor`**: [color](https://reactnative.dev/docs/colors)
-
-- **`borderRadius`**: number
-
-- **`borderTopLeftRadius`**: number
-
-- **`backgroundColor`**: [color](https://reactnative.dev/docs/colors)
-
-- **`borderWidth`**: number
-
-- **`opacity`**: number
-
-- **`overflow`**: enum('visible', 'hidden')
-
-- **`resizeMode`**: Object.keys(ImageResizeMode)
-
-- **`tintColor`**: [color](https://reactnative.dev/docs/colors)
-
-  Changes the color of all the non-transparent pixels to the tintColor.
-
-- **`overlayColor`**: string (_Android_)
-
-  When the image has rounded corners, specifying an overlayColor will cause the remaining space in the corners to be filled with a solid color. This is useful in cases which are not supported by the Android implementation of rounded corners:
-
-  - Certain resize modes, such as 'contain'
-  - Animated GIFs
-
-  A typical way to use this prop is with images displayed on a solid background and setting the `overlayColor` to the same color as the background.
-
-  For details of how this works under the hood, see http://frescolib.org/docs/rounded-corners-and-circles.html
-
 ---
 
 ### `accessible`
@@ -210,9 +160,9 @@ blurRadius: the blur radius of the blur filter added to the image
 
 When the image is resized, the corners of the size specified by `capInsets` will stay a fixed size, but the center content and borders of the image will be stretched. This is useful for creating resizable rounded buttons, shadows, and other resizable assets. More info in the [official Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets).
 
-| Type         | Required | Platform |
-| ------------ | -------- | -------- |
-| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
+| Type                                      | Required | Platform |
+| ----------------------------------------- | -------- | -------- |
+| [Rect](https://reactnative.dev/docs/rect) | No       | iOS      |
 
 ---
 
@@ -385,7 +335,7 @@ Determines how to resize the image when the frame doesn't match the raw image di
 
 The image source (either a remote URL or a local file resource).
 
-This prop can also contain several remote URLs, specified together with their width and height and potentially with scale/other URI arguments. The native side will then choose the best `uri` to display based on the measured size of the image container. A `cache` property can be added to control how networked request interacts with the local cache. (For more information see [Cache Control for Images](../images/#cache-control-ios-only)).
+This prop can also contain several remote URLs, specified together with their width and height and potentially with scale/other URI arguments. The native side will then choose the best `uri` to display based on the measured size of the image container. A `cache` property can be added to control how networked request interacts with the local cache. (For more information see [Cache Control for Images](https://reactnative.dev/docs/images/#cache-control-ios-only)).
 
 The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`, `webp` (Android only), `psd` (iOS only). In addition, iOS supports several RAW image formats. Refer to Apple's documentation for the current list of supported camera models (for iOS 12, see https://support.apple.com/en-ca/HT208967).
 

@@ -21,27 +21,27 @@ If you don't need section support and want a simpler interface, use [`<FlatList>
 ## Example
 
 ```js
-import React from "react";
-import { StyleSheet, Text, View, SafeAreaView, SectionList } from "react-native";
-import Constants from "expo-constants";
+import React from 'react';
+import { StyleSheet, Text, View, SafeAreaView, SectionList } from 'react-native';
+import Constants from 'expo-constants';
 
 const DATA = [
   {
-    title: "Main dishes",
-    data: ["Pizza", "Burger", "Risotto"]
+    title: 'Main dishes',
+    data: ['Pizza', 'Burger', 'Risotto'],
   },
   {
-    title: "Sides",
-    data: ["French Fries", "Onion Rings", "Fried Shrimps"]
+    title: 'Sides',
+    data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
   },
   {
-    title: "Drinks",
-    data: ["Water", "Coke", "Beer"]
+    title: 'Drinks',
+    data: ['Water', 'Coke', 'Beer'],
   },
   {
-    title: "Desserts",
-    data: ["Cheese Cake", "Ice Cream"]
-  }
+    title: 'Desserts',
+    data: ['Cheese Cake', 'Ice Cream'],
+  },
 ];
 
 const Item = ({ title }) => (
@@ -50,40 +50,38 @@ const Item = ({ title }) => (
   </View>
 );
 
-const App = () => (
-  <SafeAreaView style={styles.container}>
-    <SectionList
-      sections={DATA}
-      keyExtractor={(item, index) => item + index}
-      renderItem={({ item }) => <Item title={item} />}
-      renderSectionHeader={({ section: { title } }) => (
-        <Text style={styles.header}>{title}</Text>
-      )}
-    />
-  </SafeAreaView>
-);
+export default function App() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <SectionList
+        sections={DATA}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({ item }) => <Item title={item} />}
+        renderSectionHeader={({ section: { title } }) => <Text style={styles.header}>{title}</Text>}
+      />
+    </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Constants.statusBarHeight,
-    marginHorizontal: 16
+    marginHorizontal: 16,
   },
   item: {
-    backgroundColor: "#f9c2ff",
+    backgroundColor: '#f9c2ff',
     padding: 20,
-    marginVertical: 8
+    marginVertical: 8,
   },
   header: {
     fontSize: 32,
-    backgroundColor: "#fff"
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24
-  }
+    fontSize: 24,
+  },
 });
-
-export default App;
 ```
 
 This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/) that aren't explicitly listed here, along with the following caveats:
@@ -127,8 +125,8 @@ The render function will be passed an object with the following keys:
 
 The actual data to render, akin to the `data` prop in [`FlatList`](../flatlist/).
 
-| Type                                        | Required |
-| ------------------------------------------- | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | array of [Section](../sectionlist/#section)s | Yes      |
 
 ---
@@ -159,7 +157,7 @@ Reverses the direction of scroll. Uses scale transforms of -1.
 
 | Type      | Required |
 | --------- | -------- |
-| boolean | No       |
+| [boolean] | No       |
 
 ---
 
@@ -272,8 +270,8 @@ The `ViewToken` type is exported by `ViewabilityHelper.js`:
 
 Set this true while waiting for new data from a refresh.
 
-| Type      | Required |
-| --------- | -------- |
+| Type    | Required |
+| ------- | -------- |
 | boolean | No       |
 
 ---
@@ -294,9 +292,9 @@ This may improve scroll performance for large lists.
 
 Rendered at the bottom of each section.
 
-| Type                                                 | Required |
-| ---------------------------------------------------- | -------- |
-| [(info: {section: SectionT}) => ?React.Element] | No       |
+| Type                                                   | Required |
+| ------------------------------------------------------ | -------- |
+| [(info: {section: SectionT}) => ?React.Element\<any\>] | No       |
 
 ---
 
@@ -304,9 +302,9 @@ Rendered at the bottom of each section.
 
 Rendered at the top of each section. These stick to the top of the `ScrollView` by default on iOS. See `stickySectionHeadersEnabled`.
 
-| Type                                                 | Required |
-| ---------------------------------------------------- | -------- |
-| [(info: {section: SectionT}) => ?React.Element] | No       |
+| Type                                                   | Required |
+| ------------------------------------------------------ | -------- |
+| [(info: {section: SectionT}) => ?React.Element\<any\>] | No       |
 
 ---
 
@@ -390,10 +388,10 @@ An object that identifies the data to be rendered for a given section.
 
 **Properties:**
 
-| Name                     | Type                         | Description                                                                                                                                                            |
-| ------------------------ | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Name                     | Type                         | Description                                                                                                                                                             |
+| ------------------------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | data                     | array                        | The data for rendering items in this section. Array of objects, much like [`FlatList`'s data prop](../flatlist/#data).                                                  |
-| [key]                    | string                       | Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections, the array index will be used by default.                                 |
+| [key]                    | string                       | Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections, the array index will be used by default.                                  |
 | [renderItem]             | function                     | Optionally define an arbitrary item renderer for this section, overriding the default [`renderItem`](../sectionlist/#renderitem) for the list.                          |
 | [ItemSeparatorComponent] | component, function, element | Optionally define an arbitrary item separator for this section, overriding the default [`ItemSeparatorComponent`](../sectionlist/#itemseparatorcomponent) for the list. |
 | [keyExtractor]           | function                     | Optionally define an arbitrary key extractor for this section, overriding the default [`keyExtractor`](../sectionlist/#keyextractor).                                   |

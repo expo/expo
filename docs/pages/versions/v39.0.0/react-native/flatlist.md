@@ -21,21 +21,21 @@ If you need section support, use [`<SectionList>`](../sectionlist/).
 ## Example
 
 ```js
-import React from "react";
-import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } from "react-native";
+import React from 'react';
+import { SafeAreaView, View, FlatList, StyleSheet, Text, StatusBar } from 'react-native';
 
 const DATA = [
   {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First Item",
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    title: 'First Item',
   },
   {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+    title: 'Second Item',
   },
   {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
+    id: '58694a0f-3da1-471f-bd96-145571e29d72',
+    title: 'Third Item',
   },
 ];
 
@@ -45,18 +45,12 @@ const Item = ({ title }) => (
   </View>
 );
 
-const App = () => {
-  const renderItem = ({ item }) => (
-    <Item title={item.title} />
-  );
+export default function App() {
+  const renderItem = ({ item }) => <Item title={item.title} />;
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
+      <FlatList data={DATA} renderItem={renderItem} keyExtractor={item => item.id} />
     </SafeAreaView>
   );
 }
@@ -76,8 +70,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
-
-export default App;
 ```
 
 To render multiple columns, use the [`numColumns`](../flatlist/#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
@@ -88,21 +80,28 @@ More complex, multi-select example demonstrating `` usage for perf optimization 
 - `keyExtractor` tells the list to use the `id`s for the react keys instead of the default `key` property.
 
 ```js
-import React, { useState } from "react";
-import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React, { useState } from 'react';
+import {
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 
 const DATA = [
   {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First Item",
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    title: 'First Item',
   },
   {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+    title: 'Second Item',
   },
   {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
+    id: '58694a0f-3da1-471f-bd96-145571e29d72',
+    title: 'Third Item',
   },
 ];
 
@@ -112,19 +111,13 @@ const Item = ({ item, onPress, style }) => (
   </TouchableOpacity>
 );
 
-const App = () => {
+export default function App() {
   const [selectedId, setSelectedId] = useState(null);
 
   const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
+    const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
 
-    return (
-      <Item
-        item={item}
-        onPress={() => setSelectedId(item.id)}
-        style={{ backgroundColor }}
-      />
-    );
+    return <Item item={item} onPress={() => setSelectedId(item.id)} style={{ backgroundColor }} />;
   };
 
   return (
@@ -132,12 +125,12 @@ const App = () => {
       <FlatList
         data={DATA}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         extraData={selectedId}
       />
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -153,8 +146,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
-
-export default App;
 ```
 
 This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/)) that aren't explicitly listed here, along with the following caveats:
@@ -199,17 +190,18 @@ Example usage:
 
 ```js
 <FlatList
-  ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
-    <View style={[style.separator, highlighted && {marginLeft: 0}]} />
-  )}
-  data={[{title: 'Title Text', key: 'item1'}]}
-  renderItem={({item, index, separators}) => (
+  ItemSeparatorComponent={
+    Platform.OS !== 'android' &&
+    (({ highlighted }) => <View style={[style.separator, highlighted && { marginLeft: 0 }]} />)
+  }
+  data={[{ title: 'Title Text', key: 'item1' }]}
+  renderItem={({ item, index, separators }) => (
     <TouchableHighlight
       key={item.key}
       onPress={() => this._onPress(item)}
       onShowUnderlay={separators.highlight}
       onHideUnderlay={separators.unhighlight}>
-      <View style={{backgroundColor: 'white'}}>
+      <View style={{ backgroundColor: 'white' }}>
         <Text>{item.title}</Text>
       </View>
     </TouchableHighlight>
@@ -398,7 +390,7 @@ Multiple columns can only be rendered with `horizontal={false}` and will zig-zag
 ### `onEndReached`
 
 ```js
-(info: { distanceFromEnd: number }) => void
+(info: {distanceFromEnd: number}) => void
 ```
 
 Called once when the scroll position gets within `onEndReachedThreshold` of the rendered content.

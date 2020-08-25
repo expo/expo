@@ -8,8 +8,8 @@ title: Animated.ValueXY
 ## Example
 
 ```js
-import React, { useRef } from "react";
-import { Animated, PanResponder, StyleSheet, View } from "react-native";
+import React, { useRef } from 'react';
+import { Animated, PanResponder, StyleSheet, View } from 'react-native';
 
 const DraggableView = () => {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -33,10 +33,7 @@ const DraggableView = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[pan.getLayout(), styles.box]}
-      />
+      <Animated.View {...panResponder.panHandlers} style={[pan.getLayout(), styles.box]} />
     </View>
   );
 };
@@ -44,11 +41,11 @@ const DraggableView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   box: {
-    backgroundColor: "#61dafb",
+    backgroundColor: '#61dafb',
     width: 80,
     height: 80,
     borderRadius: 4,
