@@ -842,7 +842,7 @@ export async function test(t) {
         );
       });
 
-      // TODO: Limited this test as on iOS it never succeeds and @lukmccall 
+      // TODO: Limited this test to Android platform only as on iOS it never succeeds
       if (Constants.appOwnership === 'expo' && Platform.OS === 'android') {
         t.it('includes the foreign persistent notification', async () => {
           const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
