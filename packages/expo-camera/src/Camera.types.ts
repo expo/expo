@@ -148,6 +148,8 @@ export type CameraNativeProps = {
   // Android
   ratio?: string;
   useCamera2Api?: boolean;
+  // Web
+  poster?: string;
 };
 
 export type BarCodeSettings = {
