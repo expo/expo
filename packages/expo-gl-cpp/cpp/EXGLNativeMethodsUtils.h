@@ -128,8 +128,8 @@ inline std::enable_if_t<is_integral_v<T>, T> unpackArg(
   } else if (jsArgv->isNull() || jsArgv->isUndefined()) {
     return 0;
   } else if (jsArgv->isBool()) {
-    // protect from axidental coercion 0 -> false
-    return 0; // TODO: move this fallback directly to methods that realy on it
+    // this case should not be necessary but one of the ncl threejs examples relies on this behaviour
+    return jsArgv->getBool() ? GL_TRUE : GL_FALSE;
   }
   return jsArgv->asNumber();
 }
