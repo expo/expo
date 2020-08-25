@@ -144,14 +144,9 @@ void ABI38_0_0EXRegisterScopedModule(Class moduleClass, ...)
    postNotificationName:ABI38_0_0RCTJavaScriptWillStartLoadingNotification object:bridge];
 }
 
-- (void)bridgeFinishedLoading {
+- (void)bridgeFinishedLoading:(id)bridge {}
 
-}
-
-- (void)invalidate
-{
-
-}
+- (void)invalidate {}
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {

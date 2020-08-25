@@ -305,8 +305,8 @@
 		B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74001FF6DADB001C764B /* EXDevSettings.m */; };
 		B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74021FF6DADB001C764B /* EXDevSettingsDataSource.m */; };
 		B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74041FF6DADB001C764B /* EXDisabledDevLoadingView.m */; };
-		B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74061FF6DADB001C764B /* EXDisabledDevMenu.m */; };
-		B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74081FF6DADB001C764B /* EXDisabledRedBox.m */; };
+		B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74061FF6DADB001C764B /* EXDisabledDevMenu.mm */; };
+		B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74081FF6DADB001C764B /* EXDisabledRedBox.mm */; };
 		B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB740C1FF6DADB001C764B /* EXAppState.m */; };
 		B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74141FF6DADB001C764B /* EXNativeModuleIntrospection.m */; };
 		B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74171FF6DADB001C764B /* EXScopedModuleRegistry.m */; };
@@ -999,9 +999,9 @@
 		B5FB74031FF6DADB001C764B /* EXDisabledDevLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDisabledDevLoadingView.h; sourceTree = "<group>"; };
 		B5FB74041FF6DADB001C764B /* EXDisabledDevLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDisabledDevLoadingView.m; sourceTree = "<group>"; };
 		B5FB74051FF6DADB001C764B /* EXDisabledDevMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDisabledDevMenu.h; sourceTree = "<group>"; };
-		B5FB74061FF6DADB001C764B /* EXDisabledDevMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDisabledDevMenu.m; sourceTree = "<group>"; };
+		B5FB74061FF6DADB001C764B /* EXDisabledDevMenu.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXDisabledDevMenu.mm; sourceTree = "<group>"; };
 		B5FB74071FF6DADB001C764B /* EXDisabledRedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDisabledRedBox.h; sourceTree = "<group>"; };
-		B5FB74081FF6DADB001C764B /* EXDisabledRedBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDisabledRedBox.m; sourceTree = "<group>"; };
+		B5FB74081FF6DADB001C764B /* EXDisabledRedBox.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXDisabledRedBox.mm; sourceTree = "<group>"; };
 		B5FB740B1FF6DADB001C764B /* EXAppState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppState.h; sourceTree = "<group>"; };
 		B5FB740C1FF6DADB001C764B /* EXAppState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppState.m; sourceTree = "<group>"; };
 		B5FB74111FF6DADB001C764B /* EXLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXLinkingManager.h; sourceTree = "<group>"; };
@@ -2342,9 +2342,9 @@
 				B5FB74031FF6DADB001C764B /* EXDisabledDevLoadingView.h */,
 				B5FB74041FF6DADB001C764B /* EXDisabledDevLoadingView.m */,
 				B5FB74051FF6DADB001C764B /* EXDisabledDevMenu.h */,
-				B5FB74061FF6DADB001C764B /* EXDisabledDevMenu.m */,
+				B5FB74061FF6DADB001C764B /* EXDisabledDevMenu.mm */,
 				B5FB74071FF6DADB001C764B /* EXDisabledRedBox.h */,
-				B5FB74081FF6DADB001C764B /* EXDisabledRedBox.m */,
+				B5FB74081FF6DADB001C764B /* EXDisabledRedBox.mm */,
 			);
 			path = DevSupport;
 			sourceTree = "<group>";
@@ -2788,7 +2788,7 @@
 				31AD9A3B2285B53100F19090 /* AIRMapCalloutSubviewManager.m in Sources */,
 				78C832B523545ECF00448582 /* REABlockNode.m in Sources */,
 				B5FB745B1FF6DADB001C764B /* EXAnimationViewManager.m in Sources */,
-				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.m in Sources */,
+				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */,
 				31AD99EA2285B51100F19090 /* AIRGoogleMapCircleManager.m in Sources */,
 				31AD9A422285B53100F19090 /* AIRMapLocalTileOverlay.m in Sources */,
 				FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */,
@@ -2888,7 +2888,7 @@
 				7043DFA52283303800272D74 /* RNSVGRenderable.m in Sources */,
 				78C832B823545ECF00448582 /* REATransitionValues.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
-				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.m in Sources */,
+				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.mm in Sources */,
 				878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
 				7043DF802283303800272D74 /* RNSVGSymbolManager.m in Sources */,

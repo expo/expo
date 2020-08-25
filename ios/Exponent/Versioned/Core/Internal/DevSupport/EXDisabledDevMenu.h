@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridgeModule.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <React/RCTDevMenu.h>
 
-@interface EXDisabledDevMenu : NSObject <RCTBridgeModule>
+@interface EXDisabledDevMenu : NSObject <RCTTurboModule>
 
 @property (nonatomic) BOOL shakeToShow;
 @property (nonatomic) BOOL profilingEnabled;
@@ -14,6 +14,5 @@
 - (void)reload;
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler DEPRECATED_ATTRIBUTE;
 - (void)addItem:(RCTDevMenuItem *)item;
-
 
 @end
