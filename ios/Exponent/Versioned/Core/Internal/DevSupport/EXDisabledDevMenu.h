@@ -1,9 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <React/RCTBridgeModule.h>
 #import <ReactCommon/RCTTurboModule.h>
 #import <React/RCTDevMenu.h>
 
-@interface EXDisabledDevMenu : NSObject <RCTTurboModule>
+@interface EXDisabledDevMenu : NSObject <RCTBridgeModule, RCTTurboModule>
 
 @property (nonatomic) BOOL shakeToShow;
 @property (nonatomic) BOOL profilingEnabled;
