@@ -29,4 +29,6 @@
  */
 - (NSArray *)extraModulesForBridge:(id)bridge;
 
+- (void *)versionedJsExecutorFactoryForBridge:(id)bridge;
+
 @end
