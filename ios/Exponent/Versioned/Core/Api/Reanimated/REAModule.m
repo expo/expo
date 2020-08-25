@@ -2,12 +2,14 @@
 
 #import "REANodesManager.h"
 #import "Transitioning/REATransitionManager.h"
+#import "NativeProxy.h"
 
 typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
 
+RCTBridge *_bridge_reanimated = nil;
+
 @implementation REAModule
 {
-  REANodesManager *_nodesManager;
   NSMutableArray<AnimatedOperation> *_operations;
   REATransitionManager *_transitionManager;
 }
@@ -16,6 +18,7 @@ RCT_EXPORT_MODULE(ReanimatedModule);
 
 - (void)invalidate
 {
+  _bridge_reanimated = nil;
   _transitionManager = nil;
   [_nodesManager invalidate];
   [self.bridge.eventDispatcher removeDispatchObserver:self];
@@ -140,6 +143,13 @@ RCT_EXPORT_METHOD(setValue:(nonnull NSNumber *)nodeID
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager setValueForNodeID:nodeID value:newValue];
+  }];
+}
+
+RCT_EXPORT_METHOD(triggerRender)
+{
+  [self addOperationBlock:^(REANodesManager *nodesManager) {
+    [nodesManager postRunUpdatesAfterAnimation];
   }];
 }
 

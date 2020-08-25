@@ -30,6 +30,7 @@ export const JniLibNames = [
   'hermes',
   'hermes-executor-release',
   'hermes-executor-debug',
+  'reanimated',
 ];
 
 // this list is used in the shell scripts as well as directly by expotools
