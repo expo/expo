@@ -61,7 +61,7 @@ export default class DocumentationFooter extends React.PureComponent {
           className={STYLES_FOOTER_LINK}
           target="_blank"
           rel="noopener"
-          href={githubUrl(this.props.asPath)}>
+          href={githubUrl(this.props.url.pathname)}>
           Edit this page
         </a>
       </footer>
