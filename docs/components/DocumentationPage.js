@@ -249,6 +249,7 @@ export default class DocumentationPage extends React.Component {
             </DocumentationPageContext.Provider>
             <DocumentationFooter
               title={this.props.title}
+              url={this.props.url}
               asPath={this.props.asPath}
               sourceCodeUrl={this.props.sourceCodeUrl}
             />
