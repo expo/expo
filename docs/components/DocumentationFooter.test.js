@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import DocumentationFooter from './DocumentationFooter';
 
 test('displays default links', () => {
-  const { container } = render(<DocumentationFooter asPath="/" />);
+  const { container } = render(<DocumentationFooter asPath="/" url={{ pathname: '/example/' }} />);
 
   expect(container).toHaveTextContent('Ask a question on the forums');
   expect(container).toHaveTextContent('Edit this page');
