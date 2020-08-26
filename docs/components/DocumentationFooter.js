@@ -19,10 +19,14 @@ const STYLES_FOOTER_LINK = css`
 
 // Remove trailing slash and append .md
 function githubUrl(path) {
+  if(path.includes('/#')){
+      path = path.substring(0, path.indexOf('/#'));
+    } 
   if (path.includes('/versions/latest/')) {
     if (path === '/versions/latest') {
       path = '/versions/unversioned/index';
-    } else {
+    }
+    else {
       path = path.replace('/versions/latest/', '/versions/unversioned/');
     }
   } else if (path.match(/v\d+\.\d+\.\d+\/?$/) || path === '/') {
