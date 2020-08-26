@@ -81,12 +81,12 @@ PODS:
   - EXFont (8.3.0):
     - UMCore
     - UMFontInterface
-  - EXGL (9.1.0):
+  - EXGL (9.1.1):
     - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL_CPP (9.1.1):
+  - EXGL_CPP (9.1.2):
     - React-jsi
   - EXGL_CPP_LEGACY (8.4.0):
     - EXGL_CPP_LEGACY/EXGLContext (= 8.4.0)
@@ -133,7 +133,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.3.0):
     - UMCore
-  - EXNotifications (0.7.0):
+  - EXNotifications (0.7.1):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (9.3.0):
@@ -979,8 +979,8 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: d76da8440905e04f94a3e3304f94f4966e730ad7
   EXFirebaseCore: d5befdb22015f9b71168ed89dda0b50dbb07fed1
   EXFont: a6a4353271395f3bb4ee528b52a5035b4b0e412a
-  EXGL: d38031d89c33a617cee38db0f8b58e3003527798
-  EXGL_CPP: 4e31f7789773d91da2cabae1dbff23c97fa1ff7b
+  EXGL: 18197ce91dceb9acdc9b0a839919111ca004f434
+  EXGL_CPP: 33f454aae7055477285982e9ce84dff19f83d458
   EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
   EXGoogleSignIn: c575e4bc3c34882908167788a2c4a0cd8dfb2eb3
   EXHaptics: 4db5fa74b5a87148af4355246981b2dd2d7b9e77
@@ -996,7 +996,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 7436a0388652ee26b11b74d3c23180cadc000a45
   EXMediaLibrary: 1518bc6f37b7f9fbee1f03e451bd0dd1298f9292
   EXNetwork: 05c1b87ba7077cb3eea7a3968640e5007e32eb6b
-  EXNotifications: 12bb525abea895be0f5011b2be512bbc82272dfd
+  EXNotifications: 55301e7284ef5427662a2191eb986acb2035a1d5
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 969e4d8514319a74405b015cd0bf6023dcdf4b00

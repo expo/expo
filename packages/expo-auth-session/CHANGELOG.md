@@ -6,10 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 1.5.0 — 2020-08-26
+
+### 🎉 New features
+
 - Create built-in `providers/google` for easy Google auth. ([#9361](https://github.com/expo/expo/pull/9361) by [@EvanBacon](https://github.com/EvanBacon))
 - Create built-in `providers/facebook` for easy Facebook auth. ([#9361](https://github.com/expo/expo/pull/9361) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ## 1.4.2 — 2020-08-18
 

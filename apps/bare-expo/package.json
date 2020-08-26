@@ -89,7 +89,7 @@
     "expo": "~39.0.0",
     "expo-dev-menu": "0.1.0",
     "expo-image": "~1.0.0-alpha.0",
-    "expo-notifications": "~0.7.0",
+    "expo-notifications": "~0.7.1",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.13.1",
