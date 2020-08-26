@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Button,
 } from 'react-native';
-import { BarCodeScanner } from './BarCodeScanner';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const DevelopmentClient = NativeModules.EXDevelopmentClient;
 

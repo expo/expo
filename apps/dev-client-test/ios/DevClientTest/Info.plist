@@ -57,5 +57,7 @@
   <string>UIStatusBarStyleDefault</string>
   <key>NSCameraUsageDescription</key>
   <string>Allow dev-client-test to use the camera</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Allow dev-client-test to use the microphone</string>
 </dict>
 </plist>

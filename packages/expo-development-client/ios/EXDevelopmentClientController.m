@@ -32,7 +32,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 
 - (instancetype)init {
   if (self = [super init]) {
-    self.moduleRegistryAdapter = [[EDUMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[EDUMModuleRegistryProvider alloc] init]];
+    self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   }
   return self;
 }

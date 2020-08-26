@@ -12,9 +12,6 @@ PODS:
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
     - UMCore
-  - EXAppAuth (9.1.1):
-    - AppAuth (~> 1.2)
-    - UMCore
   - EXApplication (2.2.1):
     - UMCore
   - EXAV (8.4.1):
@@ -554,7 +551,6 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAmplitude (from `../../../packages/expo-analytics-amplitude/ios`)
-  - EXAppAuth (from `../../../packages/expo-app-auth/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -688,8 +684,6 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAmplitude:
     :path: "../../../packages/expo-analytics-amplitude/ios"
-  EXAppAuth:
-    :path: "../../../packages/expo-app-auth/ios"
   EXApplication:
     :path: "../../../packages/expo-application/ios"
   EXAV:
@@ -898,7 +892,6 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAmplitude: 9232a37c556ab739c42adcbd0b239b5c1ac61f10
-  EXAppAuth: 98c853968adeec68008887a0cb475efb2656f196
   EXApplication: d7ccb60c33fa4d506967ff6adde42a0f872d69ad
   EXAV: 21a356a369d2995eea564ed16c8b1e10958785e4
   EXBackgroundFetch: b773f1114c5ecbfa79daf228854184e307f9f760
