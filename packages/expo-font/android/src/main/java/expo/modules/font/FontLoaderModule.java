@@ -13,7 +13,7 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.constants.ConstantsInterface;
-import org.unimodules.interfaces.font.FontManager;
+import org.unimodules.core.interfaces.services.FontManager;
 
 public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";

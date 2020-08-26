@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.font.FontManager;
+import org.unimodules.core.interfaces.services.FontManager;
 
 public class FontManagerModule implements FontManager, InternalModule {
   @Override
