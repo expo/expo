@@ -7,19 +7,21 @@ import android.graphics.Typeface;
 import android.net.Uri;
 
 import org.unimodules.core.ExportedModule;
+import org.unimodules.core.InvalidArgumentException;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.FontManager;
 
 import java.io.File;
-import java.util.Objects;
+
+import expo.modules.font.exceptions.NoFontManagerException;
 
 public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";
   private static final String EXPORTED_NAME = "ExpoFontLoader";
 
-  private ModuleRegistry mModuleRegistry;
+  protected ModuleRegistry mModuleRegistry;
 
   public FontLoaderModule(Context context) {
     super(context);
@@ -37,27 +39,45 @@ public class FontLoaderModule extends ExportedModule {
 
   @ExpoMethod
   public void loadAsync(final String fontFamilyName, final String localUri, final Promise promise) {
+    // Validate arguments
+    if (fontFamilyName == null) {
+      promise.reject(new InvalidArgumentException("Font family name cannot be empty (null received)"));
+      return;
+    }
+
+    if (localUri == null) {
+      promise.reject(new InvalidArgumentException("Local font URI cannot be empty (null received)"));
+      return;
+    }
+
     try {
-      Typeface typeface;
-
-      if (localUri.startsWith(ASSET_SCHEME)) {
-        typeface = Typeface.createFromAsset(
-          getContext().getAssets(),
-          // Also remove the leading slash.
-          localUri.substring(ASSET_SCHEME.length() + 1));
-      } else {
-        typeface = Typeface.createFromFile(new File(Objects.requireNonNull(Uri.parse(localUri).getPath())));
-      }
-
-      FontManager fontManager = mModuleRegistry.getModule(FontManager.class);
-      if (fontManager == null) {
-        promise.reject("E_NO_FONT_MANAGER", "There is no FontManager in module registry. Are you sure all the dependencies of expo-font are installed and linked?");
-        return;
-      }
-      fontManager.setTypeface(fontFamilyName, Typeface.NORMAL, typeface);
+      getFontManager().setTypeface(fontFamilyName, Typeface.NORMAL, getTypeface(localUri));
       promise.resolve(null);
     } catch (Exception e) {
-      promise.reject("E_UNEXPECTED", "Font.loadAsync unexpected exception: " + e.getMessage(), e);
+      promise.reject(e);
     }
+  }
+
+  protected FontManager getFontManager() throws NoFontManagerException {
+    FontManager fontManager = mModuleRegistry.getModule(FontManager.class);
+    if (fontManager == null) {
+      throw new NoFontManagerException();
+    }
+    return fontManager;
+  }
+
+  protected Typeface getTypeface(String localUri) throws InvalidArgumentException {
+    if (localUri.startsWith(ASSET_SCHEME)) {
+      return Typeface.createFromAsset(
+        getContext().getAssets(),
+        // Also remove the leading slash.
+        localUri.substring(ASSET_SCHEME.length() + 1));
+    }
+
+    String localFontPath = Uri.parse(localUri).getPath();
+    if (localFontPath == null) {
+      throw new InvalidArgumentException("Could not parse provided local font URI as a URI with a path component.");
+    }
+    return Typeface.createFromFile(new File(localFontPath));
   }
 }
