@@ -1,8 +1,19 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <UMCore/UMSingletonModule.h>
-#import <EXFont/EXFontScalersManagerInterface.h>
 
-@interface EXFontScalersManager : UMSingletonModule <EXFontScalersManagerInterface>
+@protocol EXFontScaler
+
+- (UIFont *)scaledFont:(UIFont *)font toSize:(CGFloat)fontSize;
+
+@end
+
+@protocol EXFontScalersManager
+
+- (void)registerFontScaler:(id<EXFontScaler>)scaler;
+
+@end
+
+@interface EXFontScalersManager : UMSingletonModule <EXFontScalersManager>
 
 @end
