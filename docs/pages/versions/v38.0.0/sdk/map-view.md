@@ -73,6 +73,7 @@ If you have already integrated Google Sign In into your standalone app, this is 
   7.  Click the **+ Add package name and fingerprint** button.
   8.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the Package name field.
   9.  Run `expo fetch:android:hashes`.
+      - Note: If you haven't already, [run `expo build:android` for this project](https://docs.expo.io/distribution/building-standalone-apps/#if-you-choose-to-build-for-android); otherwise you will get the message _"There is no valid Keystore defined for this app"_.
   10. Copy `Google Certificate Fingerprint` from the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field.
   11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
   12. Press `Save` and then rebuild the app like in step 1.
