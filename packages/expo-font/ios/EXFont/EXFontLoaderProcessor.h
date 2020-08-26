@@ -2,13 +2,13 @@
 
 #import <Foundation/Foundation.h>
 #import <EXFont/EXFontProcessorInterface.h>
-#import <EXFont/EXFontManager.h>
+#import <EXFont/EXFontRegistry.h>
 
 @interface EXFontLoaderProcessor : NSObject <EXFontProcessorInterface>
 
 - (instancetype)initWithFontFamilyPrefix:(NSString *)prefix
-                                 manager:(EXFontManager *)manager;
+                                registry:(EXFontRegistry *)registry;
 
-- (instancetype)initWithManager:(EXFontManager *)manager;
+- (instancetype)initWithRegistry:(EXFontRegistry *)registry;
 
 @end
