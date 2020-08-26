@@ -125,12 +125,14 @@ The schema of a build profile for a generic iOS project looks like this:
 {
   "workflow": "generic",
   "credentialsSource": "local" | "remote" | "auto", // default: "auto"
+  "scheme": string,
   "artifactPath": string // default: "ios/build/App.ipa"
 }
 ```
 
 - `"workflow": "generic"` indicates that your project is a generic one.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to take advantage of your own `credentials.json` file, set this to `local` ([learn more on this here](../advanced-credentials-configuration/)). If you want to use the credentials Expo already has stored for you, choose `remote`. If you're not sure what to do but you probably won't be running builds from a CI, choose `auto` (this is the default option).
+- `scheme` defines the Xcode project's scheme to build. You should set it if your project has multiple schemes. Please note that if the project has only one scheme, it will automatically be detected. However, if multiple schemes exist and this value is **not** set, Expo CLI will prompt you to select one of them.
 - `artifactPath` is the path (or pattern) where EAS Build is going to look for the build artifacts. EAS Build uses the `fast-glob` npm package for pattern matching, [see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
 
 #### Examples
@@ -149,7 +151,6 @@ If you'd like to build your iOS project with a custom `Gymfile` ([learn more on 
 {
   "workflow": "generic",
   "artifactPath": /* @info determined by output_directory and output_name in Gymfile */ "ios/my/build/directory/RNApp.ipa" /* @end */
-
 }
 ```
 
