@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.3.1 — 2020-08-26
+
+_This version does not introduce any user-facing changes._
+
 ## 0.3.0 — 2020-08-18
 
 ### 🎉 New features

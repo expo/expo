@@ -8039,7 +8039,7 @@ CACHE_KEYS:
       EXGL:
         :debug: 7c7762dc91021bb532cba79be2c9cca5
         :release: 7c7762dc91021bb532cba79be2c9cca5
-    CHECKSUM: d38031d89c33a617cee38db0f8b58e3003527798
+    CHECKSUM: 18197ce91dceb9acdc9b0a839919111ca004f434
     FILES:
       - "../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -8055,13 +8055,13 @@ CACHE_KEYS:
       - "../../packages/expo-gl/ios/EXGL/EXGLViewManager.m"
     PROJECT_NAME: EXGL
     SPECS:
-      - EXGL (9.1.0)
+      - EXGL (9.1.1)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP:
         :debug: 99468d5c41520658b3565507679a1e9a
         :release: 99468d5c41520658b3565507679a1e9a
-    CHECKSUM: 4e31f7789773d91da2cabae1dbff23c97fa1ff7b
+    CHECKSUM: 33f454aae7055477285982e9ce84dff19f83d458
     FILES:
       - "../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -8080,7 +8080,7 @@ CACHE_KEYS:
       - "../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (9.1.1)
+      - EXGL_CPP (9.1.2)
   EXGL_CPP_LEGACY:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP_LEGACY:
@@ -8295,7 +8295,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 0602110faf064575b2e4aa90ac145f65
         :release: 0602110faf064575b2e4aa90ac145f65
-    CHECKSUM: 12bb525abea895be0f5011b2be512bbc82272dfd
+    CHECKSUM: 55301e7284ef5427662a2191eb986acb2035a1d5
     FILES:
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -8337,7 +8337,7 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.7.0)
+      - EXNotifications (0.7.1)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
@@ -8568,7 +8568,7 @@ CACHE_KEYS:
       EXUpdates:
         :debug: 30bb1eebef7c91abc546b50f14e62479
         :release: 30bb1eebef7c91abc546b50f14e62479
-    CHECKSUM: 18a7259392422481360995f7b9b51371f64ca18d
+    CHECKSUM: 3a678b646888effbf7d144f5edfcbe233af3c061
     FILES:
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncher.h"
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.h"
@@ -8618,7 +8618,7 @@ CACHE_KEYS:
       - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.m"
     PROJECT_NAME: EXUpdates
     SPECS:
-      - EXUpdates (0.3.0)
+      - EXUpdates (0.3.1)
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
       EXVideoThumbnails:
