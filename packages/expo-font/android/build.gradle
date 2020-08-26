@@ -58,6 +58,4 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  unimodule "unimodules-font-interface"
-  unimodule "unimodules-constants-interface"
 }

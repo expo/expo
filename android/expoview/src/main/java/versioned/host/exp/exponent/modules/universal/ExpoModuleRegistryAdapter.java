@@ -96,6 +96,8 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext));
 
+    moduleRegistry.registerExportedModule(new ScopedFontLoaderModule(reactContext));
+
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
     for (NativeModule otherModule : otherModules) {

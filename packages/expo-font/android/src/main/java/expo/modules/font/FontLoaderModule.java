@@ -10,7 +10,6 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.constants.ConstantsInterface;
 import org.unimodules.core.interfaces.services.FontManager;
 
 import java.io.File;
@@ -39,15 +38,7 @@ public class FontLoaderModule extends ExportedModule {
   @ExpoMethod
   public void loadAsync(final String fontFamilyName, final String localUri, final Promise promise) {
     try {
-      // TODO(nikki): make sure path is in experience's scope
       Typeface typeface;
-
-      // TODO: remove Expo references
-      // https://github.com/expo/expo/pull/4652#discussion_r296630843
-      String prefix = "";
-      if (isScoped()) {
-        prefix = "ExpoFont-";
-      }
 
       if (localUri.startsWith(ASSET_SCHEME)) {
         typeface = Typeface.createFromAsset(
@@ -63,16 +54,10 @@ public class FontLoaderModule extends ExportedModule {
         promise.reject("E_NO_FONT_MANAGER", "There is no FontManager in module registry. Are you sure all the dependencies of expo-font are installed and linked?");
         return;
       }
-      fontManager.setTypeface(prefix + fontFamilyName, Typeface.NORMAL, typeface);
+      fontManager.setTypeface(fontFamilyName, Typeface.NORMAL, typeface);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject("E_UNEXPECTED", "Font.loadAsync unexpected exception: " + e.getMessage(), e);
     }
-  }
-
-  private boolean isScoped() {
-    ConstantsInterface constantsModule = mModuleRegistry.getModule(ConstantsInterface.class);
-    // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
-    return constantsModule != null && "expo".equals(constantsModule.getAppOwnership());
   }
 }
