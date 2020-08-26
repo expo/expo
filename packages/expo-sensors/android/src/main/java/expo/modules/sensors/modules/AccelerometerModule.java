@@ -10,8 +10,8 @@ import android.os.Bundle;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.sensors.SensorService;
-import org.unimodules.interfaces.sensors.services.AccelerometerService;
+import expo.modules.sensors.interfaces.SensorService;
+import expo.modules.sensors.interfaces.services.AccelerometerService;
 
 public class AccelerometerModule extends BaseSensorModule {
   public AccelerometerModule(Context reactContext) {
