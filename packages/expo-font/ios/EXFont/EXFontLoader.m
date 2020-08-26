@@ -2,7 +2,7 @@
 
 #import <EXFont/EXFontLoader.h>
 #import <EXFont/EXFontLoaderProcessor.h>
-#import <UMFontInterface/UMFontManagerInterface.h>
+#import <EXFont/EXFontManagerInterface.h>
 #import <EXFont/EXFontScaler.h>
 #import <EXFont/EXFont.h>
 #import <objc/runtime.h>
@@ -45,10 +45,10 @@ UM_EXPORT_MODULE(ExpoFontLoader);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (moduleRegistry) {
-    id<UMFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFontManagerInterface)];
+    id<EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFontManagerInterface)];
     [manager addFontProcessor:_processor];
 
-    id<UMFontScalersManagerInterface> scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
+    id<EXFontScalersManagerInterface> scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
     [scalersManager registerFontScaler:_scaler];
   }
 }
