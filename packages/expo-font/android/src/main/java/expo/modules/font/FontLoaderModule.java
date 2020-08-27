@@ -9,9 +9,9 @@ import android.net.Uri;
 import com.facebook.react.views.text.ReactFontManager;
 
 import org.unimodules.core.ExportedModule;
-import org.unimodules.core.InvalidArgumentException;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.io.File;
