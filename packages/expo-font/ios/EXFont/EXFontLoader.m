@@ -60,17 +60,16 @@ UM_EXPORT_METHOD_AS(loadAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([_registry fontForName:fontFamilyName]) {
-    reject(@"E_FONT_ALREADY_EXISTS",
-           [NSString stringWithFormat:@"Font with family name '%@' already loaded", fontFamilyName],
+    reject(@"ERR_FONT_ALREADY_LOADED",
+           [NSString stringWithFormat:@"Font with family name '%@' has already been loaded.", fontFamilyName],
            nil);
     return;
   }
 
-  // TODO(nikki): make sure path is in experience's scope
   NSURL *uriString = [[NSURL alloc] initWithString:path];
   NSData *data = [[NSFileManager defaultManager] contentsAtPath:[uriString path]];
   if (!data) {
-    reject(@"E_FONT_FILE_NOT_FOUND",
+    reject(@"ERR_FONT_FILE_NOT_FOUND",
            [NSString stringWithFormat:@"File '%@' for font '%@' doesn't exist", path, fontFamilyName],
            nil);
     return;
@@ -80,8 +79,8 @@ UM_EXPORT_METHOD_AS(loadAsync,
   CGFontRef font = CGFontCreateWithDataProvider(provider);
   CGDataProviderRelease(provider);
   if (!font) {
-    reject(@"E_FONT_CREATION_FAILED",
-           [NSString stringWithFormat:@"Could not create font from loaded data for '%@'", fontFamilyName],
+    reject(@"ERR_FONT_FILE_INVALID",
+           [NSString stringWithFormat:@"File '%@' isn't a valid font file.", path],
            nil);
     return;
   }
