@@ -6,16 +6,15 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.net.Uri;
 
+import com.facebook.react.views.text.ReactFontManager;
+
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.InvalidArgumentException;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.FontManager;
 
 import java.io.File;
-
-import expo.modules.font.exceptions.NoFontManagerException;
 
 public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";
@@ -51,19 +50,11 @@ public class FontLoaderModule extends ExportedModule {
     }
 
     try {
-      getFontManager().setTypeface(fontFamilyName, Typeface.NORMAL, getTypeface(localUri));
+      ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, getTypeface(localUri));
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
     }
-  }
-
-  protected FontManager getFontManager() throws NoFontManagerException {
-    FontManager fontManager = mModuleRegistry.getModule(FontManager.class);
-    if (fontManager == null) {
-      throw new NoFontManagerException();
-    }
-    return fontManager;
   }
 
   protected Typeface getTypeface(String localUri) throws InvalidArgumentException {
