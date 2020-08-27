@@ -11,6 +11,7 @@ import com.facebook.react.views.text.ReactFontManager;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.errors.CodedRuntimeException;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
@@ -38,22 +39,28 @@ public class FontLoaderModule extends ExportedModule {
 
   @ExpoMethod
   public void loadAsync(final String fontFamilyName, final String localUri, final Promise promise) {
-    // Validate arguments
-    if (fontFamilyName == null) {
-      promise.reject(new InvalidArgumentException("Font family name cannot be empty (null received)"));
-      return;
-    }
-
-    if (localUri == null) {
-      promise.reject(new InvalidArgumentException("Local font URI cannot be empty (null received)"));
-      return;
-    }
-
     try {
-      ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, getTypeface(localUri));
+      // Validate arguments
+      if (fontFamilyName == null) {
+        throw new InvalidArgumentException("Font family name cannot be empty (null received)");
+      }
+      if (localUri == null) {
+        throw new InvalidArgumentException("Local font URI cannot be empty (null received)");
+      }
+
+      Typeface typeface = getTypeface(localUri);
+      if (typeface == null) {
+        throw new FontFileInvalidException(localUri);
+      }
+
+      ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, typeface);
       promise.resolve(null);
-    } catch (Exception e) {
+    } catch (CodedRuntimeException e) {
+      // Most probably an InvalidArgumentException. Already coded!
       promise.reject(e);
+    } catch (RuntimeException e) {
+      // Runtime exception is thrown if and only if there's no font file
+      promise.reject(new FontFileNotFoundException(fontFamilyName, localUri));
     }
   }
 
@@ -70,5 +77,27 @@ public class FontLoaderModule extends ExportedModule {
       throw new InvalidArgumentException("Could not parse provided local font URI as a URI with a path component.");
     }
     return Typeface.createFromFile(new File(localFontPath));
+  }
+
+  protected static class FontFileNotFoundException extends CodedRuntimeException {
+    public FontFileNotFoundException(String fontFamilyName, String path) {
+      super(String.format("File '%s' for font '%s' doesn't exist.", path, fontFamilyName));
+    }
+
+    @Override
+    public String getCode() {
+      return "ERR_FONT_FILE_NOT_FOUND";
+    }
+  }
+
+  protected static class FontFileInvalidException extends CodedRuntimeException {
+    public FontFileInvalidException(String path) {
+      super(String.format("File '%s' isn't a valid font file.", path));
+    }
+
+    @Override
+    public String getCode() {
+      return "ERR_FONT_FILE_INVALID";
+    }
   }
 }

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import org.unimodules.core.Promise;
-import org.unimodules.core.errors.CodedException;
+import org.unimodules.core.errors.CodedRuntimeException;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
@@ -38,7 +38,8 @@ public class ScopedFontLoaderModule extends FontLoaderModule {
       if (filePermissionModule != null) {
         String localFontPath = Uri.parse(localUri).getPath();
         if (localFontPath == null) {
-          throw new InvalidArgumentException("Could not parse provided local font URI as a URI with a path component.");
+          promise.reject(new InvalidArgumentException("Could not parse provided local font URI as a URI with a path component."));
+          return;
         }
         if (!filePermissionModule.getPathPermissions(getContext(), localFontPath).contains(Permission.READ)) {
           promise.reject(new LocationAccessUnauthorizedError(localFontPath));
@@ -56,7 +57,7 @@ public class ScopedFontLoaderModule extends FontLoaderModule {
     return constantsModule != null && "expo".equals(constantsModule.getAppOwnership());
   }
 
-  public static class LocationAccessUnauthorizedError extends CodedException {
+  public static class LocationAccessUnauthorizedError extends CodedRuntimeException {
     public LocationAccessUnauthorizedError(String uri) {
       super("You aren't authorized to load font file from: " + uri);
     }
