@@ -1,9 +1,16 @@
 {
   "name": "expo-dev-menu-interface",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Interface for expo-dev-menu",
   "main": "index.js",
-  "keywords": ["expo", "react-native", "dev-menu", "dev", "menu", "interface"],
+  "keywords": [
+    "expo",
+    "react-native",
+    "dev-menu",
+    "dev",
+    "menu",
+    "interface"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
