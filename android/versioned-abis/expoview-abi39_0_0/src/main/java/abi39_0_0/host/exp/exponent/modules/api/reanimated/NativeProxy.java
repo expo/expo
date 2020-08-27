@@ -3,7 +3,7 @@ package abi39_0_0.host.exp.exponent.modules.api.reanimated;
 import androidx.annotation.Nullable;
 
 import com.facebook.jni.HybridData;
-import abi39_0_0.com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStrip;
 import abi39_0_0.com.facebook.react.bridge.JSIModule;
 import abi39_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi39_0_0.com.facebook.react.bridge.WritableArray;
