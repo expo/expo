@@ -13,7 +13,7 @@ import org.unimodules.interfaces.filesystem.Permission;
 import expo.modules.font.FontLoaderModule;
 
 public class ScopedFontLoaderModule extends FontLoaderModule {
-  private static final String SCOPED_FONT_PREFIX = "Expo-";
+  private static final String SCOPED_FONT_PREFIX = "ExpoFont-";
 
   public ScopedFontLoaderModule(Context context) {
     super(context);
