@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 
+import abi39_0_0.host.exp.expoview.R
+
 /**
  * Default implementation that uses native resources.
  */
