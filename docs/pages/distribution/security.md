@@ -49,7 +49,7 @@ When creating ad-hoc builds, we temporarily store an Apple Developer session tok
 By default, your Apple ID credentials are stored in the macOS Keychain.
 Your password is only ever stored locally on your computer. This feature is not available for Windows or Linux users.
 
-Disable Keychain support with the environment variable `EXPO_NO_KEYCHAIN=1`, you can also use this to change your password.
+Disable Keychain support with the environment variable `EXPO_NO_KEYCHAIN=1`. You can also use this to change the saved password.
 
 ### Changing Apple ID Password
 
