@@ -8,36 +8,32 @@ var NativeOrientation;
     NativeOrientation[NativeOrientation["Horizontal"] = 0] = "Horizontal";
     NativeOrientation[NativeOrientation["Vertical"] = 1] = "Vertical";
 })(NativeOrientation || (NativeOrientation = {}));
-let AdOptionsView = /** @class */ (() => {
-    class AdOptionsView extends React.Component {
-        constructor() {
-            super(...arguments);
-            this.shouldAlignHorizontal = () => this.props.orientation === 'horizontal';
-        }
-        render() {
-            const style = this.shouldAlignHorizontal()
-                ? {
-                    width: this.props.iconSize * 2,
-                    height: this.props.iconSize,
-                }
-                : {
-                    width: this.props.iconSize,
-                    height: this.props.iconSize * 2,
-                };
-            return (React.createElement(AdOptionsViewContext.Consumer, null, (contextValue) => {
-                const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
-                return (React.createElement(NativeAdOptionsView, Object.assign({}, this.props, { style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current), orientation: this.shouldAlignHorizontal()
-                        ? NativeOrientation.Horizontal
-                        : NativeOrientation.Vertical })));
-            }));
-        }
+export default class AdOptionsView extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.shouldAlignHorizontal = () => this.props.orientation === 'horizontal';
     }
-    AdOptionsView.defaultProps = {
-        iconSize: 23,
-        orientation: 'horizontal',
-    };
-    return AdOptionsView;
-})();
-export default AdOptionsView;
+    render() {
+        const style = this.shouldAlignHorizontal()
+            ? {
+                width: this.props.iconSize * 2,
+                height: this.props.iconSize,
+            }
+            : {
+                width: this.props.iconSize,
+                height: this.props.iconSize * 2,
+            };
+        return (React.createElement(AdOptionsViewContext.Consumer, null, (contextValue) => {
+            const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
+            return (React.createElement(NativeAdOptionsView, Object.assign({}, this.props, { style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current), orientation: this.shouldAlignHorizontal()
+                    ? NativeOrientation.Horizontal
+                    : NativeOrientation.Vertical })));
+        }));
+    }
+}
+AdOptionsView.defaultProps = {
+    iconSize: 23,
+    orientation: 'horizontal',
+};
 export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');
 //# sourceMappingURL=AdOptionsView.js.map
