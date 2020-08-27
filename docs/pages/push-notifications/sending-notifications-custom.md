@@ -8,11 +8,11 @@ Communicating directly with APNS and FCM is much more complicated than sending n
 - Twice the amount of backend code to write and maintain (code for communicating with FCM, and then code for communicating with APNS)
 - Fetching responses from FCM and APNS to check if your notification went through, error handling, credentials management
 
-That being said, sometimes you need finer-grained control over your notifications, so communicating directly with APNS and FCM is necessary. Expo will never lock you in and force you to use our services, so the `expo-notifications` API is push service agnostic (you can use it with any push notification service).
+That being said, sometimes you need finer-grained control over your notifications, so communicating directly with APNS and FCM is necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic (you can use it with any push notification service).
 
 ## How do I write my own APNS & FCM servers?
 
-Before we begin communicating directly with APNS & FCM, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](../../versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're bypassing Expo, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](../../versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+Before we begin communicating directly with APNS & FCM, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](../../versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](../../versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
 
 ```diff
 import * as Notifications from 'expo-notifications';
@@ -22,7 +22,7 @@ import * as Notifications from 'expo-notifications';
 // send token off to your server
 ```
 
-Now that you have your native device token, we can start to implement our servers:
+Now that you have your native device token, we can start to implement our servers. Below are some very minimal examples of communicating with FCM and APNs:
 
 ## FCM Server
 
@@ -88,9 +88,9 @@ const authorizationToken = jwt.sign(
 );
 ```
 
-### HTTP2 Connection
+### HTTP/2 Connection
 
-Now that we have our `authorizationToken`, we can open up an HTTP2 connection to Apple's servers. In development, you'll want to send requests to `api.development.push.apple.com`, but in production requests should go to `api.push.apple.com`.
+Now that we have our `authorizationToken`, we can open up an HTTP/2 connection to Apple's servers. In development, you'll want to send requests to `api.development.push.apple.com`, but in production requests should go to `api.push.apple.com`.
 
 Here's how to construct your request:
 
@@ -124,7 +124,7 @@ request.write(
 request.end();
 ```
 
-> This example is **very** minimal, and includes no error handling. For testing purposes, you should refer to [this example code](https://gist.github.com/cruzach/8535b87d9f6475a78df22b69cf86da03), instead.
+> This example is **very** minimal, and includes no error handling nor connection pooling. For testing purposes, you should refer to [this example code](https://gist.github.com/cruzach/8535b87d9f6475a78df22b69cf86da03), instead.
 
 APNS provides their full list of supported fields in the notification payload [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1).
 
