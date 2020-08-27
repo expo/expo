@@ -393,14 +393,12 @@ jobs:
       - run: npm install gulp-cli -g
       - run:
           name: Build iOS shell app for real devices
-          working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - run:
           name: Build iOS shell app for simulators
-          working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - when:
           condition: << parameters.upload >>
           steps:
