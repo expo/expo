@@ -49,6 +49,10 @@ const ReanimatedImagePreview = optionalRequire(() =>
 const ReanimatedProgress = optionalRequire(() =>
   require('../screens/Reanimated/ReanimatedProgressScreen')
 );
+const ReanimatedV2 = optionalRequire(() => require('../screens/Reanimated/V2/ReanimatedV2Screen'));
+const ReanimatedV2Screens = (optionalRequire(() =>
+  require('../screens/Reanimated/V2/ReanimatedV2Screens')
+) as unknown) as Record<string, () => JSX.Element>;
 const ScreensScreens = optionalRequire(() => require('../screens/Screens'));
 const ScrollView = optionalRequire(() => require('../screens/ScrollViewScreen'));
 const Slider = optionalRequire(() => require('../screens/SliderScreen'));
@@ -111,6 +115,8 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   ...ImageScreens,
   ReanimatedImagePreview,
   ReanimatedProgress,
+  ReanimatedV2,
+  ...ReanimatedV2Screens,
   Gif,
   FacebookAds,
   SegmentedControl,
