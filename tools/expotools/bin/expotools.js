@@ -23,6 +23,15 @@ function createLogModifier(modifier) {
     }
   };
 }
+/**
+ * Importing chalk directly may lead to errors
+ * if it's not yet available on the machine.
+ *
+ * Intermediary log modifiers catch the error
+ * and return unmodified string passed into the logger.
+ *
+ * See https://github.com/expo/expo/issues/9547
+ */
 const LogModifiers = {
   error: createLogModifier((chalk) => chalk.red),
   name: createLogModifier((chalk) => chalk.cyan),
@@ -227,7 +236,9 @@ async function run(schema) {
     if (subCommandName && !subCommandName.startsWith('-')) {
       if (!schema[subCommandName]) {
         console.log(
-          LogModifiers.error(`${LogModifiers.command(subCommandName)} is not an expotools command.`),
+          LogModifiers.error(
+            `${LogModifiers.command(subCommandName)} is not an expotools command.`
+          ),
           LogModifiers.error(
             `Run ${LogModifiers.command('et --help')} to see a list of available commands.\n`
           )
