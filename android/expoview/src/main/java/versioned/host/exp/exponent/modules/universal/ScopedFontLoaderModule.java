@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.universal;
 
 import android.content.Context;
+import android.net.Uri;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.errors.CodedException;
@@ -35,8 +36,12 @@ public class ScopedFontLoaderModule extends FontLoaderModule {
       // Ensure filesystem access permissions
       FilePermissionModuleInterface filePermissionModule = mModuleRegistry.getModule(FilePermissionModuleInterface.class);
       if (filePermissionModule != null) {
-        if (!filePermissionModule.getPathPermissions(getContext(), localUri).contains(Permission.READ)) {
-          promise.reject(new LocationAccessUnauthorizedError(localUri));
+        String localFontPath = Uri.parse(localUri).getPath();
+        if (localFontPath == null) {
+          throw new InvalidArgumentException("Could not parse provided local font URI as a URI with a path component.");
+        }
+        if (!filePermissionModule.getPathPermissions(getContext(), localFontPath).contains(Permission.READ)) {
+          promise.reject(new LocationAccessUnauthorizedError(localFontPath));
           return;
         }
       }
