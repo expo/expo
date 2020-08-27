@@ -29,7 +29,7 @@ const LogModifiers = {
 };
 
 maybeRebuildAndRun().catch((error) => {
-  console.error(require('chalk').red(error.stack));
+  console.error(LogModifiers.error(error.stack));
 });
 
 async function maybeRebuildAndRun() {
@@ -45,20 +45,18 @@ async function maybeRebuildAndRun() {
 
   // If checksum of source files changed, rebuild TypeScript files.
   if (!state.sourceChecksum || state.sourceChecksum !== sourceChecksum || !buildFolderExists()) {
-    const chalk = require('chalk');
-
-    console.log(` 🛠  Rebuilding ${chalk.cyan('expotools')}`);
+    console.log(` 🛠  Rebuilding ${LogModifiers.name('expotools')}`);
 
     try {
       // Compile TypeScript files into build folder.
       await spawnAsync('yarn', ['run', 'tsc']);
       state.schema = await getCommandsSchemaAsync();
     } catch (error) {
-      console.error(chalk.red(` 💥 Rebuilding failed: ${error.stack}`));
+      console.error(LogModifiers.error(` 💥 Rebuilding failed: ${error.stack}`));
       process.exit(1);
       return;
     }
-    console.log(` ✨ Successfully built ${chalk.cyan('expotools')}\n`);
+    console.log(` ✨ Successfully built ${LogModifiers.name('expotools')}\n`);
   }
 
   state.sourceChecksum = sourceChecksum || (await calculateSourceChecksumAsync());
@@ -206,7 +204,6 @@ function canRequire(packageName) {
 }
 
 async function run(schema) {
-  const chalk = require('chalk');
   const semver = require('semver');
   const program = require('@expo/commander');
   const nodeVersion = process.versions.node.split('-')[0]; // explode and truncate tag from version
@@ -214,10 +211,10 @@ async function run(schema) {
   // Validate that used Node version is supported
   if (semver.satisfies(nodeVersion, '<8.9.0')) {
     console.log(
-      chalk.red(
-        `Node version ${chalk.cyan(nodeVersion)} is not supported. Please use Node.js ${chalk.cyan(
-          '8.9.0'
-        )} or higher.`
+      LogModifiers.error(
+        `Node version ${LogModifiers.name(
+          nodeVersion
+        )} is not supported. Please use Node.js ${LogModifiers.name('8.9.0')} or higher.`
       )
     );
     process.exit(1);
@@ -229,8 +226,10 @@ async function run(schema) {
     if (subCommandName && !subCommandName.startsWith('-')) {
       if (!schema[subCommandName]) {
         console.log(
-          chalk.red(`${chalk.cyan.italic(subCommandName)} is not an expotools command.`),
-          chalk.red(`Run ${chalk.cyan.italic('et --help')} to see a list of available commands.\n`)
+          LogModifiers.error(`${LogModifiers.command(subCommandName)} is not an expotools command.`),
+          LogModifiers.error(
+            `Run ${LogModifiers.command('et --help')} to see a list of available commands.\n`
+          )
         );
         process.exit(1);
         return;
@@ -255,7 +254,7 @@ async function run(schema) {
       program.help();
     }
   } catch (e) {
-    console.error(chalk.red(e));
+    console.error(LogModifiers.error(e));
     throw e;
   }
 }
