@@ -8,10 +8,10 @@ import android.os.Bundle;
 import androidx.core.content.FileProvider;
 
 import org.unimodules.core.ExportedModule;
-import org.unimodules.core.InvalidArgumentException;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
