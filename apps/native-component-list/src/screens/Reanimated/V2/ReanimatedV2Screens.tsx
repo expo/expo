@@ -5,7 +5,6 @@ import AnimatedStyleUpdateExample from './AnimatedStyleUpdateExample';
 import ChatHeadsExample from './ChatHeadsExample';
 import DragAndSnapExample from './DragAndSnapExample';
 import LightboxExample from './LightboxExample';
-import LiquidSwipe from './LiquidSwipe';
 import MeasureExample from './MeasureExample';
 import ScrollEventExample from './ScrollEventExample';
 import ScrollToExample from './ScrollToExample';
@@ -55,10 +54,6 @@ export const SCREENS = {
   ScrollableViewExample: {
     screen: ScrollableViewExample,
     title: '🆕 (advanced) ScrollView imitation',
-  },
-  LiquidSwipe: {
-    screen: LiquidSwipe,
-    title: '🆕 Liquid Swipe Example',
   },
 };
 
