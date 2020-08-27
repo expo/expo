@@ -34,6 +34,7 @@ const screens = [
   'QRCode',
   'ReanimatedImagePreview',
   'ReanimatedProgress',
+  'ReanimatedV2',
   'SVG',
   'Screens',
   'ScrollView',
