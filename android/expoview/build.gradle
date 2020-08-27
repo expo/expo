@@ -677,6 +677,7 @@ task cleanNdkLibs(type: Exec) {
 task packageNdkLibs(dependsOn: buildReanimated, type: Copy) {
   from("$buildDir/reanimated-ndk/all")
   include("**/lib*reanimated*.so")
+  include("**/lib*libturbomodulejsijni*.so")
   into("$projectDir/src/main/JNILibs")
 }
 
