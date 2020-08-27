@@ -13,6 +13,21 @@ const ROOT_PATH = path.dirname(__dirname);
 const BUILD_PATH = path.join(ROOT_PATH, 'build');
 const STATE_PATH = path.join(ROOT_PATH, 'cache', '.state.json');
 
+function createLogModifier(modifier) {
+  return (text) => {
+    try {
+      return modifier(require('chalk'))(text);
+    } catch (e) {
+      return text;
+    }
+  };
+}
+const LogModifiers = {
+  error: createLogModifier((chalk) => chalk.red),
+  name: createLogModifier((chalk) => chalk.cyan),
+  command: createLogModifier((chalk) => chalk.cyan.italic),
+};
+
 maybeRebuildAndRun().catch((error) => {
   console.error(require('chalk').red(error.stack));
 });
