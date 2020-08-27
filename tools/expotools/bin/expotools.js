@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 'use strict';
+/* eslint-env node */
 
 // This script is just a wrapper around expotools that ensures node modules are installed
 // and TypeScript files are compiled. To make it work even when node_modules are empty,
 // we shouldn't eagerly require any dependency - we have to run yarn first.
 
+const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const child_process = require('child_process');
 
 const ROOT_PATH = path.dirname(__dirname);
 const BUILD_PATH = path.join(ROOT_PATH, 'build');
