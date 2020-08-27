@@ -16,15 +16,19 @@ import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";
   private static final String EXPORTED_NAME = "ExpoFontLoader";
 
   protected ModuleRegistry mModuleRegistry;
+  protected Set<String> mLoadedFontNames;
 
   public FontLoaderModule(Context context) {
     super(context);
+    mLoadedFontNames = new HashSet<>();
   }
 
   @Override
@@ -40,6 +44,10 @@ public class FontLoaderModule extends ExportedModule {
   @ExpoMethod
   public void loadAsync(final String fontFamilyName, final String localUri, final Promise promise) {
     try {
+      if (mLoadedFontNames.contains(fontFamilyName)) {
+        throw new FontAlreadyLoadedException(fontFamilyName);
+      }
+
       // Validate arguments
       if (fontFamilyName == null) {
         throw new InvalidArgumentException("Font family name cannot be empty (null received)");
@@ -54,6 +62,7 @@ public class FontLoaderModule extends ExportedModule {
       }
 
       ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, typeface);
+      mLoadedFontNames.add(fontFamilyName);
       promise.resolve(null);
     } catch (CodedRuntimeException e) {
       // Most probably an InvalidArgumentException. Already coded!
@@ -98,6 +107,17 @@ public class FontLoaderModule extends ExportedModule {
     @Override
     public String getCode() {
       return "ERR_FONT_FILE_INVALID";
+    }
+  }
+
+  protected static class FontAlreadyLoadedException extends CodedRuntimeException {
+    public FontAlreadyLoadedException(String fontFamilyName) {
+      super(String.format("Font with family name '%s' has already been loaded.", fontFamilyName));
+    }
+
+    @Override
+    public String getCode() {
+      return "ERR_FONT_ALREADY_LOADED";
     }
   }
 }
