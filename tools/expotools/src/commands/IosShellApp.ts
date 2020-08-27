@@ -3,14 +3,14 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
+import * as Directories from '../Directories';
+
 async function resizeIconWithSharpAsync(iconSizePx, iconFilename, destinationIconPath) {
   const filename = path.join(destinationIconPath, iconFilename);
 
   // sharp can't have same input and output filename, so load to buffer then
   // write to disk after resize is complete
-  let buffer = await sharp(filename)
-    .resize(iconSizePx, iconSizePx)
-    .toBuffer();
+  let buffer = await sharp(filename).resize(iconSizePx, iconSizePx).toBuffer();
 
   fs.writeFileSync(filename, buffer);
 }
@@ -25,9 +25,19 @@ async function getImageDimensionsWithSharpAsync(dirname, basename) {
   }
 }
 
-async function action(options: unknown) {
+type ActionOptions = {
+  action: string;
+  [key: string]: any;
+};
+
+async function action(providedOptions: ActionOptions) {
   ImageUtils.setResizeImageFunction(resizeIconWithSharpAsync);
   ImageUtils.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
+
+  const options = {
+    ...providedOptions,
+    expoSourcePath: Directories.getIosDir(),
+  };
 
   if (options.action === 'build') {
     return await IosShellApp.buildAndCopyArtifactAsync(options);
@@ -69,11 +79,6 @@ export default (program: any) => {
     .option(
       '--workspacePath [string]',
       'Path for the unbuilt xcode workspace to create/use (optional)'
-    )
-    .option(
-      '--expoSourcePath [string]',
-      'Path to Expo client app sourcecode (/ios dir from expo/expo repo)',
-      '../../ios'
     )
     .asyncAction(action);
 };
