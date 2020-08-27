@@ -1,10 +1,10 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
-import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import path from 'path';
 
 import { PACKAGES_DIR, EXPO_DIR } from '../Constants';
+import { spawnAsync } from '../Utils';
 
 type ActionOptions = {
   name: string;
@@ -40,7 +40,6 @@ async function generateModuleWithExpoCLI(
   }
 
   await spawnAsync('expo', ['generate-module', ...templateParams, unimoduleDirectory], {
-    cwd: EXPO_DIR,
     stdio: 'inherit',
   });
 }
