@@ -1,11 +1,13 @@
 ---
 title: Sending Notifications with Expo's Push API
-sidebar_title: Sending Notifications
+sidebar_title: Sending Notifications with Expo
 ---
 
 > If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
 
-Along with the [`expo-notifications`](../../versions/latest/sdk/notifications/) module, which provides all the client-side functionality for push notifications, Expo also handles sending these notifications off to APNS and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
+Along with the [`expo-notifications`](../../versions/latest/sdk/notifications/) module, which provides all the client-side functionality for push notifications, Expo can also handle sending these notifications off to APNs and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
+
+> If you'd rather build a server that communicates with APNs and FCM directly, check out [this guide](../sending-notifications-custom/) (this is more complicated than using Expo's push notification service).
 
 ![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
 
