@@ -5,7 +5,7 @@ import sharp from 'sharp';
 
 import * as Directories from '../Directories';
 
-async function resizeIconWithSharpAsync(iconSizePx, iconFilename, destinationIconPath) {
+async function resizeIconWithSharpAsync(iconSizePx: number, iconFilename: string, destinationIconPath: string) {
   const filename = path.join(destinationIconPath, iconFilename);
 
   // sharp can't have same input and output filename, so load to buffer then
@@ -15,7 +15,7 @@ async function resizeIconWithSharpAsync(iconSizePx, iconFilename, destinationIco
   fs.writeFileSync(filename, buffer);
 }
 
-async function getImageDimensionsWithSharpAsync(dirname, basename) {
+async function getImageDimensionsWithSharpAsync(dirname: string, basename: string) {
   const filename = path.join(dirname, basename);
   try {
     let { width, height } = await sharp(filename).metadata();
