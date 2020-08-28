@@ -503,6 +503,12 @@ async function cleanUpAsync(version: string) {
     [],
     { shell: true }
   );
+  await spawnAsync(
+    `find ${versionedAbiSrcPath} -iname '*.kt' -type f -print0 | ` +
+      `xargs -0 sed -i '' 's/import ${abiName}\\..*\\.R$/import ${abiName}.host.exp.expoview.R/g'`,
+    [],
+    { shell: true }
+  );
 
   // add new versioned maven to build.gradle
   await transformFileAsync(
