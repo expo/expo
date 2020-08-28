@@ -52,9 +52,10 @@ jobs:
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
           sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
-      - name: Check that Android packages are up-to-date
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: expotools check-android-packages
+      - name: Build Android packages
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        run: expotools android-build-packages --packages all
       - name: Build shell app tarball
         run: ./buildAndroidTarballLocally.sh
       - name: Make an artifact
