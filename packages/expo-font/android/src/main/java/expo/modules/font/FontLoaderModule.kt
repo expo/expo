@@ -44,7 +44,9 @@ open class FontLoaderModule(context: Context?) : ExportedModule(context) {
       if (localUri == null) {
         throw InvalidArgumentException("Local font URI cannot be empty (null received)")
       }
+
       val typeface = getTypeface(localUri) ?: throw FontFileInvalidException(localUri)
+
       ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, typeface)
       mLoadedFontNames.add(fontFamilyName)
       promise.resolve(null)

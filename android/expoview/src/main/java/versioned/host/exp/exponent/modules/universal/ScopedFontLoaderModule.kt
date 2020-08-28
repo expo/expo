@@ -11,20 +11,20 @@ import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface
 import org.unimodules.interfaces.filesystem.Permission
 
 class ScopedFontLoaderModule(context: Context?) : FontLoaderModule(context) {
-  override fun loadAsync(providedFontFamilyName: String?, localUri: String?, promise: Promise) {
-    var fontFamilyName = providedFontFamilyName
+  override fun loadAsync(fontFamilyName: String?, localUri: String?, promise: Promise) {
+    var resolvedFontFamilyName = fontFamilyName
     if (isScoped) {
       // Validate font family name before we prefix it
-      if (providedFontFamilyName == null) {
+      if (resolvedFontFamilyName == null) {
         promise.reject(InvalidArgumentException("Font family name cannot be empty (null received)"))
         return
       }
 
       // Scope font family name
-      fontFamilyName = SCOPED_FONT_PREFIX + providedFontFamilyName
+      resolvedFontFamilyName = "$SCOPED_FONT_PREFIX$resolvedFontFamilyName"
 
       // Ensure filesystem access permissions
-      val filePermissionModule = mModuleRegistry!!.getModule(FilePermissionModuleInterface::class.java)
+      val filePermissionModule = mModuleRegistry?.getModule(FilePermissionModuleInterface::class.java)
       if (filePermissionModule != null) {
         val localFontPath = Uri.parse(localUri).path
         if (localFontPath == null) {
@@ -37,15 +37,14 @@ class ScopedFontLoaderModule(context: Context?) : FontLoaderModule(context) {
         }
       }
     }
-    super.loadAsync(fontFamilyName, localUri, promise)
+    super.loadAsync(resolvedFontFamilyName, localUri, promise)
   }
 
-  // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
   private val isScoped: Boolean
-    private get() {
-      val constantsModule = mModuleRegistry!!.getModule(ConstantsInterface::class.java)
+    get() {
+      val appOwnership = mModuleRegistry?.getModule(ConstantsInterface::class.java)?.appOwnership
       // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
-      return constantsModule != null && "expo" == constantsModule.appOwnership
+      return appOwnership == null && "expo" == appOwnership
     }
 
   class LocationAccessUnauthorizedError(uri: String) : CodedRuntimeException("You aren't authorized to load font file from: $uri") {
