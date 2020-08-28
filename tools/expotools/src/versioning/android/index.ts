@@ -361,7 +361,6 @@ async function copyUnimodulesAsync(version: string) {
   const packages = await getListOfPackagesAsync();
   for (const pkg of packages) {
     if (
-      pkg.isUnimodule &&
       pkg.isSupportedOnPlatform('android') &&
       pkg.isIncludedInExpoClientOnPlatform('android') &&
       pkg.isVersionableOnPlatform('android')
