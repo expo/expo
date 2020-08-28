@@ -16,7 +16,6 @@ on:
       - secrets/**
       - android/**
       - fastlane/**
-      - tools-public/**
       - Gemfile.lock
       - .ruby-version
       - yarn.lock
@@ -27,7 +26,6 @@ on:
       - secrets/**
       - android/**
       - fastlane/**
-      - tools-public/**
       - Gemfile.lock
       - .ruby-version
       - yarn.lock
@@ -45,12 +43,10 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('tools-public/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - run: yarn install --frozen-lockfile
-        working-directory: tools-public
       - uses: ruby/setup-ruby@v1
       - name: bundler cache
         uses: actions/cache@v1

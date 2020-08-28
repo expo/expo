@@ -15,6 +15,3 @@
 /android/**
 /fastlane/**
 /ios/**
-
-# TODO: Lint tools too
-/tools-public/**

@@ -27,15 +27,6 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('tools-public/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Install tools-public dependencies
-        run: yarn install --frozen-lockfile
-        working-directory: tools-public
       - run: echo "::add-path::$(pwd)/bin"
       - run: echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
       - run: expotools ios-generate-dynamic-macros
@@ -53,8 +44,6 @@ jobs:
         run: |
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
-      - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
-      - run: npm install gulp-cli -g
       - uses: actions/cache@v1
         with:
           path: ios/Pods
@@ -62,13 +51,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
       - name: Build iOS shell app for real devices
-        working-directory: tools-public
         timeout-minutes: 30
-        run: gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+        run: expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - name: Build iOS shell app for simulators
-        working-directory: tools-public
         timeout-minutes: 30
-        run: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+        run: expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - run: brew install awscli
       - name: set tarball name
         id: tarball
