@@ -7,6 +7,7 @@ import readline from 'readline';
 
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
+import * as ProjectVersions from '../ProjectVersions';
 
 type ActionOptions = {
   sdkVersion: string;
@@ -280,10 +281,6 @@ async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  if (!options.sdkVersion) {
-    throw new Error('Must run with `--sdkVersion SDK_VERSION`');
-  }
-
   const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
 
   // packages must stay in this order --
@@ -382,10 +379,19 @@ export default (program: any) => {
     .command('android-build-packages')
     .alias('abp')
     .description('Builds all Android AAR packages for Turtle')
-    .option('-s, --sdkVersion [string]', 'SDK version')
+    .option('-s, --sdkVersion [string]', '[optional] SDK version')
     .option(
       '-p, --packages [string]',
       '[optional] packages to build. May be `all`, `suggested`, or a comma-separate list of package names.'
     )
-    .asyncAction(action);
+    .asyncAction(async (options: Partial<ActionOptions>) => {
+      const sdkVersion =
+        options.sdkVersion ?? (await ProjectVersions.getNewestSDKVersionAsync('android'));
+
+      if (!sdkVersion) {
+        throw new Error('Could not infer SDK version, please run with `--sdkVersion SDK_VERSION`');
+      }
+
+      await action({ sdkVersion, ...options });
+    });
 };
