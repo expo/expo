@@ -18,11 +18,7 @@ async function _getOutdatedUnimodules(packages: Packages.Package[]): Promise<str
       continue;
     const buildDir = `${pkg.androidPackageName.replace(/\./g, '/')}/${pkg.packageSlug}`;
     const version = pkg.packageVersion;
-    if (
-      !(await fs.pathExists(
-        path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', buildDir, version)
-      ))
-    ) {
+    if (!(await fs.pathExists(path.join(EXPO_ROOT_DIR, 'android', 'maven', buildDir, version)))) {
       outdatedPackages.push(pkg.packageSlug);
     }
   }
@@ -47,7 +43,7 @@ async function action() {
 
   const reactNativePath = path.join(
     EXPO_ROOT_DIR,
-    'expokit-npm-package',
+    'android',
     'maven',
     'com',
     'facebook',
@@ -57,7 +53,7 @@ async function action() {
   );
   const expoviewPath = path.join(
     EXPO_ROOT_DIR,
-    'expokit-npm-package',
+    'android',
     'maven',
     'host',
     'exp',

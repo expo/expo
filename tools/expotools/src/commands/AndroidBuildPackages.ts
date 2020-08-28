@@ -90,7 +90,7 @@ async function _getSuggestedPackagesToBuild(packages: Package[]): Promise<string
   for (const pkg of packages) {
     const isUpToDate = await _isPackageUpToDate(
       pkg.sourceDir,
-      path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', pkg.buildDirRelative)
+      path.join(EXPO_ROOT_DIR, 'android', 'maven', pkg.buildDirRelative)
     );
     if (!isUpToDate) {
       packagesToBuild.push(pkg.name);
@@ -380,8 +380,8 @@ async function _exitHandler(): Promise<void> {
 export default (program: any) => {
   program
     .command('android-build-packages')
-    .alias('abp', 'update-exponent-view')
-    .description('Builds all Android AAR packages for ExpoKit')
+    .alias('abp')
+    .description('Builds all Android AAR packages for Turtle')
     .option('-s, --sdkVersion [string]', 'SDK version')
     .option(
       '-p, --packages [string]',
