@@ -155,16 +155,14 @@ public class NotificationScheduler extends ExportedModule {
           channelId
         );
       case "weekly":
-        if (!(params.get("weekday") instanceof Number) ||
-                !(params.get("hour") instanceof Number) ||
-                !(params.get("minute") instanceof Number)) {
+        if (!(params.get("weekday") instanceof Number) || !(params.get("hour") instanceof Number) || !(params.get("minute") instanceof Number)) {
           throw new InvalidArgumentException("Invalid value(s) provided for weekly trigger.");
         }
         return new WeeklyTrigger(
-                ((Number) params.get("weekday")).intValue(),
-                ((Number) params.get("hour")).intValue(),
-                ((Number) params.get("minute")).intValue(),
-                channelId
+          ((Number) params.get("weekday")).intValue(),
+          ((Number) params.get("hour")).intValue(),
+          ((Number) params.get("minute")).intValue(),
+          channelId
         );
       case "channel":
         return new ChannelAwareTrigger(channelId);
