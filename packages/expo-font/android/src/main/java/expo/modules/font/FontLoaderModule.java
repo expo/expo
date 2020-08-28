@@ -19,6 +19,10 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import expo.modules.font.exceptions.FontAlreadyLoadedException;
+import expo.modules.font.exceptions.FontFileInvalidException;
+import expo.modules.font.exceptions.FontFileNotFoundException;
+
 public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";
   private static final String EXPORTED_NAME = "ExpoFontLoader";
@@ -88,36 +92,4 @@ public class FontLoaderModule extends ExportedModule {
     return Typeface.createFromFile(new File(localFontPath));
   }
 
-  protected static class FontFileNotFoundException extends CodedRuntimeException {
-    public FontFileNotFoundException(String fontFamilyName, String path) {
-      super(String.format("File '%s' for font '%s' doesn't exist.", path, fontFamilyName));
-    }
-
-    @Override
-    public String getCode() {
-      return "ERR_FONT_FILE_NOT_FOUND";
-    }
-  }
-
-  protected static class FontFileInvalidException extends CodedRuntimeException {
-    public FontFileInvalidException(String path) {
-      super(String.format("File '%s' isn't a valid font file.", path));
-    }
-
-    @Override
-    public String getCode() {
-      return "ERR_FONT_FILE_INVALID";
-    }
-  }
-
-  protected static class FontAlreadyLoadedException extends CodedRuntimeException {
-    public FontAlreadyLoadedException(String fontFamilyName) {
-      super(String.format("Font with family name '%s' has already been loaded.", fontFamilyName));
-    }
-
-    @Override
-    public String getCode() {
-      return "ERR_FONT_ALREADY_LOADED";
-    }
-  }
 }
