@@ -16,13 +16,12 @@ const TEMPLATE_PACKAGE_NAME = 'expo-module-template';
 
 async function generateModuleWithExpoCLI(
   unimoduleDirectory: string,
-  options: Pick<ActionOptions, 'template' | 'useLocalTemplate'>
+ { template, useLocalTemplate }: Pick<ActionOptions, 'template' | 'useLocalTemplate'>
 ) {
   console.log(
     `Creating new unimodule under ${chalk.magenta(path.relative(EXPO_DIR, unimoduleDirectory))}...`
   );
 
-  const { template, useLocalTemplate } = options;
   const templateParams: string[] = [];
 
   if (template) {
