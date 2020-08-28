@@ -6,8 +6,8 @@
             withFamily:(NSString *)family
                   size:(NSNumber *)size
                 weight:(NSString *)weight
-                  style:(NSString *)style
-                variant:(NSArray<NSDictionary *> *)variant
-        scaleMultiplier:(CGFloat)scaleMultiplier;
+                 style:(NSString *)style
+               variant:(NSArray<NSDictionary *> *)variant
+       scaleMultiplier:(CGFloat)scaleMultiplier;
 
 @end
