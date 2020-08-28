@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/UMReactNativeAdapter/ABI39_0_0UMReactNativeAdapter/UMViewManagerAdapter/ABI39_0_0UMViewManagerAdapter.h
