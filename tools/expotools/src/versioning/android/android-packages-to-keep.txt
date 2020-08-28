@@ -27,3 +27,4 @@ expo.modules.updates.db
 expo.modules.updates.launcher
 expo.modules.updates.loader
 expo.modules.updates.manifest
+com.facebook.proguard.annotations.DoNotStrip
