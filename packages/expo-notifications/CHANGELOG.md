@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `WeeklyTriggerInput` that allows scheduling a weekly recurring notification for a specific day of week, hour and minute. It is supported on both iOS and Android. ([#9973](https://github.com/expo/expo/pull/9973) by [@RikTheunis](https://github.com/riktheunis))
+
 ### 🐛 Bug fixes
 
 ## 0.7.1 — 2020-08-26

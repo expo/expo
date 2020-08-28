@@ -1117,6 +1117,7 @@ export type NotificationTrigger =
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
+  | WeeklyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1199,6 +1200,19 @@ A trigger related to a daily notification. This is an Android-only type, the sam
 ```ts
 export interface DailyNotificationTrigger {
   type: 'daily';
+  hour: number;
+  minute: number;
+}
+```
+
+### `WeeklyNotificationTrigger`
+
+A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
   hour: number;
   minute: number;
 }
@@ -1296,6 +1310,7 @@ export type NotificationTriggerInput =
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
+  | WeeklyTriggerInput
   | CalendarTriggerInput;
 ```
 
@@ -1336,6 +1351,22 @@ A trigger that will cause the notification to be delivered once per day.
 ```ts
 export interface DailyTriggerInput {
   channelId?: string;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+```
+
+### `WeeklyTriggerInput`
+
+A trigger that will cause the notification to be delivered once every week.
+
+> **Note:** Weekdays are specified with a number from 1 through 7, with 1 indicating Sunday.
+
+```ts
+export interface WeeklyTriggerInput {
+  channelId?: string;
+  weekday: number;
   hour: number;
   minute: number;
   repeats: true;

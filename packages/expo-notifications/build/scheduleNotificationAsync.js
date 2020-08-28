@@ -36,6 +36,35 @@ function parseTrigger(userFacingTrigger) {
             minute,
         };
     }
+    else if (isWeeklyTriggerInput(userFacingTrigger)) {
+        const weekday = userFacingTrigger.weekday;
+        const hour = userFacingTrigger.hour;
+        const minute = userFacingTrigger.minute;
+        if (weekday === undefined ||
+            weekday == null ||
+            hour === undefined ||
+            hour == null ||
+            minute === undefined ||
+            minute == null) {
+            throw new TypeError('Weekday, hour and minute need to have valid values. Found undefined');
+        }
+        if (weekday < 1 || weekday > 7) {
+            throw new RangeError(`The weekday parameter needs to be between 1 and 7. Found: ${weekday}`);
+        }
+        if (hour < 0 || hour > 23) {
+            throw new RangeError(`The hour parameter needs to be between 0 and 23. Found: ${hour}`);
+        }
+        if (minute < 0 || minute > 59) {
+            throw new RangeError(`The minute parameter needs to be between 0 and 59. Found: ${minute}`);
+        }
+        return {
+            type: 'weekly',
+            channelId: userFacingTrigger.channelId,
+            weekday,
+            hour,
+            minute,
+        };
+    }
     else if (isSecondsPropertyMisusedInCalendarTriggerInput(userFacingTrigger)) {
         throw new TypeError('Could not have inferred the notification trigger type: if you want to use a time interval trigger, pass in only `seconds` with or without `repeats` property; if you want to use calendar-based trigger, pass in `second`.');
     }
@@ -79,6 +108,14 @@ function toTimestamp(date) {
 }
 function isDailyTriggerInput(trigger) {
     return (Object.keys(trigger).length === 3 &&
+        'hour' in trigger &&
+        'minute' in trigger &&
+        'repeats' in trigger &&
+        trigger.repeats === true);
+}
+function isWeeklyTriggerInput(trigger) {
+    return (Object.keys(trigger).length === 4 &&
+        'weekday' in trigger &&
         'hour' in trigger &&
         'minute' in trigger &&
         'repeats' in trigger &&

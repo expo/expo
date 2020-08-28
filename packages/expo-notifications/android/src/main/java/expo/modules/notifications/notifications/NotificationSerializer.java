@@ -32,6 +32,7 @@ import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
+import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
 
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {
@@ -171,6 +172,11 @@ public class NotificationSerializer {
       bundle.putString("type", "daily");
       bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
       bundle.putInt("minute", ((DailyTrigger) trigger).getMinute());
+    } else if (trigger instanceof WeeklyTrigger) {
+      bundle.putString("type", "weekly");
+      bundle.putInt("weekday", ((WeeklyTrigger) trigger).getWeekday());
+      bundle.putInt("hour", ((WeeklyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((WeeklyTrigger) trigger).getMinute());
     } else {
       bundle.putString("type", "unknown");
     }
