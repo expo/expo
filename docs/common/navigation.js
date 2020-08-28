@@ -82,6 +82,7 @@ const sections = [
       'Push Notifications Overview',
       'Push Notifications Setup',
       "Sending Notifications with Expo's Push API",
+      'Sending Notifications with APNs & FCM',
       'Receiving Notifications',
       'Using FCM for Push Notifications',
     ],
