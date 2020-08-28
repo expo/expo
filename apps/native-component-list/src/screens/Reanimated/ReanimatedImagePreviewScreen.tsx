@@ -2,7 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, State, PinchGestureHandler } from 'react-native-gesture-handler';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated, { EasingNode } from 'react-native-reanimated';
 
 const {
   set,
@@ -72,10 +72,7 @@ function scaleFriction(value: any, rest: any, delta: any) {
   const MAX_VALUE = 0.5;
   const res = multiply(value, delta);
   const howFar = abs(sub(rest, value));
-  const f = max(
-    1,
-    min(MAX_FRICTION, add(1, multiply(howFar, (MAX_FRICTION - 1) / MAX_VALUE)))
-  );
+  const f = max(1, min(MAX_FRICTION, add(1, multiply(howFar, (MAX_FRICTION - 1) / MAX_VALUE))));
   return cond(lessThan(0, howFar), multiply(value, add(1, divide(add(delta, -1), f))), res);
 }
 
@@ -90,7 +87,7 @@ function runTiming(clock: any, value: any, dest: any, startStopClock = true) {
   const config = {
     toValue: new Value(0),
     duration: 300,
-    easing: Easing.inOut(Easing.cubic),
+    easing: EasingNode.inOut(EasingNode.cubic),
   };
 
   return [
@@ -225,7 +222,7 @@ function bouncy(
 const WIDTH = 300;
 const HEIGHT = 300;
 
-class Viewer extends React.Component<{ source: string }> {
+class Viewer extends React.Component<{ source: number }> {
   pinchRef = React.createRef<PinchGestureHandler>();
   panRef = React.createRef<PanGestureHandler>();
 
@@ -345,16 +342,14 @@ class Viewer extends React.Component<{ source: string }> {
           ref={this.pinchRef}
           simultaneousHandlers={this.panRef}
           onGestureEvent={this._onPinchEvent}
-          onHandlerStateChange={this._onPinchEvent}
-        >
+          onHandlerStateChange={this._onPinchEvent}>
           <Animated.View>
             <PanGestureHandler
               ref={this.panRef}
               avgTouches
               simultaneousHandlers={this.pinchRef}
               onGestureEvent={this._onPanEvent}
-              onHandlerStateChange={this._onPanEvent}
-            >
+              onHandlerStateChange={this._onPanEvent}>
               <Animated.Image
                 style={[
                   styles.image,
