@@ -1197,7 +1197,7 @@ export async function test(t) {
               },
             });
           } else {
-            throw new Error('Test does not support platfrom');
+            throw new Error('Test does not support platform');
           }
         },
         4000
@@ -1241,7 +1241,7 @@ export async function test(t) {
               },
             });
           } else {
-            throw new Error('Test does not support platfrom');
+            throw new Error('Test does not support platform');
           }
         },
         4000
