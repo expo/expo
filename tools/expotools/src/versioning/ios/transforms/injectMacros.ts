@@ -31,7 +31,7 @@ export function injectMacros(versionName: string): TransformPipeline {
       {
         // injects macro into `enqueueJSCall:method:args:completion:` method of RCTCxxBridge
         paths: 'RCTCxxBridge.mm',
-        replace: /callJSFunction(\s+\(\s+)\[module UTF8String\],/,
+        replace: /callJSFunction(\s*?\(\s*?)\[module UTF8String\],/,
         with: `callJSFunction$1[${versionName}EX_REMOVE_VERSION(module) UTF8String],`,
       },
       {
