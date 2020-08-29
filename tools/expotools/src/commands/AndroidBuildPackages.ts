@@ -48,12 +48,7 @@ async function _findUnimodules(pkgDir: string): Promise<Package[]> {
 
   const packages = await Packages.getListOfPackagesAsync();
   for (const pkg of packages) {
-    if (
-      !pkg.isSupportedOnPlatform('android') ||
-      !pkg.androidPackageName ||
-      EXCLUDED_PACKAGE_SLUGS.includes(pkg.packageSlug)
-    )
-      continue;
+    if (!pkg.isSupportedOnPlatform('android') || !pkg.androidPackageName) continue;
     unimodules.push({
       name: pkg.packageSlug,
       sourceDir: path.join(pkg.path, pkg.androidSubdirectory),
@@ -304,7 +299,9 @@ async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
+  const detachableUniversalModules = (
+    await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'))
+  ).filter((unimodule) => !EXCLUDED_PACKAGE_SLUGS.includes(unimodule.name));
 
   // packages must stay in this order --
   // ReactAndroid MUST be first and expoview MUST be last
