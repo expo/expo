@@ -35,6 +35,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - uses: actions/cache@v2
+        id: cache-android-ndk
+        with:
+          path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          key: ${{ runner.os }}-ndk-19.2.5345600
+          restore-keys: |
+            ${{ runner.os }}-ndk-
+      - name: Install NDK
+        if: steps.cache-android-ndk.outputs.cache-hit != 'true'
+        run: |
+          sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - name: Check that Android packages are up-to-date
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: expotools check-android-packages
