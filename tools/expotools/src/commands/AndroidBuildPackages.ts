@@ -148,7 +148,7 @@ async function _uncommentWhenDistributing(filenames: string[]): Promise<void> {
   }
 }
 
-async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<void> {
+async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<number> {
   let appBuildGradle = path.join(ANDROID_DIR, 'app', 'build.gradle');
   let rootBuildGradle = path.join(ANDROID_DIR, 'build.gradle');
   let expoViewBuildGradle = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
@@ -279,6 +279,8 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
       )}\``
     );
   }
+
+  return failedPackages.length;
 }
 
 async function action(options: ActionOptions) {
@@ -363,10 +365,13 @@ async function action(options: ActionOptions) {
   }
 
   try {
-    await _updateExpoViewAsync(
+    const failedPackagesCount = await _updateExpoViewAsync(
       packages.filter((pkg) => packagesToBuild.includes(pkg.name)),
       options.sdkVersion
     );
+    if (failedPackagesCount) {
+      process.exitCode = 1;
+    }
   } catch (e) {
     await _exitHandler();
     throw e;
