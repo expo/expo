@@ -20,6 +20,7 @@ type Package = {
   buildDirRelative: string;
 };
 
+const UNBUILDABLE_PACKAGES_NAMES = ['expo-module-template'];
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 
@@ -284,7 +285,9 @@ async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
+  const detachableUniversalModules = (
+    await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'))
+  ).filter((unimodule) => !UNBUILDABLE_PACKAGES_NAMES.includes(unimodule.name));
 
   // packages must stay in this order --
   // expoview MUST be last
