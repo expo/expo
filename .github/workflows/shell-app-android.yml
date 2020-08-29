@@ -29,7 +29,6 @@ jobs:
         run: |
           echo "::add-path::$(pwd)/bin"
           echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
-      - run: sudo apt-get install awscli
       - name: Check that Android packages are up-to-date
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: expotools check-android-packages
@@ -40,6 +39,7 @@ jobs:
         with:
           name: android-shell-app
           path: artifacts/android-shell-builder.tar.gz
+      - run: sudo apt-get install awscli
       - name: Upload shell app tarball to S3
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
