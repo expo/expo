@@ -43,6 +43,8 @@ When the Expo client is finished installing, open it up. If you created an accou
 
 Projects can also be run on a computer with the [iOS Simulator (MacOS only)](../../workflow/ios-simulator/) or [Android emulator (Any OS)](../../workflow/android-studio-emulator/).
 
+<TerminalBlock cmd={['# Start and open the project on all devices', 'expo start --ios --android --web']} />
+
 > 🧐 Apple uses the word "simulator" for their iOS emulator and Google uses the word "emulator", these perform the same function conceptually and are different in name alone.
 
 ## Up next
