@@ -67,7 +67,7 @@ it(`verifies weekly trigger handling`, async () => {
     weekday: 1,
     hour: 12,
     minute: 30,
-    repeats: true,
+    repeats: true as boolean | undefined,
   };
   const input = {
     ...notificationTriggerInputTest,
