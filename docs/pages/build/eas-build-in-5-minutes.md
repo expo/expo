@@ -21,20 +21,20 @@ Initializing the project can take a few minutes. Once it's all set, you should s
 
 ## Set a bundle identifier for iOS
 
-Before configuring the project to build with EAS Build, you'll need to set the bundle identifier (`expo.ios.bundleIdentifer`) that will be used to identify your application on the Apple App Store.
+Before configuring the project for EAS Build, you'll need to set the bundle identifier (`expo.ios.bundleIdentifer`) that will be used to identify your application on the Apple App Store.
 
 An excerpt from Apple's docs:
 
 > The bundle identifier string identifies your application to the system. This string must be a uniform type identifier (UTI) that contains only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.) characters. The string should also be in reverse-DNS format. For example, if your company’s domain is Ajax.com and you create an application named Hello, you could assign the string com.Ajax.Hello as your application’s bundle identifier.
 
-To set the bundle identifier, open `app.json`, and add a `bundleIdentifier` property under `expo.ios` key, then commit the change:
+To set the bundle identifier, open `app.json`, and add a `bundleIdentifier` property under the `expo.ios` key, then commit the change:
 
 - `git add app.json`
 - `git commit -m "Set bundle identifier"`
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/06-set-bundle-id.png" /></center>
 
-## Configure project for building with EAS Build
+## Configure your project for EAS Build
 
 To automatically configure your native project for building with EAS Build on Android and iOS, you will need to run the following command:
 
@@ -46,7 +46,7 @@ It will automatically perform the following steps:
 
 ### Create `eas.json`
 
-The command will create a `eas.json` file in the root directory and then you'll be offered to commit it. It will contain the EAS Build configuration.
+The command will create an `eas.json` file in the root directory, and then you'll be asked to commit it. This file contains your EAS Build configuration.
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/03-eas-json.png" /></center>
 
@@ -60,7 +60,7 @@ Once you've created `eas.json`, new Expo CLI commands should become available fo
 - `expo eas:build:status` - displays the status of your latest build for this project
 - `expo eas:credentials:sync` - synchronizes your local credentials.json file and your credentials that Expo has stored on our servers
 
-### Configure Android project
+### Configuring Android
 
 You will be guided through generating or providing your own keystore. For the sake of simplicity in this tutorial, select `Generate new keystore` and hit `ENTER`.
 
@@ -72,13 +72,13 @@ Next, Expo CLI will auto-configure you Gradle project so we could build it on ou
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/05-configure-gradle.png" /></center>
 
-### Configure iOS project
+### Configuring iOS
 
 First, you'll be asked which bundle identifier to use. Choose the one defined in `app.json`:
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/07-choose-bundle-id.png" /></center>
 
-Next, you'll be guided through generating the app's credentials and configuring your iOS project, then you'll be offered to commit the changes.
+Next, you'll be guided through generating the app's credentials and configuring your iOS project, then you'll be asked to commit the changes.
 
 **Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
 
@@ -98,7 +98,7 @@ Once the build completes you can download the app binary by either visiting the 
 
 ## Building for iOS
 
-Run `expo eas:build --platform ios` and you'll be asked to login to Apple Developer Portal and choose your team for the iOS project. Then you'll be provided with the URL to the build logs page.
+Run `expo eas:build --platform ios` and you'll be asked to login to the Apple Developer Portal and choose your team for the iOS project. Then you'll be provided with the URL to the build logs page.
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/14-ios-build-completed-cli.png" /></center>
 
