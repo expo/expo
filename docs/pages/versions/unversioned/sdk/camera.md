@@ -207,6 +207,10 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 You can read more about each stabilization type [here](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
 
+### `poster`
+
+**Web only** **(_string_)** A URL for an image to be shown while the camera is loading.
+
 ## Methods
 
 To use methods that Camera exposes one has to create a component `ref` and invoke them using it.

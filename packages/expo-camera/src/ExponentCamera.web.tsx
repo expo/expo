@@ -24,7 +24,7 @@ export interface ExponentCameraRef {
 
 const ExponentCamera = React.forwardRef(
   (
-    { type, pictureSize, ...props }: CameraNativeProps & { children?: React.ReactNode },
+    { type, pictureSize, poster, ...props }: CameraNativeProps & { children?: React.ReactNode },
     ref: React.Ref<ExponentCameraRef>
   ) => {
     const video = React.useRef<HTMLVideoElement | null>(null);
@@ -125,6 +125,7 @@ const ExponentCamera = React.forwardRef(
           autoPlay
           playsInline
           muted={isMuted}
+          poster={poster}
           // webkitPlaysinline
           pointerEvents={props.pointerEvents}
           ref={video}
@@ -144,6 +145,7 @@ const Video = React.forwardRef(
       autoPlay?: boolean;
       playsInline?: boolean;
       muted?: boolean;
+      poster?: string;
     },
     ref: React.Ref<HTMLVideoElement>
   ) => createElement('video', { ...props, ref })
