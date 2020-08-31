@@ -28,7 +28,7 @@ In managed apps, the permissions to pick images, from camera ([`Permissions.CAME
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { Button, Image, View } from 'react-native';
+import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 
@@ -37,7 +37,7 @@ export default function ImagePickerExample() {
 
   useEffect(() => {
     (async () => {
-      if (Constants.platform.ios) {
+      if (Platform.OS !== 'web') {
         const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
         if (status !== 'granted') {
           alert('Sorry, we need camera roll permissions to make this work!');
