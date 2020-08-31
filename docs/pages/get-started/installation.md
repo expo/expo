@@ -32,7 +32,7 @@ The best way to get started with universal React is by using `expo-cli`, alterna
 
 ## 2. Mobile app: Expo client for iOS and Android
 
-The fastest way to run your project is with the Expo client app on a real iOS or Android device. Develop and test your projects on a physical device with the [Expo client app](https://expo.io/tools). When a project is `start`ed with Expo CLI, it can be opened in the Expo client.
+The fastest way to get up and running is to use the Expo client app on your iOS or Android device. Expo client allows you to open up apps that are being served through Expo CLI.
 
 - 🤖 [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater.
 - 🍎 [iOS App Store](https://itunes.com/apps/exponent) - iOS 10 and greater.
