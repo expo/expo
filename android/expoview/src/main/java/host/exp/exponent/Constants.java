@@ -24,6 +24,8 @@ public class Constants {
     public String RELEASE_CHANNEL;
     public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
     public boolean ARE_REMOTE_UPDATES_ENABLED;
+    public boolean UPDATES_CHECK_AUTOMATICALLY;
+    public int UPDATES_FALLBACK_TO_CACHE_TIMEOUT;
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
@@ -50,6 +52,8 @@ public class Constants {
   public static String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
   public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
+  public static boolean UPDATES_CHECK_AUTOMATICALLY = true;
+  public static int UPDATES_FALLBACK_TO_CACHE_TIMEOUT = 0;
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
   public static boolean ANALYTICS_ENABLED;
@@ -104,6 +108,8 @@ public class Constants {
       RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
       SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
       ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
+      UPDATES_CHECK_AUTOMATICALLY = appConstants.UPDATES_CHECK_AUTOMATICALLY;
+      UPDATES_FALLBACK_TO_CACHE_TIMEOUT = appConstants.UPDATES_FALLBACK_TO_CACHE_TIMEOUT;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
       FCM_ENABLED = appConstants.FCM_ENABLED;
       ANALYTICS_ENABLED = !isStandaloneApp();
