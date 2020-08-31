@@ -481,7 +481,6 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 
 - Publish a new version of `turtle-cli` [following this guide](https://github.com/expo/turtle/blob/master/CONTRIBUTING.md#publishing-a-release).
 - Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
-- Promote the `expokit` package published in step 5.1 to `latest` on NPM.
 
 ## 6.3. Deploy new docs
 
