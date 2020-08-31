@@ -6,7 +6,7 @@ import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 Developing Expo apps locally requires a CLI, and a client app or web browser to run the project. You can also get started in the browser with [Snack](https://snack.expo.io/).
 
-## 1. Local development tool: Expo CLI
+## 1. Expo CLI
 
 Expo CLI is a tool for developing apps and websites with React. Expo CLI also has a web-based GUI that pops up in your web browser when you start your project &mdash; this can be used in favor of the CLI if you're not yet comfortable using a terminal or just prefer GUIs, both have similar capabilities.
 
