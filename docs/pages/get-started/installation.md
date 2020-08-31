@@ -45,7 +45,7 @@ Projects can also be run on a computer with the [iOS Simulator (MacOS only)](../
 
 <TerminalBlock cmd={['# Start and open the project on all devices', 'expo start --ios --android --web']} />
 
-> 🧐 Apple uses the word "simulator" for their iOS emulator and Google uses the word "emulator", these perform the same function conceptually and are different in name alone.
+> 🧐 Apple uses the word "simulator" for their iOS emulator and Google uses the word "emulator" &mdash; [learn more about why these names are different](https://stackoverflow.com/a/4544605/659988), if you are curious.
 
 ## Up next
 
