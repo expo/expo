@@ -88,13 +88,9 @@ export class Package {
   }
 
   get podspecName(): string | null {
-    if (!this.unimoduleJson) {
-      return null;
-    }
-
     const iosConfig = {
       subdirectory: 'ios',
-      ...('ios' in this.unimoduleJson ? this.unimoduleJson.ios : {}),
+      ...(this.unimoduleJson?.ios ?? {}),
     };
 
     // 'ios.podName' is actually not used anywhere in our unimodules, but let's have the same logic as react-native-unimodules script.
