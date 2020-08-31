@@ -49,4 +49,4 @@ Projects can also be run on a computer with the [iOS Simulator (MacOS only)](../
 
 ## Up next
 
-Now that `expo-cli`, and the Expo client are installed, [let's create a new app and write some code](../../get-started/create-a-new-app/).
+Now that `expo-cli` and the Expo client are installed, [let's create a new app and write some code](../../get-started/create-a-new-app/).
