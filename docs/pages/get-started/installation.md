@@ -24,7 +24,7 @@ The best way to get started with universal React is by using `expo-cli`, alterna
 
 > 😳 **Need help?** Try searching the [forums](https://forums.expo.io) &mdash; which are a great resource for troubleshooting.
 
-<TerminalBlock cmd={['# Start the dev server', 'expo start']} />
+<TerminalBlock cmd={['# Start the development server', 'expo start']} />
 
 - Pressing `i` will open in the [iOS Simulator](../../workflow/ios-simulator/).
 - Pressing `a` will open in the [Android Emulator](../../workflow/android-studio-emulator/).
