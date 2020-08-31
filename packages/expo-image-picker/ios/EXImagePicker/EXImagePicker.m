@@ -174,7 +174,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     if (@available(iOS 11.0, *)) {
       self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
     }
-    self.picker.videoQuality = self.options[@"videoQuality"];
+    self.picker.videoQuality = [self importVideoQualityMap:self.options[@"videoQuality"]];
 
     NSTimeInterval videoMaxDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
     
@@ -608,6 +608,24 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   }
   
   return presetsMap[preset] ?: AVAssetExportPresetPassthrough;
+}
+
+
+- (NSString *)importVideoQualityMap:(NSNumber *)quality;
+{
+  static NSDictionary* videoQualityMap = nil;
+  if (!videoQualityMap) {
+    videoQualityMap = @{
+        @0: UIImagePickerControllerQualityTypeHigh,
+        @1: UIImagePickerControllerQualityTypeMedium,
+        @2: UIImagePickerControllerQualityTypeLow,
+        @3: UIImagePickerControllerQualityType640x480,
+        @4: UIImagePickerControllerQualityTypeIFrame1280x720,
+        @5: UIImagePickerControllerQualityTypeIFrame960x540,
+    };
+  }
+  
+  return videoQualityMap[quality] ?: UIImagePickerControllerQualityTypeHigh;
 }
 
 @end
