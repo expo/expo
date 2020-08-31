@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI39_0_0/Expo/EXSplashScreen/ABI39_0_0EXSplashScreen/ABI39_0_0EXSplashScreenController.h

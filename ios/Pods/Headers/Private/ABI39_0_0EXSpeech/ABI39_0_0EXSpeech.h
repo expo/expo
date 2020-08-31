@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI39_0_0/Expo/EXSpeech/ABI39_0_0EXSpeech/ABI39_0_0EXSpeech.h

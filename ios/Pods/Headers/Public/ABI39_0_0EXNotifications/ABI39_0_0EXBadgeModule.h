@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI39_0_0/Expo/EXNotifications/ABI39_0_0EXNotifications/ABI39_0_0EXBadgeModule.h
