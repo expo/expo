@@ -113,6 +113,10 @@ export class Package {
     return path.basename(podspecPaths[0], '.podspec');
   }
 
+  get iosSubdirectory(): string {
+    return this.unimoduleJson?.ios?.subdirectory ?? 'ios';
+  }
+
   get androidSubdirectory(): string {
     return this.unimoduleJson?.android?.subdirectory ?? 'android';
   }
@@ -138,7 +142,14 @@ export class Package {
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    return this.unimoduleJson?.platforms?.includes(platform) ?? false;
+    if (this.unimoduleJson) {
+      return this.unimoduleJson.platforms?.includes(platform) ?? false;
+    } else if (platform === 'android') {
+      return fs.existsSync(path.join(this.path, this.androidSubdirectory));
+    } else if (platform === 'ios') {
+      return fs.existsSync(path.join(this.path, this.iosSubdirectory));
+    }
+    return false;
   }
 
   isIncludedInExpoClientOnPlatform(platform: 'ios' | 'android'): boolean {
