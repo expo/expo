@@ -98,7 +98,11 @@ declare class GoogleAuthRequest extends AuthRequest {
  * @param config
  * @param redirectUriOptions
  */
-export declare function useIdTokenAuthRequest(config: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export declare function useIdTokenAuthRequest(config: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [
+    GoogleAuthRequest | null,
+    AuthSessionResult | null,
+    (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+];
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -109,5 +113,9 @@ export declare function useIdTokenAuthRequest(config: Partial<GoogleAuthRequestC
  * @param config
  * @param redirectUriOptions
  */
-export declare function useAuthRequest(config?: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [GoogleAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export declare function useAuthRequest(config?: Partial<GoogleAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [
+    GoogleAuthRequest | null,
+    AuthSessionResult | null,
+    (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+];
 export {};

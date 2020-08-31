@@ -26,5 +26,9 @@ declare class FacebookAuthRequest extends AuthRequest {
  * @param config
  * @param discovery
  */
-export declare function useAuthRequest(config?: Partial<FacebookAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [FacebookAuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export declare function useAuthRequest(config?: Partial<FacebookAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [
+    FacebookAuthRequest | null,
+    AuthSessionResult | null,
+    (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+];
 export {};
