@@ -272,21 +272,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_startLoaderTask
 {
+  if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
+    [self _launchWithNoDatabaseAndError:nil];
+    return;
+  }
+
+  BOOL shouldCheckOnLaunch;
+  NSNumber *launchWaitMs;
+  if (_shouldUseCacheOnly) {
+    shouldCheckOnLaunch = NO;
+    launchWaitMs = @(0);
+  } else {
+    if ([EXEnvironment sharedEnvironment].isDetached) {
+      shouldCheckOnLaunch = [EXEnvironment sharedEnvironment].updatesCheckAutomatically;
+      launchWaitMs = [EXEnvironment sharedEnvironment].updatesFallbackToCacheTimeout;
+    } else {
+      shouldCheckOnLaunch = YES;
+      launchWaitMs = @(60000);
+    }
+  }
+
   _config = [EXUpdatesConfig configWithDictionary:@{
     @"EXUpdatesURL": [[self class] _httpUrlFromManifestUrl:_manifestUrl].absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
     @"EXUpdatesScopeKey": _manifestUrl.absoluteString,
     @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
-    @"EXUpdatesLaunchWaitMs": _shouldUseCacheOnly ? @(0) : @(60000),
-    @"EXUpdatesCheckOnLaunch": _shouldUseCacheOnly ? @"NEVER" : @"ALWAYS",
+    @"EXUpdatesLaunchWaitMs": launchWaitMs,
+    @"EXUpdatesCheckOnLaunch": shouldCheckOnLaunch ? @"ALWAYS" : @"NEVER",
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
-
-  if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
-    [self _launchWithNoDatabaseAndError:nil];
-    return;
-  }
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 
