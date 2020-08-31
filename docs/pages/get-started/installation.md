@@ -20,6 +20,8 @@ Expo CLI is a tool for developing apps and websites with React. Expo CLI also ha
 
 <TerminalBlock cmd={['# Install the command line tools', 'npm install --global expo-cli','', '# Create a new project', 'expo init my-project', 'cd my-project']} />
 
+Verify that the installation was successful by running `expo whoami`. You're not logged in yet, so you will see "Not logged in". You can create an account by running `expo register` if you like, or if you have one already run `expo login`, but you also don't need an account to get started.
+
 > 😳 **Need help?** Try searching the [forums](https://forums.expo.io) &mdash; which are a great resource for troubleshooting.
 
 <TerminalBlock cmd={['# Start the development server', 'expo start']} />
