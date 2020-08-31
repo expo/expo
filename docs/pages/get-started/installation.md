@@ -18,8 +18,6 @@ Expo CLI is a tool for developing apps and websites with React. Expo CLI also ha
 
 ### Installing Expo CLI
 
-The best way to get started with universal React is by using `expo-cli`.
-
 <TerminalBlock cmd={['# Install the command line tools', 'npm install --global expo-cli','', '# Create a new project', 'expo init my-project', 'cd my-project']} />
 
 > 😳 **Need help?** Try searching the [forums](https://forums.expo.io) &mdash; which are a great resource for troubleshooting.
