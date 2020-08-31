@@ -208,7 +208,10 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
   protected void hideLoadingView() {
     if (mLoadingView != null) {
-      ((ViewGroup) mLoadingView.getParent()).removeView(mLoadingView);
+      ViewGroup viewGroup = (ViewGroup) mLoadingView.getParent();
+      if (viewGroup != null) {
+        viewGroup.removeView(mLoadingView);
+      }
       mLoadingView.hide();
       mLoadingView = null;
     }
