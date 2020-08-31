@@ -12,7 +12,7 @@ Expo CLI is a tool for developing apps and websites with React. Expo CLI also ha
 
 ### Requirements
 
-- [Node.js 12](https://nodejs.org/en/) or greater
+- [Node.js LTS release](https://nodejs.org/en/) or greater
 - [Git](https://git-scm.com) for version control
 - [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) for MacOS users
 
