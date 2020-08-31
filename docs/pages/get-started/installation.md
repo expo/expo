@@ -4,11 +4,11 @@ title: Installation
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-Developing Expo apps locally requires a CLI, and a client app or web browser to run the project. You can also get started in the browser with [Snack](https://snack.expo.io/).
+There are two tools that you need to develop apps with Expo: a command line app called Expo CLI to initialize and serve your project and a mobile client app called Expo client to open it on iOS and Android. Any web browser will work for opening the project on the web.
 
 ## 1. Expo CLI
 
-Expo CLI is a tool for developing apps and websites with React. Expo CLI also has a web-based GUI that pops up in your web browser when you start your project &mdash; this can be used in favor of the CLI if you're not yet comfortable using a terminal or just prefer GUIs, both have similar capabilities.
+Expo CLI is a tool for developing apps and websites with React. Expo CLI also has a web-based GUI that pops up in your web browser when you start your project &mdash; you can use the GUI instead of the command line interface if you're not yet comfortable using a terminal or prefer GUIs, both have similar capabilities.
 
 ### Requirements
 
@@ -18,7 +18,7 @@ Expo CLI is a tool for developing apps and websites with React. Expo CLI also ha
 
 ### Installing Expo CLI
 
-The best way to get started with universal React is by using `expo-cli`, alternatively you can use [`create-react-native-app`](https://github.com/expo/create-react-native-app) for more templates.
+The best way to get started with universal React is by using `expo-cli`.
 
 <TerminalBlock cmd={['# Install the command line tools', 'npm install --global expo-cli','', '# Create a new project', 'expo init my-project', 'cd my-project']} />
 
@@ -41,7 +41,7 @@ When the Expo client is finished installing, open it up. If you created an accou
 
 ### Running the Expo client on your computer
 
-It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to do set this up, you can learn more about the [installing the iOS Simulator (macOS only)](../../workflow/ios-simulator/) and [installing an Android emulator](../../workflow/android-studio-emulator/). 
+It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to do set this up, you can learn more about the [installing the iOS Simulator (macOS only)](../../workflow/ios-simulator/) and [installing an Android emulator](../../workflow/android-studio-emulator/).
 
 <TerminalBlock cmd={['# Start and open the project on all devices', 'expo start --ios --android --web']} />
 
