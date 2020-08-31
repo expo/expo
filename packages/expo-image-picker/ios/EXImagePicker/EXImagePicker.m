@@ -41,7 +41,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
                             @"allowsEditing": @NO,
                             @"base64": @NO,
                             @"videoMaxDuration": @0,
-                            @"videoQuality": UIImagePickerControllerQualityTypeHigh
+                            @"videoQuality": @0
                             };
     self.shouldRestoreStatusBarVisibility = NO;
   }
@@ -174,7 +174,9 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     if (@available(iOS 11.0, *)) {
       self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
     }
-    self.picker.videoQuality = [self importVideoQualityMap:self.options[@"videoQuality"]];
+      
+    NSNumber* videoQuality = [self.options valueForKey:@"videoQuality"];
+    self.picker.videoQuality = [videoQuality intValue];
 
     NSTimeInterval videoMaxDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
     
@@ -608,24 +610,6 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   }
   
   return presetsMap[preset] ?: AVAssetExportPresetPassthrough;
-}
-
-
-- (NSString *)importVideoQualityMap:(NSNumber *)quality;
-{
-  static NSDictionary* videoQualityMap = nil;
-  if (!videoQualityMap) {
-    videoQualityMap = @{
-        @0: UIImagePickerControllerQualityTypeHigh,
-        @1: UIImagePickerControllerQualityTypeMedium,
-        @2: UIImagePickerControllerQualityTypeLow,
-        @3: UIImagePickerControllerQualityType640x480,
-        @4: UIImagePickerControllerQualityTypeIFrame1280x720,
-        @5: UIImagePickerControllerQualityTypeIFrame960x540,
-    };
-  }
-  
-  return videoQualityMap[quality] ?: UIImagePickerControllerQualityTypeHigh;
 }
 
 @end
