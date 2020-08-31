@@ -215,7 +215,7 @@ UM_EXPORT_METHOD_AS(addAssetsToAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
+  if (![self _checkIfAllPermissionsWereGranted:reject]) {
     return;
   }
   
@@ -234,7 +234,7 @@ UM_EXPORT_METHOD_AS(removeAssetsFromAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
+  if (![self _checkIfAllPermissionsWereGranted:reject]) {
     return;
   }
   
@@ -283,7 +283,7 @@ UM_EXPORT_METHOD_AS(getAlbumsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
+  if (![self _checkIfAllPermissionsWereGranted:reject]) {
     return;
   }
 
@@ -330,7 +330,7 @@ UM_EXPORT_METHOD_AS(getAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
+  if (![self _checkIfAllPermissionsWereGranted:reject]) {
     return;
   }
   
@@ -344,7 +344,7 @@ UM_EXPORT_METHOD_AS(createAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
+  if (![self _checkIfAllPermissionsWereGranted:reject]) {
     return;
   }
   
@@ -374,7 +374,10 @@ UM_EXPORT_METHOD_AS(deleteAlbumsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-
+  if (![self _checkIfAllPermissionsWereGranted:reject]) {
+    return;
+  }
+  
   PHFetchResult *collections = [EXMediaLibrary _getAlbumsById:albumIds];
   [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
     if (assetRemove) {
@@ -504,6 +507,10 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   }
   
   if (albumId) {
+    if (![self _checkIfAllPermissionsWereGranted:reject]) {
+      return;
+    }
+    
     collection = [EXMediaLibrary _getAlbumById:albumId];
     
     if (!collection) {
@@ -638,7 +645,6 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 
 
 # pragma mark - Internal methods
-
 
 + (PHFetchResult *)_getAllAssets
 {
@@ -1024,6 +1030,25 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
     return [NSURL URLWithString:[@"file://" stringByAppendingString:uri]];
   }
   return [NSURL URLWithString:uri];
+}
+
+- (BOOL)_checkIfAllPermissionsWereGranted:(UMPromiseRejectBlock)reject
+{
+#ifdef __IPHONE_14_0
+  NSDictionary *permissions = [_permissionsManager getPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class]];
+  if (![permissions[@"status"] isEqualToString:@"granted"]) {
+    reject(@"E_NO_PERMISSIONS", @"CAMERA_ROLL permission is required to do this operation.", nil);
+    return NO;
+  }
+  
+  if (![permissions[@"accessPrivileges"] isEqualToString:@"all"]) {
+    reject(@"E_NO_PERMISSIONS", @"Access to all photos is required to do this operation.", nil);
+    return NO;
+  }
+#else
+  return [self _checkPermissions:reject];
+#endif
+  return YES;
 }
 
 - (BOOL)_checkPermissions:(UMPromiseRejectBlock)reject
