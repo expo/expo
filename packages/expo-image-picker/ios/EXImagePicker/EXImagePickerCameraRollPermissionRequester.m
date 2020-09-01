@@ -17,12 +17,16 @@
   NSString *scope;
   
   PHAuthorizationStatus permissions;
+#ifdef __IPHONE_14_0
   if (@available(iOS 14, *)) {
     permissions = [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
   } else {
     permissions = [PHPhotoLibrary authorizationStatus];
   }
-  
+#else
+  permissions = [PHPhotoLibrary authorizationStatus];
+#endif
+
   switch (permissions) {
     case PHAuthorizationStatusAuthorized:
       status = UMPermissionStatusGranted;
@@ -59,11 +63,15 @@
     UM_STRONGIFY(self)
     resolve([self getPermissions]);
   };
+#ifdef __IPHONE_14_0
   if (@available(iOS 14, *)) {
     [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelReadWrite handler:handler];
   } else {
     [PHPhotoLibrary requestAuthorization:handler];
   }
+#else
+  [PHPhotoLibrary requestAuthorization:handler];
+#endif
 }
 
 @end
