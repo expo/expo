@@ -39,7 +39,7 @@ export type PackageDependency = {
 /**
  * Union with possible platform names.
  */
-export type Platform = 'ios' | 'android' | 'web';
+type Platform = 'ios' | 'android' | 'web';
 
 /**
  * Type representing `unimodule.json` structure.
@@ -141,9 +141,11 @@ export class Package {
     if (this.unimoduleJson) {
       return this.unimoduleJson.platforms?.includes(platform) ?? false;
     } else if (platform === 'android') {
-      return fs.existsSync(path.join(this.path, this.androidSubdirectory));
+      return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
     } else if (platform === 'ios') {
-      return fs.existsSync(path.join(this.path, this.iosSubdirectory));
+      return fs
+        .readdirSync(path.join(this.path, this.iosSubdirectory))
+        .some((path) => path.endsWith('.podspec'));
     }
     return false;
   }
