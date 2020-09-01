@@ -174,7 +174,8 @@ export async function hasStartedGeofencingAsync(taskName) {
     return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
 /**
- * Deprecated as of SDK39
+ * @deprecated
+ * Deprecated as of SDK39 in favour of `setGoogleApiKey`.
  */
 export function setApiKey(apiKey) {
     console.warn("Location's method `setApiKey` is deprecated in favor of `setGoogleApiKey`.");

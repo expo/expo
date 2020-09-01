@@ -315,7 +315,7 @@ export function openEventInCalendar(id) {
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
 /**
- * @deprecated Use requestCalendarPermissionsAsync()
+ * @deprecated Use `requestCalendarPermissionsAsync()` instead
  */
 export async function requestPermissionsAsync() {
     console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');

@@ -14,6 +14,7 @@ export declare class Sound implements Playback {
     _eventEmitter: EventEmitter;
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
+    /** @deprecated Use `Sound.createAsync()` instead */
     static create: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{
         sound: Sound;
         status: AVPlaybackStatus;
