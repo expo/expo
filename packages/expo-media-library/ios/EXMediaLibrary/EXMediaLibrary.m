@@ -1042,7 +1042,7 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   }
   
   if (![permissions[@"accessPrivileges"] isEqualToString:@"all"]) {
-    reject(@"E_NO_PERMISSIONS", @"Access to all photos is required to do this operation.", nil);
+    reject(@"ERR_NO_ENOUGH_PERMISSIONS", @"Access to all photos is required to do this operation.", nil);
     return NO;
   }
 #else

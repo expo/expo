@@ -1,10 +1,10 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXMediaLibraryCameraRollRequester.h>
+#import <EXImagePicker/EXImagePickerCameraRollPermissionRequester.h>
 
 #import <Photos/Photos.h>
 
-@implementation EXMediaLibraryCameraRollRequester
+@implementation EXImagePickerCameraRollPermissionRequester
 
 + (NSString *)permissionType
 {
