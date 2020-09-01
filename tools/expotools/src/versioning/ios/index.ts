@@ -56,7 +56,7 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     // protect contents of EX_UNVERSIONED macro
     let unversionedCaptures: string[] = [];
     await _transformFileContentsAsync(filename, (fileString) => {
-      let pattern = /EX_UNVERSIONED\((.*)\)/g;
+      let pattern = /EX_UNVERSIONED\((.*?)\)/g;
       let match = pattern.exec(fileString);
       while (match != null) {
         unversionedCaptures.push(match[1]);
