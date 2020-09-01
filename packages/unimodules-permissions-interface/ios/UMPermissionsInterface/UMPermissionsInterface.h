@@ -24,8 +24,6 @@ typedef enum UMPermissionStatus {
 
 - (void)registerRequesters:(NSArray<id<UMPermissionsRequester>> *)newRequesters;
 
-- (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass;
-
 - (void)getPermissionUsingRequesterClass:(Class)requesterClass
                                  resolve:(UMPromiseResolveBlock)resolve
                                   reject:(UMPromiseRejectBlock)reject;
