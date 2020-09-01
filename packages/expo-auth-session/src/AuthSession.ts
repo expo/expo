@@ -99,7 +99,7 @@ export function getDefaultReturnUrl(): string {
 }
 
 /**
- * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
  * @param path
  */

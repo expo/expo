@@ -365,6 +365,7 @@ export class Recording {
     return this._uri;
   }
 
+  /** @deprecated Use `createNewLoadedSoundAsync()` instead */
   async createNewLoadedSound(
     initialStatus: AVPlaybackStatusToSet = {},
     onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null
