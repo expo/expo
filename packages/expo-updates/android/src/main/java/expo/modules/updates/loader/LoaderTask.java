@@ -310,7 +310,7 @@ public class LoaderTask {
 
   private void runReaper() {
     AsyncTask.execute(() -> {
-      if (mLauncher.getLaunchedUpdate() != null) {
+      if (mLauncher != null && mLauncher.getLaunchedUpdate() != null) {
         UpdatesDatabase database = mDatabaseHolder.getDatabase();
         Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mLauncher.getLaunchedUpdate(), mSelectionPolicy);
         mDatabaseHolder.releaseDatabase();
