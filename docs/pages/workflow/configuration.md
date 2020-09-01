@@ -103,7 +103,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
 There are two different types of configs: static (`app.config.json`, `app.json`), and dynamic (`app.config.js`, `app.config.ts`). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
 
-1. The static config are read if `app.config.json` exists (falls back to `app.json`). If no static config exists, then default values are inferred from the `package.json` and your dependencies.
+1. The static config is read if `app.config.json` exists (falls back to `app.json`). If no static config exists, then default values are inferred from the `package.json` and your dependencies.
 2. The dynamic config are read if either `app.config.ts` or `app.config.js` exist. If both exist, then the TypeScript config is used.
 3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values.
 4. The return value from the dynamic config is used as the final config. It cannot have any promises.
