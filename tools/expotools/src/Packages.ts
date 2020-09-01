@@ -39,7 +39,7 @@ export type PackageDependency = {
 /**
  * Union with possible platform names.
  */
-export type Platform = 'ios' | 'android' | 'web';
+type Platform = 'ios' | 'android' | 'web';
 
 /**
  * Type representing `unimodule.json` structure.
