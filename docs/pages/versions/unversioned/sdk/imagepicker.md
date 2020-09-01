@@ -188,7 +188,8 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
     - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes. This limit is applied automatically, if `0` or no value is specified.
     - **On Android**, effect of this option depends on support of installed camera app.
     - **On Web** this option has no effect - the limit is browser-dependant.
-  - **videoExportPreset (_[ImagePicker.VideoExportPreset](#imagepickervideoexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.VideoExportPreset.Passthrough`.
+  - **videoExportPreset (_[ImagePicker.VideoExportPreset](#imagepickervideoexportpreset)_)** -- **Available on iOS 11+ only, but Deprecated.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.VideoExportPreset.Passthrough`.
+  - **videoQuality (\_[ImagePicker.UIImagePickerControllerQualityType](#imagepickeruiimagepickercontrollerqualitytype)\_)** -- **iOS only**. Specify the quality of recorded videos. Defaults to `ImagePicker.UIImagePickerControllerQualityType.High`, which is the highest available for the device.
 
 #### Returns
 
@@ -238,6 +239,17 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 | `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
 | `VideoExportPreset.HEVC_1920x1080` | 9     | 1920 x 1080           | HEVC                        | AAC                         |
 | `VideoExportPreset.HEVC_3840x2160` | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+
+### `ImagePicker.UIImagePickerControllerType`
+
+| Preset                                       | Value | Resolution            |
+| -------------------------------------------- | ----- | --------------------- |
+| `UIImagePickerControllerType.High`           | 0     | Highest available     |
+| `UIImagePickerControllerType.Medium`         | 1     | Depends on the device |
+| `UIImagePickerControllerType.Low`            | 2     | Depends on the device |
+| `UIImagePickerControllerType.VGA640x480`     | 3     | 640 x 480             |
+| `UIImagePickerControllerType.IFrame1280x720` | 4     | 1280 x 720            |
+| `UIImagePickerControllerType.IFrame960x540`  | 5     | 960 x 540             |
 
 ## Types
 
