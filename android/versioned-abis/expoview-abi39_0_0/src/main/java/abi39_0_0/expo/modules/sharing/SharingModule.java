@@ -122,7 +122,8 @@ public class SharingModule extends ExportedModule implements ActivityEventListen
 
   protected Intent createSharingIntent(Uri uri, String mimeType) {
     Intent intent = new Intent(Intent.ACTION_SEND);
-    intent.setDataAndTypeAndNormalize(uri, mimeType);
+    intent.putExtra(Intent.EXTRA_STREAM, uri);
+    intent.setTypeAndNormalize(mimeType);
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     return intent;
   }
