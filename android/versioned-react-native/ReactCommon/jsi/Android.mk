@@ -15,7 +15,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS := -fexceptions -frtti -O3
-LOCAL_SHARED_LIBRARIES := libfolly_json_abi38_0_0 glog_abi38_0_0
+LOCAL_SHARED_LIBRARIES := libfolly_json_abi39_0_0 glog_abi39_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -30,7 +30,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS := -fexceptions -frtti -O3
-LOCAL_SHARED_LIBRARIES := libfolly_json_abi38_0_0 libjsc glog_abi38_0_0
+LOCAL_SHARED_LIBRARIES := libfolly_json_abi39_0_0 libjsc glog_abi39_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 

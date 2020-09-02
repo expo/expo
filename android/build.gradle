@@ -39,6 +39,9 @@ allprojects {
     }
     // For old expoviews to work
     maven {
+      url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
+    }
+    maven {
       url "$rootDir/versioned-abis/expoview-abi38_0_0/maven"
     }
     maven {
@@ -49,10 +52,6 @@ allprojects {
     }
     maven {
       url "$rootDir/versioned-abis/maven"
-    }
-    // For detach
-    maven {
-      url "$rootDir/../node_modules/expokit/maven"
     }
     google()
     jcenter()

@@ -43,7 +43,7 @@ export interface TaskManagerTask {
     options: any;
 }
 /**
- * @deprecated in favor of TaskManagerTask.
+ * @deprecated Use `TaskManagerTask` instead.
  */
 export interface RegisteredTask extends TaskManagerTask {
 }

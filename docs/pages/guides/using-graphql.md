@@ -324,9 +324,9 @@ class CreatePage extends React.Component {
             disabled={!this.state.text || !this.state.title}
             type="submit"
             value="Create"
-          />{' '}
+          />
           <a className="f6 pointer" onClick={this.props.history.goBack}>
-            or cancel
+            {` or cancel`}
           </a>
         </form>
       </div>

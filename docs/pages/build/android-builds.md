@@ -56,7 +56,7 @@ Your application's keystore should be kept private. **Under no circumstances sho
 
 ### Configuring Gradle
 
-Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Because we're building the project on a remote server we had to come up with a way of providing Gradle with the credentials which are not checked in to the repository. When running `expo eas:build --platform android`, we're writing the `android/app/eas-build.gradle` file with the following contents:
+Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Because we're building the project on a remote server we had to come up with a way of providing Gradle with the credentials which are not checked in to the repository. When running `expo eas:build:init`, we're writing the `android/app/eas-build.gradle` file with the following contents:
 
 ```groovy
 android {
@@ -98,7 +98,7 @@ project.afterEvaluate {
           storeFile rootProject.file("../" + credentials.android.keystore.keystorePath)
           storePassword credentials.android.keystore.keystorePassword
           keyAlias credentials.android.keystore.keyAlias
-          keyPassword credentials.android.keystore.keyPassword /* @end */ 
+          keyPassword credentials.android.keystore.keyPassword /* @end */
         } catch (Exception e) {
           println("An error occurred while parsing 'credentials.json': " + e.message)
         }

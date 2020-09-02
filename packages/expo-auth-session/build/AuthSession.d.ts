@@ -7,7 +7,7 @@ export declare function startAsync(options: AuthSessionOptions): Promise<AuthSes
 export declare function dismiss(): void;
 export declare function getDefaultReturnUrl(): string;
 /**
- * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
  * @param path
  */

@@ -7,6 +7,7 @@ import readline from 'readline';
 
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
+import * as ProjectVersions from '../ProjectVersions';
 
 type ActionOptions = {
   sdkVersion: string;
@@ -90,7 +91,7 @@ async function _getSuggestedPackagesToBuild(packages: Package[]): Promise<string
   for (const pkg of packages) {
     const isUpToDate = await _isPackageUpToDate(
       pkg.sourceDir,
-      path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', pkg.buildDirRelative)
+      path.join(EXPO_ROOT_DIR, 'android', 'maven', pkg.buildDirRelative)
     );
     if (!isUpToDate) {
       packagesToBuild.push(pkg.name);
@@ -280,10 +281,6 @@ async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  if (!options.sdkVersion) {
-    throw new Error('Must run with `--sdkVersion SDK_VERSION`');
-  }
-
   const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
 
   // packages must stay in this order --
@@ -380,12 +377,21 @@ async function _exitHandler(): Promise<void> {
 export default (program: any) => {
   program
     .command('android-build-packages')
-    .alias('abp', 'update-exponent-view')
-    .description('Builds all Android AAR packages for ExpoKit')
-    .option('-s, --sdkVersion [string]', 'SDK version')
+    .alias('abp')
+    .description('Builds all Android AAR packages for Turtle')
+    .option('-s, --sdkVersion [string]', '[optional] SDK version')
     .option(
       '-p, --packages [string]',
       '[optional] packages to build. May be `all`, `suggested`, or a comma-separate list of package names.'
     )
-    .asyncAction(action);
+    .asyncAction(async (options: Partial<ActionOptions>) => {
+      const sdkVersion =
+        options.sdkVersion ?? (await ProjectVersions.getNewestSDKVersionAsync('android'));
+
+      if (!sdkVersion) {
+        throw new Error('Could not infer SDK version, please run with `--sdkVersion SDK_VERSION`');
+      }
+
+      await action({ sdkVersion, ...options });
+    });
 };

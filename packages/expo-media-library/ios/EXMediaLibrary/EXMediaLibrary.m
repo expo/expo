@@ -215,16 +215,14 @@ UM_EXPORT_METHOD_AS(addAssetsToAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
-    return;
-  }
-  
-  [EXMediaLibrary _addAssets:assetIds toAlbum:albumId withCallback:^(BOOL success, NSError *error) {
-    if (error) {
-      reject(@"E_ADD_TO_ALBUM_FAILED", @"Couldn\'t add assets to album", error);
-    } else {
-      resolve(@(success));
-    }
+  [self _runIfAllPermissionsWereGranted:reject block:^{
+    [EXMediaLibrary _addAssets:assetIds toAlbum:albumId withCallback:^(BOOL success, NSError *error) {
+      if (error) {
+        reject(@"E_ADD_TO_ALBUM_FAILED", @"Couldn\'t add assets to album", error);
+      } else {
+        resolve(@(success));
+      }
+    }];
   }];
 }
 
@@ -234,25 +232,23 @@ UM_EXPORT_METHOD_AS(removeAssetsFromAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
-    return;
-  }
-  
-  [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-    PHAssetCollection *collection = [EXMediaLibrary _getAlbumById:albumId];
-    PHFetchResult *assets = [EXMediaLibrary _getAssetsByIds:assetIds];
-    
-    PHFetchResult *collectionAssets = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
-    PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection assets:collectionAssets];
-    
-    [albumChangeRequest removeAssets:assets];
-    
-  } completionHandler:^(BOOL success, NSError *error) {
-    if (error) {
-      reject(@"E_REMOVE_FROM_ALBUM_FAILED", @"Couldn\'t remove assets from album", error);
-    } else {
-      resolve(@(success));
-    }
+  [self _runIfAllPermissionsWereGranted:reject block:^{
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+      PHAssetCollection *collection = [EXMediaLibrary _getAlbumById:albumId];
+      PHFetchResult *assets = [EXMediaLibrary _getAssetsByIds:assetIds];
+      
+      PHFetchResult *collectionAssets = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+      PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection assets:collectionAssets];
+      
+      [albumChangeRequest removeAssets:assets];
+      
+    } completionHandler:^(BOOL success, NSError *error) {
+      if (error) {
+        reject(@"E_REMOVE_FROM_ALBUM_FAILED", @"Couldn\'t remove assets from album", error);
+      } else {
+        resolve(@(success));
+      }
+    }];
   }];
 }
 
@@ -283,28 +279,26 @@ UM_EXPORT_METHOD_AS(getAlbumsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
-    return;
-  }
+  [self _runIfAllPermissionsWereGranted:reject block:^{
+    NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
+    
+    PHFetchOptions *fetchOptions = [PHFetchOptions new];
+    fetchOptions.includeHiddenAssets = NO;
+    fetchOptions.includeAllBurstAssets = NO;
+    
+    PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
+    [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
 
-  NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
-  
-  PHFetchOptions *fetchOptions = [PHFetchOptions new];
-  fetchOptions.includeHiddenAssets = NO;
-  fetchOptions.includeAllBurstAssets = NO;
-  
-  PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
-  [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
-
-  if ([options[@"includeSmartAlbums"] boolValue]) {
-    PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
-    [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum
-                                             subtype:PHAssetCollectionSubtypeAlbumRegular
-                                             options:fetchOptions];
-    [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:smartAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
-  }
-  
-  resolve(albums);
+    if ([options[@"includeSmartAlbums"] boolValue]) {
+      PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
+      [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum
+                                               subtype:PHAssetCollectionSubtypeAlbumRegular
+                                               options:fetchOptions];
+      [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:smartAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
+    }
+    
+    resolve(albums);
+  }];
 }
 
 UM_EXPORT_METHOD_AS(getMomentsAsync,
@@ -330,12 +324,10 @@ UM_EXPORT_METHOD_AS(getAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
-    return;
-  }
-  
-  PHAssetCollection *collection = [EXMediaLibrary _getAlbumWithTitle:title];
-  resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
+  [self _runIfAllPermissionsWereGranted:reject block:^{
+    PHAssetCollection *collection = [EXMediaLibrary _getAlbumWithTitle:title];
+    resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
+  }];
 }
 
 UM_EXPORT_METHOD_AS(createAlbumAsync,
@@ -344,26 +336,24 @@ UM_EXPORT_METHOD_AS(createAlbumAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkPermissions:reject]) {
-    return;
-  }
-  
-  [EXMediaLibrary _createAlbumWithTitle:title completion:^(PHAssetCollection *collection, NSError *error) {
-    if (collection) {
-      if (assetId) {
-        [EXMediaLibrary _addAssets:@[assetId] toAlbum:collection.localIdentifier withCallback:^(BOOL success, NSError *error) {
-          if (success) {
-            resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
-          } else {
-            reject(@"E_ALBUM_CANT_ADD_ASSET", @"Unable to add asset to the new album", error);
-          }
-        }];
+  [self _runIfAllPermissionsWereGranted:reject block:^{
+    [EXMediaLibrary _createAlbumWithTitle:title completion:^(PHAssetCollection *collection, NSError *error) {
+      if (collection) {
+        if (assetId) {
+          [EXMediaLibrary _addAssets:@[assetId] toAlbum:collection.localIdentifier withCallback:^(BOOL success, NSError *error) {
+            if (success) {
+              resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
+            } else {
+              reject(@"E_ALBUM_CANT_ADD_ASSET", @"Unable to add asset to the new album", error);
+            }
+          }];
+        } else {
+          resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
+        }
       } else {
-        resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
+        reject(@"E_ALBUM_CREATE_FAILED", @"Could not create album", error);
       }
-    } else {
-      reject(@"E_ALBUM_CREATE_FAILED", @"Could not create album", error);
-    }
+    }];
   }];
 }
 
@@ -374,22 +364,23 @@ UM_EXPORT_METHOD_AS(deleteAlbumsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-
-  PHFetchResult *collections = [EXMediaLibrary _getAlbumsById:albumIds];
-  [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-    if (assetRemove) {
-      for (PHAssetCollection *collection in collections) {
-        PHFetchResult *fetch = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
-        [PHAssetChangeRequest deleteAssets:fetch];
+  [self _runIfAllPermissionsWereGranted:reject block:^{
+    PHFetchResult *collections = [EXMediaLibrary _getAlbumsById:albumIds];
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+      if (assetRemove) {
+        for (PHAssetCollection *collection in collections) {
+          PHFetchResult *fetch = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+          [PHAssetChangeRequest deleteAssets:fetch];
+        }
       }
-    }
-    [PHAssetCollectionChangeRequest deleteAssetCollections:collections];
-  } completionHandler:^(BOOL success, NSError * _Nullable error) {
-    if (success == YES) {
-      resolve(@(success));
-    } else {
-      reject(@"E_ALBUM_DELETE_FAILED", @"Could not delete album", error);
-    }
+      [PHAssetCollectionChangeRequest deleteAssetCollections:collections];
+    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+      if (success == YES) {
+        resolve(@(success));
+      } else {
+        reject(@"E_ALBUM_DELETE_FAILED", @"Could not delete album", error);
+      }
+    }];
   }];
 }
   
@@ -477,23 +468,116 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
     return;
   }
   
-  PHFetchOptions *fetchOptions = [PHFetchOptions new];
-  NSMutableArray<NSPredicate *> *predicates = [NSMutableArray new];
-  NSMutableDictionary *response = [NSMutableDictionary new];
-  NSMutableArray<NSDictionary *> *assets = [NSMutableArray new];
-  
   // options
   NSString *after = options[@"after"];
   NSInteger first = [options[@"first"] integerValue] ?: 20;
   NSArray<NSString *> *mediaType = options[@"mediaType"];
   NSArray *sortBy = options[@"sortBy"];
-  NSString *albumId = options[@"album"];
   NSDate *createdAfter = [UMUtilities NSDate:options[@"createdAfter"]];
   NSDate *createdBefore = [UMUtilities NSDate:options[@"createdBefore"]];
+  NSString *albumId = options[@"album"];
+
+  if (albumId) {
+    [self _runIfAllPermissionsWereGranted:reject block:^{
+      PHAssetCollection *collection = [EXMediaLibrary _getAlbumById:albumId];
+      
+      if (!collection) {
+        reject(@"E_ALBUM_NOT_FOUND", @"Couldn't find album", nil);
+        return;
+      }
+      
+      [EXMediaLibrary _getAssetsWithAfter:after
+                                    first:first
+                                mediaType:mediaType
+                                   sortBy:sortBy
+                             createdAfter:createdAfter
+                            createdBefore:createdBefore
+                               collection:collection
+                                  resolve:resolve
+                                   reject:reject];
+    }];
+  } else {
+    [EXMediaLibrary _getAssetsWithAfter:after
+                                  first:first
+                              mediaType:mediaType
+                                 sortBy:sortBy
+                           createdAfter:createdAfter
+                          createdBefore:createdBefore
+                             collection:nil
+                                resolve:resolve
+                                 reject:reject];
+  }
+}
+
+# pragma mark - PHPhotoLibraryChangeObserver
+
+- (void)startObserving
+{
+  _allAssetsFetchResult = [EXMediaLibrary _getAllAssets];
+  [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+}
+
+- (void)stopObserving
+{
+  _allAssetsFetchResult = nil;
+  [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+}
+
+- (void)photoLibraryDidChange:(PHChange *)changeInstance
+{
+  if (changeInstance != nil && _allAssetsFetchResult != nil) {
+    PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_allAssetsFetchResult];
+    
+    if (changeDetails != nil) {
+      _allAssetsFetchResult = changeDetails.fetchResultAfterChanges;
+      
+      // PHPhotoLibraryChangeObserver is calling this method too often, so we need to filter out some calls before they are sent to JS.
+      // Ultimately, we emit an event only when something has been inserted or removed from the library.
+      if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
+        NSMutableArray *insertedAssets = [NSMutableArray new];
+        NSMutableArray *deletedAssets = [NSMutableArray new];
+        NSMutableArray *updatedAssets = [NSMutableArray new];
+        NSDictionary *body = @{
+                               @"insertedAssets": insertedAssets,
+                               @"deletedAssets": deletedAssets,
+                               @"updatedAssets": updatedAssets
+                               };
+        
+        for (PHAsset *asset in changeDetails.insertedObjects) {
+          [insertedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
+        }
+        for (PHAsset *asset in changeDetails.removedObjects) {
+          [deletedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
+        }
+        for (PHAsset *asset in changeDetails.changedObjects) {
+          [updatedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
+        }
+        
+        [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:body];
+      }
+    }
+  }
+}
+
+
+# pragma mark - Internal methods
+
++ (void)_getAssetsWithAfter:(NSString *)after
+                      first:(NSInteger)first
+                  mediaType:(NSArray<NSString *> *)mediaType
+                     sortBy:(NSArray *)sortBy
+               createdAfter:(NSDate *)createdAfter
+              createdBefore:(NSDate *)createdBefore
+                 collection:(PHAssetCollection *)collection
+                    resolve:(UMPromiseResolveBlock)resolve
+                     reject:(UMPromiseRejectBlock)reject
+{
+  PHFetchOptions *fetchOptions = [PHFetchOptions new];
+  NSMutableArray<NSPredicate *> *predicates = [NSMutableArray new];
+  NSMutableDictionary *response = [NSMutableDictionary new];
+  NSMutableArray<NSDictionary *> *assets = [NSMutableArray new];
   
-  PHAssetCollection *collection;
   PHAsset *cursor;
-  
   if (after) {
     cursor = [EXMediaLibrary _getAssetById:after];
     
@@ -502,16 +586,7 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
       return;
     }
   }
-  
-  if (albumId) {
-    collection = [EXMediaLibrary _getAlbumById:albumId];
-    
-    if (!collection) {
-      reject(@"E_ALBUM_NOT_FOUND", @"Couldn't find album", nil);
-      return;
-    }
-  }
-  
+
   if (mediaType && [mediaType count] > 0) {
     NSMutableArray<NSNumber *> *assetTypes = [EXMediaLibrary _convertMediaTypes:mediaType];
     
@@ -585,60 +660,6 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   
   resolve(response);
 }
-
-# pragma mark - PHPhotoLibraryChangeObserver
-
-- (void)startObserving
-{
-  _allAssetsFetchResult = [EXMediaLibrary _getAllAssets];
-  [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
-}
-
-- (void)stopObserving
-{
-  _allAssetsFetchResult = nil;
-  [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
-}
-
-- (void)photoLibraryDidChange:(PHChange *)changeInstance
-{
-  if (changeInstance != nil && _allAssetsFetchResult != nil) {
-    PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_allAssetsFetchResult];
-    
-    if (changeDetails != nil) {
-      _allAssetsFetchResult = changeDetails.fetchResultAfterChanges;
-      
-      // PHPhotoLibraryChangeObserver is calling this method too often, so we need to filter out some calls before they are sent to JS.
-      // Ultimately, we emit an event only when something has been inserted or removed from the library.
-      if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
-        NSMutableArray *insertedAssets = [NSMutableArray new];
-        NSMutableArray *deletedAssets = [NSMutableArray new];
-        NSMutableArray *updatedAssets = [NSMutableArray new];
-        NSDictionary *body = @{
-                               @"insertedAssets": insertedAssets,
-                               @"deletedAssets": deletedAssets,
-                               @"updatedAssets": updatedAssets
-                               };
-        
-        for (PHAsset *asset in changeDetails.insertedObjects) {
-          [insertedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
-        }
-        for (PHAsset *asset in changeDetails.removedObjects) {
-          [deletedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
-        }
-        for (PHAsset *asset in changeDetails.changedObjects) {
-          [updatedAssets addObject:[EXMediaLibrary _exportAsset:asset]];
-        }
-        
-        [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:body];
-      }
-    }
-  }
-}
-
-
-# pragma mark - Internal methods
-
 
 + (PHFetchResult *)_getAllAssets
 {
@@ -1024,6 +1045,27 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
     return [NSURL URLWithString:[@"file://" stringByAppendingString:uri]];
   }
   return [NSURL URLWithString:uri];
+}
+
+- (void)_runIfAllPermissionsWereGranted:(UMPromiseRejectBlock)reject block:(void (^)(void))block
+{
+  [_permissionsManager getPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class] resolve:^(id result) {
+    NSDictionary *permissions = (NSDictionary *)result;
+    
+    if (![permissions[@"status"] isEqualToString:@"granted"]) {
+      reject(@"E_NO_PERMISSIONS", @"CAMERA_ROLL permission is required to do this operation.", nil);
+      return;
+    }
+    
+#ifdef __IPHONE_14_0
+    if (![permissions[@"accessPrivileges"] isEqualToString:@"all"]) {
+      reject(@"ERR_NO_ENOUGH_PERMISSIONS", @"Access to all photos is required to do this operation.", nil);
+      return;
+    }
+#endif
+    
+    block();
+  } reject:reject];
 }
 
 - (BOOL)_checkPermissions:(UMPromiseRejectBlock)reject

@@ -4,4 +4,5 @@
 // - excludes some methods that are not exposed by our API.
 //
 // Original definitions by: TeamworkGuy2 <https://github.com/TeamworkGuy2>
+export {};
 //# sourceMappingURL=SQLite.types.js.map

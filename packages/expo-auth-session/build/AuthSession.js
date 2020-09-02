@@ -65,7 +65,7 @@ export function getDefaultReturnUrl() {
     return sessionUrlProvider.getDefaultReturnUrl();
 }
 /**
- * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
  * @param path
  */

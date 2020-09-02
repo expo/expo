@@ -89,6 +89,10 @@ function ensureNativeProps(options?: CameraProps): CameraNativeProps {
     delete newProps.useCamera2Api;
   }
 
+  if (Platform.OS !== 'web') {
+    delete newProps.poster;
+  }
+
   return newProps;
 }
 

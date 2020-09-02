@@ -44,7 +44,7 @@ it(`verifies daily trigger handling`, async () => {
   const trigger = {
     hour: 12,
     minute: 30,
-    repeats: true,
+    repeats: true as boolean | undefined,
   };
   const input = {
     ...notificationTriggerInputTest,

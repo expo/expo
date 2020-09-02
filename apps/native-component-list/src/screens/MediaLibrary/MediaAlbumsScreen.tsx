@@ -44,10 +44,18 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   }
 
   async fetchAlbums() {
-    const albums = await MediaLibrary.getAlbumsAsync({
-      includeSmartAlbums: this.state.includeSmartAlbums,
-    });
-    this.setState({ albums });
+    try {
+      const albums = await MediaLibrary.getAlbumsAsync({
+        includeSmartAlbums: this.state.includeSmartAlbums,
+      });
+      this.setState({ albums });
+    } catch (e) {
+      if (e.code === 'ERR_NO_ENOUGH_PERMISSIONS') {
+        this.setState({ albums: [] });
+      } else {
+        throw e;
+      }
+    }
   }
 
   keyExtractor = (item: MediaLibrary.Album) => item.id;
