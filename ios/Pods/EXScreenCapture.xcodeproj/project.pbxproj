@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DFDF7C691E6AD4C5DC9AEC26E3E871FC /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EA0F7490DCBA0A59AC2417B5D1AECF0 /* EXScreenCaptureModule.m */; };
-		9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D559264B1E43D41EABB6948A2E3FFF /* EXScreenCapture-dummy.m */; };
+		13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DBD0676AAD85BC6BA82FE789D58B8ADD /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 85BCAEE9934470CA6BC605236624F961 /* EXScreenCaptureModule.m */; };
+		9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 567CD695713FF6D90AFAE990CD8B2450 /* EXScreenCapture-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,14 +23,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0B71F59A1570484BE19DE4D2945E033C /* EXScreenCapture.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXScreenCapture.xcconfig; sourceTree = "<group>"; };
 		366BC1FED57CB9DA5667253219D52344 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		470517B68A038E4EC51AC5545D5B2D03 /* EXScreenCapture.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXScreenCapture.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		4EA0F7490DCBA0A59AC2417B5D1AECF0 /* EXScreenCaptureModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenCaptureModule.m; path = EXScreenCapture/EXScreenCaptureModule.m; sourceTree = "<group>"; };
+		567CD695713FF6D90AFAE990CD8B2450 /* EXScreenCapture-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXScreenCapture-dummy.m"; sourceTree = "<group>"; };
 		7455E946A16C0A0EC128A037AC52AF70 /* libEXScreenCapture.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXScreenCapture.a; path = libEXScreenCapture.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3D559264B1E43D41EABB6948A2E3FFF /* EXScreenCapture-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXScreenCapture-dummy.m"; sourceTree = "<group>"; };
-		B65B6D0A653CF8B595BC027ECF7EA170 /* EXScreenCapture-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXScreenCapture-prefix.pch"; sourceTree = "<group>"; };
-		DFDF7C691E6AD4C5DC9AEC26E3E871FC /* EXScreenCaptureModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenCaptureModule.h; path = EXScreenCapture/EXScreenCaptureModule.h; sourceTree = "<group>"; };
+		85BCAEE9934470CA6BC605236624F961 /* EXScreenCaptureModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenCaptureModule.m; path = EXScreenCapture/EXScreenCaptureModule.m; sourceTree = "<group>"; };
+		8E68DFA7B16E3E680EEEF6DE5EC2EC47 /* EXScreenCapture.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXScreenCapture.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		951FB58A42C0EB3C0AFFE09B4A6CDCAB /* EXScreenCapture.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXScreenCapture.release.xcconfig; sourceTree = "<group>"; };
+		C170970DECAACBC33C40A5D82F6CE552 /* EXScreenCapture.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXScreenCapture.debug.xcconfig; sourceTree = "<group>"; };
+		CE22A3282D7BBB9E20C2D7AD5093296D /* EXScreenCapture-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXScreenCapture-prefix.pch"; sourceTree = "<group>"; };
+		DBD0676AAD85BC6BA82FE789D58B8ADD /* EXScreenCaptureModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenCaptureModule.h; path = EXScreenCapture/EXScreenCaptureModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,33 +53,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		46ACD2D744E7ACD14E3C246212A7F0C6 /* Support Files */ = {
+		3C1803EE10B5C1F6BE5D5A4E917041E0 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				0B71F59A1570484BE19DE4D2945E033C /* EXScreenCapture.xcconfig */,
-				B3D559264B1E43D41EABB6948A2E3FFF /* EXScreenCapture-dummy.m */,
-				B65B6D0A653CF8B595BC027ECF7EA170 /* EXScreenCapture-prefix.pch */,
+				8E68DFA7B16E3E680EEEF6DE5EC2EC47 /* EXScreenCapture.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXScreenCapture";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		576EC5DCA49F58A7C5684AD22CCA25D4 = {
 			isa = PBXGroup;
 			children = (
 				DA9EF540C603F47D61FCD55A3B063196 /* Dependencies */,
-				B2FE7A991B041B12060730D296E1EF2B /* EXScreenCapture */,
+				CA8FE1BAD336779D8383400D52BDC4C3 /* EXScreenCapture */,
 				B2571D3419C33ABFF5CED90285D48EF2 /* Frameworks */,
 				1101E1A81066135F6E67FCBCCD7EE9C5 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		973FD75B8A1DA908B2FCEB68BA52F503 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				470517B68A038E4EC51AC5545D5B2D03 /* EXScreenCapture.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		B2571D3419C33ABFF5CED90285D48EF2 /* Frameworks */ = {
@@ -88,13 +78,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B2FE7A991B041B12060730D296E1EF2B /* EXScreenCapture */ = {
+		CA8FE1BAD336779D8383400D52BDC4C3 /* EXScreenCapture */ = {
 			isa = PBXGroup;
 			children = (
-				DFDF7C691E6AD4C5DC9AEC26E3E871FC /* EXScreenCaptureModule.h */,
-				4EA0F7490DCBA0A59AC2417B5D1AECF0 /* EXScreenCaptureModule.m */,
-				973FD75B8A1DA908B2FCEB68BA52F503 /* Pod */,
-				46ACD2D744E7ACD14E3C246212A7F0C6 /* Support Files */,
+				DBD0676AAD85BC6BA82FE789D58B8ADD /* EXScreenCaptureModule.h */,
+				85BCAEE9934470CA6BC605236624F961 /* EXScreenCaptureModule.m */,
+				3C1803EE10B5C1F6BE5D5A4E917041E0 /* Pod */,
+				DD75AFFE2B099DF8EBAC469880536FEE /* Support Files */,
 			);
 			name = EXScreenCapture;
 			path = "../../packages/expo-screen-capture/ios";
@@ -106,6 +96,18 @@
 				366BC1FED57CB9DA5667253219D52344 /* UMCore */,
 			);
 			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		DD75AFFE2B099DF8EBAC469880536FEE /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				567CD695713FF6D90AFAE990CD8B2450 /* EXScreenCapture-dummy.m */,
+				CE22A3282D7BBB9E20C2D7AD5093296D /* EXScreenCapture-prefix.pch */,
+				C170970DECAACBC33C40A5D82F6CE552 /* EXScreenCapture.debug.xcconfig */,
+				951FB58A42C0EB3C0AFFE09B4A6CDCAB /* EXScreenCapture.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXScreenCapture";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,30 +195,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		24C1241E172FC1CF8B03FECA2DB315DB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0B71F59A1570484BE19DE4D2945E033C /* EXScreenCapture.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenCapture;
-				PRODUCT_NAME = EXScreenCapture;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		3E7202DD51F9D5E1ADABFEAAAC845B20 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -281,6 +259,30 @@
 			};
 			name = Debug;
 		};
+		45390EE778B19ACABE6C180A5C9D4627 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C170970DECAACBC33C40A5D82F6CE552 /* EXScreenCapture.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenCapture;
+				PRODUCT_NAME = EXScreenCapture;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		48CCA6D34DA9D1E56FD16BAF0AABF927 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -341,9 +343,9 @@
 			};
 			name = Release;
 		};
-		8BEFBBA865C9F7CC722FC3FA6F955168 /* Release */ = {
+		5238451F1AD9F6AB4ABB87DA4074B6C0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0B71F59A1570484BE19DE4D2945E033C /* EXScreenCapture.xcconfig */;
+			baseConfigurationReference = 951FB58A42C0EB3C0AFFE09B4A6CDCAB /* EXScreenCapture.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -381,8 +383,8 @@
 		C83C739E6FCF22B84B8EF5C8179FE42B /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				24C1241E172FC1CF8B03FECA2DB315DB /* Debug */,
-				8BEFBBA865C9F7CC722FC3FA6F955168 /* Release */,
+				45390EE778B19ACABE6C180A5C9D4627 /* Debug */,
+				5238451F1AD9F6AB4ABB87DA4074B6C0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

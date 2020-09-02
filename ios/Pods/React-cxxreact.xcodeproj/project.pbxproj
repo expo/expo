@@ -7,40 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		08F8C124035A9CB89AD392EAAC9E5E2F /* SystraceSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 0279DE57E20A35134B7D8259E34288D5 /* SystraceSection.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0D480E3E41CBE0BA57BF1D55272ED518 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 99A691CE00EA093A3A035E5CAF187F63 /* JsArgumentHelpers-inl.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		19388464F40F65A272A38516EFA10604 /* CxxNativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = BA5806B3A5AE917365C0FD8251A4E1DF /* CxxNativeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		214AE606E1D4D2C333773140D599F65F /* SharedProxyCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 979BA42DC9FD18E1AB5444829E0EBBE9 /* SharedProxyCxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		320C8559814F0E75FEA4CF525345B158 /* ReactMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FA5F5B32B4D4278308A4DF186F286CE /* ReactMarker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		38991FEF73709B7E076E46295FC4E4E0 /* ReactMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2FD32FD520136650103F921ADA1B7E8D /* ReactMarker.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		47B7BBDF40AFE8565725DB7CCFCFC26C /* MessageQueueThread.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B1C7ED66313D6375FA216FAEBD3EC8 /* MessageQueueThread.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4C5B2B62E9B135005FBE427AD8BE0AA1 /* CxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = E3B6E5CD7D8DF292187C3D3FFCA8C19F /* CxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		52AB4FCDDDFA893F45D4EE6ED1F837FB /* NativeToJsBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = DA0BE3247E399A7B64FF7DB93E146C48 /* NativeToJsBridge.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		57422C3DD49E437599E90A1A1ABD1F72 /* JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D7F52021B02D32CBC5B0C1F1FDB492 /* JSIndexedRAMBundle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		5955A3C8E78682FFE489A8BEB6289592 /* JSModulesUnbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 8435E48B98A6C9614DFD138C9D49B7B7 /* JSModulesUnbundle.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		61B2A11BF67783AEF3D14BBD3F6A089B /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13FD0218205ECF44C049D643A6BA45FF /* NativeToJsBridge.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6CFFA7512FBB5E6230C527312527D6B5 /* JSDeltaBundleClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 992862F2A5D10DA524180ACB053A9A16 /* JSDeltaBundleClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6E7B88724DEED43110364BB7EF771184 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A883ED2E9490C08F0206E3253F5B3BEC /* JSBundleType.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		84FD39A5F5877C5C490D08608164857A /* JSExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = FB977323F1A59890CCD1C6104587C917 /* JSExecutor.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		898271E9A2575883A181120F08A1C208 /* NativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 8CE9D2D647E11BFE832E54E1AB4D7A25 /* NativeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		91296D1DE8B62D598A53426EDEEB1599 /* MethodCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23C22D21DC1BFB37234D177AB02C581C /* MethodCall.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9418737086A8FC89D0A24370074D01FE /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52DFB0B17BFE42B52EF13B40B9819D39 /* JSExecutor.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9CCA2F3BC0FA98A3332BE0EA746754F7 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFCE307B43A15BD97981DFE0B05F09AF /* Instance.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A4D2BACBAA4760EBB20F3417A215A231 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = D18BDFAF48C8D39C18E9AD30BEE2A7A7 /* JsArgumentHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A766A9F8613AB6444BB5DE49E5750D3F /* JSDeltaBundleClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0AB99BAC7B8329F41B5AD300B2C16A8 /* JSDeltaBundleClient.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		AF71985AD5918270C1B9285DDBD3EA4C /* RAMBundleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 06EA141F71E10F182DEB036A06958EDE /* RAMBundleRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B1488776741868B886DC5A61BFF62257 /* React-cxxreact-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D9B50FB6B8EC624D2615129A91072BF /* React-cxxreact-dummy.m */; };
-		B24424229B5D0BA86A1F925D4E2183E4 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 95BA9598652992DE70D6BB0434BBCC25 /* CxxNativeModule.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B505C941425A8D4B3556E99018CEBF01 /* ModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = CE9016A501429C58CC18511AD3F21E20 /* ModuleRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BBAC650AA3507353DFBC71705FBA2700 /* Instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B3D032953A249F0E58843D2E2485C53 /* Instance.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BC656A1201C738BECD89A0857392565F /* JSBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AB536017F3FC88336E657C6DFCAC465 /* JSBigString.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BDB0A8A66CA702FDB46EF62A1CD9DAF1 /* RecoverableError.h in Headers */ = {isa = PBXBuildFile; fileRef = 833FBAE0876198F32E653EECD0C23F82 /* RecoverableError.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C8B30F61674514D0EBEB6247CD7ECC5D /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A7467F32D4A9115F06A28355726AFAE /* JSBundleType.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E0D1275897499790A9B43B7D9003A021 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC1506C1C7F66B5C0F552E8448B64833 /* JSBigString.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E2734DF661027396586160FAC4BDEEA1 /* JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A30BADB5308769B222D72FA23FB97F3 /* JSIndexedRAMBundle.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EDACAD645BD45D13C8E98C0DA31E7750 /* MethodCall.h in Headers */ = {isa = PBXBuildFile; fileRef = B99E5CDD3A351BF7FD5C24615DB9FF39 /* MethodCall.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EE94907A0F25925AC69D9471205414A9 /* ModuleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB27536A47C194B564CD26FC5AB327F7 /* ModuleRegistry.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FBFB41501A66614A9DADC5B650E1EA1B /* RAMBundleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F72E1A1BC31636B2D0C7AB8EDD151E1 /* RAMBundleRegistry.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		08F8C124035A9CB89AD392EAAC9E5E2F /* SystraceSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 580D0A6C29ABF3ED853D18DD7797F85D /* SystraceSection.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0D480E3E41CBE0BA57BF1D55272ED518 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A99CD58494E23888133D2EDC5E0CB51 /* JsArgumentHelpers-inl.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		19388464F40F65A272A38516EFA10604 /* CxxNativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B2CBE46632CE467F488916A78CCFE01 /* CxxNativeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		214AE606E1D4D2C333773140D599F65F /* SharedProxyCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 99ADAA13365378B895AA3C69863F50E9 /* SharedProxyCxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		320C8559814F0E75FEA4CF525345B158 /* ReactMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = 18AD723E7DADC878829E849850415CAB /* ReactMarker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		38991FEF73709B7E076E46295FC4E4E0 /* ReactMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21E9AA71279EA71E27D4F8568957E14A /* ReactMarker.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		47B7BBDF40AFE8565725DB7CCFCFC26C /* MessageQueueThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B88AC5B0FB418ECCC2B3293DD3AF510 /* MessageQueueThread.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4C5B2B62E9B135005FBE427AD8BE0AA1 /* CxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 85EB568004BCE6DDC94E611910B0739C /* CxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		52AB4FCDDDFA893F45D4EE6ED1F837FB /* NativeToJsBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A926DF44EDE95E149A4F10E77878FEC /* NativeToJsBridge.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		57422C3DD49E437599E90A1A1ABD1F72 /* JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1481B08F467F2701588655ED0FE8CBBE /* JSIndexedRAMBundle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5955A3C8E78682FFE489A8BEB6289592 /* JSModulesUnbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AA04A6F2D78CB234B70A02EE70E5BB0 /* JSModulesUnbundle.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		61B2A11BF67783AEF3D14BBD3F6A089B /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EBE923FE0DA31D423FAD68D5D44AE45 /* NativeToJsBridge.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6CFFA7512FBB5E6230C527312527D6B5 /* JSDeltaBundleClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A2F26AE0D5E9DE78D72E407B4C5549BE /* JSDeltaBundleClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6E7B88724DEED43110364BB7EF771184 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFE73B278B6C44E36C890AC3B575979B /* JSBundleType.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		84FD39A5F5877C5C490D08608164857A /* JSExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 5110AFD26F8B97ADA02E4623C492185D /* JSExecutor.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		898271E9A2575883A181120F08A1C208 /* NativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 92163B347C50EAE0402B451913EC0E21 /* NativeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		91296D1DE8B62D598A53426EDEEB1599 /* MethodCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCF76AB03E8B6ADF92B4CF573A478B7F /* MethodCall.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9418737086A8FC89D0A24370074D01FE /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36E8AC1E835151270EBAE4B03541CDE1 /* JSExecutor.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9CCA2F3BC0FA98A3332BE0EA746754F7 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10757754F41D6B50898F61AD78AA9BBE /* Instance.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A4D2BACBAA4760EBB20F3417A215A231 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 433E87F9D53851EE96254B628E71D82F /* JsArgumentHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A766A9F8613AB6444BB5DE49E5750D3F /* JSDeltaBundleClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6894933C7BD841666956C42B0AA9CC66 /* JSDeltaBundleClient.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AF71985AD5918270C1B9285DDBD3EA4C /* RAMBundleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 64DDA4416926CA5F83928DF000B11FEF /* RAMBundleRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B1488776741868B886DC5A61BFF62257 /* React-cxxreact-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CC504266A6926B7C5392E7100C97225 /* React-cxxreact-dummy.m */; };
+		B24424229B5D0BA86A1F925D4E2183E4 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A35A6CBD505B9A22E7EE38C1BEBB10E /* CxxNativeModule.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B505C941425A8D4B3556E99018CEBF01 /* ModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = F8FDD9B901D5C02FD3309AC9C3CACB91 /* ModuleRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BBAC650AA3507353DFBC71705FBA2700 /* Instance.h in Headers */ = {isa = PBXBuildFile; fileRef = D59DBCC1251AF9360EBD28E2D0A891C0 /* Instance.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BC656A1201C738BECD89A0857392565F /* JSBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E663CE3CA121635D007AC65E113AD17 /* JSBigString.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BDB0A8A66CA702FDB46EF62A1CD9DAF1 /* RecoverableError.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CC800048024C6929C9090EB69BB0C9B /* RecoverableError.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C8B30F61674514D0EBEB6247CD7ECC5D /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 0471624ACF5857916F8314D25A7DC64D /* JSBundleType.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E0D1275897499790A9B43B7D9003A021 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 64F92E2EC7DDBC92F5DAB93F5AD7E008 /* JSBigString.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E2734DF661027396586160FAC4BDEEA1 /* JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 641FF317DFE522CC06A907ED5A8843F7 /* JSIndexedRAMBundle.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EDACAD645BD45D13C8E98C0DA31E7750 /* MethodCall.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A07E110FF7DB76A8DF87A135A55893D /* MethodCall.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EE94907A0F25925AC69D9471205414A9 /* ModuleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFB8327082237FB74C5DE08AC56C2742 /* ModuleRegistry.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FBFB41501A66614A9DADC5B650E1EA1B /* RAMBundleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F373EE60C1BB36EEA929A501262BEDB /* RAMBundleRegistry.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,49 +82,50 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00D7F52021B02D32CBC5B0C1F1FDB492 /* JSIndexedRAMBundle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSIndexedRAMBundle.cpp; sourceTree = "<group>"; };
-		0279DE57E20A35134B7D8259E34288D5 /* SystraceSection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SystraceSection.h; sourceTree = "<group>"; };
-		06EA141F71E10F182DEB036A06958EDE /* RAMBundleRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RAMBundleRegistry.h; sourceTree = "<group>"; };
-		0FA5F5B32B4D4278308A4DF186F286CE /* ReactMarker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ReactMarker.h; sourceTree = "<group>"; };
-		13FD0218205ECF44C049D643A6BA45FF /* NativeToJsBridge.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = NativeToJsBridge.cpp; sourceTree = "<group>"; };
+		0471624ACF5857916F8314D25A7DC64D /* JSBundleType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSBundleType.h; sourceTree = "<group>"; };
+		0E663CE3CA121635D007AC65E113AD17 /* JSBigString.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSBigString.h; sourceTree = "<group>"; };
+		0F373EE60C1BB36EEA929A501262BEDB /* RAMBundleRegistry.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = RAMBundleRegistry.cpp; sourceTree = "<group>"; };
+		10757754F41D6B50898F61AD78AA9BBE /* Instance.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = Instance.cpp; sourceTree = "<group>"; };
+		1481B08F467F2701588655ED0FE8CBBE /* JSIndexedRAMBundle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSIndexedRAMBundle.cpp; sourceTree = "<group>"; };
 		169C0751B61862CF5E13CBF7FB775438 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		1AB536017F3FC88336E657C6DFCAC465 /* JSBigString.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSBigString.h; sourceTree = "<group>"; };
+		18AD723E7DADC878829E849850415CAB /* ReactMarker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ReactMarker.h; sourceTree = "<group>"; };
+		1A926DF44EDE95E149A4F10E77878FEC /* NativeToJsBridge.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = NativeToJsBridge.h; sourceTree = "<group>"; };
 		20D5D0B65A2F895E004AE053686B184D /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
-		23C22D21DC1BFB37234D177AB02C581C /* MethodCall.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = MethodCall.cpp; sourceTree = "<group>"; };
-		2FD32FD520136650103F921ADA1B7E8D /* ReactMarker.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = ReactMarker.cpp; sourceTree = "<group>"; };
-		3B3D032953A249F0E58843D2E2485C53 /* Instance.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Instance.h; sourceTree = "<group>"; };
-		3D9B50FB6B8EC624D2615129A91072BF /* React-cxxreact-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-cxxreact-dummy.m"; sourceTree = "<group>"; };
-		3F90DBB7FFAF67EC1827EB8DEBFC4DD9 /* React-cxxreact.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-cxxreact.xcconfig"; sourceTree = "<group>"; };
-		52DFB0B17BFE42B52EF13B40B9819D39 /* JSExecutor.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSExecutor.cpp; sourceTree = "<group>"; };
+		21E9AA71279EA71E27D4F8568957E14A /* ReactMarker.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = ReactMarker.cpp; sourceTree = "<group>"; };
+		36E8AC1E835151270EBAE4B03541CDE1 /* JSExecutor.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSExecutor.cpp; sourceTree = "<group>"; };
+		433E87F9D53851EE96254B628E71D82F /* JsArgumentHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JsArgumentHelpers.h; sourceTree = "<group>"; };
+		4A99CD58494E23888133D2EDC5E0CB51 /* JsArgumentHelpers-inl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JsArgumentHelpers-inl.h"; sourceTree = "<group>"; };
+		5110AFD26F8B97ADA02E4623C492185D /* JSExecutor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSExecutor.h; sourceTree = "<group>"; };
+		580D0A6C29ABF3ED853D18DD7797F85D /* SystraceSection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SystraceSection.h; sourceTree = "<group>"; };
+		5B2CBE46632CE467F488916A78CCFE01 /* CxxNativeModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = CxxNativeModule.h; sourceTree = "<group>"; };
+		5B4E410DCA1754B3F9DB81E72DE8E07C /* React-cxxreact.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-cxxreact.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5CC800048024C6929C9090EB69BB0C9B /* RecoverableError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RecoverableError.h; sourceTree = "<group>"; };
+		5EBE923FE0DA31D423FAD68D5D44AE45 /* NativeToJsBridge.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = NativeToJsBridge.cpp; sourceTree = "<group>"; };
 		633ACDF38299D551D20CEB799A009126 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
-		7A7467F32D4A9115F06A28355726AFAE /* JSBundleType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSBundleType.h; sourceTree = "<group>"; };
-		7F72E1A1BC31636B2D0C7AB8EDD151E1 /* RAMBundleRegistry.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = RAMBundleRegistry.cpp; sourceTree = "<group>"; };
-		833FBAE0876198F32E653EECD0C23F82 /* RecoverableError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RecoverableError.h; sourceTree = "<group>"; };
-		8435E48B98A6C9614DFD138C9D49B7B7 /* JSModulesUnbundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSModulesUnbundle.h; sourceTree = "<group>"; };
-		8A30BADB5308769B222D72FA23FB97F3 /* JSIndexedRAMBundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSIndexedRAMBundle.h; sourceTree = "<group>"; };
-		8CE9D2D647E11BFE832E54E1AB4D7A25 /* NativeModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = NativeModule.h; sourceTree = "<group>"; };
-		95BA9598652992DE70D6BB0434BBCC25 /* CxxNativeModule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = CxxNativeModule.cpp; sourceTree = "<group>"; };
-		979BA42DC9FD18E1AB5444829E0EBBE9 /* SharedProxyCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SharedProxyCxxModule.h; sourceTree = "<group>"; };
-		992862F2A5D10DA524180ACB053A9A16 /* JSDeltaBundleClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSDeltaBundleClient.h; sourceTree = "<group>"; };
-		99A691CE00EA093A3A035E5CAF187F63 /* JsArgumentHelpers-inl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JsArgumentHelpers-inl.h"; sourceTree = "<group>"; };
-		9C3F4DB7B63438656C0052ADFE4AD505 /* React-cxxreact.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-cxxreact.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		A883ED2E9490C08F0206E3253F5B3BEC /* JSBundleType.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSBundleType.cpp; sourceTree = "<group>"; };
+		641FF317DFE522CC06A907ED5A8843F7 /* JSIndexedRAMBundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSIndexedRAMBundle.h; sourceTree = "<group>"; };
+		64DDA4416926CA5F83928DF000B11FEF /* RAMBundleRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RAMBundleRegistry.h; sourceTree = "<group>"; };
+		64F92E2EC7DDBC92F5DAB93F5AD7E008 /* JSBigString.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSBigString.cpp; sourceTree = "<group>"; };
+		6894933C7BD841666956C42B0AA9CC66 /* JSDeltaBundleClient.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSDeltaBundleClient.cpp; sourceTree = "<group>"; };
+		6AA04A6F2D78CB234B70A02EE70E5BB0 /* JSModulesUnbundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSModulesUnbundle.h; sourceTree = "<group>"; };
+		6B88AC5B0FB418ECCC2B3293DD3AF510 /* MessageQueueThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MessageQueueThread.h; sourceTree = "<group>"; };
+		7CC504266A6926B7C5392E7100C97225 /* React-cxxreact-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-cxxreact-dummy.m"; sourceTree = "<group>"; };
+		7FD2546DBFF691B14A3CCDCE484C5C33 /* React-cxxreact.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-cxxreact.debug.xcconfig"; sourceTree = "<group>"; };
+		85EB568004BCE6DDC94E611910B0739C /* CxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = CxxModule.h; sourceTree = "<group>"; };
+		89C29F0903EFBE6B58E193865F011955 /* React-cxxreact.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-cxxreact.release.xcconfig"; sourceTree = "<group>"; };
+		8A07E110FF7DB76A8DF87A135A55893D /* MethodCall.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MethodCall.h; sourceTree = "<group>"; };
+		92163B347C50EAE0402B451913EC0E21 /* NativeModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = NativeModule.h; sourceTree = "<group>"; };
+		99ADAA13365378B895AA3C69863F50E9 /* SharedProxyCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SharedProxyCxxModule.h; sourceTree = "<group>"; };
+		9A35A6CBD505B9A22E7EE38C1BEBB10E /* CxxNativeModule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = CxxNativeModule.cpp; sourceTree = "<group>"; };
+		A2F26AE0D5E9DE78D72E407B4C5549BE /* JSDeltaBundleClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSDeltaBundleClient.h; sourceTree = "<group>"; };
 		B5F8F9B3C4343000423E1207C4AD4B7D /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
-		B99E5CDD3A351BF7FD5C24615DB9FF39 /* MethodCall.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MethodCall.h; sourceTree = "<group>"; };
-		BA5806B3A5AE917365C0FD8251A4E1DF /* CxxNativeModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = CxxNativeModule.h; sourceTree = "<group>"; };
 		BB5E270E0B8562E57936ACCA6195BE19 /* React-jsinspector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsinspector"; path = "React-jsinspector.xcodeproj"; sourceTree = "<group>"; };
 		BBEF9ABADCD08333777E63C4000E0222 /* libReact-cxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-cxxreact.a"; path = "libReact-cxxreact.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC1506C1C7F66B5C0F552E8448B64833 /* JSBigString.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSBigString.cpp; sourceTree = "<group>"; };
-		CE9016A501429C58CC18511AD3F21E20 /* ModuleRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ModuleRegistry.h; sourceTree = "<group>"; };
-		D18BDFAF48C8D39C18E9AD30BEE2A7A7 /* JsArgumentHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JsArgumentHelpers.h; sourceTree = "<group>"; };
-		DA0BE3247E399A7B64FF7DB93E146C48 /* NativeToJsBridge.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = NativeToJsBridge.h; sourceTree = "<group>"; };
-		DB167F8E8B298ADA113B11FDE1DF54BA /* React-cxxreact-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-cxxreact-prefix.pch"; sourceTree = "<group>"; };
-		DFCE307B43A15BD97981DFE0B05F09AF /* Instance.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = Instance.cpp; sourceTree = "<group>"; };
-		E0AB99BAC7B8329F41B5AD300B2C16A8 /* JSDeltaBundleClient.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSDeltaBundleClient.cpp; sourceTree = "<group>"; };
-		E3B6E5CD7D8DF292187C3D3FFCA8C19F /* CxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = CxxModule.h; sourceTree = "<group>"; };
-		E8B1C7ED66313D6375FA216FAEBD3EC8 /* MessageQueueThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MessageQueueThread.h; sourceTree = "<group>"; };
-		FB27536A47C194B564CD26FC5AB327F7 /* ModuleRegistry.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = ModuleRegistry.cpp; sourceTree = "<group>"; };
-		FB977323F1A59890CCD1C6104587C917 /* JSExecutor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSExecutor.h; sourceTree = "<group>"; };
+		CCF76AB03E8B6ADF92B4CF573A478B7F /* MethodCall.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = MethodCall.cpp; sourceTree = "<group>"; };
+		CFB8327082237FB74C5DE08AC56C2742 /* ModuleRegistry.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = ModuleRegistry.cpp; sourceTree = "<group>"; };
+		D59DBCC1251AF9360EBD28E2D0A891C0 /* Instance.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Instance.h; sourceTree = "<group>"; };
+		DFE73B278B6C44E36C890AC3B575979B /* JSBundleType.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSBundleType.cpp; sourceTree = "<group>"; };
+		F8FDD9B901D5C02FD3309AC9C3CACB91 /* ModuleRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ModuleRegistry.h; sourceTree = "<group>"; };
+		FC43FD2BF0202836568FB78B430DB488 /* React-cxxreact-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-cxxreact-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,47 +139,67 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		144279702BEE4733FA60613148D138E8 /* React-cxxreact */ = {
+		0020157A000BA4F225D172DF2594431D /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				E3B6E5CD7D8DF292187C3D3FFCA8C19F /* CxxModule.h */,
-				95BA9598652992DE70D6BB0434BBCC25 /* CxxNativeModule.cpp */,
-				BA5806B3A5AE917365C0FD8251A4E1DF /* CxxNativeModule.h */,
-				DFCE307B43A15BD97981DFE0B05F09AF /* Instance.cpp */,
-				3B3D032953A249F0E58843D2E2485C53 /* Instance.h */,
-				D18BDFAF48C8D39C18E9AD30BEE2A7A7 /* JsArgumentHelpers.h */,
-				99A691CE00EA093A3A035E5CAF187F63 /* JsArgumentHelpers-inl.h */,
-				CC1506C1C7F66B5C0F552E8448B64833 /* JSBigString.cpp */,
-				1AB536017F3FC88336E657C6DFCAC465 /* JSBigString.h */,
-				A883ED2E9490C08F0206E3253F5B3BEC /* JSBundleType.cpp */,
-				7A7467F32D4A9115F06A28355726AFAE /* JSBundleType.h */,
-				E0AB99BAC7B8329F41B5AD300B2C16A8 /* JSDeltaBundleClient.cpp */,
-				992862F2A5D10DA524180ACB053A9A16 /* JSDeltaBundleClient.h */,
-				52DFB0B17BFE42B52EF13B40B9819D39 /* JSExecutor.cpp */,
-				FB977323F1A59890CCD1C6104587C917 /* JSExecutor.h */,
-				00D7F52021B02D32CBC5B0C1F1FDB492 /* JSIndexedRAMBundle.cpp */,
-				8A30BADB5308769B222D72FA23FB97F3 /* JSIndexedRAMBundle.h */,
-				8435E48B98A6C9614DFD138C9D49B7B7 /* JSModulesUnbundle.h */,
-				E8B1C7ED66313D6375FA216FAEBD3EC8 /* MessageQueueThread.h */,
-				23C22D21DC1BFB37234D177AB02C581C /* MethodCall.cpp */,
-				B99E5CDD3A351BF7FD5C24615DB9FF39 /* MethodCall.h */,
-				FB27536A47C194B564CD26FC5AB327F7 /* ModuleRegistry.cpp */,
-				CE9016A501429C58CC18511AD3F21E20 /* ModuleRegistry.h */,
-				8CE9D2D647E11BFE832E54E1AB4D7A25 /* NativeModule.h */,
-				13FD0218205ECF44C049D643A6BA45FF /* NativeToJsBridge.cpp */,
-				DA0BE3247E399A7B64FF7DB93E146C48 /* NativeToJsBridge.h */,
-				7F72E1A1BC31636B2D0C7AB8EDD151E1 /* RAMBundleRegistry.cpp */,
-				06EA141F71E10F182DEB036A06958EDE /* RAMBundleRegistry.h */,
-				2FD32FD520136650103F921ADA1B7E8D /* ReactMarker.cpp */,
-				0FA5F5B32B4D4278308A4DF186F286CE /* ReactMarker.h */,
-				833FBAE0876198F32E653EECD0C23F82 /* RecoverableError.h */,
-				979BA42DC9FD18E1AB5444829E0EBBE9 /* SharedProxyCxxModule.h */,
-				0279DE57E20A35134B7D8259E34288D5 /* SystraceSection.h */,
-				FFBA67D7B480C65CAA8393E8C23414E9 /* Pod */,
-				B8B485712A41CFE4C4302B537EBE41BC /* Support Files */,
+				5B4E410DCA1754B3F9DB81E72DE8E07C /* React-cxxreact.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		3AB5BCF62D54AFA034B4F7D316E1E80D /* React-cxxreact */ = {
+			isa = PBXGroup;
+			children = (
+				85EB568004BCE6DDC94E611910B0739C /* CxxModule.h */,
+				9A35A6CBD505B9A22E7EE38C1BEBB10E /* CxxNativeModule.cpp */,
+				5B2CBE46632CE467F488916A78CCFE01 /* CxxNativeModule.h */,
+				10757754F41D6B50898F61AD78AA9BBE /* Instance.cpp */,
+				D59DBCC1251AF9360EBD28E2D0A891C0 /* Instance.h */,
+				433E87F9D53851EE96254B628E71D82F /* JsArgumentHelpers.h */,
+				4A99CD58494E23888133D2EDC5E0CB51 /* JsArgumentHelpers-inl.h */,
+				64F92E2EC7DDBC92F5DAB93F5AD7E008 /* JSBigString.cpp */,
+				0E663CE3CA121635D007AC65E113AD17 /* JSBigString.h */,
+				DFE73B278B6C44E36C890AC3B575979B /* JSBundleType.cpp */,
+				0471624ACF5857916F8314D25A7DC64D /* JSBundleType.h */,
+				6894933C7BD841666956C42B0AA9CC66 /* JSDeltaBundleClient.cpp */,
+				A2F26AE0D5E9DE78D72E407B4C5549BE /* JSDeltaBundleClient.h */,
+				36E8AC1E835151270EBAE4B03541CDE1 /* JSExecutor.cpp */,
+				5110AFD26F8B97ADA02E4623C492185D /* JSExecutor.h */,
+				1481B08F467F2701588655ED0FE8CBBE /* JSIndexedRAMBundle.cpp */,
+				641FF317DFE522CC06A907ED5A8843F7 /* JSIndexedRAMBundle.h */,
+				6AA04A6F2D78CB234B70A02EE70E5BB0 /* JSModulesUnbundle.h */,
+				6B88AC5B0FB418ECCC2B3293DD3AF510 /* MessageQueueThread.h */,
+				CCF76AB03E8B6ADF92B4CF573A478B7F /* MethodCall.cpp */,
+				8A07E110FF7DB76A8DF87A135A55893D /* MethodCall.h */,
+				CFB8327082237FB74C5DE08AC56C2742 /* ModuleRegistry.cpp */,
+				F8FDD9B901D5C02FD3309AC9C3CACB91 /* ModuleRegistry.h */,
+				92163B347C50EAE0402B451913EC0E21 /* NativeModule.h */,
+				5EBE923FE0DA31D423FAD68D5D44AE45 /* NativeToJsBridge.cpp */,
+				1A926DF44EDE95E149A4F10E77878FEC /* NativeToJsBridge.h */,
+				0F373EE60C1BB36EEA929A501262BEDB /* RAMBundleRegistry.cpp */,
+				64DDA4416926CA5F83928DF000B11FEF /* RAMBundleRegistry.h */,
+				21E9AA71279EA71E27D4F8568957E14A /* ReactMarker.cpp */,
+				18AD723E7DADC878829E849850415CAB /* ReactMarker.h */,
+				5CC800048024C6929C9090EB69BB0C9B /* RecoverableError.h */,
+				99ADAA13365378B895AA3C69863F50E9 /* SharedProxyCxxModule.h */,
+				580D0A6C29ABF3ED853D18DD7797F85D /* SystraceSection.h */,
+				0020157A000BA4F225D172DF2594431D /* Pod */,
+				90895C471D21EF5B5925A01C4DA59C05 /* Support Files */,
 			);
 			name = "React-cxxreact";
 			path = "../../react-native-lab/react-native/ReactCommon/cxxreact";
+			sourceTree = "<group>";
+		};
+		90895C471D21EF5B5925A01C4DA59C05 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7CC504266A6926B7C5392E7100C97225 /* React-cxxreact-dummy.m */,
+				FC43FD2BF0202836568FB78B430DB488 /* React-cxxreact-prefix.pch */,
+				7FD2546DBFF691B14A3CCDCE484C5C33 /* React-cxxreact.debug.xcconfig */,
+				89C29F0903EFBE6B58E193865F011955 /* React-cxxreact.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/React-cxxreact";
 			sourceTree = "<group>";
 		};
 		9464EFB7FA254E9F57D896272612268A /* Products */ = {
@@ -189,24 +210,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B8B485712A41CFE4C4302B537EBE41BC /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				3F90DBB7FFAF67EC1827EB8DEBFC4DD9 /* React-cxxreact.xcconfig */,
-				3D9B50FB6B8EC624D2615129A91072BF /* React-cxxreact-dummy.m */,
-				DB167F8E8B298ADA113B11FDE1DF54BA /* React-cxxreact-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../../ios/Pods/Target Support Files/React-cxxreact";
-			sourceTree = "<group>";
-		};
 		C023455655143443163098AD25C4BBD3 = {
 			isa = PBXGroup;
 			children = (
 				CB8141AA1916A9EBFA9ED19C44407E2C /* Dependencies */,
 				CBB0C32017B72ECBE9787503310C1C1B /* Frameworks */,
 				9464EFB7FA254E9F57D896272612268A /* Products */,
-				144279702BEE4733FA60613148D138E8 /* React-cxxreact */,
+				3AB5BCF62D54AFA034B4F7D316E1E80D /* React-cxxreact */,
 			);
 			sourceTree = "<group>";
 		};
@@ -227,14 +237,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		FFBA67D7B480C65CAA8393E8C23414E9 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				9C3F4DB7B63438656C0052ADFE4AD505 /* React-cxxreact.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -513,9 +515,9 @@
 			};
 			name = Release;
 		};
-		715198396F749754B8B855CC3DE1AC82 /* Debug */ = {
+		AA2901C531B89DA89B8E41B6E897CECC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3F90DBB7FFAF67EC1827EB8DEBFC4DD9 /* React-cxxreact.xcconfig */;
+			baseConfigurationReference = 7FD2546DBFF691B14A3CCDCE484C5C33 /* React-cxxreact.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -542,9 +544,9 @@
 			};
 			name = Debug;
 		};
-		BF4B2C77F464DBFF9B7D2E305F7CAC31 /* Release */ = {
+		DA161EC1919AD76B6B5C60EDA1E83CC3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3F90DBB7FFAF67EC1827EB8DEBFC4DD9 /* React-cxxreact.xcconfig */;
+			baseConfigurationReference = 89C29F0903EFBE6B58E193865F011955 /* React-cxxreact.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -578,8 +580,8 @@
 		23D5517B56B5019A82F2C2F8DAD974FC /* Build configuration list for PBXNativeTarget "React-cxxreact" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				715198396F749754B8B855CC3DE1AC82 /* Debug */,
-				BF4B2C77F464DBFF9B7D2E305F7CAC31 /* Release */,
+				AA2901C531B89DA89B8E41B6E897CECC /* Debug */,
+				DA161EC1919AD76B6B5C60EDA1E83CC3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

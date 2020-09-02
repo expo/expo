@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C33378EB1B2CE81CF6AF6B1ECCA765B8 /* EXKeepAwake-dummy.m */; };
-		7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B3B6B6EE5638CEE0B1D708E946E5D8D /* EXKeepAwake.m */; };
-		CF3607FA749762EF7FA7EFB8F0549A3B /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = E13E83AD900F8638ADCF2FE1E437F1EB /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F3C6B39A23D87BB866B4B113B94E4201 /* EXKeepAwake-dummy.m */; };
+		7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BBF1DF37A6AA6BC313F5CE4D66AEA3F /* EXKeepAwake.m */; };
+		CF3607FA749762EF7FA7EFB8F0549A3B /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = 63006FE3DDD42168985A9223AE3C082A /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,13 +24,14 @@
 
 /* Begin PBXFileReference section */
 		0B0771F3E7E293065C915B2C73207099 /* libEXKeepAwake.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXKeepAwake.a; path = libEXKeepAwake.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		186DB5CDC43E0AD17B1E25E6E1388873 /* EXKeepAwake.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXKeepAwake.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		5B3B6B6EE5638CEE0B1D708E946E5D8D /* EXKeepAwake.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXKeepAwake.m; path = EXKeepAwake/EXKeepAwake.m; sourceTree = "<group>"; };
+		1E7E4C0DE6544017F8ABAEE1377E0FFF /* EXKeepAwake.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXKeepAwake.release.xcconfig; sourceTree = "<group>"; };
+		22759CC949EC7B77EC6AC42CEA3EE67B /* EXKeepAwake.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXKeepAwake.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		63006FE3DDD42168985A9223AE3C082A /* EXKeepAwake.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXKeepAwake.h; path = EXKeepAwake/EXKeepAwake.h; sourceTree = "<group>"; };
+		8BBF1DF37A6AA6BC313F5CE4D66AEA3F /* EXKeepAwake.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXKeepAwake.m; path = EXKeepAwake/EXKeepAwake.m; sourceTree = "<group>"; };
 		B21C702A327A1FDEFA6CF37D23D42E93 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		B759F41EE39A2F3463B6A7DC113CDB0E /* EXKeepAwake.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXKeepAwake.xcconfig; sourceTree = "<group>"; };
-		C33378EB1B2CE81CF6AF6B1ECCA765B8 /* EXKeepAwake-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXKeepAwake-dummy.m"; sourceTree = "<group>"; };
-		E13E83AD900F8638ADCF2FE1E437F1EB /* EXKeepAwake.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXKeepAwake.h; path = EXKeepAwake/EXKeepAwake.h; sourceTree = "<group>"; };
-		F72374C1CEC5D29209132241E68A6EBF /* EXKeepAwake-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXKeepAwake-prefix.pch"; sourceTree = "<group>"; };
+		D9F853412E468CACC59633BFCB48CF98 /* EXKeepAwake.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXKeepAwake.debug.xcconfig; sourceTree = "<group>"; };
+		DE9BC9C5F12D2FE8CAC5713E43DD201A /* EXKeepAwake-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXKeepAwake-prefix.pch"; sourceTree = "<group>"; };
+		F3C6B39A23D87BB866B4B113B94E4201 /* EXKeepAwake-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXKeepAwake-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,22 +49,18 @@
 			isa = PBXGroup;
 			children = (
 				91D8DA7A56FC4ED02DC4DD4C14FAB7D8 /* Dependencies */,
-				2FA9FB2A3D185E3A99847AAB2DC4EC47 /* EXKeepAwake */,
+				C12ECB665FFB376DAEE5A69C2E763EF6 /* EXKeepAwake */,
 				834B924D02D2E02DCE3A8739249B1B7D /* Frameworks */,
 				54ABC55FC1D71CCA7E20BD7F32E3D775 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		2FA9FB2A3D185E3A99847AAB2DC4EC47 /* EXKeepAwake */ = {
+		2D4CEC5FA88A2BD3BA719D858B273726 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				E13E83AD900F8638ADCF2FE1E437F1EB /* EXKeepAwake.h */,
-				5B3B6B6EE5638CEE0B1D708E946E5D8D /* EXKeepAwake.m */,
-				6C0DE7B140B658A443631DDED111A153 /* Pod */,
-				881ED85856B30F6D86DF56A9B5FB51E9 /* Support Files */,
+				22759CC949EC7B77EC6AC42CEA3EE67B /* EXKeepAwake.podspec */,
 			);
-			name = EXKeepAwake;
-			path = "../../packages/expo-keep-awake/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		54ABC55FC1D71CCA7E20BD7F32E3D775 /* Products */ = {
@@ -74,12 +71,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6C0DE7B140B658A443631DDED111A153 /* Pod */ = {
+		650A05CA899D088D675F0F827F474E3E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				186DB5CDC43E0AD17B1E25E6E1388873 /* EXKeepAwake.podspec */,
+				F3C6B39A23D87BB866B4B113B94E4201 /* EXKeepAwake-dummy.m */,
+				DE9BC9C5F12D2FE8CAC5713E43DD201A /* EXKeepAwake-prefix.pch */,
+				D9F853412E468CACC59633BFCB48CF98 /* EXKeepAwake.debug.xcconfig */,
+				1E7E4C0DE6544017F8ABAEE1377E0FFF /* EXKeepAwake.release.xcconfig */,
 			);
-			name = Pod;
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXKeepAwake";
 			sourceTree = "<group>";
 		};
 		834B924D02D2E02DCE3A8739249B1B7D /* Frameworks */ = {
@@ -89,23 +90,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		881ED85856B30F6D86DF56A9B5FB51E9 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				B759F41EE39A2F3463B6A7DC113CDB0E /* EXKeepAwake.xcconfig */,
-				C33378EB1B2CE81CF6AF6B1ECCA765B8 /* EXKeepAwake-dummy.m */,
-				F72374C1CEC5D29209132241E68A6EBF /* EXKeepAwake-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXKeepAwake";
-			sourceTree = "<group>";
-		};
 		91D8DA7A56FC4ED02DC4DD4C14FAB7D8 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
 				B21C702A327A1FDEFA6CF37D23D42E93 /* UMCore */,
 			);
 			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		C12ECB665FFB376DAEE5A69C2E763EF6 /* EXKeepAwake */ = {
+			isa = PBXGroup;
+			children = (
+				63006FE3DDD42168985A9223AE3C082A /* EXKeepAwake.h */,
+				8BBF1DF37A6AA6BC313F5CE4D66AEA3F /* EXKeepAwake.m */,
+				2D4CEC5FA88A2BD3BA719D858B273726 /* Pod */,
+				650A05CA899D088D675F0F827F474E3E /* Support Files */,
+			);
+			name = EXKeepAwake;
+			path = "../../packages/expo-keep-awake/ios";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -317,9 +319,9 @@
 			};
 			name = Debug;
 		};
-		94C7752B77A4B37BFD744E69A3F9E840 /* Release */ = {
+		965E5B6D8AF63F4CB182898B96C701D9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B759F41EE39A2F3463B6A7DC113CDB0E /* EXKeepAwake.xcconfig */;
+			baseConfigurationReference = 1E7E4C0DE6544017F8ABAEE1377E0FFF /* EXKeepAwake.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -342,9 +344,9 @@
 			};
 			name = Release;
 		};
-		ADCCFABBD41B3C7C8BBF624927DD66EE /* Debug */ = {
+		C7C73DA4FDC0871D715BE105FBFBE104 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B759F41EE39A2F3463B6A7DC113CDB0E /* EXKeepAwake.xcconfig */;
+			baseConfigurationReference = D9F853412E468CACC59633BFCB48CF98 /* EXKeepAwake.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -372,8 +374,8 @@
 		514B3B43938A18F8902A85F4E991BDE6 /* Build configuration list for PBXNativeTarget "EXKeepAwake" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				ADCCFABBD41B3C7C8BBF624927DD66EE /* Debug */,
-				94C7752B77A4B37BFD744E69A3F9E840 /* Release */,
+				C7C73DA4FDC0871D715BE105FBFBE104 /* Debug */,
+				965E5B6D8AF63F4CB182898B96C701D9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

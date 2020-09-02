@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05665A171D16ED4E323891EFA656FCE3 /* EXTaskService.m in Sources */ = {isa = PBXBuildFile; fileRef = 59DAEA1C79A0FDBE67C2C68F7CE84FC6 /* EXTaskService.m */; };
-		1F9535EB3021D748E3B6DA4508F76F02 /* EXTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CC3AEC55A06E3DBC29C617AFDB16E80 /* EXTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		29E0FB5FA8DFB24AF53BA16F9E21D540 /* EXTaskManagerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AB1CF9B4144D68FE8D66E638C9A038CA /* EXTaskManagerAppDelegate.m */; };
-		2CC0582D9B19774B35469E3D296DEC7B /* EXTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DC8F11E08993DDEBF0C49DEA94B25C36 /* EXTaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		575A4BC8160060D589071B55CCEA2389 /* EXTaskExecutionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 751DF7E1533A75E1C763AD11FCCE9539 /* EXTaskExecutionRequest.m */; };
-		6FE1A4DCC465CACF31894D7695D28B66 /* EXTaskManager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 84E4ED8CE573CBE1AD24DAB3CCC50BDD /* EXTaskManager-dummy.m */; };
-		B786A3E4D3BCCFA82E0E681DAD0EAA58 /* EXTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 60B7106BB8514B16E0ECF6F955EF37C7 /* EXTask.m */; };
-		BDD09B20DBECAFA620E8755D9BB70E86 /* EXTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BE90D4B5F989DCF65DE5BFD68135C13C /* EXTaskManager.m */; };
-		C2447823F0537AE4B6212F631FCF635D /* EXTaskService.h in Headers */ = {isa = PBXBuildFile; fileRef = D5005D5C428E11053A2A0F1C16B1560D /* EXTaskService.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C8DE75524B46D3F3D035B8E8127F4B96 /* EXTaskExecutionRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = BF20B1DAEF11B71D1D9F804A538D4F72 /* EXTaskExecutionRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DCE653F09E3D235D6D2A0723C53387D2 /* EXTaskManagerAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DF3827760A815A9054796CEB7497F3F3 /* EXTaskManagerAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		05665A171D16ED4E323891EFA656FCE3 /* EXTaskService.m in Sources */ = {isa = PBXBuildFile; fileRef = CBF9B8375A35418F7D30E9A05A4F8343 /* EXTaskService.m */; };
+		1F9535EB3021D748E3B6DA4508F76F02 /* EXTask.h in Headers */ = {isa = PBXBuildFile; fileRef = D8F34FAD185ECCA371DE3486033F89AF /* EXTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		29E0FB5FA8DFB24AF53BA16F9E21D540 /* EXTaskManagerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DADA9B3D0A5C5CF66C5A60506CB19FA /* EXTaskManagerAppDelegate.m */; };
+		2CC0582D9B19774B35469E3D296DEC7B /* EXTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D975F8FCBC08F685781BEC963771E520 /* EXTaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		575A4BC8160060D589071B55CCEA2389 /* EXTaskExecutionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C961F8D495D9416315BBFF9E6FF936 /* EXTaskExecutionRequest.m */; };
+		6FE1A4DCC465CACF31894D7695D28B66 /* EXTaskManager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DF0B25063EBEEF55E3E9A31255C7704 /* EXTaskManager-dummy.m */; };
+		B786A3E4D3BCCFA82E0E681DAD0EAA58 /* EXTask.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C9D26C683CFD3BD72409CD736FBE60 /* EXTask.m */; };
+		BDD09B20DBECAFA620E8755D9BB70E86 /* EXTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F49743E3E42CDEE9EA2664818D17E1 /* EXTaskManager.m */; };
+		C2447823F0537AE4B6212F631FCF635D /* EXTaskService.h in Headers */ = {isa = PBXBuildFile; fileRef = 483A964129675F68D72F6D9B318B5D15 /* EXTaskService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C8DE75524B46D3F3D035B8E8127F4B96 /* EXTaskExecutionRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBE752A791FC9CE2FFF5718F78AD80E /* EXTaskExecutionRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DCE653F09E3D235D6D2A0723C53387D2 /* EXTaskManagerAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 23D74150C5E8232BDB83F0A82FD706CD /* EXTaskManagerAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,25 +52,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0CC3AEC55A06E3DBC29C617AFDB16E80 /* EXTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTask.h; path = EXTaskManager/EXTask.h; sourceTree = "<group>"; };
-		2B5F634C21CEBFFBB255E988531030DE /* EXTaskManager.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXTaskManager.xcconfig; sourceTree = "<group>"; };
-		318E2891F8AA28B9A4E7AA9ECE2A54D0 /* EXTaskManager-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXTaskManager-prefix.pch"; sourceTree = "<group>"; };
+		09819C294B469BC80B576C27F9431229 /* EXTaskManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXTaskManager.release.xcconfig; sourceTree = "<group>"; };
+		0CBE752A791FC9CE2FFF5718F78AD80E /* EXTaskExecutionRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskExecutionRequest.h; path = EXTaskManager/EXTaskExecutionRequest.h; sourceTree = "<group>"; };
+		126178ACAB0C500B00126A16E3A67222 /* EXTaskManager.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXTaskManager.debug.xcconfig; sourceTree = "<group>"; };
+		1DF0B25063EBEEF55E3E9A31255C7704 /* EXTaskManager-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXTaskManager-dummy.m"; sourceTree = "<group>"; };
+		23D74150C5E8232BDB83F0A82FD706CD /* EXTaskManagerAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskManagerAppDelegate.h; path = EXTaskManager/EXTaskManagerAppDelegate.h; sourceTree = "<group>"; };
 		4195E20AD3069378B10DF814EC28FDD5 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		483A964129675F68D72F6D9B318B5D15 /* EXTaskService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskService.h; path = EXTaskManager/EXTaskService.h; sourceTree = "<group>"; };
+		4DADA9B3D0A5C5CF66C5A60506CB19FA /* EXTaskManagerAppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskManagerAppDelegate.m; path = EXTaskManager/EXTaskManagerAppDelegate.m; sourceTree = "<group>"; };
 		4F3875BD62C5ED59F7AC09E19616F54A /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
-		59DAEA1C79A0FDBE67C2C68F7CE84FC6 /* EXTaskService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskService.m; path = EXTaskManager/EXTaskService.m; sourceTree = "<group>"; };
-		60B7106BB8514B16E0ECF6F955EF37C7 /* EXTask.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTask.m; path = EXTaskManager/EXTask.m; sourceTree = "<group>"; };
-		751DF7E1533A75E1C763AD11FCCE9539 /* EXTaskExecutionRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskExecutionRequest.m; path = EXTaskManager/EXTaskExecutionRequest.m; sourceTree = "<group>"; };
-		84E4ED8CE573CBE1AD24DAB3CCC50BDD /* EXTaskManager-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXTaskManager-dummy.m"; sourceTree = "<group>"; };
+		5C2275F7B7F02A54E6E2B6C1C9593168 /* EXTaskManager-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXTaskManager-prefix.pch"; sourceTree = "<group>"; };
 		8CD283112DA8107AFEDE66840B84ED1C /* UMTaskManagerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMTaskManagerInterface; path = UMTaskManagerInterface.xcodeproj; sourceTree = "<group>"; };
-		AB1CF9B4144D68FE8D66E638C9A038CA /* EXTaskManagerAppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskManagerAppDelegate.m; path = EXTaskManager/EXTaskManagerAppDelegate.m; sourceTree = "<group>"; };
+		9D5F6D8B6BB83A79792739D2227A85FD /* EXTaskManager.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXTaskManager.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B4677D1564B4CB7AD3766C77CB1BF367 /* UMAppLoader */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMAppLoader; path = UMAppLoader.xcodeproj; sourceTree = "<group>"; };
-		BE90D4B5F989DCF65DE5BFD68135C13C /* EXTaskManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskManager.m; path = EXTaskManager/EXTaskManager.m; sourceTree = "<group>"; };
-		BF20B1DAEF11B71D1D9F804A538D4F72 /* EXTaskExecutionRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskExecutionRequest.h; path = EXTaskManager/EXTaskExecutionRequest.h; sourceTree = "<group>"; };
+		CBF9B8375A35418F7D30E9A05A4F8343 /* EXTaskService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskService.m; path = EXTaskManager/EXTaskService.m; sourceTree = "<group>"; };
 		CF369EE85CCBFC22360B5E1AFEA30530 /* libEXTaskManager.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXTaskManager.a; path = libEXTaskManager.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2F710D82DDAEC31C49BA74A989A3CC8 /* EXTaskManager.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXTaskManager.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		D5005D5C428E11053A2A0F1C16B1560D /* EXTaskService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskService.h; path = EXTaskManager/EXTaskService.h; sourceTree = "<group>"; };
-		DC8F11E08993DDEBF0C49DEA94B25C36 /* EXTaskManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskManager.h; path = EXTaskManager/EXTaskManager.h; sourceTree = "<group>"; };
-		DF3827760A815A9054796CEB7497F3F3 /* EXTaskManagerAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskManagerAppDelegate.h; path = EXTaskManager/EXTaskManagerAppDelegate.h; sourceTree = "<group>"; };
+		D2C961F8D495D9416315BBFF9E6FF936 /* EXTaskExecutionRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskExecutionRequest.m; path = EXTaskManager/EXTaskExecutionRequest.m; sourceTree = "<group>"; };
+		D8C9D26C683CFD3BD72409CD736FBE60 /* EXTask.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTask.m; path = EXTaskManager/EXTask.m; sourceTree = "<group>"; };
+		D8F34FAD185ECCA371DE3486033F89AF /* EXTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTask.h; path = EXTaskManager/EXTask.h; sourceTree = "<group>"; };
+		D975F8FCBC08F685781BEC963771E520 /* EXTaskManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXTaskManager.h; path = EXTaskManager/EXTaskManager.h; sourceTree = "<group>"; };
+		F6F49743E3E42CDEE9EA2664818D17E1 /* EXTaskManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXTaskManager.m; path = EXTaskManager/EXTaskManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +92,46 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		3AE99C2C2ABF458E01624B06EBD12818 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1DF0B25063EBEEF55E3E9A31255C7704 /* EXTaskManager-dummy.m */,
+				5C2275F7B7F02A54E6E2B6C1C9593168 /* EXTaskManager-prefix.pch */,
+				126178ACAB0C500B00126A16E3A67222 /* EXTaskManager.debug.xcconfig */,
+				09819C294B469BC80B576C27F9431229 /* EXTaskManager.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXTaskManager";
+			sourceTree = "<group>";
+		};
+		3E840071F6E18E039999EF74945F194A /* EXTaskManager */ = {
+			isa = PBXGroup;
+			children = (
+				D8F34FAD185ECCA371DE3486033F89AF /* EXTask.h */,
+				D8C9D26C683CFD3BD72409CD736FBE60 /* EXTask.m */,
+				0CBE752A791FC9CE2FFF5718F78AD80E /* EXTaskExecutionRequest.h */,
+				D2C961F8D495D9416315BBFF9E6FF936 /* EXTaskExecutionRequest.m */,
+				D975F8FCBC08F685781BEC963771E520 /* EXTaskManager.h */,
+				F6F49743E3E42CDEE9EA2664818D17E1 /* EXTaskManager.m */,
+				23D74150C5E8232BDB83F0A82FD706CD /* EXTaskManagerAppDelegate.h */,
+				4DADA9B3D0A5C5CF66C5A60506CB19FA /* EXTaskManagerAppDelegate.m */,
+				483A964129675F68D72F6D9B318B5D15 /* EXTaskService.h */,
+				CBF9B8375A35418F7D30E9A05A4F8343 /* EXTaskService.m */,
+				61E9B4DB1AE4479A8D67FBC4B5CBCD69 /* Pod */,
+				3AE99C2C2ABF458E01624B06EBD12818 /* Support Files */,
+			);
+			name = EXTaskManager;
+			path = "../../../../packages/expo-task-manager/ios";
+			sourceTree = "<group>";
+		};
+		61E9B4DB1AE4479A8D67FBC4B5CBCD69 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				9D5F6D8B6BB83A79792739D2227A85FD /* EXTaskManager.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		6BF2294F26FF25D11A09DED2FF6CC434 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -102,50 +143,11 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		7B639C2EC8F52FFB497CE801AE2D9214 /* EXTaskManager */ = {
-			isa = PBXGroup;
-			children = (
-				0CC3AEC55A06E3DBC29C617AFDB16E80 /* EXTask.h */,
-				60B7106BB8514B16E0ECF6F955EF37C7 /* EXTask.m */,
-				BF20B1DAEF11B71D1D9F804A538D4F72 /* EXTaskExecutionRequest.h */,
-				751DF7E1533A75E1C763AD11FCCE9539 /* EXTaskExecutionRequest.m */,
-				DC8F11E08993DDEBF0C49DEA94B25C36 /* EXTaskManager.h */,
-				BE90D4B5F989DCF65DE5BFD68135C13C /* EXTaskManager.m */,
-				DF3827760A815A9054796CEB7497F3F3 /* EXTaskManagerAppDelegate.h */,
-				AB1CF9B4144D68FE8D66E638C9A038CA /* EXTaskManagerAppDelegate.m */,
-				D5005D5C428E11053A2A0F1C16B1560D /* EXTaskService.h */,
-				59DAEA1C79A0FDBE67C2C68F7CE84FC6 /* EXTaskService.m */,
-				99ABCD67B23CD69CC746D43F89F33DC8 /* Pod */,
-				8F10B0326C0F2107109EB57AF1F1FEE8 /* Support Files */,
-			);
-			name = EXTaskManager;
-			path = "../../../../packages/expo-task-manager/ios";
-			sourceTree = "<group>";
-		};
-		8F10B0326C0F2107109EB57AF1F1FEE8 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				2B5F634C21CEBFFBB255E988531030DE /* EXTaskManager.xcconfig */,
-				84E4ED8CE573CBE1AD24DAB3CCC50BDD /* EXTaskManager-dummy.m */,
-				318E2891F8AA28B9A4E7AA9ECE2A54D0 /* EXTaskManager-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXTaskManager";
-			sourceTree = "<group>";
-		};
-		99ABCD67B23CD69CC746D43F89F33DC8 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				D2F710D82DDAEC31C49BA74A989A3CC8 /* EXTaskManager.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		CE2B259287A06C44F3A184DFC368EC8A = {
 			isa = PBXGroup;
 			children = (
 				6BF2294F26FF25D11A09DED2FF6CC434 /* Dependencies */,
-				7B639C2EC8F52FFB497CE801AE2D9214 /* EXTaskManager */,
+				3E840071F6E18E039999EF74945F194A /* EXTaskManager */,
 				1EE8927E062CD1AC6E0CD8FE9853F131 /* Frameworks */,
 				DE65B7EBAB161124E2CE0F2A015BD4AB /* Products */,
 			);
@@ -339,9 +341,9 @@
 			};
 			name = Release;
 		};
-		8EF1B4AC58E4D74BB5AB8CE5C3D55FE4 /* Debug */ = {
+		86EB921C3963B91B404E5D3D219F499B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2B5F634C21CEBFFBB255E988531030DE /* EXTaskManager.xcconfig */;
+			baseConfigurationReference = 09819C294B469BC80B576C27F9431229 /* EXTaskManager.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -361,8 +363,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		A6098BF719541AB06C7F1306E22FFD06 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -428,9 +431,9 @@
 			};
 			name = Debug;
 		};
-		CD0FDEAD9B527FED3B072399B5355209 /* Release */ = {
+		FFDF92CD9ECED7277BB3A6654B25015C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2B5F634C21CEBFFBB255E988531030DE /* EXTaskManager.xcconfig */;
+			baseConfigurationReference = 126178ACAB0C500B00126A16E3A67222 /* EXTaskManager.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -450,9 +453,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -460,8 +462,8 @@
 		60091F6B265982F2C603C47A986F34B3 /* Build configuration list for PBXNativeTarget "EXTaskManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8EF1B4AC58E4D74BB5AB8CE5C3D55FE4 /* Debug */,
-				CD0FDEAD9B527FED3B072399B5355209 /* Release */,
+				FFDF92CD9ECED7277BB3A6654B25015C /* Debug */,
+				86EB921C3963B91B404E5D3D219F499B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

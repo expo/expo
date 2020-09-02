@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		099D716FAEDFD397674C5611E7155CDE /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D925DED64966005ED9C8F390FB33F7CC /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1302359DF0B7A9CD00679D6F8F04BEC1 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 29CA37D68C32096E136D3EC37C3ACA1D /* MallocImpl.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		152B646A074F85D2A1FBBA775FDCC3E1 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB583EE3B1887D35FD2DBE3A9449F23D /* Format.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2093F86B36A43DA948147A9CF5332D5E /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2670EA675E8B416D67BD3FDC1C74A3E /* SpookyHashV2.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		263668CF8E81B50360EF994CA26538C0 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E586EA596640284384908302FE427EE4 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		30F28195AD18B3C2C9E6D35EA68D067B /* Folly-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8AC8778B2201E1D32ED3BA33EA51 /* Folly-dummy.m */; };
-		384986C29EEFB981D04580FE2F9A6044 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C16FB6C0752E2AC4B2579A3A3B8104AB /* String.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		5CE05E0C66F02B9CAC71641364F24326 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32B106B98128FB0DBB99C8C43C7CB4C /* dynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		648329ABF68446881B982928AE99FAD2 /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FFD7C9DF9B87A0241BF5D136AA3444BE /* F14Table.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9897E08E27407067C8FFA7D6FE5FEDB3 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A63FF9270174EDFE44770AB29D892CCD /* Conv.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B76640E8C691CEA5D6B541BF3C2D8784 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0DBE9C80CBDDC3E48906B97035465520 /* json.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D201493016EA15945E2E4EEEBB3482A8 /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 464DC30F89930E6739D1674977F763E5 /* json_pointer.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DBD454D712AB3B96E106A30BB89E3E29 /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2D22E537620633E687EE4A3466EA504 /* ScopeGuard.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DD4A5F6A4B111D84970397A1EF436856 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E6C50D4CC287E8E694092883C07CAEB /* Unicode.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		EC5D634E1E684E6F49CD150D7602633A /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9528774C7C3E26D32674FA3D1DF6F2D8 /* Assume.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F899755A85C1EFE0A645DE37E5D1811A /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B24112F0B02343F001DABC6F3009674E /* ColdClass.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		099D716FAEDFD397674C5611E7155CDE /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 277348353165C2EB7B595853E0EF3894 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1302359DF0B7A9CD00679D6F8F04BEC1 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15ACB2897EDCB4667EE0E0761CDF58B4 /* MallocImpl.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		152B646A074F85D2A1FBBA775FDCC3E1 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A98742543B1B2FDCA74BE2D03AAA0FC /* Format.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2093F86B36A43DA948147A9CF5332D5E /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68145D2D531292FF22953701DC076C6C /* SpookyHashV2.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		263668CF8E81B50360EF994CA26538C0 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 824CB4FBA7F6AEFB726A80CB433523E7 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		30F28195AD18B3C2C9E6D35EA68D067B /* Folly-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8672934E078865EFE002FFF5C11567EF /* Folly-dummy.m */; };
+		384986C29EEFB981D04580FE2F9A6044 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FC7082FFDD8D9123404A277C4EBC5A /* String.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5CE05E0C66F02B9CAC71641364F24326 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03C96FAB5797118622274BF5E7F29C4B /* dynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		648329ABF68446881B982928AE99FAD2 /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0675B3AF3D79C5FCE510E27388D31D1 /* F14Table.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9897E08E27407067C8FFA7D6FE5FEDB3 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46497B1D24C175B68B2C54E732903B61 /* Conv.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B76640E8C691CEA5D6B541BF3C2D8784 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5B9E77201EE94707D053C282A8BD2C /* json.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D201493016EA15945E2E4EEEBB3482A8 /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3D90C188A05E97258751D955C9CACD4 /* json_pointer.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DBD454D712AB3B96E106A30BB89E3E29 /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06F5193137CFFCAA796FDFB9D45904E /* ScopeGuard.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DD4A5F6A4B111D84970397A1EF436856 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C4413B34460FDF5FDF1525137FBECC4C /* Unicode.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EC5D634E1E684E6F49CD150D7602633A /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F37F9B733EC5E9CEF30822F9DB0FCD3 /* Assume.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F899755A85C1EFE0A645DE37E5D1811A /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FBFB7D61A3EA82B9AA551CC5CE24114 /* ColdClass.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,28 +50,29 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03C96FAB5797118622274BF5E7F29C4B /* dynamic.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = dynamic.cpp; path = folly/dynamic.cpp; sourceTree = "<group>"; };
 		0CE66E39013028C80C062C515A568DFB /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
-		0DBE9C80CBDDC3E48906B97035465520 /* json.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = json.cpp; path = folly/json.cpp; sourceTree = "<group>"; };
-		126F8117B38F9C1A10685ECABC0EFC19 /* Folly-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Folly-prefix.pch"; sourceTree = "<group>"; };
+		15ACB2897EDCB4667EE0E0761CDF58B4 /* MallocImpl.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = MallocImpl.cpp; path = folly/memory/detail/MallocImpl.cpp; sourceTree = "<group>"; };
+		1A98742543B1B2FDCA74BE2D03AAA0FC /* Format.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Format.cpp; path = folly/Format.cpp; sourceTree = "<group>"; };
+		277348353165C2EB7B595853E0EF3894 /* Demangle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Demangle.cpp; path = folly/detail/Demangle.cpp; sourceTree = "<group>"; };
 		28081F2DF85A9F5DAB33F83BF4A38723 /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
-		29CA37D68C32096E136D3EC37C3ACA1D /* MallocImpl.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = MallocImpl.cpp; path = folly/memory/detail/MallocImpl.cpp; sourceTree = "<group>"; };
-		464DC30F89930E6739D1674977F763E5 /* json_pointer.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = json_pointer.cpp; path = folly/json_pointer.cpp; sourceTree = "<group>"; };
-		7E6C50D4CC287E8E694092883C07CAEB /* Unicode.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Unicode.cpp; path = folly/Unicode.cpp; sourceTree = "<group>"; };
+		3F37F9B733EC5E9CEF30822F9DB0FCD3 /* Assume.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Assume.cpp; path = folly/lang/Assume.cpp; sourceTree = "<group>"; };
+		46497B1D24C175B68B2C54E732903B61 /* Conv.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Conv.cpp; path = folly/Conv.cpp; sourceTree = "<group>"; };
+		46FC7082FFDD8D9123404A277C4EBC5A /* String.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = String.cpp; path = folly/String.cpp; sourceTree = "<group>"; };
+		4FBFB7D61A3EA82B9AA551CC5CE24114 /* ColdClass.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ColdClass.cpp; path = folly/lang/ColdClass.cpp; sourceTree = "<group>"; };
+		5E5B9E77201EE94707D053C282A8BD2C /* json.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = json.cpp; path = folly/json.cpp; sourceTree = "<group>"; };
+		68145D2D531292FF22953701DC076C6C /* SpookyHashV2.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = SpookyHashV2.cpp; path = folly/hash/SpookyHashV2.cpp; sourceTree = "<group>"; };
+		824CB4FBA7F6AEFB726A80CB433523E7 /* Demangle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Demangle.cpp; path = folly/Demangle.cpp; sourceTree = "<group>"; };
+		8672934E078865EFE002FFF5C11567EF /* Folly-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Folly-dummy.m"; sourceTree = "<group>"; };
+		89906260910A852B53B3D762D6BF737D /* Folly.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Folly.release.xcconfig; sourceTree = "<group>"; };
 		8C3367BF5E897C1B971A6095545AAF23 /* libFolly.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libFolly.a; path = libFolly.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		9528774C7C3E26D32674FA3D1DF6F2D8 /* Assume.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Assume.cpp; path = folly/lang/Assume.cpp; sourceTree = "<group>"; };
-		A63FF9270174EDFE44770AB29D892CCD /* Conv.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Conv.cpp; path = folly/Conv.cpp; sourceTree = "<group>"; };
-		B24112F0B02343F001DABC6F3009674E /* ColdClass.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ColdClass.cpp; path = folly/lang/ColdClass.cpp; sourceTree = "<group>"; };
-		C16FB6C0752E2AC4B2579A3A3B8104AB /* String.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = String.cpp; path = folly/String.cpp; sourceTree = "<group>"; };
-		D2670EA675E8B416D67BD3FDC1C74A3E /* SpookyHashV2.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = SpookyHashV2.cpp; path = folly/hash/SpookyHashV2.cpp; sourceTree = "<group>"; };
-		D2D22E537620633E687EE4A3466EA504 /* ScopeGuard.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ScopeGuard.cpp; path = folly/ScopeGuard.cpp; sourceTree = "<group>"; };
-		D5DA2EF5CDF713D407615D4A9D2D924F /* Folly.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Folly.xcconfig; sourceTree = "<group>"; };
-		D925DED64966005ED9C8F390FB33F7CC /* Demangle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Demangle.cpp; path = folly/detail/Demangle.cpp; sourceTree = "<group>"; };
-		DDAC8AC8778B2201E1D32ED3BA33EA51 /* Folly-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Folly-dummy.m"; sourceTree = "<group>"; };
-		E32B106B98128FB0DBB99C8C43C7CB4C /* dynamic.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = dynamic.cpp; path = folly/dynamic.cpp; sourceTree = "<group>"; };
-		E586EA596640284384908302FE427EE4 /* Demangle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Demangle.cpp; path = folly/Demangle.cpp; sourceTree = "<group>"; };
+		A0675B3AF3D79C5FCE510E27388D31D1 /* F14Table.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = F14Table.cpp; path = folly/container/detail/F14Table.cpp; sourceTree = "<group>"; };
+		A3E25A4E5EBC942498A7B62429D8D45C /* Folly-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Folly-prefix.pch"; sourceTree = "<group>"; };
+		A9C3285499C91652EB8B2635E8763859 /* Folly.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Folly.debug.xcconfig; sourceTree = "<group>"; };
+		B06F5193137CFFCAA796FDFB9D45904E /* ScopeGuard.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ScopeGuard.cpp; path = folly/ScopeGuard.cpp; sourceTree = "<group>"; };
+		C4413B34460FDF5FDF1525137FBECC4C /* Unicode.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Unicode.cpp; path = folly/Unicode.cpp; sourceTree = "<group>"; };
 		F38A732023BFACDE8354EA52B33591F9 /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
-		FB583EE3B1887D35FD2DBE3A9449F23D /* Format.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Format.cpp; path = folly/Format.cpp; sourceTree = "<group>"; };
-		FFD7C9DF9B87A0241BF5D136AA3444BE /* F14Table.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = F14Table.cpp; path = folly/container/detail/F14Table.cpp; sourceTree = "<group>"; };
+		F3D90C188A05E97258751D955C9CACD4 /* json_pointer.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = json_pointer.cpp; path = folly/json_pointer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,49 +94,50 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		573D754F5668BECA3E5216605F153885 /* Support Files */ = {
+		B159ECD70FAD07F2BD760BC1AC1D8A7C /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				D5DA2EF5CDF713D407615D4A9D2D924F /* Folly.xcconfig */,
-				DDAC8AC8778B2201E1D32ED3BA33EA51 /* Folly-dummy.m */,
-				126F8117B38F9C1A10685ECABC0EFC19 /* Folly-prefix.pch */,
+				8672934E078865EFE002FFF5C11567EF /* Folly-dummy.m */,
+				A3E25A4E5EBC942498A7B62429D8D45C /* Folly-prefix.pch */,
+				A9C3285499C91652EB8B2635E8763859 /* Folly.debug.xcconfig */,
+				89906260910A852B53B3D762D6BF737D /* Folly.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/Folly";
-			sourceTree = "<group>";
-		};
-		7941C147967923320718339286D25E9B /* Folly */ = {
-			isa = PBXGroup;
-			children = (
-				9528774C7C3E26D32674FA3D1DF6F2D8 /* Assume.cpp */,
-				B24112F0B02343F001DABC6F3009674E /* ColdClass.cpp */,
-				A63FF9270174EDFE44770AB29D892CCD /* Conv.cpp */,
-				E586EA596640284384908302FE427EE4 /* Demangle.cpp */,
-				D925DED64966005ED9C8F390FB33F7CC /* Demangle.cpp */,
-				E32B106B98128FB0DBB99C8C43C7CB4C /* dynamic.cpp */,
-				FFD7C9DF9B87A0241BF5D136AA3444BE /* F14Table.cpp */,
-				FB583EE3B1887D35FD2DBE3A9449F23D /* Format.cpp */,
-				0DBE9C80CBDDC3E48906B97035465520 /* json.cpp */,
-				464DC30F89930E6739D1674977F763E5 /* json_pointer.cpp */,
-				29CA37D68C32096E136D3EC37C3ACA1D /* MallocImpl.cpp */,
-				D2D22E537620633E687EE4A3466EA504 /* ScopeGuard.cpp */,
-				D2670EA675E8B416D67BD3FDC1C74A3E /* SpookyHashV2.cpp */,
-				C16FB6C0752E2AC4B2579A3A3B8104AB /* String.cpp */,
-				7E6C50D4CC287E8E694092883C07CAEB /* Unicode.cpp */,
-				573D754F5668BECA3E5216605F153885 /* Support Files */,
-			);
-			name = Folly;
-			path = Folly;
 			sourceTree = "<group>";
 		};
 		C4FF9CC4877676CD4F2394B93164C3B0 = {
 			isa = PBXGroup;
 			children = (
 				F97B955B9F973AC394093285B3DD6A74 /* Dependencies */,
-				7941C147967923320718339286D25E9B /* Folly */,
+				F5B707EA508FA174C27DA22BAEDC527A /* Folly */,
 				FC5AAEC10C0D4A181D402F5608E2D838 /* Frameworks */,
 				5091C0437D8C65EE3EEF470659DB3BF1 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		F5B707EA508FA174C27DA22BAEDC527A /* Folly */ = {
+			isa = PBXGroup;
+			children = (
+				3F37F9B733EC5E9CEF30822F9DB0FCD3 /* Assume.cpp */,
+				4FBFB7D61A3EA82B9AA551CC5CE24114 /* ColdClass.cpp */,
+				46497B1D24C175B68B2C54E732903B61 /* Conv.cpp */,
+				824CB4FBA7F6AEFB726A80CB433523E7 /* Demangle.cpp */,
+				277348353165C2EB7B595853E0EF3894 /* Demangle.cpp */,
+				03C96FAB5797118622274BF5E7F29C4B /* dynamic.cpp */,
+				A0675B3AF3D79C5FCE510E27388D31D1 /* F14Table.cpp */,
+				1A98742543B1B2FDCA74BE2D03AAA0FC /* Format.cpp */,
+				5E5B9E77201EE94707D053C282A8BD2C /* json.cpp */,
+				F3D90C188A05E97258751D955C9CACD4 /* json_pointer.cpp */,
+				15ACB2897EDCB4667EE0E0761CDF58B4 /* MallocImpl.cpp */,
+				B06F5193137CFFCAA796FDFB9D45904E /* ScopeGuard.cpp */,
+				68145D2D531292FF22953701DC076C6C /* SpookyHashV2.cpp */,
+				46FC7082FFDD8D9123404A277C4EBC5A /* String.cpp */,
+				C4413B34460FDF5FDF1525137FBECC4C /* Unicode.cpp */,
+				B159ECD70FAD07F2BD760BC1AC1D8A7C /* Support Files */,
+			);
+			name = Folly;
+			path = Folly;
 			sourceTree = "<group>";
 		};
 		F97B955B9F973AC394093285B3DD6A74 /* Dependencies */ = {
@@ -271,6 +273,30 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		8083993BC10BC70022A269033F93B75B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89906260910A852B53B3D762D6BF737D /* Folly.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/Folly/Folly-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = folly;
+				PRODUCT_NAME = Folly;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		8FE960564CC14F9B9342A9053B5E0F4D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -335,9 +361,9 @@
 			};
 			name = Debug;
 		};
-		992260F4FF9688563A83D2D3E9E06F5F /* Debug */ = {
+		DDD36063D9A02F10602169269D481F55 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5DA2EF5CDF713D407615D4A9D2D924F /* Folly.xcconfig */;
+			baseConfigurationReference = A9C3285499C91652EB8B2635E8763859 /* Folly.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -357,30 +383,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		DC8E94F84BED5BD131A39908FCD61510 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5DA2EF5CDF713D407615D4A9D2D924F /* Folly.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/Folly/Folly-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = folly;
-				PRODUCT_NAME = Folly;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		FFAF1DB89EA39F512C259F6D4473005F /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -457,8 +459,8 @@
 		E6749141538F9E0A8A7E20F8FAB513B2 /* Build configuration list for PBXNativeTarget "Folly" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				992260F4FF9688563A83D2D3E9E06F5F /* Debug */,
-				DC8E94F84BED5BD131A39908FCD61510 /* Release */,
+				DDD36063D9A02F10602169269D481F55 /* Debug */,
+				8083993BC10BC70022A269033F93B75B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

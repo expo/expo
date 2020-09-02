@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		026E2FD70D5BD3E342F7A4C70EC8A90E /* EXStoreReview-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD9EFC19D835C2630466AAA3C3BC465 /* EXStoreReview-dummy.m */; };
-		47935A8EE058263146617A66DD4E92C4 /* EXStoreReviewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FBF9644292B2BE89E79CEB19C88C2F74 /* EXStoreReviewModule.m */; };
-		E64CEAC098A682F3213893672B61BE80 /* EXStoreReviewModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A28442347F8D86933F5B803C479CB07 /* EXStoreReviewModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		026E2FD70D5BD3E342F7A4C70EC8A90E /* EXStoreReview-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 213C900BA72709C3908A54F2AE6336D6 /* EXStoreReview-dummy.m */; };
+		47935A8EE058263146617A66DD4E92C4 /* EXStoreReviewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E35F0C6E4DB707E67960CE72B43F5D4 /* EXStoreReviewModule.m */; };
+		E64CEAC098A682F3213893672B61BE80 /* EXStoreReviewModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC4496ED5BFA9DA1CDC3A2AA437F1A3 /* EXStoreReviewModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,13 +24,14 @@
 
 /* Begin PBXFileReference section */
 		0D89D8AEF10EA17B383D3838388D7280 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		2A28442347F8D86933F5B803C479CB07 /* EXStoreReviewModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXStoreReviewModule.h; path = EXStoreReview/EXStoreReviewModule.h; sourceTree = "<group>"; };
-		4BD9EFC19D835C2630466AAA3C3BC465 /* EXStoreReview-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXStoreReview-dummy.m"; sourceTree = "<group>"; };
-		4CE8A726C2BA75F25F20BA9820740149 /* EXStoreReview.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXStoreReview.xcconfig; sourceTree = "<group>"; };
-		53C7B7FFA9F6DF3F1EBA96B7CE3E870C /* EXStoreReview.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXStoreReview.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		213C900BA72709C3908A54F2AE6336D6 /* EXStoreReview-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXStoreReview-dummy.m"; sourceTree = "<group>"; };
+		3E35F0C6E4DB707E67960CE72B43F5D4 /* EXStoreReviewModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXStoreReviewModule.m; path = EXStoreReview/EXStoreReviewModule.m; sourceTree = "<group>"; };
 		5AC167129EC66465B1EA65864E0CBB68 /* libEXStoreReview.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXStoreReview.a; path = libEXStoreReview.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		609509F6C965A0113211E6E4B7FD45F4 /* EXStoreReview-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXStoreReview-prefix.pch"; sourceTree = "<group>"; };
-		FBF9644292B2BE89E79CEB19C88C2F74 /* EXStoreReviewModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXStoreReviewModule.m; path = EXStoreReview/EXStoreReviewModule.m; sourceTree = "<group>"; };
+		8BC4496ED5BFA9DA1CDC3A2AA437F1A3 /* EXStoreReviewModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXStoreReviewModule.h; path = EXStoreReview/EXStoreReviewModule.h; sourceTree = "<group>"; };
+		A476086232797DA5254D3EEDA4BB4EEA /* EXStoreReview.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXStoreReview.release.xcconfig; sourceTree = "<group>"; };
+		ADA4DAD7C20776CD202445029B76C2F8 /* EXStoreReview.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXStoreReview.debug.xcconfig; sourceTree = "<group>"; };
+		E0EDE9607FB57DE72228EEF31B9BC508 /* EXStoreReview-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXStoreReview-prefix.pch"; sourceTree = "<group>"; };
+		E7BA96EB4DEF4655E746742CE5F88904 /* EXStoreReview.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXStoreReview.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,14 +45,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		18CE45FE43242749C9AF0B2AC5C5DCE6 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				53C7B7FFA9F6DF3F1EBA96B7CE3E870C /* EXStoreReview.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		3BA00F156DF2BC6E3FF57D3336621BFB /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -60,13 +53,13 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		883C1C325BEEF415A9379F0753608275 /* EXStoreReview */ = {
+		786711F2927113D52F85EFAB696E4B0D /* EXStoreReview */ = {
 			isa = PBXGroup;
 			children = (
-				2A28442347F8D86933F5B803C479CB07 /* EXStoreReviewModule.h */,
-				FBF9644292B2BE89E79CEB19C88C2F74 /* EXStoreReviewModule.m */,
-				18CE45FE43242749C9AF0B2AC5C5DCE6 /* Pod */,
-				C5E2317072C31A2395D60DA465F664AF /* Support Files */,
+				8BC4496ED5BFA9DA1CDC3A2AA437F1A3 /* EXStoreReviewModule.h */,
+				3E35F0C6E4DB707E67960CE72B43F5D4 /* EXStoreReviewModule.m */,
+				CB125313EB201E1C95394126B6BC7BE4 /* Pod */,
+				DF33487A530F1C928AB0E384CA026B1C /* Support Files */,
 			);
 			name = EXStoreReview;
 			path = "../../packages/expo-store-review/ios";
@@ -76,21 +69,18 @@
 			isa = PBXGroup;
 			children = (
 				3BA00F156DF2BC6E3FF57D3336621BFB /* Dependencies */,
-				883C1C325BEEF415A9379F0753608275 /* EXStoreReview */,
+				786711F2927113D52F85EFAB696E4B0D /* EXStoreReview */,
 				EE5395B1A46D2616FB191A007BCDFF6C /* Frameworks */,
 				DD94886E2ED6BF95AD6092C4F58B07CF /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		C5E2317072C31A2395D60DA465F664AF /* Support Files */ = {
+		CB125313EB201E1C95394126B6BC7BE4 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				4CE8A726C2BA75F25F20BA9820740149 /* EXStoreReview.xcconfig */,
-				4BD9EFC19D835C2630466AAA3C3BC465 /* EXStoreReview-dummy.m */,
-				609509F6C965A0113211E6E4B7FD45F4 /* EXStoreReview-prefix.pch */,
+				E7BA96EB4DEF4655E746742CE5F88904 /* EXStoreReview.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXStoreReview";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		DD94886E2ED6BF95AD6092C4F58B07CF /* Products */ = {
@@ -99,6 +89,18 @@
 				5AC167129EC66465B1EA65864E0CBB68 /* libEXStoreReview.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		DF33487A530F1C928AB0E384CA026B1C /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				213C900BA72709C3908A54F2AE6336D6 /* EXStoreReview-dummy.m */,
+				E0EDE9607FB57DE72228EEF31B9BC508 /* EXStoreReview-prefix.pch */,
+				ADA4DAD7C20776CD202445029B76C2F8 /* EXStoreReview.debug.xcconfig */,
+				A476086232797DA5254D3EEDA4BB4EEA /* EXStoreReview.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXStoreReview";
 			sourceTree = "<group>";
 		};
 		EE5395B1A46D2616FB191A007BCDFF6C /* Frameworks */ = {
@@ -193,9 +195,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		6CFA9EBD52AD2F7DBAFBBDE3669BD26D /* Release */ = {
+		33E040235601D0A2705777F87F2AB592 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4CE8A726C2BA75F25F20BA9820740149 /* EXStoreReview.xcconfig */;
+			baseConfigurationReference = ADA4DAD7C20776CD202445029B76C2F8 /* EXStoreReview.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -214,9 +216,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		9816D7BA794D7416F5C1F6094139153E /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -342,9 +343,9 @@
 			};
 			name = Debug;
 		};
-		D7F17F8B0A8E3111A3E02C01CBA8A923 /* Debug */ = {
+		F96E296D86A5CA9BC33102B08FB7586D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4CE8A726C2BA75F25F20BA9820740149 /* EXStoreReview.xcconfig */;
+			baseConfigurationReference = A476086232797DA5254D3EEDA4BB4EEA /* EXStoreReview.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -363,8 +364,9 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -381,8 +383,8 @@
 		4008F4A8FAB4437D128D364015B25B45 /* Build configuration list for PBXNativeTarget "EXStoreReview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D7F17F8B0A8E3111A3E02C01CBA8A923 /* Debug */,
-				6CFA9EBD52AD2F7DBAFBBDE3669BD26D /* Release */,
+				33E040235601D0A2705777F87F2AB592 /* Debug */,
+				F96E296D86A5CA9BC33102B08FB7586D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

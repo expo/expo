@@ -7,25 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27B0C4B242F4972D2AC5F3AE8A109947 /* EXAdIconViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E33B9649814A93B60D2A3A3B29DE4CE /* EXAdIconViewManager.m */; };
-		286221492F92C8FEBCD0BE5BEF6BAD08 /* EXNativeMediaViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ABDB9C5105AA22A3DF5F27B1ABC1EEA9 /* EXNativeMediaViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		299B934842C58EEF6346786656F38D0E /* EXNativeAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B40AD5C4E7111A313EE4082B75D8D6F /* EXNativeAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2B7ECAF96D50D9433627C05F0B2AE205 /* EXNativeMediaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 339AA27A8132FD35E90CC06466CC077D /* EXNativeMediaViewManager.m */; };
-		2D28D8FE987953AC131747394D919A46 /* EXAdOptionsViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4821C8305390FBF8F5FF19B0E9D60329 /* EXAdOptionsViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3958A7A8DFF5F9E23196C571360914E6 /* EXBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CC2CB4C99B56103905EB6E36A3A596 /* EXBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6251841AE87B53403DE90C94D82B85F1 /* EXNativeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = CAE963DDC07E92C9A4BDBBD678E6A81F /* EXNativeAdView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		65645577AEDCBAE1758F3791D6311B5E /* EXBannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 050EC44FF934D8695AAC98832232097A /* EXBannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		659BC578D925FD3E89650C881C246223 /* EXAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A28D3E5AF1459BC9956A37101D140016 /* EXAdSettingsManager.m */; };
-		72189AB0721A11734754F0C8023CFD56 /* EXInterstitialAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D07653EF92E7BAF0796C282D4DFA9378 /* EXInterstitialAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7F6886C5DC808F90C101335C7AACFD6F /* EXNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C150A9055535A16087A52594033D211 /* EXNativeAdView.m */; };
-		86227C8B36F9A0F689C95DB605B7C5A9 /* EXBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A8664C0AF3F6AD04998833471578AA63 /* EXBannerViewManager.m */; };
-		8B68BCE1AFFFC382C444371A1E8ECA82 /* EXAdOptionsViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F7F0715486C6CCE1AE481E8FAA7C20D /* EXAdOptionsViewManager.m */; };
-		9705C6289518B420E1D42B0EB7114965 /* EXAdsFacebook-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BAF4F81354B16B475B6FB3CBC84C3958 /* EXAdsFacebook-dummy.m */; };
-		BBC6002F2E82C9C311FE10E73669EFAF /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE589DD45849B7DD12A731103DB655B /* EXBannerView.m */; };
-		D10338AA0E659459D79AD59E1E7FE853 /* EXAdSettingsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BF9F8F454BAF6CAE9E7EAFDE6667F32 /* EXAdSettingsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DE2DBA0276008400BF05B57FC43B4397 /* EXInterstitialAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E88361CD18EA70D240AB934005F35B8 /* EXInterstitialAdManager.m */; };
-		EBB2229F313F83593AD38E3EC71B6E9C /* EXAdIconViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 338EFF00BF551B21939E9CDFA158EA0D /* EXAdIconViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FB2C84133BB2CE9E7132A60FE56B9475 /* EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7DCF63BFDC1094FDB18E42E00C5FBC /* EXNativeAdManager.m */; };
+		27B0C4B242F4972D2AC5F3AE8A109947 /* EXAdIconViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 310E67DD804C63B4F029B8D0064AB88A /* EXAdIconViewManager.m */; };
+		286221492F92C8FEBCD0BE5BEF6BAD08 /* EXNativeMediaViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A91C7C08DF9A0248D16C79C20F67A2F2 /* EXNativeMediaViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		299B934842C58EEF6346786656F38D0E /* EXNativeAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87800D9AAB32D9F65742B57DA31FDDF2 /* EXNativeAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2B7ECAF96D50D9433627C05F0B2AE205 /* EXNativeMediaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59BC3D45D1FF39DE4EC9FB305CA4B95 /* EXNativeMediaViewManager.m */; };
+		2D28D8FE987953AC131747394D919A46 /* EXAdOptionsViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 814C49040201117C09854935F6DAF9FB /* EXAdOptionsViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3958A7A8DFF5F9E23196C571360914E6 /* EXBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5AFDFBC5A610C0687E619DA94AE363 /* EXBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6251841AE87B53403DE90C94D82B85F1 /* EXNativeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B2681E802068C5FF56B3406D21A2090 /* EXNativeAdView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		65645577AEDCBAE1758F3791D6311B5E /* EXBannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BDACB75119B6906E4B7763FA19CC778 /* EXBannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		659BC578D925FD3E89650C881C246223 /* EXAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E5E2C497B981055216BD3D6D3AD5 /* EXAdSettingsManager.m */; };
+		72189AB0721A11734754F0C8023CFD56 /* EXInterstitialAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BD3BC84F95CA0525B20CAF27B30178A /* EXInterstitialAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7F6886C5DC808F90C101335C7AACFD6F /* EXNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AC0CCFA7E4050F59AF47CEEDF1D76D2 /* EXNativeAdView.m */; };
+		86227C8B36F9A0F689C95DB605B7C5A9 /* EXBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C69A20503EA51D3DABB45BD64776EF49 /* EXBannerViewManager.m */; };
+		8B68BCE1AFFFC382C444371A1E8ECA82 /* EXAdOptionsViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C82F1C1FE12A397DEBFCE5DB08B15F8 /* EXAdOptionsViewManager.m */; };
+		9705C6289518B420E1D42B0EB7114965 /* EXAdsFacebook-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E12B8911C1C51BD48F4BD4B60F8CE047 /* EXAdsFacebook-dummy.m */; };
+		BBC6002F2E82C9C311FE10E73669EFAF /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = C88A9D295ED28B13ACF23ED5FDDCF28B /* EXBannerView.m */; };
+		D10338AA0E659459D79AD59E1E7FE853 /* EXAdSettingsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 392098D21D270A299DBC4B15BE9E50E0 /* EXAdSettingsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DE2DBA0276008400BF05B57FC43B4397 /* EXInterstitialAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 16B10856914ADF0FFBE82B35E05C9BFB /* EXInterstitialAdManager.m */; };
+		EBB2229F313F83593AD38E3EC71B6E9C /* EXAdIconViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C44F48A489E377E90CA32198CA636624 /* EXAdIconViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FB2C84133BB2CE9E7132A60FE56B9475 /* EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AE947E9CB54AFBCDC1CC6C889231988 /* EXNativeAdManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,31 +46,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0401A7C1AE20D4E7CFFCC43D2A8845A8 /* EXAdsFacebook-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAdsFacebook-prefix.pch"; sourceTree = "<group>"; };
-		050EC44FF934D8695AAC98832232097A /* EXBannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBannerViewManager.h; path = EXAdsFacebook/EXBannerViewManager.h; sourceTree = "<group>"; };
-		2B40AD5C4E7111A313EE4082B75D8D6F /* EXNativeAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeAdManager.h; path = EXAdsFacebook/EXNativeAdManager.h; sourceTree = "<group>"; };
+		16B10856914ADF0FFBE82B35E05C9BFB /* EXInterstitialAdManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXInterstitialAdManager.m; path = EXAdsFacebook/EXInterstitialAdManager.m; sourceTree = "<group>"; };
 		2E646D36A8FBC620CEC35887639914D6 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		30370C30637C5BC8B26AF64A1A750B38 /* FBAudienceNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBAudienceNetwork; path = FBAudienceNetwork.xcodeproj; sourceTree = "<group>"; };
-		338EFF00BF551B21939E9CDFA158EA0D /* EXAdIconViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdIconViewManager.h; path = EXAdsFacebook/EXAdIconViewManager.h; sourceTree = "<group>"; };
-		339AA27A8132FD35E90CC06466CC077D /* EXNativeMediaViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNativeMediaViewManager.m; path = EXAdsFacebook/EXNativeMediaViewManager.m; sourceTree = "<group>"; };
-		4821C8305390FBF8F5FF19B0E9D60329 /* EXAdOptionsViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdOptionsViewManager.h; path = EXAdsFacebook/EXAdOptionsViewManager.h; sourceTree = "<group>"; };
-		4E33B9649814A93B60D2A3A3B29DE4CE /* EXAdIconViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdIconViewManager.m; path = EXAdsFacebook/EXAdIconViewManager.m; sourceTree = "<group>"; };
+		310E67DD804C63B4F029B8D0064AB88A /* EXAdIconViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdIconViewManager.m; path = EXAdsFacebook/EXAdIconViewManager.m; sourceTree = "<group>"; };
+		392098D21D270A299DBC4B15BE9E50E0 /* EXAdSettingsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdSettingsManager.h; path = EXAdsFacebook/EXAdSettingsManager.h; sourceTree = "<group>"; };
+		3AE947E9CB54AFBCDC1CC6C889231988 /* EXNativeAdManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNativeAdManager.m; path = EXAdsFacebook/EXNativeAdManager.m; sourceTree = "<group>"; };
+		3BDACB75119B6906E4B7763FA19CC778 /* EXBannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBannerViewManager.h; path = EXAdsFacebook/EXBannerViewManager.h; sourceTree = "<group>"; };
+		3C82F1C1FE12A397DEBFCE5DB08B15F8 /* EXAdOptionsViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdOptionsViewManager.m; path = EXAdsFacebook/EXAdOptionsViewManager.m; sourceTree = "<group>"; };
+		40892ADB7353B34B18BA39A47A38382A /* EXAdsFacebook-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAdsFacebook-prefix.pch"; sourceTree = "<group>"; };
+		5AC0CCFA7E4050F59AF47CEEDF1D76D2 /* EXNativeAdView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNativeAdView.m; path = EXAdsFacebook/EXNativeAdView.m; sourceTree = "<group>"; };
 		5B087829C54DC48406CAE6DA7945130C /* libEXAdsFacebook.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAdsFacebook.a; path = libEXAdsFacebook.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		5BF9F8F454BAF6CAE9E7EAFDE6667F32 /* EXAdSettingsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdSettingsManager.h; path = EXAdsFacebook/EXAdSettingsManager.h; sourceTree = "<group>"; };
-		5E88361CD18EA70D240AB934005F35B8 /* EXInterstitialAdManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXInterstitialAdManager.m; path = EXAdsFacebook/EXInterstitialAdManager.m; sourceTree = "<group>"; };
-		66CC2CB4C99B56103905EB6E36A3A596 /* EXBannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBannerView.h; path = EXAdsFacebook/EXBannerView.h; sourceTree = "<group>"; };
-		6F7F0715486C6CCE1AE481E8FAA7C20D /* EXAdOptionsViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdOptionsViewManager.m; path = EXAdsFacebook/EXAdOptionsViewManager.m; sourceTree = "<group>"; };
-		8C150A9055535A16087A52594033D211 /* EXNativeAdView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNativeAdView.m; path = EXAdsFacebook/EXNativeAdView.m; sourceTree = "<group>"; };
-		8C7DCF63BFDC1094FDB18E42E00C5FBC /* EXNativeAdManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNativeAdManager.m; path = EXAdsFacebook/EXNativeAdManager.m; sourceTree = "<group>"; };
-		A28D3E5AF1459BC9956A37101D140016 /* EXAdSettingsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdSettingsManager.m; path = EXAdsFacebook/EXAdSettingsManager.m; sourceTree = "<group>"; };
-		A42F05BA17E44AA4D3A7835AC816A02A /* EXAdsFacebook.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAdsFacebook.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		A8664C0AF3F6AD04998833471578AA63 /* EXBannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBannerViewManager.m; path = EXAdsFacebook/EXBannerViewManager.m; sourceTree = "<group>"; };
-		ABDB9C5105AA22A3DF5F27B1ABC1EEA9 /* EXNativeMediaViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeMediaViewManager.h; path = EXAdsFacebook/EXNativeMediaViewManager.h; sourceTree = "<group>"; };
-		BAF4F81354B16B475B6FB3CBC84C3958 /* EXAdsFacebook-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAdsFacebook-dummy.m"; sourceTree = "<group>"; };
-		CAE963DDC07E92C9A4BDBBD678E6A81F /* EXNativeAdView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeAdView.h; path = EXAdsFacebook/EXNativeAdView.h; sourceTree = "<group>"; };
-		CD6FCACD02FF705FB88BEAE283C14D90 /* EXAdsFacebook.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAdsFacebook.xcconfig; sourceTree = "<group>"; };
-		D07653EF92E7BAF0796C282D4DFA9378 /* EXInterstitialAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXInterstitialAdManager.h; path = EXAdsFacebook/EXInterstitialAdManager.h; sourceTree = "<group>"; };
-		DEE589DD45849B7DD12A731103DB655B /* EXBannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBannerView.m; path = EXAdsFacebook/EXBannerView.m; sourceTree = "<group>"; };
+		6BD3BC84F95CA0525B20CAF27B30178A /* EXInterstitialAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXInterstitialAdManager.h; path = EXAdsFacebook/EXInterstitialAdManager.h; sourceTree = "<group>"; };
+		6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAdsFacebook.debug.xcconfig; sourceTree = "<group>"; };
+		7B2681E802068C5FF56B3406D21A2090 /* EXNativeAdView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeAdView.h; path = EXAdsFacebook/EXNativeAdView.h; sourceTree = "<group>"; };
+		814C49040201117C09854935F6DAF9FB /* EXAdOptionsViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdOptionsViewManager.h; path = EXAdsFacebook/EXAdOptionsViewManager.h; sourceTree = "<group>"; };
+		84C2E5E2C497B981055216BD3D6D3AD5 /* EXAdSettingsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdSettingsManager.m; path = EXAdsFacebook/EXAdSettingsManager.m; sourceTree = "<group>"; };
+		87800D9AAB32D9F65742B57DA31FDDF2 /* EXNativeAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeAdManager.h; path = EXAdsFacebook/EXNativeAdManager.h; sourceTree = "<group>"; };
+		9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAdsFacebook.release.xcconfig; sourceTree = "<group>"; };
+		A91C7C08DF9A0248D16C79C20F67A2F2 /* EXNativeMediaViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeMediaViewManager.h; path = EXAdsFacebook/EXNativeMediaViewManager.h; sourceTree = "<group>"; };
+		B59BC3D45D1FF39DE4EC9FB305CA4B95 /* EXNativeMediaViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNativeMediaViewManager.m; path = EXAdsFacebook/EXNativeMediaViewManager.m; sourceTree = "<group>"; };
+		C44F48A489E377E90CA32198CA636624 /* EXAdIconViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdIconViewManager.h; path = EXAdsFacebook/EXAdIconViewManager.h; sourceTree = "<group>"; };
+		C69A20503EA51D3DABB45BD64776EF49 /* EXBannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBannerViewManager.m; path = EXAdsFacebook/EXBannerViewManager.m; sourceTree = "<group>"; };
+		C88A9D295ED28B13ACF23ED5FDDCF28B /* EXBannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBannerView.m; path = EXAdsFacebook/EXBannerView.m; sourceTree = "<group>"; };
+		D9BAA56679EB9C37BAD63A5A4E127B8E /* EXAdsFacebook.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAdsFacebook.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E12B8911C1C51BD48F4BD4B60F8CE047 /* EXAdsFacebook-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAdsFacebook-dummy.m"; sourceTree = "<group>"; };
+		FA5AFDFBC5A610C0687E619DA94AE363 /* EXBannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBannerView.h; path = EXAdsFacebook/EXBannerView.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,29 +85,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0DF7B9F3ABF59E291E87B188B1F6F7D3 /* EXAdsFacebook */ = {
+		0BCA86A6B910689E4227384D19FC7577 /* EXAdsFacebook */ = {
 			isa = PBXGroup;
 			children = (
-				338EFF00BF551B21939E9CDFA158EA0D /* EXAdIconViewManager.h */,
-				4E33B9649814A93B60D2A3A3B29DE4CE /* EXAdIconViewManager.m */,
-				4821C8305390FBF8F5FF19B0E9D60329 /* EXAdOptionsViewManager.h */,
-				6F7F0715486C6CCE1AE481E8FAA7C20D /* EXAdOptionsViewManager.m */,
-				5BF9F8F454BAF6CAE9E7EAFDE6667F32 /* EXAdSettingsManager.h */,
-				A28D3E5AF1459BC9956A37101D140016 /* EXAdSettingsManager.m */,
-				66CC2CB4C99B56103905EB6E36A3A596 /* EXBannerView.h */,
-				DEE589DD45849B7DD12A731103DB655B /* EXBannerView.m */,
-				050EC44FF934D8695AAC98832232097A /* EXBannerViewManager.h */,
-				A8664C0AF3F6AD04998833471578AA63 /* EXBannerViewManager.m */,
-				D07653EF92E7BAF0796C282D4DFA9378 /* EXInterstitialAdManager.h */,
-				5E88361CD18EA70D240AB934005F35B8 /* EXInterstitialAdManager.m */,
-				2B40AD5C4E7111A313EE4082B75D8D6F /* EXNativeAdManager.h */,
-				8C7DCF63BFDC1094FDB18E42E00C5FBC /* EXNativeAdManager.m */,
-				CAE963DDC07E92C9A4BDBBD678E6A81F /* EXNativeAdView.h */,
-				8C150A9055535A16087A52594033D211 /* EXNativeAdView.m */,
-				ABDB9C5105AA22A3DF5F27B1ABC1EEA9 /* EXNativeMediaViewManager.h */,
-				339AA27A8132FD35E90CC06466CC077D /* EXNativeMediaViewManager.m */,
-				E7DA287BC9D5CC8B91EC329851B4A8B3 /* Pod */,
-				D2146E3D923CD76F8D4F32C887ABE85E /* Support Files */,
+				C44F48A489E377E90CA32198CA636624 /* EXAdIconViewManager.h */,
+				310E67DD804C63B4F029B8D0064AB88A /* EXAdIconViewManager.m */,
+				814C49040201117C09854935F6DAF9FB /* EXAdOptionsViewManager.h */,
+				3C82F1C1FE12A397DEBFCE5DB08B15F8 /* EXAdOptionsViewManager.m */,
+				392098D21D270A299DBC4B15BE9E50E0 /* EXAdSettingsManager.h */,
+				84C2E5E2C497B981055216BD3D6D3AD5 /* EXAdSettingsManager.m */,
+				FA5AFDFBC5A610C0687E619DA94AE363 /* EXBannerView.h */,
+				C88A9D295ED28B13ACF23ED5FDDCF28B /* EXBannerView.m */,
+				3BDACB75119B6906E4B7763FA19CC778 /* EXBannerViewManager.h */,
+				C69A20503EA51D3DABB45BD64776EF49 /* EXBannerViewManager.m */,
+				6BD3BC84F95CA0525B20CAF27B30178A /* EXInterstitialAdManager.h */,
+				16B10856914ADF0FFBE82B35E05C9BFB /* EXInterstitialAdManager.m */,
+				87800D9AAB32D9F65742B57DA31FDDF2 /* EXNativeAdManager.h */,
+				3AE947E9CB54AFBCDC1CC6C889231988 /* EXNativeAdManager.m */,
+				7B2681E802068C5FF56B3406D21A2090 /* EXNativeAdView.h */,
+				5AC0CCFA7E4050F59AF47CEEDF1D76D2 /* EXNativeAdView.m */,
+				A91C7C08DF9A0248D16C79C20F67A2F2 /* EXNativeMediaViewManager.h */,
+				B59BC3D45D1FF39DE4EC9FB305CA4B95 /* EXNativeMediaViewManager.m */,
+				C6827CD4DE3FF2D037D128E23F91F8ED /* Pod */,
+				FB624A66AFAA1DA89E0BFC7AB3AB019F /* Support Files */,
 			);
 			name = EXAdsFacebook;
 			path = "../../packages/expo-ads-facebook/ios";
@@ -120,25 +121,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		C6827CD4DE3FF2D037D128E23F91F8ED /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				D9BAA56679EB9C37BAD63A5A4E127B8E /* EXAdsFacebook.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		CC46659A91A7F098100E7B29AFBA27D8 = {
 			isa = PBXGroup;
 			children = (
 				E17B04D1FD1DF139C262DE70B1A39123 /* Dependencies */,
-				0DF7B9F3ABF59E291E87B188B1F6F7D3 /* EXAdsFacebook */,
+				0BCA86A6B910689E4227384D19FC7577 /* EXAdsFacebook */,
 				EEAD76596D819D51B20816002EF5A3A3 /* Frameworks */,
 				6FB2D6C0C4DEA972AF5FF1E228B24E18 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		D2146E3D923CD76F8D4F32C887ABE85E /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				CD6FCACD02FF705FB88BEAE283C14D90 /* EXAdsFacebook.xcconfig */,
-				BAF4F81354B16B475B6FB3CBC84C3958 /* EXAdsFacebook-dummy.m */,
-				0401A7C1AE20D4E7CFFCC43D2A8845A8 /* EXAdsFacebook-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXAdsFacebook";
 			sourceTree = "<group>";
 		};
 		E17B04D1FD1DF139C262DE70B1A39123 /* Dependencies */ = {
@@ -150,19 +148,23 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		E7DA287BC9D5CC8B91EC329851B4A8B3 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				A42F05BA17E44AA4D3A7835AC816A02A /* EXAdsFacebook.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		EEAD76596D819D51B20816002EF5A3A3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FB624A66AFAA1DA89E0BFC7AB3AB019F /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				E12B8911C1C51BD48F4BD4B60F8CE047 /* EXAdsFacebook-dummy.m */,
+				40892ADB7353B34B18BA39A47A38382A /* EXAdsFacebook-prefix.pch */,
+				6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */,
+				9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXAdsFacebook";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -275,31 +277,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0F3DDFF865A42F973707F577E286DFA7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD6FCACD02FF705FB88BEAE283C14D90 /* EXAdsFacebook.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAdsFacebook/EXAdsFacebook-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAdsFacebook;
-				PRODUCT_NAME = EXAdsFacebook;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		28E7C0B54B5088C7294C655AA13522AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -424,9 +401,34 @@
 			};
 			name = Debug;
 		};
-		6059A1E452A64AD30D29E4811574F4FD /* Debug */ = {
+		8E87935A90DC621D3053CEE1A482F0B9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD6FCACD02FF705FB88BEAE283C14D90 /* EXAdsFacebook.xcconfig */;
+			baseConfigurationReference = 9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAdsFacebook/EXAdsFacebook-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAdsFacebook;
+				PRODUCT_NAME = EXAdsFacebook;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FEE418E58F16A493579BC1F19391F66D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -463,8 +465,8 @@
 		E8E1996D52354CEFF0F05B2F9E647C69 /* Build configuration list for PBXNativeTarget "EXAdsFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6059A1E452A64AD30D29E4811574F4FD /* Debug */,
-				0F3DDFF865A42F973707F577E286DFA7 /* Release */,
+				FEE418E58F16A493579BC1F19391F66D /* Debug */,
+				8E87935A90DC621D3053CEE1A482F0B9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

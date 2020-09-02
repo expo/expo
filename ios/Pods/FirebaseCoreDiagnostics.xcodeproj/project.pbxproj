@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01EE80B5153F5D3C8C5F9877FDB70CA6 /* FIRCoreDiagnostics.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CD7D5CBF92F3872669D510F23CFDF41 /* FIRCoreDiagnostics.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2F3975BB3D4E8D128FD5BFB9AFD50AAE /* firebasecore.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = AF465D5A3287DA8757B6AD89F95531DE /* firebasecore.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		3B9079FD1EAF334C4A8614EB28E82B88 /* FIRCoreDiagnosticsDateFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E4D338B05E2C0202889C13ACE387F843 /* FIRCoreDiagnosticsDateFileStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7318D50F49F841F9264545698F0485E5 /* FirebaseCoreDiagnostics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ACEACBEB755CC05A42145F4DFEE55A3D /* FirebaseCoreDiagnostics-dummy.m */; };
-		74D6F82389B7D58F5135759047B49105 /* FIRCoreDiagnosticsDateFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 701FA3E167197A8DA04694F905373DF8 /* FIRCoreDiagnosticsDateFileStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CBD63850526AD317A2D1BA1130A1AAFE /* firebasecore.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = A1C487EF04DF9EA0E4FBF8804F5EE289 /* firebasecore.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		01EE80B5153F5D3C8C5F9877FDB70CA6 /* FIRCoreDiagnostics.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBA0B28E25A93CAF174602C735A1AA9 /* FIRCoreDiagnostics.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2F3975BB3D4E8D128FD5BFB9AFD50AAE /* firebasecore.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = 51F97DB11D582AEA760E2D91CBC416DB /* firebasecore.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3B9079FD1EAF334C4A8614EB28E82B88 /* FIRCoreDiagnosticsDateFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E8C90E0B991A940437F8499D8E1D1B /* FIRCoreDiagnosticsDateFileStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7318D50F49F841F9264545698F0485E5 /* FirebaseCoreDiagnostics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C3065A3C922CA527FE671097AAD1870B /* FirebaseCoreDiagnostics-dummy.m */; };
+		74D6F82389B7D58F5135759047B49105 /* FIRCoreDiagnosticsDateFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = B523378D384EF8C483110E594A6B576E /* FIRCoreDiagnosticsDateFileStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CBD63850526AD317A2D1BA1130A1AAFE /* firebasecore.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = EA7998A74C0539DC5A8D39C29B1A9C0B /* firebasecore.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,17 +48,18 @@
 
 /* Begin PBXFileReference section */
 		07332CF5E4EFC89251BC4F34B81FC997 /* GoogleDataTransportCCTSupport */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleDataTransportCCTSupport; path = GoogleDataTransportCCTSupport.xcodeproj; sourceTree = "<group>"; };
-		0CD7D5CBF92F3872669D510F23CFDF41 /* FIRCoreDiagnostics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCoreDiagnostics.m; path = Firebase/CoreDiagnostics/FIRCDLibrary/FIRCoreDiagnostics.m; sourceTree = "<group>"; };
-		130D4CD524FA0130039BA7EA4F43C34A /* FirebaseCoreDiagnostics.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCoreDiagnostics.xcconfig; sourceTree = "<group>"; };
+		0EBA0B28E25A93CAF174602C735A1AA9 /* FIRCoreDiagnostics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCoreDiagnostics.m; path = Firebase/CoreDiagnostics/FIRCDLibrary/FIRCoreDiagnostics.m; sourceTree = "<group>"; };
 		2CB4B6550B3EC7890130FA81A9FAF524 /* GoogleUtilities */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleUtilities; path = GoogleUtilities.xcodeproj; sourceTree = "<group>"; };
-		701FA3E167197A8DA04694F905373DF8 /* FIRCoreDiagnosticsDateFileStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCoreDiagnosticsDateFileStorage.h; path = Firebase/CoreDiagnostics/FIRCDLibrary/FIRCoreDiagnosticsDateFileStorage.h; sourceTree = "<group>"; };
+		4F406AE7ABB4B2A5490A155EC8D133DD /* FirebaseCoreDiagnostics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCoreDiagnostics.debug.xcconfig; sourceTree = "<group>"; };
+		51F97DB11D582AEA760E2D91CBC416DB /* firebasecore.nanopb.c */ = {isa = PBXFileReference; includeInIndex = 1; name = firebasecore.nanopb.c; path = Firebase/CoreDiagnostics/FIRCDLibrary/Protogen/nanopb/firebasecore.nanopb.c; sourceTree = "<group>"; };
+		9B6F3E15889DE72CF25DB32CCB7EE36B /* FirebaseCoreDiagnostics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseCoreDiagnostics.release.xcconfig; sourceTree = "<group>"; };
 		9C26A1101E24633705E58E53094ABE84 /* libFirebaseCoreDiagnostics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libFirebaseCoreDiagnostics.a; path = libFirebaseCoreDiagnostics.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1C487EF04DF9EA0E4FBF8804F5EE289 /* firebasecore.nanopb.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = firebasecore.nanopb.h; path = Firebase/CoreDiagnostics/FIRCDLibrary/Protogen/nanopb/firebasecore.nanopb.h; sourceTree = "<group>"; };
 		AACDEDBE3EE0792CBF7BD0188C76DD48 /* FirebaseCoreDiagnosticsInterop */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCoreDiagnosticsInterop; path = FirebaseCoreDiagnosticsInterop.xcodeproj; sourceTree = "<group>"; };
-		ACEACBEB755CC05A42145F4DFEE55A3D /* FirebaseCoreDiagnostics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FirebaseCoreDiagnostics-dummy.m"; sourceTree = "<group>"; };
-		AF465D5A3287DA8757B6AD89F95531DE /* firebasecore.nanopb.c */ = {isa = PBXFileReference; includeInIndex = 1; name = firebasecore.nanopb.c; path = Firebase/CoreDiagnostics/FIRCDLibrary/Protogen/nanopb/firebasecore.nanopb.c; sourceTree = "<group>"; };
+		B523378D384EF8C483110E594A6B576E /* FIRCoreDiagnosticsDateFileStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRCoreDiagnosticsDateFileStorage.h; path = Firebase/CoreDiagnostics/FIRCDLibrary/FIRCoreDiagnosticsDateFileStorage.h; sourceTree = "<group>"; };
+		C3065A3C922CA527FE671097AAD1870B /* FirebaseCoreDiagnostics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FirebaseCoreDiagnostics-dummy.m"; sourceTree = "<group>"; };
 		DD4020203D57A6DD6DA37EDEF60CED3A /* nanopb */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nanopb; path = nanopb.xcodeproj; sourceTree = "<group>"; };
-		E4D338B05E2C0202889C13ACE387F843 /* FIRCoreDiagnosticsDateFileStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCoreDiagnosticsDateFileStorage.m; path = Firebase/CoreDiagnostics/FIRCDLibrary/FIRCoreDiagnosticsDateFileStorage.m; sourceTree = "<group>"; };
+		EA7998A74C0539DC5A8D39C29B1A9C0B /* firebasecore.nanopb.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = firebasecore.nanopb.h; path = Firebase/CoreDiagnostics/FIRCDLibrary/Protogen/nanopb/firebasecore.nanopb.h; sourceTree = "<group>"; };
+		F7E8C90E0B991A940437F8499D8E1D1B /* FIRCoreDiagnosticsDateFileStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FIRCoreDiagnosticsDateFileStorage.m; path = Firebase/CoreDiagnostics/FIRCDLibrary/FIRCoreDiagnosticsDateFileStorage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +73,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		610476C04DAAFC2D051D30E1A535EE9B /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				C3065A3C922CA527FE671097AAD1870B /* FirebaseCoreDiagnostics-dummy.m */,
+				4F406AE7ABB4B2A5490A155EC8D133DD /* FirebaseCoreDiagnostics.debug.xcconfig */,
+				9B6F3E15889DE72CF25DB32CCB7EE36B /* FirebaseCoreDiagnostics.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/FirebaseCoreDiagnostics";
+			sourceTree = "<group>";
+		};
 		7054AF217EB5130D57ABE8E3231BA917 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -91,11 +103,25 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		AF9D389C00C710B02F2DA9D1D8CE7370 /* FirebaseCoreDiagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				0EBA0B28E25A93CAF174602C735A1AA9 /* FIRCoreDiagnostics.m */,
+				B523378D384EF8C483110E594A6B576E /* FIRCoreDiagnosticsDateFileStorage.h */,
+				F7E8C90E0B991A940437F8499D8E1D1B /* FIRCoreDiagnosticsDateFileStorage.m */,
+				51F97DB11D582AEA760E2D91CBC416DB /* firebasecore.nanopb.c */,
+				EA7998A74C0539DC5A8D39C29B1A9C0B /* firebasecore.nanopb.h */,
+				610476C04DAAFC2D051D30E1A535EE9B /* Support Files */,
+			);
+			name = FirebaseCoreDiagnostics;
+			path = FirebaseCoreDiagnostics;
+			sourceTree = "<group>";
+		};
 		C01428A92D31C45829C31837A864DB36 = {
 			isa = PBXGroup;
 			children = (
 				7054AF217EB5130D57ABE8E3231BA917 /* Dependencies */,
-				FB7B67D88B1C5AAEC392B269704AC653 /* FirebaseCoreDiagnostics */,
+				AF9D389C00C710B02F2DA9D1D8CE7370 /* FirebaseCoreDiagnostics */,
 				DCC2FFE661D4FDD91FCEB2F7D16000F6 /* Frameworks */,
 				8E00461114D2EC8B77058C5A6E9620E7 /* Products */,
 			);
@@ -106,30 +132,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		ECCB1CC9A2F2A587687A648335A7678B /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				130D4CD524FA0130039BA7EA4F43C34A /* FirebaseCoreDiagnostics.xcconfig */,
-				ACEACBEB755CC05A42145F4DFEE55A3D /* FirebaseCoreDiagnostics-dummy.m */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/FirebaseCoreDiagnostics";
-			sourceTree = "<group>";
-		};
-		FB7B67D88B1C5AAEC392B269704AC653 /* FirebaseCoreDiagnostics */ = {
-			isa = PBXGroup;
-			children = (
-				0CD7D5CBF92F3872669D510F23CFDF41 /* FIRCoreDiagnostics.m */,
-				701FA3E167197A8DA04694F905373DF8 /* FIRCoreDiagnosticsDateFileStorage.h */,
-				E4D338B05E2C0202889C13ACE387F843 /* FIRCoreDiagnosticsDateFileStorage.m */,
-				AF465D5A3287DA8757B6AD89F95531DE /* firebasecore.nanopb.c */,
-				A1C487EF04DF9EA0E4FBF8804F5EE289 /* firebasecore.nanopb.h */,
-				ECCB1CC9A2F2A587687A648335A7678B /* Support Files */,
-			);
-			name = FirebaseCoreDiagnostics;
-			path = FirebaseCoreDiagnostics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -247,29 +249,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2B49D693F34496ECD5A2B1927E117CE8 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 130D4CD524FA0130039BA7EA4F43C34A /* FirebaseCoreDiagnostics.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = FirebaseCoreDiagnostics;
-				PRODUCT_NAME = FirebaseCoreDiagnostics;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		93DAE48F1D512952D5481D3A978C76D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -394,9 +373,9 @@
 			};
 			name = Release;
 		};
-		CD5B281066A35D66DA603F61813DB66A /* Debug */ = {
+		D6D347FB3D444F8405D8855CC3FFA0DF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 130D4CD524FA0130039BA7EA4F43C34A /* FirebaseCoreDiagnostics.xcconfig */;
+			baseConfigurationReference = 4F406AE7ABB4B2A5490A155EC8D133DD /* FirebaseCoreDiagnostics.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -416,14 +395,37 @@
 			};
 			name = Debug;
 		};
+		D8370E2FB03DAAF91F8A42E6BD32A793 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9B6F3E15889DE72CF25DB32CCB7EE36B /* FirebaseCoreDiagnostics.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = FirebaseCoreDiagnostics;
+				PRODUCT_NAME = FirebaseCoreDiagnostics;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		1E635A1ED97115204D77AD08FD941D0E /* Build configuration list for PBXNativeTarget "FirebaseCoreDiagnostics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CD5B281066A35D66DA603F61813DB66A /* Debug */,
-				2B49D693F34496ECD5A2B1927E117CE8 /* Release */,
+				D6D347FB3D444F8405D8855CC3FFA0DF /* Debug */,
+				D8370E2FB03DAAF91F8A42E6BD32A793 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

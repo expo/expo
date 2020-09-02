@@ -1836,7 +1836,7 @@ PODS:
   - EXDocumentPicker (8.2.1):
     - UMCore
     - UMFileSystemInterface
-  - EXErrorRecovery (1.2.1):
+  - EXErrorRecovery (1.2.2):
     - UMCore
   - EXFacebook (8.2.1):
     - FBSDKCoreKit (~> 5.8.0)
@@ -4238,7 +4238,7 @@ SPEC CHECKSUMS:
   EXCrypto: 867e1d45d513e39ab9d7706232435edb1cf756cd
   EXDevice: befd3b2619915e615c3753c9f83309808aa0cdf5
   EXDocumentPicker: 38b1bc0995d3b8c879142be6d6753866484025a8
-  EXErrorRecovery: 500f1d4231c534f415e86caeb3fc677c7f5dd23c
+  EXErrorRecovery: ff58873bf2714fcd5290935d49b74d9fc589d575
   EXFacebook: 3c124265fb7230cf1071329208b765e0e187789e
   EXFaceDetector: 20b84e880ccf8c60a53af48bea8afe3cd4516ab8
   EXFileSystem: 76875135b61708b9afa7e6a89b72a60ba0fdfa20
@@ -4290,7 +4290,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
   FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
   FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
-  FirebaseMLVisionFaceModel: d6ba42000f263df52187aee936262bc2002b3389
+  FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
@@ -4348,4 +4348,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 529190a386115c6ed272c0477f2ee8e0ce0b7490
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.3

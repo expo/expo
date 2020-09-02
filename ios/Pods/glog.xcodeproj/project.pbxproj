@@ -7,38 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		08D27C75E673005D33C796D0F4516055 /* utilities.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8880F0A632176E976D4C56838C047064 /* utilities.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		0FFA42AFC133A7E6950775860C29E69E /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 613AC97AC1174F75A3AEEE930DDCED32 /* logging.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1439F5B68C83481E4625EDF49F991221 /* vlog_is_on.h in Headers */ = {isa = PBXBuildFile; fileRef = 828ADDB930C6775916A84CB7B34CB323 /* vlog_is_on.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		254F0D99D44802861A96826F005B2B0E /* signalhandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 48E273FBCDBF9F92F88F9CE4BF58BCEE /* signalhandler.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		3000B88000D9F1F250BBCAFCBC56B8AD /* log_severity.h in Headers */ = {isa = PBXBuildFile; fileRef = C78C93F32C30E4CF046C6B36A41F795A /* log_severity.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		416E27C303F9E8C326D375AE0B47361F /* demangle.cc in Sources */ = {isa = PBXBuildFile; fileRef = ABE953EE3E836BBEF1FF581A06DDEA58 /* demangle.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		606221575BAC793092A5CD0C2206E891 /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = A6919066C4D94E410DD341C471FE374D /* raw_logging.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		61E7B272FD66EA3890C82FBB4DB8402A /* logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 103D4D2150698F02CB1A5BEFC1466427 /* logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8DB7605FD7272BF91C992CE35C09FF7E /* symbolize.cc in Sources */ = {isa = PBXBuildFile; fileRef = FEAAB1901C6E0E47FC92E07CB4E18A00 /* symbolize.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		ABCBBA6E6311038A4D7A97ED3DE13DAA /* glog-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AC5DDA58319446ABDD899B5382E17764 /* glog-dummy.m */; };
-		B1E8E67FE5300451AC09BB0BAB259E45 /* raw_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 3132121F1B9209EAA18C0D41B4A66780 /* raw_logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D39B22176B1F139C4D40DD9C2A78159D /* stl_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 1328E1DC31E394F230EADF7F668AB87E /* stl_logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FC627147E1745B42142886FD52D7F75F /* vlog_is_on.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1FA798AE543D696C36688BB4F6FB3C47 /* vlog_is_on.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		08D27C75E673005D33C796D0F4516055 /* utilities.cc in Sources */ = {isa = PBXBuildFile; fileRef = 76BFF81E90EDD4206158D7CB5F08FE99 /* utilities.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0FFA42AFC133A7E6950775860C29E69E /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = CDF96B2350C1F4369E30C7D40E03DB77 /* logging.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1439F5B68C83481E4625EDF49F991221 /* vlog_is_on.h in Headers */ = {isa = PBXBuildFile; fileRef = 18DA16D4CBDF42A52449A599CEA6DDDD /* vlog_is_on.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		254F0D99D44802861A96826F005B2B0E /* signalhandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 26B8FD859A787B85AB36F2B56E9FB8A6 /* signalhandler.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3000B88000D9F1F250BBCAFCBC56B8AD /* log_severity.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DE7048C0947DF35490DFC406A446D30 /* log_severity.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		416E27C303F9E8C326D375AE0B47361F /* demangle.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8B10DAB3A18BCD59DD80E551629A9 /* demangle.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		606221575BAC793092A5CD0C2206E891 /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AF1BD0DA01483ABBF628F42FD409C /* raw_logging.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		61E7B272FD66EA3890C82FBB4DB8402A /* logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E5C2CA03919F137BE7C43451FEB44A8 /* logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8DB7605FD7272BF91C992CE35C09FF7E /* symbolize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7532CB1882C7F13F879B7D2B0CC65EB3 /* symbolize.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ABCBBA6E6311038A4D7A97ED3DE13DAA /* glog-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 97BB3913A80CBB070DF646D081593BCD /* glog-dummy.m */; };
+		B1E8E67FE5300451AC09BB0BAB259E45 /* raw_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E77F7030C3BF7541CE088C26DE2310 /* raw_logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D39B22176B1F139C4D40DD9C2A78159D /* stl_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BCF7236B1CF1887B3F512BF3F117598 /* stl_logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FC627147E1745B42142886FD52D7F75F /* vlog_is_on.cc in Sources */ = {isa = PBXBuildFile; fileRef = D1285DC91AAA3566D28B996A8B984108 /* vlog_is_on.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		103D4D2150698F02CB1A5BEFC1466427 /* logging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = logging.h; path = src/glog/logging.h; sourceTree = "<group>"; };
-		1328E1DC31E394F230EADF7F668AB87E /* stl_logging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = stl_logging.h; path = src/glog/stl_logging.h; sourceTree = "<group>"; };
-		1FA798AE543D696C36688BB4F6FB3C47 /* vlog_is_on.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = vlog_is_on.cc; path = src/vlog_is_on.cc; sourceTree = "<group>"; };
-		30FC90606820AA1CE4BE67146944D514 /* glog.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = glog.xcconfig; sourceTree = "<group>"; };
-		3132121F1B9209EAA18C0D41B4A66780 /* raw_logging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = raw_logging.h; path = src/glog/raw_logging.h; sourceTree = "<group>"; };
-		48E273FBCDBF9F92F88F9CE4BF58BCEE /* signalhandler.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = signalhandler.cc; path = src/signalhandler.cc; sourceTree = "<group>"; };
-		613AC97AC1174F75A3AEEE930DDCED32 /* logging.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = logging.cc; path = src/logging.cc; sourceTree = "<group>"; };
-		828ADDB930C6775916A84CB7B34CB323 /* vlog_is_on.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = vlog_is_on.h; path = src/glog/vlog_is_on.h; sourceTree = "<group>"; };
-		8880F0A632176E976D4C56838C047064 /* utilities.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = utilities.cc; path = src/utilities.cc; sourceTree = "<group>"; };
-		A6919066C4D94E410DD341C471FE374D /* raw_logging.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = raw_logging.cc; path = src/raw_logging.cc; sourceTree = "<group>"; };
-		ABE953EE3E836BBEF1FF581A06DDEA58 /* demangle.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = demangle.cc; path = src/demangle.cc; sourceTree = "<group>"; };
-		AC5DDA58319446ABDD899B5382E17764 /* glog-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "glog-dummy.m"; sourceTree = "<group>"; };
+		18DA16D4CBDF42A52449A599CEA6DDDD /* vlog_is_on.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = vlog_is_on.h; path = src/glog/vlog_is_on.h; sourceTree = "<group>"; };
+		1DE7048C0947DF35490DFC406A446D30 /* log_severity.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = log_severity.h; path = src/glog/log_severity.h; sourceTree = "<group>"; };
+		26B8FD859A787B85AB36F2B56E9FB8A6 /* signalhandler.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = signalhandler.cc; path = src/signalhandler.cc; sourceTree = "<group>"; };
+		2DB8B10DAB3A18BCD59DD80E551629A9 /* demangle.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = demangle.cc; path = src/demangle.cc; sourceTree = "<group>"; };
+		3BCF7236B1CF1887B3F512BF3F117598 /* stl_logging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = stl_logging.h; path = src/glog/stl_logging.h; sourceTree = "<group>"; };
+		7532CB1882C7F13F879B7D2B0CC65EB3 /* symbolize.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = symbolize.cc; path = src/symbolize.cc; sourceTree = "<group>"; };
+		76BFF81E90EDD4206158D7CB5F08FE99 /* utilities.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = utilities.cc; path = src/utilities.cc; sourceTree = "<group>"; };
+		8B5AF1BD0DA01483ABBF628F42FD409C /* raw_logging.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = raw_logging.cc; path = src/raw_logging.cc; sourceTree = "<group>"; };
+		90E77F7030C3BF7541CE088C26DE2310 /* raw_logging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = raw_logging.h; path = src/glog/raw_logging.h; sourceTree = "<group>"; };
+		9724009EF45F1984C9699EB7DD0BA040 /* glog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = glog.debug.xcconfig; sourceTree = "<group>"; };
+		97BB3913A80CBB070DF646D081593BCD /* glog-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "glog-dummy.m"; sourceTree = "<group>"; };
+		9E5C2CA03919F137BE7C43451FEB44A8 /* logging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = logging.h; path = src/glog/logging.h; sourceTree = "<group>"; };
 		BDE281CDABF919FBC99575024BEDDF24 /* libglog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libglog.a; path = libglog.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		C78C93F32C30E4CF046C6B36A41F795A /* log_severity.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = log_severity.h; path = src/glog/log_severity.h; sourceTree = "<group>"; };
-		C94ED5C6F2DB46B822A03F727195A23F /* glog-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "glog-prefix.pch"; sourceTree = "<group>"; };
-		FEAAB1901C6E0E47FC92E07CB4E18A00 /* symbolize.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = symbolize.cc; path = src/symbolize.cc; sourceTree = "<group>"; };
+		CDF96B2350C1F4369E30C7D40E03DB77 /* logging.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = logging.cc; path = src/logging.cc; sourceTree = "<group>"; };
+		D1285DC91AAA3566D28B996A8B984108 /* vlog_is_on.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = vlog_is_on.cc; path = src/vlog_is_on.cc; sourceTree = "<group>"; };
+		E88FD65AE97D6A49AD6DA3DB202E2045 /* glog-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "glog-prefix.pch"; sourceTree = "<group>"; };
+		F1D3DC17FF5113D782F2363C6C2F23A4 /* glog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = glog.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,33 +53,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3123FCABFA06360E5DA5B8E554DA6984 /* glog */ = {
+		49126DEFAB3F0DC69916A93806C7CED0 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				ABE953EE3E836BBEF1FF581A06DDEA58 /* demangle.cc */,
-				C78C93F32C30E4CF046C6B36A41F795A /* log_severity.h */,
-				613AC97AC1174F75A3AEEE930DDCED32 /* logging.cc */,
-				103D4D2150698F02CB1A5BEFC1466427 /* logging.h */,
-				A6919066C4D94E410DD341C471FE374D /* raw_logging.cc */,
-				3132121F1B9209EAA18C0D41B4A66780 /* raw_logging.h */,
-				48E273FBCDBF9F92F88F9CE4BF58BCEE /* signalhandler.cc */,
-				1328E1DC31E394F230EADF7F668AB87E /* stl_logging.h */,
-				FEAAB1901C6E0E47FC92E07CB4E18A00 /* symbolize.cc */,
-				8880F0A632176E976D4C56838C047064 /* utilities.cc */,
-				1FA798AE543D696C36688BB4F6FB3C47 /* vlog_is_on.cc */,
-				828ADDB930C6775916A84CB7B34CB323 /* vlog_is_on.h */,
-				3BA23B404C7C6BCAF58FEA97C878D643 /* Support Files */,
-			);
-			name = glog;
-			path = glog;
-			sourceTree = "<group>";
-		};
-		3BA23B404C7C6BCAF58FEA97C878D643 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				30FC90606820AA1CE4BE67146944D514 /* glog.xcconfig */,
-				AC5DDA58319446ABDD899B5382E17764 /* glog-dummy.m */,
-				C94ED5C6F2DB46B822A03F727195A23F /* glog-prefix.pch */,
+				97BB3913A80CBB070DF646D081593BCD /* glog-dummy.m */,
+				E88FD65AE97D6A49AD6DA3DB202E2045 /* glog-prefix.pch */,
+				9724009EF45F1984C9699EB7DD0BA040 /* glog.debug.xcconfig */,
+				F1D3DC17FF5113D782F2363C6C2F23A4 /* glog.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/glog";
@@ -103,9 +84,30 @@
 			isa = PBXGroup;
 			children = (
 				A6E5B9374B64BD5CEC62453EBF341B5D /* Frameworks */,
-				3123FCABFA06360E5DA5B8E554DA6984 /* glog */,
+				D706C76790A26A2FA1B6E595B759EDF1 /* glog */,
 				C4199ED65357C1A080685A6B208AEC2F /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		D706C76790A26A2FA1B6E595B759EDF1 /* glog */ = {
+			isa = PBXGroup;
+			children = (
+				2DB8B10DAB3A18BCD59DD80E551629A9 /* demangle.cc */,
+				1DE7048C0947DF35490DFC406A446D30 /* log_severity.h */,
+				CDF96B2350C1F4369E30C7D40E03DB77 /* logging.cc */,
+				9E5C2CA03919F137BE7C43451FEB44A8 /* logging.h */,
+				8B5AF1BD0DA01483ABBF628F42FD409C /* raw_logging.cc */,
+				90E77F7030C3BF7541CE088C26DE2310 /* raw_logging.h */,
+				26B8FD859A787B85AB36F2B56E9FB8A6 /* signalhandler.cc */,
+				3BCF7236B1CF1887B3F512BF3F117598 /* stl_logging.h */,
+				7532CB1882C7F13F879B7D2B0CC65EB3 /* symbolize.cc */,
+				76BFF81E90EDD4206158D7CB5F08FE99 /* utilities.cc */,
+				D1285DC91AAA3566D28B996A8B984108 /* vlog_is_on.cc */,
+				18DA16D4CBDF42A52449A599CEA6DDDD /* vlog_is_on.h */,
+				49126DEFAB3F0DC69916A93806C7CED0 /* Support Files */,
+			);
+			name = glog;
+			path = glog;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -313,9 +315,9 @@
 			};
 			name = Debug;
 		};
-		76D67723CC35F52949AB8E47A23BDCA5 /* Release */ = {
+		DAF78D98684472F924BEC34CE1B33C0C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 30FC90606820AA1CE4BE67146944D514 /* glog.xcconfig */;
+			baseConfigurationReference = F1D3DC17FF5113D782F2363C6C2F23A4 /* glog.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -337,9 +339,9 @@
 			};
 			name = Release;
 		};
-		78C594244061EF2D64DC5BF4856F10B5 /* Debug */ = {
+		ED51B2B0D48F4DA0819B78566308C0DA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 30FC90606820AA1CE4BE67146944D514 /* glog.xcconfig */;
+			baseConfigurationReference = 9724009EF45F1984C9699EB7DD0BA040 /* glog.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -375,8 +377,8 @@
 		94A4D74B3E689F2C159B9AEDFA754BCF /* Build configuration list for PBXNativeTarget "glog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				78C594244061EF2D64DC5BF4856F10B5 /* Debug */,
-				76D67723CC35F52949AB8E47A23BDCA5 /* Release */,
+				ED51B2B0D48F4DA0819B78566308C0DA /* Debug */,
+				DAF78D98684472F924BEC34CE1B33C0C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

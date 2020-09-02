@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		14094174E889887D1F78815287512552 /* UMUserNotificationCenterProxyInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 6C36B3885B57F8BFCB3F0555ED1308EF /* UMUserNotificationCenterProxyInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		19346D80E7AE0D0A657F3BF9F8BE5305 /* UMPermissionsMethodsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 65FE323DDD6E44CD557687232249FF33 /* UMPermissionsMethodsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3A639FA21B1EFD59BD204CD4171BEB02 /* UMPermissionsInterface-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 562CEA4918D91F988957C5EC30B2469E /* UMPermissionsInterface-dummy.m */; };
-		C0EB2515F54EB45C66C44E585CF3B317 /* UMPermissionsMethodsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4950CC405A863F47412DDDE04049E9AA /* UMPermissionsMethodsDelegate.m */; };
-		C618FF940BEB5A0A8E50216D1DE2B872 /* UMPermissionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = B34F173E64AC80F4819D8ACEEC20A73B /* UMPermissionsInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		14094174E889887D1F78815287512552 /* UMUserNotificationCenterProxyInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BF0DA7D58ED91B218DF17314D51314F /* UMUserNotificationCenterProxyInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		19346D80E7AE0D0A657F3BF9F8BE5305 /* UMPermissionsMethodsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FABB5C981147933C03D2344C55FA182E /* UMPermissionsMethodsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3A639FA21B1EFD59BD204CD4171BEB02 /* UMPermissionsInterface-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CD999204DCC8C867478E4C8EFEB657D /* UMPermissionsInterface-dummy.m */; };
+		C0EB2515F54EB45C66C44E585CF3B317 /* UMPermissionsMethodsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFDF3E4AAC6AFFED2C952A0FE2DBBD3 /* UMPermissionsMethodsDelegate.m */; };
+		C618FF940BEB5A0A8E50216D1DE2B872 /* UMPermissionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 663AA800E8EF835928E4759C24C650AC /* UMPermissionsInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,15 +26,16 @@
 
 /* Begin PBXFileReference section */
 		093AF6407C4F406805F73F83B5108CA3 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		335389191BDCE08FAF9DB20AC8014B2A /* UMPermissionsInterface-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UMPermissionsInterface-prefix.pch"; sourceTree = "<group>"; };
-		4950CC405A863F47412DDDE04049E9AA /* UMPermissionsMethodsDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMPermissionsMethodsDelegate.m; path = UMPermissionsInterface/UMPermissionsMethodsDelegate.m; sourceTree = "<group>"; };
-		562CEA4918D91F988957C5EC30B2469E /* UMPermissionsInterface-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UMPermissionsInterface-dummy.m"; sourceTree = "<group>"; };
-		65FE323DDD6E44CD557687232249FF33 /* UMPermissionsMethodsDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMPermissionsMethodsDelegate.h; path = UMPermissionsInterface/UMPermissionsMethodsDelegate.h; sourceTree = "<group>"; };
-		6C36B3885B57F8BFCB3F0555ED1308EF /* UMUserNotificationCenterProxyInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMUserNotificationCenterProxyInterface.h; path = UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h; sourceTree = "<group>"; };
-		810742DA581E86E46583B4F87327CFDA /* UMPermissionsInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMPermissionsInterface.xcconfig; sourceTree = "<group>"; };
+		13DAC728F07B8BBD87112618F23C7C48 /* UMPermissionsInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMPermissionsInterface.debug.xcconfig; sourceTree = "<group>"; };
+		1F0B939B1F478C512A8B5EB98153CAF4 /* UMPermissionsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMPermissionsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		3BF0DA7D58ED91B218DF17314D51314F /* UMUserNotificationCenterProxyInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMUserNotificationCenterProxyInterface.h; path = UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h; sourceTree = "<group>"; };
+		4FFDF3E4AAC6AFFED2C952A0FE2DBBD3 /* UMPermissionsMethodsDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMPermissionsMethodsDelegate.m; path = UMPermissionsInterface/UMPermissionsMethodsDelegate.m; sourceTree = "<group>"; };
+		663AA800E8EF835928E4759C24C650AC /* UMPermissionsInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMPermissionsInterface.h; path = UMPermissionsInterface/UMPermissionsInterface.h; sourceTree = "<group>"; };
+		6CD999204DCC8C867478E4C8EFEB657D /* UMPermissionsInterface-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UMPermissionsInterface-dummy.m"; sourceTree = "<group>"; };
+		8F948CAA6C182BE0205E9ED80C3E783D /* UMPermissionsInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMPermissionsInterface.release.xcconfig; sourceTree = "<group>"; };
 		9E2F177113BEC898A58C443565B4AE40 /* libUMPermissionsInterface.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libUMPermissionsInterface.a; path = libUMPermissionsInterface.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABC41CE88F1B6B4B58F44F3FF2842A60 /* UMPermissionsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMPermissionsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		B34F173E64AC80F4819D8ACEEC20A73B /* UMPermissionsInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMPermissionsInterface.h; path = UMPermissionsInterface/UMPermissionsInterface.h; sourceTree = "<group>"; };
+		E48D8B0769A14396C372E5ED269B8356 /* UMPermissionsInterface-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UMPermissionsInterface-prefix.pch"; sourceTree = "<group>"; };
+		FABB5C981147933C03D2344C55FA182E /* UMPermissionsMethodsDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMPermissionsMethodsDelegate.h; path = UMPermissionsInterface/UMPermissionsMethodsDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +49,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		02C6A4AA5B0F4458439757A9D30001AF /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				1F0B939B1F478C512A8B5EB98153CAF4 /* UMPermissionsInterface.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		1E170C1B4B40FDC326EB0246189A6631 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				6CD999204DCC8C867478E4C8EFEB657D /* UMPermissionsInterface-dummy.m */,
+				E48D8B0769A14396C372E5ED269B8356 /* UMPermissionsInterface-prefix.pch */,
+				13DAC728F07B8BBD87112618F23C7C48 /* UMPermissionsInterface.debug.xcconfig */,
+				8F948CAA6C182BE0205E9ED80C3E783D /* UMPermissionsInterface.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/UMPermissionsInterface";
+			sourceTree = "<group>";
+		};
 		4F77EF0F302994220BDCDE53EF1347D5 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -62,7 +83,7 @@
 				4F77EF0F302994220BDCDE53EF1347D5 /* Dependencies */,
 				AA3BBFA666D890DF382F11006ADD0F5B /* Frameworks */,
 				845B87769981B7D4A462D671DFE1FE63 /* Products */,
-				ADB72C4D8CF90C1BBBF969C3BA4F66BC /* UMPermissionsInterface */,
+				F728C12F8D42504FE78899598AABE693 /* UMPermissionsInterface */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,17 +95,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		994A678AFF9A9EFBC49214E985110CCA /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				810742DA581E86E46583B4F87327CFDA /* UMPermissionsInterface.xcconfig */,
-				562CEA4918D91F988957C5EC30B2469E /* UMPermissionsInterface-dummy.m */,
-				335389191BDCE08FAF9DB20AC8014B2A /* UMPermissionsInterface-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/UMPermissionsInterface";
-			sourceTree = "<group>";
-		};
 		AA3BBFA666D890DF382F11006ADD0F5B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -92,26 +102,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		ADB72C4D8CF90C1BBBF969C3BA4F66BC /* UMPermissionsInterface */ = {
+		F728C12F8D42504FE78899598AABE693 /* UMPermissionsInterface */ = {
 			isa = PBXGroup;
 			children = (
-				B34F173E64AC80F4819D8ACEEC20A73B /* UMPermissionsInterface.h */,
-				65FE323DDD6E44CD557687232249FF33 /* UMPermissionsMethodsDelegate.h */,
-				4950CC405A863F47412DDDE04049E9AA /* UMPermissionsMethodsDelegate.m */,
-				6C36B3885B57F8BFCB3F0555ED1308EF /* UMUserNotificationCenterProxyInterface.h */,
-				DEA308C93D7018478F4DA38D3F9A66BB /* Pod */,
-				994A678AFF9A9EFBC49214E985110CCA /* Support Files */,
+				663AA800E8EF835928E4759C24C650AC /* UMPermissionsInterface.h */,
+				FABB5C981147933C03D2344C55FA182E /* UMPermissionsMethodsDelegate.h */,
+				4FFDF3E4AAC6AFFED2C952A0FE2DBBD3 /* UMPermissionsMethodsDelegate.m */,
+				3BF0DA7D58ED91B218DF17314D51314F /* UMUserNotificationCenterProxyInterface.h */,
+				02C6A4AA5B0F4458439757A9D30001AF /* Pod */,
+				1E170C1B4B40FDC326EB0246189A6631 /* Support Files */,
 			);
 			name = UMPermissionsInterface;
 			path = "../../packages/unimodules-permissions-interface/ios";
-			sourceTree = "<group>";
-		};
-		DEA308C93D7018478F4DA38D3F9A66BB /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				ABC41CE88F1B6B4B58F44F3FF2842A60 /* UMPermissionsInterface.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -261,33 +263,9 @@
 			};
 			name = Release;
 		};
-		A09A4B37121D04D950D9D9AC727F587D /* Debug */ = {
+		8607B4C411C45DDE36CC1DE7E9D4941F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 810742DA581E86E46583B4F87327CFDA /* UMPermissionsInterface.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMPermissionsInterface/UMPermissionsInterface-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMPermissionsInterface;
-				PRODUCT_NAME = UMPermissionsInterface;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		DF4893C010B09D901AA608F94AADA497 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 810742DA581E86E46583B4F87327CFDA /* UMPermissionsInterface.xcconfig */;
+			baseConfigurationReference = 8F948CAA6C182BE0205E9ED80C3E783D /* UMPermissionsInterface.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -309,6 +287,30 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		AD357A72CE5A5AAE5D25F01F9E038367 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 13DAC728F07B8BBD87112618F23C7C48 /* UMPermissionsInterface.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMPermissionsInterface/UMPermissionsInterface-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMPermissionsInterface;
+				PRODUCT_NAME = UMPermissionsInterface;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		E72B84A7876D739DBADC5CEABA31DE65 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -380,8 +382,8 @@
 		504921805372C9562281132D549E1DDB /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A09A4B37121D04D950D9D9AC727F587D /* Debug */,
-				DF4893C010B09D901AA608F94AADA497 /* Release */,
+				AD357A72CE5A5AAE5D25F01F9E038367 /* Debug */,
+				8607B4C411C45DDE36CC1DE7E9D4941F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

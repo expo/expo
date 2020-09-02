@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6951D85CF6A8D94C07A5ABD46E71569B /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = C1B1158BFDB0C41C60EEDB3B89A34C2E /* EXSpeech.m */; };
-		7D2A3E5611BCF621BE1852F198A245B4 /* EXSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C893CF7F1F4DD581354E2BAA4497F73 /* EXSpeech.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		892D001EC4834C7B1A503AF8EAFA83D4 /* EXSpeech-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E956E72567D8CB0F505C468A24A8D /* EXSpeech-dummy.m */; };
+		6951D85CF6A8D94C07A5ABD46E71569B /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FAB5831C9F9F3AB9F738702BD99AE66 /* EXSpeech.m */; };
+		7D2A3E5611BCF621BE1852F198A245B4 /* EXSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 06CB68F97A0D7D7187A59D0B03067F91 /* EXSpeech.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		892D001EC4834C7B1A503AF8EAFA83D4 /* EXSpeech-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AA390D654A626C333D056D0B604333FD /* EXSpeech-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,13 +23,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0C893CF7F1F4DD581354E2BAA4497F73 /* EXSpeech.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSpeech.h; path = EXSpeech/EXSpeech.h; sourceTree = "<group>"; };
-		2C2E956E72567D8CB0F505C468A24A8D /* EXSpeech-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSpeech-dummy.m"; sourceTree = "<group>"; };
+		06CB68F97A0D7D7187A59D0B03067F91 /* EXSpeech.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSpeech.h; path = EXSpeech/EXSpeech.h; sourceTree = "<group>"; };
+		15BF56CD64E1B3CCC702DDD7151962E7 /* EXSpeech.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSpeech.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		1AD3C68B8DCAB3A3210F403C12627B85 /* EXSpeech.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.release.xcconfig; sourceTree = "<group>"; };
+		2FAB5831C9F9F3AB9F738702BD99AE66 /* EXSpeech.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSpeech.m; path = EXSpeech/EXSpeech.m; sourceTree = "<group>"; };
 		4EECAA31C5ADC03ACFEECFEA881BCD05 /* libEXSpeech.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSpeech.a; path = libEXSpeech.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		52C5CBDB42AA72CE0A343DBA74752B21 /* EXSpeech.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.xcconfig; sourceTree = "<group>"; };
-		760D93F4FDEFA63206E3CF098A9F4379 /* EXSpeech.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSpeech.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		A3CC672447436C579C1A8530B917816B /* EXSpeech-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSpeech-prefix.pch"; sourceTree = "<group>"; };
-		C1B1158BFDB0C41C60EEDB3B89A34C2E /* EXSpeech.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSpeech.m; path = EXSpeech/EXSpeech.m; sourceTree = "<group>"; };
+		58E4D754ABEC87912C9E6F356AFA808F /* EXSpeech.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.debug.xcconfig; sourceTree = "<group>"; };
+		AA390D654A626C333D056D0B604333FD /* EXSpeech-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSpeech-dummy.m"; sourceTree = "<group>"; };
+		C6C895C13D69906E8ABF569BBA9AB5EC /* EXSpeech-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSpeech-prefix.pch"; sourceTree = "<group>"; };
 		E3422DCAA36451BC562729CADA1B60B4 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -52,19 +53,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1A270CACAB5020423A2DE24BAE3CD76A /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				760D93F4FDEFA63206E3CF098A9F4379 /* EXSpeech.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		1BEBCE2538AE42700810BC4B5151F1C9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		36407E4A8ECC425691D9BA250B630F5D /* EXSpeech */ = {
+			isa = PBXGroup;
+			children = (
+				06CB68F97A0D7D7187A59D0B03067F91 /* EXSpeech.h */,
+				2FAB5831C9F9F3AB9F738702BD99AE66 /* EXSpeech.m */,
+				B0917564DEAAE0F70C2ECA7E21557100 /* Pod */,
+				A7FE823F240278CD999E6FE15DC9F496 /* Support Files */,
+			);
+			name = EXSpeech;
+			path = "../../packages/expo-speech/ios";
 			sourceTree = "<group>";
 		};
 		6AB96B7641452FE84DFDBD95E1DE9E37 /* Dependencies */ = {
@@ -79,33 +84,30 @@
 			isa = PBXGroup;
 			children = (
 				6AB96B7641452FE84DFDBD95E1DE9E37 /* Dependencies */,
-				ED81B6B557929B98DCCC0AD23671DE18 /* EXSpeech */,
+				36407E4A8ECC425691D9BA250B630F5D /* EXSpeech */,
 				1BEBCE2538AE42700810BC4B5151F1C9 /* Frameworks */,
 				0F80633B203A98AFB0FCC5A4ACEA51E0 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		C41366DB00678D25B1A87E22F60CA85C /* Support Files */ = {
+		A7FE823F240278CD999E6FE15DC9F496 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				52C5CBDB42AA72CE0A343DBA74752B21 /* EXSpeech.xcconfig */,
-				2C2E956E72567D8CB0F505C468A24A8D /* EXSpeech-dummy.m */,
-				A3CC672447436C579C1A8530B917816B /* EXSpeech-prefix.pch */,
+				AA390D654A626C333D056D0B604333FD /* EXSpeech-dummy.m */,
+				C6C895C13D69906E8ABF569BBA9AB5EC /* EXSpeech-prefix.pch */,
+				58E4D754ABEC87912C9E6F356AFA808F /* EXSpeech.debug.xcconfig */,
+				1AD3C68B8DCAB3A3210F403C12627B85 /* EXSpeech.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXSpeech";
 			sourceTree = "<group>";
 		};
-		ED81B6B557929B98DCCC0AD23671DE18 /* EXSpeech */ = {
+		B0917564DEAAE0F70C2ECA7E21557100 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				0C893CF7F1F4DD581354E2BAA4497F73 /* EXSpeech.h */,
-				C1B1158BFDB0C41C60EEDB3B89A34C2E /* EXSpeech.m */,
-				1A270CACAB5020423A2DE24BAE3CD76A /* Pod */,
-				C41366DB00678D25B1A87E22F60CA85C /* Support Files */,
+				15BF56CD64E1B3CCC702DDD7151962E7 /* EXSpeech.podspec */,
 			);
-			name = EXSpeech;
-			path = "../../packages/expo-speech/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,9 +195,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5FC1A3119A700CE3F6C38F508D079ACF /* Debug */ = {
+		09FC7FC4A8FBBEB7065ED238E3565C94 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 52C5CBDB42AA72CE0A343DBA74752B21 /* EXSpeech.xcconfig */;
+			baseConfigurationReference = 58E4D754ABEC87912C9E6F356AFA808F /* EXSpeech.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -216,6 +218,31 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		19DE2DB68427365ADBA50D4EDB81D9B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1AD3C68B8DCAB3A3210F403C12627B85 /* EXSpeech.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSpeech;
+				PRODUCT_NAME = EXSpeech;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		A009CDCFC380CDCEBF205D908094E69D /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -274,31 +301,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		D6C1D05421701DAA65AF957688808F1E /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 52C5CBDB42AA72CE0A343DBA74752B21 /* EXSpeech.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSpeech;
-				PRODUCT_NAME = EXSpeech;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -381,8 +383,8 @@
 		DF15A136AAE224BEC2FE63F0D1238C10 /* Build configuration list for PBXNativeTarget "EXSpeech" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5FC1A3119A700CE3F6C38F508D079ACF /* Debug */,
-				D6C1D05421701DAA65AF957688808F1E /* Release */,
+				09FC7FC4A8FBBEB7065ED238E3565C94 /* Debug */,
+				19DE2DB68427365ADBA50D4EDB81D9B3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

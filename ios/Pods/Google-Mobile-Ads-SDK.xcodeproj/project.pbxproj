@@ -31,11 +31,20 @@
 
 /* Begin PBXFileReference section */
 		04839982BC9F967D7BA77B83F08BC28D /* GoogleAppMeasurement */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleAppMeasurement; path = GoogleAppMeasurement.xcodeproj; sourceTree = "<group>"; };
-		3A31D1BA28180B26CA7BB0C91160FECB /* Google-Mobile-Ads-SDK.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Google-Mobile-Ads-SDK.xcconfig"; sourceTree = "<group>"; };
-		F13DCB9FE576F5D2F9B9A248BA193C1B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Frameworks/GoogleMobileAdsFramework-Current/GoogleMobileAds.framework"; sourceTree = "<group>"; };
+		2F5525614359002DE655ECF69F1C48DE /* Google-Mobile-Ads-SDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Google-Mobile-Ads-SDK.release.xcconfig"; sourceTree = "<group>"; };
+		E9CD05923D13C0F0A8DEC02851B0C47B /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMobileAds.framework; path = "Frameworks/GoogleMobileAdsFramework-Current/GoogleMobileAds.framework"; sourceTree = "<group>"; };
+		F3B21D762271B91EB55326721CADBBFF /* Google-Mobile-Ads-SDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Google-Mobile-Ads-SDK.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0F50F2768C533833926D8E86CC1F1C3D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E9CD05923D13C0F0A8DEC02851B0C47B /* GoogleMobileAds.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		19E54369FFDBBA4331F6916595D967E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -50,38 +59,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		57F4E517F60A618E32153EA88224F79F = {
+		236190D7E193493D71311C05DD1EBBF5 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				F8F2FD5E1C46624FC6B62247481520EA /* Dependencies */,
-				19E54369FFDBBA4331F6916595D967E9 /* Frameworks */,
-				ED7F9A72E737F749B2D2AD07E48B084F /* Google-Mobile-Ads-SDK */,
-				1CAA672F39D7EF2A506AB845F9EC9E83 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		97AB49E0A8692018A72E693915336D2C /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				F13DCB9FE576F5D2F9B9A248BA193C1B /* GoogleMobileAds.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		A607EBD0DA2C27C41BD6571D349B0837 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				3A31D1BA28180B26CA7BB0C91160FECB /* Google-Mobile-Ads-SDK.xcconfig */,
+				F3B21D762271B91EB55326721CADBBFF /* Google-Mobile-Ads-SDK.debug.xcconfig */,
+				2F5525614359002DE655ECF69F1C48DE /* Google-Mobile-Ads-SDK.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/Google-Mobile-Ads-SDK";
 			sourceTree = "<group>";
 		};
-		ED7F9A72E737F749B2D2AD07E48B084F /* Google-Mobile-Ads-SDK */ = {
+		57F4E517F60A618E32153EA88224F79F = {
 			isa = PBXGroup;
 			children = (
-				97AB49E0A8692018A72E693915336D2C /* Frameworks */,
-				A607EBD0DA2C27C41BD6571D349B0837 /* Support Files */,
+				F8F2FD5E1C46624FC6B62247481520EA /* Dependencies */,
+				19E54369FFDBBA4331F6916595D967E9 /* Frameworks */,
+				F14DF4757B27DDA682F21331BFC9FEE0 /* Google-Mobile-Ads-SDK */,
+				1CAA672F39D7EF2A506AB845F9EC9E83 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F14DF4757B27DDA682F21331BFC9FEE0 /* Google-Mobile-Ads-SDK */ = {
+			isa = PBXGroup;
+			children = (
+				0F50F2768C533833926D8E86CC1F1C3D /* Frameworks */,
+				236190D7E193493D71311C05DD1EBBF5 /* Support Files */,
 			);
 			name = "Google-Mobile-Ads-SDK";
 			path = "Google-Mobile-Ads-SDK";
@@ -136,9 +138,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1510F7660EF7F997BF40A008C2BC9767 /* Debug */ = {
+		02B495EC46BCBC44BC942C26BF88F4A3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A31D1BA28180B26CA7BB0C91160FECB /* Google-Mobile-Ads-SDK.xcconfig */;
+			baseConfigurationReference = 2F5525614359002DE655ECF69F1C48DE /* Google-Mobile-Ads-SDK.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -146,8 +148,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		56CED91FC52C4D7CF04EE0ACAFEC5672 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -209,9 +212,9 @@
 			};
 			name = Release;
 		};
-		BE3798456B920EC42AF55284211D3AFE /* Release */ = {
+		6A1AB055CA5AC7EB576E3BED49529020 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A31D1BA28180B26CA7BB0C91160FECB /* Google-Mobile-Ads-SDK.xcconfig */;
+			baseConfigurationReference = F3B21D762271B91EB55326721CADBBFF /* Google-Mobile-Ads-SDK.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -219,9 +222,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		EFDFA8E0E70F7306DBAFA410B1EFD65C /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -302,8 +304,8 @@
 		EBF7575535600B767B27E9749313871E /* Build configuration list for PBXAggregateTarget "Google-Mobile-Ads-SDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1510F7660EF7F997BF40A008C2BC9767 /* Debug */,
-				BE3798456B920EC42AF55284211D3AFE /* Release */,
+				6A1AB055CA5AC7EB576E3BED49529020 /* Debug */,
+				02B495EC46BCBC44BC942C26BF88F4A3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

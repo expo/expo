@@ -7,19 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B61109333B3772F9F1B44597D4D4EFA /* React-jsinspector-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F60328DBFBC9DFCD59791596BEFF017C /* React-jsinspector-dummy.m */; };
-		5F5055D61677A4085737671D47EDAB2C /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC13D2507F9AAEC1D92136053B2AE7E0 /* InspectorInterfaces.cpp */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		66DA1064CE8BF5D28DEBAD27060B058B /* InspectorInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = 043CD3A5A775CD0C1040B4C17142C838 /* InspectorInterfaces.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1B61109333B3772F9F1B44597D4D4EFA /* React-jsinspector-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB296D20FF027000F5405BD1D363821 /* React-jsinspector-dummy.m */; };
+		5F5055D61677A4085737671D47EDAB2C /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FFDC9B47FA655738B299A3861E0DC4 /* InspectorInterfaces.cpp */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		66DA1064CE8BF5D28DEBAD27060B058B /* InspectorInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = CD48BA5747F0B3B8ABB095F7E791C2BD /* InspectorInterfaces.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		043CD3A5A775CD0C1040B4C17142C838 /* InspectorInterfaces.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = InspectorInterfaces.h; sourceTree = "<group>"; };
-		464C13C972A5FBFF8F4D55E429CAE1DB /* React-jsinspector-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-jsinspector-prefix.pch"; sourceTree = "<group>"; };
-		6199AD6EC63B728938CE805FF3C65E62 /* React-jsinspector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-jsinspector.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		75A607C753C29C9CED625610171B851C /* libReact-jsinspector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-jsinspector.a"; path = "libReact-jsinspector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-jsinspector.xcconfig"; sourceTree = "<group>"; };
-		BC13D2507F9AAEC1D92136053B2AE7E0 /* InspectorInterfaces.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = InspectorInterfaces.cpp; sourceTree = "<group>"; };
-		F60328DBFBC9DFCD59791596BEFF017C /* React-jsinspector-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-jsinspector-dummy.m"; sourceTree = "<group>"; };
+		7C18DFFA51E409769CB8905B38D7C85B /* React-jsinspector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-jsinspector.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		8DB296D20FF027000F5405BD1D363821 /* React-jsinspector-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-jsinspector-dummy.m"; sourceTree = "<group>"; };
+		98D6A31F9D64923AC98A6F39EEED62AA /* React-jsinspector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-jsinspector.release.xcconfig"; sourceTree = "<group>"; };
+		B9049B72FE6C68DEC9B07C1AA31C3B7B /* React-jsinspector.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-jsinspector.debug.xcconfig"; sourceTree = "<group>"; };
+		C7FFDC9B47FA655738B299A3861E0DC4 /* InspectorInterfaces.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = InspectorInterfaces.cpp; sourceTree = "<group>"; };
+		CD48BA5747F0B3B8ABB095F7E791C2BD /* InspectorInterfaces.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = InspectorInterfaces.h; sourceTree = "<group>"; };
+		DDAEE77380E103C16A11B5932CE2C9BE /* React-jsinspector-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-jsinspector-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,24 +41,25 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3B72B2199EE931ED43AF7FCBA9AD65FD /* Support Files */ = {
+		365642C141F037D319EFE7B673A7E99B /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */,
-				F60328DBFBC9DFCD59791596BEFF017C /* React-jsinspector-dummy.m */,
-				464C13C972A5FBFF8F4D55E429CAE1DB /* React-jsinspector-prefix.pch */,
+				8DB296D20FF027000F5405BD1D363821 /* React-jsinspector-dummy.m */,
+				DDAEE77380E103C16A11B5932CE2C9BE /* React-jsinspector-prefix.pch */,
+				B9049B72FE6C68DEC9B07C1AA31C3B7B /* React-jsinspector.debug.xcconfig */,
+				98D6A31F9D64923AC98A6F39EEED62AA /* React-jsinspector.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../../ios/Pods/Target Support Files/React-jsinspector";
 			sourceTree = "<group>";
 		};
-		5F022F5AB67C78F64C8600E07054DE84 /* React-jsinspector */ = {
+		5CA3D4449E6501F30BF4BD306890BE87 /* React-jsinspector */ = {
 			isa = PBXGroup;
 			children = (
-				BC13D2507F9AAEC1D92136053B2AE7E0 /* InspectorInterfaces.cpp */,
-				043CD3A5A775CD0C1040B4C17142C838 /* InspectorInterfaces.h */,
-				B08A2A2BAFA1436987F8A5A929B2837D /* Pod */,
-				3B72B2199EE931ED43AF7FCBA9AD65FD /* Support Files */,
+				C7FFDC9B47FA655738B299A3861E0DC4 /* InspectorInterfaces.cpp */,
+				CD48BA5747F0B3B8ABB095F7E791C2BD /* InspectorInterfaces.h */,
+				CF0995BCE261254FF707601A59A0174B /* Pod */,
+				365642C141F037D319EFE7B673A7E99B /* Support Files */,
 			);
 			name = "React-jsinspector";
 			path = "../../react-native-lab/react-native/ReactCommon/jsinspector";
@@ -71,10 +73,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B08A2A2BAFA1436987F8A5A929B2837D /* Pod */ = {
+		CF0995BCE261254FF707601A59A0174B /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				6199AD6EC63B728938CE805FF3C65E62 /* React-jsinspector.podspec */,
+				7C18DFFA51E409769CB8905B38D7C85B /* React-jsinspector.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -84,7 +86,7 @@
 			children = (
 				2FDA21C7ADD0808EDF9F80AD04B332EA /* Frameworks */,
 				86931ED7070DE8B31A51A0F2ACA2FAB3 /* Products */,
-				5F022F5AB67C78F64C8600E07054DE84 /* React-jsinspector */,
+				5CA3D4449E6501F30BF4BD306890BE87 /* React-jsinspector */,
 			);
 			sourceTree = "<group>";
 		};
@@ -159,6 +161,36 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		29B32FC63752B5063532C2C9142BBFEB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 98D6A31F9D64923AC98A6F39EEED62AA /* React-jsinspector.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-jsinspector/React-jsinspector-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = jsinspector;
+				PRODUCT_NAME = "React-jsinspector";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		41F53401A87FE5A33EED7C9435F2CEE1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -219,9 +251,9 @@
 			};
 			name = Release;
 		};
-		954EEA8783F9D8511A280AD7ED5B0801 /* Debug */ = {
+		A6637A451F1F5C21BBB1706F95A382E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */;
+			baseConfigurationReference = B9049B72FE6C68DEC9B07C1AA31C3B7B /* React-jsinspector.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -312,44 +344,14 @@
 			};
 			name = Debug;
 		};
-		ED7455C5DEF7B5E924B735CAC4894C38 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-jsinspector/React-jsinspector-prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"RCT_DEV=1",
-					"RCT_ENABLE_INSPECTOR=0",
-					"ENABLE_PACKAGER_CONNECTION=0",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = jsinspector;
-				PRODUCT_NAME = "React-jsinspector";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		022719D655BD874370360BFF5D133BFB /* Build configuration list for PBXNativeTarget "React-jsinspector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				954EEA8783F9D8511A280AD7ED5B0801 /* Debug */,
-				ED7455C5DEF7B5E924B735CAC4894C38 /* Release */,
+				A6637A451F1F5C21BBB1706F95A382E3 /* Debug */,
+				29B32FC63752B5063532C2C9142BBFEB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

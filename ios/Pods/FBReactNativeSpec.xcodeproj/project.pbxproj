@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5ED219393852FEFF1E59CFCE7EA9D835 /* FBReactNativeSpec-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9742862007138DA62515DF3083F35BC9 /* FBReactNativeSpec-dummy.m */; };
-		8464888FA1E3CBE14EC54AC02BC80653 /* FBReactNativeSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A37989E8C26D9DF2DA96FFEED087223 /* FBReactNativeSpec.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BE6CD2E12AEEE3E67B9DA636A0786160 /* FBReactNativeSpec-generated.mm in Sources */ = {isa = PBXBuildFile; fileRef = 09516B1016833876B7FC0FC271F2E96B /* FBReactNativeSpec-generated.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5ED219393852FEFF1E59CFCE7EA9D835 /* FBReactNativeSpec-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B41E7006883AB5F48E4CCEEDC652B57D /* FBReactNativeSpec-dummy.m */; };
+		8464888FA1E3CBE14EC54AC02BC80653 /* FBReactNativeSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0A4A368032E00A3DF8C712928C9FB5 /* FBReactNativeSpec.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BE6CD2E12AEEE3E67B9DA636A0786160 /* FBReactNativeSpec-generated.mm in Sources */ = {isa = PBXBuildFile; fileRef = 01B7E35D8FC342B9DFF9B2D4C3738C79 /* FBReactNativeSpec-generated.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,18 +58,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		09516B1016833876B7FC0FC271F2E96B /* FBReactNativeSpec-generated.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = "FBReactNativeSpec-generated.mm"; path = "FBReactNativeSpec/FBReactNativeSpec-generated.mm"; sourceTree = "<group>"; };
+		01B7E35D8FC342B9DFF9B2D4C3738C79 /* FBReactNativeSpec-generated.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = "FBReactNativeSpec-generated.mm"; path = "FBReactNativeSpec/FBReactNativeSpec-generated.mm"; sourceTree = "<group>"; };
+		0EFBD4078DA41454E8B075707C665410 /* FBReactNativeSpec.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FBReactNativeSpec.debug.xcconfig; sourceTree = "<group>"; };
 		303C1B7F254277C06C37DFB2BA0D2EED /* RCTRequired */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTRequired; path = RCTRequired.xcodeproj; sourceTree = "<group>"; };
 		483B29A8047CEB595F37FE736A8BCAFD /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 		51711AD5A1A31E09CD9EEA3532618A56 /* RCTTypeSafety */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTypeSafety; path = RCTTypeSafety.xcodeproj; sourceTree = "<group>"; };
 		57538CA8713C240745CA1A9A72AF8388 /* ReactCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCommon; path = ReactCommon.xcodeproj; sourceTree = "<group>"; };
-		5A37989E8C26D9DF2DA96FFEED087223 /* FBReactNativeSpec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBReactNativeSpec.h; path = FBReactNativeSpec/FBReactNativeSpec.h; sourceTree = "<group>"; };
-		6A1D5D165142D7EAD3504123C75A61BB /* FBReactNativeSpec.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FBReactNativeSpec.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		6A0A4A368032E00A3DF8C712928C9FB5 /* FBReactNativeSpec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBReactNativeSpec.h; path = FBReactNativeSpec/FBReactNativeSpec.h; sourceTree = "<group>"; };
+		7C418E16E4BA1857A8A5827F8B6AC724 /* FBReactNativeSpec-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FBReactNativeSpec-prefix.pch"; sourceTree = "<group>"; };
 		905B95AD9BC0E9D19FF03F151B7B5971 /* React-jsi */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsi"; path = "React-jsi.xcodeproj"; sourceTree = "<group>"; };
-		91EEF1E6D91254125C0617E4D390BD22 /* FBReactNativeSpec.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FBReactNativeSpec.xcconfig; sourceTree = "<group>"; };
-		9742862007138DA62515DF3083F35BC9 /* FBReactNativeSpec-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FBReactNativeSpec-dummy.m"; sourceTree = "<group>"; };
 		9EB29FFC2FA99D53B566CCF96AB5FB76 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		E1F3C6B58A0618C87DC0CEB114134A9F /* FBReactNativeSpec-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FBReactNativeSpec-prefix.pch"; sourceTree = "<group>"; };
+		B1D7D9042DEF8B5E88F1D8B8CB5F49F3 /* FBReactNativeSpec.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FBReactNativeSpec.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B41E7006883AB5F48E4CCEEDC652B57D /* FBReactNativeSpec-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FBReactNativeSpec-dummy.m"; sourceTree = "<group>"; };
+		BD5B99EA25A07FD322CC86FAEDD03E68 /* FBReactNativeSpec.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FBReactNativeSpec.release.xcconfig; sourceTree = "<group>"; };
 		EEB582DEAA5121D91BCB1E95DA8332DC /* libFBReactNativeSpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libFBReactNativeSpec.a; path = libFBReactNativeSpec.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -91,14 +92,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		6D444598E44AF744A42C5012F457A04B /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				6A1D5D165142D7EAD3504123C75A61BB /* FBReactNativeSpec.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		91F1A4EA2ECFE5B763A72CEA00E65567 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -107,34 +100,43 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B556CDBC856CD3B356B57F12E496FD50 /* FBReactNativeSpec */ = {
+		AAF675F90E0B12AA664293B6C3728510 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				5A37989E8C26D9DF2DA96FFEED087223 /* FBReactNativeSpec.h */,
-				09516B1016833876B7FC0FC271F2E96B /* FBReactNativeSpec-generated.mm */,
-				6D444598E44AF744A42C5012F457A04B /* Pod */,
-				BE69AFE1C8A5982782D25AEF86CF3B5E /* Support Files */,
+				B1D7D9042DEF8B5E88F1D8B8CB5F49F3 /* FBReactNativeSpec.podspec */,
 			);
-			name = FBReactNativeSpec;
-			path = "../../react-native-lab/react-native/Libraries/FBReactNativeSpec";
+			name = Pod;
 			sourceTree = "<group>";
 		};
-		BE69AFE1C8A5982782D25AEF86CF3B5E /* Support Files */ = {
+		DCC296940465C4A92AD71D587F438525 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				91EEF1E6D91254125C0617E4D390BD22 /* FBReactNativeSpec.xcconfig */,
-				9742862007138DA62515DF3083F35BC9 /* FBReactNativeSpec-dummy.m */,
-				E1F3C6B58A0618C87DC0CEB114134A9F /* FBReactNativeSpec-prefix.pch */,
+				B41E7006883AB5F48E4CCEEDC652B57D /* FBReactNativeSpec-dummy.m */,
+				7C418E16E4BA1857A8A5827F8B6AC724 /* FBReactNativeSpec-prefix.pch */,
+				0EFBD4078DA41454E8B075707C665410 /* FBReactNativeSpec.debug.xcconfig */,
+				BD5B99EA25A07FD322CC86FAEDD03E68 /* FBReactNativeSpec.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../../ios/Pods/Target Support Files/FBReactNativeSpec";
+			sourceTree = "<group>";
+		};
+		DECE95818841442A2F29FAEE32372AC9 /* FBReactNativeSpec */ = {
+			isa = PBXGroup;
+			children = (
+				6A0A4A368032E00A3DF8C712928C9FB5 /* FBReactNativeSpec.h */,
+				01B7E35D8FC342B9DFF9B2D4C3738C79 /* FBReactNativeSpec-generated.mm */,
+				AAF675F90E0B12AA664293B6C3728510 /* Pod */,
+				DCC296940465C4A92AD71D587F438525 /* Support Files */,
+			);
+			name = FBReactNativeSpec;
+			path = "../../react-native-lab/react-native/Libraries/FBReactNativeSpec";
 			sourceTree = "<group>";
 		};
 		E1880B6BC451D2B0B20FF58EFA5D8574 = {
 			isa = PBXGroup;
 			children = (
 				E738A86CABF9B8F7E5C2B5D36330706C /* Dependencies */,
-				B556CDBC856CD3B356B57F12E496FD50 /* FBReactNativeSpec */,
+				DECE95818841442A2F29FAEE32372AC9 /* FBReactNativeSpec */,
 				5AE8621BC91C42834D763C7642DAD226 /* Frameworks */,
 				91F1A4EA2ECFE5B763A72CEA00E65567 /* Products */,
 			);
@@ -283,9 +285,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		B8F0A7B5B242184145E0560F697326E3 /* Debug */ = {
+		95F41A852DD12492E5B9ABDBEC0BF187 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91EEF1E6D91254125C0617E4D390BD22 /* FBReactNativeSpec.xcconfig */;
+			baseConfigurationReference = 0EFBD4078DA41454E8B075707C665410 /* FBReactNativeSpec.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -430,9 +432,9 @@
 			};
 			name = Release;
 		};
-		D7E06E848250849B93266B6D86EB79A2 /* Release */ = {
+		E2E8BCCEE8DD82084835214E41A479D9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91EEF1E6D91254125C0617E4D390BD22 /* FBReactNativeSpec.xcconfig */;
+			baseConfigurationReference = BD5B99EA25A07FD322CC86FAEDD03E68 /* FBReactNativeSpec.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -469,8 +471,8 @@
 		EB94603F1049C984FE3436D91C6D5C69 /* Build configuration list for PBXNativeTarget "FBReactNativeSpec" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B8F0A7B5B242184145E0560F697326E3 /* Debug */,
-				D7E06E848250849B93266B6D86EB79A2 /* Release */,
+				95F41A852DD12492E5B9ABDBEC0BF187 /* Debug */,
+				E2E8BCCEE8DD82084835214E41A479D9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

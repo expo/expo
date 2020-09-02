@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05B6E9D9583DEBB536722ECEFDBD0461 /* JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE220EE88953E8D164B86B5BDB6F58EC /* JSIDynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		071432D933F96AF0BF5ADDA0DDA22A69 /* jsilib-windows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC21E3FC1E23796C2A26D2C7AF2D6B57 /* jsilib-windows.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		10037D75D06AC87821187FE2FE67EBBB /* jsilib.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D1B14F2302AC37AD2329466FD9E0A43 /* jsilib.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		114F79855B0ED6ED2DBF4F4697BF24F0 /* decorator.h in Headers */ = {isa = PBXBuildFile; fileRef = C1B036EBCEBA8515E1F185BBC95DD7DC /* decorator.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1927961CC8A9DC69B03D85D4BB0B6A1F /* JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = 4ADF8F744F12266A19628E3E2D515BD3 /* JSIDynamic.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		37003A4CC86D31342293080A2A81B15E /* jsi-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = DD5B747B6E79A2C7E434B89DBC7B1118 /* jsi-inl.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		371A99B384AA2D8E3A9A7380929183C5 /* JSCRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E05F6ACF8F2D08F2FF2B55CF0B53D8E9 /* JSCRuntime.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		3C88C343188F07516B77024F5DDF9C43 /* jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27D44FFC1876B9F79C0A1FA2E62F7295 /* jsi.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		47197B0245129245C3EDACE7C3CA525E /* jsi.h in Headers */ = {isa = PBXBuildFile; fileRef = 9EE1568C618D0894ECC2E5956F8F5D8E /* jsi.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9123828DE03D7A77DF56EAED19FB26A6 /* React-jsi-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FE252420255A112FD2D17C09D475F714 /* React-jsi-dummy.m */; };
-		AADA91AAC975489D1D53E8DF1A1832EF /* jsilib-posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 091029B302252910143B0CD30E38C75A /* jsilib-posix.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C5E749620FF1D726D7D994B06EF853D6 /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = AF6597733A82344323A831AC889CC21C /* instrumentation.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EDA2FA1C4075933E6C3895EA82CFBF7B /* threadsafe.h in Headers */ = {isa = PBXBuildFile; fileRef = 75AC54A0B820C14861AABEFC44CCD2B4 /* threadsafe.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FB9A03C8B23926B556CC6D0386399225 /* JSCRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = 63E83D8E5D486D4C35712C5FBBEA80F0 /* JSCRuntime.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		05B6E9D9583DEBB536722ECEFDBD0461 /* JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DEC1E236722590D858A0FA8FA14CB30C /* JSIDynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		071432D933F96AF0BF5ADDA0DDA22A69 /* jsilib-windows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F0DB65CCB984B70394DE11C6B7DFFB3 /* jsilib-windows.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		10037D75D06AC87821187FE2FE67EBBB /* jsilib.h in Headers */ = {isa = PBXBuildFile; fileRef = 55225F625C79DAC9A9F75CFE039BE7BF /* jsilib.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		114F79855B0ED6ED2DBF4F4697BF24F0 /* decorator.h in Headers */ = {isa = PBXBuildFile; fileRef = 75D9DA91595A25262597B4F51166A778 /* decorator.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1927961CC8A9DC69B03D85D4BB0B6A1F /* JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = C2BD7045D91839C3B84ACFF54F36E0C9 /* JSIDynamic.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		37003A4CC86D31342293080A2A81B15E /* jsi-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5EF60F673281CC330292B302FF5B76FC /* jsi-inl.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		371A99B384AA2D8E3A9A7380929183C5 /* JSCRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2492C115C8ED869CD5A1D21ABA9DBD15 /* JSCRuntime.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3C88C343188F07516B77024F5DDF9C43 /* jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 069D8645AE381E23A2F5CD23EB313C35 /* jsi.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		47197B0245129245C3EDACE7C3CA525E /* jsi.h in Headers */ = {isa = PBXBuildFile; fileRef = EEE073CFDE5E9C75701420B1F82509D1 /* jsi.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9123828DE03D7A77DF56EAED19FB26A6 /* React-jsi-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2BDEB41F5F87EDD245901945B578D /* React-jsi-dummy.m */; };
+		AADA91AAC975489D1D53E8DF1A1832EF /* jsilib-posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C1EE3F129382074CD08D7643129B402E /* jsilib-posix.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C5E749620FF1D726D7D994B06EF853D6 /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = A03AB3911FA1C81006971F82D35A1848 /* instrumentation.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EDA2FA1C4075933E6C3895EA82CFBF7B /* threadsafe.h in Headers */ = {isa = PBXBuildFile; fileRef = 96B5816085986D932B6A681B7C778F87 /* threadsafe.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FB9A03C8B23926B556CC6D0386399225 /* JSCRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = 750AB8EE4C1275A1C8003F4A1BFD5D36 /* JSCRuntime.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,28 +55,29 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		091029B302252910143B0CD30E38C75A /* jsilib-posix.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = "jsilib-posix.cpp"; sourceTree = "<group>"; };
+		069D8645AE381E23A2F5CD23EB313C35 /* jsi.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = jsi.cpp; sourceTree = "<group>"; };
+		0F0DB65CCB984B70394DE11C6B7DFFB3 /* jsilib-windows.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = "jsilib-windows.cpp"; sourceTree = "<group>"; };
 		221454AEC8BAF287E3C8DC5E1F274FBE /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
-		27D44FFC1876B9F79C0A1FA2E62F7295 /* jsi.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = jsi.cpp; sourceTree = "<group>"; };
-		3D1B14F2302AC37AD2329466FD9E0A43 /* jsilib.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = jsilib.h; sourceTree = "<group>"; };
-		4ADF8F744F12266A19628E3E2D515BD3 /* JSIDynamic.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSIDynamic.h; sourceTree = "<group>"; };
-		5E6CB358915E5EF7F75BAAB4471F6198 /* React-jsi.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-jsi.xcconfig"; sourceTree = "<group>"; };
-		61535F9EE1A5B1ADDD620675F6F8C1F3 /* React-jsi.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-jsi.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		63E83D8E5D486D4C35712C5FBBEA80F0 /* JSCRuntime.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSCRuntime.h; sourceTree = "<group>"; };
+		2492C115C8ED869CD5A1D21ABA9DBD15 /* JSCRuntime.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSCRuntime.cpp; sourceTree = "<group>"; };
+		3A13E98DBF87750E03ED224322FC23DC /* React-jsi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-jsi.release.xcconfig"; sourceTree = "<group>"; };
+		55225F625C79DAC9A9F75CFE039BE7BF /* jsilib.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = jsilib.h; sourceTree = "<group>"; };
+		5EF60F673281CC330292B302FF5B76FC /* jsi-inl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "jsi-inl.h"; sourceTree = "<group>"; };
 		6A4E119724A2730CD54923CCF947002B /* libReact-jsi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-jsi.a"; path = "libReact-jsi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		75AC54A0B820C14861AABEFC44CCD2B4 /* threadsafe.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = threadsafe.h; sourceTree = "<group>"; };
-		7D55FCF6A58EB5406437E434FB1DCFBA /* React-jsi-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-jsi-prefix.pch"; sourceTree = "<group>"; };
+		70A83578EF94471F52CFF9FFC40D6558 /* React-jsi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-jsi.debug.xcconfig"; sourceTree = "<group>"; };
+		750AB8EE4C1275A1C8003F4A1BFD5D36 /* JSCRuntime.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSCRuntime.h; sourceTree = "<group>"; };
+		75D9DA91595A25262597B4F51166A778 /* decorator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = decorator.h; sourceTree = "<group>"; };
 		8A55C1112A214E39F264533540A5646F /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
-		9EE1568C618D0894ECC2E5956F8F5D8E /* jsi.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = jsi.h; sourceTree = "<group>"; };
-		AF6597733A82344323A831AC889CC21C /* instrumentation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = instrumentation.h; sourceTree = "<group>"; };
-		C1B036EBCEBA8515E1F185BBC95DD7DC /* decorator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = decorator.h; sourceTree = "<group>"; };
-		CE220EE88953E8D164B86B5BDB6F58EC /* JSIDynamic.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSIDynamic.cpp; sourceTree = "<group>"; };
-		DC21E3FC1E23796C2A26D2C7AF2D6B57 /* jsilib-windows.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = "jsilib-windows.cpp"; sourceTree = "<group>"; };
-		DD5B747B6E79A2C7E434B89DBC7B1118 /* jsi-inl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "jsi-inl.h"; sourceTree = "<group>"; };
-		E05F6ACF8F2D08F2FF2B55CF0B53D8E9 /* JSCRuntime.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSCRuntime.cpp; sourceTree = "<group>"; };
+		96B5816085986D932B6A681B7C778F87 /* threadsafe.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = threadsafe.h; sourceTree = "<group>"; };
+		9AB2BDEB41F5F87EDD245901945B578D /* React-jsi-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-jsi-dummy.m"; sourceTree = "<group>"; };
+		A03AB3911FA1C81006971F82D35A1848 /* instrumentation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = instrumentation.h; sourceTree = "<group>"; };
+		C1EE3F129382074CD08D7643129B402E /* jsilib-posix.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = "jsilib-posix.cpp"; sourceTree = "<group>"; };
+		C2BD7045D91839C3B84ACFF54F36E0C9 /* JSIDynamic.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = JSIDynamic.h; sourceTree = "<group>"; };
+		C61ECE3855D80F975817C55950F05657 /* React-jsi.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-jsi.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DEC1E236722590D858A0FA8FA14CB30C /* JSIDynamic.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = JSIDynamic.cpp; sourceTree = "<group>"; };
 		E4E62F93F6DFB7D5502CFEB2ADCA5874 /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
+		EEE073CFDE5E9C75701420B1F82509D1 /* jsi.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = jsi.h; sourceTree = "<group>"; };
+		F21B83955856430121411409C577DCC2 /* React-jsi-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-jsi-prefix.pch"; sourceTree = "<group>"; };
 		F6FE744C4562368AE63E0E317710B84A /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		FE252420255A112FD2D17C09D475F714 /* React-jsi-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-jsi-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,55 +91,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1F5FA87819848679155AFB010D8588B4 /* jsi */ = {
+		3350BBE02C1718FAC168280A07BC173A /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				C1B036EBCEBA8515E1F185BBC95DD7DC /* decorator.h */,
-				AF6597733A82344323A831AC889CC21C /* instrumentation.h */,
-				27D44FFC1876B9F79C0A1FA2E62F7295 /* jsi.cpp */,
-				9EE1568C618D0894ECC2E5956F8F5D8E /* jsi.h */,
-				DD5B747B6E79A2C7E434B89DBC7B1118 /* jsi-inl.h */,
-				CE220EE88953E8D164B86B5BDB6F58EC /* JSIDynamic.cpp */,
-				4ADF8F744F12266A19628E3E2D515BD3 /* JSIDynamic.h */,
-				3D1B14F2302AC37AD2329466FD9E0A43 /* jsilib.h */,
-				091029B302252910143B0CD30E38C75A /* jsilib-posix.cpp */,
-				DC21E3FC1E23796C2A26D2C7AF2D6B57 /* jsilib-windows.cpp */,
-				75AC54A0B820C14861AABEFC44CCD2B4 /* threadsafe.h */,
-			);
-			name = jsi;
-			path = jsi;
-			sourceTree = "<group>";
-		};
-		2101727DAC302419960FDFB153B5A032 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				61535F9EE1A5B1ADDD620675F6F8C1F3 /* React-jsi.podspec */,
+				C61ECE3855D80F975817C55950F05657 /* React-jsi.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		56395BC35A131B24ED7B607C7F6439DA /* Support Files */ = {
+		4C916527730197A3D61D95C158BA663D /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				5E6CB358915E5EF7F75BAAB4471F6198 /* React-jsi.xcconfig */,
-				FE252420255A112FD2D17C09D475F714 /* React-jsi-dummy.m */,
-				7D55FCF6A58EB5406437E434FB1DCFBA /* React-jsi-prefix.pch */,
+				9AB2BDEB41F5F87EDD245901945B578D /* React-jsi-dummy.m */,
+				F21B83955856430121411409C577DCC2 /* React-jsi-prefix.pch */,
+				70A83578EF94471F52CFF9FFC40D6558 /* React-jsi.debug.xcconfig */,
+				3A13E98DBF87750E03ED224322FC23DC /* React-jsi.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../../ios/Pods/Target Support Files/React-jsi";
 			sourceTree = "<group>";
 		};
-		938A997D899D466461CE1F7FCDBC3BCC /* React-jsi */ = {
+		7E6676C2370B607E0B6307777D3B4830 /* jsi */ = {
 			isa = PBXGroup;
 			children = (
-				E05F6ACF8F2D08F2FF2B55CF0B53D8E9 /* JSCRuntime.cpp */,
-				63E83D8E5D486D4C35712C5FBBEA80F0 /* JSCRuntime.h */,
-				1F5FA87819848679155AFB010D8588B4 /* jsi */,
-				2101727DAC302419960FDFB153B5A032 /* Pod */,
-				56395BC35A131B24ED7B607C7F6439DA /* Support Files */,
+				75D9DA91595A25262597B4F51166A778 /* decorator.h */,
+				A03AB3911FA1C81006971F82D35A1848 /* instrumentation.h */,
+				069D8645AE381E23A2F5CD23EB313C35 /* jsi.cpp */,
+				EEE073CFDE5E9C75701420B1F82509D1 /* jsi.h */,
+				5EF60F673281CC330292B302FF5B76FC /* jsi-inl.h */,
+				DEC1E236722590D858A0FA8FA14CB30C /* JSIDynamic.cpp */,
+				C2BD7045D91839C3B84ACFF54F36E0C9 /* JSIDynamic.h */,
+				55225F625C79DAC9A9F75CFE039BE7BF /* jsilib.h */,
+				C1EE3F129382074CD08D7643129B402E /* jsilib-posix.cpp */,
+				0F0DB65CCB984B70394DE11C6B7DFFB3 /* jsilib-windows.cpp */,
+				96B5816085986D932B6A681B7C778F87 /* threadsafe.h */,
 			);
-			name = "React-jsi";
-			path = "../../react-native-lab/react-native/ReactCommon/jsi";
+			name = jsi;
+			path = jsi;
 			sourceTree = "<group>";
 		};
 		9D9B555FFB3B792B65304D91C6A846A6 /* Frameworks */ = {
@@ -173,8 +162,21 @@
 				AEEE24DA90A7499A9B76AB46EA0C52F9 /* Dependencies */,
 				9D9B555FFB3B792B65304D91C6A846A6 /* Frameworks */,
 				AEE7B0E47CEFE104A0BF2D814CAEF65C /* Products */,
-				938A997D899D466461CE1F7FCDBC3BCC /* React-jsi */,
+				F53F22B409241B38B8842533D63D0AF3 /* React-jsi */,
 			);
+			sourceTree = "<group>";
+		};
+		F53F22B409241B38B8842533D63D0AF3 /* React-jsi */ = {
+			isa = PBXGroup;
+			children = (
+				2492C115C8ED869CD5A1D21ABA9DBD15 /* JSCRuntime.cpp */,
+				750AB8EE4C1275A1C8003F4A1BFD5D36 /* JSCRuntime.h */,
+				7E6676C2370B607E0B6307777D3B4830 /* jsi */,
+				3350BBE02C1718FAC168280A07BC173A /* Pod */,
+				4C916527730197A3D61D95C158BA663D /* Support Files */,
+			);
+			name = "React-jsi";
+			path = "../../react-native-lab/react-native/ReactCommon/jsi";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -300,36 +302,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		196E867D686EFE3037B0F2C99AF3CC0E /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E6CB358915E5EF7F75BAAB4471F6198 /* React-jsi.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-jsi/React-jsi-prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"RCT_DEV=1",
-					"RCT_ENABLE_INSPECTOR=0",
-					"ENABLE_PACKAGER_CONNECTION=0",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = jsi;
-				PRODUCT_NAME = "React-jsi";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		7FCCE7F0612578A6F6A7B2FBD5EA790D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -454,9 +426,9 @@
 			};
 			name = Debug;
 		};
-		C0BEA0A73BE2BE26B4E90191E92CAC24 /* Debug */ = {
+		ACF7425E8C4DCBC7142F5C44618C310B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E6CB358915E5EF7F75BAAB4471F6198 /* React-jsi.xcconfig */;
+			baseConfigurationReference = 70A83578EF94471F52CFF9FFC40D6558 /* React-jsi.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -483,14 +455,44 @@
 			};
 			name = Debug;
 		};
+		F3D300F1827738050B2043C4A9E55E91 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3A13E98DBF87750E03ED224322FC23DC /* React-jsi.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-jsi/React-jsi-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = jsi;
+				PRODUCT_NAME = "React-jsi";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		2B5076F7D8B3A4314FFB925F27299DB8 /* Build configuration list for PBXNativeTarget "React-jsi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C0BEA0A73BE2BE26B4E90191E92CAC24 /* Debug */,
-				196E867D686EFE3037B0F2C99AF3CC0E /* Release */,
+				ACF7425E8C4DCBC7142F5C44618C310B /* Debug */,
+				F3D300F1827738050B2043C4A9E55E91 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

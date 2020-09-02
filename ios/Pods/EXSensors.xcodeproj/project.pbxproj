@@ -7,25 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05E5C65FE9F7A1EE4750211155233B0A /* EXBaseSensorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E8F291CCB05040E58CCA870892D5804 /* EXBaseSensorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		25C9D1ACE0BF8E4E2CC1E39868292D3C /* EXDeviceMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EFEEB1A0CC4DB5D93C03BEB8343ED7B /* EXDeviceMotion.m */; };
-		2CF1BE2E665BA840AAA732EB858B19BD /* EXDeviceMotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 9EAEDD33B8F0BBC50E07797C0C0612C0 /* EXDeviceMotion.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3DF43EBC82B5671437F0160843BDEF9B /* EXMagnetometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 65DAF04C934D76796035B0693902BF4C /* EXMagnetometer.m */; };
-		42A05DFB3297476675DE5720C79AFC97 /* EXBarometer.h in Headers */ = {isa = PBXBuildFile; fileRef = 708C123BA5D59DFD56E304F783F08392 /* EXBarometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		45C819F233E982D6A02827C72317F781 /* EXBarometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2018F838818B8D799707A5FCAD619798 /* EXBarometer.m */; };
-		57586580CAFC9B052E49EBB02A209DAC /* EXSensors-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4040E444F20CE8F1592D244D19300D9F /* EXSensors-dummy.m */; };
-		5B88A33B32D0381401D5CCBA10FD010E /* EXSensorsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F4F471D56D37E8B78EB8368205C8E31 /* EXSensorsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5CF91E05DDAF2AEAD26E2BBA942232B2 /* EXPedometer.h in Headers */ = {isa = PBXBuildFile; fileRef = E1ED99D42703B6DEE3FCBD7C78C512EB /* EXPedometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6D78BA42DDDE316480CEB2B7A184305B /* EXGyroscope.h in Headers */ = {isa = PBXBuildFile; fileRef = E9EF33AA31082CD889A3FDFCBA674139 /* EXGyroscope.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		85DE4463309FE176F00BD6942392996A /* EXPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = A643F163C77B094AFF785F4C83EF2461 /* EXPedometer.m */; };
-		9067F4B0C2F3C3C0BBB03F6FE96BF4D1 /* EXAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9134CBD385C92EEC0C9430EA477BDA2A /* EXAccelerometer.m */; };
-		A8C521BB49C24E73B40FFDE5F48E8A76 /* EXGyroscope.m in Sources */ = {isa = PBXBuildFile; fileRef = 11045D05B6F9C75178C160C74DD927E6 /* EXGyroscope.m */; };
-		BE2E2A34D4056DFC557E5ACBE17AA78F /* EXSensorsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8D4B32B4FE5C1F8083836B8A44F120 /* EXSensorsManager.m */; };
-		C876DE6EDF964F88F4B2986D71F99ED0 /* EXMagnetometer.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E4049E1CDEEE927EF67479417134DD /* EXMagnetometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D67182DA07A2B8E6708EA4B07AE29A27 /* EXMagnetometerUncalibrated.m in Sources */ = {isa = PBXBuildFile; fileRef = 683427A014D5D93769877FC8C0DA1A78 /* EXMagnetometerUncalibrated.m */; };
-		E2E7205623E2539179C68CA898BD9B96 /* EXBaseSensorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6783B09E3781BE4587539B5D0F7AB8D3 /* EXBaseSensorModule.m */; };
-		FBD55E16CCA6CF864264E8ECD0CBB2F3 /* EXAccelerometer.h in Headers */ = {isa = PBXBuildFile; fileRef = C3FC9502DE0714A83FE8CE736B648C6B /* EXAccelerometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FED8A0A948EC26C6573DC9EEB3E0F328 /* EXMagnetometerUncalibrated.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F3FF829669764B36F837A3BDCB68169 /* EXMagnetometerUncalibrated.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		05E5C65FE9F7A1EE4750211155233B0A /* EXBaseSensorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = AB30D43606551E5D10D60EB3DAC34489 /* EXBaseSensorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		25C9D1ACE0BF8E4E2CC1E39868292D3C /* EXDeviceMotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 7243400CD199CD867CAEEF17F2954F22 /* EXDeviceMotion.m */; };
+		2CF1BE2E665BA840AAA732EB858B19BD /* EXDeviceMotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 5505565BE2B7A812C268F04A29A0ABEC /* EXDeviceMotion.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3DF43EBC82B5671437F0160843BDEF9B /* EXMagnetometer.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E7CA913973A7F4A319A246D005B814 /* EXMagnetometer.m */; };
+		42A05DFB3297476675DE5720C79AFC97 /* EXBarometer.h in Headers */ = {isa = PBXBuildFile; fileRef = 636EE675A445A9AC882D7E4F27997CCC /* EXBarometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		45C819F233E982D6A02827C72317F781 /* EXBarometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 12F5725A2FB241FA8B1ECF7F90BF978F /* EXBarometer.m */; };
+		57586580CAFC9B052E49EBB02A209DAC /* EXSensors-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 40BC9E56FF9101BDB684E73F2462223D /* EXSensors-dummy.m */; };
+		5B88A33B32D0381401D5CCBA10FD010E /* EXSensorsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 784C15BC9F8DDF265A29C6346D93026C /* EXSensorsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5CF91E05DDAF2AEAD26E2BBA942232B2 /* EXPedometer.h in Headers */ = {isa = PBXBuildFile; fileRef = 83AE3A7FAFC36997CC7B6CBC1E2C7943 /* EXPedometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6D78BA42DDDE316480CEB2B7A184305B /* EXGyroscope.h in Headers */ = {isa = PBXBuildFile; fileRef = 36C6CFC7FDD99B19EE54E7FD060C3BCD /* EXGyroscope.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		85DE4463309FE176F00BD6942392996A /* EXPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 01160C81CB8476BA0B1D268BAB64C5B7 /* EXPedometer.m */; };
+		9067F4B0C2F3C3C0BBB03F6FE96BF4D1 /* EXAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF76B4FF76065589D14120D4BCB5AA1 /* EXAccelerometer.m */; };
+		A8C521BB49C24E73B40FFDE5F48E8A76 /* EXGyroscope.m in Sources */ = {isa = PBXBuildFile; fileRef = 2613762D3A5600C6916041FE680AB0B9 /* EXGyroscope.m */; };
+		BE2E2A34D4056DFC557E5ACBE17AA78F /* EXSensorsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EA69E1BAA0006A76EDD6CD0AD8173D42 /* EXSensorsManager.m */; };
+		C876DE6EDF964F88F4B2986D71F99ED0 /* EXMagnetometer.h in Headers */ = {isa = PBXBuildFile; fileRef = CCAB6CF167B8949DDB3BD0B21CA7B034 /* EXMagnetometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D67182DA07A2B8E6708EA4B07AE29A27 /* EXMagnetometerUncalibrated.m in Sources */ = {isa = PBXBuildFile; fileRef = A51EF64A252D0F544AEA310C533690D9 /* EXMagnetometerUncalibrated.m */; };
+		E2E7205623E2539179C68CA898BD9B96 /* EXBaseSensorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A8721FA981D2EAE75966C9A81046B62 /* EXBaseSensorModule.m */; };
+		FBD55E16CCA6CF864264E8ECD0CBB2F3 /* EXAccelerometer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD04E8330A63C953E5C16289C91B0F6 /* EXAccelerometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FED8A0A948EC26C6573DC9EEB3E0F328 /* EXMagnetometerUncalibrated.h in Headers */ = {isa = PBXBuildFile; fileRef = D9990B5A13FBA116677A7A87E6BEDC77 /* EXMagnetometerUncalibrated.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,31 +46,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		01160C81CB8476BA0B1D268BAB64C5B7 /* EXPedometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXPedometer.m; sourceTree = "<group>"; };
 		0FAD82EF40B7398F8CCB5B43B3AEB6E2 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		11045D05B6F9C75178C160C74DD927E6 /* EXGyroscope.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXGyroscope.m; sourceTree = "<group>"; };
-		1EFEEB1A0CC4DB5D93C03BEB8343ED7B /* EXDeviceMotion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDeviceMotion.m; sourceTree = "<group>"; };
-		2018F838818B8D799707A5FCAD619798 /* EXBarometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXBarometer.m; sourceTree = "<group>"; };
-		3F3FF829669764B36F837A3BDCB68169 /* EXMagnetometerUncalibrated.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXMagnetometerUncalibrated.h; sourceTree = "<group>"; };
-		4040E444F20CE8F1592D244D19300D9F /* EXSensors-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSensors-dummy.m"; sourceTree = "<group>"; };
-		5D8D4B32B4FE5C1F8083836B8A44F120 /* EXSensorsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSensorsManager.m; path = EXSensors/EXSensorsManager.m; sourceTree = "<group>"; };
-		65DAF04C934D76796035B0693902BF4C /* EXMagnetometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometer.m; sourceTree = "<group>"; };
-		6783B09E3781BE4587539B5D0F7AB8D3 /* EXBaseSensorModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXBaseSensorModule.m; sourceTree = "<group>"; };
-		683427A014D5D93769877FC8C0DA1A78 /* EXMagnetometerUncalibrated.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometerUncalibrated.m; sourceTree = "<group>"; };
-		6984AEE0F11612EA6869FC14A27E2FA0 /* EXSensors.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSensors.xcconfig; sourceTree = "<group>"; };
-		6E8F291CCB05040E58CCA870892D5804 /* EXBaseSensorModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXBaseSensorModule.h; sourceTree = "<group>"; };
-		6F4F471D56D37E8B78EB8368205C8E31 /* EXSensorsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSensorsManager.h; path = EXSensors/EXSensorsManager.h; sourceTree = "<group>"; };
-		708C123BA5D59DFD56E304F783F08392 /* EXBarometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXBarometer.h; sourceTree = "<group>"; };
-		89E4049E1CDEEE927EF67479417134DD /* EXMagnetometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXMagnetometer.h; sourceTree = "<group>"; };
-		8DBAF96B43EC783BEEB5277224A750FB /* EXSensors.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSensors.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9134CBD385C92EEC0C9430EA477BDA2A /* EXAccelerometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXAccelerometer.m; sourceTree = "<group>"; };
-		9EAEDD33B8F0BBC50E07797C0C0612C0 /* EXDeviceMotion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDeviceMotion.h; sourceTree = "<group>"; };
-		A643F163C77B094AFF785F4C83EF2461 /* EXPedometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXPedometer.m; sourceTree = "<group>"; };
+		12F5725A2FB241FA8B1ECF7F90BF978F /* EXBarometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXBarometer.m; sourceTree = "<group>"; };
+		1A8721FA981D2EAE75966C9A81046B62 /* EXBaseSensorModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXBaseSensorModule.m; sourceTree = "<group>"; };
+		2613762D3A5600C6916041FE680AB0B9 /* EXGyroscope.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXGyroscope.m; sourceTree = "<group>"; };
+		2FE4102E9134B09197EEA88FF1BE3A28 /* EXSensors.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSensors.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		32264672994E55F5ECD4C39AD73D0F22 /* EXSensors.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSensors.release.xcconfig; sourceTree = "<group>"; };
+		36C6CFC7FDD99B19EE54E7FD060C3BCD /* EXGyroscope.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXGyroscope.h; sourceTree = "<group>"; };
+		40BC9E56FF9101BDB684E73F2462223D /* EXSensors-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSensors-dummy.m"; sourceTree = "<group>"; };
+		49B94DF5A8C2C14998E702F60AD45470 /* EXSensors.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSensors.debug.xcconfig; sourceTree = "<group>"; };
+		4CF6B447309DB01C808ABA3C1FA2D556 /* EXSensors-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSensors-prefix.pch"; sourceTree = "<group>"; };
+		5505565BE2B7A812C268F04A29A0ABEC /* EXDeviceMotion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDeviceMotion.h; sourceTree = "<group>"; };
+		636EE675A445A9AC882D7E4F27997CCC /* EXBarometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXBarometer.h; sourceTree = "<group>"; };
+		7243400CD199CD867CAEEF17F2954F22 /* EXDeviceMotion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDeviceMotion.m; sourceTree = "<group>"; };
+		784C15BC9F8DDF265A29C6346D93026C /* EXSensorsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSensorsManager.h; path = EXSensors/EXSensorsManager.h; sourceTree = "<group>"; };
+		83AE3A7FAFC36997CC7B6CBC1E2C7943 /* EXPedometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXPedometer.h; sourceTree = "<group>"; };
+		A51EF64A252D0F544AEA310C533690D9 /* EXMagnetometerUncalibrated.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometerUncalibrated.m; sourceTree = "<group>"; };
+		AB30D43606551E5D10D60EB3DAC34489 /* EXBaseSensorModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXBaseSensorModule.h; sourceTree = "<group>"; };
 		AE051CAAEE1BEB90FE2B0D8E8C9F51E2 /* libEXSensors.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSensors.a; path = libEXSensors.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B91E89A2D7FCE9F93BEF9E0FDE9D7BCE /* UMSensorsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMSensorsInterface; path = UMSensorsInterface.xcodeproj; sourceTree = "<group>"; };
-		C3FC9502DE0714A83FE8CE736B648C6B /* EXAccelerometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXAccelerometer.h; sourceTree = "<group>"; };
-		E1ED99D42703B6DEE3FCBD7C78C512EB /* EXPedometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXPedometer.h; sourceTree = "<group>"; };
-		E33C3E987409E8953553F02C17BDBBEA /* EXSensors-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSensors-prefix.pch"; sourceTree = "<group>"; };
-		E9EF33AA31082CD889A3FDFCBA674139 /* EXGyroscope.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXGyroscope.h; sourceTree = "<group>"; };
+		CCAB6CF167B8949DDB3BD0B21CA7B034 /* EXMagnetometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXMagnetometer.h; sourceTree = "<group>"; };
+		CDF76B4FF76065589D14120D4BCB5AA1 /* EXAccelerometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXAccelerometer.m; sourceTree = "<group>"; };
+		D9990B5A13FBA116677A7A87E6BEDC77 /* EXMagnetometerUncalibrated.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXMagnetometerUncalibrated.h; sourceTree = "<group>"; };
+		E9E7CA913973A7F4A319A246D005B814 /* EXMagnetometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXMagnetometer.m; sourceTree = "<group>"; };
+		EA69E1BAA0006A76EDD6CD0AD8173D42 /* EXSensorsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSensorsManager.m; path = EXSensors/EXSensorsManager.m; sourceTree = "<group>"; };
+		FAD04E8330A63C953E5C16289C91B0F6 /* EXAccelerometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXAccelerometer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,69 +85,58 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		032342065D3F2F60798274C165475BE7 /* Modules */ = {
+		0CDBA374033100855571CDBC6CA99319 /* SensorModules */ = {
 			isa = PBXGroup;
 			children = (
-				E1ED99D42703B6DEE3FCBD7C78C512EB /* EXPedometer.h */,
-				A643F163C77B094AFF785F4C83EF2461 /* EXPedometer.m */,
-				868D1C945F51DC4F3148D7AD222C6A8C /* SensorModules */,
-			);
-			name = Modules;
-			path = EXSensors/Modules;
-			sourceTree = "<group>";
-		};
-		618FA2FF9CD9B757FBD208CD344FBFA4 /* EXSensors */ = {
-			isa = PBXGroup;
-			children = (
-				6F4F471D56D37E8B78EB8368205C8E31 /* EXSensorsManager.h */,
-				5D8D4B32B4FE5C1F8083836B8A44F120 /* EXSensorsManager.m */,
-				032342065D3F2F60798274C165475BE7 /* Modules */,
-				866F1C143856E5D78C6B49E646210B47 /* Pod */,
-				AD79DC916ADC7E04DB9EAAE36E173B36 /* Support Files */,
-			);
-			name = EXSensors;
-			path = "../../packages/expo-sensors/ios";
-			sourceTree = "<group>";
-		};
-		866F1C143856E5D78C6B49E646210B47 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				8DBAF96B43EC783BEEB5277224A750FB /* EXSensors.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		868D1C945F51DC4F3148D7AD222C6A8C /* SensorModules */ = {
-			isa = PBXGroup;
-			children = (
-				C3FC9502DE0714A83FE8CE736B648C6B /* EXAccelerometer.h */,
-				9134CBD385C92EEC0C9430EA477BDA2A /* EXAccelerometer.m */,
-				708C123BA5D59DFD56E304F783F08392 /* EXBarometer.h */,
-				2018F838818B8D799707A5FCAD619798 /* EXBarometer.m */,
-				6E8F291CCB05040E58CCA870892D5804 /* EXBaseSensorModule.h */,
-				6783B09E3781BE4587539B5D0F7AB8D3 /* EXBaseSensorModule.m */,
-				9EAEDD33B8F0BBC50E07797C0C0612C0 /* EXDeviceMotion.h */,
-				1EFEEB1A0CC4DB5D93C03BEB8343ED7B /* EXDeviceMotion.m */,
-				E9EF33AA31082CD889A3FDFCBA674139 /* EXGyroscope.h */,
-				11045D05B6F9C75178C160C74DD927E6 /* EXGyroscope.m */,
-				89E4049E1CDEEE927EF67479417134DD /* EXMagnetometer.h */,
-				65DAF04C934D76796035B0693902BF4C /* EXMagnetometer.m */,
-				3F3FF829669764B36F837A3BDCB68169 /* EXMagnetometerUncalibrated.h */,
-				683427A014D5D93769877FC8C0DA1A78 /* EXMagnetometerUncalibrated.m */,
+				FAD04E8330A63C953E5C16289C91B0F6 /* EXAccelerometer.h */,
+				CDF76B4FF76065589D14120D4BCB5AA1 /* EXAccelerometer.m */,
+				636EE675A445A9AC882D7E4F27997CCC /* EXBarometer.h */,
+				12F5725A2FB241FA8B1ECF7F90BF978F /* EXBarometer.m */,
+				AB30D43606551E5D10D60EB3DAC34489 /* EXBaseSensorModule.h */,
+				1A8721FA981D2EAE75966C9A81046B62 /* EXBaseSensorModule.m */,
+				5505565BE2B7A812C268F04A29A0ABEC /* EXDeviceMotion.h */,
+				7243400CD199CD867CAEEF17F2954F22 /* EXDeviceMotion.m */,
+				36C6CFC7FDD99B19EE54E7FD060C3BCD /* EXGyroscope.h */,
+				2613762D3A5600C6916041FE680AB0B9 /* EXGyroscope.m */,
+				CCAB6CF167B8949DDB3BD0B21CA7B034 /* EXMagnetometer.h */,
+				E9E7CA913973A7F4A319A246D005B814 /* EXMagnetometer.m */,
+				D9990B5A13FBA116677A7A87E6BEDC77 /* EXMagnetometerUncalibrated.h */,
+				A51EF64A252D0F544AEA310C533690D9 /* EXMagnetometerUncalibrated.m */,
 			);
 			name = SensorModules;
 			path = SensorModules;
 			sourceTree = "<group>";
 		};
-		AD79DC916ADC7E04DB9EAAE36E173B36 /* Support Files */ = {
+		630CE1C933350A743B278D8249732624 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				6984AEE0F11612EA6869FC14A27E2FA0 /* EXSensors.xcconfig */,
-				4040E444F20CE8F1592D244D19300D9F /* EXSensors-dummy.m */,
-				E33C3E987409E8953553F02C17BDBBEA /* EXSensors-prefix.pch */,
+				2FE4102E9134B09197EEA88FF1BE3A28 /* EXSensors.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXSensors";
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		A1C994CADB99D9E86638FEDD263945A5 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				83AE3A7FAFC36997CC7B6CBC1E2C7943 /* EXPedometer.h */,
+				01160C81CB8476BA0B1D268BAB64C5B7 /* EXPedometer.m */,
+				0CDBA374033100855571CDBC6CA99319 /* SensorModules */,
+			);
+			name = Modules;
+			path = EXSensors/Modules;
+			sourceTree = "<group>";
+		};
+		A32052681C810BFCF5F2A74EFF771F6C /* EXSensors */ = {
+			isa = PBXGroup;
+			children = (
+				784C15BC9F8DDF265A29C6346D93026C /* EXSensorsManager.h */,
+				EA69E1BAA0006A76EDD6CD0AD8173D42 /* EXSensorsManager.m */,
+				A1C994CADB99D9E86638FEDD263945A5 /* Modules */,
+				630CE1C933350A743B278D8249732624 /* Pod */,
+				FE09A36A30A7E6C474DFF2C892F0899C /* Support Files */,
+			);
+			name = EXSensors;
+			path = "../../packages/expo-sensors/ios";
 			sourceTree = "<group>";
 		};
 		AECC6763411FD078E30F871B2D60BEE8 /* Dependencies */ = {
@@ -162,7 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				AECC6763411FD078E30F871B2D60BEE8 /* Dependencies */,
-				618FA2FF9CD9B757FBD208CD344FBFA4 /* EXSensors */,
+				A32052681C810BFCF5F2A74EFF771F6C /* EXSensors */,
 				FA92350EAD04665F06E33DBA6F5248B6 /* Frameworks */,
 				E299B4ADFBBE2C063558561C02126780 /* Products */,
 			);
@@ -181,6 +171,18 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FE09A36A30A7E6C474DFF2C892F0899C /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				40BC9E56FF9101BDB684E73F2462223D /* EXSensors-dummy.m */,
+				4CF6B447309DB01C808ABA3C1FA2D556 /* EXSensors-prefix.pch */,
+				49B94DF5A8C2C14998E702F60AD45470 /* EXSensors.debug.xcconfig */,
+				32264672994E55F5ECD4C39AD73D0F22 /* EXSensors.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXSensors";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -293,30 +295,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		16A85B7B021408D566082F77ED9192C3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6984AEE0F11612EA6869FC14A27E2FA0 /* EXSensors.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSensors/EXSensors-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSensors;
-				PRODUCT_NAME = EXSensors;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		22C424105A1BB9ADEB159DFBDD3FDAB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -381,9 +359,9 @@
 			};
 			name = Debug;
 		};
-		BEDF45B6E28AB89FE94A3A1F484E9A67 /* Release */ = {
+		36C431C9F5100B5A0349A77511A0AB45 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6984AEE0F11612EA6869FC14A27E2FA0 /* EXSensors.xcconfig */;
+			baseConfigurationReference = 32264672994E55F5ECD4C39AD73D0F22 /* EXSensors.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -405,6 +383,30 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		89601BC1DF2DD6CFA6A5E1118AD14BFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49B94DF5A8C2C14998E702F60AD45470 /* EXSensors.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSensors/EXSensors-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSensors;
+				PRODUCT_NAME = EXSensors;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		E9F069537583DBDC545F3B94C0D69994 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -472,8 +474,8 @@
 		4F17CF7CC08EE60A002B7D65BBF9C26C /* Build configuration list for PBXNativeTarget "EXSensors" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				16A85B7B021408D566082F77ED9192C3 /* Debug */,
-				BEDF45B6E28AB89FE94A3A1F484E9A67 /* Release */,
+				89601BC1DF2DD6CFA6A5E1118AD14BFD /* Debug */,
+				36C431C9F5100B5A0349A77511A0AB45 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

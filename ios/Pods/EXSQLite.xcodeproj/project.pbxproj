@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		18547F0715A1C174CBE702D18B74B128 /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5019EE4593EFFB455D45F1FA9AB047 /* EXSQLite.m */; };
-		80C2499C52E3D74EC383C9B7D161ACBE /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C26D0B499F3BBE0E2A8FACAD8CDD6056 /* EXSQLite-dummy.m */; };
-		BFFD921BAA03E8315205B02F171AD4EE /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D66FCAFAD9E2B8D6832F01A93079F5A /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		18547F0715A1C174CBE702D18B74B128 /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = BF42AC40B3D522E4E0FBCC0652865B13 /* EXSQLite.m */; };
+		80C2499C52E3D74EC383C9B7D161ACBE /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A3F40B0216FB75CAFA5EDD1EC17BB11B /* EXSQLite-dummy.m */; };
+		BFFD921BAA03E8315205B02F171AD4EE /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 605206E9F01299EBF1CFA841C6466365 /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,15 +30,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		33E19F123A27D861D8CBA1DE06370426 /* EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSQLite.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		5D66FCAFAD9E2B8D6832F01A93079F5A /* EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSQLite.h; path = EXSQLite/EXSQLite.h; sourceTree = "<group>"; };
+		2A7768A36D86B546AFC05CB10E750E9D /* EXSQLite.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.release.xcconfig; sourceTree = "<group>"; };
+		605206E9F01299EBF1CFA841C6466365 /* EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSQLite.h; path = EXSQLite/EXSQLite.h; sourceTree = "<group>"; };
 		94911D5E1E8F28CF3885A99F2F267235 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		AC405F87335A0340112CE30028B7353F /* EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSQLite-prefix.pch"; sourceTree = "<group>"; };
-		AC6F2FAEA34A3E1FB3D235119BB22FF9 /* EXSQLite.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.xcconfig; sourceTree = "<group>"; };
+		9F09E455586D7A7213CCAAD3BB7CB770 /* EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSQLite.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A3F40B0216FB75CAFA5EDD1EC17BB11B /* EXSQLite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSQLite-dummy.m"; sourceTree = "<group>"; };
 		B967A41C9278E23CE745A4B048C5C5D5 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		C26D0B499F3BBE0E2A8FACAD8CDD6056 /* EXSQLite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSQLite-dummy.m"; sourceTree = "<group>"; };
+		BF42AC40B3D522E4E0FBCC0652865B13 /* EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSQLite.m; path = EXSQLite/EXSQLite.m; sourceTree = "<group>"; };
+		C1328955F2DA22ED2AAD46E30C4F4DA2 /* EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSQLite-prefix.pch"; sourceTree = "<group>"; };
+		D5541DF53BD99DF8AA10A752B5F97AB8 /* EXSQLite.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.debug.xcconfig; sourceTree = "<group>"; };
 		EEB2B69588D5A9FA232B89A27D9653E6 /* libEXSQLite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSQLite.a; path = libEXSQLite.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF5019EE4593EFFB455D45F1FA9AB047 /* EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSQLite.m; path = EXSQLite/EXSQLite.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +62,30 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		35ECA1AEA40273571C9DB7FAA1992947 /* EXSQLite */ = {
+			isa = PBXGroup;
+			children = (
+				605206E9F01299EBF1CFA841C6466365 /* EXSQLite.h */,
+				BF42AC40B3D522E4E0FBCC0652865B13 /* EXSQLite.m */,
+				D0C9DCC28139F5105E136554B420FFD2 /* Pod */,
+				58541CA52265FFB1DD655258D6647680 /* Support Files */,
+			);
+			name = EXSQLite;
+			path = "../../packages/expo-sqlite/ios";
+			sourceTree = "<group>";
+		};
+		58541CA52265FFB1DD655258D6647680 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				A3F40B0216FB75CAFA5EDD1EC17BB11B /* EXSQLite-dummy.m */,
+				C1328955F2DA22ED2AAD46E30C4F4DA2 /* EXSQLite-prefix.pch */,
+				D5541DF53BD99DF8AA10A752B5F97AB8 /* EXSQLite.debug.xcconfig */,
+				2A7768A36D86B546AFC05CB10E750E9D /* EXSQLite.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXSQLite";
+			sourceTree = "<group>";
+		};
 		93910376DCF49EE5D5699CA663A6FDEB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -69,32 +94,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B76438AF86AA3D99A18212280B13C244 /* EXSQLite */ = {
-			isa = PBXGroup;
-			children = (
-				5D66FCAFAD9E2B8D6832F01A93079F5A /* EXSQLite.h */,
-				FF5019EE4593EFFB455D45F1FA9AB047 /* EXSQLite.m */,
-				D7E01891F4A9CA13574412EAA403C189 /* Pod */,
-				EFB855E508DAEAD59153FE3C508339AA /* Support Files */,
-			);
-			name = EXSQLite;
-			path = "../../packages/expo-sqlite/ios";
-			sourceTree = "<group>";
-		};
 		B9CE01979EFD113664CDA613F2B4C47C = {
 			isa = PBXGroup;
 			children = (
 				0AF2988D9050F2A576C12E0ED6527463 /* Dependencies */,
-				B76438AF86AA3D99A18212280B13C244 /* EXSQLite */,
+				35ECA1AEA40273571C9DB7FAA1992947 /* EXSQLite */,
 				E9F75F27B5522BE6B8A33B0636211CD1 /* Frameworks */,
 				93910376DCF49EE5D5699CA663A6FDEB /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		D7E01891F4A9CA13574412EAA403C189 /* Pod */ = {
+		D0C9DCC28139F5105E136554B420FFD2 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				33E19F123A27D861D8CBA1DE06370426 /* EXSQLite.podspec */,
+				9F09E455586D7A7213CCAAD3BB7CB770 /* EXSQLite.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -104,17 +117,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		EFB855E508DAEAD59153FE3C508339AA /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				AC6F2FAEA34A3E1FB3D235119BB22FF9 /* EXSQLite.xcconfig */,
-				C26D0B499F3BBE0E2A8FACAD8CDD6056 /* EXSQLite-dummy.m */,
-				AC405F87335A0340112CE30028B7353F /* EXSQLite-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXSQLite";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,9 +213,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1C07853AAF4EC7FEE5E13F74C2A9CA2F /* Debug */ = {
+		54A30B5F893FD5A1220B4E24A227E06A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AC6F2FAEA34A3E1FB3D235119BB22FF9 /* EXSQLite.xcconfig */;
+			baseConfigurationReference = D5541DF53BD99DF8AA10A752B5F97AB8 /* EXSQLite.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -234,31 +236,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		1E9D9B3B7CF6FCE9669A041BAC2F4755 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = AC6F2FAEA34A3E1FB3D235119BB22FF9 /* EXSQLite.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSQLite;
-				PRODUCT_NAME = EXSQLite;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		8AB5F1CE1FD60F12DE38308C27BE2B21 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -384,14 +361,39 @@
 			};
 			name = Release;
 		};
+		E7F29BE346AC7E7310F69632C8574F4D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A7768A36D86B546AFC05CB10E750E9D /* EXSQLite.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSQLite;
+				PRODUCT_NAME = EXSQLite;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		383C479324D98B5C06D0E0FCCB995460 /* Build configuration list for PBXNativeTarget "EXSQLite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1C07853AAF4EC7FEE5E13F74C2A9CA2F /* Debug */,
-				1E9D9B3B7CF6FCE9669A041BAC2F4755 /* Release */,
+				54A30B5F893FD5A1220B4E24A227E06A /* Debug */,
+				E7F29BE346AC7E7310F69632C8574F4D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

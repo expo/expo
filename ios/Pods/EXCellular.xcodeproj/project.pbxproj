@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15A90B97809B0098AB5A96D4D7334E69 /* EXCellularModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B5F9CCA29E506905545F38F41DD32AA /* EXCellularModule.m */; };
-		28DFEF118D139FE7EED0880717AC30C3 /* EXCellularModule.h in Headers */ = {isa = PBXBuildFile; fileRef = B1061EF1B9C81EE2583F93B63ACEC13D /* EXCellularModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BFE865269296974504D60664DCEE4C10 /* EXCellular-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B24789B0C1142A82E7543DC2E2144CE /* EXCellular-dummy.m */; };
+		15A90B97809B0098AB5A96D4D7334E69 /* EXCellularModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C0AE93E373B0B275F3B10CD8EE62D732 /* EXCellularModule.m */; };
+		28DFEF118D139FE7EED0880717AC30C3 /* EXCellularModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 797813250B830B500AD1FFF503F4BA6B /* EXCellularModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BFE865269296974504D60664DCEE4C10 /* EXCellular-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A38E771FCBDAA072C96A51FF1A832A55 /* EXCellular-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,14 +23,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		056C2CC93959A2FF7732FF0FD9AD1234 /* EXCellular.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCellular.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		0B24789B0C1142A82E7543DC2E2144CE /* EXCellular-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCellular-dummy.m"; sourceTree = "<group>"; };
-		2B5F9CCA29E506905545F38F41DD32AA /* EXCellularModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCellularModule.m; path = EXCellular/EXCellularModule.m; sourceTree = "<group>"; };
-		5B8F717C4A30788524073C509DE4A44A /* EXCellular-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCellular-prefix.pch"; sourceTree = "<group>"; };
+		3CE84376030BEFB6E025A8F6D129EE46 /* EXCellular.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCellular.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		797813250B830B500AD1FFF503F4BA6B /* EXCellularModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCellularModule.h; path = EXCellular/EXCellularModule.h; sourceTree = "<group>"; };
+		A38E771FCBDAA072C96A51FF1A832A55 /* EXCellular-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCellular-dummy.m"; sourceTree = "<group>"; };
 		A65385E9C7881EFEAF5B6FD54A0C80D0 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		B1061EF1B9C81EE2583F93B63ACEC13D /* EXCellularModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCellularModule.h; path = EXCellular/EXCellularModule.h; sourceTree = "<group>"; };
 		BE8EFD72FB1D6DBD02B2882D3AB75439 /* libEXCellular.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXCellular.a; path = libEXCellular.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		C5FEEC7A791C60B46B841AF5ECD37AB2 /* EXCellular.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCellular.xcconfig; sourceTree = "<group>"; };
+		C0AE93E373B0B275F3B10CD8EE62D732 /* EXCellularModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCellularModule.m; path = EXCellular/EXCellularModule.m; sourceTree = "<group>"; };
+		D0492578752DC0147C5C9E7259E7EDD5 /* EXCellular-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCellular-prefix.pch"; sourceTree = "<group>"; };
+		DD1F5645536FBB6E9233C255D4C7CA0E /* EXCellular.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCellular.debug.xcconfig; sourceTree = "<group>"; };
+		FB21316F57FDD5B6D8AA8F53B404FE9B /* EXCellular.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCellular.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,16 +45,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4758DC21EA7F91E14D42C93B2B65C46A /* EXCellular */ = {
+		83DE80F9083C689D49A3CC13A9E9AA22 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				B1061EF1B9C81EE2583F93B63ACEC13D /* EXCellularModule.h */,
-				2B5F9CCA29E506905545F38F41DD32AA /* EXCellularModule.m */,
-				DCE95A0573A11AC95C5C3ECFADB73F03 /* Pod */,
-				94C9984AA49B3AB5DAEC229959CF2DD1 /* Support Files */,
+				A38E771FCBDAA072C96A51FF1A832A55 /* EXCellular-dummy.m */,
+				D0492578752DC0147C5C9E7259E7EDD5 /* EXCellular-prefix.pch */,
+				DD1F5645536FBB6E9233C255D4C7CA0E /* EXCellular.debug.xcconfig */,
+				FB21316F57FDD5B6D8AA8F53B404FE9B /* EXCellular.release.xcconfig */,
 			);
-			name = EXCellular;
-			path = "../../packages/expo-cellular/ios";
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXCellular";
+			sourceTree = "<group>";
+		};
+		867F445F2469ACEB8C117C75C873E2C5 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				3CE84376030BEFB6E025A8F6D129EE46 /* EXCellular.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		8A12584BDCDE74C63BBC3550C8CA5D6E /* Dependencies */ = {
@@ -64,15 +73,16 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		94C9984AA49B3AB5DAEC229959CF2DD1 /* Support Files */ = {
+		959F25C2A572A667C098B411B2999632 /* EXCellular */ = {
 			isa = PBXGroup;
 			children = (
-				C5FEEC7A791C60B46B841AF5ECD37AB2 /* EXCellular.xcconfig */,
-				0B24789B0C1142A82E7543DC2E2144CE /* EXCellular-dummy.m */,
-				5B8F717C4A30788524073C509DE4A44A /* EXCellular-prefix.pch */,
+				797813250B830B500AD1FFF503F4BA6B /* EXCellularModule.h */,
+				C0AE93E373B0B275F3B10CD8EE62D732 /* EXCellularModule.m */,
+				867F445F2469ACEB8C117C75C873E2C5 /* Pod */,
+				83DE80F9083C689D49A3CC13A9E9AA22 /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXCellular";
+			name = EXCellular;
+			path = "../../packages/expo-cellular/ios";
 			sourceTree = "<group>";
 		};
 		982E43FE1C630AA530089860A09DEC56 /* Products */ = {
@@ -87,18 +97,10 @@
 			isa = PBXGroup;
 			children = (
 				8A12584BDCDE74C63BBC3550C8CA5D6E /* Dependencies */,
-				4758DC21EA7F91E14D42C93B2B65C46A /* EXCellular */,
+				959F25C2A572A667C098B411B2999632 /* EXCellular */,
 				F7A4BD4784EFFF82295ABD984638B0B9 /* Frameworks */,
 				982E43FE1C630AA530089860A09DEC56 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		DCE95A0573A11AC95C5C3ECFADB73F03 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				056C2CC93959A2FF7732FF0FD9AD1234 /* EXCellular.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		F7A4BD4784EFFF82295ABD984638B0B9 /* Frameworks */ = {
@@ -193,30 +195,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2B0D219673E5473CC8073CF8723B2300 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C5FEEC7A791C60B46B841AF5ECD37AB2 /* EXCellular.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXCellular/EXCellular-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXCellular;
-				PRODUCT_NAME = EXCellular;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		73CCF0FF8AED209CBF923338FD161D7D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -341,9 +319,33 @@
 			};
 			name = Debug;
 		};
-		7FA5960183D6314F2ED33FC62BD46C3D /* Release */ = {
+		B3A69CB81692562F66B922085DA43ADD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C5FEEC7A791C60B46B841AF5ECD37AB2 /* EXCellular.xcconfig */;
+			baseConfigurationReference = DD1F5645536FBB6E9233C255D4C7CA0E /* EXCellular.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXCellular/EXCellular-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXCellular;
+				PRODUCT_NAME = EXCellular;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F492920691940DAB54BA1ECF13AE27C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FB21316F57FDD5B6D8AA8F53B404FE9B /* EXCellular.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -381,8 +383,8 @@
 		B518F0C3E77DD46F7B910E95400F849A /* Build configuration list for PBXNativeTarget "EXCellular" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2B0D219673E5473CC8073CF8723B2300 /* Debug */,
-				7FA5960183D6314F2ED33FC62BD46C3D /* Release */,
+				B3A69CB81692562F66B922085DA43ADD /* Debug */,
+				F492920691940DAB54BA1ECF13AE27C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

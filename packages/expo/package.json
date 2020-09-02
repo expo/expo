@@ -58,7 +58,7 @@
     "cross-spawn": "^6.0.5",
     "expo-asset": "~8.1.7",
     "expo-constants": "~9.1.1",
-    "expo-error-recovery": "~1.2.1",
+    "expo-error-recovery": "~1.2.2",
     "expo-file-system": "~9.0.1",
     "expo-font": "~8.2.1",
     "expo-keep-awake": "~8.2.1",

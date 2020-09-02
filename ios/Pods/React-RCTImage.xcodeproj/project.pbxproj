@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05A9DD56868DAD761B290CC6CE957DDD /* RCTImagePlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = 34A54C93F4F9CB6C592E6BCBA93CF386 /* RCTImagePlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		076B6392707E03036AD60DCD279E861F /* RCTLocalAssetImageLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 698F5663B228598925AF54AABB44A7D2 /* RCTLocalAssetImageLoader.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		0AAF6A883A0C30C04040D9E78ECEAAC4 /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F6F97603F1FFB8D7533DA843BD4619B4 /* RCTImageBlurUtils.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		22C9C67F32EE66BB311E5CF51521BCCA /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F58C52787F5AC3E5D0583B105C72FD0C /* RCTImageUtils.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		27E1128644D185D4B0E5EB2D00AC477C /* RCTImageView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0581E3A58A0CE40B82324D5DB40F2FB2 /* RCTImageView.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2E4F1073A584B567172A0BD06ED14580 /* RCTImageStoreManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 81B2BAB6505187C92AA552D75A3D27A8 /* RCTImageStoreManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		3AE4C541485AF3BA31BCB7BFDCB3BBA6 /* React-RCTImage-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7684BE0D860868592DE71637293FC9F0 /* React-RCTImage-dummy.m */; };
-		469AEB29DEF73BB2A3CEE2F68C0A6431 /* RCTImageShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD3E63C721FAD90F3C8CD01B3DF53C03 /* RCTImageShadowView.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		60BDCAE0E79C95EBB94FAC5448ACD57D /* RCTImageEditingManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 447A31FA237C9C5FDDF56843C36329C6 /* RCTImageEditingManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6303D927F69332B18CC1DAD378438008 /* RCTGIFImageDecoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 228DA5612F06C9E1FF499CF920981EED /* RCTGIFImageDecoder.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		837818225E134F171C9687B3056CC19A /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 123DED87071FD1091A521DBD63A0C683 /* RCTImageCache.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B50937F2BDAF84CB8ABCB7AB94942602 /* RCTAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 77097A2BA09EB8705FDA9BB9BA25E155 /* RCTAnimatedImage.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D5BAC51781838040698F86CFE9ECFC91 /* RCTUIImageViewAnimated.m in Sources */ = {isa = PBXBuildFile; fileRef = E732F1791884C7087BB7512C3F9DDD7F /* RCTUIImageViewAnimated.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DD2BCC74D0FF9E33138959D57AAF8F6D /* RCTImageViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = EFFBDD1827340F837E4ED035CD1F7E10 /* RCTImageViewManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E5447910D1AAC26D7E1A8035AD307EDF /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79DFC2E4B8F1D8CD5D66BB012F549B /* RCTResizeMode.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F852CF8BC2C89223C2D3AF9A84DBF6FA /* RCTImageLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8AE2D94C793B6BA247A0DF32F6CE9A4 /* RCTImageLoader.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		05A9DD56868DAD761B290CC6CE957DDD /* RCTImagePlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29CE8BC520C33082447A63FDB2E4AE6C /* RCTImagePlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		076B6392707E03036AD60DCD279E861F /* RCTLocalAssetImageLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9299C78DE19BD9AF32990FDA8CA7B6A6 /* RCTLocalAssetImageLoader.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0AAF6A883A0C30C04040D9E78ECEAAC4 /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 99F92855F52DA9598704053D5DC46AE5 /* RCTImageBlurUtils.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		22C9C67F32EE66BB311E5CF51521BCCA /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 944951C055223CD048280A53A41812E6 /* RCTImageUtils.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		27E1128644D185D4B0E5EB2D00AC477C /* RCTImageView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5948C967EBEECCC464AB3CA977D25201 /* RCTImageView.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2E4F1073A584B567172A0BD06ED14580 /* RCTImageStoreManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 823F71474869F89602C0262A1D5A52AC /* RCTImageStoreManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3AE4C541485AF3BA31BCB7BFDCB3BBA6 /* React-RCTImage-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 193B73B925BA91A288C36DE6C457121B /* React-RCTImage-dummy.m */; };
+		469AEB29DEF73BB2A3CEE2F68C0A6431 /* RCTImageShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B28BFDFF5DFC07081BBF2E5F803FE2D /* RCTImageShadowView.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		60BDCAE0E79C95EBB94FAC5448ACD57D /* RCTImageEditingManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = D1858098CF363451DFF5FFEE51A51C17 /* RCTImageEditingManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6303D927F69332B18CC1DAD378438008 /* RCTGIFImageDecoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0BEE374BCA836CD1E4D988350101F3C0 /* RCTGIFImageDecoder.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		837818225E134F171C9687B3056CC19A /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 844762CA19538D4C413C9E9FE78F104E /* RCTImageCache.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B50937F2BDAF84CB8ABCB7AB94942602 /* RCTAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 21BC02955616EB97157633E682ABDBBE /* RCTAnimatedImage.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D5BAC51781838040698F86CFE9ECFC91 /* RCTUIImageViewAnimated.m in Sources */ = {isa = PBXBuildFile; fileRef = 34385B25BDF62C8FEB2BBB72BE26E174 /* RCTUIImageViewAnimated.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DD2BCC74D0FF9E33138959D57AAF8F6D /* RCTImageViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8F64BB1615B602955875A2F70B8D1E92 /* RCTImageViewManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E5447910D1AAC26D7E1A8035AD307EDF /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C853B31F519707865CE178DA0EF3DCC /* RCTResizeMode.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F852CF8BC2C89223C2D3AF9A84DBF6FA /* RCTImageLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 67CA2C61216B04F15B73B2E530C2CB1D /* RCTImageLoader.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,31 +71,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0581E3A58A0CE40B82324D5DB40F2FB2 /* RCTImageView.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageView.mm; sourceTree = "<group>"; };
+		062BCAD7F429048FEA77B2B39B3FD52C /* React-RCTImage.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTImage.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		0BEE374BCA836CD1E4D988350101F3C0 /* RCTGIFImageDecoder.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTGIFImageDecoder.mm; sourceTree = "<group>"; };
 		11123F2AD850AB8A87686860928721CE /* React-RCTNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTNetwork"; path = "React-RCTNetwork.xcodeproj"; sourceTree = "<group>"; };
-		123DED87071FD1091A521DBD63A0C683 /* RCTImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageCache.m; sourceTree = "<group>"; };
 		16E80AAB6E48C5C71F9A554EA4D248DC /* libReact-RCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-RCTImage.a"; path = "libReact-RCTImage.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		18E573BB867C9C78750C08C3EB68EE55 /* React-RCTImage.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTImage.xcconfig"; sourceTree = "<group>"; };
-		228DA5612F06C9E1FF499CF920981EED /* RCTGIFImageDecoder.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTGIFImageDecoder.mm; sourceTree = "<group>"; };
+		193B73B925BA91A288C36DE6C457121B /* React-RCTImage-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTImage-dummy.m"; sourceTree = "<group>"; };
+		1C853B31F519707865CE178DA0EF3DCC /* RCTResizeMode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTResizeMode.m; sourceTree = "<group>"; };
+		21BC02955616EB97157633E682ABDBBE /* RCTAnimatedImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTAnimatedImage.m; sourceTree = "<group>"; };
 		25A1A0EF2468E7A053221110F73B382C /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
-		34A54C93F4F9CB6C592E6BCBA93CF386 /* RCTImagePlugins.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImagePlugins.mm; sourceTree = "<group>"; };
+		2672016EE92356A3DF0EEF78AC2F8FDB /* React-RCTImage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTImage.debug.xcconfig"; sourceTree = "<group>"; };
+		29CE8BC520C33082447A63FDB2E4AE6C /* RCTImagePlugins.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImagePlugins.mm; sourceTree = "<group>"; };
+		34385B25BDF62C8FEB2BBB72BE26E174 /* RCTUIImageViewAnimated.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTUIImageViewAnimated.m; sourceTree = "<group>"; };
+		34BCC47056B744DDCB6C89842715E269 /* React-RCTImage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTImage.release.xcconfig"; sourceTree = "<group>"; };
 		389F70D78B5525EA26AEA47E78DAC014 /* FBReactNativeSpec */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBReactNativeSpec; path = FBReactNativeSpec.xcodeproj; sourceTree = "<group>"; };
 		41F81524887B0A1056EF7E533FF97C8F /* ReactCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCommon; path = ReactCommon.xcodeproj; sourceTree = "<group>"; };
-		447A31FA237C9C5FDDF56843C36329C6 /* RCTImageEditingManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageEditingManager.mm; sourceTree = "<group>"; };
-		698F5663B228598925AF54AABB44A7D2 /* RCTLocalAssetImageLoader.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTLocalAssetImageLoader.mm; sourceTree = "<group>"; };
-		7684BE0D860868592DE71637293FC9F0 /* React-RCTImage-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTImage-dummy.m"; sourceTree = "<group>"; };
-		77097A2BA09EB8705FDA9BB9BA25E155 /* RCTAnimatedImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTAnimatedImage.m; sourceTree = "<group>"; };
-		81B2BAB6505187C92AA552D75A3D27A8 /* RCTImageStoreManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageStoreManager.mm; sourceTree = "<group>"; };
-		A8AE2D94C793B6BA247A0DF32F6CE9A4 /* RCTImageLoader.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageLoader.mm; sourceTree = "<group>"; };
-		AB9F37BF3CBACC131EF3A54A5901DE0D /* React-RCTImage.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTImage.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		AD3E63C721FAD90F3C8CD01B3DF53C03 /* RCTImageShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageShadowView.m; sourceTree = "<group>"; };
+		5948C967EBEECCC464AB3CA977D25201 /* RCTImageView.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageView.mm; sourceTree = "<group>"; };
+		67CA2C61216B04F15B73B2E530C2CB1D /* RCTImageLoader.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageLoader.mm; sourceTree = "<group>"; };
+		7B28BFDFF5DFC07081BBF2E5F803FE2D /* RCTImageShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageShadowView.m; sourceTree = "<group>"; };
+		823F71474869F89602C0262A1D5A52AC /* RCTImageStoreManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageStoreManager.mm; sourceTree = "<group>"; };
+		844762CA19538D4C413C9E9FE78F104E /* RCTImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageCache.m; sourceTree = "<group>"; };
+		8F64BB1615B602955875A2F70B8D1E92 /* RCTImageViewManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageViewManager.mm; sourceTree = "<group>"; };
+		9299C78DE19BD9AF32990FDA8CA7B6A6 /* RCTLocalAssetImageLoader.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTLocalAssetImageLoader.mm; sourceTree = "<group>"; };
+		944951C055223CD048280A53A41812E6 /* RCTImageUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageUtils.m; sourceTree = "<group>"; };
+		99F92855F52DA9598704053D5DC46AE5 /* RCTImageBlurUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageBlurUtils.m; sourceTree = "<group>"; };
 		BDF703F3857C5E8DF0E168581A2B95C3 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		DD6E631AB78249DBC6BA263F7E4380F0 /* React-RCTImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTImage-prefix.pch"; sourceTree = "<group>"; };
-		E732F1791884C7087BB7512C3F9DDD7F /* RCTUIImageViewAnimated.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTUIImageViewAnimated.m; sourceTree = "<group>"; };
-		EE79DFC2E4B8F1D8CD5D66BB012F549B /* RCTResizeMode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTResizeMode.m; sourceTree = "<group>"; };
-		EFFBDD1827340F837E4ED035CD1F7E10 /* RCTImageViewManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageViewManager.mm; sourceTree = "<group>"; };
-		F58C52787F5AC3E5D0583B105C72FD0C /* RCTImageUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageUtils.m; sourceTree = "<group>"; };
-		F6F97603F1FFB8D7533DA843BD4619B4 /* RCTImageBlurUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTImageBlurUtils.m; sourceTree = "<group>"; };
+		C439CF2DD22EBD1AACABA84963195F37 /* React-RCTImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTImage-prefix.pch"; sourceTree = "<group>"; };
+		D1858098CF363451DFF5FFEE51A51C17 /* RCTImageEditingManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTImageEditingManager.mm; sourceTree = "<group>"; };
 		FAC0BB4D9B51D959194A786A439834DC /* RCTTypeSafety */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTypeSafety; path = RCTTypeSafety.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -117,40 +118,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3230B9F76817C78717C0B97243D4A7F2 /* Support Files */ = {
+		299C714F9E0C6A059985156A8DB291B3 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				18E573BB867C9C78750C08C3EB68EE55 /* React-RCTImage.xcconfig */,
-				7684BE0D860868592DE71637293FC9F0 /* React-RCTImage-dummy.m */,
-				DD6E631AB78249DBC6BA263F7E4380F0 /* React-RCTImage-prefix.pch */,
+				062BCAD7F429048FEA77B2B39B3FD52C /* React-RCTImage.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../../ios/Pods/Target Support Files/React-RCTImage";
-			sourceTree = "<group>";
-		};
-		6F3D0901A87F445869F8DF3D434BF01C /* React-RCTImage */ = {
-			isa = PBXGroup;
-			children = (
-				77097A2BA09EB8705FDA9BB9BA25E155 /* RCTAnimatedImage.m */,
-				228DA5612F06C9E1FF499CF920981EED /* RCTGIFImageDecoder.mm */,
-				F6F97603F1FFB8D7533DA843BD4619B4 /* RCTImageBlurUtils.m */,
-				123DED87071FD1091A521DBD63A0C683 /* RCTImageCache.m */,
-				447A31FA237C9C5FDDF56843C36329C6 /* RCTImageEditingManager.mm */,
-				A8AE2D94C793B6BA247A0DF32F6CE9A4 /* RCTImageLoader.mm */,
-				34A54C93F4F9CB6C592E6BCBA93CF386 /* RCTImagePlugins.mm */,
-				AD3E63C721FAD90F3C8CD01B3DF53C03 /* RCTImageShadowView.m */,
-				81B2BAB6505187C92AA552D75A3D27A8 /* RCTImageStoreManager.mm */,
-				F58C52787F5AC3E5D0583B105C72FD0C /* RCTImageUtils.m */,
-				0581E3A58A0CE40B82324D5DB40F2FB2 /* RCTImageView.mm */,
-				EFFBDD1827340F837E4ED035CD1F7E10 /* RCTImageViewManager.mm */,
-				698F5663B228598925AF54AABB44A7D2 /* RCTLocalAssetImageLoader.mm */,
-				EE79DFC2E4B8F1D8CD5D66BB012F549B /* RCTResizeMode.m */,
-				E732F1791884C7087BB7512C3F9DDD7F /* RCTUIImageViewAnimated.m */,
-				D255D3E70A5ADB6F7CB2C5D14BBA7C5D /* Pod */,
-				3230B9F76817C78717C0B97243D4A7F2 /* Support Files */,
-			);
-			name = "React-RCTImage";
-			path = "../../react-native-lab/react-native/Libraries/Image";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		8DC8ABF7B6B62F6AF4EC53CD79504DC3 /* Dependencies */ = {
@@ -174,12 +147,41 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D255D3E70A5ADB6F7CB2C5D14BBA7C5D /* Pod */ = {
+		B139CAEC0210F97352F20F41D53B2513 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				AB9F37BF3CBACC131EF3A54A5901DE0D /* React-RCTImage.podspec */,
+				193B73B925BA91A288C36DE6C457121B /* React-RCTImage-dummy.m */,
+				C439CF2DD22EBD1AACABA84963195F37 /* React-RCTImage-prefix.pch */,
+				2672016EE92356A3DF0EEF78AC2F8FDB /* React-RCTImage.debug.xcconfig */,
+				34BCC47056B744DDCB6C89842715E269 /* React-RCTImage.release.xcconfig */,
 			);
-			name = Pod;
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/React-RCTImage";
+			sourceTree = "<group>";
+		};
+		E4D452435560E0A0603B7B244791CF9F /* React-RCTImage */ = {
+			isa = PBXGroup;
+			children = (
+				21BC02955616EB97157633E682ABDBBE /* RCTAnimatedImage.m */,
+				0BEE374BCA836CD1E4D988350101F3C0 /* RCTGIFImageDecoder.mm */,
+				99F92855F52DA9598704053D5DC46AE5 /* RCTImageBlurUtils.m */,
+				844762CA19538D4C413C9E9FE78F104E /* RCTImageCache.m */,
+				D1858098CF363451DFF5FFEE51A51C17 /* RCTImageEditingManager.mm */,
+				67CA2C61216B04F15B73B2E530C2CB1D /* RCTImageLoader.mm */,
+				29CE8BC520C33082447A63FDB2E4AE6C /* RCTImagePlugins.mm */,
+				7B28BFDFF5DFC07081BBF2E5F803FE2D /* RCTImageShadowView.m */,
+				823F71474869F89602C0262A1D5A52AC /* RCTImageStoreManager.mm */,
+				944951C055223CD048280A53A41812E6 /* RCTImageUtils.m */,
+				5948C967EBEECCC464AB3CA977D25201 /* RCTImageView.mm */,
+				8F64BB1615B602955875A2F70B8D1E92 /* RCTImageViewManager.mm */,
+				9299C78DE19BD9AF32990FDA8CA7B6A6 /* RCTLocalAssetImageLoader.mm */,
+				1C853B31F519707865CE178DA0EF3DCC /* RCTResizeMode.m */,
+				34385B25BDF62C8FEB2BBB72BE26E174 /* RCTUIImageViewAnimated.m */,
+				299C714F9E0C6A059985156A8DB291B3 /* Pod */,
+				B139CAEC0210F97352F20F41D53B2513 /* Support Files */,
+			);
+			name = "React-RCTImage";
+			path = "../../react-native-lab/react-native/Libraries/Image";
 			sourceTree = "<group>";
 		};
 		EAD415110740FE1B898B6D5D78345933 = {
@@ -188,7 +190,7 @@
 				8DC8ABF7B6B62F6AF4EC53CD79504DC3 /* Dependencies */,
 				1D85D62E83998B2E61B246B9092DC6B5 /* Frameworks */,
 				A1B93C2DA9515841B87D84E709C4413C /* Products */,
-				6F3D0901A87F445869F8DF3D434BF01C /* React-RCTImage */,
+				E4D452435560E0A0603B7B244791CF9F /* React-RCTImage */,
 			);
 			sourceTree = "<group>";
 		};
@@ -335,9 +337,38 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		01B8F2A3255B21B75AE8674D8CC3043B /* Release */ = {
+		6DD2EC97560B5FEE48B0F9987DE92642 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18E573BB867C9C78750C08C3EB68EE55 /* React-RCTImage.xcconfig */;
+			baseConfigurationReference = 2672016EE92356A3DF0EEF78AC2F8FDB /* React-RCTImage.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTImage/React-RCTImage-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTImage;
+				PRODUCT_NAME = "React-RCTImage";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B75D17165A7236EBB4CCE71747007AC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 34BCC47056B744DDCB6C89842715E269 /* React-RCTImage.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -364,35 +395,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		4038172D832FD67F3FFEE75D727B3E9F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18E573BB867C9C78750C08C3EB68EE55 /* React-RCTImage.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTImage/React-RCTImage-prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"RCT_DEV=1",
-					"RCT_ENABLE_INSPECTOR=0",
-					"ENABLE_PACKAGER_CONNECTION=0",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTImage;
-				PRODUCT_NAME = "React-RCTImage";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		EFB3FA611B4B338BA2C96FCD96F01C74 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -524,8 +526,8 @@
 		BD94BA1CCB29FF75656E114DA73C3BB1 /* Build configuration list for PBXNativeTarget "React-RCTImage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4038172D832FD67F3FFEE75D727B3E9F /* Debug */,
-				01B8F2A3255B21B75AE8674D8CC3043B /* Release */,
+				6DD2EC97560B5FEE48B0F9987DE92642 /* Debug */,
+				B75D17165A7236EBB4CCE71747007AC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

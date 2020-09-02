@@ -7,28 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		298A9150D2F6613E23CD34E4981D3A6A /* pb_decode.h in Headers */ = {isa = PBXBuildFile; fileRef = B79980A182F4C58079BFB048870F77AC /* pb_decode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4C09004FAFACC746DB1F25D0DE6C94B0 /* nanopb-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E01F0129D8A2E80D2539C5B2EEA3E21E /* nanopb-dummy.m */; };
-		5892AC4F385F8990B770E04431349205 /* pb_common.h in Headers */ = {isa = PBXBuildFile; fileRef = E4AFC20268EE46BB3BCB299B7C5E7B77 /* pb_common.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6709CA27ED233119F839B23E2DD4122B /* pb_common.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C1667F0F00DD8F907143D139EB7E17E /* pb_common.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		83E6AFF1A612CB794345761FE749DAA0 /* pb_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = B5E3576EAB9383445B4FF1DA1620345A /* pb_encode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		92639F8D767F8DAE88EC65B0268B9D94 /* pb_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = DE3B63DEC0D7129301A9D38875859ED5 /* pb_decode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B0F16D51CFC032AB8DBEA57AB6A9ED5D /* pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C41AECB394EF8E5807B171BFCCEEAA0 /* pb.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DFE7BD96597B4E3424CBD681A927A06C /* pb_encode.h in Headers */ = {isa = PBXBuildFile; fileRef = 498DC3D05B7718EF628F4852733A03F9 /* pb_encode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		298A9150D2F6613E23CD34E4981D3A6A /* pb_decode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AEAC440D883C6F124C2FA07677263B2 /* pb_decode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4C09004FAFACC746DB1F25D0DE6C94B0 /* nanopb-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75127A443F8023166AF061DC85873C /* nanopb-dummy.m */; };
+		5892AC4F385F8990B770E04431349205 /* pb_common.h in Headers */ = {isa = PBXBuildFile; fileRef = 0016725B52348EAE8EA69E5FFEA093EE /* pb_common.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6709CA27ED233119F839B23E2DD4122B /* pb_common.c in Sources */ = {isa = PBXBuildFile; fileRef = 823FFEE170A0CF7015CCB6BE56373D24 /* pb_common.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		83E6AFF1A612CB794345761FE749DAA0 /* pb_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = BE6EBDDD34BAE4D40D759EC9BD97421B /* pb_encode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		92639F8D767F8DAE88EC65B0268B9D94 /* pb_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = A1923BBEFA1E461169C7356C1E699A72 /* pb_decode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B0F16D51CFC032AB8DBEA57AB6A9ED5D /* pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 2D3AA704263E5ABB4C7EBB2A89189461 /* pb.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DFE7BD96597B4E3424CBD681A927A06C /* pb_encode.h in Headers */ = {isa = PBXBuildFile; fileRef = DAFE1CF91E650DE4E99F0D00577E9937 /* pb_encode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		498DC3D05B7718EF628F4852733A03F9 /* pb_encode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb_encode.h; sourceTree = "<group>"; };
-		4C41AECB394EF8E5807B171BFCCEEAA0 /* pb.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb.h; sourceTree = "<group>"; };
-		6C1667F0F00DD8F907143D139EB7E17E /* pb_common.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_common.c; sourceTree = "<group>"; };
-		77DBBAF4E3784C5050C05C48D7ADA038 /* nanopb-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "nanopb-prefix.pch"; sourceTree = "<group>"; };
-		B5E3576EAB9383445B4FF1DA1620345A /* pb_encode.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_encode.c; sourceTree = "<group>"; };
-		B79980A182F4C58079BFB048870F77AC /* pb_decode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb_decode.h; sourceTree = "<group>"; };
-		D2696B64590A5E62A5F1030A1F717382 /* nanopb.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = nanopb.xcconfig; sourceTree = "<group>"; };
+		0016725B52348EAE8EA69E5FFEA093EE /* pb_common.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb_common.h; sourceTree = "<group>"; };
+		2D3AA704263E5ABB4C7EBB2A89189461 /* pb.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb.h; sourceTree = "<group>"; };
+		4AEAC440D883C6F124C2FA07677263B2 /* pb_decode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb_decode.h; sourceTree = "<group>"; };
+		61219783C22C546F23D732E4263AAEA0 /* nanopb.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = nanopb.release.xcconfig; sourceTree = "<group>"; };
+		6F3D40A942E04BEADC28C5CDB0096C42 /* nanopb.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = nanopb.debug.xcconfig; sourceTree = "<group>"; };
+		823FFEE170A0CF7015CCB6BE56373D24 /* pb_common.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_common.c; sourceTree = "<group>"; };
+		A1923BBEFA1E461169C7356C1E699A72 /* pb_decode.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_decode.c; sourceTree = "<group>"; };
+		BE6EBDDD34BAE4D40D759EC9BD97421B /* pb_encode.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_encode.c; sourceTree = "<group>"; };
+		CE2C286FA6005D907E8ABE7EE494186C /* nanopb-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "nanopb-prefix.pch"; sourceTree = "<group>"; };
 		DA4181A656DA93DDF6A3412D73B7DD44 /* libnanopb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libnanopb.a; path = libnanopb.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE3B63DEC0D7129301A9D38875859ED5 /* pb_decode.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_decode.c; sourceTree = "<group>"; };
-		E01F0129D8A2E80D2539C5B2EEA3E21E /* nanopb-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "nanopb-dummy.m"; sourceTree = "<group>"; };
-		E4AFC20268EE46BB3BCB299B7C5E7B77 /* pb_common.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb_common.h; sourceTree = "<group>"; };
+		DAFE1CF91E650DE4E99F0D00577E9937 /* pb_encode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb_encode.h; sourceTree = "<group>"; };
+		FA75127A443F8023166AF061DC85873C /* nanopb-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "nanopb-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,40 +43,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		14E1F7DF6989B29BC0734D0FFDF3FCAD /* encode */ = {
+		0217AF89E97B836D391BA1AD538A03C9 /* encode */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = encode;
 			sourceTree = "<group>";
 		};
-		58DEF576ABB63596DF9890F3D5088FBD /* Support Files */ = {
+		195321B8DE41D962AE943866A2D76561 /* decode */ = {
 			isa = PBXGroup;
 			children = (
-				D2696B64590A5E62A5F1030A1F717382 /* nanopb.xcconfig */,
-				E01F0129D8A2E80D2539C5B2EEA3E21E /* nanopb-dummy.m */,
-				77DBBAF4E3784C5050C05C48D7ADA038 /* nanopb-prefix.pch */,
+			);
+			name = decode;
+			sourceTree = "<group>";
+		};
+		42C8901371630863AF7FF46DECA1D6ED /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				FA75127A443F8023166AF061DC85873C /* nanopb-dummy.m */,
+				CE2C286FA6005D907E8ABE7EE494186C /* nanopb-prefix.pch */,
+				6F3D40A942E04BEADC28C5CDB0096C42 /* nanopb.debug.xcconfig */,
+				61219783C22C546F23D732E4263AAEA0 /* nanopb.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/nanopb";
-			sourceTree = "<group>";
-		};
-		96F6A28193FD02D63BCECF848DF2D5D8 /* nanopb */ = {
-			isa = PBXGroup;
-			children = (
-				4C41AECB394EF8E5807B171BFCCEEAA0 /* pb.h */,
-				6C1667F0F00DD8F907143D139EB7E17E /* pb_common.c */,
-				E4AFC20268EE46BB3BCB299B7C5E7B77 /* pb_common.h */,
-				DE3B63DEC0D7129301A9D38875859ED5 /* pb_decode.c */,
-				B79980A182F4C58079BFB048870F77AC /* pb_decode.h */,
-				B5E3576EAB9383445B4FF1DA1620345A /* pb_encode.c */,
-				498DC3D05B7718EF628F4852733A03F9 /* pb_encode.h */,
-				C31477AB2B90CC065D6AA3697D949425 /* decode */,
-				14E1F7DF6989B29BC0734D0FFDF3FCAD /* encode */,
-				58DEF576ABB63596DF9890F3D5088FBD /* Support Files */,
-			);
-			name = nanopb;
-			path = nanopb;
 			sourceTree = "<group>";
 		};
 		A5846A7DC7D11CCCE3D46154A2E8E387 /* Products */ = {
@@ -86,13 +77,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C31477AB2B90CC065D6AA3697D949425 /* decode */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = decode;
-			sourceTree = "<group>";
-		};
 		C42BC009D364BD08E9F094F022AAEB55 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -100,11 +84,29 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D3904760904E730CAF5AC8F5ABD1BE8C /* nanopb */ = {
+			isa = PBXGroup;
+			children = (
+				2D3AA704263E5ABB4C7EBB2A89189461 /* pb.h */,
+				823FFEE170A0CF7015CCB6BE56373D24 /* pb_common.c */,
+				0016725B52348EAE8EA69E5FFEA093EE /* pb_common.h */,
+				A1923BBEFA1E461169C7356C1E699A72 /* pb_decode.c */,
+				4AEAC440D883C6F124C2FA07677263B2 /* pb_decode.h */,
+				BE6EBDDD34BAE4D40D759EC9BD97421B /* pb_encode.c */,
+				DAFE1CF91E650DE4E99F0D00577E9937 /* pb_encode.h */,
+				195321B8DE41D962AE943866A2D76561 /* decode */,
+				0217AF89E97B836D391BA1AD538A03C9 /* encode */,
+				42C8901371630863AF7FF46DECA1D6ED /* Support Files */,
+			);
+			name = nanopb;
+			path = nanopb;
+			sourceTree = "<group>";
+		};
 		F2DB4CF37E2E32D2131A0B7792811734 = {
 			isa = PBXGroup;
 			children = (
 				C42BC009D364BD08E9F094F022AAEB55 /* Frameworks */,
-				96F6A28193FD02D63BCECF848DF2D5D8 /* nanopb */,
+				D3904760904E730CAF5AC8F5ABD1BE8C /* nanopb */,
 				A5846A7DC7D11CCCE3D46154A2E8E387 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -245,9 +247,9 @@
 			};
 			name = Release;
 		};
-		718863C81AB13566D5FA4A4CEC598CF5 /* Debug */ = {
+		631DCCC97EA17AD231A06B8480E67870 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2696B64590A5E62A5F1030A1F717382 /* nanopb.xcconfig */;
+			baseConfigurationReference = 6F3D40A942E04BEADC28C5CDB0096C42 /* nanopb.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -333,9 +335,9 @@
 			};
 			name = Debug;
 		};
-		F0CF41859736E8091145A567F572D1DE /* Release */ = {
+		CDB220CDF2AA16CDD98C0AF4B698A4E0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2696B64590A5E62A5F1030A1F717382 /* nanopb.xcconfig */;
+			baseConfigurationReference = 61219783C22C546F23D732E4263AAEA0 /* nanopb.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -373,8 +375,8 @@
 		CA72EDEFB1993EBFEA956782A96C0DAD /* Build configuration list for PBXNativeTarget "nanopb" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				718863C81AB13566D5FA4A4CEC598CF5 /* Debug */,
-				F0CF41859736E8091145A567F572D1DE /* Release */,
+				631DCCC97EA17AD231A06B8480E67870 /* Debug */,
+				CDB220CDF2AA16CDD98C0AF4B698A4E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

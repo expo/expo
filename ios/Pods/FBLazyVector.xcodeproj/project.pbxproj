@@ -19,17 +19,18 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		791E1A87DAE0197793154E6ADD951298 /* FBLazyIterator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBLazyIterator.h; path = FBLazyVector/FBLazyIterator.h; sourceTree = "<group>"; };
-		7FE49E9989FEDADA0DD92D83AF1F1147 /* FBLazyVector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBLazyVector.h; path = FBLazyVector/FBLazyVector.h; sourceTree = "<group>"; };
-		8A20DB4EF19A62879156101469FC1DDB /* FBLazyVector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FBLazyVector.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		F369770E2F08EF9348ED240EDC151AAC /* FBLazyVector.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FBLazyVector.xcconfig; sourceTree = "<group>"; };
+		2F21B1DD7BE88FDF7C4E0C398C9D4209 /* FBLazyVector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBLazyVector.h; path = FBLazyVector/FBLazyVector.h; sourceTree = "<group>"; };
+		4ACDC1E17B0E152072EAD48686798EE5 /* FBLazyIterator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBLazyIterator.h; path = FBLazyVector/FBLazyIterator.h; sourceTree = "<group>"; };
+		593BC491B207ED57BEF8533E7A7E6CAC /* FBLazyVector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FBLazyVector.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		8180791475FE3AB9714CF1FFC5113C5F /* FBLazyVector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FBLazyVector.release.xcconfig; sourceTree = "<group>"; };
+		BEDC9E4A9683A21F193F5129C5FD6B0A /* FBLazyVector.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FBLazyVector.debug.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0F788BC997CA300388AEC03C1F0CBAE1 = {
 			isa = PBXGroup;
 			children = (
-				9534B1204129E173FEEE95A9D0926023 /* FBLazyVector */,
+				CA6D5FB252A4AB8D14B70C42055E92E0 /* FBLazyVector */,
 				10851407EB8E66591C0DBBBE8611CFCD /* Frameworks */,
 				3BC442B1408DD6C36ED7B51D6C68A7F2 /* Products */,
 			);
@@ -42,14 +43,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		268EFDA588ECFF55BB2F5F9D7DA57831 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				8A20DB4EF19A62879156101469FC1DDB /* FBLazyVector.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		3BC442B1408DD6C36ED7B51D6C68A7F2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -57,22 +50,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9534B1204129E173FEEE95A9D0926023 /* FBLazyVector */ = {
+		C00A5CF2394AFBA2CEE62CDAF9BC9E00 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				791E1A87DAE0197793154E6ADD951298 /* FBLazyIterator.h */,
-				7FE49E9989FEDADA0DD92D83AF1F1147 /* FBLazyVector.h */,
-				268EFDA588ECFF55BB2F5F9D7DA57831 /* Pod */,
-				B0C989EEA86D5638230CE548114A2D93 /* Support Files */,
+				593BC491B207ED57BEF8533E7A7E6CAC /* FBLazyVector.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		CA6D5FB252A4AB8D14B70C42055E92E0 /* FBLazyVector */ = {
+			isa = PBXGroup;
+			children = (
+				4ACDC1E17B0E152072EAD48686798EE5 /* FBLazyIterator.h */,
+				2F21B1DD7BE88FDF7C4E0C398C9D4209 /* FBLazyVector.h */,
+				C00A5CF2394AFBA2CEE62CDAF9BC9E00 /* Pod */,
+				F0500A57566852D254AF96BA4EB715F8 /* Support Files */,
 			);
 			name = FBLazyVector;
 			path = "../../react-native-lab/react-native/Libraries/FBLazyVector";
 			sourceTree = "<group>";
 		};
-		B0C989EEA86D5638230CE548114A2D93 /* Support Files */ = {
+		F0500A57566852D254AF96BA4EB715F8 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				F369770E2F08EF9348ED240EDC151AAC /* FBLazyVector.xcconfig */,
+				BEDC9E4A9683A21F193F5129C5FD6B0A /* FBLazyVector.debug.xcconfig */,
+				8180791475FE3AB9714CF1FFC5113C5F /* FBLazyVector.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../../ios/Pods/Target Support Files/FBLazyVector";
@@ -106,33 +108,6 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		1F6E489CCF2CC137A3DD7ABDD039B03A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F369770E2F08EF9348ED240EDC151AAC /* FBLazyVector.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		29B72491BD171B2AB1BD892B1E0B6A24 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F369770E2F08EF9348ED240EDC151AAC /* FBLazyVector.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		61D13CC9C81940D6DC218ECE12453FEF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -257,14 +232,41 @@
 			};
 			name = Release;
 		};
+		BC694CF2F2AE21787ACADD7A663AEC25 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8180791475FE3AB9714CF1FFC5113C5F /* FBLazyVector.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F082F60CEDDB2245C18C9FC8CAAE2EF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BEDC9E4A9683A21F193F5129C5FD6B0A /* FBLazyVector.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		08B90F5F4C8B56677E1B2B1C7F1499B3 /* Build configuration list for PBXAggregateTarget "FBLazyVector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1F6E489CCF2CC137A3DD7ABDD039B03A /* Debug */,
-				29B72491BD171B2AB1BD892B1E0B6A24 /* Release */,
+				F082F60CEDDB2245C18C9FC8CAAE2EF2 /* Debug */,
+				BC694CF2F2AE21787ACADD7A663AEC25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

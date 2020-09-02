@@ -19,9 +19,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXFileReference section */
-		4618DA9ACB9E433772BC09019115BE2D /* UMConstantsInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMConstantsInterface.xcconfig; sourceTree = "<group>"; };
-		4C4864F663A66F37C4A9495F164CA599 /* UMConstantsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMConstantsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		E58F871575415DDAB90AB5C8AC5EE631 /* UMConstantsInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMConstantsInterface.h; path = UMConstantsInterface/UMConstantsInterface.h; sourceTree = "<group>"; };
+		26FFB2F49C27D7C3BEA8F1DBBD57D84E /* UMConstantsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMConstantsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5B945F1312E227C7C07AFE1F6332F43E /* UMConstantsInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMConstantsInterface.h; path = UMConstantsInterface/UMConstantsInterface.h; sourceTree = "<group>"; };
+		7AF973A89EF7449165924249C545C503 /* UMConstantsInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMConstantsInterface.debug.xcconfig; sourceTree = "<group>"; };
+		BD264BF7AD730217F1035FE036839B6B /* UMConstantsInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMConstantsInterface.release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -30,27 +31,29 @@
 			children = (
 				7CDAF4B96918C54964D46B0451654FD5 /* Frameworks */,
 				CE6EF44D1074332B4FB699D057131E69 /* Products */,
-				6166002F6B79E700D22AF8BAC6103C68 /* UMConstantsInterface */,
+				62C3104C3A41717FBBCA109AE0098759 /* UMConstantsInterface */,
 			);
 			sourceTree = "<group>";
 		};
-		6166002F6B79E700D22AF8BAC6103C68 /* UMConstantsInterface */ = {
+		62C3104C3A41717FBBCA109AE0098759 /* UMConstantsInterface */ = {
 			isa = PBXGroup;
 			children = (
-				E58F871575415DDAB90AB5C8AC5EE631 /* UMConstantsInterface.h */,
-				705BFF1CE50C991C0B64510F1B889390 /* Pod */,
-				9BFEAC98A8B0966F3BD29A88218861F7 /* Support Files */,
+				5B945F1312E227C7C07AFE1F6332F43E /* UMConstantsInterface.h */,
+				EC9375912EC50E38326F918455F766D3 /* Pod */,
+				6B6CC7BFFE8641B7A50EED0E6B8181C0 /* Support Files */,
 			);
 			name = UMConstantsInterface;
 			path = "../../../../packages/unimodules-constants-interface/ios";
 			sourceTree = "<group>";
 		};
-		705BFF1CE50C991C0B64510F1B889390 /* Pod */ = {
+		6B6CC7BFFE8641B7A50EED0E6B8181C0 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				4C4864F663A66F37C4A9495F164CA599 /* UMConstantsInterface.podspec */,
+				7AF973A89EF7449165924249C545C503 /* UMConstantsInterface.debug.xcconfig */,
+				BD264BF7AD730217F1035FE036839B6B /* UMConstantsInterface.release.xcconfig */,
 			);
-			name = Pod;
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMConstantsInterface";
 			sourceTree = "<group>";
 		};
 		7CDAF4B96918C54964D46B0451654FD5 /* Frameworks */ = {
@@ -60,20 +63,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		9BFEAC98A8B0966F3BD29A88218861F7 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				4618DA9ACB9E433772BC09019115BE2D /* UMConstantsInterface.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMConstantsInterface";
-			sourceTree = "<group>";
-		};
 		CE6EF44D1074332B4FB699D057131E69 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		EC9375912EC50E38326F918455F766D3 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				26FFB2F49C27D7C3BEA8F1DBBD57D84E /* UMConstantsInterface.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -104,9 +106,9 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		74F46524640A5D37AB569EF059284E24 /* Debug */ = {
+		2AE24FFE410D5541AA5F00499080FA06 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4618DA9ACB9E433772BC09019115BE2D /* UMConstantsInterface.xcconfig */;
+			baseConfigurationReference = 7AF973A89EF7449165924249C545C503 /* UMConstantsInterface.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -182,9 +184,9 @@
 			};
 			name = Debug;
 		};
-		AC7133EC67F55E2527E5E64AD8B0B78D /* Release */ = {
+		BD01C1391A7895F4FB3556D3DD67A6F8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4618DA9ACB9E433772BC09019115BE2D /* UMConstantsInterface.xcconfig */;
+			baseConfigurationReference = BD264BF7AD730217F1035FE036839B6B /* UMConstantsInterface.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -263,8 +265,8 @@
 		9FCF3522CD75A3D47B02FAEA9E2C5301 /* Build configuration list for PBXAggregateTarget "UMConstantsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				74F46524640A5D37AB569EF059284E24 /* Debug */,
-				AC7133EC67F55E2527E5E64AD8B0B78D /* Release */,
+				2AE24FFE410D5541AA5F00499080FA06 /* Debug */,
+				BD01C1391A7895F4FB3556D3DD67A6F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

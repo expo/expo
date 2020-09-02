@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 35181B97DC57B0300A7DCA689A168F02 /* EXErrorRecoveryModule.m */; };
-		403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6964907A31E64140D8BECEF94BBDE154 /* EXErrorRecovery-dummy.m */; };
-		C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FDA28065660DBF2B4AF77729917FE07 /* EXErrorRecoveryModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B460ADC502A5E7124B2C32BF40E45338 /* EXErrorRecoveryModule.m */; };
+		403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 264E93B67EC41B33D47C7FAE47DC9CB1 /* EXErrorRecovery-dummy.m */; };
+		C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 127228213A5BEED8029B60BFEE8DAE43 /* EXErrorRecoveryModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,13 +23,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXErrorRecovery.xcconfig; sourceTree = "<group>"; };
+		01BFEE65CDAB30F17A5759B0011C3451 /* EXErrorRecovery-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXErrorRecovery-prefix.pch"; sourceTree = "<group>"; };
+		127228213A5BEED8029B60BFEE8DAE43 /* EXErrorRecoveryModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXErrorRecoveryModule.h; path = EXErrorRecovery/EXErrorRecoveryModule.h; sourceTree = "<group>"; };
+		264E93B67EC41B33D47C7FAE47DC9CB1 /* EXErrorRecovery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXErrorRecovery-dummy.m"; sourceTree = "<group>"; };
 		2914D17BF504D0A58332842D9F7783C4 /* libEXErrorRecovery.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXErrorRecovery.a; path = libEXErrorRecovery.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		35181B97DC57B0300A7DCA689A168F02 /* EXErrorRecoveryModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXErrorRecoveryModule.m; path = EXErrorRecovery/EXErrorRecoveryModule.m; sourceTree = "<group>"; };
-		5FDA28065660DBF2B4AF77729917FE07 /* EXErrorRecoveryModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXErrorRecoveryModule.h; path = EXErrorRecovery/EXErrorRecoveryModule.h; sourceTree = "<group>"; };
-		6964907A31E64140D8BECEF94BBDE154 /* EXErrorRecovery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXErrorRecovery-dummy.m"; sourceTree = "<group>"; };
-		ACC6C32E0E3AE972BF827CB0DDB7B396 /* EXErrorRecovery.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXErrorRecovery.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		F2858566E7E636D54285D3963BEB9E17 /* EXErrorRecovery-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXErrorRecovery-prefix.pch"; sourceTree = "<group>"; };
+		74DECD6190EE92421992AC97A1FA40CD /* EXErrorRecovery.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXErrorRecovery.debug.xcconfig; sourceTree = "<group>"; };
+		7525FEBE2837A3D550AB30074394F953 /* EXErrorRecovery.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXErrorRecovery.release.xcconfig; sourceTree = "<group>"; };
+		8EA829B8AA72067B0B84EFBB70A30523 /* EXErrorRecovery.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXErrorRecovery.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B460ADC502A5E7124B2C32BF40E45338 /* EXErrorRecoveryModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXErrorRecoveryModule.m; path = EXErrorRecovery/EXErrorRecoveryModule.m; sourceTree = "<group>"; };
 		FDE7E72F4F259D2C8E974C92345D460C /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -44,12 +45,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		240F45DDD11722E477DDE48D57DD7963 /* Pod */ = {
+		3928B39F6F03C5773567D205635E3D1F /* EXErrorRecovery */ = {
 			isa = PBXGroup;
 			children = (
-				ACC6C32E0E3AE972BF827CB0DDB7B396 /* EXErrorRecovery.podspec */,
+				127228213A5BEED8029B60BFEE8DAE43 /* EXErrorRecoveryModule.h */,
+				B460ADC502A5E7124B2C32BF40E45338 /* EXErrorRecoveryModule.m */,
+				6013A25FD23ABCD721D7ED07299877A0 /* Pod */,
+				4B312918E5360787EFD4363B45D706F5 /* Support Files */,
 			);
-			name = Pod;
+			name = EXErrorRecovery;
+			path = "../../packages/expo-error-recovery/ios";
 			sourceTree = "<group>";
 		};
 		3DE9ACAFA799A6723B6D240FF1672274 /* Frameworks */ = {
@@ -59,27 +64,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		52315E43D65F3ED7D0D6D48C0F6107E4 /* EXErrorRecovery */ = {
+		4B312918E5360787EFD4363B45D706F5 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				5FDA28065660DBF2B4AF77729917FE07 /* EXErrorRecoveryModule.h */,
-				35181B97DC57B0300A7DCA689A168F02 /* EXErrorRecoveryModule.m */,
-				240F45DDD11722E477DDE48D57DD7963 /* Pod */,
-				54A1C764BEDEB2DF98170C95957871AD /* Support Files */,
-			);
-			name = EXErrorRecovery;
-			path = "../../packages/expo-error-recovery/ios";
-			sourceTree = "<group>";
-		};
-		54A1C764BEDEB2DF98170C95957871AD /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */,
-				6964907A31E64140D8BECEF94BBDE154 /* EXErrorRecovery-dummy.m */,
-				F2858566E7E636D54285D3963BEB9E17 /* EXErrorRecovery-prefix.pch */,
+				264E93B67EC41B33D47C7FAE47DC9CB1 /* EXErrorRecovery-dummy.m */,
+				01BFEE65CDAB30F17A5759B0011C3451 /* EXErrorRecovery-prefix.pch */,
+				74DECD6190EE92421992AC97A1FA40CD /* EXErrorRecovery.debug.xcconfig */,
+				7525FEBE2837A3D550AB30074394F953 /* EXErrorRecovery.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXErrorRecovery";
+			sourceTree = "<group>";
+		};
+		6013A25FD23ABCD721D7ED07299877A0 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				8EA829B8AA72067B0B84EFBB70A30523 /* EXErrorRecovery.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		83B79619077DA9140E04AD0D8E37C069 /* Dependencies */ = {
@@ -102,7 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				83B79619077DA9140E04AD0D8E37C069 /* Dependencies */,
-				52315E43D65F3ED7D0D6D48C0F6107E4 /* EXErrorRecovery */,
+				3928B39F6F03C5773567D205635E3D1F /* EXErrorRecovery */,
 				3DE9ACAFA799A6723B6D240FF1672274 /* Frameworks */,
 				9981103A74279DD2E2D98C54C0E9BD29 /* Products */,
 			);
@@ -193,9 +195,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		007B515D5E9F5F67A629F460EC3C3CEF /* Debug */ = {
+		018DD8AEC411BDECFA28EB23BF235DE9 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */;
+			baseConfigurationReference = 74DECD6190EE92421992AC97A1FA40CD /* EXErrorRecovery.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -216,6 +218,31 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		09CA0369C55FFDF1D65D60504CFE69FD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7525FEBE2837A3D550AB30074394F953 /* EXErrorRecovery.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXErrorRecovery;
+				PRODUCT_NAME = EXErrorRecovery;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		6D9238E83838AA053287AA04412BABB9 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -274,31 +301,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		FA4D138ACE4C5F8D3231A6A29C2D4940 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXErrorRecovery;
-				PRODUCT_NAME = EXErrorRecovery;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -381,8 +383,8 @@
 		88FE7B3B8211A6769125AF890B5E1CEE /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				007B515D5E9F5F67A629F460EC3C3CEF /* Debug */,
-				FA4D138ACE4C5F8D3231A6A29C2D4940 /* Release */,
+				018DD8AEC411BDECFA28EB23BF235DE9 /* Debug */,
+				09CA0369C55FFDF1D65D60504CFE69FD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

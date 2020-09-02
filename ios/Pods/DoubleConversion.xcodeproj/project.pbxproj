@@ -7,50 +7,51 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		005B66454386C1D6B8A88D73933CCAD0 /* double-conversion.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9C4BF1D3AA81E7574FB3603D4E1ED782 /* double-conversion.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		0A4366BBEC0A3F515BF37D87ECA249F3 /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = A21D31CC9831CAFEC4FC068B32F7D623 /* strtod.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		16161E7D0BC525F166B2C197657603AE /* fixed-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 3812B3D9F24D8E7C0C349AEA5469093D /* fixed-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		26EFD2A3713E9FC825088A812FC91218 /* bignum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9EA11A0D57C1764283C504D5C01AA109 /* bignum.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		293B6D1DFEAA6FC2576894B9472E121C /* DoubleConversion-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 340E7598660A4D8B65FD7C32EA0ECFCC /* DoubleConversion-dummy.m */; };
-		5046DEFC641216205A92A1F2DABBE010 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BECC54751D78319908CB5534492B16C /* utils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		56396F781EB20CE0752F5A0B85BD1AC1 /* double-conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = AA37A45EBEB9FA0D3884E8354292B09D /* double-conversion.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		568A4AF54749901755286272F702441F /* bignum.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C13A67B792093A87B064253405F04CE /* bignum.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6081FF1696039DB4D7676CDB3FBFBE55 /* bignum-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 557D50DCAC2C737C948FC590CA7861C8 /* bignum-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		64A624472ECE5244942ED688BFE7906C /* cached-powers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2649B17692776258B349E238218DACA0 /* cached-powers.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6A511A0A8434E489A22B6EE1B08A758A /* ieee.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A93DFEA1A2E27EFED37E092A227462 /* ieee.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		802A0E7E363A6407709AECD6F8E6C211 /* diy-fp.h in Headers */ = {isa = PBXBuildFile; fileRef = 2466F214C82D37FE45394B0685379DD3 /* diy-fp.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D8EE5FB928EC7B81A6175F0AB93890D4 /* fast-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = D8ABA8122AF5B3E128CBEC95BCFF247D /* fast-dtoa.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DA436D76DCFE4244A751C36C18A972EF /* cached-powers.h in Headers */ = {isa = PBXBuildFile; fileRef = 91176FD6E9D426D55C2DFBCDBB738945 /* cached-powers.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DE0DDC7187C98D569D99074BC977E86B /* strtod.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D2901E6B07626177720A62BD7F7A5AE /* strtod.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E167C49F2D3C271D5DAABF367B4B475F /* diy-fp.cc in Sources */ = {isa = PBXBuildFile; fileRef = F512B12BFEE77DC051AE36178C77CD07 /* diy-fp.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E64B88A03AAEC8205DF6D8772EA1F7D4 /* fast-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 452F77A5F06673FCE1F9C0AFCBEAF857 /* fast-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EE2BE4601A837C15DC8A9619224827D3 /* fixed-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 09E303DC075886D0DF653D0C7174F070 /* fixed-dtoa.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F5FC7F29254A7EC23F42457BBA009C0E /* bignum-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = E91DB3180FF22469772B3F86C294B3C2 /* bignum-dtoa.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		005B66454386C1D6B8A88D73933CCAD0 /* double-conversion.cc in Sources */ = {isa = PBXBuildFile; fileRef = C15F2808F6C8C8A27735FF6DF4DED4B0 /* double-conversion.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0A4366BBEC0A3F515BF37D87ECA249F3 /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = 57B9FAC463D4B7D10B730E6F3E1A9FB5 /* strtod.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		16161E7D0BC525F166B2C197657603AE /* fixed-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = D187DB90F47E1C4C6012F49AF2D5E562 /* fixed-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		26EFD2A3713E9FC825088A812FC91218 /* bignum.cc in Sources */ = {isa = PBXBuildFile; fileRef = EA73188682B029A86A8250871F7B0AE0 /* bignum.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		293B6D1DFEAA6FC2576894B9472E121C /* DoubleConversion-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B45DF6C83F9D15AD58B3A13AA5E7E7D5 /* DoubleConversion-dummy.m */; };
+		5046DEFC641216205A92A1F2DABBE010 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DDB685293BB92051D30ECBF4A9D75B /* utils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		56396F781EB20CE0752F5A0B85BD1AC1 /* double-conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = DC29C87CCA5470B702B952ABD5D0E5E6 /* double-conversion.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		568A4AF54749901755286272F702441F /* bignum.h in Headers */ = {isa = PBXBuildFile; fileRef = 3825AADDC3CF40AFAE0061D08AFCB9F5 /* bignum.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6081FF1696039DB4D7676CDB3FBFBE55 /* bignum-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = F5BDAFD85B4491C35C18CE66762E1FB1 /* bignum-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		64A624472ECE5244942ED688BFE7906C /* cached-powers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 592B86B143E273DDD72D536061A49907 /* cached-powers.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6A511A0A8434E489A22B6EE1B08A758A /* ieee.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B371C28326FCA96907F47FE3328109B /* ieee.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		802A0E7E363A6407709AECD6F8E6C211 /* diy-fp.h in Headers */ = {isa = PBXBuildFile; fileRef = 463EEA8042B19F226AD55227C5C1FD3C /* diy-fp.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D8EE5FB928EC7B81A6175F0AB93890D4 /* fast-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 80E19C6B777B2B745BD86FAE33926434 /* fast-dtoa.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DA436D76DCFE4244A751C36C18A972EF /* cached-powers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D1B3A311C732C675E61526EA3D0A314 /* cached-powers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DE0DDC7187C98D569D99074BC977E86B /* strtod.h in Headers */ = {isa = PBXBuildFile; fileRef = 1624F0A7470EA1C094FFE2D939C4126E /* strtod.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E167C49F2D3C271D5DAABF367B4B475F /* diy-fp.cc in Sources */ = {isa = PBXBuildFile; fileRef = 6B519460A1834C78E524EFEDD17E0045 /* diy-fp.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E64B88A03AAEC8205DF6D8772EA1F7D4 /* fast-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = C60880963647305B6619277F458DB991 /* fast-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EE2BE4601A837C15DC8A9619224827D3 /* fixed-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCBA1DE95830BC988704BD817F2AB25D /* fixed-dtoa.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F5FC7F29254A7EC23F42457BBA009C0E /* bignum-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = C49B36A5DD13B037B7354141C65FCE8C /* bignum-dtoa.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		01A93DFEA1A2E27EFED37E092A227462 /* ieee.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ieee.h; path = "double-conversion/ieee.h"; sourceTree = "<group>"; };
-		09E303DC075886D0DF653D0C7174F070 /* fixed-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "fixed-dtoa.cc"; path = "double-conversion/fixed-dtoa.cc"; sourceTree = "<group>"; };
-		2466F214C82D37FE45394B0685379DD3 /* diy-fp.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "diy-fp.h"; path = "double-conversion/diy-fp.h"; sourceTree = "<group>"; };
-		2649B17692776258B349E238218DACA0 /* cached-powers.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "cached-powers.cc"; path = "double-conversion/cached-powers.cc"; sourceTree = "<group>"; };
-		340E7598660A4D8B65FD7C32EA0ECFCC /* DoubleConversion-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DoubleConversion-dummy.m"; sourceTree = "<group>"; };
-		3812B3D9F24D8E7C0C349AEA5469093D /* fixed-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "fixed-dtoa.h"; path = "double-conversion/fixed-dtoa.h"; sourceTree = "<group>"; };
-		3BECC54751D78319908CB5534492B16C /* utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "double-conversion/utils.h"; sourceTree = "<group>"; };
-		452F77A5F06673FCE1F9C0AFCBEAF857 /* fast-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "fast-dtoa.h"; path = "double-conversion/fast-dtoa.h"; sourceTree = "<group>"; };
-		557D50DCAC2C737C948FC590CA7861C8 /* bignum-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "bignum-dtoa.h"; path = "double-conversion/bignum-dtoa.h"; sourceTree = "<group>"; };
-		5D2901E6B07626177720A62BD7F7A5AE /* strtod.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = strtod.h; path = "double-conversion/strtod.h"; sourceTree = "<group>"; };
-		7C13A67B792093A87B064253405F04CE /* bignum.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = bignum.h; path = "double-conversion/bignum.h"; sourceTree = "<group>"; };
-		91176FD6E9D426D55C2DFBCDBB738945 /* cached-powers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "cached-powers.h"; path = "double-conversion/cached-powers.h"; sourceTree = "<group>"; };
+		00031AB762A428383C38E41BBA40D7BD /* DoubleConversion.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DoubleConversion.release.xcconfig; sourceTree = "<group>"; };
+		1624F0A7470EA1C094FFE2D939C4126E /* strtod.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = strtod.h; path = "double-conversion/strtod.h"; sourceTree = "<group>"; };
+		3825AADDC3CF40AFAE0061D08AFCB9F5 /* bignum.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = bignum.h; path = "double-conversion/bignum.h"; sourceTree = "<group>"; };
+		3D1B3A311C732C675E61526EA3D0A314 /* cached-powers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "cached-powers.h"; path = "double-conversion/cached-powers.h"; sourceTree = "<group>"; };
+		463EEA8042B19F226AD55227C5C1FD3C /* diy-fp.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "diy-fp.h"; path = "double-conversion/diy-fp.h"; sourceTree = "<group>"; };
+		47DDB685293BB92051D30ECBF4A9D75B /* utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "double-conversion/utils.h"; sourceTree = "<group>"; };
+		57B9FAC463D4B7D10B730E6F3E1A9FB5 /* strtod.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = strtod.cc; path = "double-conversion/strtod.cc"; sourceTree = "<group>"; };
+		592B86B143E273DDD72D536061A49907 /* cached-powers.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "cached-powers.cc"; path = "double-conversion/cached-powers.cc"; sourceTree = "<group>"; };
+		5B371C28326FCA96907F47FE3328109B /* ieee.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ieee.h; path = "double-conversion/ieee.h"; sourceTree = "<group>"; };
+		6B519460A1834C78E524EFEDD17E0045 /* diy-fp.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "diy-fp.cc"; path = "double-conversion/diy-fp.cc"; sourceTree = "<group>"; };
+		80E19C6B777B2B745BD86FAE33926434 /* fast-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "fast-dtoa.cc"; path = "double-conversion/fast-dtoa.cc"; sourceTree = "<group>"; };
+		8FE30E8AD256960F1E20409B20E451F6 /* DoubleConversion.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DoubleConversion.debug.xcconfig; sourceTree = "<group>"; };
 		9BBC564C7D31A3046C48519917BED1C7 /* libDoubleConversion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libDoubleConversion.a; path = libDoubleConversion.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C4BF1D3AA81E7574FB3603D4E1ED782 /* double-conversion.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "double-conversion.cc"; path = "double-conversion/double-conversion.cc"; sourceTree = "<group>"; };
-		9EA11A0D57C1764283C504D5C01AA109 /* bignum.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = bignum.cc; path = "double-conversion/bignum.cc"; sourceTree = "<group>"; };
-		A21D31CC9831CAFEC4FC068B32F7D623 /* strtod.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = strtod.cc; path = "double-conversion/strtod.cc"; sourceTree = "<group>"; };
-		AA37A45EBEB9FA0D3884E8354292B09D /* double-conversion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "double-conversion.h"; path = "double-conversion/double-conversion.h"; sourceTree = "<group>"; };
-		D8ABA8122AF5B3E128CBEC95BCFF247D /* fast-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "fast-dtoa.cc"; path = "double-conversion/fast-dtoa.cc"; sourceTree = "<group>"; };
-		E57FD55DBA182ED43A94CDD78A41C2CB /* DoubleConversion-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DoubleConversion-prefix.pch"; sourceTree = "<group>"; };
-		E91DB3180FF22469772B3F86C294B3C2 /* bignum-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "bignum-dtoa.cc"; path = "double-conversion/bignum-dtoa.cc"; sourceTree = "<group>"; };
-		F512B12BFEE77DC051AE36178C77CD07 /* diy-fp.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "diy-fp.cc"; path = "double-conversion/diy-fp.cc"; sourceTree = "<group>"; };
-		F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DoubleConversion.xcconfig; sourceTree = "<group>"; };
+		B45DF6C83F9D15AD58B3A13AA5E7E7D5 /* DoubleConversion-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DoubleConversion-dummy.m"; sourceTree = "<group>"; };
+		C15F2808F6C8C8A27735FF6DF4DED4B0 /* double-conversion.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "double-conversion.cc"; path = "double-conversion/double-conversion.cc"; sourceTree = "<group>"; };
+		C49B36A5DD13B037B7354141C65FCE8C /* bignum-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "bignum-dtoa.cc"; path = "double-conversion/bignum-dtoa.cc"; sourceTree = "<group>"; };
+		C60880963647305B6619277F458DB991 /* fast-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "fast-dtoa.h"; path = "double-conversion/fast-dtoa.h"; sourceTree = "<group>"; };
+		D187DB90F47E1C4C6012F49AF2D5E562 /* fixed-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "fixed-dtoa.h"; path = "double-conversion/fixed-dtoa.h"; sourceTree = "<group>"; };
+		DC29C87CCA5470B702B952ABD5D0E5E6 /* double-conversion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "double-conversion.h"; path = "double-conversion/double-conversion.h"; sourceTree = "<group>"; };
+		DCBA1DE95830BC988704BD817F2AB25D /* fixed-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "fixed-dtoa.cc"; path = "double-conversion/fixed-dtoa.cc"; sourceTree = "<group>"; };
+		DCEDA120B365F9DC11E44C657FB1BF19 /* DoubleConversion-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DoubleConversion-prefix.pch"; sourceTree = "<group>"; };
+		EA73188682B029A86A8250871F7B0AE0 /* bignum.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = bignum.cc; path = "double-conversion/bignum.cc"; sourceTree = "<group>"; };
+		F5BDAFD85B4491C35C18CE66762E1FB1 /* bignum-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "bignum-dtoa.h"; path = "double-conversion/bignum-dtoa.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,49 +65,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		279C99480BA6E0B149D2ECE0F77EC58C /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */,
-				340E7598660A4D8B65FD7C32EA0ECFCC /* DoubleConversion-dummy.m */,
-				E57FD55DBA182ED43A94CDD78A41C2CB /* DoubleConversion-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/DoubleConversion";
-			sourceTree = "<group>";
-		};
 		3D0D0404969D97C517E884AA3DDC924C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		465671790FFBCF02F8789418F0066012 /* DoubleConversion */ = {
-			isa = PBXGroup;
-			children = (
-				9EA11A0D57C1764283C504D5C01AA109 /* bignum.cc */,
-				7C13A67B792093A87B064253405F04CE /* bignum.h */,
-				E91DB3180FF22469772B3F86C294B3C2 /* bignum-dtoa.cc */,
-				557D50DCAC2C737C948FC590CA7861C8 /* bignum-dtoa.h */,
-				2649B17692776258B349E238218DACA0 /* cached-powers.cc */,
-				91176FD6E9D426D55C2DFBCDBB738945 /* cached-powers.h */,
-				F512B12BFEE77DC051AE36178C77CD07 /* diy-fp.cc */,
-				2466F214C82D37FE45394B0685379DD3 /* diy-fp.h */,
-				9C4BF1D3AA81E7574FB3603D4E1ED782 /* double-conversion.cc */,
-				AA37A45EBEB9FA0D3884E8354292B09D /* double-conversion.h */,
-				D8ABA8122AF5B3E128CBEC95BCFF247D /* fast-dtoa.cc */,
-				452F77A5F06673FCE1F9C0AFCBEAF857 /* fast-dtoa.h */,
-				09E303DC075886D0DF653D0C7174F070 /* fixed-dtoa.cc */,
-				3812B3D9F24D8E7C0C349AEA5469093D /* fixed-dtoa.h */,
-				01A93DFEA1A2E27EFED37E092A227462 /* ieee.h */,
-				A21D31CC9831CAFEC4FC068B32F7D623 /* strtod.cc */,
-				5D2901E6B07626177720A62BD7F7A5AE /* strtod.h */,
-				3BECC54751D78319908CB5534492B16C /* utils.h */,
-				279C99480BA6E0B149D2ECE0F77EC58C /* Support Files */,
-			);
-			name = DoubleConversion;
-			path = DoubleConversion;
 			sourceTree = "<group>";
 		};
 		49D91EBF7E05F0687AC24EA603241FD5 /* Products */ = {
@@ -117,13 +80,52 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		4E5E45EEFE42A75D1D602485FA25C39C /* DoubleConversion */ = {
+			isa = PBXGroup;
+			children = (
+				EA73188682B029A86A8250871F7B0AE0 /* bignum.cc */,
+				3825AADDC3CF40AFAE0061D08AFCB9F5 /* bignum.h */,
+				C49B36A5DD13B037B7354141C65FCE8C /* bignum-dtoa.cc */,
+				F5BDAFD85B4491C35C18CE66762E1FB1 /* bignum-dtoa.h */,
+				592B86B143E273DDD72D536061A49907 /* cached-powers.cc */,
+				3D1B3A311C732C675E61526EA3D0A314 /* cached-powers.h */,
+				6B519460A1834C78E524EFEDD17E0045 /* diy-fp.cc */,
+				463EEA8042B19F226AD55227C5C1FD3C /* diy-fp.h */,
+				C15F2808F6C8C8A27735FF6DF4DED4B0 /* double-conversion.cc */,
+				DC29C87CCA5470B702B952ABD5D0E5E6 /* double-conversion.h */,
+				80E19C6B777B2B745BD86FAE33926434 /* fast-dtoa.cc */,
+				C60880963647305B6619277F458DB991 /* fast-dtoa.h */,
+				DCBA1DE95830BC988704BD817F2AB25D /* fixed-dtoa.cc */,
+				D187DB90F47E1C4C6012F49AF2D5E562 /* fixed-dtoa.h */,
+				5B371C28326FCA96907F47FE3328109B /* ieee.h */,
+				57B9FAC463D4B7D10B730E6F3E1A9FB5 /* strtod.cc */,
+				1624F0A7470EA1C094FFE2D939C4126E /* strtod.h */,
+				47DDB685293BB92051D30ECBF4A9D75B /* utils.h */,
+				F5A070B2C9E732824443BA4A0E050B92 /* Support Files */,
+			);
+			name = DoubleConversion;
+			path = DoubleConversion;
+			sourceTree = "<group>";
+		};
 		BF1E9D08244A5ED51217EBFA74F51D57 = {
 			isa = PBXGroup;
 			children = (
-				465671790FFBCF02F8789418F0066012 /* DoubleConversion */,
+				4E5E45EEFE42A75D1D602485FA25C39C /* DoubleConversion */,
 				3D0D0404969D97C517E884AA3DDC924C /* Frameworks */,
 				49D91EBF7E05F0687AC24EA603241FD5 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		F5A070B2C9E732824443BA4A0E050B92 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B45DF6C83F9D15AD58B3A13AA5E7E7D5 /* DoubleConversion-dummy.m */,
+				DCEDA120B365F9DC11E44C657FB1BF19 /* DoubleConversion-prefix.pch */,
+				8FE30E8AD256960F1E20409B20E451F6 /* DoubleConversion.debug.xcconfig */,
+				00031AB762A428383C38E41BBA40D7BD /* DoubleConversion.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/DoubleConversion";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -213,29 +215,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1A505DA1F838E2D94E4FA10990020421 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/DoubleConversion/DoubleConversion-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = DoubleConversion;
-				PRODUCT_NAME = DoubleConversion;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		4C2B3E89D338F5DAB8999833179B6CE5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -296,9 +275,32 @@
 			};
 			name = Release;
 		};
-		A5AD47F2B75B97917A31F70F6C55726D /* Release */ = {
+		5A40EE0E4A03D5CDE1EDDD367E96DD41 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */;
+			baseConfigurationReference = 8FE30E8AD256960F1E20409B20E451F6 /* DoubleConversion.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/DoubleConversion/DoubleConversion-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = DoubleConversion;
+				PRODUCT_NAME = DoubleConversion;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B483C521BBCD93D8F9F7784A8DE5AD0F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00031AB762A428383C38E41BBA40D7BD /* DoubleConversion.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -390,8 +392,8 @@
 		954BE09564C6C513E507625CBC406E59 /* Build configuration list for PBXNativeTarget "DoubleConversion" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1A505DA1F838E2D94E4FA10990020421 /* Debug */,
-				A5AD47F2B75B97917A31F70F6C55726D /* Release */,
+				5A40EE0E4A03D5CDE1EDDD367E96DD41 /* Debug */,
+				B483C521BBCD93D8F9F7784A8DE5AD0F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

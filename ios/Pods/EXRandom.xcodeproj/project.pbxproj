@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		424DF9B5616FF75672E8C02408CF7D0F /* EXRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 126E48D6DA51CCD24D38906AF7848819 /* EXRandom.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7E9E9E60D6714E946FC8719D6ECD5C46 /* EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FAD9DE29DBB52BA755577FFAD7600B47 /* EXRandom-dummy.m */; };
-		91F5F55ACE938806C5BA42D0DFE90CB5 /* EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = DF623FA41C341534C4325CD20B39D61F /* EXRandom.m */; };
+		424DF9B5616FF75672E8C02408CF7D0F /* EXRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 232C3A11B38832A13CB055F69420FD8C /* EXRandom.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7E9E9E60D6714E946FC8719D6ECD5C46 /* EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872F246FA16A5C5C6D5987C26B812D9 /* EXRandom-dummy.m */; };
+		91F5F55ACE938806C5BA42D0DFE90CB5 /* EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = B426262711636D8D1E0F6F11B03781C9 /* EXRandom.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,14 +23,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		126E48D6DA51CCD24D38906AF7848819 /* EXRandom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRandom.h; path = EXRandom/EXRandom.h; sourceTree = "<group>"; };
-		4E85CDE6867AEBDB538598F90B96F387 /* EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXRandom.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		78C6B95B7CF3BEA54A5A280AAD8771D6 /* EXRandom-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXRandom-prefix.pch"; sourceTree = "<group>"; };
+		1C7A324C557D5242205C0775EFE3EB37 /* EXRandom.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.debug.xcconfig; sourceTree = "<group>"; };
+		232C3A11B38832A13CB055F69420FD8C /* EXRandom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRandom.h; path = EXRandom/EXRandom.h; sourceTree = "<group>"; };
+		779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.release.xcconfig; sourceTree = "<group>"; };
+		9872F246FA16A5C5C6D5987C26B812D9 /* EXRandom-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXRandom-dummy.m"; sourceTree = "<group>"; };
 		ABA839BF6EF1B661F43A935E0835C42B /* libEXRandom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXRandom.a; path = libEXRandom.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE96B9863D6E9CB19DFF16DCE3FD32F9 /* EXRandom.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.xcconfig; sourceTree = "<group>"; };
+		B426262711636D8D1E0F6F11B03781C9 /* EXRandom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRandom.m; path = EXRandom/EXRandom.m; sourceTree = "<group>"; };
 		D6ADFE68665AAE170EAF262C8B848B14 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		DF623FA41C341534C4325CD20B39D61F /* EXRandom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRandom.m; path = EXRandom/EXRandom.m; sourceTree = "<group>"; };
-		FAD9DE29DBB52BA755577FFAD7600B47 /* EXRandom-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXRandom-dummy.m"; sourceTree = "<group>"; };
+		E396195E7EADBFFCB015571C731148DF /* EXRandom-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXRandom-prefix.pch"; sourceTree = "<group>"; };
+		E52F8EB47E1DF969770D020770A136C1 /* EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXRandom.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,12 +45,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		20E6316E324C3FB6C28D6801FE8076E0 /* Pod */ = {
+		2A89C716F9C01D1433EE1FBC0DF27F0C /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				4E85CDE6867AEBDB538598F90B96F387 /* EXRandom.podspec */,
+				E52F8EB47E1DF969770D020770A136C1 /* EXRandom.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		3725D91E2217E0578507A50762D70F7D /* EXRandom */ = {
+			isa = PBXGroup;
+			children = (
+				232C3A11B38832A13CB055F69420FD8C /* EXRandom.h */,
+				B426262711636D8D1E0F6F11B03781C9 /* EXRandom.m */,
+				2A89C716F9C01D1433EE1FBC0DF27F0C /* Pod */,
+				51DC8986620281F78F14AB6594F6AA27 /* Support Files */,
+			);
+			name = EXRandom;
+			path = "../../packages/expo-random/ios";
 			sourceTree = "<group>";
 		};
 		389259836FBA79F409DA40FEE4D80FA0 /* Frameworks */ = {
@@ -57,6 +70,18 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		51DC8986620281F78F14AB6594F6AA27 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				9872F246FA16A5C5C6D5987C26B812D9 /* EXRandom-dummy.m */,
+				E396195E7EADBFFCB015571C731148DF /* EXRandom-prefix.pch */,
+				1C7A324C557D5242205C0775EFE3EB37 /* EXRandom.debug.xcconfig */,
+				779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXRandom";
 			sourceTree = "<group>";
 		};
 		600BD6871B5DA12DF656FA3C6572A3B5 /* Products */ = {
@@ -75,34 +100,11 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		81E52D22ED3E42497AD58A7EE7F3D38F /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				CE96B9863D6E9CB19DFF16DCE3FD32F9 /* EXRandom.xcconfig */,
-				FAD9DE29DBB52BA755577FFAD7600B47 /* EXRandom-dummy.m */,
-				78C6B95B7CF3BEA54A5A280AAD8771D6 /* EXRandom-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXRandom";
-			sourceTree = "<group>";
-		};
-		DB61C886D1988FC26F086718F2C42C85 /* EXRandom */ = {
-			isa = PBXGroup;
-			children = (
-				126E48D6DA51CCD24D38906AF7848819 /* EXRandom.h */,
-				DF623FA41C341534C4325CD20B39D61F /* EXRandom.m */,
-				20E6316E324C3FB6C28D6801FE8076E0 /* Pod */,
-				81E52D22ED3E42497AD58A7EE7F3D38F /* Support Files */,
-			);
-			name = EXRandom;
-			path = "../../packages/expo-random/ios";
-			sourceTree = "<group>";
-		};
 		EF3248404F968B773E287A4D87F4BEF4 = {
 			isa = PBXGroup;
 			children = (
 				74A99FCD67A915A6C442AFE5A23E524A /* Dependencies */,
-				DB61C886D1988FC26F086718F2C42C85 /* EXRandom */,
+				3725D91E2217E0578507A50762D70F7D /* EXRandom */,
 				389259836FBA79F409DA40FEE4D80FA0 /* Frameworks */,
 				600BD6871B5DA12DF656FA3C6572A3B5 /* Products */,
 			);
@@ -193,6 +195,30 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		24775954E5B6A49A4ED6B77E7192D614 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1C7A324C557D5242205C0775EFE3EB37 /* EXRandom.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXRandom;
+				PRODUCT_NAME = EXRandom;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		300933D08555CB7EDD3E961A886E0E71 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -257,6 +283,31 @@
 			};
 			name = Debug;
 		};
+		777366036D44C3DBC5BE1359EDFD362D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXRandom;
+				PRODUCT_NAME = EXRandom;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		7E3223FFA731463206A0217DA17610E5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -317,63 +368,14 @@
 			};
 			name = Release;
 		};
-		B9C124863BC3A39E39C3363612DDD483 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE96B9863D6E9CB19DFF16DCE3FD32F9 /* EXRandom.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXRandom;
-				PRODUCT_NAME = EXRandom;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		FB362D40C42C56997150BBDE49D91147 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE96B9863D6E9CB19DFF16DCE3FD32F9 /* EXRandom.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXRandom;
-				PRODUCT_NAME = EXRandom;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		9F9B00B953B16BEFB7A472A49D295319 /* Build configuration list for PBXNativeTarget "EXRandom" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B9C124863BC3A39E39C3363612DDD483 /* Debug */,
-				FB362D40C42C56997150BBDE49D91147 /* Release */,
+				24775954E5B6A49A4ED6B77E7192D614 /* Debug */,
+				777366036D44C3DBC5BE1359EDFD362D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

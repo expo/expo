@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		19CAFBDCF8B7CD2666B238CB7CAFB3E2 /* EXScreenOrientationUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B3B4A8252CB9B44C9F3B9F66D78160 /* EXScreenOrientationUtilities.m */; };
-		1B590F5D6A45AB38DF834D45C85F256E /* EXScreenOrientationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = D0887B8ECCBF0856EE84C98045400F51 /* EXScreenOrientationViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		23CFAEC4F405D3CE37AA86B749E742EE /* EXScreenOrientationUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 8519E23D77B3B2F0A0412B47E54C935F /* EXScreenOrientationUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3187B090CF1138A54301CD73570C27FB /* EXScreenOrientationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB12C889665155533B1D32ADD448461 /* EXScreenOrientationViewController.m */; };
-		C191EA115F52E13F0FF3818B3C4FED18 /* EXScreenOrientation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 667F953C8782EC04937C2A8DA7C60080 /* EXScreenOrientation-dummy.m */; };
-		C1FCBC9417B5E34ECF6E9EF15F25160D /* EXScreenOrientationModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A12ED568F91B2310F4B78B2BFB72B6 /* EXScreenOrientationModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D8B1B14168CED6835393FBFDB1733A68 /* EXScreenOrientationRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = F048BFC650EA6A72DCB34245434ADA7F /* EXScreenOrientationRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DB3027FF6DF15395646C4B8CC9A4B198 /* EXScreenOrientationRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = F537EE7D43662EFCAB53E90FECC16217 /* EXScreenOrientationRegistry.m */; };
-		E03747FA90434991DBFCD30353E17691 /* EXScreenOrientationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EFBB821D51017ABC339C8D26A4542F02 /* EXScreenOrientationModule.m */; };
+		19CAFBDCF8B7CD2666B238CB7CAFB3E2 /* EXScreenOrientationUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 378C1012639B8C323E096B47C4924DC8 /* EXScreenOrientationUtilities.m */; };
+		1B590F5D6A45AB38DF834D45C85F256E /* EXScreenOrientationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = CB63EB8F130844F49D39C858099C1030 /* EXScreenOrientationViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		23CFAEC4F405D3CE37AA86B749E742EE /* EXScreenOrientationUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = A5100B966544F44952BCE50103B612CE /* EXScreenOrientationUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3187B090CF1138A54301CD73570C27FB /* EXScreenOrientationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2654B8168BB409A424E27E00376E955 /* EXScreenOrientationViewController.m */; };
+		C191EA115F52E13F0FF3818B3C4FED18 /* EXScreenOrientation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 19686DBDDEBF10044BF2C494A028B3DE /* EXScreenOrientation-dummy.m */; };
+		C1FCBC9417B5E34ECF6E9EF15F25160D /* EXScreenOrientationModule.h in Headers */ = {isa = PBXBuildFile; fileRef = EFE91B23F663DDC2793B3F72055E986A /* EXScreenOrientationModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D8B1B14168CED6835393FBFDB1733A68 /* EXScreenOrientationRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 42E4DEA07532BC49E38E4DDE14319F11 /* EXScreenOrientationRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DB3027FF6DF15395646C4B8CC9A4B198 /* EXScreenOrientationRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E67574301AE13840F0B66283DFFFFAD /* EXScreenOrientationRegistry.m */; };
+		E03747FA90434991DBFCD30353E17691 /* EXScreenOrientationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 06CFBA849A3C2493244BD7132C41E9FE /* EXScreenOrientationModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,21 +36,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0AB12C889665155533B1D32ADD448461 /* EXScreenOrientationViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationViewController.m; path = EXScreenOrientation/EXScreenOrientationViewController.m; sourceTree = "<group>"; };
-		29B3B4A8252CB9B44C9F3B9F66D78160 /* EXScreenOrientationUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationUtilities.m; path = EXScreenOrientation/EXScreenOrientationUtilities.m; sourceTree = "<group>"; };
-		667F953C8782EC04937C2A8DA7C60080 /* EXScreenOrientation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXScreenOrientation-dummy.m"; sourceTree = "<group>"; };
-		73A299544496837B779B242A643DBCCF /* EXScreenOrientation.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXScreenOrientation.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		8519E23D77B3B2F0A0412B47E54C935F /* EXScreenOrientationUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationUtilities.h; path = EXScreenOrientation/EXScreenOrientationUtilities.h; sourceTree = "<group>"; };
+		06CFBA849A3C2493244BD7132C41E9FE /* EXScreenOrientationModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationModule.m; path = EXScreenOrientation/EXScreenOrientationModule.m; sourceTree = "<group>"; };
+		19686DBDDEBF10044BF2C494A028B3DE /* EXScreenOrientation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXScreenOrientation-dummy.m"; sourceTree = "<group>"; };
+		1ADA464133106354C8312150DA2CBD24 /* EXScreenOrientation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXScreenOrientation.debug.xcconfig; sourceTree = "<group>"; };
+		375CE6F7111BFA09A80E22A7FB60B403 /* EXScreenOrientation.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXScreenOrientation.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		378C1012639B8C323E096B47C4924DC8 /* EXScreenOrientationUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationUtilities.m; path = EXScreenOrientation/EXScreenOrientationUtilities.m; sourceTree = "<group>"; };
+		42E4DEA07532BC49E38E4DDE14319F11 /* EXScreenOrientationRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationRegistry.h; path = EXScreenOrientation/EXScreenOrientationRegistry.h; sourceTree = "<group>"; };
+		5E67574301AE13840F0B66283DFFFFAD /* EXScreenOrientationRegistry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationRegistry.m; path = EXScreenOrientation/EXScreenOrientationRegistry.m; sourceTree = "<group>"; };
+		89B0859EBF0D17CC59AAC720D2F0520D /* EXScreenOrientation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXScreenOrientation-prefix.pch"; sourceTree = "<group>"; };
 		95099331B64F313BC1EB8C41D0D21476 /* libEXScreenOrientation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXScreenOrientation.a; path = libEXScreenOrientation.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		95DB4F859E131B6C201E1115D12FA8C5 /* EXScreenOrientation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXScreenOrientation-prefix.pch"; sourceTree = "<group>"; };
-		9A1BBE3FE68A4A6CC69BE34216AB40D8 /* EXScreenOrientation.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXScreenOrientation.xcconfig; sourceTree = "<group>"; };
-		A5A12ED568F91B2310F4B78B2BFB72B6 /* EXScreenOrientationModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationModule.h; path = EXScreenOrientation/EXScreenOrientationModule.h; sourceTree = "<group>"; };
-		D0887B8ECCBF0856EE84C98045400F51 /* EXScreenOrientationViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationViewController.h; path = EXScreenOrientation/EXScreenOrientationViewController.h; sourceTree = "<group>"; };
+		A5100B966544F44952BCE50103B612CE /* EXScreenOrientationUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationUtilities.h; path = EXScreenOrientation/EXScreenOrientationUtilities.h; sourceTree = "<group>"; };
+		CB63EB8F130844F49D39C858099C1030 /* EXScreenOrientationViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationViewController.h; path = EXScreenOrientation/EXScreenOrientationViewController.h; sourceTree = "<group>"; };
+		D2654B8168BB409A424E27E00376E955 /* EXScreenOrientationViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationViewController.m; path = EXScreenOrientation/EXScreenOrientationViewController.m; sourceTree = "<group>"; };
 		D8E3B542AC88C7CF2991D44EC4E50F7F /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
-		EFBB821D51017ABC339C8D26A4542F02 /* EXScreenOrientationModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationModule.m; path = EXScreenOrientation/EXScreenOrientationModule.m; sourceTree = "<group>"; };
-		F048BFC650EA6A72DCB34245434ADA7F /* EXScreenOrientationRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationRegistry.h; path = EXScreenOrientation/EXScreenOrientationRegistry.h; sourceTree = "<group>"; };
+		ED5BA1A15298EEF8E31C98795226142E /* EXScreenOrientation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXScreenOrientation.release.xcconfig; sourceTree = "<group>"; };
+		EFE91B23F663DDC2793B3F72055E986A /* EXScreenOrientationModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXScreenOrientationModule.h; path = EXScreenOrientation/EXScreenOrientationModule.h; sourceTree = "<group>"; };
 		F29A965EC49A315CBE08E61FD04A6F54 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		F537EE7D43662EFCAB53E90FECC16217 /* EXScreenOrientationRegistry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXScreenOrientationRegistry.m; path = EXScreenOrientation/EXScreenOrientationRegistry.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,32 +65,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0F6138406D843F830C260C0BD2F64290 /* EXScreenOrientation */ = {
-			isa = PBXGroup;
-			children = (
-				A5A12ED568F91B2310F4B78B2BFB72B6 /* EXScreenOrientationModule.h */,
-				EFBB821D51017ABC339C8D26A4542F02 /* EXScreenOrientationModule.m */,
-				F048BFC650EA6A72DCB34245434ADA7F /* EXScreenOrientationRegistry.h */,
-				F537EE7D43662EFCAB53E90FECC16217 /* EXScreenOrientationRegistry.m */,
-				8519E23D77B3B2F0A0412B47E54C935F /* EXScreenOrientationUtilities.h */,
-				29B3B4A8252CB9B44C9F3B9F66D78160 /* EXScreenOrientationUtilities.m */,
-				D0887B8ECCBF0856EE84C98045400F51 /* EXScreenOrientationViewController.h */,
-				0AB12C889665155533B1D32ADD448461 /* EXScreenOrientationViewController.m */,
-				1B1EAB8E3736B14371121A7F004646CE /* Pod */,
-				D47C330A3576C4021BE6A5EBB71E6FF1 /* Support Files */,
-			);
-			name = EXScreenOrientation;
-			path = "../../../../packages/expo-screen-orientation/ios";
-			sourceTree = "<group>";
-		};
-		1B1EAB8E3736B14371121A7F004646CE /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				73A299544496837B779B242A643DBCCF /* EXScreenOrientation.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		36F90C097ABA5D5CD9CA0E81142B0F1C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -106,11 +81,19 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		770047535A839430767871776332D03A /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				375CE6F7111BFA09A80E22A7FB60B403 /* EXScreenOrientation.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		85290EDC835CE7D3BFACC4678C987038 = {
 			isa = PBXGroup;
 			children = (
 				6AEABAD7415E90FAE27384C60B68A872 /* Dependencies */,
-				0F6138406D843F830C260C0BD2F64290 /* EXScreenOrientation */,
+				F0599C6C6C9565A34117B4401C5C3E7B /* EXScreenOrientation */,
 				36F90C097ABA5D5CD9CA0E81142B0F1C /* Frameworks */,
 				8DF2D94F4093180D1A0848217101491C /* Products */,
 			);
@@ -124,15 +107,34 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D47C330A3576C4021BE6A5EBB71E6FF1 /* Support Files */ = {
+		C2A4792FFCCAF51F409C46AA0344E40D /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				9A1BBE3FE68A4A6CC69BE34216AB40D8 /* EXScreenOrientation.xcconfig */,
-				667F953C8782EC04937C2A8DA7C60080 /* EXScreenOrientation-dummy.m */,
-				95DB4F859E131B6C201E1115D12FA8C5 /* EXScreenOrientation-prefix.pch */,
+				19686DBDDEBF10044BF2C494A028B3DE /* EXScreenOrientation-dummy.m */,
+				89B0859EBF0D17CC59AAC720D2F0520D /* EXScreenOrientation-prefix.pch */,
+				1ADA464133106354C8312150DA2CBD24 /* EXScreenOrientation.debug.xcconfig */,
+				ED5BA1A15298EEF8E31C98795226142E /* EXScreenOrientation.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXScreenOrientation";
+			sourceTree = "<group>";
+		};
+		F0599C6C6C9565A34117B4401C5C3E7B /* EXScreenOrientation */ = {
+			isa = PBXGroup;
+			children = (
+				EFE91B23F663DDC2793B3F72055E986A /* EXScreenOrientationModule.h */,
+				06CFBA849A3C2493244BD7132C41E9FE /* EXScreenOrientationModule.m */,
+				42E4DEA07532BC49E38E4DDE14319F11 /* EXScreenOrientationRegistry.h */,
+				5E67574301AE13840F0B66283DFFFFAD /* EXScreenOrientationRegistry.m */,
+				A5100B966544F44952BCE50103B612CE /* EXScreenOrientationUtilities.h */,
+				378C1012639B8C323E096B47C4924DC8 /* EXScreenOrientationUtilities.m */,
+				CB63EB8F130844F49D39C858099C1030 /* EXScreenOrientationViewController.h */,
+				D2654B8168BB409A424E27E00376E955 /* EXScreenOrientationViewController.m */,
+				770047535A839430767871776332D03A /* Pod */,
+				C2A4792FFCCAF51F409C46AA0344E40D /* Support Files */,
+			);
+			name = EXScreenOrientation;
+			path = "../../../../packages/expo-screen-orientation/ios";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -235,9 +237,9 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		31ECCD5FED6921054C823F660C862A1C /* Debug */ = {
+		22B1A828AB81F5B6AFCC3F10C1D65381 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A1BBE3FE68A4A6CC69BE34216AB40D8 /* EXScreenOrientation.xcconfig */;
+			baseConfigurationReference = 1ADA464133106354C8312150DA2CBD24 /* EXScreenOrientation.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -259,32 +261,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		525AF88FFB8B746D1737BB43D83BEF1B /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A1BBE3FE68A4A6CC69BE34216AB40D8 /* EXScreenOrientation.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenOrientation;
-				PRODUCT_NAME = EXScreenOrientation;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		9EC46603FB8DD5B527FD88F23AD6A495 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -410,14 +386,40 @@
 			};
 			name = Release;
 		};
+		BB4EDF6C65F1566DE993F61D80A8C820 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ED5BA1A15298EEF8E31C98795226142E /* EXScreenOrientation.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenOrientation;
+				PRODUCT_NAME = EXScreenOrientation;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		121CCAA931E12AC4CCD2FBB67C4EDE0C /* Build configuration list for PBXNativeTarget "EXScreenOrientation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				31ECCD5FED6921054C823F660C862A1C /* Debug */,
-				525AF88FFB8B746D1737BB43D83BEF1B /* Release */,
+				22B1A828AB81F5B6AFCC3F10C1D65381 /* Debug */,
+				BB4EDF6C65F1566DE993F61D80A8C820 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
