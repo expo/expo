@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -14,9 +15,11 @@
 		07C6733224D220A5003F3F5C /* EXUpdatesBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */; };
 		07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */; };
 		09642C2C78D047D0AFCB7C1D /* RNSharedElementTransitionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		09692FA19AC347C283AAD242 /* RuntimeDecorator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 57CF73D162CE4B888D9693B4 /* RuntimeDecorator.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		0CC6F95E225F5B1B00322635 /* EXStandaloneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */; };
 		0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */; };
 		0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		14869DBC5F0A448187BE8AAC /* MutableValueSetterProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */; };
@@ -27,6 +30,8 @@
 		25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */; };
 		25742BF121774212003E7453 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BEF21774212003E7453 /* EXNotifications.m */; };
 		2596F06B22201A9500DEEFF9 /* EXScopedFileSystemModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */; };
+		25E12698EDFA4F52BD58F16C /* NativeReanimatedModuleSpec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		28E9B2F58D214976A0686D92 /* FrozenObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08CC64AA5921475995168914 /* FrozenObject.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		2CFE1F25CD524A7ABFCAA366 /* RNSharedElementNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		2E50A3637BCE4846A8676DEC /* ReactViewPagerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 36D368D781234C37BC0979B5 /* ReactViewPagerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		2F7A50E095D6492596EA0B26 /* RNSharedElementNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -102,7 +107,11 @@
 		31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47D20B8451B0082B09F /* EXSensorManager.m */; };
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
+		3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Sources */ = {isa = PBXBuildFile; fileRef = CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 		49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4C1F2EE78AC34F53965716A1 /* EventHandlerRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4E3532555D7C4B0392A6AE9D /* RNSVGContextBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = C349E74BFFF643C38858FD6F /* RNSVGContextBrush.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4F0C654D34E74404BA5425F6 /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A7DA8E798407CA5410CF6 /* RNSVGPathMeasure.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -167,6 +176,9 @@
 		7043DFAB2283303800272D74 /* RNSVGTSpan.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF712283303800272D74 /* RNSVGTSpan.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7043DFAC2283303800272D74 /* RNSVGGlyphContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF732283303800272D74 /* RNSVGGlyphContext.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7043DFAD2283303800272D74 /* RNSVGNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF742283303800272D74 /* RNSVGNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7370740FD755433187FCCDC4 /* NativeProxy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4750108634CD475EAA60B7CF /* NativeProxy.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		74C42DC8C6AA4DF8B74D157D /* MutableValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7653126F460D4C328509E921 /* Mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A1219848D9846F7B932BA57 /* Mapper.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		78C832A323545ECE00448582 /* REAModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C8326B23545ECE00448582 /* REAModule.m */; };
 		78C832A423545ECE00448582 /* REAPropsNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C8326D23545ECE00448582 /* REAPropsNode.m */; };
 		78C832A523545ECE00448582 /* REAStyleNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C8327423545ECE00448582 /* REAStyleNode.m */; };
@@ -215,6 +227,8 @@
 		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7CBFBC898DB74BAC99A8A218 /* REATurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = D59284064DCC4E92818588C5 /* REATurboModuleProvider.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7F8A284434844347B0714FC3 /* Scheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5B04112B8034322885307FE /* Scheduler.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		807A6CE3FB55427E8D995580 /* RCTOnPageScrollStateChanged.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DEE22713D4641DCBA13071A /* RCTOnPageScrollStateChanged.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8767F5B824D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F5B724D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m */; };
@@ -224,9 +238,13 @@
 		878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */; };
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8CEF0EA1BF0E47189AFD108E /* RemoteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D6010CAFED24823A4C3DED4 /* RemoteObject.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		9C7C7E9CB1C14EDCAE259B74 /* REAIOSErrorHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A845744006CE4B049D8B3A1F /* NativeMethods.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC7986C2FC404501906FF740 /* NativeMethods.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 		ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		AF898917F5C94A00ADF8ED47 /* EventHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE60406590143F384331AD9 /* EventHandler.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
@@ -336,6 +354,8 @@
 		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		DE9DE727B5D75D6A80905846 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39CE0C0AB7A919742FB12FF1 /* libPods-Exponent.a */; };
 		E076A3A138374780BD9CAEA0 /* RCTOnPageScrollEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -344,6 +364,7 @@
 		E77A18FAA07E47EFBBDD7338 /* ReactNativePageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01D6195E420E433AA7BB8584 /* ReactNativePageView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E7A65010FA85413EA748C757 /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 26AEDCCD9FDB4296B2B4AF5E /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E7F4DCD62B6043AEB2B9F2B5 /* RNCWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E6E68AB99C5B4BA58B372F19 /* RNCWebViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EE4681A896274B6C8E39B2CB /* MapperRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2A61C6958F2449DCA0E47A15 /* MapperRegistry.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF5E8C163603C21D7DA45E6C /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D52770593795F4C7AC872315 /* libPods-ExponentIntegrationTests.a */; };
 		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
@@ -362,26 +383,6 @@
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
 		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
-		AF898917F5C94A00ADF8ED47 /* EventHandler.cpp in Resources */ = {isa = PBXBuildFile; fileRef = EEE60406590143F384331AD9 /* EventHandler.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		4C1F2EE78AC34F53965716A1 /* EventHandlerRegistry.cpp in Resources */ = {isa = PBXBuildFile; fileRef = DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		28E9B2F58D214976A0686D92 /* FrozenObject.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 08CC64AA5921475995168914 /* FrozenObject.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		7653126F460D4C328509E921 /* Mapper.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 8A1219848D9846F7B932BA57 /* Mapper.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EE4681A896274B6C8E39B2CB /* MapperRegistry.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 2A61C6958F2449DCA0E47A15 /* MapperRegistry.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		74C42DC8C6AA4DF8B74D157D /* MutableValue.cpp in Resources */ = {isa = PBXBuildFile; fileRef = CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		14869DBC5F0A448187BE8AAC /* MutableValueSetterProxy.cpp in Resources */ = {isa = PBXBuildFile; fileRef = CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		A845744006CE4B049D8B3A1F /* NativeMethods.mm in Resources */ = {isa = PBXBuildFile; fileRef = CC7986C2FC404501906FF740 /* NativeMethods.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		7370740FD755433187FCCDC4 /* NativeProxy.mm in Resources */ = {isa = PBXBuildFile; fileRef = 4750108634CD475EAA60B7CF /* NativeProxy.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Resources */ = {isa = PBXBuildFile; fileRef = B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		25E12698EDFA4F52BD58F16C /* NativeReanimatedModuleSpec.cpp in Resources */ = {isa = PBXBuildFile; fileRef = ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		9C7C7E9CB1C14EDCAE259B74 /* REAIOSErrorHandler.mm in Resources */ = {isa = PBXBuildFile; fileRef = 750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Resources */ = {isa = PBXBuildFile; fileRef = CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Resources */ = {isa = PBXBuildFile; fileRef = 7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		7CBFBC898DB74BAC99A8A218 /* REATurboModuleProvider.mm in Resources */ = {isa = PBXBuildFile; fileRef = D59284064DCC4E92818588C5 /* REATurboModuleProvider.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		8CEF0EA1BF0E47189AFD108E /* RemoteObject.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 3D6010CAFED24823A4C3DED4 /* RemoteObject.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		09692FA19AC347C283AAD242 /* RuntimeDecorator.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 57CF73D162CE4B888D9693B4 /* RuntimeDecorator.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		7F8A284434844347B0714FC3 /* Scheduler.cpp in Resources */ = {isa = PBXBuildFile; fileRef = C5B04112B8034322885307FE /* Scheduler.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Resources */ = {isa = PBXBuildFile; fileRef = 1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -418,6 +419,7 @@
 		07C6733124D220A5003F3F5C /* EXUpdatesBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUpdatesBinding.h; sourceTree = "<group>"; };
 		07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderExpoUpdates.h; sourceTree = "<group>"; };
 		07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderExpoUpdates.m; sourceTree = "<group>"; };
+		08CC64AA5921475995168914 /* FrozenObject.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = FrozenObject.cpp; path = FrozenObject.cpp; sourceTree = "<group>"; };
 		0CC6F95C225F5B1B00322635 /* EXStandaloneAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStandaloneAppDelegate.h; sourceTree = "<group>"; };
 		0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneAppDelegate.m; sourceTree = "<group>"; };
 		0CC6F95F225F5C7700322635 /* ExpoKitAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoKitAppDelegate.h; sourceTree = "<group>"; };
@@ -425,8 +427,11 @@
 		0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCConnectionStateWatcher.m; sourceTree = "<group>"; };
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
 		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerManager.h; sourceTree = "<group>"; };
+		141D4A19D11B4B209071945A /* ErrorHandler.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = ErrorHandler.h; path = ErrorHandler.h; sourceTree = "<group>"; };
 		143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionManager.h; sourceTree = "<group>"; };
 		1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RCTOnPageSelected.m; sourceTree = "<group>"; };
+		152FE7D86CAE4295B6D624F4 /* MutableValue.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = MutableValue.h; path = MutableValue.h; sourceTree = "<group>"; };
+		1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = WorkletsCache.cpp; path = WorkletsCache.cpp; sourceTree = "<group>"; };
 		19382BA71EC2EACC001ED4A1 /* EXScopedBranchManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedBranchManager.h; sourceTree = "<group>"; };
 		19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedBranchManager.m; sourceTree = "<group>"; };
 		19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXCachedResourceManager.h; sourceTree = "<group>"; };
@@ -452,6 +457,7 @@
 		2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedFileSystemModule.m; sourceTree = "<group>"; };
 		26AEDCCD9FDB4296B2B4AF5E /* RNCPicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPicker.m; sourceTree = "<group>"; };
 		28E6BF17A5204DD4814864E1 /* RNSVGContextBrush.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGContextBrush.h; sourceTree = "<group>"; };
+		2A61C6958F2449DCA0E47A15 /* MapperRegistry.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = MapperRegistry.cpp; path = MapperRegistry.cpp; sourceTree = "<group>"; };
 		2C8BF65CC9F2438FAD9F906D /* RNCWebView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCWebView.m; sourceTree = "<group>"; };
 		2CC6701F60EF495685FCD7B9 /* RNCWebView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCWebView.h; sourceTree = "<group>"; };
 		2EBAA829A2238361F2EC490B /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -598,19 +604,27 @@
 		31E6D48120B845920082B09F /* EXSensorsManagerBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSensorsManagerBinding.h; sourceTree = "<group>"; };
 		31E8B2FB23D090E200E6C2BF /* EXClientReleaseType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXClientReleaseType.h; sourceTree = "<group>"; };
 		31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXClientReleaseType.m; sourceTree = "<group>"; };
+		3260CF60254646AB9984E4AA /* ShareableValue.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = ShareableValue.h; path = ShareableValue.h; sourceTree = "<group>"; };
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedView.m; sourceTree = "<group>"; };
 		36D368D781234C37BC0979B5 /* ReactViewPagerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = ReactViewPagerManager.m; sourceTree = "<group>"; };
 		391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementStyle.m; sourceTree = "<group>"; };
+		397779D94D034396B23418D9 /* RuntimeDecorator.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = RuntimeDecorator.h; path = RuntimeDecorator.h; sourceTree = "<group>"; };
 		39CE0C0AB7A919742FB12FF1 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3CFA08E845354AC3B662C745 /* REAIOSLogger.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = REAIOSLogger.h; path = REAIOSLogger.h; sourceTree = "<group>"; };
+		3D6010CAFED24823A4C3DED4 /* RemoteObject.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = RemoteObject.cpp; path = RemoteObject.cpp; sourceTree = "<group>"; };
 		417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerPosition.m; sourceTree = "<group>"; };
 		4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+UIPageViewControllerTransitionStyle.m"; sourceTree = "<group>"; };
+		4750108634CD475EAA60B7CF /* NativeProxy.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NativeProxy.mm; path = NativeProxy.mm; sourceTree = "<group>"; };
 		476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedViewManager.h; sourceTree = "<group>"; };
+		4C5C373454924AC9902484F0 /* SpeedChecker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = SpeedChecker.h; path = SpeedChecker.h; sourceTree = "<group>"; };
 		50FA56FBAFB44A7AB2A97B96 /* RCTConvert+UIPageViewControllerNavigationOrientation.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+UIPageViewControllerNavigationOrientation.m"; sourceTree = "<group>"; };
+		5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = ShareableValue.cpp; path = ShareableValue.cpp; sourceTree = "<group>"; };
 		55321D87F6F24AA280C9C7E7 /* RNCPickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPickerManager.h; sourceTree = "<group>"; };
 		56982E29371C48638AB74543 /* RCTConvert+UIPageViewControllerNavigationOrientation.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+UIPageViewControllerNavigationOrientation.h"; sourceTree = "<group>"; };
 		574312068E2240349CC816A0 /* RCTOnPageSelected.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RCTOnPageSelected.h; sourceTree = "<group>"; };
 		57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementCornerRadii.h; sourceTree = "<group>"; };
+		57CF73D162CE4B888D9693B4 /* RuntimeDecorator.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = RuntimeDecorator.cpp; path = RuntimeDecorator.cpp; sourceTree = "<group>"; };
 		5972DE6FF6EE4E5BAE26F7FC /* RNSVGMarkerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerManager.h; sourceTree = "<group>"; };
 		5A6A19B126BB4312B36E0274 /* RCTOnPageScrollStateChanged.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RCTOnPageScrollStateChanged.h; sourceTree = "<group>"; };
 		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
@@ -739,7 +753,10 @@
 		7043DF732283303800272D74 /* RNSVGGlyphContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGGlyphContext.m; sourceTree = "<group>"; };
 		7043DF742283303800272D74 /* RNSVGNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGNode.m; sourceTree = "<group>"; };
 		7043DF752283303800272D74 /* RNSVGContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGContainer.h; sourceTree = "<group>"; };
+		70CF0556ED2440AA98B83B1C /* FrozenObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = FrozenObject.h; path = FrozenObject.h; sourceTree = "<group>"; };
 		731D1E5D176247F4893297CE /* RNSVGMarker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarker.h; sourceTree = "<group>"; };
+		750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = REAIOSErrorHandler.mm; path = REAIOSErrorHandler.mm; sourceTree = "<group>"; };
+		7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = REAIOSScheduler.mm; path = REAIOSScheduler.mm; sourceTree = "<group>"; };
 		780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementCornerRadii.m; sourceTree = "<group>"; };
 		78C8326B23545ECE00448582 /* REAModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAModule.m; sourceTree = "<group>"; };
 		78C8326D23545ECE00448582 /* REAPropsNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAPropsNode.m; sourceTree = "<group>"; };
@@ -856,17 +873,26 @@
 		878B4AFC24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoadingProgressWindowController.h; sourceTree = "<group>"; };
 		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
 		8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObjectManager.m; sourceTree = "<group>"; };
+		8A1219848D9846F7B932BA57 /* Mapper.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Mapper.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
 		8A3442268EC4E750318A4755 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		8B93B1BC6E124123A8F39891 /* Mapper.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = Mapper.h; path = Mapper.h; sourceTree = "<group>"; };
+		8D59D0FC255B4AB7B121EA2C /* NativeReanimatedModuleSpec.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = NativeReanimatedModuleSpec.h; path = NativeReanimatedModuleSpec.h; sourceTree = "<group>"; };
 		90EDC72E21EF251B7424E2E5 /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
 		93C9E2950F474416B3F7A60E /* RNCPickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPickerManager.m; sourceTree = "<group>"; };
 		96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+CreateExtension.m"; sourceTree = "<group>"; };
 		993696B522A54FE2B8DC27D4 /* RNSVGMarkerPosition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerPosition.h; sourceTree = "<group>"; };
 		9A34C4ECEE0D49B6AD86972D /* RNCConnectionState.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionState.h; sourceTree = "<group>"; };
+		9AD0DBC830AF42E8BC6EAE6E /* WorkletsCache.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = WorkletsCache.h; path = WorkletsCache.h; sourceTree = "<group>"; };
+		9AF0BA136E2540D397345F34 /* Logger.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = Logger.h; path = Logger.h; sourceTree = "<group>"; };
 		9F02F7D4DDFF4D76804115FF /* RNCSegmentedControlManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSegmentedControlManager.h; sourceTree = "<group>"; };
+		A014421A042042DE8042EC31 /* Scheduler.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = Scheduler.h; path = Scheduler.h; sourceTree = "<group>"; };
 		A0DCD2EBCF2B4FDC80E8EBE3 /* RNSVGForeignObject.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObject.m; sourceTree = "<group>"; };
 		A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmapManager.m; sourceTree = "<group>"; };
 		A7848BD4CFE74709BDC8E8B0 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStackHeaderConfig.h; sourceTree = "<group>"; };
 		AA6C990084ED43EFA6B281D9 /* RCTConvert+UIPageViewControllerTransitionStyle.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+UIPageViewControllerTransitionStyle.h"; sourceTree = "<group>"; };
+		ACF14968839847CF9ACD753E /* NativeReanimatedModule.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = NativeReanimatedModule.h; path = NativeReanimatedModule.h; sourceTree = "<group>"; };
+		AD9470D5881744E4AD45F984 /* EventHandler.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = EventHandler.h; path = EventHandler.h; sourceTree = "<group>"; };
+		ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NativeReanimatedModuleSpec.cpp; path = NativeReanimatedModuleSpec.cpp; sourceTree = "<group>"; };
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
 		AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RCTOnPageScrollEvent.m; sourceTree = "<group>"; };
 		B1BEB7E458624CEBA53B3CE8 /* RNCSegmentedControl.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSegmentedControl.h; sourceTree = "<group>"; };
@@ -885,6 +911,7 @@
 		B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsHandlerModule.m; sourceTree = "<group>"; };
 		B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsUtils.h; sourceTree = "<group>"; };
 		B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsUtils.m; sourceTree = "<group>"; };
+		B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NativeReanimatedModule.cpp; path = NativeReanimatedModule.cpp; sourceTree = "<group>"; };
 		B505BA0E20CAF77A0046ACFB /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B505BA1220CAF77A0046ACFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentMocks.m; sourceTree = "<group>"; };
@@ -1040,6 +1067,9 @@
 		B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedEventEmitter.m; sourceTree = "<group>"; };
 		B683FEF12A9E4E4D9CFCC5A1 /* AIRGoogleMapHeatmap.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmap.h; sourceTree = "<group>"; };
 		B6982387E180A3864221896B /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
+		B8006E77A46142428C9416E5 /* REAIOSScheduler.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = REAIOSScheduler.h; path = REAIOSScheduler.h; sourceTree = "<group>"; };
+		B903C16E9CD24469BA4A2E4F /* RemoteObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = RemoteObject.h; path = RemoteObject.h; sourceTree = "<group>"; };
+		BB23392ECD264A2796364FD8 /* SharedParent.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = SharedParent.h; path = SharedParent.h; sourceTree = "<group>"; };
 		BB36BC5D2135C98D00AFFD58 /* RNSScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreen.h; sourceTree = "<group>"; };
 		BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSScreenContainer.m; sourceTree = "<group>"; };
 		BB36BC602135C98D00AFFD58 /* RNSScreenContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreenContainer.h; sourceTree = "<group>"; };
@@ -1071,7 +1101,9 @@
 		BBE8539222B98828001FF9C2 /* EXScopedFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFontLoader.h; sourceTree = "<group>"; };
 		BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedFontLoader.m; sourceTree = "<group>"; };
 		C147366B532F4B4387086885 /* RNSVGPathMeasure.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGPathMeasure.h; sourceTree = "<group>"; };
+		C31084AC217949A186CD9B6E /* LoggerInterface.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = LoggerInterface.h; path = LoggerInterface.h; sourceTree = "<group>"; };
 		C349E74BFFF643C38858FD6F /* RNSVGContextBrush.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGContextBrush.m; sourceTree = "<group>"; };
+		C5B04112B8034322885307FE /* Scheduler.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Scheduler.cpp; path = Scheduler.cpp; sourceTree = "<group>"; };
 		C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSegmentedControl.m; sourceTree = "<group>"; };
 		C5E293DD722E4378A24299D9 /* RNCSafeAreaViewMode.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewMode.h; sourceTree = "<group>"; };
 		C6C45542575546F8AAC2AE50 /* RNSharedElementNodeManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNodeManager.h; sourceTree = "<group>"; };
@@ -1079,23 +1111,36 @@
 		C9B790CD211D4E869D7099DD /* RNCPicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPicker.h; sourceTree = "<group>"; };
 		CB140B5293CF4E4B9FA74E62 /* RNSVGForeignObjectManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObjectManager.h; sourceTree = "<group>"; };
 		CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTypes.h; sourceTree = "<group>"; };
+		CC7986C2FC404501906FF740 /* NativeMethods.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NativeMethods.mm; path = NativeMethods.mm; sourceTree = "<group>"; };
 		CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSliderManager.m; sourceTree = "<group>"; };
+		CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = REAIOSLogger.mm; path = REAIOSLogger.mm; sourceTree = "<group>"; };
+		CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = MutableValueSetterProxy.cpp; path = MutableValueSetterProxy.cpp; sourceTree = "<group>"; };
+		CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = MutableValue.cpp; path = MutableValue.cpp; sourceTree = "<group>"; };
+		D290562E102943CEA478BC08 /* REATurboModuleProvider.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = REATurboModuleProvider.h; path = REATurboModuleProvider.h; sourceTree = "<group>"; };
 		D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNode.m; sourceTree = "<group>"; };
 		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePicker.m; sourceTree = "<group>"; };
 		D47B9E6257F1413387F5CD67 /* ReactViewPagerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = ReactViewPagerManager.h; sourceTree = "<group>"; };
 		D48607EC4F61D3E513BBF4EF /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		D52770593795F4C7AC872315 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D59284064DCC4E92818588C5 /* REATurboModuleProvider.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = REATurboModuleProvider.mm; path = REATurboModuleProvider.mm; sourceTree = "<group>"; };
 		D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePickerManager.m; sourceTree = "<group>"; };
 		D93FFB9A64504D3E92FE8931 /* RNSVGMarkerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerManager.m; sourceTree = "<group>"; };
 		DC16FA23D2824BC78C9D6E51 /* RNCWebViewManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCWebViewManager.h; sourceTree = "<group>"; };
+		DD9E21FD38F243A6A917D7D8 /* NativeMethods.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = NativeMethods.h; path = NativeMethods.h; sourceTree = "<group>"; };
+		DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = EventHandlerRegistry.cpp; path = EventHandlerRegistry.cpp; sourceTree = "<group>"; };
 		E307EED1B62C455182DBF80B /* RNSharedElementTransitionItem.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionItem.h; sourceTree = "<group>"; };
 		E4381D58C24E4B2195CDD1F7 /* ReactNativePageView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = ReactNativePageView.h; sourceTree = "<group>"; };
+		E4C29372176A43708BA02852 /* REAIOSErrorHandler.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = REAIOSErrorHandler.h; path = REAIOSErrorHandler.h; sourceTree = "<group>"; };
 		E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSScreenStack.m; sourceTree = "<group>"; };
 		E5E493D6EE6840CDB98CCBB5 /* REAUtils.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = REAUtils.h; sourceTree = "<group>"; };
 		E6E68AB99C5B4BA58B372F19 /* RNCWebViewManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCWebViewManager.m; sourceTree = "<group>"; };
+		EA4A7C93824A465E80887697 /* MapperRegistry.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = MapperRegistry.h; path = MapperRegistry.h; sourceTree = "<group>"; };
 		EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSlider.m; sourceTree = "<group>"; };
+		ECEB31A1DE40474593CD7AB8 /* NativeProxy.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = NativeProxy.h; path = NativeProxy.h; sourceTree = "<group>"; };
 		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
+		EEE60406590143F384331AD9 /* EventHandler.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = EventHandler.cpp; path = EventHandler.cpp; sourceTree = "<group>"; };
 		EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionStateWatcher.h; sourceTree = "<group>"; };
+		F00D28C949584726A2B48E1C /* EventHandlerRegistry.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = EventHandlerRegistry.h; path = EventHandlerRegistry.h; sourceTree = "<group>"; };
 		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
 		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
 		F108698C2448C6B800B7DC04 /* EXDevMenuGestureInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevMenuGestureInterceptor.h; sourceTree = "<group>"; };
@@ -1107,6 +1152,7 @@
 		F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppRecord.h; sourceTree = "<group>"; };
 		F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppLoader.m; sourceTree = "<group>"; };
 		F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-dynamic-macros.sh"; sourceTree = "<group>"; };
+		F137D3AA554F4F19BCAC6475 /* PlatformDepMethodsHolder.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = PlatformDepMethodsHolder.h; path = PlatformDepMethodsHolder.h; sourceTree = "<group>"; };
 		F156867623E19E3C0029DF16 /* EXKernelDevKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevKeyCommands.h; sourceTree = "<group>"; };
 		F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevKeyCommands.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
@@ -1127,52 +1173,7 @@
 		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
 		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
 		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
-		141D4A19D11B4B209071945A /* ErrorHandler.h */ = {isa = PBXFileReference; name = "ErrorHandler.h"; path = "ErrorHandler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		EEE60406590143F384331AD9 /* EventHandler.cpp */ = {isa = PBXFileReference; name = "EventHandler.cpp"; path = "EventHandler.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		AD9470D5881744E4AD45F984 /* EventHandler.h */ = {isa = PBXFileReference; name = "EventHandler.h"; path = "EventHandler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */ = {isa = PBXFileReference; name = "EventHandlerRegistry.cpp"; path = "EventHandlerRegistry.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F00D28C949584726A2B48E1C /* EventHandlerRegistry.h */ = {isa = PBXFileReference; name = "EventHandlerRegistry.h"; path = "EventHandlerRegistry.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		08CC64AA5921475995168914 /* FrozenObject.cpp */ = {isa = PBXFileReference; name = "FrozenObject.cpp"; path = "FrozenObject.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		70CF0556ED2440AA98B83B1C /* FrozenObject.h */ = {isa = PBXFileReference; name = "FrozenObject.h"; path = "FrozenObject.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		9AF0BA136E2540D397345F34 /* Logger.h */ = {isa = PBXFileReference; name = "Logger.h"; path = "Logger.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		C31084AC217949A186CD9B6E /* LoggerInterface.h */ = {isa = PBXFileReference; name = "LoggerInterface.h"; path = "LoggerInterface.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		8A1219848D9846F7B932BA57 /* Mapper.cpp */ = {isa = PBXFileReference; name = "Mapper.cpp"; path = "Mapper.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8B93B1BC6E124123A8F39891 /* Mapper.h */ = {isa = PBXFileReference; name = "Mapper.h"; path = "Mapper.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		2A61C6958F2449DCA0E47A15 /* MapperRegistry.cpp */ = {isa = PBXFileReference; name = "MapperRegistry.cpp"; path = "MapperRegistry.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		EA4A7C93824A465E80887697 /* MapperRegistry.h */ = {isa = PBXFileReference; name = "MapperRegistry.h"; path = "MapperRegistry.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */ = {isa = PBXFileReference; name = "MutableValue.cpp"; path = "MutableValue.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		152FE7D86CAE4295B6D624F4 /* MutableValue.h */ = {isa = PBXFileReference; name = "MutableValue.h"; path = "MutableValue.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */ = {isa = PBXFileReference; name = "MutableValueSetterProxy.cpp"; path = "MutableValueSetterProxy.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		FE89956BF2504EB0A76B89AD /* MutableValueSetterProxy.h */ = {isa = PBXFileReference; name = "MutableValueSetterProxy.h"; path = "MutableValueSetterProxy.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		DD9E21FD38F243A6A917D7D8 /* NativeMethods.h */ = {isa = PBXFileReference; name = "NativeMethods.h"; path = "NativeMethods.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		CC7986C2FC404501906FF740 /* NativeMethods.mm */ = {isa = PBXFileReference; name = "NativeMethods.mm"; path = "NativeMethods.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		ECEB31A1DE40474593CD7AB8 /* NativeProxy.h */ = {isa = PBXFileReference; name = "NativeProxy.h"; path = "NativeProxy.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		4750108634CD475EAA60B7CF /* NativeProxy.mm */ = {isa = PBXFileReference; name = "NativeProxy.mm"; path = "NativeProxy.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */ = {isa = PBXFileReference; name = "NativeReanimatedModule.cpp"; path = "NativeReanimatedModule.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		ACF14968839847CF9ACD753E /* NativeReanimatedModule.h */ = {isa = PBXFileReference; name = "NativeReanimatedModule.h"; path = "NativeReanimatedModule.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */ = {isa = PBXFileReference; name = "NativeReanimatedModuleSpec.cpp"; path = "NativeReanimatedModuleSpec.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8D59D0FC255B4AB7B121EA2C /* NativeReanimatedModuleSpec.h */ = {isa = PBXFileReference; name = "NativeReanimatedModuleSpec.h"; path = "NativeReanimatedModuleSpec.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		F137D3AA554F4F19BCAC6475 /* PlatformDepMethodsHolder.h */ = {isa = PBXFileReference; name = "PlatformDepMethodsHolder.h"; path = "PlatformDepMethodsHolder.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		E4C29372176A43708BA02852 /* REAIOSErrorHandler.h */ = {isa = PBXFileReference; name = "REAIOSErrorHandler.h"; path = "REAIOSErrorHandler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */ = {isa = PBXFileReference; name = "REAIOSErrorHandler.mm"; path = "REAIOSErrorHandler.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		3CFA08E845354AC3B662C745 /* REAIOSLogger.h */ = {isa = PBXFileReference; name = "REAIOSLogger.h"; path = "REAIOSLogger.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */ = {isa = PBXFileReference; name = "REAIOSLogger.mm"; path = "REAIOSLogger.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B8006E77A46142428C9416E5 /* REAIOSScheduler.h */ = {isa = PBXFileReference; name = "REAIOSScheduler.h"; path = "REAIOSScheduler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */ = {isa = PBXFileReference; name = "REAIOSScheduler.mm"; path = "REAIOSScheduler.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D290562E102943CEA478BC08 /* REATurboModuleProvider.h */ = {isa = PBXFileReference; name = "REATurboModuleProvider.h"; path = "REATurboModuleProvider.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		D59284064DCC4E92818588C5 /* REATurboModuleProvider.mm */ = {isa = PBXFileReference; name = "REATurboModuleProvider.mm"; path = "REATurboModuleProvider.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		3D6010CAFED24823A4C3DED4 /* RemoteObject.cpp */ = {isa = PBXFileReference; name = "RemoteObject.cpp"; path = "RemoteObject.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B903C16E9CD24469BA4A2E4F /* RemoteObject.h */ = {isa = PBXFileReference; name = "RemoteObject.h"; path = "RemoteObject.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		57CF73D162CE4B888D9693B4 /* RuntimeDecorator.cpp */ = {isa = PBXFileReference; name = "RuntimeDecorator.cpp"; path = "RuntimeDecorator.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		397779D94D034396B23418D9 /* RuntimeDecorator.h */ = {isa = PBXFileReference; name = "RuntimeDecorator.h"; path = "RuntimeDecorator.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		C5B04112B8034322885307FE /* Scheduler.cpp */ = {isa = PBXFileReference; name = "Scheduler.cpp"; path = "Scheduler.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A014421A042042DE8042EC31 /* Scheduler.h */ = {isa = PBXFileReference; name = "Scheduler.h"; path = "Scheduler.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */ = {isa = PBXFileReference; name = "ShareableValue.cpp"; path = "ShareableValue.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		3260CF60254646AB9984E4AA /* ShareableValue.h */ = {isa = PBXFileReference; name = "ShareableValue.h"; path = "ShareableValue.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		BB23392ECD264A2796364FD8 /* SharedParent.h */ = {isa = PBXFileReference; name = "SharedParent.h"; path = "SharedParent.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		4C5C373454924AC9902484F0 /* SpeedChecker.h */ = {isa = PBXFileReference; name = "SpeedChecker.h"; path = "SpeedChecker.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */ = {isa = PBXFileReference; name = "WorkletsCache.cpp"; path = "WorkletsCache.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		9AD0DBC830AF42E8BC6EAE6E /* WorkletsCache.h */ = {isa = PBXFileReference; name = "WorkletsCache.h"; path = "WorkletsCache.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		FE89956BF2504EB0A76B89AD /* MutableValueSetterProxy.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = MutableValueSetterProxy.h; path = MutableValueSetterProxy.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2802,6 +2803,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-Core/AccessibilityResources.bundle",
 				"${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der",
 				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle",
@@ -2811,12 +2813,12 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3215,26 +3217,26 @@
 				807A6CE3FB55427E8D995580 /* RCTOnPageScrollStateChanged.m in Sources */,
 				5E91B590D3BD401FB31B6D2D /* RCTOnPageSelected.m in Sources */,
 				6D0D4DF0D549439499086EC6 /* UIViewController+CreateExtension.m in Sources */,
-				AF898917F5C94A00ADF8ED47 /* EventHandler.cpp in Resources */,
-				4C1F2EE78AC34F53965716A1 /* EventHandlerRegistry.cpp in Resources */,
-				28E9B2F58D214976A0686D92 /* FrozenObject.cpp in Resources */,
-				7653126F460D4C328509E921 /* Mapper.cpp in Resources */,
-				EE4681A896274B6C8E39B2CB /* MapperRegistry.cpp in Resources */,
-				74C42DC8C6AA4DF8B74D157D /* MutableValue.cpp in Resources */,
-				14869DBC5F0A448187BE8AAC /* MutableValueSetterProxy.cpp in Resources */,
-				A845744006CE4B049D8B3A1F /* NativeMethods.mm in Resources */,
-				7370740FD755433187FCCDC4 /* NativeProxy.mm in Resources */,
-				45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Resources */,
-				25E12698EDFA4F52BD58F16C /* NativeReanimatedModuleSpec.cpp in Resources */,
-				9C7C7E9CB1C14EDCAE259B74 /* REAIOSErrorHandler.mm in Resources */,
-				3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Resources */,
-				45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Resources */,
-				7CBFBC898DB74BAC99A8A218 /* REATurboModuleProvider.mm in Resources */,
-				8CEF0EA1BF0E47189AFD108E /* RemoteObject.cpp in Resources */,
-				09692FA19AC347C283AAD242 /* RuntimeDecorator.cpp in Resources */,
-				7F8A284434844347B0714FC3 /* Scheduler.cpp in Resources */,
-				CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Resources */,
-				CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Resources */,
+				AF898917F5C94A00ADF8ED47 /* EventHandler.cpp in Sources */,
+				4C1F2EE78AC34F53965716A1 /* EventHandlerRegistry.cpp in Sources */,
+				28E9B2F58D214976A0686D92 /* FrozenObject.cpp in Sources */,
+				7653126F460D4C328509E921 /* Mapper.cpp in Sources */,
+				EE4681A896274B6C8E39B2CB /* MapperRegistry.cpp in Sources */,
+				74C42DC8C6AA4DF8B74D157D /* MutableValue.cpp in Sources */,
+				14869DBC5F0A448187BE8AAC /* MutableValueSetterProxy.cpp in Sources */,
+				A845744006CE4B049D8B3A1F /* NativeMethods.mm in Sources */,
+				7370740FD755433187FCCDC4 /* NativeProxy.mm in Sources */,
+				45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Sources */,
+				25E12698EDFA4F52BD58F16C /* NativeReanimatedModuleSpec.cpp in Sources */,
+				9C7C7E9CB1C14EDCAE259B74 /* REAIOSErrorHandler.mm in Sources */,
+				3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Sources */,
+				45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Sources */,
+				7CBFBC898DB74BAC99A8A218 /* REATurboModuleProvider.mm in Sources */,
+				8CEF0EA1BF0E47189AFD108E /* RemoteObject.cpp in Sources */,
+				09692FA19AC347C283AAD242 /* RuntimeDecorator.cpp in Sources */,
+				7F8A284434844347B0714FC3 /* Scheduler.cpp in Sources */,
+				CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Sources */,
+				CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/EXNotifications/ABI39_0_0EXNotifications/Notifications/Emitter/ABI39_0_0EXNotificationsEmitter.h
