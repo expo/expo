@@ -29,14 +29,14 @@
   - [4.2. Making a simulator build](#42-making-a-simulator-build)
   - [4.3. Submit iOS client to App Store Review](#43-submit-ios-client-to-app-store-review)
   - [4.4. Release clients to external beta testers](#44-release-clients-to-external-beta-testers)
-- [Stage 5 - ExpoKit and standalone apps](#stage-5---expokit-and-standalone-apps)
-  - [5.1. Updating ExpoKit](#51-updating-expokit)
+- [Stage 5 - Standalone apps](#stage-5---standalone-apps)
+  - [5.1. Updating JS dependencies required for build](#51-updating-js-dependencies-required-for-build)
   - [5.2. Make shell app build](#52-make-shell-app-build)
   - [5.3. Make adhoc client shell app for iOS](#53-make-adhoc-client-shell-app-for-ios)
   - [5.4. Deploy Turtle with new shell tarballs](#54-deploy-turtle-with-new-shell-tarballs)
 - [Stage 6 - Final release](#stage-6---final-release)
   - [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)
-  - [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)
+  - [6.2. Deploy Turtle to production](#62-deploy-turtle-to-production)
   - [6.3. Deploy new docs](#63-deploy-new-docs)
   - [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint)
   - [6.5. Promote versions to production](#65-promote-versions-to-production)
@@ -392,15 +392,15 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - Coordinate with @cruzach and @byCedric on this. Most beta testers will use the simulator builds on staging, but we can also send TestFlight invitations if needed.
 
-# Stage 5 - ExpoKit and standalone apps
+# Stage 5 - Standalone apps
 
-## 5.1. Updating ExpoKit
+## 5.1. Updating JS dependencies required for build
 
 | Prerequisites                                                                               |
 | ------------------------------------------------------------------------------------------- |
 | [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
-**Why:** Ejected apps use ExpoKit as a dependency containing the core of Expo and some modules that are not yet extracted to unimodules. Since this flow is still supported (we're going to deprecate it) we need to release its new version as well.
+**Why:** When building an iOS shell app XDL installs some extra packages needed for the build process.
 
 **How:**
 
@@ -408,9 +408,9 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 5.2. Make shell app build
 
-| Prerequisites                                 |
-| --------------------------------------------- |
-| [5.1. Updating ExpoKit](#51-updating-expokit) |
+| Prerequisites                                                                                                |
+| ------------------------------------------------------------------------------------------------------------ |
+| [5.1. Updating Updating JS dependencies required for build](#51-updating-js-dependencies-required-for-build) |
 
 **Why:** Shell app is a simple app on which Expo's Turtle work on to generate a standalone app. On iOS, shell app is compiled before it is uploaded to Turtle, so the process of building a standalone app is reduced to the minimum. We need to prepare such app for the new SDK, compile it, then put it into a tarball and put its url to Turtle's shellTarballs configs.
 
@@ -468,7 +468,7 @@ Once everything above is completed and Apple has approved the iOS client, the fi
   - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
   - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be downloadable via Play Store.
 
-## 6.2. Deploy Turtle/ExpoKit to production
+## 6.2. Deploy Turtle to production
 
 **How:**
 
@@ -505,7 +505,7 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 | Prerequisites                                                                                   |
 | ----------------------------------------------------------------------------------------------- |
 | [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)                              |
-| [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)              |
+| [6.2. Deploy Turtle to production](#62-deploy-turtle-to-production)                             |
 | [6.3. Deploy new docs](#63-deploy-new-docs)                                                     |
 | [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint) |
 
