@@ -15,7 +15,18 @@
 {
   ABI39_0_0UMPermissionStatus status;
   NSString *scope;
-  PHAuthorizationStatus permissions = [PHPhotoLibrary authorizationStatus];
+
+  PHAuthorizationStatus permissions;
+#ifdef __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    permissions = [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
+  } else {
+    permissions = [PHPhotoLibrary authorizationStatus];
+  }
+#else
+  permissions = [PHPhotoLibrary authorizationStatus];
+#endif
+
   switch (permissions) {
      case PHAuthorizationStatusAuthorized:
        status = ABI39_0_0UMPermissionStatusGranted;
@@ -37,6 +48,7 @@
        scope = @"none";
        break;
   }
+
   return @{
     @"status": @(status),
     @"accessPrivileges": scope,
@@ -47,10 +59,20 @@
 - (void)requestPermissionsWithResolver:(ABI39_0_0UMPromiseResolveBlock)resolve rejecter:(ABI39_0_0UMPromiseRejectBlock)reject
 {
   ABI39_0_0UM_WEAKIFY(self)
-  [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+  void(^handler)(PHAuthorizationStatus) = ^(PHAuthorizationStatus status) {
     ABI39_0_0UM_STRONGIFY(self)
     resolve([self getPermissions]);
-  }];
+  };
+  
+#ifdef __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelReadWrite handler:handler];
+  } else {
+    [PHPhotoLibrary requestAuthorization:handler];
+  }
+#else
+  [PHPhotoLibrary requestAuthorization:handler];
+#endif
 }
 
 @end
