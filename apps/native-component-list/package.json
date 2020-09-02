@@ -60,7 +60,7 @@
     "expo-localization": "~9.0.0",
     "expo-location": "~9.0.0",
     "expo-mail-composer": "~8.4.0",
-    "expo-media-library": "~9.2.0",
+    "expo-media-library": "~9.2.1",
     "expo-permissions": "~9.3.0",
     "expo-print": "~9.1.0",
     "expo-processing": "2.0.2",
