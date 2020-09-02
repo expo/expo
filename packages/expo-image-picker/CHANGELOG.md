@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix permissions on iOS 14. ([#10026](https://github.com/expo/expo/pull/10026) by [@lukmccall](https://github.com/lukmccall))
+
 ## 9.1.0 — 2020-08-18
 
 ### 🎉 New features
@@ -17,6 +19,7 @@
 ### 🐛 Bug fixes
 
 - Return array of `ImagePickerResult` when `allowsMultipleSelection` is set to `true` on Web. ([#9402](https://github.com/expo/expo/pull/9402) by [@isthaison](https://github.com/isthaison))
+- video recorded on iOS recorded was producing [low resolution](https://github.com/expo/expo/issues/6224) videos, not it's fixed, and can be configured via the `videoQuality` option. ([#9808](https://github.com/expo/expo/pull/9808) by [@vujevits](https://github.com/vujevits))
 
 ## 9.0.0 — 2020-08-11
 
