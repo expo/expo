@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import expo.modules.updates.UpdatesConfiguration;
+import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.db.enums.UpdateStatus;
@@ -118,7 +119,14 @@ public class LegacyManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), "js");
+    String key;
+    try {
+      key = "bundle-" + UpdatesUtils.sha256(mBundleUrl.toString());
+    } catch (Exception e) {
+      key = "bundle-" + mCommitTime.getTime();
+      Log.e(TAG, "Failed to get SHA-256 checksum of bundle URL");
+    }
+    AssetEntity bundleAssetEntity = new AssetEntity(key, "js");
     bundleAssetEntity.url = mBundleUrl;
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;

@@ -89,6 +89,8 @@ public abstract class AssetDao {
       existingEntity.url = newEntity.url;
       updateAsset(existingEntity);
     }
+    // we need to keep track of whether the calling class expects this asset to be the launch asset
+    existingEntity.isLaunchAsset = newEntity.isLaunchAsset;
   }
 
   @Transaction
