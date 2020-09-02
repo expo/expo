@@ -23,6 +23,12 @@ applyNativeModulesSettingsGradle(settings)
 //include(":expo-image")
 //project(":expo-image").projectDir = new File("../../../packages/expo-image/android")
 
+include(":expo-dev-menu-interface")
+project(":expo-dev-menu-interface").projectDir = new File("../../../packages/expo-dev-menu-interface/android")
+
+include(":expo-dev-menu")
+project(":expo-dev-menu").projectDir = new File("../../../packages/expo-dev-menu/android")
+
 include(":expo-development-client")
 project(":expo-development-client").projectDir = new File("../../../packages/expo-development-client/android")
 

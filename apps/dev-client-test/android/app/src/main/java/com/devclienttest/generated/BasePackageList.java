@@ -14,7 +14,6 @@ public class BasePackageList {
         new expo.modules.backgroundfetch.BackgroundFetchPackage(),
         new expo.modules.barcodescanner.BarCodeScannerPackage(),
         new expo.modules.battery.BatteryPackage(),
-        new expo.modules.bluetooth.BluetoothPackage(),
         new expo.modules.brightness.BrightnessPackage(),
         new expo.modules.calendar.CalendarPackage(),
         new expo.modules.cellular.CellularPackage(),
@@ -51,7 +50,6 @@ public class BasePackageList {
         new expo.modules.network.NetworkPackage(),
         new expo.modules.notifications.NotificationsPackage(),
         new expo.modules.print.PrintPackage(),
-        new expo.modules.random.RandomPackage(),
         new expo.modules.screencapture.ScreenCapturePackage(),
         new expo.modules.screenorientation.ScreenOrientationPackage(),
         new expo.modules.securestore.SecureStorePackage(),
@@ -60,6 +58,7 @@ public class BasePackageList {
         new expo.modules.sms.SMSPackage(),
         new expo.modules.speech.SpeechPackage(),
         new expo.modules.splashscreen.SplashScreenPackage(),
+        new expo.modules.storereview.StoreReviewPackage(),
         new expo.modules.taskManager.TaskManagerPackage(),
         new expo.modules.videothumbnails.VideoThumbnailsPackage()
     );

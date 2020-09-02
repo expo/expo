@@ -46,9 +46,7 @@ public class DevelopmentClientController {
       jsBundleTempFile.delete();
     }
 
-    // If we're using a development server for our launcher UI, set the host to that. Else use the
-    // fake host so React Native thinks the packager is down and uses our embedded bundle.
-    saveDebugHTTPHost(DEV_LAUNCHER_HOST != null ? DEV_LAUNCHER_HOST : FAKE_HOST);
+    saveLauncherHTTPHost();
   }
 
   public static DevelopmentClientController getInstance() {
@@ -87,6 +85,12 @@ public class DevelopmentClientController {
     }
   }
 
+  private void saveLauncherHTTPHost() {
+    // If we're using a development server for our launcher UI, set the host to that. Else use the
+    // fake host so React Native thinks the packager is down and uses our embedded bundle.
+    saveDebugHTTPHost(DEV_LAUNCHER_HOST != null ? DEV_LAUNCHER_HOST : FAKE_HOST);
+  }
+
   private void saveDebugHTTPHost(String host) {
     // React Native's internal `PackagerConnectionSettings` reads from this
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -111,6 +115,18 @@ public class DevelopmentClientController {
       @Override
       public void run() {
         reactContext.getCurrentActivity().setRequestedOrientation(orientation);
+        ((ReactApplication) mContext).getReactNativeHost().getReactInstanceManager().recreateReactContextInBackground();
+      }
+    });
+  }
+
+  void navigateToLauncher() {
+    saveLauncherHTTPHost();
+
+    // Restart the bridge on the main thread
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run() {
         ((ReactApplication) mContext).getReactNativeHost().getReactInstanceManager().recreateReactContextInBackground();
       }
     });

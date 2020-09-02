@@ -87,6 +87,8 @@ dependencies {
     unimodule 'unimodules-react-native-adapter'
     unimodule 'expo-barcode-scanner'
 
+    implementation project(":expo-dev-menu-interface")
+
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
 
