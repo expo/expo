@@ -44,9 +44,11 @@ const loadAppFromUrl = async (url: string) => {
 
 const App = () => {
   const [scanning, setScanning] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const onBarCodeScanned = ({ data }: { data: string }) => {
     loadAppFromUrl(data);
+    setLoading(true);
   };
 
   const onPressScan = () => {
@@ -61,7 +63,11 @@ const App = () => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
-        {scanning ? (
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Loading...</Text>
+          </View>
+        ) : scanning ? (
           <React.Fragment>
             <View style={styles.barCodeScannerContainer}>
               <BarCodeScanner onBarCodeScanned={onBarCodeScanned} style={styles.barCodeScanner} />
@@ -104,6 +110,15 @@ const styles = StyleSheet.create({
   },
   barCodeScanner: {
     flex: 1,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 24,
   },
 
   buttonContainer: {
