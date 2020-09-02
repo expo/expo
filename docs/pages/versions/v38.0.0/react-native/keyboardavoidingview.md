@@ -11,7 +11,7 @@ It is a component to solve the common problem of views that need to move out of 
 import React from 'react';
 import { View, KeyboardAvoidingView, TextInput, StyleSheet, Text, Platform, TouchableWithoutFeedback, Button, Keyboard  } from 'react-native';
 
-export default function KeyboardAvoidingComponent() {
+function KeyboardAvoidingComponent() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS == "ios" ? "padding" : "height"}
