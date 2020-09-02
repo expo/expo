@@ -63,13 +63,13 @@ The AWS Amplify Console provides a Git-based workflow for continuously deploying
 
 5. Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
 
-## [Vercel](https://vercel.com/home)
+## [Vercel](https://vercel.com/)
 
 Vercel has a single-command zero-config deployment flow. You can use `vercel` to deploy your app for free! 💯
 
-> For more information on unlimited hosting, check out [vercel pricing](https://vercel.com/pricing).
+> For more information on unlimited hosting, check out their [pricing](https://vercel.com/pricing).
 
-1. [Install the vercel CLI](https://vercel.com/download).
+1. [Install the Vercel CLI](https://vercel.com/download).
 
 2. Build your Expo web app with `expo build:web`.
 
@@ -77,7 +77,7 @@ Vercel has a single-command zero-config deployment flow. You can use `vercel` to
 
 - Run `cd web-build`
 - Run `vercel`
-- You should see a url that you can use to view your project online.
+- You should see a URL that you can use to view your project online.
 
 Paste that URL into your browser when the build is complete, and you will see your deployed app!
 
