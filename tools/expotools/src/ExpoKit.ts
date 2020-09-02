@@ -2,7 +2,6 @@ import path from 'path';
 import uuid from 'uuid';
 import { Versions, Config } from '@expo/xdl';
 import JsonFile from '@expo/json-file';
-import spawnAsync from '@expo/spawn-async';
 
 import * as S3 from './S3';
 
@@ -134,30 +133,5 @@ export async function updateExpoKitAndroidAsync(
   if (!versions.sdkVersions[sdkVersion]) {
     throw new Error(`SDK version ${sdkVersion} not found in versions JSON`);
   }
-
-  const expokitNpmPackageDir = path.join(expoDir, `expokit-npm-package`);
-  const npmVersionArg = expokitVersion || 'patch';
-
-  await spawnAsync(`npm`, ['version', npmVersionArg, '--allow-same-version'], {
-    stdio: 'inherit',
-    cwd: expokitNpmPackageDir,
-  });
-
-  let expokitPackageJson = new JsonFile(path.join(expokitNpmPackageDir, 'package.json'));
-  let expokitNpmVersion = await expokitPackageJson.getAsync('version', null);
-
   versions.sdkVersions[sdkVersion].androidExpoViewUrl = `https://s3.amazonaws.com/${BUCKET}/${key}`;
-  versions.sdkVersions[sdkVersion].expokitNpmPackage = `expokit@${expokitNpmVersion}`;
   await Versions.setVersionsAsync(versions);
-
-  try {
-    await spawnAsync('npm', ['publish', '--tag', expokitTag], {
-      stdio: 'inherit',
-      cwd: expokitNpmPackageDir,
-    });
-  } catch (e) {
-    console.error(
-      `'npm publish' failed. Please make sure you have permission to publish the 'expokit' package and run 'npm publish' in 'expokit-npm-package'. You do not need to re-run this command after publishing the npm package.`
-    );
-  }
-}

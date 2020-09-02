@@ -1,16 +1,16 @@
 # Updating Expokit Package For Ejected Android Projects and Turtle
 
-This document will guide you through the process of creating a new version of `expokit` which is used in ejected projects and in Turtle. Instructions for creating a versioned snapshot of Expo SDK solely for Expo client's use, see `Creating Versioned Expo SDK for Android` doc.
+This document will guide you through the process of creating a new version of prebuilt Android packages which are used in Turtle. Instructions for creating a versioned snapshot of Expo SDK solely for Expo client's use, see `Creating Versioned Expo SDK for Android` doc.
 
-1. **Update AARs in `expokit-npm-package`**
+1. **Update AARs in local Maven repo**
 
     **Why:** AARs are prebuilt versions of Android libraries. Prebuilding them on our side allows developers and Turtle to build their projects faster and without extra setup steps that could be required for some libraries to work (eg. if we would decide to distribute `expoview` as a library to compile yourself).
 
-    Prebuilt AARs for `expoview` and all unimodules are put into `expokit` NPM package which is then published and depended upon by ejected user projects. Configuration in `android/app/build.gradle` is set up so that ejected user projects include unimodules code from `node_modules` (_live code_) and `expoview` from AAR (prebuilt). This allows developers to modify native code if needed and upgrade quicker. Turtle, on the other hand, uses AARs for both `expoview` and unimodules.
+    Prebuilt AARs for `expoview` and all unimodules are put into local Maven repo. Turtle uses AARs for both `expoview` and unimodules.
 
-    **How:** Run `expotools android-build-packages --sdkVersion XX.X.X`. The script will delete contents of `expokit-npm-package`, clear [local Maven repository](https://www.mkyong.com/maven/where-is-maven-local-repository/), clean `build` folder for every package to prebuild and… prebuild (by running `:{library-name}:uploadArchives` Gradle tasks). Archives are uploaded to local Maven repository from where they are then copied to `expokit-npm-package`.
+    **How:** Run `expotools android-build-packages --sdkVersion XX.X.X`. The script will delete contents of `android/maven`, clear [local Maven repository](https://www.mkyong.com/maven/where-is-maven-local-repository/), clean `build` folder for every package to prebuild and… prebuild (by running `:{library-name}:uploadArchives` Gradle tasks). Archives are uploaded to local user Maven repository from where they are then copied to repository Maven repo.
 
-    If the script fails during the compilation step of any package, it will print out the raw error message from Gradle. You should fix the error in the affected package. You may then either discard all changes made by the script to `expokit-npm-package` (deleted contents in preparation for new archives) and to `android` (some changes should be committed after the script is done, some are temporary) and rerun the script entirely, or just rerun the script for the affected packages only. (Instructions will be printed from the script itself in this case.)
+    If the script fails during the compilation step of any package, it will print out the raw error message from Gradle. You should fix the error in the affected package. You may then either discard all changes made by the script to `android/maven` (deleted contents in preparation for new archives) and to `android` (some changes should be committed after the script is done, some are temporary) and rerun the script entirely, or just rerun the script for the affected packages only. (Instructions will be printed from the script itself in this case.)
 
 2. **Update Expo ejected project template**
 
