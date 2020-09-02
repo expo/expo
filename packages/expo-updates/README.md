@@ -23,7 +23,7 @@ If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/).
+For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/).
 
 # Installation in bare React Native projects
 
