@@ -326,7 +326,7 @@ class CreatePage extends React.Component {
             value="Create"
           />
           <a className="f6 pointer" onClick={this.props.history.goBack}>
-            or cancel
+            {` or cancel`}
           </a>
         </form>
       </div>
