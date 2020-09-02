@@ -11,7 +11,7 @@ title: Publishing Websites
   - [Manual deployment with the Netlify CDN](#manual-deployment-with-the-netlify-cdn)
   - [Continuous delivery](#continuous-delivery)
 - [GitHub Pages](#github-pages)
-- [Now](#now)
+- [Vercel](#vercel)
 - [Firebase Hosting](#firebase-hosting)
 - [Surge](#surge)
 
@@ -63,21 +63,21 @@ The AWS Amplify Console provides a Git-based workflow for continuously deploying
 
 5. Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
 
-## [Now](https://zeit.co/now)
+## [Vercel](https://vercel.com/)
 
-Now has a single-command zero-config deployment flow. You can use `now` to deploy your app for free! 💯
+Vercel has a single-command zero-config deployment flow. You can use `vercel` to deploy your app for free! 💯
 
-> For more information on unlimited hosting, check out [the blog post](https://zeit.co/blog/unlimited-static).
+> For more information on unlimited hosting, check out their [pricing](https://vercel.com/pricing).
 
-1. Install the now CLI with `npm install -g now`.
+1. [Install the Vercel CLI](https://vercel.com/download).
 
 2. Build your Expo web app with `expo build:web`.
 
 3. To deploy:
 
 - Run `cd web-build`
-- Run `now --name your-project-name`
-- You should see a **`now.sh`** URL in your output like: `> Ready! https://expo-web-is-cool-nocabnave.now.sh (copied!)`
+- Run `vercel`
+- You should see a URL that you can use to view your project online.
 
 Paste that URL into your browser when the build is complete, and you will see your deployed app!
 
