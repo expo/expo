@@ -203,8 +203,6 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     /TEMPORARY_ABI_VERSION\s*=\s*null/,
     `TEMPORARY_ABI_VERSION = "${sdkVersion}"`
   );
-  await _regexFileAsync(settingsGradle, `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`, `/*`);
-  await _regexFileAsync(settingsGradle, `// FLAG_END_REMOVE__UPDATE_EXPOKIT`, `*/ //`);
   await _uncommentWhenDistributing([appBuildGradle, expoViewBuildGradle]);
   await _commentWhenDistributing([
     constantsJava,
