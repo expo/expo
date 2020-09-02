@@ -15,7 +15,6 @@
     "packages": [
       "apps/*",
       "apps/test-suite/puppeteer-test",
-      "expokit-npm-package",
       "home",
       "packages/*",
       "packages/@unimodules/*",
@@ -23,6 +22,7 @@
     ]
   },
   "dependencies": {
+    "jsc-android": "^245459.0.0",
     "react-native-unimodules": "~0.11.0"
   },
   "devDependencies": {

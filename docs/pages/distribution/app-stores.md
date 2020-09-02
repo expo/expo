@@ -53,10 +53,9 @@ To access these values at runtime, you can use the [Expo Constants API](/version
 ## iOS-specific guidelines
 
 - All apps in the iTunes Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
-- Apple will ask you whether your app uses the IDFA. **For Expo apps on an SDK version less than 39, the answer is yes.** This is because Expo contains the Segment and Amplitude Analytics SDKs, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
-- Starting with SDK 39, you no longer need to check the IDFA usage box if you're using the managed workflow.
+- Apple will ask you whether your app uses the IDFA, the answer is "yes." This is because Expo contains the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
 
-> **Note**: No data is sent to Segment or Amplitude from your app unless you explicitly do so using the APIs. However, because that code is present in your binary (even if it's unused), you need to say your app uses the IDFA (if using an SDK lower than 39). For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained).
+> **Note**: No data is sent to Branch, Facebook, Segment, or Amplitude from your app unless you explicitly do so using the APIs. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained).
 
 ## Android Permissions
 

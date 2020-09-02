@@ -32,6 +32,7 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'JKBigInteger2',
   'Branch',
   'Google-Mobile-Ads-SDK',
+  'Folly',
 ];
 
 /**
@@ -55,7 +56,7 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     // protect contents of EX_UNVERSIONED macro
     let unversionedCaptures: string[] = [];
     await _transformFileContentsAsync(filename, (fileString) => {
-      let pattern = /EX_UNVERSIONED\((.*)\)/g;
+      let pattern = /EX_UNVERSIONED\((.*?)\)/g;
       let match = pattern.exec(fileString);
       while (match != null) {
         unversionedCaptures.push(match[1]);
@@ -288,7 +289,11 @@ async function generateReactNativePodspecsAsync(
   await generateReactPodspecAsync(versionedReactNativePath, versionName);
 }
 
-async function generateVersionedExpoAsync(versionName: string): Promise<void> {
+/**
+ * @param versionName 
+ * @param versionNumber format "XX.X.X"
+ */
+async function generateVersionedExpoAsync(versionName: string, versionNumber: string): Promise<void> {
   const versionedExpoPath = getVersionedExpoPath(versionName);
   const versionedExpoKitPath = getVersionedExpoKitPath(versionName);
   const versionedUnimodulePods = await getVersionedUnimodulePodsAsync(versionName);
@@ -384,7 +389,7 @@ async function generateVersionedExpoAsync(versionName: string): Promise<void> {
 
   console.log(`Generating podspec for ${chalk.green('ExpoKit')} ...`);
 
-  await generateExpoKitPodspecAsync(versionedExpoKitPath, versionedUnimodulePods, versionName);
+  await generateExpoKitPodspecAsync(versionedExpoKitPath, versionedUnimodulePods, versionName, versionNumber);
 }
 
 /**
@@ -398,7 +403,8 @@ async function generateVersionedExpoAsync(versionName: string): Promise<void> {
 async function generateExpoKitPodspecAsync(
   specfilePath: string,
   universalModulesPodNames: { [key: string]: string },
-  versionName: string
+  versionName: string,
+  versionNumber: string
 ): Promise<void> {
   const versionedReactPodName = getVersionedReactPodName(versionName);
   const versionedExpoKitPodName = getVersionedExpoKitPodName(versionName);
@@ -417,7 +423,6 @@ async function generateExpoKitPodspecAsync(
     const universalModulesDependencies = (await getListOfPackagesAsync())
       .filter(
         (pkg) =>
-          pkg.isUnimodule() &&
           pkg.isIncludedInExpoClientOnPlatform('ios') &&
           pkg.podspecName &&
           !excludedPodNames.includes(pkg.podspecName)
@@ -432,7 +437,7 @@ async function generateExpoKitPodspecAsync(
     ).join(`
     `);
     let subspec = `s.subspec "Expo" do |ss|
-    ss.source_files     = "Core/**/*.{h,m,mm}"
+    ss.source_files     = "Core/**/*.{h,m,mm,cpp}"
 
     ss.dependency         "${versionedReactPodName}-Core"
     ss.dependency         "${versionedReactPodName}-Core/DevSupport"
@@ -448,6 +453,27 @@ async function generateExpoKitPodspecAsync(
       /(s\.subspec ".+?"[\S\s]+?(?=end\b)end\b[\s]+)+/g,
       `${subspec}\n`
     );
+
+    // correct version number
+    fileString = fileString.replace(/(?<=s.version = ").*?(?=")/g, versionNumber);
+
+    // add Reanimated V2 Folly dependency  
+    fileString = fileString
+      .replace(/(?=Pod::Spec.new do \|s\|)/, `
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
+folly_version = '2020.01.13.00'
+boost_compiler_flags = '-Wno-documentation'\n\n`)
+      .replace(/(?=  s.subspec "Expo" do \|ss\|)/g, `
+  s.pod_target_xcconfig    = {
+    "USE_HEADERMAP"       => "YES",
+    "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/Folly\\" \\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/React-Core\\" "
+  }
+  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
+  s.xcconfig               = { 
+    "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\"",
+    "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
+  }\n\n`);
 
     return fileString;
   });
@@ -861,7 +887,7 @@ export async function addVersionAsync(versionNumber: string) {
       path.relative(EXPO_DIR, getVersionedExpoPath(versionName))
     )} directory...`
   );
-  await generateVersionedExpoAsync(versionName);
+  await generateVersionedExpoAsync(versionName, versionNumber);
 
   // Namespace the new React clone
   console.log('Namespacing/transforming files...');
@@ -1169,7 +1195,7 @@ function _isDirectory(dir) {
 }
 
 // TODO: use the one in XDL
-async function _transformFileContentsAsync(filename, transform) {
+async function _transformFileContentsAsync(filename: string, transform: (fileString: string) => Promise<string> | string | null) {
   let fileString = await fs.readFile(filename, 'utf8');
   let newFileString = await transform(fileString);
   if (newFileString !== null) {

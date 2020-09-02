@@ -58,6 +58,9 @@ function ensureNativeProps(options) {
         delete newProps.ratio;
         delete newProps.useCamera2Api;
     }
+    if (Platform.OS !== 'web') {
+        delete newProps.poster;
+    }
     return newProps;
 }
 function convertProp(value, key) {

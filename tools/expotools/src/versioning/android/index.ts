@@ -361,7 +361,6 @@ async function copyUnimodulesAsync(version: string) {
   const packages = await getListOfPackagesAsync();
   for (const pkg of packages) {
     if (
-      pkg.isUnimodule &&
       pkg.isSupportedOnPlatform('android') &&
       pkg.isIncludedInExpoClientOnPlatform('android') &&
       pkg.isVersionableOnPlatform('android')
@@ -501,6 +500,12 @@ async function cleanUpAsync(version: string) {
   await spawnAsync(
     `find ${versionedAbiSrcPath} -iname '*.java' -type f -print0 | ` +
       `xargs -0 sed -i '' 's/import ${abiName}\.[^;]*\.R;/import ${abiName}.host.exp.expoview.R;/g'`,
+    [],
+    { shell: true }
+  );
+  await spawnAsync(
+    `find ${versionedAbiSrcPath} -iname '*.kt' -type f -print0 | ` +
+      `xargs -0 sed -i '' 's/import ${abiName}\\..*\\.R$/import ${abiName}.host.exp.expoview.R/g'`,
     [],
     { shell: true }
   );

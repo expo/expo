@@ -26,6 +26,7 @@ export class Sound implements Playback {
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
 
+  /** @deprecated Use `Sound.createAsync()` instead */
   static create = async (
     source: AVPlaybackSource,
     initialStatus: AVPlaybackStatusToSet = {},

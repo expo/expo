@@ -60,16 +60,16 @@ Continuing from the previous section, we can see that our release is available i
 | 2018-01-05T23:55:04.603Z  |  1.0.0 | 36.0.0 |  ios | production | 80b1ffd7-4e05-4851-95f9-697e122033c3  |
 | 2018-01-04T22:43:19.302Z  |  1.0.0 | 36.0.0 |  ios | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
 
+
 ## Rollback a channel entry
 
-Example use case: you published a release to your `production` channel, only to realize that it includes a major regression for some of your users, so you want to revert back to the previous version.
+Example use case: you published a release to your `production` channel, only to realize that it includes a major regression for some of your users, so you want to revert to the previous version.
 
-Continuing from the previous section, we rollback our `production` channel entry for all platforms with `expo publish:set`
+Continuing from the previous section, we rollback our `production` channel entry for just the iOS platform with `expo publish:set`
 
 `expo publish:set --release-channel production --publish-id d6b61741-a8dc-11e9-852a-3b0715b88238`
-`expo publish:set --release-channel production --publish-id 43d89652-a8dc-11e9-b565-4586c71668b9`
 
-We could accomplish the same thing more succinctly with publish:rollback
+Or, we could rollback the `production` channel entry for both iOS and Android with:
 `expo publish:rollback --release-channel production --sdk-version 36.0.0`
 
 Now we can see that our releases are available on the production channel.
@@ -80,7 +80,6 @@ Now we can see that our releases are available on the production channel.
 |---|---|---|---|---|---|---|
 | 2018-01-04T22:43:19.302Z  |  1.0.0 | 36.0.0 |  ios | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
 | 2018-01-04T22:43:46.714Z  |  1.0.0 | 36.0.0 |  android | production | 43d89652-a8dc-11e9-b565-4586c71668b9 |
-
 
 ## Release channels CLI tools
 ### Publish history

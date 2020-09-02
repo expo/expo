@@ -237,6 +237,8 @@ final class MediaLibraryUtils {
         Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: " + e.getMessage());
       } catch (FileNotFoundException e) {
         Log.e("expo-media-library", String.format("ContentResolver failed to read %s: %s", uri, e.getMessage()));
+      } catch (RuntimeException e) {
+        Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: " + e.getMessage());
       } finally {
         if (retriever != null) {
           retriever.release();

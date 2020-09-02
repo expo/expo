@@ -21,6 +21,14 @@ export declare enum VideoExportPreset {
     HEVC_1920x1080 = 9,
     HEVC_3840x2160 = 10
 }
+export declare enum UIImagePickerControllerQualityType {
+    High = 0,
+    Medium = 1,
+    Low = 2,
+    VGA640x480 = 3,
+    IFrame1280x720 = 4,
+    IFrame960x540 = 5
+}
 export declare type ImageInfo = {
     uri: string;
     width: number;
@@ -54,7 +62,11 @@ export declare type ImagePickerOptions = {
     mediaTypes?: MediaTypeOptions;
     exif?: boolean;
     base64?: boolean;
+    /**
+     * @deprecated see [iOS videoExportPreset](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+     */
     videoExportPreset?: VideoExportPreset;
+    videoQuality?: UIImagePickerControllerQualityType;
     allowsMultipleSelection?: boolean;
     videoMaxDuration?: number;
 };

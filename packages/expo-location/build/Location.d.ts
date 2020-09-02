@@ -63,7 +63,8 @@ export declare function startGeofencingAsync(taskName: string, regions?: Locatio
 export declare function stopGeofencingAsync(taskName: string): Promise<void>;
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
 /**
- * Deprecated as of SDK39
+ * @deprecated
+ * Deprecated as of SDK39 in favour of `setGoogleApiKey`.
  */
 export declare function setApiKey(apiKey: string): void;
 export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
