@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "EXDevMenu" # NOTE: This is temporary till we decide on a way to have this be optional
+  s.dependency "EXDevMenuInterface"
   # ...
   # s.dependency "..."
 end

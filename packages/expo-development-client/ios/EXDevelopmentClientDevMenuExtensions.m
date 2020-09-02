@@ -2,7 +2,7 @@
 
 
 //#if __has_include("EXDevMenu.h") // NOTE: Replace with working discovery of `EXDevMenu`
-@import EXDevMenu;
+@import EXDevMenuInterface;
 #define HAVE_EX_DEV_MENU
 //#endif
 
