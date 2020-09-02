@@ -88,12 +88,6 @@ configurations.all {
   }
 }
 
-// WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-/* UNCOMMENT WHEN DISTRIBUTING
-apply from: 'expo.gradle'
-END UNCOMMENT WHEN DISTRIBUTING */
-// WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 
 dependencies {
