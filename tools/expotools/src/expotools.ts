@@ -1,5 +1,4 @@
 export * as Directories from './Directories';
-export * as ExpoKit from './ExpoKit';
 export * as FirebaseTestLab from './FirebaseTestLab';
 export * as HashDirectory from './HashDirectory';
 export * as IOSSimulator from './IOSSimulator';
