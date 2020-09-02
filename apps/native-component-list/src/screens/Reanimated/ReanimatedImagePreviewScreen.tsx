@@ -2,7 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, State, PinchGestureHandler } from 'react-native-gesture-handler';
-import Animated, { EasingNode } from 'react-native-reanimated';
+import Animated, { Easing } from 'react-native-reanimated';
 
 const {
   set,
@@ -87,7 +87,7 @@ function runTiming(clock: any, value: any, dest: any, startStopClock = true) {
   const config = {
     toValue: new Value(0),
     duration: 300,
-    easing: EasingNode.inOut(EasingNode.cubic),
+    easing: Easing.inOut(Easing.cubic),
   };
 
   return [
