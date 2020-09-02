@@ -411,7 +411,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
     **Android:**
   - Check out the release branch.
   - Run `et android-build-packages` and ensure that all the unimodule packages are up-to-date. Commit any changes.
-  - Run `et android-update-expokit --sdkVersion XX.X.X --appVersion <android client version> --expokitVersion XX.X.X --expokitTag next`. This will publish a new version of the `expokit` package to NPM, upload the ExpoKit template files to S3, and set values on the staging versions endpoint.
+  - Run `et android-update-expokit --sdkVersion XX.X.X --appVersion <android client version> --expokitVersion XX.X.X --expokitTag next`. This will upload the ExpoKit template files to S3, and set values on the staging versions endpoint.
 
 ## 5.2. Make shell app build
 
@@ -481,7 +481,6 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 
 - Publish a new version of `turtle-cli` [following this guide](https://github.com/expo/turtle/blob/master/CONTRIBUTING.md#publishing-a-release).
 - Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
-- Promote the `expokit` package published in step 5.1 to `latest` on NPM.
 
 ## 6.3. Deploy new docs
 
