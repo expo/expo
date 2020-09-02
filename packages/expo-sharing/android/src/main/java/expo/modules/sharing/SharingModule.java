@@ -3,6 +3,8 @@ package expo.modules.sharing;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.core.content.FileProvider;
@@ -21,6 +23,7 @@ import org.unimodules.interfaces.filesystem.Permission;
 
 import java.io.File;
 import java.net.URLConnection;
+import java.util.List;
 
 public class SharingModule extends ExportedModule implements ActivityEventListener {
   private static final int REQUEST_CODE = 8524;
@@ -79,6 +82,14 @@ public class SharingModule extends ExportedModule implements ActivityEventListen
       }
 
       Intent intent = Intent.createChooser(createSharingIntent(contentUri, mimeType), params.getString(DIALOG_TITLE_OPTIONS_KEY));
+
+      List<ResolveInfo> resInfoList = mContext.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+      for (ResolveInfo resolveInfo : resInfoList) {
+        String packageName = resolveInfo.activityInfo.packageName;
+        mContext.grantUriPermission(packageName, contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+      }
+
       mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().startActivityForResult(intent, REQUEST_CODE);
 
       mPendingPromise = promise;
@@ -122,7 +133,8 @@ public class SharingModule extends ExportedModule implements ActivityEventListen
 
   protected Intent createSharingIntent(Uri uri, String mimeType) {
     Intent intent = new Intent(Intent.ACTION_SEND);
-    intent.setDataAndTypeAndNormalize(uri, mimeType);
+    intent.putExtra(Intent.EXTRA_STREAM, uri);
+    intent.setTypeAndNormalize(mimeType);
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     return intent;
   }
