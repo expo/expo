@@ -126,7 +126,7 @@ If upgrading from SDK 32 or below:
      require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
      use_unimodules!
    ```
-   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
+   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/master/packages/react-native-unimodules).
 3. Upgrade CocoaPods to some version higher or equal 1.6. (At the moment of writing the latest version is 1.7.1, we have tested it works. You will probably need to run `gem update cocoapods`, but the exact command will depend on your setup.)
 4. Change the whole `post_install` block at the bottom of the `Podfile` to
 
