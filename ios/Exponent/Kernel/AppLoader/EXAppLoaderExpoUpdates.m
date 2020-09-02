@@ -364,6 +364,20 @@ NS_ASSUME_NONNULL_BEGIN
         return;
       }
     }
+
+    // we want to avoid showing the status for older snack SDK versions, too
+    // we make our best guess based on the manifest fields
+    // TODO: remove this after SDK 38 is phased out
+    NSString *sdkVersion = manifest[@"sdkVersion"];
+    NSString *bundleUrl = manifest[@"bundleUrl"];
+    if (![@"UNVERSIONED" isEqual:sdkVersion] &&
+        sdkVersion.integerValue < 39 &&
+        [@"snack" isEqual:manifest[@"slug"]] &&
+        bundleUrl && [bundleUrl isKindOfClass:[NSString class]] &&
+        [bundleUrl hasPrefix:@"https://d1wp6m56sqw74a.cloudfront.net/%40exponent%2Fsnack"]) {
+      _shouldShowRemoteUpdateStatus = NO;
+      return;
+    }
   }
   _shouldShowRemoteUpdateStatus = YES;
 }

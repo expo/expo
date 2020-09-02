@@ -360,6 +360,19 @@ public class ExpoUpdatesAppLoader {
       mShouldShowAppLoaderStatus = !(manifest.has(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY) &&
         manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY)
           .optBoolean(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_SILENT_LAUNCH_KEY, false));
+
+      if (mShouldShowAppLoaderStatus) {
+        // we want to avoid showing the status for older snack SDK versions, too
+        // we make our best guess based on the manifest fields
+        // TODO: remove this after SDK 38 is phased out
+        if (manifest.has(ExponentManifest.MANIFEST_SDK_VERSION_KEY) &&
+            ABIVersion.toNumber("39.0.0") > ABIVersion.toNumber(manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY)) &&
+            "snack".equals(manifest.optString(ExponentManifest.MANIFEST_SLUG)) &&
+            manifest.optString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY, "").startsWith("https://d1wp6m56sqw74a.cloudfront.net/%40exponent%2Fsnack")
+        ) {
+          mShouldShowAppLoaderStatus = false;
+        }
+      }
     } catch (JSONException e) {
       mShouldShowAppLoaderStatus = true;
     }
