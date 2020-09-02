@@ -405,10 +405,6 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native-unimodules' -v 'X.Y.Z'` where `X.Y.Z` is the version of `react-native-unimodules` that is going to be used in ejected and standalone apps using this new SDK version.
-    **Android:**
-  - Check out the release branch.
-  - Run `et android-build-packages` and ensure that all the unimodule packages are up-to-date. Commit any changes.
-  - Run `et android-update-expokit --sdkVersion XX.X.X --appVersion <android client version> --expokitVersion XX.X.X --expokitTag next`. This will upload the ExpoKit template files to S3, and set values on the staging versions endpoint.
 
 ## 5.2. Make shell app build
 

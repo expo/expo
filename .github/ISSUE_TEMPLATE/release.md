@@ -64,7 +64,6 @@ assignees: ''
 ### [Stage 5 - ExpoKit and standalone apps](https://git.io/JeKCx#stage-5---expokit-and-standalone-apps)
 
 - [ ] [5.1. Updating ExpoKit](https://git.io/JeKCx#51-updating-expokit)
-  - [ ] Android
 - [ ] [5.2. Make shell app build](https://git.io/JeKCx#52-make-shell-app-build)
   - [ ] Android
   - [ ] iOS
