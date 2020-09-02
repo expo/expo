@@ -7,38 +7,6 @@ import * as S3 from './S3';
 
 const BUCKET = 'exp-exponent-view-code';
 
-export async function updateExpoKitIosAsync(
-  expoDir: string,
-  appVersion: string,
-  sdkVersion: string
-): Promise<void> {
-  const key = `ios-v${appVersion.trim().replace(/^v/, '')}-sdk${sdkVersion}-${uuid()}.tar.gz`;
-
-  // TODO: rename the template to expokit-template
-  await S3.uploadDirectoriesAsync(BUCKET, key, [
-    {
-      source: path.join(expoDir, 'exponent-view-template', 'ios'),
-      destination: path.join('exponent-view-template', 'ios'),
-    },
-    {
-      source: path.join(expoDir, 'template-files', 'ios'),
-      destination: path.join('template-files', 'ios'),
-    },
-  ]);
-
-  process.env.EXPO_STAGING = '1';
-  Config.api.host = 'staging.exp.host';
-  let versions = await Versions.versionsAsync();
-  if (!versions.sdkVersions[sdkVersion]) {
-    throw new Error(`SDK version ${sdkVersion} not found in versions JSON`);
-  }
-
-  versions.sdkVersions[sdkVersion].iosExpoViewUrl = `https://s3.amazonaws.com/${BUCKET}/${key}`;
-
-  versions.sdkVersions[sdkVersion].iosVersion = appVersion;
-  await Versions.setVersionsAsync(versions);
-}
-
 export async function updateReactNativeUnimodulesAsync(
   expoDir: string,
   reactNativeUnimodulesVersion: string,
