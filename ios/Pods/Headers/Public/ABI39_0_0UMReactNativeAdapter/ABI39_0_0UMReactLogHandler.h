@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/UMReactNativeAdapter/ABI39_0_0UMReactNativeAdapter/Services/ABI39_0_0UMReactLogHandler.h

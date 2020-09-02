@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/EXNotifications/ABI39_0_0EXNotifications/Notifications/Categories/ABI39_0_0EXNotificationCategoriesModule.h
