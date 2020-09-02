@@ -1,6 +1,7 @@
 import groovy.json.JsonSlurper
 import org.gradle.util.VersionNumber
 
+import java.nio.file.Paths
 import java.util.regex.Pattern
 
 class Unimodule {
@@ -128,7 +129,7 @@ def findUnimodules(String target, List exclude, List modulesPaths) {
     def moduleConfigPaths = new FileNameFinder().getFileNames(baseDir, '**/unimodule.json', '')
 
     for (moduleConfigPath in moduleConfigPaths) {
-      def unimoduleConfig = new File(moduleConfigPath)
+      def unimoduleConfig = Paths.get(moduleConfigPath).toRealPath().toFile()
       def unimoduleJson = new JsonSlurper().parseText(unimoduleConfig.text)
       def directory = unimoduleConfig.getParent()
       def buildGradle = readFromBuildGradle(new File(directory, "android/build.gradle").toString())

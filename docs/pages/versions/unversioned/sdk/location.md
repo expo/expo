@@ -1,6 +1,6 @@
 ---
 title: Location
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-location'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

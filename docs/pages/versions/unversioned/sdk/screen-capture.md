@@ -1,6 +1,6 @@
 ---
 title: ScreenCapture
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-screen-capture'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-screen-capture'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

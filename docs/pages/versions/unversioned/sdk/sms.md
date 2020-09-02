@@ -1,6 +1,6 @@
 ---
 title: SMS
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sms'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sms'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

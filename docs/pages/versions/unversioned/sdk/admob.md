@@ -1,6 +1,6 @@
 ---
 title: Admob
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-admob'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-admob'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

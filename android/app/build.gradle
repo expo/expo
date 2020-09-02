@@ -150,7 +150,6 @@ dependencies {
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-  // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
   androidTestImplementation 'androidx.test:runner:1.1.0'
   androidTestImplementation "androidx.annotation:annotation:1.0.0"
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
@@ -187,6 +186,11 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+
+  // BEGIN_SDK_39
+  implementation(project(':expoview-abi39_0_0'))
+  // END_SDK_39
 
 
   // BEGIN_SDK_38

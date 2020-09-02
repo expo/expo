@@ -1,5 +1,5 @@
 PODS:
-  - Amplitude-iOS (4.7.1)
+  - Amplitude (6.0.0)
   - Analytics (4.0.4)
   - AppAuth (1.4.0):
     - AppAuth/Core (= 1.4.0)
@@ -8,8 +8,8 @@ PODS:
   - AppAuth/ExternalUserAgent (1.4.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - EXAmplitude (8.3.0):
-    - Amplitude-iOS (~> 4.7.1)
+  - EXAmplitude (8.3.1):
+    - Amplitude (~> 6.0.0)
     - UMConstantsInterface
     - UMCore
   - EXAppAuth (9.2.0):
@@ -53,7 +53,10 @@ PODS:
     - UMCore
   - EXDevice (2.3.0):
     - UMCore
-  - EXDevMenu (0.1.0):
+  - EXDevMenu (0.0.1):
+    - EXDevMenuInterface
+    - React
+  - EXDevMenuInterface (0.0.1):
     - React
   - EXDocumentPicker (8.4.0):
     - UMCore
@@ -78,12 +81,12 @@ PODS:
   - EXFont (8.3.0):
     - UMCore
     - UMFontInterface
-  - EXGL (9.1.0):
+  - EXGL (9.1.1):
     - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL_CPP (9.1.0):
+  - EXGL_CPP (9.1.2):
     - React-jsi
   - EXGL_CPP_LEGACY (8.4.0):
     - EXGL_CPP_LEGACY/EXGLContext (= 8.4.0)
@@ -123,14 +126,14 @@ PODS:
   - EXMailComposer (8.4.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (9.2.0):
+  - EXMediaLibrary (9.2.1):
     - React
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
   - EXNetwork (2.3.0):
     - UMCore
-  - EXNotifications (0.7.0):
+  - EXNotifications (0.7.1):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (9.3.0):
@@ -144,7 +147,7 @@ PODS:
     - UMFileSystemInterface
   - EXRandom (8.3.0):
     - React
-  - EXScreenCapture (1.1.0):
+  - EXScreenCapture (1.1.1):
     - UMCore
   - EXScreenOrientation (2.0.0):
     - React-Core
@@ -169,7 +172,7 @@ PODS:
   - EXSQLite (8.4.0):
     - UMCore
     - UMFileSystemInterface
-  - EXStoreReview (2.1.3):
+  - EXStoreReview (2.2.0):
     - UMCore
   - EXTaskManager (8.5.0):
     - UMAppLoader
@@ -590,6 +593,7 @@ DEPENDENCIES:
   - EXCrypto (from `../../../packages/expo-crypto/ios`)
   - EXDevice (from `../../../packages/expo-device/ios`)
   - EXDevMenu (from `../../../packages/expo-dev-menu`)
+  - EXDevMenuInterface (from `../../../packages/expo-dev-menu-interface`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
   - EXFacebook (from `../../../packages/expo-facebook/ios`)
@@ -691,7 +695,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Amplitude-iOS
+    - Amplitude
     - Analytics
     - AppAuth
     - boost-for-react-native
@@ -750,6 +754,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-device/ios"
   EXDevMenu:
     :path: "../../../packages/expo-dev-menu"
+  EXDevMenuInterface:
+    :path: "../../../packages/expo-dev-menu-interface"
   EXDocumentPicker:
     :path: "../../../packages/expo-document-picker/ios"
   EXErrorRecovery:
@@ -944,12 +950,12 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
+  Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAmplitude: 57aa88d69bd7cc8121654685b969018823f8879e
+  EXAmplitude: caa186767e48b4efcb07cf74be76ff16f4700e48
   EXAppAuth: 0346d79802fceaacd16a18faccc80035ac9523dd
   EXApplication: c346c5ab7d1a4607f1863e93490b79fe838148b1
   EXAV: 1f679b57367f8889b5ea15067413c9e2d95039fb
@@ -964,7 +970,8 @@ SPEC CHECKSUMS:
   EXContacts: 28ea8e112bbfeb8fe04987b06f5bf58f71e262f6
   EXCrypto: 80ee65669a5466a7ce9426a8ae985a50be7f3a5d
   EXDevice: e6ede72e08f6adc4b224d0628a9963d394ab9226
-  EXDevMenu: 83316fe0e2fabf443a2b60e5cf3bb0dc78c3d430
+  EXDevMenu: a40f21353b521fb721ae30452d5a89f8319d7d0f
+  EXDevMenuInterface: 10940ba80c09a99703ee1850b94f7e632c1d4764
   EXDocumentPicker: 417ff098decc69113ed67a5ddb5e13109583a55c
   EXErrorRecovery: 16696fe023fb46a32c3b09033abc361cfcf150a7
   EXFacebook: dd5352a2a74f825922131abf1ed438cf51d116a7
@@ -972,8 +979,8 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: d76da8440905e04f94a3e3304f94f4966e730ad7
   EXFirebaseCore: d5befdb22015f9b71168ed89dda0b50dbb07fed1
   EXFont: a6a4353271395f3bb4ee528b52a5035b4b0e412a
-  EXGL: d38031d89c33a617cee38db0f8b58e3003527798
-  EXGL_CPP: 2fadf72a369e6c6530125b2f740706d7fd3e7c90
+  EXGL: 18197ce91dceb9acdc9b0a839919111ca004f434
+  EXGL_CPP: 33f454aae7055477285982e9ce84dff19f83d458
   EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
   EXGoogleSignIn: c575e4bc3c34882908167788a2c4a0cd8dfb2eb3
   EXHaptics: 4db5fa74b5a87148af4355246981b2dd2d7b9e77
@@ -987,14 +994,14 @@ SPEC CHECKSUMS:
   EXLocalization: 8621f60b37c3d3ad8c8e27c2cb3b05ebc7b484a2
   EXLocation: a3b92458ec5c4356c5d932fe0d2bbe552ef7f4cb
   EXMailComposer: 7436a0388652ee26b11b74d3c23180cadc000a45
-  EXMediaLibrary: 1518bc6f37b7f9fbee1f03e451bd0dd1298f9292
+  EXMediaLibrary: 876e417918fbb1a3a521b3465b8034ef41d5d16a
   EXNetwork: 05c1b87ba7077cb3eea7a3968640e5007e32eb6b
-  EXNotifications: 12bb525abea895be0f5011b2be512bbc82272dfd
+  EXNotifications: 55301e7284ef5427662a2191eb986acb2035a1d5
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 969e4d8514319a74405b015cd0bf6023dcdf4b00
   EXRandom: 124ef1bb780179fbc07fd8bf0f183c713d7fa251
-  EXScreenCapture: 602976ecab94dbbd4b939ef3b85c68e4b74ad571
+  EXScreenCapture: cb33de21768c77375ec37ab744a0f4ba4c9caec2
   EXScreenOrientation: 9110f49798fae74322f6fa959eab1da5d4805cf0
   EXSecureStore: 579cbccd9cd093e6f4336aba073b059008bd78e0
   EXSegment: a354d6e65fad4dbb97701a24db763ea425d783e9
@@ -1003,7 +1010,7 @@ SPEC CHECKSUMS:
   EXSMS: 62b990a7d9e6132904062b2438002f09418b4f0b
   EXSpeech: daf271faf114448b0dccf6391b6b81f49bf44b99
   EXSQLite: d0d8677c13e60d5db2812387f059c697be27d3fb
-  EXStoreReview: b74c5e58e7ab74f28eaaefb1dfd4659e80a22c91
+  EXStoreReview: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
   EXTaskManager: 85c9d0ad555af2a393a5c4cb34c767f0e2162357
   EXVideoThumbnails: 14e86a99ba80dff030a77a0a720f494ac6c1cf84
   EXWebBrowser: 1a3ff931f6e64592c70f5faa226e4802a344d664
@@ -1081,6 +1088,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7d68d76a495ecc0b27376c8d1495ac39d662f779
+PODFILE CHECKSUM: 8974c5202d54589df37e3e68cf4c3cf5dcf6e8e5
 
 COCOAPODS: 1.9.3

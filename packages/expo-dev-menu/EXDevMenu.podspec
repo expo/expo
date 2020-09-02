@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
 
   s.resource_bundles = { 'EXDevMenu' => [
     'assets/*.ios.js',
-    'assets/.dev-menu-packager-host'
+    'assets/dev-menu-packager-host'
   ]}
 
   # Swift/Objective-C compatibility
@@ -32,4 +32,5 @@ Pod::Spec.new do |s|
   # }
 
   s.dependency 'React'
+  s.dependency 'EXDevMenuInterface'
 end

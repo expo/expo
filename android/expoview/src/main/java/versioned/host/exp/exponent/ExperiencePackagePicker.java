@@ -60,6 +60,7 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.sqlite.SQLitePackage;
+import expo.modules.storereview.StoreReviewPackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expo.modules.updates.UpdatesPackage;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
@@ -112,6 +113,7 @@ public class ExperiencePackagePicker {
       new PermissionsPackage(),
       new PrintPackage(),
       new SMSPackage(),
+      new StoreReviewPackage(),
       new SQLitePackage(),
       new ScreenCapturePackage(),
       new ScreenOrientationPackage(),

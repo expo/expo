@@ -37,7 +37,7 @@ export async function hideAsync(): Promise<boolean> {
 }
 
 /**
- * @deprecated
+ * @deprecated Use `SplashScreen.hideAsync()` instead
  */
 export function hide(): void {
   console.warn('SplashScreen.hide() is deprecated in favour of SplashScreen.hideAsync()');
@@ -45,7 +45,7 @@ export function hide(): void {
 }
 
 /**
- * @deprecated
+ * @deprecated Use `SplashScreen.preventAutoHideAsync()` instead
  */
 export function preventAutoHide(): void {
   console.warn(

@@ -110,6 +110,9 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       NSError *err;
       manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
       NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+      NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+      mutableManifest[@"isVerified"] = @(NO);
+      manifest = [mutableManifest copy];
     }
 
     if (isSigned) {

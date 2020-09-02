@@ -1,6 +1,6 @@
 ---
 title: Amplitude
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -106,7 +106,6 @@ By default the Amplitude SDK will track several user properties such as carrier 
 | `disableDeviceManufacturer` | Disable tracking of the device manufacturer.                               |
 | `disableDeviceModel`        | Disable tracking of the device model.                                      |
 | `disableDMA`                | Disable tracking of the user's DMA.                                        |
-| `disableIDFA`               | Disable tracking of the user's IDFA.                                       |
 | `disableIDFV`               | Disable tracking of the user's IDFV.                                       |
 | `disableIPAddress`          | Disable tracking of the user's IP address.                                 |
 | `disableLanguage`           | Disable tracking of the device's language.                                 |

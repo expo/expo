@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 9.1.1 — 2020-08-26
+
+### 🎉 New features
+
+- Enable stencil buffer on Android ([#9928](https://github.com/expo/expo/pull/9928) by [@wkozyra95](https://github.com/wkozyra95))
+
 ## 9.1.0 — 2020-08-18
 
 ### 🐛 Bug fixes

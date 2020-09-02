@@ -14,7 +14,6 @@ This guide will explain how to create a unimodule and integrate it into the nati
 2. It will guide you through the process, asking some questions about the module, like its name:
   - If you’re creating an implementation module (your code will actually do something, expose some functionality to client code, e.g. barcode scanner), prefix the hyphenated name of your module with `expo-` (e.g. `expo-barcode-scanner`).
   - If you’re creating an interface module (one that will be a middle-ground between a consumer and provider), prefix the hyphenated name of your module with `expo-` and end it with `-interface` (e.g. `expo-barcode-scanner-interface`).
-  - If you’re creating an adapter for a host platform (like React Native or Flutter), prefix the hyphenated name of the platform with `@unimodules/` and end it with `-adapter` (e.g. `@unimodules/react-native-adapter`).
   - Some areas of the Expo SDK will be scoped on a name level; e.g. for analytics we know we’ll have multiple providers, so we name them `expo-analytics-branch`, `expo-analytics-segment`, etc...
   - When it comes to CocoaPods names: `expo-module-name-something` => `EXModuleNameSomething`
   - When it comes to Java module names:

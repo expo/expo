@@ -273,7 +273,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       }
     } else {
       // there's no update, so signal we're ready to launch
-      [self _finishWithError:nil];
+      [self _finishWithError:error];
       if (error) {
         [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusError manifest:nil error:error];
       } else {

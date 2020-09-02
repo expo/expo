@@ -24,7 +24,7 @@ const DIR_MAPPING = {
   'regulatory-compliance': 'Regulatory Compliance',
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
-  build: 'EAS Builds',
+  build: 'EAS Build',
 };
 
 const processUrl = path => {

@@ -92,7 +92,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI38_0_0UMPermissionsInterface"
     ss.dependency         "ABI38_0_0UMSensorsInterface"
     ss.dependency         "ABI38_0_0UMTaskManagerInterface"
-    ss.dependency         "Amplitude-iOS"
+    ss.dependency         "Amplitude"
     ss.dependency         "Analytics"
     ss.dependency         "AppAuth"
     ss.dependency         "FBAudienceNetwork"

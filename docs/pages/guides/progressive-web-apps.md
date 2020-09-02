@@ -2,13 +2,13 @@
 title: Progressive Web Apps
 ---
 
-A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo web can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, etc...
+A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo CLI can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, etc. Just [enable service workers](https://expo.fyi/enabling-web-service-workers) to get a complete PWA.
 
 You can test your PWA in an Emulator and Simulator by running `expo start:web --ios --android` then installing the PWA via the mobile browser.
 
 ## Usage
 
-Expo web projects are PWAs by default, you don't need to do anything special to enable PWAs. You can disable PWA generation by passing the `--no-pwa` to `expo build:web`, this won't effect favicon generation.
+Expo web projects generate PWA assets and manifests by default, you only need to [enable offline web support](https://expo.fyi/enabling-web-service-workers) to get a full PWA. You can disable asset and manifest generation by passing the `--no-pwa` to `expo build:web`, this won't effect favicon generation.
 
 When you run `expo build:web` the Webpack config reads your `app.config.js` (or `app.json`) and generates a PWA from it.
 

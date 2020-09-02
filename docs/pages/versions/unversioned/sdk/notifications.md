@@ -1,6 +1,6 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
@@ -236,7 +236,7 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](../../push-notifications/overview/).
+Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](/push-notifications/overview/).
 
 > **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://expo.fyi/upload-notifications-credentials). TODO
 

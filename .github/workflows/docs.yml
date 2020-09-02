@@ -6,13 +6,14 @@ defaults:
     working-directory: docs
 
 on:
+  workflow_dispatch: {}
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'

@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.7.1 — 2020-08-26
+
+_This version does not introduce any user-facing changes._
+
 ## 0.7.0 — 2020-08-18
 
 ### 🎉 New features
@@ -16,6 +20,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix scheduled notifications not being displayed after five minutes of phone inactivity on Android. ([#9816](https://github.com/expo/expo/pull/9816) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed case where iOS notification category would not be set on the very first call to `setNotificationCategoryAsync`. ([#9515](https://github.com/expo/expo/pull/9515) by [@cruzach](https://github.com/cruzach))
 - Fixed notification response listener not triggering in the managed workflow on iOS when app was completely killed ([#9478](https://github.com/expo/expo/pull/9478) by [@cruzach](https://github.com/cruzach))
 - Fixed notifications being displayed when `shouldShowAlert` was `false` on Android. ([#9563](https://github.com/expo/expo/pull/9563) by [@barthap](https://github.com/barthap))
@@ -75,13 +80,9 @@
 
 - Added native permission requester that will let developers call `Permissions.getAsync(Permissions.NOTIFICATIONS)` (or `askAsync`) when this module is installed. ([#8486](https://github.com/expo/expo/pull/8486) by [@sjchmiela](https://github.com/sjchmiela))
 
-> Note that the effect of this method is the same as if you called `Notifications.getPermissionsAsync()` (or `requestPermissionsAsync`) and then `Notifications.getDevicePushTokenAsync()`—it tries to both ask the user for user-facing notifications permissions and then tries to register the device for remote notifications. We are planning to deprecate the `.NOTIFICATIONS` permission soon.## 0.2.0 — 2020-05-27
+> Note that the effect of this method is the same as if you called `Notifications.getPermissionsAsync()` (or `requestPermissionsAsync`) and then `Notifications.getDevicePushTokenAsync()`—it tries to both ask the user for user-facing notifications permissions and then tries to register the device for remote notifications. We are planning to deprecate the `.NOTIFICATIONS` permission soon.## 0.2.0 — 2020-05-27### 🛠 Breaking changes
 
-### 🛠 Breaking changes
-
-> Note that this may or may not be a breaking change for you — if you'd expect the notification to be automatically dismissed when tapped on this is a bug fix and a new feature (fixes inconsistency between platforms as on iOS this is the only supported behavior; adds the ability to customize the behavior on Android). If you'd expect the notification to only be dismissed at your will this is a breaking change and you'll need to add `autoDismiss: false` to your notification content inputs.- Changed the default notification behavior on Android to be automatically dismissed when clicked. This is customizable with the `autoDismiss` parameter of `NotificationContentInput`. ([#8241](https://github.com/expo/expo/pull/8241) by [@thorbenprimke](https://github.com/thorbenprimke))
-
-### 🎉 New features
+> Note that this may or may not be a breaking change for you — if you'd expect the notification to be automatically dismissed when tapped on this is a bug fix and a new feature (fixes inconsistency between platforms as on iOS this is the only supported behavior; adds the ability to customize the behavior on Android). If you'd expect the notification to only be dismissed at your will this is a breaking change and you'll need to add `autoDismiss: false` to your notification content inputs.- Changed the default notification behavior on Android to be automatically dismissed when clicked. This is customizable with the `autoDismiss` parameter of `NotificationContentInput`. ([#8241](https://github.com/expo/expo/pull/8241) by [@thorbenprimke](https://github.com/thorbenprimke))### 🎉 New features
 
 - Added the ability to configure whether the notification should be automatically dismissed when tapped on or not (on Android) with the `autoDismiss` parameter of `NotificationContentInput`. ([#8241](https://github.com/expo/expo/pull/8241) by [@thorbenprimke](https://github.com/thorbenprimke))
 - Added `DailyTriggerInput` that allows scheduling a daily recurring notification for a specific hour and minute. It is supported on both iOS and Android. ([#8199](https://github.com/expo/expo/pull/8199) by [@thorbenprimke](https://github.com/thorbenprimke))

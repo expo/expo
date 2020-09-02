@@ -1,7 +1,10 @@
-import * as Localization from 'expo-localization';
-import * as GoogleSignIn from 'expo-google-sign-in';
 import { Platform } from '@unimodules/core';
+import * as GoogleSignIn from 'expo-google-sign-in';
+import * as Localization from 'expo-localization';
 import { Image } from 'react-native';
+
+import { alertAndWaitForResponse } from './helpers';
+
 export const name = 'GoogleSignIn';
 /*
  If you define the name of your email address, this will automatically sign you in (after the first successful sign-in) ex: bacon@expo.io
@@ -105,11 +108,14 @@ export async function test({
 
     describe('GoogleSignIn.signInAsync()', () => {
       it(`Cancelled signing-in`, async () => {
+        await alertAndWaitForResponse('Please cancel signing-in.');
         await GoogleSignIn.signOutAsync();
         await signInWithResult('cancel');
       });
 
       it(`Successfully signed-in`, async () => {
+        await alertAndWaitForResponse('Please select an account and complete auth flow.');
+
         await GoogleSignIn.signOutAsync();
         await signInWithResult('success');
       });

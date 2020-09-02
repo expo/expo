@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.channels.ScopedNotificationsChannelsProvider;
+import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;

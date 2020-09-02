@@ -2,8 +2,9 @@ import DefaultIonicons from '@expo/vector-icons/build/Ionicons';
 import DefaultMaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { Svg, Path } from 'react-native-svg';
 import { Platform } from 'react-native';
+import { Svg, Path } from 'react-native-svg';
+
 import Colors from '../constants/Colors';
 
 type Props = {

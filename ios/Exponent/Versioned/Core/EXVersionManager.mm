@@ -35,13 +35,18 @@
 
 #import <objc/message.h>
 
+#import <UMCore/UMDefines.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
+
+#import "REATurboModuleProvider.h"
+#import "REAModule.h"
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
@@ -66,11 +71,12 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 @end
 
-@interface EXVersionManager ()
+@interface EXVersionManager () <RCTTurboModuleManagerDelegate>
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
+@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 
 @end
 
@@ -105,14 +111,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (void)bridgeWillStartLoading:(id)bridge
 {
-  // Override the "Reload" button from Redbox to reload the app from manifest
-  // Keep in mind that it is possible this will return a EXDisabledRedBox
-  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
-  [redBox setOverrideReloadAction:^{
-      [[NSNotificationCenter defaultCenter]
-     postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
-  }];
-
   // We need to check DEBUG flag here because in ejected projects RCT_DEV is set only for React and not for ExpoKit to which this file belongs to.
   // It can be changed to just RCT_DEV once we deprecate ExpoKit and set that flag for the entire standalone project.
 #if DEBUG || RCT_DEV
@@ -127,18 +125,21 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
    postNotificationName:RCTJavaScriptWillStartLoadingNotification object:bridge];
 }
 
-- (void)bridgeFinishedLoading {
-
-}
-
-- (void)invalidate
+- (void)bridgeFinishedLoading:(id)bridge
 {
-
+  // Override the "Reload" button from Redbox to reload the app from manifest
+  // Keep in mind that it is possible this will return a EXDisabledRedBox
+  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
+  [redBox setOverrideReloadAction:^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
+  }];
 }
+
+- (void)invalidate {}
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [NSMutableDictionary new];
 
@@ -198,7 +199,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
 {
   RCTAssertMainQueue();
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   if ([key isEqualToString:@"dev-reload"]) {
     // bridge could be an RCTBridge of any version and we need to cast it since ARC needs to know
     // the return type
@@ -238,13 +239,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (void)disableRemoteDebuggingForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   devSettings.isDebuggingRemotely = NO;
 }
 
 - (void)toggleElementInspectorForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   [devSettings toggleElementInspector];
 }
 
@@ -258,21 +259,14 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (id<RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
 {
-  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
-    bridge = [bridge batchedBridge];
-  }
-  RCTModuleData *data = [bridge moduleDataForName:name];
-  if (data) {
-    return [data instance];
-  }
-  return nil;
+  return [bridge moduleForClass:[self getModuleClassFromName:[name UTF8String]]];
 }
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
                          logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
-  RCTEnableTurboModule(YES);
+  RCTEnableTurboModule([self.params[@"manifest"][@"experiments"][@"turboModules"] boolValue]);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
@@ -280,8 +274,8 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (NSArray *)extraModulesForBridge:(id)bridge
 {
+  _bridge_reanimated = bridge;
   NSDictionary *params = _params;
-  BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
@@ -326,6 +320,17 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
+  
+  if (!RCTTurboModuleEnabled()) {
+    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
+    id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
+    if (exceptionsManager) {
+      [extraModules addObject:exceptionsManager];
+    }
+    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
+    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
+    [extraModules addObject:[self getModuleInstanceFromClass:RCTAsyncLocalStorageCls()]];
+  }
 
   return extraModules;
 }
@@ -388,7 +393,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return nullptr;
+  return facebook::react::REATurboModuleProvider(name, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
@@ -396,7 +401,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   // Standard
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
-      return @[[RCTLocalAssetImageLoader new]];
+      return @[[RCTLocalAssetImageLoader new], [EXMediaLibraryImageLoader new]];
     } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
       return @[[RCTGIFImageDecoder new]];
     }];
@@ -436,6 +441,17 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   return [moduleClass new];
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                       instance:(id<RCTTurboModule>)instance
+                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                                                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
+                                                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+{
+  // TODO: ADD
+  return nullptr;
+}
+
+
 - (NSString *)_experienceId
 {
   return _params[@"manifest"][@"id"];
@@ -444,6 +460,21 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (BOOL)_isOpeningHomeInProductionMode
 {
   return _params[@"browserModuleClass"] && !_params[@"manifest"][@"developer"];
+}
+
+- (void *)versionedJsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+  UM_WEAKIFY(self);
+  return new facebook::react::JSCExecutorFactory([UMWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    UM_ENSURE_STRONGIFY(self);
+    self->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                     delegate:self
+                                                                    jsInvoker:bridge.jsCallInvoker];
+    [self->_turboModuleManager installJSBindingWithRuntime:&runtime];
+  });
 }
 
 @end

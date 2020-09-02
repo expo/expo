@@ -19,7 +19,7 @@ const GROUPS = {
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
   Preview: ['Preview'],
-  'EAS Builds': ['EAS Builds'],
+  'EAS Build': ['EAS Build'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -29,15 +29,15 @@ const sections = [
     reference: ['Introduction', 'Support and feedback'],
   },
   {
-    name: 'EAS Builds',
+    name: 'EAS Build',
     reference: [
       'Introduction',
-      'EAS Builds in 5 Minutes',
-      'Setup',
-      'Configuring with eas.json',
-      'Android Builds',
-      'iOS Builds',
-      'Advanced Credentials Configuration',
+      'EAS Build from scratch in 5 minutes',
+      'Set up your project and environment',
+      'Configuration with eas.json',
+      'Android build process',
+      'iOS build process',
+      'Advanced credentials configuration',
     ],
   },
   {
@@ -82,6 +82,7 @@ const sections = [
       'Push Notifications Overview',
       'Push Notifications Setup',
       "Sending Notifications with Expo's Push API",
+      'Sending Notifications with APNs & FCM',
       'Receiving Notifications',
       'Using FCM for Push Notifications',
     ],
@@ -124,6 +125,7 @@ const sections = [
     reference: [
       'Overview',
       'Building Standalone Apps',
+      'Build Webhooks',
       'App Signing',
       'Deploying to App Stores',
       'Release Channels',

@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.reanimated;
 
+import com.facebook.fbreact.specs.NativeWebSocketModuleSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -35,6 +36,8 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
   private @Nullable NodesManager mNodesManager;
   private @Nullable TransitionModule mTransitionManager;
 
+  private UIManagerModule mUIManager;
+
   public ReanimatedModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -46,6 +49,8 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
     reactCtx.addLifecycleEventListener(this);
     uiManager.addUIManagerListener(this);
     mTransitionManager = new TransitionModule(uiManager);
+
+    mUIManager = uiManager;
   }
 
   @Override
@@ -90,7 +95,7 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
     return NAME;
   }
 
-  private NodesManager getNodesManager() {
+  /*package*/ NodesManager getNodesManager() {
     if (mNodesManager == null) {
       mNodesManager = new NodesManager(getReactApplicationContext());
     }
@@ -222,5 +227,11 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
         nodesManager.setValue(nodeID, newValue);
       }
     });
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+    mNodesManager.onCatalystInstanceDestroy();
   }
 }

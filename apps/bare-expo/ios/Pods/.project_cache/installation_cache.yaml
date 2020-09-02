@@ -2,15 +2,15 @@ BUILD_CONFIGURATIONS:
   Debug: :debug
   Release: :release
 CACHE_KEYS:
-  Amplitude-iOS:
+  Amplitude:
     BUILD_SETTINGS_CHECKSUM:
-      Amplitude-iOS:
-        :debug: 0cbcb9952774673acc7a6e9a8c1266db
-        :release: 0cbcb9952774673acc7a6e9a8c1266db
-    CHECKSUM: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
-    PROJECT_NAME: Amplitude-iOS
+      Amplitude:
+        :debug: 2d34c2c14634a150915caf3b9199a4f3
+        :release: 2d34c2c14634a150915caf3b9199a4f3
+    CHECKSUM: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
+    PROJECT_NAME: Amplitude
     SPECS:
-      - Amplitude-iOS (4.7.1)
+      - Amplitude (6.0.0)
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
       Analytics:
@@ -52,15 +52,15 @@ CACHE_KEYS:
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude:
-        :debug: 61eb4bcce3e82c9da4c0d6ef87815f8c
-        :release: 61eb4bcce3e82c9da4c0d6ef87815f8c
-    CHECKSUM: 57aa88d69bd7cc8121654685b969018823f8879e
+        :debug: 1e421155a1ef4a7ee11a8374855e4ecc
+        :release: 1e421155a1ef4a7ee11a8374855e4ecc
+    CHECKSUM: caa186767e48b4efcb07cf74be76ff16f4700e48
     FILES:
       - "../../../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
       - "../../../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.m"
     PROJECT_NAME: EXAmplitude
     SPECS:
-      - EXAmplitude (8.3.0)
+      - EXAmplitude (8.3.1)
   EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       EXAppAuth:
@@ -286,11 +286,11 @@ CACHE_KEYS:
   EXDevMenu:
     BUILD_SETTINGS_CHECKSUM:
       EXDevMenu:
-        :debug: 0ca08de365def984d0e9b321d0f1a0a8
-        :release: 0ca08de365def984d0e9b321d0f1a0a8
-    CHECKSUM: 83316fe0e2fabf443a2b60e5cf3bb0dc78c3d430
+        :debug: b1eba0b1d6e2b892cedf4546f1284ac1
+        :release: b1eba0b1d6e2b892cedf4546f1284ac1
+    CHECKSUM: a40f21353b521fb721ae30452d5a89f8319d7d0f
     FILES:
-      - "../../../../packages/expo-dev-menu/assets/.dev-menu-packager-host"
+      - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
       - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
@@ -307,22 +307,35 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift"
       - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuMotionInterceptor.swift"
       - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/MenuItems/DevMenuAction.swift"
-      - "../../../../packages/expo-dev-menu/ios/MenuItems/DevMenuGroup.swift"
-      - "../../../../packages/expo-dev-menu/ios/MenuItems/DevMenuItem.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
-      - "../../../../packages/expo-dev-menu/ios/Protocols/DevMenuBridgeProtocol.swift"
-      - "../../../../packages/expo-dev-menu/ios/Protocols/DevMenuDelegateProtocol.swift"
-      - "../../../../packages/expo-dev-menu/ios/Protocols/DevMenuExtensionProtocol.swift"
       - "../../../../packages/expo-dev-menu/README.md"
     PROJECT_NAME: EXDevMenu
     SPECS:
-      - EXDevMenu (0.1.0)
+      - EXDevMenu (0.0.1)
+  EXDevMenuInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      EXDevMenuInterface:
+        :debug: 6088830fd6859a94b46d7ffbe993b1aa
+        :release: 6088830fd6859a94b46d7ffbe993b1aa
+    CHECKSUM: 10940ba80c09a99703ee1850b94f7e632c1d4764
+    FILES:
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuManagerProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuUIResponderExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuAction.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuGroup.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuItem.swift"
+      - "../../../../packages/expo-dev-menu-interface/README.md"
+    PROJECT_NAME: EXDevMenuInterface
+    SPECS:
+      - EXDevMenuInterface (0.0.1)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
@@ -449,7 +462,7 @@ CACHE_KEYS:
       EXGL:
         :debug: e2693ac9b23793b0d76b54ea5efb250c
         :release: e2693ac9b23793b0d76b54ea5efb250c
-    CHECKSUM: d38031d89c33a617cee38db0f8b58e3003527798
+    CHECKSUM: 18197ce91dceb9acdc9b0a839919111ca004f434
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -465,13 +478,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLViewManager.m"
     PROJECT_NAME: EXGL
     SPECS:
-      - EXGL (9.1.0)
+      - EXGL (9.1.1)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP:
         :debug: 2048fe04f075c294e3d06750bdb6e79a
         :release: 2048fe04f075c294e3d06750bdb6e79a
-    CHECKSUM: 2fadf72a369e6c6530125b2f740706d7fd3e7c90
+    CHECKSUM: 33f454aae7055477285982e9ce84dff19f83d458
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -490,7 +503,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (9.1.0)
+      - EXGL_CPP (9.1.2)
   EXGL_CPP_LEGACY:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP_LEGACY:
@@ -687,7 +700,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: cc36485bbe4780e0bf7381237eb7412a
         :release: cc36485bbe4780e0bf7381237eb7412a
-    CHECKSUM: 1518bc6f37b7f9fbee1f03e451bd0dd1298f9292
+    CHECKSUM: 876e417918fbb1a3a521b3465b8034ef41d5d16a
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -699,7 +712,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
-      - EXMediaLibrary (9.2.0)
+      - EXMediaLibrary (9.2.1)
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork:
@@ -717,7 +730,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 1a9a6dea23cce102abe0ca9c4863027b
         :release: 1a9a6dea23cce102abe0ca9c4863027b
-    CHECKSUM: 12bb525abea895be0f5011b2be512bbc82272dfd
+    CHECKSUM: 55301e7284ef5427662a2191eb986acb2035a1d5
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -759,7 +772,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.7.0)
+      - EXNotifications (0.7.1)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
@@ -830,13 +843,13 @@ CACHE_KEYS:
       EXScreenCapture:
         :debug: 2cf4d30c60c6bea2892b7e500db91630
         :release: 2cf4d30c60c6bea2892b7e500db91630
-    CHECKSUM: 602976ecab94dbbd4b939ef3b85c68e4b74ad571
+    CHECKSUM: cb33de21768c77375ec37ab744a0f4ba4c9caec2
     FILES:
       - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.h"
       - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.m"
     PROJECT_NAME: EXScreenCapture
     SPECS:
-      - EXScreenCapture (1.1.0)
+      - EXScreenCapture (1.1.1)
   EXScreenOrientation:
     BUILD_SETTINGS_CHECKSUM:
       EXScreenOrientation:
@@ -960,13 +973,13 @@ CACHE_KEYS:
       EXStoreReview:
         :debug: 75d89d81f1fecae17930ce470b32f1ec
         :release: 75d89d81f1fecae17930ce470b32f1ec
-    CHECKSUM: b74c5e58e7ab74f28eaaefb1dfd4659e80a22c91
+    CHECKSUM: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
     FILES:
       - "../../../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.h"
       - "../../../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.m"
     PROJECT_NAME: EXStoreReview
     SPECS:
-      - EXStoreReview (2.1.3)
+      - EXStoreReview (2.2.0)
   EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
       EXTaskManager:
@@ -1215,21 +1228,18 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 76816b7215772a4870f549c2b493264f
-      Release: 76816b7215772a4870f549c2b493264f
+      Debug: 2376812207103a5cb27166faed1e7156
+      Release: 2376812207103a5cb27166faed1e7156
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der"
-      - "${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der"
+      - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
       - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 0531aed66de38cccd84f332899442e3b
-      Release: 0531aed66de38cccd84f332899442e3b
+      Debug: 7b3d396c9e7e40fcd86b4c7f7061e278
+      Release: 7b3d396c9e7e40fcd86b4c7f7061e278
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

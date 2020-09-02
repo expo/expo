@@ -36,4 +36,6 @@ typedef NSNumber* REANodeID;
 - (void)dangerouslyRescheduleEvaluate;
 - (void)forceUpdateMemoizedValue:(id)value;
 
+- (void)onDrop;
+
 @end

@@ -8,6 +8,7 @@ import inquirer from 'inquirer';
 import glob from 'glob-promise';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
+import ncp from 'ncp';
 import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
@@ -35,6 +36,11 @@ interface VendoredModuleUpdateStep {
   updatePbxproj?: boolean;
 }
 
+type ModuleModifier = (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+) => Promise<void>;
+
 interface VendoredModuleConfig {
   repoUrl: string;
   packageName?: string;
@@ -43,6 +49,7 @@ interface VendoredModuleConfig {
   semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
   steps: VendoredModuleUpdateStep[];
+  moduleModifier?: ModuleModifier;
   warnings?: string[];
 }
 
@@ -50,6 +57,89 @@ const IOS_DIR = Directories.getIosDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
+
+const ReanimatedModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const firstStep = moduleConfig.steps[0];
+  const androidMainPathReanimated = path.join(clonedProjectPath, 'android', 'src', 'main');
+  const androidMainPathExpoview = path.join(ANDROID_DIR, 'expoview', 'src', 'main');
+  const JNIOldPackagePrefix = firstStep.sourceAndroidPackage!.split('.').join('/');
+  const JNINewPackagePrefix = firstStep.targetAndroidPackage!.split('.').join('/');
+
+  const replaceHermesByJSC = async () => {
+    const nativeProxyPath = path.join(
+      clonedProjectPath,
+      'android',
+      'src',
+      'main',
+      'cpp',
+      'NativeProxy.cpp'
+    );
+    const runtimeCreatingLineJSC = 'jsc::makeJSCRuntime();';
+    const jscImportingLine = '#include <jsi/JSCRuntime.h>';
+    const runtimeCreatingLineHermes = 'facebook::hermes::makeHermesRuntime();';
+    const hermesImportingLine = '#include <hermes/hermes.h>';
+
+    const content = await fs.readFile(nativeProxyPath, 'utf8');
+    let transformedContent = content.replace(runtimeCreatingLineHermes, runtimeCreatingLineJSC);
+    transformedContent = transformedContent.replace(
+      new RegExp(hermesImportingLine, 'g'),
+      jscImportingLine
+    );
+
+    await fs.writeFile(nativeProxyPath, transformedContent, 'utf8');
+  };
+
+  const replaceJNIPackages = async () => {
+    const cppPattern = path.join(androidMainPathReanimated, 'cpp', '**', '*.@(h|cpp)');
+    const androidCpp = await glob(cppPattern);
+    for (const file of androidCpp) {
+      const content = await fs.readFile(file, 'utf8');
+      const transformedContent = content.split(JNIOldPackagePrefix).join(JNINewPackagePrefix);
+      await fs.writeFile(file, transformedContent, 'utf8');
+    }
+  };
+
+  const copyCPP = async () => {
+    const dirs = ['Common', 'cpp'];
+    for (let dir of dirs) {
+      await fs.remove(path.join(androidMainPathExpoview, dir)); // clean
+      // copy
+      await new Promise((res, rej) => {
+        ncp(
+          path.join(androidMainPathReanimated, dir),
+          path.join(androidMainPathExpoview, dir),
+          { dereference: true },
+          () => {
+            res();
+          }
+        );
+      });
+    }
+  };
+
+  const prepareIOSNativeFiles = async () => {
+    const patternCommon = path.join(clonedProjectPath, 'Common', '**', '*.@(h|mm|cpp)');
+    const patternNative = path.join(clonedProjectPath, 'ios', 'native', '**', '*.@(h|mm|cpp)');
+    const commonFiles = await glob(patternCommon);
+    const iosOnlyFiles = await glob(patternNative);
+    const files = [...commonFiles, ...iosOnlyFiles];
+    for (let file of files) {
+      console.log(file);
+      const fileName = file.split(path.sep).slice(-1)[0];
+      await fs.copy(file, path.join(clonedProjectPath, 'ios', fileName));
+    }
+
+    await fs.remove(path.join(clonedProjectPath, 'ios', 'native'));
+  };
+
+  await replaceHermesByJSC();
+  await replaceJNIPackages();
+  await copyCPP();
+  await prepareIOSNativeFiles();
+};
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-gesture-handler': {
@@ -83,6 +173,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     repoUrl: 'https://github.com/software-mansion/react-native-reanimated.git',
     installableInManagedApps: true,
     semverPrefix: '~',
+    moduleModifier: ReanimatedModifier,
     steps: [
       {
         recursive: true,
@@ -98,6 +189,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
       )} will not be updated -- you'll need to add these to expoview manually!`,
+      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to 
+      ${chalk.magenta('""')}`,
     ],
   },
   'react-native-screens': {
@@ -137,7 +230,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'packages/amazon-cognito-identity-js/ios',
         targetIosPath: 'Api/Cognito',
-        sourceAndroidPath: 'packages/amazon-cognito-identity-js/android/src/main/java/com/amazonaws',
+        sourceAndroidPath:
+          'packages/amazon-cognito-identity-js/android/src/main/java/com/amazonaws',
         targetAndroidPath: 'modules/api/cognito',
         sourceAndroidPackage: 'com.amazonaws',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.cognito',
@@ -255,7 +349,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
           'useSharedPool'
         )} property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.`
       ),
-      chalk.bold.yellow(`See commit ${chalk.cyan('https://github.com/expo/expo/commit/0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
+      chalk.bold.yellow(
+        `See commit ${chalk.cyan(
+          'https://github.com/expo/expo/commit/0e7d25bd9facba74828a0af971293d30f9ba22fc'
+        )}.\n`
+      ),
     ],
   },
   'react-native-safe-area-context': {
@@ -406,7 +504,7 @@ async function renameIOSSymbolsAsync(file: string, iosPrefix: string) {
 }
 
 async function findObjcFilesAsync(dir: string, recursive: boolean): Promise<string[]> {
-  const pattern = path.join(dir, recursive ? '**' : '', '*.[hmc]');
+  const pattern = path.join(dir, recursive ? '**' : '', '*.@(h|m|c|mm|cpp)');
   return await glob(pattern);
 }
 
@@ -651,6 +749,10 @@ async function action(options: ActionOptions) {
     moduleConfig.warnings.forEach((warning) => console.warn(warning));
   }
 
+  if (moduleConfig.moduleModifier) {
+    await moduleConfig.moduleModifier(moduleConfig, tmpDir);
+  }
+
   for (const step of moduleConfig.steps) {
     const executeAndroid = ['all', 'android'].includes(options.platform);
     const executeIOS = ['all', 'ios'].includes(options.platform);
@@ -761,7 +863,6 @@ async function action(options: ActionOptions) {
       }
     }
   }
-
   const { name, version } = await JsonFile.readAsync<{
     name: string;
     version: string;

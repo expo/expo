@@ -1,9 +1,9 @@
+import Constants from 'expo-constants';
 import * as React from 'react';
 import { Clipboard, Keyboard, Linking, Platform } from 'react-native';
 
 import * as UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';
-import Constants from 'expo-constants';
 
 type Props = {
   isValid: boolean;

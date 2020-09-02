@@ -9,7 +9,7 @@
 
 # Installation
 
-You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your dependencies
 

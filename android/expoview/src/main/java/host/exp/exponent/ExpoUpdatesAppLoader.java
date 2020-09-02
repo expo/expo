@@ -31,6 +31,7 @@ import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
@@ -74,6 +75,7 @@ public class ExpoUpdatesAppLoader {
   private boolean mIsEmergencyLaunch = false;
   private boolean mIsUpToDate = true;
   private AppLoaderStatus mStatus;
+  private boolean mShouldShowAppLoaderStatus = true;
 
   private boolean isStarted = false;
 
@@ -138,6 +140,10 @@ public class ExpoUpdatesAppLoader {
     return mStatus;
   }
 
+  public boolean shouldShowAppLoaderStatus() {
+    return mShouldShowAppLoaderStatus;
+  }
+
   private void updateStatus(AppLoaderStatus status) {
     mStatus = status;
     mCallback.updateStatus(status);
@@ -164,7 +170,13 @@ public class ExpoUpdatesAppLoader {
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "NEVER");
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 0);
     } else {
-      configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 60000);
+      if (Constants.isStandaloneApp()) {
+        configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, Constants.UPDATES_CHECK_AUTOMATICALLY ? "ALWAYS" : "NEVER");
+        configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, Constants.UPDATES_FALLBACK_TO_CACHE_TIMEOUT);
+      } else {
+        configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "ALWAYS");
+        configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY, 60000);
+      }
     }
 
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
@@ -204,12 +216,20 @@ public class ExpoUpdatesAppLoader {
           mIsEmergencyLaunch = true;
           launchWithNoDatabase(context, e);
         } else {
-          mCallback.onError(e);
+          Exception exception = e;
+          try {
+            JSONObject errorJson = new JSONObject(e.getMessage());
+            exception = new ManifestException(e, mManifestUrl, errorJson);
+          } catch (Exception ex) {
+            // do nothing, expected if the error payload does not come from a conformant server
+          }
+          mCallback.onError(exception);
         }
       }
 
       @Override
       public boolean onCachedUpdateLoaded(UpdateEntity update) {
+        setShouldShowAppLoaderStatus(update.metadata);
         if (isUsingDeveloperTool(update.metadata)) {
           return false;
         } else {
@@ -229,6 +249,7 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
+        setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
         mCallback.onOptimisticManifest(manifest.getRawManifestJson());
         updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
       }
@@ -285,7 +306,9 @@ public class ExpoUpdatesAppLoader {
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
     Uri parsedManifestUrl = Uri.parse(mManifestUrl);
-    if (isThirdPartyHosted(parsedManifestUrl) && !Constants.isStandaloneApp()) {
+    if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY) &&
+        isThirdPartyHosted(parsedManifestUrl) &&
+        !Constants.isStandaloneApp()) {
       // Sandbox third party apps and consider them verified
       // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
       // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
@@ -297,12 +320,14 @@ public class ExpoUpdatesAppLoader {
       manifest.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId);
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
-    if (mExponentManifest.isAnonymousExperience(manifest)) {
-      // automatically verified
-      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
-    }
     if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false);
+    }
+
+    if (!manifest.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
+        mExponentManifest.isAnonymousExperience(manifest)) {
+      // automatically verified
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
 
     String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
@@ -327,6 +352,29 @@ public class ExpoUpdatesAppLoader {
         manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPER_KEY).has(ExponentManifest.MANIFEST_DEVELOPER_TOOL_KEY);
     } catch (JSONException e) {
       return false;
+    }
+  }
+
+  private void setShouldShowAppLoaderStatus(JSONObject manifest) {
+    try {
+      mShouldShowAppLoaderStatus = !(manifest.has(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY) &&
+        manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY)
+          .optBoolean(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_SILENT_LAUNCH_KEY, false));
+
+      if (mShouldShowAppLoaderStatus) {
+        // we want to avoid showing the status for older snack SDK versions, too
+        // we make our best guess based on the manifest fields
+        // TODO: remove this after SDK 38 is phased out
+        if (manifest.has(ExponentManifest.MANIFEST_SDK_VERSION_KEY) &&
+            ABIVersion.toNumber("39.0.0") > ABIVersion.toNumber(manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY)) &&
+            "snack".equals(manifest.optString(ExponentManifest.MANIFEST_SLUG)) &&
+            manifest.optString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY, "").startsWith("https://d1wp6m56sqw74a.cloudfront.net/%40exponent%2Fsnack")
+        ) {
+          mShouldShowAppLoaderStatus = false;
+        }
+      }
+    } catch (JSONException e) {
+      mShouldShowAppLoaderStatus = true;
     }
   }
 

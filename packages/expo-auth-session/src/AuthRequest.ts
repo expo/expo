@@ -15,6 +15,7 @@ import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
+import { TokenResponse } from './TokenRequest';
 
 const sessionUrlProvider = getSessionUrlProvider();
 
@@ -42,7 +43,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   readonly usePKCE?: boolean;
   readonly codeChallengeMethod: CodeChallengeMethod;
   readonly redirectUri: string;
-  readonly scopes: string[];
+  readonly scopes?: string[];
   readonly clientSecret?: string;
   readonly prompt?: Prompt;
 
@@ -185,6 +186,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     const { state, error = errorCode } = params;
 
     let parsedError: AuthError | null = null;
+    let authentication: TokenResponse | null = null;
     if (state !== this.state) {
       // This is a non-standard error
       parsedError = new AuthError({
@@ -195,12 +197,17 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     } else if (error) {
       parsedError = new AuthError({ error, ...params });
     }
+    if (params.access_token) {
+      authentication = TokenResponse.fromQueryParams(params);
+    }
 
     return {
       type: parsedError ? 'error' : 'success',
       error: parsedError,
       url,
       params,
+      authentication,
+
       // Return errorCode for legacy
       errorCode,
     };
@@ -247,7 +254,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     params.response_type = request.responseType!;
     params.state = request.state;
 
-    if (request.scopes.length) {
+    if (request.scopes?.length) {
       params.scope = request.scopes.join(' ');
     }
 

@@ -3,7 +3,6 @@ package versioned.host.exp.exponent.modules.api.notifications;
 import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.categories.serializers.ExpoNotificationsCategoriesSerializer;
 import expo.modules.notifications.notifications.model.NotificationCategory;
-import host.exp.exponent.notifications.ScopedNotificationsIdUtils;
 
 public class ScopedNotificationsCategoriesSerializer extends ExpoNotificationsCategoriesSerializer {
   @Override

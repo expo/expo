@@ -1,6 +1,6 @@
 ---
 title: Random
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-random'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-random'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

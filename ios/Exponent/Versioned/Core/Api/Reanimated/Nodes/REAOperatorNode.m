@@ -88,7 +88,7 @@ return @(OP); \
             @"greaterThan": REA_INFIX(a > b),
             @"lessOrEq": REA_INFIX(a <= b),
             @"greaterOrEq": REA_INFIX(a >= b),
-            @"neq": REA_INFIX(a != b),
+             @"neq": REA_INFIX(a != b),
             };
   });
   if ((self = [super initWithID:nodeID config:config])) {

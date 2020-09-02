@@ -11,7 +11,7 @@
                    logFunction: (RCTLogFunction)logFunction
                   logThreshold: (NSInteger)threshold;
 - (void)bridgeWillStartLoading: (id)bridge;
-- (void)bridgeFinishedLoading;
+- (void)bridgeFinishedLoading:(id)bridge;
 - (void)invalidate;
 
 /**
@@ -28,5 +28,7 @@
  *  Provides the extra native modules required to set up a bridge with this version.
  */
 - (NSArray *)extraModulesForBridge:(id)bridge;
+
+- (void *)versionedJsExecutorFactoryForBridge:(id)bridge;
 
 @end

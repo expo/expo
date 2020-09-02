@@ -1,6 +1,6 @@
 ---
 title: ErrorRecovery
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-error-recovery'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-error-recovery'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

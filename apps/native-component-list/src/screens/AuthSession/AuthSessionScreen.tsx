@@ -1,6 +1,8 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
-import { useAuthRequest, TokenTypeHint } from 'expo-auth-session';
+import { useAuthRequest } from 'expo-auth-session';
+import * as GoogleAuthSession from 'expo-auth-session/providers/google';
+import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
@@ -10,15 +12,23 @@ import { getGUID } from '../../api/guid';
 import TitledSwitch from '../../components/TitledSwitch';
 import { AuthSection } from './AuthResult';
 import LegacyAuthSession from './LegacyAuthSession';
+import TitledPicker from '../../components/TitledPicker';
 
 maybeCompleteAuthSession();
 
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
+const languages = [
+  { key: 'en', value: 'English' },
+  { key: 'pl', value: 'Polish' },
+  { key: 'nl', value: 'Dutch' },
+  { key: 'fi', value: 'Finnish' },
+];
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
+  const [language, setLanguage] = React.useState<any>(languages[0].key);
 
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
@@ -41,9 +51,20 @@ export default function AuthSessionScreen() {
             setValue={value => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
           />
           <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
+          <TitledPicker
+            items={languages}
+            title="Language"
+            value={language}
+            setValue={setLanguage}
+          />
         </View>
         <H2>Services</H2>
-        <AuthSessionProviders prompt={prompt} usePKCE={usePKCE} useProxy={useProxy} />
+        <AuthSessionProviders
+          prompt={prompt}
+          usePKCE={usePKCE}
+          useProxy={useProxy}
+          language={language}
+        />
         <H2>Legacy</H2>
         <LegacyAuthSession />
       </ScrollView>
@@ -59,8 +80,9 @@ function AuthSessionProviders(props: {
   useProxy: boolean;
   usePKCE: boolean;
   prompt?: AuthSession.Prompt;
+  language: string;
 }) {
-  const { useProxy, usePKCE, prompt } = props;
+  const { useProxy, usePKCE, prompt, language } = props;
 
   const redirectUri = AuthSession.makeRedirectUri({
     native: 'bareexpo://redirect',
@@ -73,15 +95,17 @@ function AuthSessionProviders(props: {
     usePKCE,
     prompt,
     redirectUri,
+    language,
   };
 
   const providers = [
+    Google,
+    GoogleFirebase,
     Facebook,
     Spotify,
     Strava,
     Twitch,
     Dropbox,
-    Google,
     Reddit,
     Github,
     Coinbase,
@@ -101,90 +125,64 @@ function AuthSessionProviders(props: {
   );
 }
 
-function Google({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
-  });
-
-  const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
-
-  const [request, result, promptAsync] = useAuthRequest(
+function Google({ prompt, language, usePKCE }: any) {
+  const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest(
     {
-      clientId: useProxy
-        ? '29635966244-bc5tjrdacdaktqorhinsbtda80tchl7n.apps.googleusercontent.com'
-        : getGUID(),
-      redirectUri,
-      prompt,
-      scopes: ['profile', 'email', 'openid'],
+      language,
+      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
+      clientId: `${getGUID()}.apps.googleusercontent.com`,
+      selectAccount: !!prompt,
       usePKCE,
     },
-    discovery
+    {
+      path: 'redirect',
+      preferLocalhost: true,
+    }
   );
 
-  const [access, setAccess] = React.useState<null | AuthSession.TokenResponse>(null);
-  const clientSecret = '';
-  // Code exchange test
   React.useEffect(() => {
-    if (!clientSecret || access || !request || !discovery || result?.type !== 'success') {
-      return;
+    if (request && result?.type === 'success') {
+      console.log('Result: ', result.authentication);
     }
-
-    if (result.params.code) {
-      AuthSession.exchangeCodeAsync(
-        {
-          clientId: request.clientId,
-          clientSecret: request.clientSecret ?? clientSecret,
-          redirectUri: request.redirectUri,
-          scopes: request.scopes,
-          code: result.params.code,
-          extraParams: {
-            // @ts-ignore: allow for instances where PKCE is disabled
-            code_verifier: request.codeVerifier,
-          },
-        },
-        discovery
-      ).then(token => {
-        setAccess(token);
-      });
-    } else if (result.params.access_token) {
-      setAccess(AuthSession.TokenResponse.fromQueryParams(result.params));
-    } else {
-      console.warn('unexpected response: ', result);
-    }
-  }, [access, result, discovery, request]);
-
-  // Revocation test
-  React.useEffect(() => {
-    if (!request || !access || !discovery) return;
-
-    console.log('Revoking: ', access);
-
-    AuthSession.revokeAsync(
-      {
-        token: access.accessToken,
-        // tokenTypeHint: TokenTypeHint.AccessToken,
-        // clientId: request?.clientId,
-        // clientSecret: request?.clientSecret,
-        // scopes: request.scopes,
-      },
-      discovery
-    ).then(result => {
-      console.log('Revoked', result);
-    });
-  }, [request, access, discovery]);
+  }, [result]);
 
   return (
     <AuthSection
-      disabled={!useProxy && isInClient}
       request={request}
-      tokenResponse={access}
       title="google"
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 515, height: 680 } })}
-      useProxy={useProxy}
+      promptAsync={() => promptAsync()}
+    />
+  );
+}
+
+function GoogleFirebase({ prompt, language, usePKCE }: any) {
+  const [request, result, promptAsync] = GoogleAuthSession.useIdTokenAuthRequest(
+    {
+      language,
+      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
+      clientId: `${getGUID()}.apps.googleusercontent.com`,
+      selectAccount: !!prompt,
+      usePKCE,
+    },
+    {
+      path: 'redirect',
+      preferLocalhost: true,
+    }
+  );
+
+  React.useEffect(() => {
+    if (request && result?.type === 'success') {
+      console.log('Result:', result.params.id_token);
+    }
+  }, [result]);
+
+  return (
+    <AuthSection
+      request={request}
+      title="google_firebase"
+      result={result}
+      promptAsync={() => promptAsync()}
     />
   );
 }
@@ -445,42 +443,28 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 }
 
-function Facebook({ usePKCE, prompt, useProxy }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: `fb145668956753819://authorize`,
-  });
-
-  const [request, result, promptAsync] = useAuthRequest(
+function Facebook({ usePKCE, useProxy, language }: any) {
+  const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
     {
       clientId: '145668956753819',
-      redirectUri,
-      scopes: ['public_profile', 'user_likes'],
       usePKCE,
-      prompt,
-      extraParams: {
-        display: 'popup',
-        // Rerequest decliened permissions, to test this,
-        // add "email" to the scopes and try again (be sure not to allow email permission).
-        auth_type: 'rerequest',
-      },
+      language,
+      scopes: ['user_likes'],
     },
     {
-      authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-      tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+      path: 'redirect',
+      preferLocalhost: true,
+      useProxy,
     }
   );
+  // Add fetch user example
 
   return (
     <AuthSection
       title="facebook"
-      disabled={isInClient && !useProxy}
       request={request}
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 700, height: 600 } })}
-      useProxy={useProxy}
+      promptAsync={() => promptAsync()}
     />
   );
 }

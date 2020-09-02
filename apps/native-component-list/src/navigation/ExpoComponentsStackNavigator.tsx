@@ -6,13 +6,13 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { Screens } from './ExpoComponents';
-import StackConfig from './StackConfig';
+import getStackConfig from './StackConfig';
 
 const Stack = createStackNavigator();
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   return (
-    <Stack.Navigator {...props} {...StackConfig}>
+    <Stack.Navigator {...props} {...getStackConfig(props)}>
       <Stack.Screen
         name="ExpoComponents"
         options={{ title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK' }}

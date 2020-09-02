@@ -120,6 +120,7 @@ export declare class Recording {
     pauseAsync(): Promise<RecordingStatus>;
     stopAndUnloadAsync(): Promise<RecordingStatus>;
     getURI(): string | null;
+    /** @deprecated Use `createNewLoadedSoundAsync()` instead */
     createNewLoadedSound(initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null): Promise<{
         sound: Sound;
         status: AVPlaybackStatus;

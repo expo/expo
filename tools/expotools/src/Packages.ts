@@ -39,7 +39,7 @@ export type PackageDependency = {
 /**
  * Union with possible platform names.
  */
-export type Platform = 'ios' | 'android' | 'web';
+type Platform = 'ios' | 'android' | 'web';
 
 /**
  * Type representing `unimodule.json` structure.
@@ -88,13 +88,9 @@ export class Package {
   }
 
   get podspecName(): string | null {
-    if (!this.unimoduleJson) {
-      return null;
-    }
-
     const iosConfig = {
       subdirectory: 'ios',
-      ...('ios' in this.unimoduleJson ? this.unimoduleJson.ios : {}),
+      ...(this.unimoduleJson?.ios ?? {}),
     };
 
     // 'ios.podName' is actually not used anywhere in our unimodules, but let's have the same logic as react-native-unimodules script.
@@ -111,6 +107,10 @@ export class Package {
       return null;
     }
     return path.basename(podspecPaths[0], '.podspec');
+  }
+
+  get iosSubdirectory(): string {
+    return this.unimoduleJson?.ios?.subdirectory ?? 'ios';
   }
 
   get androidSubdirectory(): string {
@@ -138,7 +138,16 @@ export class Package {
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    return this.unimoduleJson?.platforms?.includes(platform) ?? false;
+    if (this.unimoduleJson) {
+      return this.unimoduleJson.platforms?.includes(platform) ?? false;
+    } else if (platform === 'android') {
+      return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
+    } else if (platform === 'ios') {
+      return fs
+        .readdirSync(path.join(this.path, this.iosSubdirectory))
+        .some((path) => path.endsWith('.podspec'));
+    }
+    return false;
   }
 
   isIncludedInExpoClientOnPlatform(platform: 'ios' | 'android'): boolean {

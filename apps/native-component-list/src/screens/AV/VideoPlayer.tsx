@@ -1,18 +1,12 @@
+import SegmentedControl from '@react-native-community/segmented-control';
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
-import { Video, AVPlaybackStatus, VideoFullscreenUpdateEvent } from 'expo-av';
+import { AVPlaybackStatus, ResizeMode, Video, VideoFullscreenUpdateEvent } from 'expo-av';
 import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, Text, View, ViewStyle } from 'react-native';
 
+import { Colors } from '../../constants';
 import Player from './Player';
-
-interface State {
-  sourceIndex: number;
-  errorMessage?: string;
-  useNativeControls: boolean;
-  resizeMode: any;
-  status: AVPlaybackStatus;
-}
 
 type VideoPlayerSource =
   | number
@@ -25,136 +19,150 @@ type VideoPlayerSource =
     }
   | Asset;
 
-export default class VideoPlayer extends React.Component<
-  {
-    style?: StyleProp<ViewStyle>;
-    sources: VideoPlayerSource[];
-  },
-  State
-> {
-  readonly state: State = {
-    sourceIndex: 0,
-    useNativeControls: false,
-    resizeMode: Video.RESIZE_MODE_CONTAIN,
-    status: {
-      isLoaded: false,
-    },
+export default function VideoPlayer(props: {
+  style?: StyleProp<ViewStyle>;
+  sources: VideoPlayerSource[];
+}) {
+  const [sourceIndex, setIndex] = React.useState(0);
+  const [errorMessage, setError] = React.useState<undefined | string>(undefined);
+  const [useNativeControls, setUseNativeControls] = React.useState(false);
+  const [resizeMode, setResizeMode] = React.useState<ResizeMode>(Video.RESIZE_MODE_CONTAIN);
+  const prevStatus = React.useRef<AVPlaybackStatus | null>(null);
+
+  const [status, setStatus] = React.useState<AVPlaybackStatus>({
+    isLoaded: false,
+  });
+
+  const video = React.useRef<Video>(null);
+
+  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    console.log('onPlaybackStatusUpdate: ', diff(prevStatus.current || {}, status));
+    prevStatus.current = status;
+    setStatus(status);
   };
 
-  _video?: Video;
-  private prevStatus?: AVPlaybackStatus;
-
-  _handleError = (errorMessage: string) => this.setState({ errorMessage });
-
-  _handleVideoMount = (ref: Video) => (this._video = ref);
-
-  _handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    console.log('onPlaybackStatusUpdate: ', diff(this.prevStatus || {}, status));
-    this.prevStatus = status;
-    this.setState({ status });
-  };
-
-  _handleFullScreenUpdate = (event: VideoFullscreenUpdateEvent) =>
+  const handleFullScreenUpdate = (event: VideoFullscreenUpdateEvent) =>
     console.log('onFullscreenUpdate', event);
 
-  _playAsync = async () => this._video!.playAsync();
+  const playAsync = async () => video.current?.playAsync();
 
-  _pauseAsync = async () => this._video!.pauseAsync();
+  const pauseAsync = async () => video.current?.pauseAsync();
 
-  _replayAsync = async () => this._video!.replayAsync();
+  const replayAsync = async () => video.current?.replayAsync();
 
-  _setPositionAsync = async (position: number) => this._video!.setPositionAsync(position);
+  const setPositionAsync = async (position: number) => video.current?.setPositionAsync(position);
 
-  _setIsLoopingAsync = async (isLooping: boolean) => this._video!.setIsLoopingAsync(isLooping);
+  const setIsLoopingAsync = async (isLooping: boolean) =>
+    video.current?.setIsLoopingAsync(isLooping);
 
-  _setIsMutedAsync = async (isMuted: boolean) => this._video!.setIsMutedAsync(isMuted);
+  const setIsMutedAsync = async (isMuted: boolean) => video.current?.setIsMutedAsync(isMuted);
 
-  _setRateAsync = async (rate: number, shouldCorrectPitch: boolean) =>
-    this._video!.setRateAsync(rate, shouldCorrectPitch);
+  const setRateAsync = async (rate: number, shouldCorrectPitch: boolean) =>
+    video.current?.setRateAsync(rate, shouldCorrectPitch);
 
-  _toggleNativeControls = () =>
-    this.setState(({ useNativeControls }) => ({ useNativeControls: !useNativeControls }));
+  const toggleNativeControls = () => setUseNativeControls(useNativeControls => !useNativeControls);
 
-  _resizeModeSetter = (resizeMode: any) => () => this.setState({ resizeMode });
+  const openFullscreen = () => video.current?.presentFullscreenPlayer();
 
-  _openFullscreen = () => this._video!.presentFullscreenPlayer();
-
-  _changeSource = () => {
-    this.setState(state => ({
-      sourceIndex: (state.sourceIndex + 1) % this.props.sources.length,
-    }));
+  const changeSource = () => {
+    setIndex(index => (index + 1) % props.sources.length);
   };
 
-  _renderVideo = () => (
-    <Video
-      useNativeControls={this.state.useNativeControls}
-      ref={this._handleVideoMount}
-      source={this.props.sources[this.state.sourceIndex]}
-      resizeMode={this.state.resizeMode}
-      onError={this._handleError}
-      style={{ height: 300 }}
-      progressUpdateIntervalMillis={100}
-      onPlaybackStatusUpdate={this._handlePlaybackStatusUpdate}
-      onFullscreenUpdate={this._handleFullScreenUpdate}
+  return (
+    <Player
+      style={props.style}
+      errorMessage={errorMessage}
+      isLoaded={status.isLoaded}
+      isLooping={status.isLoaded ? status.isLooping : false}
+      rate={status.isLoaded ? status.rate : 1}
+      positionMillis={status.isLoaded ? status.positionMillis : 0}
+      durationMillis={status.isLoaded ? status.durationMillis || 0 : 0}
+      shouldCorrectPitch={status.isLoaded ? status.shouldCorrectPitch : false}
+      isPlaying={status.isLoaded ? status.isPlaying : false}
+      isMuted={status.isLoaded ? status.isMuted : false}
+      volume={status.isLoaded ? status.volume : 1}
+      playAsync={playAsync}
+      pauseAsync={pauseAsync}
+      replayAsync={replayAsync}
+      nextAsync={changeSource}
+      setPositionAsync={setPositionAsync}
+      setIsLoopingAsync={setIsLoopingAsync}
+      setIsMutedAsync={setIsMutedAsync}
+      setRateAsync={setRateAsync}
+      setVolume={volume => video.current?.setVolumeAsync(volume)}
+      extraButtons={[
+        {
+          iconName: 'options',
+          title: 'Native controls',
+          onPress: toggleNativeControls,
+          active: useNativeControls,
+        },
+        () => <ResizeModeSegmentedControl onValueChange={setResizeMode} />,
+        {
+          iconName: 'resize',
+          title: 'Open full screen',
+          onPress: openFullscreen,
+          active: false,
+        },
+      ]}
+      header={
+        <Video
+          useNativeControls={useNativeControls}
+          ref={video}
+          source={props.sources[sourceIndex]}
+          resizeMode={resizeMode}
+          onError={setError}
+          style={{ height: 300 }}
+          progressUpdateIntervalMillis={100}
+          onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+          onFullscreenUpdate={handleFullScreenUpdate}
+        />
+      }
     />
   );
+}
 
-  render() {
-    const { status } = this.state;
-    return (
-      <Player
-        style={this.props.style}
-        errorMessage={this.state.errorMessage}
-        isLoaded={status.isLoaded}
-        isLooping={status.isLoaded ? status.isLooping : false}
-        rate={status.isLoaded ? status.rate : 1}
-        positionMillis={status.isLoaded ? status.positionMillis : 0}
-        durationMillis={status.isLoaded ? status.durationMillis || 0 : 0}
-        shouldCorrectPitch={status.isLoaded ? status.shouldCorrectPitch : false}
-        isPlaying={status.isLoaded ? status.isPlaying : false}
-        isMuted={status.isLoaded ? status.isMuted : false}
-        playAsync={this._playAsync}
-        pauseAsync={this._pauseAsync}
-        replayAsync={this._replayAsync}
-        nextAsync={this._changeSource}
-        setPositionAsync={this._setPositionAsync}
-        setIsLoopingAsync={this._setIsLoopingAsync}
-        setIsMutedAsync={this._setIsMutedAsync}
-        setRateAsync={this._setRateAsync}
-        extraButtons={[
-          {
-            iconName: 'options',
-            title: 'Native controls',
-            onPress: this._toggleNativeControls,
-            active: this.state.useNativeControls,
-          },
-          {
-            iconName: 'move',
-            title: 'Resize mode – stretch',
-            onPress: this._resizeModeSetter(Video.RESIZE_MODE_STRETCH),
-            active: this.state.resizeMode === Video.RESIZE_MODE_STRETCH,
-          },
-          {
-            iconName: 'log-in',
-            title: 'Resize mode – contain',
-            onPress: this._resizeModeSetter(Video.RESIZE_MODE_CONTAIN),
-            active: this.state.resizeMode === Video.RESIZE_MODE_CONTAIN,
-          },
-          {
-            iconName: 'qr-scanner',
-            title: 'Resize mode – cover',
-            onPress: this._resizeModeSetter(Video.RESIZE_MODE_COVER),
-            active: this.state.resizeMode === Video.RESIZE_MODE_COVER,
-          },
-          {
-            iconName: 'resize',
-            title: 'Open full screen',
-            onPress: this._openFullscreen,
-            active: false,
-          },
-        ]}
-        header={this._renderVideo()}
+function ResizeModeSegmentedControl({
+  onValueChange,
+}: {
+  onValueChange: (value: ResizeMode) => void;
+}) {
+  const resizeMap = {
+    stretch: ResizeMode.STRETCH,
+    contain: ResizeMode.CONTAIN,
+    cover: ResizeMode.COVER,
+  };
+  const data = Object.keys(resizeMap);
+  const [index, setIndex] = React.useState(1);
+  return (
+    <View
+      style={{
+        alignItems: 'stretch',
+        paddingBottom: 6,
+        margin: 10,
+        justifyContent: 'flex-end',
+        flex: 1,
+      }}>
+      <SegmentedControl
+        values={data}
+        fontStyle={{ color: Colors.tintColor }}
+        selectedIndex={index}
+        tintColor={'white'}
+        onChange={event => {
+          setIndex(event.nativeEvent.selectedSegmentIndex);
+        }}
+        onValueChange={value => onValueChange(resizeMap[value])}
       />
-    );
-  }
+      <Text
+        style={{
+          textAlign: 'center',
+          fontWeight: 'bold',
+          color: Colors.tintColor,
+          marginTop: 8,
+          fontSize: 12,
+        }}>
+        Resize Mode
+      </Text>
+    </View>
+  );
 }

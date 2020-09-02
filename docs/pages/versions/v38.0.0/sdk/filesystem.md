@@ -325,9 +325,9 @@ Returns a Promise that resolves to an object with the following fields:
 
 - **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
-- **status (_number_)** -- The HTTP status code for the download network request.
+- **status (_number_)** -- The HTTP response status code for the download network request.
 
-- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+- **headers (_object_)** -- An object containing all the HTTP response header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
 
 - **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
@@ -343,7 +343,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
 - **options (_object_)** -- A map of options:
 
-  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the upload network request. The keys and values of the object are the header names and values respectively.
 
   - **httpMethod (_String_)** -- The request method. Accepts values: 'POST', 'PUT', 'PATCH. Default to 'POST'.
 
@@ -363,9 +363,9 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
 Returns a Promise that resolves to an object with the following fields:
 
-- **status (_number_)** -- The HTTP status code for the download network request.
+- **status (_number_)** -- The HTTP response status code for the upload network request.
 
-- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+- **headers (_object_)** -- An object containing all the HTTP response header fields and their values for the upload network request. The keys and values of the object are the header names and values respectively.
 
 - **body (_string_)** -- The body of the server response.
 

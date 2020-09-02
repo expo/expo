@@ -1,6 +1,6 @@
 ---
 title: Haptics
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-haptics'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

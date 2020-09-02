@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
-import host.exp.exponent.AppLoader;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -81,6 +80,7 @@ import versioned.host.exp.exponent.ExpoTurboPackage;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
@@ -699,7 +699,7 @@ public class Kernel extends KernelInterface {
         @Override
         public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
           if (mOptimisticActivity != null) {
-            mOptimisticActivity.setLoadingProgressStatus(status);
+            mOptimisticActivity.setLoadingProgressStatusIfEnabled(status);
           }
         }
 

@@ -7,7 +7,7 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "jest",
-    "lint": "eslint --ext .js,.ts,.tsx,.d.ts .",
+    "lint": "eslint .",
     "report": "npx react-native-bundle-visualizer --entry-file __generated__/AppEntry.js"
   },
   "author": "Expo",
@@ -31,8 +31,8 @@
     "apollo-cache-inmemory": "^1.6.3",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
-    "expo": "~39.0.0",
-    "expo-analytics-amplitude": "~8.3.0",
+    "expo": "~39.0.1",
+    "expo-analytics-amplitude": "~8.3.1",
     "expo-asset": "~8.2.0",
     "expo-barcode-scanner": "~9.0.0",
     "expo-blur": "~8.2.0",

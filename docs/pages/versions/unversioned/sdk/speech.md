@@ -1,6 +1,6 @@
 ---
 title: Speech
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-speech'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-speech'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

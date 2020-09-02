@@ -50,29 +50,17 @@ const screens = [
   'WebView',
 ];
 
-export default function ExpoComponentsScreen() {
-  const apis = React.useMemo(() => {
-    return screens
-      .map(name => ({
-        name,
-        route: `/components/${name.toLowerCase()}`,
-        isAvailable: !!Screens[name],
-      }))
-      .sort((a, b) => {
-        if (a.isAvailable !== b.isAvailable) {
-          if (a.isAvailable) {
-            return -1;
-          }
-          return 1;
-        }
-        return 0;
-      });
-  }, []);
+export const ScreenItems = screens.map(name => ({
+  name,
+  route: `/components/${name.toLowerCase()}`,
+  isAvailable: !!Screens[name],
+}));
 
+export default function ExpoComponentsScreen() {
   const renderItemRight = React.useCallback(
     ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
     []
   );
 
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} />;
+  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

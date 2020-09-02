@@ -26,10 +26,6 @@
 #import <React/RCTUtils.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
-#if __has_include(<EXGL_CPP/UEXGL.h>)
-#import <EXGL_CPP/UEXGL.h>
-#endif
-
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #endif
@@ -115,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
   // EXKernel.appRegistry.homeAppRecord does not contain any homeAppRecord until this point,
   // therefore we cannot move this property initialization to the constructor/initializer
   _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
-  
+
   // show LoadingCancelView in managed apps only
   if (!self.isStandalone && !self.isHomeApp) {
     self.appLoadingCancelView = [EXAppLoadingCancelView new];
@@ -127,9 +123,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view bringSubviewToFront:self.appLoadingCancelView];
   }
 
-  // show LoadingProgressWindow in managed apps and dev home app only
-  BOOL isDevelopmentHomeApp = self.isHomeApp && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone || isDevelopmentHomeApp];
+  // show LoadingProgressWindow in the development client for all apps other than production home
+  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone && !isProductionHomeApp];
 
   // show SplashScreen in standalone apps and home app only
   // SplashScreen for managed is shown once the manifest is available
@@ -291,12 +287,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (_backgroundedControllers != nil) {
     __block UIViewController *parentController = self;
-    
+
     [_backgroundedControllers enumerateObjectsUsingBlock:^(UIViewController * _Nonnull viewController, NSUInteger idx, BOOL * _Nonnull stop) {
       [parentController presentViewController:viewController animated:NO completion:nil];
       parentController = viewController;
     }];
-    
+
     _backgroundedControllers = nil;
   }
 }
@@ -304,12 +300,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)backgroundControllers
 {
   UIViewController *childController = [self presentedViewController];
-  
+
   if (childController != nil) {
     if (_backgroundedControllers == nil) {
       _backgroundedControllers = [NSMutableArray new];
     }
-    
+
     while (childController != nil) {
       [_backgroundedControllers addObject:childController];
       childController = childController.presentedViewController;
@@ -322,9 +318,9 @@ NS_ASSUME_NONNULL_BEGIN
  * - optimistic one (served from cache)
  * - actual one served when app is fetched.
  * For each of them we should show SplashScreen,
- * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible. 
+ * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
  * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
- */ 
+ */
 - (void)_showOrReconfigureManagedAppSplashScreen:(NSDictionary *)manifest
 {
   if (_isStandalone || _isHomeApp) {
@@ -332,12 +328,16 @@ NS_ASSUME_NONNULL_BEGIN
   }
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
-    
+
     EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-    [splashScreenService showSplashScreenFor:self
-                    splashScreenViewProvider:_managedAppSplashScreenViewProvider
-                             successCallback:^{}
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    UM_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UM_ENSURE_STRONGIFY(self);
+      [splashScreenService showSplashScreenFor:self
+                      splashScreenViewProvider:self.managedAppSplashScreenViewProvider
+                               successCallback:^{}
+                               failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    });
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
@@ -354,9 +354,21 @@ NS_ASSUME_NONNULL_BEGIN
                                 alertControllerWithTitle:@"Using a cached project"
                                 message:@"If you did not intend to use a cached project, check your network connection and reload."
                                 preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Reload" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+      [self refresh];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Use cache" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
   });
+}
+
+- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAppLoader *)appLoader
+{
+  if (appLoader.shouldShowRemoteUpdateStatus) {
+    [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
+  } else {
+    [self.appLoadingProgressWindowController hide];
+  }
 }
 
 #pragma mark - EXAppLoaderDelegate
@@ -372,6 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
   }
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
@@ -390,8 +403,8 @@ NS_ASSUME_NONNULL_BEGIN
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
   }
-  
-  if (!appLoader.isUpToDate) {
+
+  if (!appLoader.isUpToDate && appLoader.shouldShowRemoteUpdateStatus) {
     [self _showCachedExperienceAlert];
   }
 }
@@ -417,7 +430,7 @@ NS_ASSUME_NONNULL_BEGIN
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  
+
   [_contentView removeFromSuperview];
   _contentView = reactView;
   [self.view addSubview:_contentView];
@@ -462,9 +475,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager
 {
-#if __has_include(<EXGL_CPP/UEXGL.h>)
-  UEXGLInvalidateJsiCache();
-#endif
 }
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
@@ -482,12 +492,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [screenOrientationRegistry requiredOrientationMask];
   }
 #endif
-  
+
   // TODO: Remove once sdk 37 is phased out
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
-  
+
   return [self orientationMaskFromManifestOrDefault];
 }
 
@@ -517,12 +527,12 @@ NS_ASSUME_NONNULL_BEGIN
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
-    
+
     #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
       EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
-      
+
     // TODO: Remove once sdk 37 is phased out
     [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }

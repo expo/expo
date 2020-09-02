@@ -14,12 +14,18 @@
   - `setGroup` to `setGroupAsync`
   - `setTrackingOptions` to `setTrackingOptionsAsync`
     ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+- All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+## 8.3.1 — 2020-08-24
+
+### 🛠 Breaking changes
+
+- Upgraded native Amplitude iOS library from `4.7.1` to `6.0.0`. This removes the IDFA code that was previously included with the Amplitude library. `disableIDFA` option for `Amplitude.setTrackingOptions` is removed. If you would like to collect the IDFA, you must be in the bare workflow. ([#9880](https://github.com/expo/expo/pull/9880) by [@bbarthec](https://github.com/bbarthec))
 
 ## 8.3.0 — 2020-08-18
 
