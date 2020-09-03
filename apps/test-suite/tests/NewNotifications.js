@@ -1197,7 +1197,51 @@ export async function test(t) {
               },
             });
           } else {
-            throw new Error('Test does not support platfrom');
+            throw new Error('Test does not support platform');
+          }
+        },
+        4000
+      );
+
+      t.it(
+        'schedules a repeating weekly notification. only first scheduled event is verified.',
+        async () => {
+          const dateNow = new Date();
+          const trigger = {
+            // JS weekday range equals 0 to 6, Sunday equals 0
+            // Native weekday range equals 1 to 7, Sunday equals 1
+            weekday: dateNow.getDay() + 1,
+            hour: dateNow.getHours(),
+            minute: (dateNow.getMinutes() + 2) % 60,
+            repeats: true,
+          };
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
+          });
+          const result = await Notifications.getAllScheduledNotificationsAsync();
+          delete trigger.repeats;
+          if (Platform.OS === 'android') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'weekly',
+              channelId: null,
+              ...trigger,
+            });
+          } else if (Platform.OS === 'ios') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'calendar',
+              class: 'UNCalendarNotificationTrigger',
+              repeats: true,
+              dateComponents: {
+                ...trigger,
+                timeZone: null,
+                isLeapMonth: false,
+                calendar: null,
+              },
+            });
+          } else {
+            throw new Error('Test does not support platform');
           }
         },
         4000
@@ -1507,6 +1551,68 @@ export async function test(t) {
               identifier,
               content: notification,
               trigger: {
+                hour: triggerDate.getHours(),
+                minute: triggerDate.getMinutes(),
+                repeats: true,
+              },
+            });
+            const scheduledTime = new Date(triggerDate);
+            scheduledTime.setSeconds(0);
+            scheduledTime.setMilliseconds(0);
+            const milliSecondsToWait = scheduledTime - new Date().getTime() + 2000;
+            await waitFor(milliSecondsToWait);
+            t.expect(timesSpyHasBeenCalled).toBe(1);
+          },
+          140000
+        );
+      }
+    );
+
+    onlyInteractiveDescribe(
+      'triggers a repeating weekly notification. only first scheduled event is awaited and verified.',
+      () => {
+        let timesSpyHasBeenCalled = 0;
+        const identifier = 'test-scheduled-notification';
+        const notification = {
+          title: 'Scheduled notification',
+          data: { key: 'value' },
+          badge: 2,
+          vibrate: [100, 100, 100, 100, 100, 100],
+          color: '#FF0000',
+        };
+
+        t.beforeEach(async () => {
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          Notifications.setNotificationHandler({
+            handleNotification: async () => {
+              timesSpyHasBeenCalled += 1;
+              return {
+                shouldShowAlert: false,
+              };
+            },
+          });
+        });
+
+        t.afterEach(async () => {
+          Notifications.setNotificationHandler(null);
+          await Notifications.cancelAllScheduledNotificationsAsync();
+        });
+
+        t.it(
+          'triggers a repeating weekly notification. only first event is verified.',
+          async () => {
+            // On iOS because we are using the calendar with repeat, it needs to be
+            // greater than 60 seconds
+            const triggerDate = new Date(
+                new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+            );
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
+                // JS weekday range equals 0 to 6, Sunday equals 0
+                // Native weekday range equals 1 to 7, Sunday equals 1
+                weekday: triggerDate.getDay() + 1,
                 hour: triggerDate.getHours(),
                 minute: triggerDate.getMinutes(),
                 repeats: true,
