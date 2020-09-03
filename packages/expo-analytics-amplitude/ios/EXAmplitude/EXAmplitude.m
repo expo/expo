@@ -14,8 +14,8 @@ UM_EXPORT_MODULE(ExpoAmplitude);
   return [Amplitude instance];
 }
 
-UM_EXPORT_METHOD_AS(initialize,
-                    initialize:(NSString *)apiKey
+UM_EXPORT_METHOD_AS(initializeAsync,
+                    initializeAsync:(NSString *)apiKey
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -26,8 +26,8 @@ UM_EXPORT_METHOD_AS(initialize,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setUserId,
-                    setUserId:(NSString *)userId
+UM_EXPORT_METHOD_AS(setUserIdAsync,
+                    setUserIdAsync:(NSString *)userId
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -35,8 +35,8 @@ UM_EXPORT_METHOD_AS(setUserId,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setUserProperties,
-                    setUserProperties:(NSDictionary *)properties
+UM_EXPORT_METHOD_AS(setUserPropertiesAsync,
+                    setUserPropertiesAsync:(NSDictionary *)properties
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -44,16 +44,16 @@ UM_EXPORT_METHOD_AS(setUserProperties,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(clearUserProperties,
-                    clearUserPropertiesWithResolver:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(clearUserPropertiesAsync,
+                    clearUserPropertiesAsyncWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] clearUserProperties];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logEvent,
-                    logEvent:(NSString *)eventName
+UM_EXPORT_METHOD_AS(logEventAsync,
+                    logEventAsync:(NSString *)eventName
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -61,8 +61,8 @@ UM_EXPORT_METHOD_AS(logEvent,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logEventWithProperties,
-                    logEventWithProperties:(NSString *)eventName
+UM_EXPORT_METHOD_AS(logEventWithPropertiesAsync,
+                    logEventWithPropertiesAsync:(NSString *)eventName
                     withProperties:(NSDictionary *)properties
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
@@ -71,8 +71,8 @@ UM_EXPORT_METHOD_AS(logEventWithProperties,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setGroup,
-                    setGroup:(NSString *)groupType
+UM_EXPORT_METHOD_AS(setGroupAsync,
+                    setGroupAsync:(NSString *)groupType
                     withGroupNames:(NSArray *)groupNames
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
@@ -81,8 +81,8 @@ UM_EXPORT_METHOD_AS(setGroup,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setTrackingOptions,
-                    setTrackingOptions:(NSDictionary *)options
+UM_EXPORT_METHOD_AS(setTrackingOptionsAsync,
+                    setTrackingOptionsAsync:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
