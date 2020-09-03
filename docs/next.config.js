@@ -3,6 +3,7 @@ const { copySync, removeSync } = require('fs-extra');
 const { join } = require('path');
 const semver = require('semver');
 
+const headings = require('./common/headings');
 const { version } = require('./package.json');
 
 // copy versions/v(latest version) to versions/latest
@@ -27,7 +28,14 @@ module.exports = withCSS({
     };
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
-      use: [babelMdxLoader, '@mdx-js/loader', join(__dirname, './common/md-loader')],
+      use: [
+        babelMdxLoader,
+        {
+          loader: '@mdx-js/loader',
+          options: { mdPlugins: [headings] },
+        },
+        join(__dirname, './common/md-loader'),
+      ],
     });
     config.node = {
       fs: 'empty',

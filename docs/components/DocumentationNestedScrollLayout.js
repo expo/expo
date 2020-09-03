@@ -1,9 +1,9 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
+import * as React from 'react';
 import styled, { keyframes, css, injectGlobal } from 'react-emotion';
 
-import * as React from 'react';
 import * as Constants from '~/common/constants';
 
 // NOTE(jim): Global styles if and only if this component is used.
@@ -174,6 +174,12 @@ const STYLES_RIGHT_WRAPPER = css`
 `;
 
 class ScrollContainer extends React.Component {
+  constructor(...args) {
+    super(...args);
+
+    this.scrollRef = React.createRef();
+  }
+
   componentDidMount() {
     if (this.props.scrollPosition && this.refs.scroll) {
       this.refs.scroll.scrollTop = this.props.scrollPosition;
@@ -181,12 +187,15 @@ class ScrollContainer extends React.Component {
   }
 
   getScrollTop = () => {
-    return this.refs.scroll.scrollTop;
+    return this.scrollRef.current.scrollTop;
   };
 
   render() {
     return (
-      <div className={STYLES_SCROLL_CONTAINER} ref="scroll">
+      <div
+        className={STYLES_SCROLL_CONTAINER}
+        ref={this.scrollRef}
+        onScroll={this.props.scrollHandler}>
         {this.props.children}
       </div>
     );
@@ -202,6 +211,14 @@ export default class DocumentationNestedScrollLayout extends React.Component {
     if (this.refs.sidebar) {
       return this.refs.sidebar.getScrollTop();
     }
+  };
+
+  getContentScrollTop = () => {
+    if (this.refs.content) {
+      return this.refs.content.getScrollTop();
+    }
+
+    return undefined;
   };
 
   render() {
@@ -224,8 +241,14 @@ export default class DocumentationNestedScrollLayout extends React.Component {
           </div>
 
           <div className={STYLES_RIGHT}>
-            <ScrollContainer>
+            <ScrollContainer ref="content" scrollHandler={this.props.contentScrollHandler}>
               <div className={STYLES_RIGHT_WRAPPER}>{this.props.children}</div>
+            </ScrollContainer>
+          </div>
+
+          <div className={STYLES_LEFT}>
+            <ScrollContainer ref="rightbar" scrollPosition={this.props.sidebarScrollPosition}>
+              {this.props.sidebarRight}
             </ScrollContainer>
           </div>
         </div>

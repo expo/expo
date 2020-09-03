@@ -1,11 +1,11 @@
-import * as React from 'react';
+import { MDXProvider } from '@mdx-js/tag';
 import GithubSlugger from 'github-slugger';
 import { withRouter } from 'next/router';
-import { MDXProvider } from '@mdx-js/tag';
+import * as React from 'react';
 
+import * as components from '~/common/translate-markdown';
 import DocumentationPage from '~/components/DocumentationPage';
 import { SluggerContext } from '~/components/page-higher-order/withSlugger';
-import * as components from '~/common/translate-markdown';
 
 const withDocumentationElements = (meta) => {
   const DocumentationElementsHOC = withRouter((props) => {
