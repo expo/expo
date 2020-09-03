@@ -19,9 +19,6 @@
   }
 }
 
-- (void)bundleFinishedLoading:(RCTBridge *)bridge
-{
-  
-}
+- (void)bundleFinishedLoading:(RCTBridge *)bridge {}
 
 @end
