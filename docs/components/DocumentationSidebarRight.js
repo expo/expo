@@ -20,9 +20,6 @@ const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 32px;
 `;
 
-const WHITESPACE = /\s/g;
-const SPECIALS = /[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~’]/g;
-
 function shouldSkipTitle(info, parentGroup) {
   if (parentGroup && info.name === parentGroup.name) {
     // If the title of the group is Expo SDK and the section within it has the same name
@@ -44,7 +41,7 @@ function shouldSkipTitle(info, parentGroup) {
 function Item({ heading, activeSlug }) {
   const itemStyle = heading.slug === activeSlug ? { color: 'red' } : undefined;
   return (
-    <li key={heading.slug} style={itemStyle}>
+    <li style={itemStyle}>
       <a href={'#' + heading.slug} style={itemStyle}>
         {new Array(heading.level).join('-') + ' ' + heading.title}
       </a>
@@ -140,7 +137,7 @@ class DocumentationSidebarRight extends React.Component {
 
         <ul>
           {headings.map(heading => (
-            <Item heading={heading} activeSlug={this.state.activeSlug} />
+            <Item key={heading.slug} heading={heading} activeSlug={this.state.activeSlug} />
           ))}
         </ul>
       </nav>
