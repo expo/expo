@@ -225,7 +225,7 @@ export default class DocumentationPage extends React.Component {
 
     const handleContentScroll = contentScrollPosition => {
       window.requestAnimationFrame(() => {
-        if (this.sidebarRightRef.current)
+        if (this.sidebarRightRef && this.sidebarRightRef.current)
           this.sidebarRightRef.current.handleContentScroll(contentScrollPosition);
       });
     };

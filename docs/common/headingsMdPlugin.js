@@ -24,7 +24,9 @@ module.exports = function() {
   return tree => {
     const headings = [];
     visit(tree, 'heading', node => {
-      headings.push({ level: node.depth, title: node.children[0].value });
+      if (node.children.length > 0) {
+        headings.push({ level: node.depth, title: node.children[0].value });
+      }
     });
 
     visit(tree, 'export', node => {

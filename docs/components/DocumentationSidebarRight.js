@@ -111,7 +111,9 @@ class DocumentationSidebarRight extends React.Component {
     const { headings } = headingManager;
 
     for (const heading of headings) {
-      //console.log(heading);
+      if (!heading.ref) {
+        continue;
+      }
       const { current } = heading.ref;
       if (current && current.offsetTop >= contentScrollPosition) {
         if (heading.slug !== this.state.activeSlug) {
