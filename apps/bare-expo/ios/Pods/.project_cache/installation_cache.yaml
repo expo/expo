@@ -288,13 +288,15 @@ CACHE_KEYS:
       EXDevMenu:
         :debug: b1eba0b1d6e2b892cedf4546f1284ac1
         :release: b1eba0b1d6e2b892cedf4546f1284ac1
-    CHECKSUM: 03e2daf1658c6538115b2fdec9530331d09a2a40
+    CHECKSUM: a40f21353b521fb721ae30452d5a89f8319d7d0f
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
       - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuManager.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.m"
       - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuSettings.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuUtils.swift"
@@ -316,13 +318,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/README.md"
     PROJECT_NAME: EXDevMenu
     SPECS:
-      - EXDevMenu (0.1.0)
+      - EXDevMenu (0.0.1)
   EXDevMenuInterface:
     BUILD_SETTINGS_CHECKSUM:
       EXDevMenuInterface:
         :debug: 6088830fd6859a94b46d7ffbe993b1aa
         :release: 6088830fd6859a94b46d7ffbe993b1aa
-    CHECKSUM: 2c69e120acacbb868de3a9414907017612638f2c
+    CHECKSUM: 10940ba80c09a99703ee1850b94f7e632c1d4764
     FILES:
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
@@ -335,7 +337,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu-interface/README.md"
     PROJECT_NAME: EXDevMenuInterface
     SPECS:
-      - EXDevMenuInterface (0.1.0)
+      - EXDevMenuInterface (0.0.1)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:

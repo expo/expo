@@ -6,7 +6,7 @@ class DevMenuViewController: UIViewController {
   static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
 
   private let manager: DevMenuManager
-  private var reactRootView: RCTRootView?
+  private var reactRootView: DevMenuRootView?
   private var hasCalledJSLoadedNotification: Bool = false
 
   init(manager: DevMenuManager) {
@@ -81,6 +81,8 @@ class DevMenuViewController: UIViewController {
     ]
   }
 
+  // RCTRootView assumes it is created on a loading bridge.
+  // in our case, the bridge has usually already loaded. so we need to prod the view.
   private func forceRootViewToRenderHack() {
     if !hasCalledJSLoadedNotification, let bridge = manager.appInstance?.bridge {
       let notification = Notification(name: DevMenuViewController.JavaScriptDidLoadNotification, object: nil, userInfo: ["bridge": bridge])
@@ -100,7 +102,7 @@ class DevMenuViewController: UIViewController {
         reactRootView = nil
       }
       hasCalledJSLoadedNotification = false
-      reactRootView = RCTRootView(bridge: bridge, moduleName: "main", initialProperties: initialProps())
+      reactRootView = DevMenuRootView(bridge: bridge, moduleName: "main", initialProperties: initialProps())
       reactRootView?.frame = view.bounds
       reactRootView?.backgroundColor = UIColor.clear
 
