@@ -24,17 +24,17 @@ import * as Amplitude from 'expo-analytics-amplitude';
 
 **[Methods](#methods)**
 
-- [`Amplitude.initialize(apiKey)`](#amplitudeinitializeapikey)
-- [`Amplitude.setUserId(userId)`](#amplitudesetuseriduserid)
-- [`Amplitude.setUserProperties(userProperties)`](#amplitudesetuserpropertiesuserproperties)
-- [`Amplitude.clearUserProperties()`](#amplitudeclearuserproperties)
-- [`Amplitude.logEvent(eventName)`](#amplitudelogeventeventname)
-- [`Amplitude.logEventWithProperties(eventName, properties)`](#amplitudelogeventwithpropertieseventname-properties)
-- [`Amplitude.setGroup(groupType, groupNames)`](#amplitudesetgroupgrouptype-groupnames)
+- [`Amplitude.initializeAsync(apiKey)`](#amplitudeinitializeasyncapikey)
+- [`Amplitude.setUserIdAsync(userId)`](#amplitudesetuseridasyncuserid)
+- [`Amplitude.setUserPropertiesAsync(userProperties)`](#amplitudesetuserpropertiesasyncuserproperties)
+- [`Amplitude.clearUserPropertiesAsync()`](#amplitudeclearuserpropertiesasync)
+- [`Amplitude.logEventAsync(eventName)`](#amplitudelogeventasynceventname)
+- [`Amplitude.logEventWithPropertiesAsync(eventName, properties)`](#amplitudelogeventwithpropertiesasynceventname-properties)
+- [`Amplitude.setGroupAsync(groupType, groupNames)`](#amplitudesetgroupasyncgrouptype-groupnames)
 
 ## Methods
 
-### `Amplitude.initialize(apiKey)`
+### `Amplitude.initializeAsync(apiKey)`
 
 Initializes Amplitude with your Amplitude API key. If you're having trouble finding your API key, see [step 4 of these instructions](https://amplitude.zendesk.com/hc/en-us/articles/207108137-Introduction-Getting-Started#getting-started).
 
@@ -42,7 +42,7 @@ Initializes Amplitude with your Amplitude API key. If you're having trouble find
 
 - **apiKey (_string_)** -- Your Amplitude application's API key.
 
-### `Amplitude.setUserId(userId)`
+### `Amplitude.setUserIdAsync(userId)`
 
 Assign a user ID to the current user. If you don't have a system for user IDs you don't need to call this. See [this page](https://amplitude.zendesk.com/hc/en-us/articles/206404628-Step-2-Assign-User-IDs-and-Identify-your-Users) for details.
 
@@ -50,7 +50,7 @@ Assign a user ID to the current user. If you don't have a system for user IDs yo
 
 - **userId (_string_)** -- User ID for the current user.
 
-### `Amplitude.setUserProperties(userProperties)`
+### `Amplitude.setUserPropertiesAsync(userProperties)`
 
 Set properties for the current user. See [here for details](https://amplitude.zendesk.com/hc/en-us/articles/207108327-Step-4-Set-User-Properties-and-Event-Properties).
 
@@ -58,11 +58,11 @@ Set properties for the current user. See [here for details](https://amplitude.ze
 
 - **userProperties (_object_)** -- A map of custom properties.
 
-### `Amplitude.clearUserProperties()`
+### `Amplitude.clearUserPropertiesAsync()`
 
 Clear properties set by [`Amplitude.setUserProperties()`](#expoamplitudesetuserproperties 'Amplitude.setUserProperties').
 
-### `Amplitude.logEvent(eventName)`
+### `Amplitude.logEventAsync(eventName)`
 
 Log an event to Amplitude. For more information about what kind of events to track, [see here](https://amplitude.zendesk.com/hc/en-us/articles/206404698-Step-3-Track-Events-and-Understand-the-Actions-Users-Take).
 
@@ -70,7 +70,7 @@ Log an event to Amplitude. For more information about what kind of events to tra
 
 - **eventName (_string_)** -- The event name.
 
-### `Amplitude.logEventWithProperties(eventName, properties)`
+### `Amplitude.logEventWithPropertiesAsync(eventName, properties)`
 
 Log an event to Amplitude with custom properties. For more information about what kind of events to track, [see here](https://amplitude.zendesk.com/hc/en-us/articles/206404698-Step-3-Track-Events-and-Understand-the-Actions-Users-Take).
 
@@ -79,7 +79,7 @@ Log an event to Amplitude with custom properties. For more information about wha
 - **eventName (_string_)** -- The event name.
 - **properties (_object_)** -- A map of custom properties.
 
-### `Amplitude.setGroup(groupType, groupNames)`
+### `Amplitude.setGroupAsync(groupType, groupNames)`
 
 Add the current user to a group. For more information, see here for [iOS](https://github.com/amplitude/Amplitude-iOS#setting-groups) and see here for [Android](https://github.com/amplitude/Amplitude-Android#setting-groups).
 
@@ -88,7 +88,7 @@ Add the current user to a group. For more information, see here for [iOS](https:
 - **groupType (_string_)** -- The group name, e.g. "sports".
 - **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
 
-### `Amplitude.setTrackingOptions(trackingOptions)`
+### `Amplitude.setTrackingOptionsAsync(trackingOptions)`
 
 By default the Amplitude SDK will track several user properties such as carrier and city. You can use this method to customize and disable individual fields.
 
@@ -99,7 +99,7 @@ By default the Amplitude SDK will track several user properties such as carrier 
 - **trackingOptions (object)** -- Options object for what should not be tracked. The table below describes what properties the object may contain. All properties are expected to be booleans. For example, passing `disableCarrier: true` disables tracking the device's carrier.
 
 | Property                    | Description                                                                |
-|-----------------------------|----------------------------------------------------------------------------|
+| --------------------------- | -------------------------------------------------------------------------- |
 | `disableCarrier`            | Disable tracking of the device's carrier.                                  |
 | `disableCity`               | Disable tracking of the user's city.                                       |
 | `disableCountry`            | Disable tracking of the user's country.                                    |
