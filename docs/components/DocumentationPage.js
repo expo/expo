@@ -13,6 +13,7 @@ import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
+import DocumentationSidebarRight from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 
@@ -219,13 +220,27 @@ export default class DocumentationPage extends React.Component {
       />
     );
 
+    const sidebarRightElement = (
+      <DocumentationSidebarRight title={this.props.title} headings={this.props.headings} />
+    );
+
+    const scrollHandler = event => {
+      const layout = this.refs.layout;
+      window.requestAnimationFrame(() => {
+        console.log(layout.getContentScrollTop());
+        console.log(this.refs);
+      });
+    };
+
     return (
       <DocumentationNestedScrollLayout
         ref="layout"
         header={headerElement}
         sidebar={sidebarElement}
+        sidebarRight={sidebarRightElement}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
+        contentScrollHandler={scrollHandler}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
@@ -273,6 +288,7 @@ export default class DocumentationPage extends React.Component {
                 onSetVersion={this._handleSetVersion}
                 isVersionSelectorHidden={!isReferencePath}
               />
+              {sidebarRightElement}
             </div>
           </div>
         )}
